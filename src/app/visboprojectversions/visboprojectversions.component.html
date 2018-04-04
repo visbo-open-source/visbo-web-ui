@@ -1,0 +1,44 @@
+<nav>
+  <a routerLink="/dashboard">Dashboard</a>
+  <a routerLink="/vc">Visbo Centers</a>
+  <a routerLink="/vp">Visbo Projects</a>
+  <a routerLink="/login">Logout</a>
+</nav>
+<p> </p>
+<div class='well'>
+  <div class='panel-heading'>Visbo Project Versions</div>
+  <div *ngIf="vpActive">in Visbo Project {{vpActive.name}} </div>
+
+  <div class='panel-body'>
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th>Nr.</th>
+          <th>Name</th>
+          <th>Created</th>
+          <th>End Date</th>
+          <th>Erlös</th>
+          <th>Variant Name</th>
+          <th>Info</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let vpv of visboprojectversions; let vpvIndex=index" (click)="gotoClickedRow(vpv)">
+          <td>{{vpvIndex+1}}</td>
+          <td>{{vpv.name}}</td>
+          <td>{{vpv.timestamp | date :'dd.MM.yy HH:mm'}}</td>
+          <td>{{vpv.endDate | date :'dd.MM.yy'}}</td>
+          <td>{{vpv.Erloes}}</td>
+          <td>{{vpv.variantName}}</td>
+          <td>
+            <button class="Detail" title="Detail of Visbo Project Version"
+            (click)="gotoDetail(vpv)">i</button>
+          </td>
+        </tr>
+      </tbody>
+      <!--Table body-->
+    </table>
+  </div>
+</div>

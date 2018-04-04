@@ -1,0 +1,49 @@
+<div class="container-fluit">
+  <nav>
+    <a routerLink="/dashboard">Dashboard</a>
+    <a routerLink="/vc">Visbo Centers</a>
+    <a routerLink="/vp">Visbo Projects</a>
+    <a routerLink="/login">Logout</a>
+  </nav>
+  <br>
+</div>
+<div class='well'>
+  <div class='panel-heading'>
+      <h2>Top Visbo Centers</h2>
+  </div>
+</div>
+<div class="container-fluit" >
+  <div class="col-md-12">
+  	<div class="row">
+  		<div class="col-md-4" *ngFor="let vc of visbocenters" (click)="gotoClickedVc(vc)">
+        <div class="well">
+          <h3>{{vc.name}}</h3>
+          <p>{{vc.updatedAt | date :'dd.MM.yy'}}</p>
+      		<li>XX Users</li>
+    			<li>XX Projects</li>
+      	  <p>Visbo Center Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+      	</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class='well'>
+  <div class='panel-heading'>
+      <h2>Top Visbo Projects</h2>
+  </div>
+  <br>
+</div>
+<div class="container-fluit" >
+  <div class="col-md-12">
+  	<div class="row">
+  		<div class="col-md-4" *ngFor="let vp of visboprojects" (click)="gotoClickedVp(vp)">
+        <div class="well">
+          <h3>{{vp.name}}</h3>
+          <p>{{vp.updatedAt | date :'dd.MM.yy'}}</p>
+      		<li>XX Users</li>
+    			<p>Visbo Project Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+    	  </div>
+      </div>
+    </div>
+  </div>
+</div>

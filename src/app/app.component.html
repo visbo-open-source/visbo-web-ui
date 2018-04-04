@@ -1,0 +1,18 @@
+<!-- <h1>{{title}}</h1>
+<alert></alert>
+<nav>
+  <a routerLink="/dashboard">Dashboard</a>
+  <a routerLink="/vc">Visbo Centers</a>
+</nav>
+<router-outlet></router-outlet> -->
+<!-- main app container -->
+<div class="jumbotron">
+  <h2>{{title}}</h2>
+  <div class="container">
+    <div class="col-md-12 col-md-offset-1"  style="background-color: #ffffff;">
+      <alert></alert>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+<app-messages></app-messages>

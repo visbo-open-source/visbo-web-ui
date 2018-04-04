@@ -1,0 +1,78 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+
+//import { MaterialModule } from './_helpers/material.module';
+
+// Authentication
+import { LoginComponent } from './login/login.component';
+import { AlertComponent } from './_directives/alert.component';
+import { AuthGuard } from './_guards/auth.guard';
+import { JwtInterceptor } from './_helpers/jwt.interceptor';
+import { AuthenticationService } from './_services/authentication.service';
+import { UserService } from './_services/user.service';
+import { RegisterComponent } from './register/register.component';
+import { AlertService } from './_services/alert.service';
+import { MessagesComponent } from './messages/messages.component';
+import { MessageService } from './_services/message.service';
+
+// Visbo Centers
+import { VisboCentersComponent } from './visbocenters/visbocenters.component';
+import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+import { VisboCenterService } from './_services/visbocenter.service';
+
+// Visbo Projects
+import { VisboProjectService } from './_services/visboproject.service';
+import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
+import { VisboProjectDetailComponent } from './visboproject-detail/visboproject-detail.component';
+
+// Visbo Project Versions
+import { VisboProjectVersionService } from './_services/visboprojectversion.service';
+import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
+
+import { DashboardComponent } from './dashboard/dashboard.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    AlertComponent,
+    VisboCentersComponent,
+    VisboCenterDetailComponent,
+    VisboProjectsComponent,
+    VisboProjectDetailComponent,
+    VisboProjectVersionsComponent,
+    MessagesComponent,
+    DashboardComponent,
+    LoginComponent,
+    RegisterComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    AppRoutingModule,
+    // MaterialModule,
+    HttpClientModule
+  ],
+  providers: [
+    AuthGuard,
+    AlertService,
+    AuthenticationService,
+    VisboCenterService,
+    VisboProjectService,
+    VisboProjectVersionService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
+
+    MessageService
+  ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule { }

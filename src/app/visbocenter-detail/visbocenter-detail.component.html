@@ -1,0 +1,61 @@
+<div *ngIf="visbocenter">
+  <div class='container'>
+  <br><h2>Details of: {{ visbocenter.name | uppercase }}</h2>
+    <div>
+      <label>Name:<input [(ngModel)]="visbocenter.name" placeholder="name"/>
+      </label>
+      <button class="delete" style="float: right;" title="Delete Visbo Center"
+      (click)="delete(visbocenter)">Delete!</button>
+    </div>
+
+    <form>
+      <div>
+        <label class="col-sm-8 control-label">Created at:</label>
+        <label class="form-control-static">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm'}} </label>
+      </div>
+      <div>
+        <label class="col-sm-8 control-label">Updated at:</label>
+        <label class="form-control-static">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm'}} </label>
+      </div>
+    </form>
+    <div class='well'>
+      <div class='panel-heading'>
+          Visbo Center Users
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th>Nr.</th>
+              <th>e-Mail</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let member of visbocenter.users; let memberIndex=index"> <!-- class="danger"> -->
+              <td>{{memberIndex+1}}</td>
+              <td>{{member.email}}</td>
+              <td>{{member.role}}</td>
+            </tr>
+          </tbody>
+          <!--Table body-->
+        </table>
+        <div>
+          <label>Project:
+            <input #vpName />
+          </label>
+          <!-- (click) passes input value to add() and then clears the input -->
+          <button (click)="addproject(vpName.value, visbocenter._id); vpName.value=''">
+            add
+          </button>
+        </div>
+
+        <!-- <p>{{ visbocenter._id }}</p> -->
+      </div>
+    </div>
+    <button (click)="save()" class="btn btn-primary">save</button>
+    <button (click)="goBack()">go back</button>
+  </div>
+</div>
