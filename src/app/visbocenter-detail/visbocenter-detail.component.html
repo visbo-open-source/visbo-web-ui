@@ -1,8 +1,31 @@
 <div *ngIf="visbocenter">
   <div class='container'>
-  <br><h2>Details of: {{ visbocenter.name | uppercase }}</h2>
+  <br><h3>Details of: {{ visbocenter.name | uppercase }}</h3>
+  <!-- <form class="form-inline" action="/action_page.php">
+    <div class="form-group">
+      <label for="email">Email address:</label>
+      <input type="email" class="form-control" id="email">
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label>
+      <input type="password" class="form-control" id="pwd">
+    </div>
+    <div class="checkbox">
+      <label><input type="checkbox"> Remember me</label>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form> -->
+  <!-- <form class="form-inline">
+    <div class="form-group">
+      <label >Name: </label>
+      <input [(ngModel)]="visbocenter.name" placeholder="name" class="form-control">
+    </div>
+    <button class="delete" style="float: right;" title="Delete Visbo Center"
+    (click)="delete(visbocenter)">Delete!</button>
+  </form> -->
+
     <div>
-      <label>Name:<input [(ngModel)]="visbocenter.name" placeholder="name"/>
+      <label class="col-sm-8 control-label">Name: <input [(ngModel)]="visbocenter.name" placeholder="name" />
       </label>
       <button class="delete" style="float: right;" title="Delete Visbo Center"
       (click)="delete(visbocenter)">Delete!</button>

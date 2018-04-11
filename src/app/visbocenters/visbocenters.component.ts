@@ -53,7 +53,7 @@ export class VisboCentersComponent implements OnInit {
   }
 
   gotoClickedRow(visbocenter: VisboCenter):void {
-    console.log("clicked row %s", visbocenter.name);
+    // console.log("clicked row %s", visbocenter.name);
     this.router.navigate(['vp/'+visbocenter._id]);
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }

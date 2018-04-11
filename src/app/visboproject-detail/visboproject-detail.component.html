@@ -1,20 +1,20 @@
 <div *ngIf="visboproject">
   <div class='container'>
-  <br><h2>Details of: {{ visboproject.name | uppercase }}</h2>
+  <br>
+  <h3>Details of: {{ visboproject.name | uppercase }}</h3>
     <div>
-      <label>Name:<input [(ngModel)]="visboproject.name" placeholder="name"/>
+      <label class="col-sm-8 control-label">Name: <input [(ngModel)]="visboproject.name" placeholder="name"/>
       </label>
       <button class="delete" style="float: right;" title="Delete Visbo Project"
       (click)="delete(visboproject)">Delete!</button>
     </div>
-
     <form>
       <div>
-        <label class="col-sm-8 control-label">Created at:</label>
+        <label class="col-sm-8 control-label">Created at: </label>
         <label class="form-control-static">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm'}} </label>
       </div>
       <div>
-        <label class="col-sm-8 control-label">Updated at:</label>
+        <label class="col-sm-8 control-label">Updated at: </label>
         <label class="form-control-static">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm'}} </label>
       </div>
     </form>

@@ -17,6 +17,9 @@ import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { RegisterComponent } from './register/register.component';
 import { AlertService } from './_services/alert.service';
+
+import { NavbarComponent } from './navbar/navbar.component';
+
 import { MessagesComponent } from './messages/messages.component';
 import { MessageService } from './_services/message.service';
 
@@ -48,6 +51,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     VisboProjectVersionsComponent,
     MessagesComponent,
     DashboardComponent,
+    NavbarComponent,
     LoginComponent,
     RegisterComponent
   ],

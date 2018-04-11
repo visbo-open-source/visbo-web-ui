@@ -1,13 +1,7 @@
-<nav>
-  <a routerLink="/dashboard">Dashboard</a>
-  <a routerLink="/vc">Visbo Centers</a>
-  <a routerLink="/vp">Visbo Projects</a>
-  <a routerLink="/login">Logout</a>
-</nav>
-<p> </p>
 <div class='well'>
-  <div class='panel-heading'>Visbo Projects</div>
-  <div *ngIf="vcActive">in VisboCenter {{vcActive.name}} </div>
+  <span class='panel-heading'>Visbo Projects</span>
+  <span *ngIf="vcActive"> in VisboCenter {{vcActive.name}}</span>
+  <span>:</span>
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>

@@ -2,28 +2,20 @@ export class Login {
   email: string = "";
   password: string = ""
 };
+export class VisboUserAddress {
+  street: string;
+  zip: string;
+  city: string;
+  state: string;
+  country: string;
+};
 
-export class VisboUserFlat {
-  _id: string;
-  updatedAt: string;
-  createdAT: string;
-  email: string;
-  password: string;
-  name: string;
-  //profile: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    phone: string;
-    // address: {
-      street: string;
-      zip: string;
-      city: string;
-      state: string;
-      country: string;
-    // };
-  // };
-  _v: number
+export class VisboUserProfile {
+  firstName: string;
+  lastName: string;
+  company: string;
+  phone: string;
+  address: VisboUserAddress;
 };
 
 export class VisboUser {
@@ -33,19 +25,7 @@ export class VisboUser {
   email: string;
   password: string;
   name: string;
-  profile: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    phone: string;
-    address: {
-      street: string;
-      zip: string;
-      city: string;
-      state: string;
-      country: string;
-    };
-  };
+  profile: VisboUserProfile;
   _v: number
 };
 

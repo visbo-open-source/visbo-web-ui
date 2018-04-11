@@ -14,6 +14,10 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
+the final destination for production is that the client is part of the visbo-rest-server environment. As long as it is not configured, do the following:
+Compile with the following options: `ng build --prod --env=prod --base-href /ui/` This defines the base path for the loader to use /ui/
+Copy the result files from dest to the folder /public/ui/ on the rest server. restart the Rest Server.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
