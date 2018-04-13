@@ -2,6 +2,7 @@
   <span class='panel-heading'>Visbo Projects</span>
   <span *ngIf="vcActive"> in VisboCenter {{vcActive.name}}</span>
   <span>:</span>
+  <!-- <td #emptyVc>...</td> -->
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
@@ -11,6 +12,7 @@
           <th>Nr.</th>
           <th>Name</th>
           <th>Modified</th>
+          <th>Visbo Center</th>
           <th>Info</th>
         </tr>
       </thead>
@@ -20,6 +22,8 @@
           <td>{{vpIndex+1}}</td>
           <td>{{vp.name}}</td>
           <td>{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td *ngIf="vp.vc">{{vp.vc.name}}</td>
+          <td *ngIf="!vp.vc"> </td>
           <td>
             <button class="Detail" title="Detail of Visbo Project"
             (click)="gotoDetail(vp)">i</button>

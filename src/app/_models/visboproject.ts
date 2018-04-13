@@ -5,6 +5,9 @@ export class VisboProject {
   vcid: string;
   name: string;
   users: [ {email: string, role: string, _id: string} ]
+  vc: {
+    name: string;
+  }
 }
 
 export class VisboProjectResponse {
