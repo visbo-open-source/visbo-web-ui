@@ -1,6 +1,7 @@
 # Visbo Client
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.2.
+To use angular-cli you have to install it globally `npm install -g @angular/cli`
 
 ## Development server
 
