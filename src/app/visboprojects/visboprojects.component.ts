@@ -57,11 +57,16 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  add(name: string): void {
+  addproject(name: string, vcid: string): void {
     name = name.trim();
+    console.log("call create VP %s with ID %s to list", name, vcid);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name } as VisboProject)
-      .subscribe(vp => { this.visboprojects.push(vp[0]); });
+    this.visboprojectService.addVisboProject({ name: name, vcid: vcid } as VisboProject)
+      .subscribe(vp => {
+        console.log("add VP %s with ID %s to VC %s", vp.name, vp._id, vp.vcid);
+        this.visboprojects.push(vp)
+      });
+      // show up afterwards about success / error
   }
 
   delete(visboproject: VisboProject): void {

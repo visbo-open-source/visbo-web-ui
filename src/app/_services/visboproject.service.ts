@@ -96,14 +96,18 @@ export class VisboProjectService {
   addVisboProject (visboproject: VisboProject): Observable<VisboProject> {
     // set active user as admin
     //visboproject.Users.push({email:'markus.seyfried@visbo.de', role:'Admin' })
-    var newVP = new VisboProject();
-    newVP.name = visboproject.name;
+    // var newVP = new VisboProject();
+    // newVP.name = visboproject.name;
+    // newVP.vcid = visboproject.vcid;
     // MS ToDo: currently no users were set
     // the active user is added to the list by the API Post
-    return this.http.post<VisboProject>(this.vpUrl, visboproject, httpOptions)
+    return this.http.post<VisboProjectResponse>(this.vpUrl, visboproject, httpOptions)
       .pipe(
-        map(response => { return JSON.parse(JSON.stringify(response)).vp }), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
-        tap((visboproject: VisboProject) => this.log(`added VisboProject w/ id=${visboproject._id}`)),
+        map(response => {
+          // this.log(`added VisboProject Response ${JSON.stringify(response.vp[0])}`)
+          return response.vp[0]
+        }),
+        tap(vp => this.log(`added VisboProject with id=${vp._id}`)),
         catchError(this.handleError<VisboProject>('addVisboProject'))
       );
   }
@@ -115,10 +119,11 @@ export class VisboProjectService {
     const url = `${this.vpUrl}/${id}`;
     this.log(`Calling HTTP Request: ${url} `);
 
-    return this.http.delete<VisboProject>(url, httpOptions).pipe(
-      tap(_ => this.log(`deleted VisboProject id=${id}`)),
-      catchError(this.handleError<VisboProject>('deleteVisboProject'))
-    );
+    return this.http.delete<VisboProject>(url, httpOptions)
+      .pipe(
+        tap(_ => this.log(`deleted VisboProject id=${id}`)),
+        catchError(this.handleError<VisboProject>('deleteVisboProject'))
+      );
   }
 
   /** PUT: update the Visbo Project on the server */

@@ -33,4 +33,13 @@
       <!--Table body-->
     </table>
   </div>
+  <div *ngIf="vcActive">
+    <label>Project:
+      <input #vpName />
+    </label>
+    <!-- (click) passes input value to add() and then clears the input -->
+    <button (click)="addproject(vpName.value, vcActive._id); vpName.value=''">
+      add
+    </button>
+  </div>
 </div>
