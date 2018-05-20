@@ -34,8 +34,6 @@ export class VisboCenterService {
 
     return this.http.get<VisboCenterResponse>(this.vcUrl, httpOptions)
       .pipe(
-        //map(xeroes => xeroes[]), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
-        // map(response => response.vc), // map the JSON to an object?
         map(response => response.vc), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
         // tap(visbocenters => this.log(`fetched JSON VisboCenters ${JSON.stringify(visbocenters)}`)),
@@ -64,10 +62,8 @@ export class VisboCenterService {
     const url = `${this.vcUrl}/${id}`;
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
-      // map(hero => hero), // MS Todo: Check correct JSON OBject Mapping
       map(response => response.vc[0]),
       tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id=${id}`)),
-      // tap(_ => this.log(`fetched hero id=${id}`)),
       catchError(this.handleError<VisboCenter>(`getVisboCenter id=${id}`))
     );
   }

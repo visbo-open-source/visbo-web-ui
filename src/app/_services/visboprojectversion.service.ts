@@ -40,7 +40,7 @@ export class VisboProjectVersionService {
     if (id) {
       params = params.append('vpid', id);
     }
-    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(this.vpvUrl, { headers , params })
       .pipe(
         map(response => response.vpv), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
@@ -70,10 +70,8 @@ export class VisboProjectVersionService {
     const url = `${this.vpvUrl}/${id}`;
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboProjectVersionResponse>(url).pipe(
-      // map(hero => hero), // MS Todo: Check correct JSON OBject Mapping
       map(response => response.vpv[0]),
-      tap(visboprojectversion => this.log(`fetched vpv id=${id} ${JSON.stringify(visboprojectversion)}`)),
-      // tap(_ => this.log(`fetched hero id=${id}`)),
+      // tap(visboprojectversion => this.log(`fetched vpv id=${id} ${JSON.stringify(visboprojectversion)}`)),
       catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
     );
   }

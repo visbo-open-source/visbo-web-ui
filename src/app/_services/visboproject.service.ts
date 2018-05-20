@@ -40,7 +40,7 @@ export class VisboProjectService {
     if (id) {
       params = params.append('vcid', id);
     }
-    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectResponse>(this.vpUrl, { headers , params })
       .pipe(
         map(response => response.vp), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
@@ -70,10 +70,8 @@ export class VisboProjectService {
     const url = `${this.vpUrl}/${id}`;
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboProjectResponse>(url).pipe(
-      // map(hero => hero), // MS Todo: Check correct JSON OBject Mapping
       map(response => response.vp[0]),
-      tap(visboproject => this.log(`fetched vp id=${id} ${JSON.stringify(visboproject)}`)),
-      // tap(_ => this.log(`fetched hero id=${id}`)),
+      // tap(visboproject => this.log(`fetched vp id=${id} ${JSON.stringify(visboproject)}`)),
       catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
     );
   }
