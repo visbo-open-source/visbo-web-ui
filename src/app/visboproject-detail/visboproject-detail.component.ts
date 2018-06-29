@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
+import { MessageService } from '../_services/message.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 

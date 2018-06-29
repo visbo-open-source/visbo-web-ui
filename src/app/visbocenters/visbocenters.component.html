@@ -1,96 +1,74 @@
+<visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class='panel-heading'>
-      Visbo Centers
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h3 class='panel-heading'>
+          Visbo Centers
+        </h3>
+      </div>
+      <div class='col-6 col-md-2 align-self-end'>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VcModalCreate">
+          New Visbo Center
+        </button>
+      </div>
+    </div>
   </div>
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
         <tr>
-          <th>Nr.</th>
+          <th class="d-none d-md-table-cell">Nr.</th>
           <th>Name</th>
-          <th>Modified</th>
+          <th class="d-none d-sm-table-cell">Modified</th>
           <th>Detail</th>
         </tr>
       </thead>
       <!--Table body-->
       <tbody>
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" > <!-- class="danger"> -->
-          <td>{{vcIndex+1}}</td>
+          <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
           <td>{{vc.name}}</td>
-          <td>{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td>
             <button class="Detail" title="Detail of Visbo Center"
             (click)="gotoDetail(vc)">i</button>
           </td>
         </tr>
       </tbody>
-      <!--Table body-->
     </table>
-    <div>
-      <label>Name:
-        <input #vcName />
-      </label>
-      <!-- (click) passes input value to add() and then clears the input -->
-      <button (click)="add(vcName.value); vcName.value=''">
-        add
-      </button>
-    </div>
   </div>
 </div>
 
-<!--
-
-<div style="margin: auto; max-width: 1000px; margin-bottom: 50px;">
-    <data-table id="persons-grid"
-        headerTitle="Employees"
-        [items]="items"
-        [itemCount]="itemCount"
-        (reload)="reloadItems($event)"
-
-        (rowClick)="rowClick($event)"
-        (rowDoubleClick)="rowDoubleClick($event)"
-        [rowTooltip]="rowTooltip"
-        >
-        <data-table-column
-            [property]="'name'"
-            [header]="'Name'"
-            [sortable]="true"
-            [resizable]="true">
-        </data-table-column>
-        <data-table-column
-            [property]="'date'"
-            [header]="'Date'"
-            [sortable]="true">
-            <template #dataTableCell let-item="item">
-                <span>{{item.date | date:'yyyy-MM-dd'}}</span>
-            </template>
-        </data-table-column>
-        <data-table-column
-            property="phoneNumber"
-            header="Phone number"
-            width="150px">
-        </data-table-column>
-        <data-table-column
-            [property]="'jobTitle'"
-            [header]="'Job title'"
-            [visible]="false">
-        </data-table-column>
-        <data-table-column
-            [property]="'active'"
-            [header]="'Active'"
-            [width]="100"
-            [resizable]="true">
-            <template #dataTableHeader let-item="item">
-                <span style="color: rgb(232, 0, 0)">Active</span>
-            </template>
-            <template #dataTableCell let-item="item">
-                <span style="color: grey">
-                <span class="glyphicon glyphicon-ok" *ngIf="item.active"></span>
-                <span class="glyphicon glyphicon-remove" *ngIf="!item.active"></span>
-                </span>
-            </template>
-        </data-table-column>
-    </data-table>
+<!-- Modal -->
+<div class="modal fade" id="VcModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcModalCreateTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcModalCenterTitle">Create a new Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="vcName" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" #vcName>
+          </div>
+          <div class="form-group">
+            <label for="vcDescription" class="col-form-label">Description:</label>
+            <textarea class="form-control" #vcDescription></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="add(vcName.value, vcDescription.value); vcName.value=''; vcDescription.value=''" data-dismiss="modal">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
--->

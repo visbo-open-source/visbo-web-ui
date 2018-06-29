@@ -8,6 +8,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { VisboCenter } from '../_models/visbocenter';
+import { VCUser } from '../_models/visbocenter';
+import { VisboCenterUserResponse } from '../_models/visbocenter';
 import { VisboCenterResponse } from '../_models/visbocenter';
 
 import { MessageService } from './message.service';
@@ -133,10 +135,36 @@ export class VisboCenterService {
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
-
+      sessionStorage.removeItem('currentUser');
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
+
+  /** POST: add a new User to the Visbo Center */
+  addVCUser (user: VCUser, vcid: string): Observable<any> {
+    const url = `${this.vcUrl}/${vcid}/user`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
+    return this.http.post<VisboCenterUserResponse>(url, user, httpOptions)
+      .pipe(
+        map(response => {
+          // this.log(`added User to Visbo Center Response ${JSON.stringify(response.users)}`)
+          return response.users
+        }),
+        tap(users => this.log(`added VisboProject with id=${users[0]._id}`)),
+        catchError(this.handleError<VCUser>('addVCUser'))
+      );
+  }
+
+
+  /** DELETE: remove a User from the Visbo Center */
+  deleteVCUser (user: VCUser, vcid: string): Observable<any> {
+    const url = `${this.vcUrl}/${vcid}/user/${user.userId}?role=${user.role}`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
+    return this.http.delete<VisboCenterUserResponse>(url, httpOptions).pipe(
+      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
+      catchError(this.handleError<VisboCenterUserResponse>('deleteVisboCenterUser'))
+    );
   }
 
   /** Log a VisboCenterService message with the MessageService */

@@ -3,8 +3,11 @@
   <br>
   <h3>Details of: {{ visboproject.name | uppercase }}</h3>
     <div>
-      <label class="col-sm-8 control-label">Name: <input [(ngModel)]="visboproject.name" placeholder="name"/>
+      <label class="col-sm-8 control-label">Name: <input [(ngModel)]="visboproject.name" placeholder="Name"/>
       </label>
+      <label class="col-sm-8 control-label">Name: </label>
+      <input [(ngModel)]="visboproject.name" placeholder="Name"/>
+
       <button class="delete" style="float: right;" title="Delete Visbo Project"
       (click)="delete(visboproject)">Delete!</button>
     </div>

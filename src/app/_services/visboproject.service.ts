@@ -147,14 +147,9 @@ export class VisboProjectService {
       this.log(`HTTP Request failed: ${error.message} ${error.status}`);
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-      if ( error.status = 401 ) this.authenticationService.logout();
+      if ( error.status = 400 ) this.authenticationService.logout();
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
-
-      if ( error.status = 401 ) {
-        this.authenticationService.logout();
-        //this.router.navigate(['/login']); // MS Todo: Set a ReturnURL so the user is redirected to this page again after login
-      }
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
