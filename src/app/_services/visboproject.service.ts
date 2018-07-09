@@ -135,6 +135,37 @@ export class VisboProjectService {
       );
   }
 
+  /** POST: add a new User to the Visbo Project */
+  addVPUser (user: VPUser, message: string, vpid: string): Observable<any> {
+    const url = `${this.vpUrl}/${vpid}/user`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
+    return this.http.post<VPUserResponse>(url, user, httpOptions)
+      .pipe(
+        map(response => {
+          // this.log(`added User to Visbo Project Response ${JSON.stringify(response.users)}`)
+          return response.users
+        }),
+        tap(users => this.log(`added Visbo User with id=${users[0]._id}`)),
+        catchError(this.handleError<VPUser>('addVPUser'))
+      );
+  }
+
+
+  /** DELETE: remove a User from the Visbo Project */
+  deleteVPUser (user: VPUser, vpid: string): Observable<any> {
+    const url = `${this.vpUrl}/${vpid}/user/${user.userId}?role=${user.role}`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
+    return this.http.delete<VisboCenterResponse>(url, httpOptions).pipe(
+//      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
+      map(result => {
+        this.log(`Remove User Successful:  ${result.message}`);
+        // this.log(`Remove User Successful Detail:  ${JSON.stringify(result)}`);
+        return result.vp[0].users;
+      }),
+      catchError(this.handleError<any>('deleteVisboCenterUser'))
+    );
+  }
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.

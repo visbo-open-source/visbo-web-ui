@@ -12,6 +12,7 @@ import { VisboCenterDetailComponent }  from './visbocenter-detail/visbocenter-de
 import { VisboProjectsComponent }      from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent }  from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent }      from './visboprojectversions/visboprojectversions.component';
+import { ShowMessagesComponent }      from './messages/showmessages.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'vpDetail/:id', component: VisboProjectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
+  { path: 'showmessages', component: ShowMessagesComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 

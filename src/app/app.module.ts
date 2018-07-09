@@ -20,6 +20,7 @@ import { AlertService } from './_services/alert.service';
 
 import { NavbarComponent } from './navbar/navbar.component';
 
+import { ShowMessagesComponent } from './messages/showmessages.component';
 import { MessagesComponent } from './messages/messages.component';
 import { MessageService } from './_services/message.service';
 
@@ -50,6 +51,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,
     MessagesComponent,
+    ShowMessagesComponent,
     DashboardComponent,
     NavbarComponent,
     LoginComponent,

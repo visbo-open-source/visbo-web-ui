@@ -13,6 +13,8 @@ import { LoginComponent } from '../login/login.component';
 export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
+  sortAscending: boolean;
+  sortColumn: number;
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -57,5 +59,41 @@ export class VisboCentersComponent implements OnInit {
     // console.log("clicked row %s", visbocenter.name);
     this.router.navigate(['vp/'+visbocenter._id]);
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
+  }
+
+  sortVCTable(n) {
+
+    if (n != this.sortColumn) {
+      this.sortColumn = n;
+      this.sortAscending = undefined;
+    }
+    if (this.sortAscending == undefined) this.sortAscending = true;
+    else this.sortAscending = !this.sortAscending;
+    console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
+    if (this.sortColumn == 1) {
+      this.visbocenters.sort(function(a, b) {
+        var result = 0
+        if (a.name > b.name)
+          result = 1;
+        else if (a.name < b.name)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 2) {
+      this.visbocenters.sort(function(a, b) {
+        var result = 0
+        // console.log("Sort VC Date %s", a.updatedAt)
+        if (a.updatedAt > b.updatedAt)
+          result = 1;
+        else if (a.updatedAt < b.updatedAt)
+          result = -1;
+        return result
+      })
+    }
+    console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
+    if (!this.sortAscending) {
+      this.visbocenters.reverse();
+      console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
+    }
   }
 }

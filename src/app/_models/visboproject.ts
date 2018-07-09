@@ -1,10 +1,26 @@
+export class VPUser {
+  _id: string;
+  email: string;
+  role: string;
+  userId: string;
+}
+
+export class VPUserResponse {
+  state: string;
+  message: string;
+  users: [ VPUser ]
+}
+
 export class VisboProject {
   _id: string;
   updatedAt: string;
   createdAt: string;
   vcid: string;
   name: string;
-  users: [ {email: string, role: string, _id: string} ]
+  description: string;
+  vpType: number;
+  vpPublic: boolean;
+  users: [ VPUser ]
   vc: {
     name: string;
   }

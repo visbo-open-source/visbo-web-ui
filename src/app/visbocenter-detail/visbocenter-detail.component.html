@@ -53,33 +53,23 @@
               <td>{{member.role}}</td>
               <td>
                 <button class="Detail" title="Remove User"
-                (click)="removevcuser(member, visbocenter._id)">X</button>
+                (click)="removevcuser(member, visbocenter._id)">&times;</button>
               </td>
             </tr>
           </tbody>
           <!--Table body-->
         </table>
-        <!-- <div>
-          <label>Project:
-            <input #vpName />
-          </label>
-          <!-- (click) passes input value to add() and then clears the input --!>
-          <button (click)="addproject(vpName.value, visbocenter._id); vpName.value=''">
-            add
-          </button>
-        </div> -->
-
-        <!-- <p>{{ visbocenter._id }}</p> -->
       </div>
     </div>
     <button (click)="save()" class="btn btn-primary">save</button>
     <button (click)="goBack()">go back</button>
-    <button class="col-2 col-lg-1 bg-warning" style="float: right" title="Delete Visbo Center"
-    (click)="delete(visbocenter)">Delete!</button>
+    <button class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
+      Delete!
+    </button>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Add VC User -->
 <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -113,6 +103,47 @@
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" (click)="addvcuser(VcUserName.value, VcUserRole.value, VcUserMessage.value, visbocenter._id); VcUserName.value=''; VcUserRole.value=''; VcUserMessage.value=''" data-dismiss="modal">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Delete VC -->
+<div class="modal fade" id="VcDelete" tabindex="-1" role="dialog" aria-labelledby="Delete Visbo Center" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcDeleteTitle">Delete this Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label class="bg-warning">Do you really want to delete this Visbo Center? </label>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="VcName" class="col-form-label">Name:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcDescription" class="col-form-label">Description:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.description }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcProjects" class="col-form-label">Projects:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.vpCount }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcUsers" class="col-form-label">Users:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.users.length }} </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
       </div>
     </div>
   </div>

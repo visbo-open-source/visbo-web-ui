@@ -5,35 +5,21 @@
   </div>
 </div>
 <div class="container-fluit" >
-  <div class="col-md-12">
+  <div class="col-12">
   	<div class="row">
   		<div class="card-group col-sm-8 col-md-6 col-lg-4 mb-2" *ngFor="let vc of visbocenters">
         <div class="card" style="width: 18rem;">
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             <h3 class="card-title">{{vc.name}}</h3>
-            <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yy hh:mm'}}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy hh:mm'}}</h6>
             <p class="card-text">{{vc.description}}</p>
             <p class="card-subtitle">{{vc.users.length}} Users</p>
-            <!-- <a class="card-link"  (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</a> -->
-            <!-- <a class="card-link" (click)="gotoClickedVcDetail(vc)">Details</a> -->
-            <button type="button" class="btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</button>
-            <button type="button" class="btn btn-secondary" (click)="gotoClickedVcDetail(vc)">Detail</button>
-          </div>
-        </div>
-        <!-- <div class="col-sm-8 col-md-6 col-lg-4 mb-2" *ngFor="let vc of visbocenters" (click)="gotoClickedVc(vc)"> -->
-        <!-- <div class="bg-white d-flex" style="background: white; padding: 5px">  <!-- ; height: 200px" -->
-          <!-- <div> -->
-            <!-- <h3>{{vc.name}}</h3> -->
-            <!-- <p>{{vc.updatedAt | date :'dd.MM.yy hh:mm'}}<br> -->
-            <!-- {{vc.description}}</p> -->
-            <!-- <div class="row no-gutters padding: 5px"> -->
-              <!-- <div class="col col-md-6"> -->
-          		  <!-- <div>{{vc.users.length}} Users</div> -->
-                <!-- <div>Projects</div> -->
-              <!-- </div> <!-- end of col -->
-            <!-- </div> <!-- end of row -->
-          <!-- </div> <!-- end of  -->
-      	<!-- </div> <!-- end of well -->
+            <div class="align-self-bottom" style="margin-top: auto;">
+              <button type="button" class="btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</button>
+              <button type="button" class="btn btn-secondary" (click)="gotoClickedVcDetail(vc)">Detail</button>
+            </div>
+          </div> <!-- end of card-body -->
+        </div> <!-- end of card -->
       </div> <!-- end of col -->
     </div> <!-- end of row -->
   </div>
@@ -42,20 +28,24 @@
   <div class='panel-heading'>
       <h2>Top Visbo Projects</h2>
   </div>
-  <br>
 </div>
 <div class="container-fluit" >
-  <div class="col-md-12">
-  	<div class="row row-eq-height">
-  		<div class="col-md-4" *ngFor="let vp of visboprojects" (click)="gotoClickedVp(vp)">
-        <div class="well">
-          <h3>{{vp.name}}</h3>
-          <p>{{vp.updatedAt | date :'dd.MM.yy hh:mm'}}<br>
-          {{vp.description}}</p>
-      		<li>{{vp.users.length}} Users</li>
-    			<li>{{vp.vpvCount}} Versions</li>
-    	  </div>
-      </div>
-    </div>
+  <div class="col-12">
+  	<div class="row">
+  		<div class="card-group col-sm-8 col-md-6 col-lg-4 mb-2" *ngFor="let vp of visboprojects">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body d-flex flex-column">
+            <h3 class="card-title">{{vp.name}}</h3>
+            <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy hh:mm'}}</h6>
+            <p class="card-text">{{vp.description}}</p>
+            <p class="card-subtitle">{{vp.users.length}} Users</p>
+            <div class="align-self-bottom" style="margin-top: auto;">
+              <button type="button" class="btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpvCount}} Versions</button>
+              <button type="button" class="btn btn-secondary" (click)="gotoClickedVpDetail(vp)">Detail</button>
+            </div>
+          </div> <!-- end of card-body -->
+        </div> <!-- end of card -->
+      </div> <!-- end of col -->
+    </div> <!-- end of row -->
   </div>
 </div>
