@@ -49,6 +49,7 @@ export class LoginComponent implements OnInit {
       this.authenticationService.logout();
 
       // get return url from route parameters or default to '/'
+      console.error('reLogin after error 401 to URL %s', this.route.snapshot.queryParams['returnUrl']); // log to console instead
       this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
 }

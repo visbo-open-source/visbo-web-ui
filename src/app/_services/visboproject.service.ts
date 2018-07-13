@@ -11,6 +11,8 @@ import { environment } from '../../environments/environment';
 
 // import { VisboCenter } from '../_models/visbocenter';
 import { VisboProject } from '../_models/visboproject';
+import { VPUser } from '../_models/visboproject';
+import { VPUserResponse } from '../_models/visboproject';
 import { VisboProjectResponse } from '../_models/visboproject';
 
 import { MessageService } from './message.service';
@@ -155,7 +157,7 @@ export class VisboProjectService {
   deleteVPUser (user: VPUser, vpid: string): Observable<any> {
     const url = `${this.vpUrl}/${vpid}/user/${user.userId}?role=${user.role}`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
-    return this.http.delete<VisboCenterResponse>(url, httpOptions).pipe(
+    return this.http.delete<VisboProjectResponse>(url, httpOptions).pipe(
 //      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
       map(result => {
         this.log(`Remove User Successful:  ${result.message}`);

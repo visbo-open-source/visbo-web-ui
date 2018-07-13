@@ -19,6 +19,8 @@ export class VisboProjectVersionsComponent implements OnInit {
   visboprojectversions: VisboProjectVersion[];
   vpSelected: string;
   vpActive: VisboProject;
+  sortAscending: boolean;
+  sortColumn: number;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -58,29 +60,84 @@ export class VisboProjectVersionsComponent implements OnInit {
     }
   }
 
-  // add(name: string): void {
-  //   name = name.trim();
-  //   if (!name) { return; }
-  //   this.visboprojectService.addVisboProject({ name: name } as VisboProject)
-  //     .subscribe(vp => { this.visboprojects.push(vp[0]); });
-  // }
-
-  // delete(visboproject: VisboProject): void {
-  //   // remove item from list
-  //   this.visboprojects = this.visboprojects.filter(vp => vp !== visboproject);
-  //   this.visboprojectService.deleteVisboProject(visboproject).subscribe();
-  // }
-
-
-  // gotoClickedRow(visboproject: VisboProject):void {
-  //   console.log("clicked row %s", visboproject.name);
-  //   this.router.navigate(['vpv/'.concat(visboproject._id)]);
-  // }
-
   gotoDetail(visboprojectversion: VisboProjectVersion):void {
     console.log("clicked Details %s", visboprojectversion.name);
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)]);
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
+  }
+
+  gotoVPDetail(visboproject: VisboProject):void {
+    this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
+  }
+
+  sortVPVTable(n) {
+    if (!this.visboprojectversions) return
+    if (n != this.sortColumn) {
+      this.sortColumn = n;
+      this.sortAscending = undefined;
+    }
+    if (this.sortAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortAscending = ( n == 5 ) ? true : false;
+    }
+    else this.sortAscending = !this.sortAscending;
+    if (this.sortColumn == 1) {
+      // sort by VPV Timestamp
+      this.visboprojectversions.sort(function(a, b) {
+        var result = 0
+        if (a.timestamp > b.timestamp)
+          result = 1;
+        else if (a.timestamp < b.timestamp)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 2) {
+      // sort by VPV endDate
+      this.visboprojectversions.sort(function(a, b) {
+        var result = 0
+        // console.log("Sort VC Date %s", a.updatedAt)
+        if (a.endDate > b.endDate)
+          result = 1;
+        else if (a.endDate < b.endDate)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 3) {
+      // sort by VPV ampelStatus
+      this.visboprojectversions.sort(function(a, b) {
+        var result = 0
+        // console.log("Sort VC Date %s", a.updatedAt)
+        if (a.ampelStatus > b.ampelStatus)
+          result = 1;
+        else if (a.ampelStatus < b.ampelStatus)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 4) {
+      // sort by VPV Erloes
+      this.visboprojectversions.sort(function(a, b) {
+        var result = 0
+        // console.log("Sort VC Date %s", a.updatedAt)
+        if (a.Erloes > b.Erloes)
+          result = 1;
+        else if (a.Erloes < b.Erloes)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 5) {
+      // sort by VC vpvCount
+      this.visboprojectversions.sort(function(a, b) {
+        var result = 0
+        if (a.variantName.toLowerCase() > b.variantName.toLowerCase())
+          result = 1;
+        else if (a.variantName.toLowerCase() < b.variantName.toLowerCase())
+          result = -1;
+        return result
+      })
+    }
+    if (!this.sortAscending) {
+      this.visboprojectversions.reverse();
+    }
   }
 
 }

@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { AlertService } from '../_services/alert.service';
+import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VCUser } from '../_models/visbocenter';
@@ -18,6 +19,8 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 export class VisboCenterDetailComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
+  vcIsAdmin: boolean;
+  userIndex: number;
 
   constructor(
     private messageService: MessageService,
@@ -26,6 +29,7 @@ export class VisboCenterDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
+    private authenticationService: AuthenticationService,
     private alertService: AlertService
   ) { }
 
@@ -35,9 +39,15 @@ export class VisboCenterDetailComponent implements OnInit {
 
   getVisboCenter(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    var currentUser = this.authenticationService.getActiveUser();
+
     //this.messageService.add('VisboCenter Detail of: ' + id);
     this.visbocenterService.getVisboCenter(id)
-      .subscribe(visbocenter => this.visbocenter = visbocenter);
+      .subscribe(visbocenter => {
+        this.visbocenter = visbocenter;
+        this.vcIsAdmin = this.visbocenter.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
+        console.log("User is Admin? ", this.vcIsAdmin)
+      });
   }
   goBack(): void {
     this.location.back();
@@ -81,6 +91,11 @@ export class VisboCenterDetailComponent implements OnInit {
       );
       // .subscribe(users => { users; });
       // show up alter about success / error
+  }
+
+  helperRemoveUser(userIndex: number):void {
+    // this.messageService.add(`Remove User Helper: ${userIndex}`);
+    this.userIndex = userIndex
   }
 
   removevcuser(user: VCUser, vcid: string): void {

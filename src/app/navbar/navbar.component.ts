@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { AlertService } from '../_services/alert.service';
+import { MessageService } from '../_services/message.service';
 
 @Component({
   selector: 'visbo-navbar',
@@ -15,16 +16,17 @@ export class NavbarComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
+    private messageService: MessageService,
     public authenticationService: AuthenticationService
   ) { }
 
   ngOnInit() {
-    console.log('Navbar init')
-    // reset login status
-    // this.authenticationService.logout();
-    //
-    // // get return url from route parameters or default to '/'
+    // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+  gotoClickedItem(action: string):void {
+    console.log("clicked nav item %s", action);
+    this.router.navigate([action]);
+  }
 }

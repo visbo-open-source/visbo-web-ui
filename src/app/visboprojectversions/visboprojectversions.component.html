@@ -1,37 +1,52 @@
 <visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class='panel-heading'>Visbo Project Versions:</div>
-  <div class='bold' *ngIf="vpActive"> in Visbo Project: {{vpActive.name}}</div>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h5 *ngIf="!vpActive">
+          Project Versions
+        </h5>
+        <h5 *ngIf="vpActive">
+          Project Versions in:
+          <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
+            {{vpActive.name}}
+          </button>
+        </h5>
+      </div>
+    </div>
+  </div>
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
         <tr>
-          <th>Nr.</th>
+          <th class="d-none d-md-table-cell">Nr.</th>
           <!-- <th>Name</th> -->
-          <th>Changed</th>
-          <th>End Date</th>
-          <th>Ampel</th>
-          <th>Erlös</th>
-          <th>Variant Name</th>
-          <th>Info</th>
+          <th (click)="sortVPVTable(1)">Changed</th>
+          <th (click)="sortVPVTable(2)" class="d-none d-md-table-cell">End Date</th>
+          <th (click)="sortVPVTable(3)">Ampel</th>
+          <th (click)="sortVPVTable(4)">Erlös</th>
+          <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">Variant Name</th>
+          <!-- <th>Info</th> -->
         </tr>
       </thead>
       <!--Table body-->
       <tbody>
         <tr *ngFor="let vpv of visboprojectversions; let vpvIndex=index" (click)="gotoClickedRow(vpv)">
-          <td>{{vpvIndex+1}}</td>
+          <td class="d-none d-md-table-cell">{{vpvIndex+1}}</td>
           <!-- <td>{{vpv.name}}</td> -->
-          <td>{{vpv.timestamp | date :'dd.MM.yy HH:mm'}}</td>
-          <td>{{vpv.endDate | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-lg-table-cell">{{vpv.timestamp | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-md-table-cell d-lg-none">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
+          <td class="d-md-none">{{vpv.timestamp | date :'MMM.yy'}}</td>
+          <td class="d-none d-md-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
           <td>{{vpv.ampelStatus}}</td>
           <td>{{vpv.Erloes}}</td>
-          <td>{{vpv.variantName}}</td>
-          <td>
+          <td class="d-none d-md-table-cell">{{vpv.variantName}}</td>
+          <!-- <td>
             <button class="Detail" title="Detail of Visbo Project Version"
             (click)="gotoDetail(vpv)">i</button>
-          </td>
+          </td> -->
         </tr>
       </tbody>
       <!--Table body-->

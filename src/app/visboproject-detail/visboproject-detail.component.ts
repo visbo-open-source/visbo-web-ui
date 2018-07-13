@@ -3,9 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { AlertService } from '../_services/alert.service';
+import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
+import { VPUser } from '../_models/visboproject';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -14,9 +16,12 @@ import { VisboProject } from '../_models/visboproject';
 export class VisboProjectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
+  vpIsAdmin: boolean;
+  userIndex: number;
 
   constructor(
     private messageService: MessageService,
+    private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
     private location: Location,
@@ -29,9 +34,17 @@ export class VisboProjectDetailComponent implements OnInit {
 
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    var currentUser = this.authenticationService.getActiveUser();
+
     //this.messageService.add('VisboProject Detail of: ' + id);
     this.visboprojectService.getVisboProject(id)
-      .subscribe(visboproject => this.visboproject = visboproject);
+      .subscribe(visboproject => {
+        this.visboproject = visboproject
+        this.vpIsAdmin = this.visboproject.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
+        console.log("User is Admin? ", this.vpIsAdmin)
+
+      });
+
   }
 
   // add(name: string): void {
@@ -76,6 +89,11 @@ export class VisboProjectDetailComponent implements OnInit {
       );
       // .subscribe(users => { users; });
       // show up alter about success / error
+  }
+
+  helperRemoveUser(userIndex: number):void {
+    // this.messageService.add(`Remove User Helper: ${userIndex}`);
+    this.userIndex = userIndex
   }
 
   removevpuser(user: VPUser, vpid: string): void {

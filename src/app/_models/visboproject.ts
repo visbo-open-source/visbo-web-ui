@@ -5,6 +5,21 @@ export class VPUser {
   userId: string;
 }
 
+export class VPVariant {
+  _id: string;
+  variantName: string;
+  email: string;
+  createdAt: Date;
+  vpvCount: number;
+}
+
+export class VPLock {
+  variantName: string;
+  email: string;
+  createdAt: Date;
+  expiresAt: Date;
+}
+
 export class VPUserResponse {
   state: string;
   message: string;
@@ -20,7 +35,10 @@ export class VisboProject {
   description: string;
   vpType: number;
   vpPublic: boolean;
-  users: [ VPUser ]
+  vpvCount: number;
+  variant: [VPVariant];
+  lock: [VPLock];
+  users: [ VPUser ];
   vc: {
     name: string;
   }

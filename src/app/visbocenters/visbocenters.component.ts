@@ -32,8 +32,14 @@ export class VisboCentersComponent implements OnInit {
   }
 
   getVisboCenters(): void {
+    // console.log("VC getVisboCenters");
     this.visbocenterService.getVisboCenters()
-        .subscribe(visbocenters => this.visbocenters = visbocenters);
+        .subscribe(visbocenters =>
+          {
+            this.visbocenters = visbocenters;
+            this.sortVCTable(1);
+          }
+        );
   }
 
   add(name: string, description: string): void {
@@ -63,19 +69,25 @@ export class VisboCentersComponent implements OnInit {
 
   sortVCTable(n) {
 
+    if (!this.visbocenters) return
     if (n != this.sortColumn) {
       this.sortColumn = n;
       this.sortAscending = undefined;
     }
-    if (this.sortAscending == undefined) this.sortAscending = true;
+
+    if (this.sortAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortAscending = n == 1 ? true : false;
+      // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+    }
     else this.sortAscending = !this.sortAscending;
-    console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
+    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {
       this.visbocenters.sort(function(a, b) {
         var result = 0
-        if (a.name > b.name)
+        if (a.name.toLowerCase() > b.name.toLowerCase())
           result = 1;
-        else if (a.name < b.name)
+        else if (a.name.toLowerCase() < b.name.toLowerCase())
           result = -1;
         return result
       })
@@ -89,11 +101,14 @@ export class VisboCentersComponent implements OnInit {
           result = -1;
         return result
       })
+    } else if (this.sortColumn == 3) {
+      // sort VP Count
+      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount })
     }
-    console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
+    // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visbocenters.reverse();
-      console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
+      // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 }

@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import { AlertService } from '../_services/alert.service';
+import { AuthenticationService } from '../_services/authentication.service';
+
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
@@ -19,10 +22,12 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
+  vcIsAdmin: boolean;
   sortAscending: boolean;
   sortColumn: number;
 
   constructor(
+    private authenticationService: AuthenticationService,
     private visboprojectService: VisboProjectService,
     private visbocenterService: VisboCenterService,
     private route: ActivatedRoute,
@@ -31,7 +36,7 @@ export class VisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.getVisboCenters();
+    console.log("Init VisboProjects");
     this.getVisboProjects();
   }
 
@@ -42,20 +47,33 @@ export class VisboProjectsComponent implements OnInit {
   getVisboProjects(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
+    var currentUser = this.authenticationService.getActiveUser();
+
     this.vcSelected = id;
     if (id) {
       this.visbocenterService.getVisboCenter(id)
           .subscribe(visbocenters => {
             this.vcActive = visbocenters;
-            console.log("get VC name if ID is used %s", this.vcActive.name);
+            this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
+            console.log("User is Admin? ", this.vcIsAdmin)
             this.visboprojectService.getVisboProjects(id)
-                .subscribe(visboprojects => this.visboprojects = visboprojects);
+              .subscribe(visboprojects =>
+                {
+                  this.visboprojects = visboprojects;
+                  this.sortVPTable(1);
+                }
+              );
           });
     } else {
       this.vcSelected = null;
       this.vcActive = null;
       this.visboprojectService.getVisboProjects(null)
-          .subscribe(visboprojects => this.visboprojects = visboprojects);
+          .subscribe(visboprojects =>
+            {
+              this.visboprojects = visboprojects;
+              this.sortVPTable(1);
+            }
+          );
     }
   }
 
@@ -63,7 +81,7 @@ export class VisboProjectsComponent implements OnInit {
     name = name.trim();
     console.log("call create VP %s with VCID %s Desc %s Public %s", name, vcid, desc, vpPublic);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic != '', vcid: vcid } as VisboProject)
+    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject)
       .subscribe(vp => {
         console.log("add VP %s with ID %s to VC %s", vp.name, vp._id, vp.vcid);
         this.visboprojects.push(vp)
@@ -87,22 +105,31 @@ export class VisboProjectsComponent implements OnInit {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
+
+  gotoVCDetail(visbocenter: VisboCenter):void {
+    this.router.navigate(['vcDetail/'.concat(visbocenter._id)]);
+  }
+
   sortVPTable(n) {
 
+    if (!this.visboprojects) return
     if (n != this.sortColumn) {
       this.sortColumn = n;
       this.sortAscending = undefined;
     }
-    if (this.sortAscending == undefined) this.sortAscending = true;
+    if (this.sortAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortAscending = n == 1 || n == 3 ? true : false;
+    }
     else this.sortAscending = !this.sortAscending;
-    console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
+    // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {
       // sort by VP Name
       this.visboprojects.sort(function(a, b) {
         var result = 0
-        if (a.name > b.name)
+        if (a.name.toLowerCase() > b.name.toLowerCase())
           result = 1;
-        else if (a.name < b.name)
+        else if (a.name.toLowerCase() < b.name.toLowerCase())
           result = -1;
         return result
       })
@@ -122,14 +149,14 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojects.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.vc.name > b.vc.name)
+        if (a.vc.name.toLowerCase() > b.vc.name.toLowerCase())
           result = 1;
-        else if (a.vc.name < b.vc.name)
+        else if (a.vc.name.toLowerCase() < b.vc.name.toLowerCase())
           result = -1;
         return result
       })
     } else if (this.sortColumn == 4) {
-      // sort by VC Name
+      // sort by VC vpvCount
       this.visboprojects.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)

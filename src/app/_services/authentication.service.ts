@@ -54,6 +54,11 @@ export class AuthenticationService {
         sessionStorage.removeItem('currentToken');
     }
 
+    getActiveUser(){
+      var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+      return currentUser;
+    }
+
     createUser(model: any){
       const url = `${this.authUrl}/signup`;
       var newUser = new VisboUser;

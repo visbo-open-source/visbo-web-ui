@@ -163,7 +163,7 @@ export class VisboCenterService {
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
-      
+
       // TODO: better job of transforming error for user consumption
       // user no longer authenticated, remove it from the session
       if (error.status == 401) {
