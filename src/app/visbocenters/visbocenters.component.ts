@@ -85,9 +85,9 @@ export class VisboCentersComponent implements OnInit {
     if (!name) { return; }
     this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter).subscribe(
       vc => {
-        this.visbocenters.push(vc[0]);
+        this.visbocenters.push(vc);
         this.sortVCTable(undefined);
-        this.alertService.success(`Visbo Center ${vc[0].name} created successfully`);
+        this.alertService.success(`Visbo Center ${vc.name} created successfully`);
       },
       error => {
         this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);

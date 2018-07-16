@@ -66,12 +66,16 @@ export class VisboCenterDetailComponent implements OnInit {
       );
   }
   goBack(): void {
+    // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
   }
   save(): void {
     this.visbocenterService.updateVisboCenter(this.visbocenter)
       .subscribe(
-        () => { this.goBack() },
+        vc => {
+          this.alertService.success(`Visbo Center ${vc.name} updated successfully`, true);
+          this.goBack()
+        },
         error => {
           this.log(`save VC failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status == 403) {
@@ -89,13 +93,13 @@ export class VisboCenterDetailComponent implements OnInit {
   }
 
   delete(visbocenter: VisboCenter): void {
-    // remove item from list
-    // this.visbocenterService.deleteVisboCenter(visbocenter)
-    //   .subscribe(() => this.goBack());
     this.log(`Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
     this.visbocenterService.deleteVisboCenter(visbocenter)
       .subscribe(
-        () => { this.goBack() },
+        vc => {
+          this.alertService.success(`Visbo Center ${visbocenter.name} deleted successfully`, true);
+          this.goBack()
+        },
         error => {
           this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
@@ -118,8 +122,8 @@ export class VisboCenterDetailComponent implements OnInit {
     if (!email || !role) { return; }
     this.visbocenterService.addVCUser({ email: email, role: role} as VCUser, message, vcid )
       .subscribe(
-        users => {
-          this.visbocenter.users.push(users[0]);
+        user => {
+          this.visbocenter.users.push(user);
           this.alertService.success(`User ${email} added successfully`);
         },
         error => {
@@ -146,9 +150,9 @@ export class VisboCenterDetailComponent implements OnInit {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Role: ${user.role} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid)
       .subscribe(
-        result => {
+        users => {
           // this.log(`Remove VisboCenter User result: ${JSON.stringify(result)}`);
-          this.visbocenter.users = result;
+          this.visbocenter.users = users;
           this.alertService.success(`User ${user.email} removed successfully`);
         },
         error => {

@@ -89,18 +89,11 @@ export class VisboProjectService {
   //////// Save methods //////////
 
   /** POST: add a new Visbo Project to the server */
-  addVisboProject (visboproject: VisboProject): Observable<any> {
-    // set active user as admin
-    //visboproject.Users.push({email:'markus.seyfried@visbo.de', role:'Admin' })
-    // var newVP = new VisboProject();
-    // newVP.name = visboproject.name;
-    // newVP.vcid = visboproject.vcid;
-    // MS ToDo: currently no users were set
-    // the active user is added to the list by the API Post
+  addVisboProject (visboproject: VisboProject): Observable<VisboProject> {
     return this.http.post<VisboProjectResponse>(this.vpUrl, visboproject, httpOptions)
       .pipe(
-        map(response => response.vp ),
-        tap(vp => this.log(`added VisboProject with id=${vp[0]._id}`)),
+        map(response => response.vp[0] ),
+        tap(vp => this.log(`added VisboProject with id=${vp._id}`)),
         catchError(this.handleError<VisboProject>('addVisboProject'))
       );
   }
@@ -120,43 +113,38 @@ export class VisboProjectService {
   }
 
   /** PUT: update the Visbo Project on the server */
-  updateVisboProject (visboproject: VisboProject): Observable<any> {
+  updateVisboProject (visboproject: VisboProject): Observable<VisboProject> {
     const url = `${this.vpUrl}/${visboproject._id}`;
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put(url, visboproject, httpOptions)
+    return this.http.put<VisboProjectResponse>(url, visboproject, httpOptions)
       .pipe(
+        map(response => response.vp[0]),
         tap(_ => this.log(`updated VisboProject id=${visboproject._id} url=${this.vpUrl}`)),
         catchError(this.handleError<any>('updateVisboProject'))
       );
   }
 
   /** POST: add a new User to the Visbo Project */
-  addVPUser (user: VPUser, message: string, vpid: string): Observable<any> {
+  addVPUser (user: VPUser, message: string, vpid: string): Observable<VPUser> {
     const url = `${this.vpUrl}/${vpid}/user`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
     return this.http.post<VPUserResponse>(url, user, httpOptions)
       .pipe(
-        map(response => {
-          // this.log(`added User to Visbo Project Response ${JSON.stringify(response.users)}`)
-          return response.users
-        }),
-        tap(users => this.log(`added Visbo User with id=${users[0]._id}`)),
+        map(response => response.users[0]),
+        tap(users => this.log(`added Visbo User with id=${users._id}`)),
         catchError(this.handleError<VPUser>('addVPUser'))
       );
   }
 
 
   /** DELETE: remove a User from the Visbo Project */
-  deleteVPUser (user: VPUser, vpid: string): Observable<any> {
+  deleteVPUser (user: VPUser, vpid: string): Observable<[VPUser]> {
     const url = `${this.vpUrl}/${vpid}/user/${user.userId}?role=${user.role}`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
-    return this.http.delete<VisboProjectResponse>(url, httpOptions).pipe(
-//      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
-      map(result => {
-        this.log(`Remove User Successful:  ${result.message}`);
-        // this.log(`Remove User Successful Detail:  ${JSON.stringify(result)}`);
-        return result.vp[0].users;
-      }),
+    return this.http.delete<VisboProjectResponse>(url, httpOptions)
+    .pipe(
+      map(response => response.vp[0].users),
+      tap(users => this.log(`deleted VisboProject User ${user.email} from ${vpid} `)),
       catchError(this.handleError<any>('deleteVisboCenterUser'))
     );
   }

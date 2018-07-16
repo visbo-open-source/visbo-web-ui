@@ -118,9 +118,9 @@ export class VisboProjectsComponent implements OnInit {
     this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
-        this.visboprojects.push(vp[0]);
+        this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        this.alertService.success(`Visbo Project ${vp[0].name} created successfully`);
+        this.alertService.success(`Visbo Project ${vp.name} created successfully`);
       },
       error => {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);

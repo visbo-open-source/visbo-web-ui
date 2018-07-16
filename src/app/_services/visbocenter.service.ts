@@ -114,19 +114,19 @@ export class VisboCenterService {
   //////// Save methods //////////
 
   /** POST: aa a new Visbo Center to the server */
-  addVisboCenter (visbocenter: VisboCenter): Observable<any> {
+  addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
     this.log(`Calling HTTP Request: ${this.vcUrl} ${JSON.stringify(visbocenter)}`);
 
     return this.http.post<VisboCenterResponse>(this.vcUrl, visbocenter, httpOptions).pipe(
-      map(response => response.vc ),
-      tap(vc => this.log(`added VisboCenter ${vc[0].name} with id=${vc[0]._id}`)),
+      map(response => response.vc[0] ),
+      tap(vc => this.log(`added VisboCenter ${vc.name} with id=${vc._id}`)),
       catchError(this.handleError<VisboCenter>('addVisboCenter'))
     );
   }
 
 
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
+  deleteVisboCenter (visbocenter: VisboCenter): Observable<any> {
     //const id = typeof visbocenter === 'number' ? visbocenter : visbocenter._id;
     const id = visbocenter._id;
     const url = `${this.vcUrl}/${id}`;
@@ -139,44 +139,38 @@ export class VisboCenterService {
   }
 
   /** PUT: update the Visbo Center on the server */
-  updateVisboCenter (visbocenter: VisboCenter): Observable<any> {
+  updateVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${visbocenter._id}`;
     this.log(`Calling HTTP Request PUT: ${url} `);
     return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
       .pipe(
-        map(response => response.vc ),
-        tap(vc => this.log(`updated VisboCenter ${visbocenter.name} with id=${visbocenter._id}`)),
+        map(response => response.vc[0] ),
+        tap(vc => this.log(`updated VisboCenter ${vc.name} with id=${vc._id}`)),
         catchError(this.handleError<any>('updateVisboCenter'))
       );
   }
 
   /** POST: add a new User to the Visbo Center */
-  addVCUser (user: VCUser, message: string, vcid: string): Observable<any> {
+  addVCUser (user: VCUser, message: string, vcid: string): Observable<VCUser> {
     const url = `${this.vcUrl}/${vcid}/user`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
     return this.http.post<VCUserResponse>(url, user, httpOptions)
       .pipe(
-        map(response => {
-          // this.log(`added User to Visbo Center Response ${JSON.stringify(response.users)}`)
-          return response.users
-        }),
-        tap(users => this.log(`added Visbo User with id=${users[0]._id}`)),
+        map(response => response.users[0]),
+        tap(users => this.log(`added Visbo User with id=${users._id}`)),
         catchError(this.handleError<VCUser>('addVCUser'))
       );
   }
 
 
   /** DELETE: remove a User from the Visbo Center */
-  deleteVCUser (user: VCUser, vcid: string): Observable<any> {
+  deleteVCUser (user: VCUser, vcid: string): Observable<[VCUser]> {
     const url = `${this.vcUrl}/${vcid}/user/${user.userId}?role=${user.role}`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.delete<VisboCenterResponse>(url, httpOptions).pipe(
-//      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
-      map(result => {
-        this.log(`Remove User Successful:  ${result.message}`);
-        // this.log(`Remove User Successful Detail:  ${JSON.stringify(result)}`);
-        return result.vc[0].users;
-      }),
+    return this.http.delete<VisboCenterResponse>(url, httpOptions)
+    .pipe(
+      map(response => response.vc[0].users),
+      tap(users => this.log(`deleted VisboProject User ${user.email}`)),
       catchError(this.handleError<any>('deleteVisboCenterUser'))
     );
   }

@@ -37,7 +37,7 @@ export class VisboProjectDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    //this.messageService.add('VisboProject Detail of: ' + id);
+    //this.log('VisboProject Detail of: ' + id);
     this.visboprojectService.getVisboProject(id)
       .subscribe(
         visboproject => {
@@ -85,7 +85,10 @@ export class VisboProjectDetailComponent implements OnInit {
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject)
       .subscribe(
-        () => this.goBack(),
+        (vp) => {
+          this.alertService.success(`Visbo Project ${vp.name} updated successfully`, true);
+          this.goBack();
+        },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
           // redirect to login and come back to current URL
@@ -111,8 +114,8 @@ export class VisboProjectDetailComponent implements OnInit {
     if (!email || !role) { return; }
     this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, message, vpid )
       .subscribe(
-        users => {
-          this.visboproject.users.push(users[0]);
+        user => {
+          this.visboproject.users.push(user);
           this.alertService.success(`User ${email} added successfully`);
         },
         error => {
@@ -128,17 +131,17 @@ export class VisboProjectDetailComponent implements OnInit {
   }
 
   helperRemoveUser(userIndex: number):void {
-    // this.messageService.add(`Remove User Helper: ${userIndex}`);
+    // this.log(`Remove User Helper: ${userIndex}`);
     this.userIndex = userIndex
   }
 
   removevpuser(user: VPUser, vpid: string): void {
-    this.messageService.add(`Remove VisboProject User: ${user.email}/${user.userId} Role: ${user.role} VP: ${vpid}`);
+    this.log(`Remove VisboProject User: ${user.email}/${user.userId} Role: ${user.role} VP: ${vpid}`);
     this.visboprojectService.deleteVPUser(user, vpid)
       .subscribe(
-        result => {
-          this.log(`Remove VisboProject User result: ${JSON.stringify(result)}`);
-          this.visboproject.users = result;
+        users => {
+          this.log(`Remove VisboProject User result: ${JSON.stringify(users)}`);
+          this.visboproject.users = users;
           this.alertService.success(`User ${user.email} removed successfully`);
         },
         error => {
