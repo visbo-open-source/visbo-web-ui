@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -14,7 +15,6 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionResponse } from '../_models/visboprojectversion';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -138,7 +138,6 @@ export class VisboProjectVersionService {
       this.log(`HTTP Request failed: ${error.message} ${error.status}`);
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-      if ( error.status = 401 ) this.authenticationService.logout();
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
 

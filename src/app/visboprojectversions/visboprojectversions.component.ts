@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import { MessageService } from '../_services/message.service';
+import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
@@ -25,6 +27,8 @@ export class VisboProjectVersionsComponent implements OnInit {
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
+    private messageService: MessageService,
+    private alertService: AlertService,
     private route: ActivatedRoute,
     //private location: Location,
     private router: Router
@@ -46,17 +50,57 @@ export class VisboProjectVersionsComponent implements OnInit {
     console.log("get VP name if ID is used %s", id);
     if (id) {
       this.visboprojectService.getVisboProject(id)
-          .subscribe(visboproject => {
+        .subscribe(
+          visboproject => {
             this.vpActive = visboproject;
             console.log("get VP name if ID is used %s", this.vpActive.name);
             this.visboprojectversionService.getVisboProjectVersions(id)
-                .subscribe(visboprojectversions => this.visboprojectversions = visboprojectversions);
-          });
+              .subscribe(
+                visboprojectversions => this.visboprojectversions = visboprojectversions,
+                error => {
+                  console.log('get VPVs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+                  // redirect to login and come back to current URL
+                  if (error.status == 403) {
+                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                  } else if (error.status == 401) {
+                    this.alertService.error(`Session expired, please login again`, true);
+                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+                  } else {
+                    this.alertService.error(error.error.message);
+                  }
+                }
+              );
+          },
+          error => {
+            console.log('get VPV VP failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+            if (error.status == 403) {
+              this.alertService.error(`Permission Denied for Visbo Project`);
+            } else if (error.status == 401) {
+              this.alertService.error(`Session expired, please login again`, true);
+              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            } else {
+              this.alertService.error(error.error.message);
+            }
+        });
     } else {
       this.vpSelected = null;
       this.vpActive = null;
       this.visboprojectversionService.getVisboProjectVersions(null)
-          .subscribe(visboprojectversions => this.visboprojectversions = visboprojectversions);
+        .subscribe(
+          visboprojectversions => this.visboprojectversions = visboprojectversions,
+          error => {
+            console.log('get VPVs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+            // redirect to login and come back to current URL
+            if (error.status == 403) {
+              this.alertService.error(`Permission Denied for Visbo Project Versions`);
+            } else if (error.status == 401) {
+              this.alertService.error(`Session expired, please login again`, true);
+              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            } else {
+              this.alertService.error(error.error.message);
+            }
+          }
+        );
     }
   }
 
@@ -72,15 +116,17 @@ export class VisboProjectVersionsComponent implements OnInit {
 
   sortVPVTable(n) {
     if (!this.visboprojectversions) return
-    if (n != this.sortColumn) {
-      this.sortColumn = n;
-      this.sortAscending = undefined;
+    if (n != undefined) {
+      if (n != this.sortColumn) {
+        this.sortColumn = n;
+        this.sortAscending = undefined;
+      }
+      if (this.sortAscending == undefined) {
+        // sort name column ascending, number values desc first
+        this.sortAscending = ( n == 5 ) ? true : false;
+      }
+      else this.sortAscending = !this.sortAscending;
     }
-    if (this.sortAscending == undefined) {
-      // sort name column ascending, number values desc first
-      this.sortAscending = ( n == 5 ) ? true : false;
-    }
-    else this.sortAscending = !this.sortAscending;
     if (this.sortColumn == 1) {
       // sort by VPV Timestamp
       this.visboprojectversions.sort(function(a, b) {

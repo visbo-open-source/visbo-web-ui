@@ -3,11 +3,11 @@
   <div class="container">
     <div class='row'>
       <div class='col'>
-        <h5 class='panel-heading'>
+        <h2 class='panel-heading'>
           Visbo Centers
-        </h5>
+        </h2>
       </div>
-      <div class='col-6 col-md-2 align-self-end'>
+      <div *ngIf="vcIsSysAdmin" class='col-6 col-md-2 align-self-end'>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-sm btn-primary align-self-end" data-toggle="modal" data-target="#VcModalCreate">
           New Visbo Center

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStat
 
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
+import { VisboCenterService } from '../_services/visbocenter.service';
 
 @Component({
   selector: 'app-settings',
@@ -13,14 +14,18 @@ import { MessageService } from '../_services/message.service';
 export class SettingsComponent implements OnInit {
 
   activateMessage: boolean;
+  sysAdminRole: string;
 
   constructor(
+    private visbocenterService: VisboCenterService,
     private messageService: MessageService,
     private alertService: AlertService
   ) { }
 
   ngOnInit() {
     this.activateMessage = this.messageService.getstatus();
+    this.sysAdminRole = this.visbocenterService.getSysAdminRole();
+    console.log('SysAdminRole: ', this.sysAdminRole)
   }
 
   toggleMessages():void {

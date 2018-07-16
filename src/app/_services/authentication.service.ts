@@ -50,8 +50,11 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         this.isLoggedIn = false;
+        
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentToken');
+        sessionStorage.removeItem('isSysAdmin');
+
     }
 
     getActiveUser(){

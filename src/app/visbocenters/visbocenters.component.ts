@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
+import { MessageService } from '../_services/message.service';
+import { AlertService } from '../_services/alert.service';
+import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { LoginComponent } from '../login/login.component';
@@ -13,11 +17,16 @@ import { LoginComponent } from '../login/login.component';
 export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
+  sysvisbocenter: VisboCenter;
+  vcIsSysAdmin: boolean;
   sortAscending: boolean;
   sortColumn: number;
 
   constructor(
     private visbocenterService: VisboCenterService,
+    private authenticationService: AuthenticationService,
+    private messageService: MessageService,
+    private alertService: AlertService,
     private route: ActivatedRoute,
     //private location: Location,
     private router: Router
@@ -25,6 +34,7 @@ export class VisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
+    this.getSysVisboCenters(); //done during login
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -32,55 +42,114 @@ export class VisboCentersComponent implements OnInit {
   }
 
   getVisboCenters(): void {
-    // console.log("VC getVisboCenters");
+    // this.log("VC getVisboCenters");
     this.visbocenterService.getVisboCenters()
-        .subscribe(visbocenters =>
-          {
-            this.visbocenters = visbocenters;
-            this.sortVCTable(1);
+      .subscribe(
+        visbocenters => {
+          this.visbocenters = visbocenters;
+          this.sortVCTable(1);
+          this.log('get VCs success');
+
+        },
+        error => {
+          this.log(`get VCs failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
-        );
+        }
+      );
+  }
+
+  getSysVisboCenters(): void {
+    var currentUser = this.authenticationService.getActiveUser();
+
+    // console.log("VC getSysVisboCenters for User %s", currentUser.email);
+    this.visbocenterService.getSysVisboCenters()
+      .subscribe(visbocenters => {
+        if (visbocenters.length >0) {
+          this.sysvisbocenter = visbocenters[0];
+          this.vcIsSysAdmin = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
+          this.log(`User is Sys Admin ${this.sysvisbocenter.name}? ${this.vcIsSysAdmin}`)
+        } else
+          this.vcIsSysAdmin = false
+      }
+    );
   }
 
   add(name: string, description: string): void {
     name = name.trim();
     description = description.trim();
+    this.log(`VC: Add VC: ${name}`);
     if (!name) { return; }
-    this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter)
-      .subscribe(vc => { this.visbocenters.push(vc[0]); });
+    this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter).subscribe(
+      vc => {
+        this.visbocenters.push(vc[0]);
+        this.sortVCTable(undefined);
+        this.alertService.success(`Visbo Center ${vc[0].name} created successfully`);
+      },
+      error => {
+        this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);
+        if (error.status == 403) {
+          this.alertService.error(`Permission Denied for Visbo Center ${name}`);
+        } else if (error.status == 409) {
+          this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
+        } else if (error.status == 401) {
+          this.alertService.error(`Session expired, please login again`, true);
+          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+        } else {
+          this.alertService.error(error.error.message);
+        }
+      }
+    );
   }
 
   delete(visbocenter: VisboCenter): void {
     // remove item from list
+    this.messageService.add(`VC: Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
     this.visbocenters = this.visbocenters.filter(vc => vc !== visbocenter);
-    this.visbocenterService.deleteVisboCenter(visbocenter).subscribe();
+    this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
+      error => {
+        this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
+        // this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
+        // if (error.status == 403) {
+        //   this.alertService.error(`Permission Denied: Visbo Center ${name}`);
+        // } else if (error.status == 401) {
+        //   this.alertService.error(`Session expired, please login again`, true);
+        //   this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+        // } else {
+        //   this.alertService.error(error.error.message);
+        // }
+      }
+    );
   }
 
   gotoDetail(visbocenter: VisboCenter):void {
     this.router.navigate(['vcDetail/'+visbocenter._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 
   gotoClickedRow(visbocenter: VisboCenter):void {
-    // console.log("clicked row %s", visbocenter.name);
+    // this.log(`clicked row ${visbocenter.name}`);
     this.router.navigate(['vp/'+visbocenter._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 
   sortVCTable(n) {
 
     if (!this.visbocenters) return
-    if (n != this.sortColumn) {
-      this.sortColumn = n;
-      this.sortAscending = undefined;
+    // change sort order otherwise sort same column same direction
+    if (n != undefined || this.sortColumn == undefined) {
+      if (n != this.sortColumn) {
+        this.sortColumn = n;
+        this.sortAscending = undefined;
+      }
+      if (this.sortAscending == undefined) {
+        // sort name column ascending, number values desc first
+        this.sortAscending = n == 1 ? true : false;
+        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+      }
+      else this.sortAscending = !this.sortAscending;
     }
-
-    if (this.sortAscending == undefined) {
-      // sort name column ascending, number values desc first
-      this.sortAscending = n == 1 ? true : false;
-      // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
-    }
-    else this.sortAscending = !this.sortAscending;
     // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {
       this.visbocenters.sort(function(a, b) {
@@ -110,5 +179,10 @@ export class VisboCentersComponent implements OnInit {
       this.visbocenters.reverse();
       // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
+  }
+
+  /** Log a VisboProjectService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('VisboCenter: ' + message);
   }
 }

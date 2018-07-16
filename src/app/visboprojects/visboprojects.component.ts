@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
+import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 
@@ -28,6 +30,8 @@ export class VisboProjectsComponent implements OnInit {
 
   constructor(
     private authenticationService: AuthenticationService,
+    private messageService: MessageService,
+    private alertService: AlertService,
     private visboprojectService: VisboProjectService,
     private visbocenterService: VisboCenterService,
     private route: ActivatedRoute,
@@ -36,7 +40,7 @@ export class VisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log("Init VisboProjects");
+    // console.log("Init VisboProjects");
     this.getVisboProjects();
   }
 
@@ -52,58 +56,115 @@ export class VisboProjectsComponent implements OnInit {
     this.vcSelected = id;
     if (id) {
       this.visbocenterService.getVisboCenter(id)
-          .subscribe(visbocenters => {
+        .subscribe(
+          visbocenters => {
             this.vcActive = visbocenters;
             this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-            console.log("User is Admin? ", this.vcIsAdmin)
+            this.log(`User is Admin? ${this.vcIsAdmin}`)
             this.visboprojectService.getVisboProjects(id)
-              .subscribe(visboprojects =>
-                {
+              .subscribe(
+                visboprojects => {
                   this.visboprojects = visboprojects;
                   this.sortVPTable(1);
+                },
+                error => {
+                  this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
+                  this.alertService.error(error.error.message);
+                  // redirect to login and come back to current URL
+                  if (error.status == 401) {
+                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+                  }
                 }
               );
-          });
+          },
+          error => {
+            this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
+            // redirect to login and come back to current URL
+            if (error.status == 401) {
+              this.alertService.error("Session expired, please log in again", true);
+              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            } else {
+              this.alertService.error(error.error.message);
+            }
+          }
+        );
     } else {
       this.vcSelected = null;
       this.vcActive = null;
       this.visboprojectService.getVisboProjects(null)
-          .subscribe(visboprojects =>
-            {
-              this.visboprojects = visboprojects;
-              this.sortVPTable(1);
+        .subscribe(
+          visboprojects => {
+            this.visboprojects = visboprojects;
+            this.sortVPTable(1);
+          },
+          error => {
+            this.log(`get VPs all failed: error:  ${error.status} message: ${error.error.message}`);
+            // redirect to login and come back to current URL
+            if (error.status == 401) {
+              this.alertService.error("Session expired, please log in again", true);
+              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            } else {
+              this.alertService.error(error.error.message);
             }
-          );
+          }
+        );
     }
   }
 
   addproject(name: string, vcid: string, desc: string, vpPublic: boolean): void {
     name = name.trim();
-    console.log("call create VP %s with VCID %s Desc %s Public %s", name, vcid, desc, vpPublic);
+    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} Public ${vpPublic}`);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject)
-      .subscribe(vp => {
-        console.log("add VP %s with ID %s to VC %s", vp.name, vp._id, vp.vcid);
-        this.visboprojects.push(vp)
-      });
-      // show up afterwards about success / error
+    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject).subscribe(
+      vp => {
+        // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
+        this.visboprojects.push(vp[0]);
+        this.sortVPTable(undefined);
+        this.alertService.success(`Visbo Project ${vp[0].name} created successfully`);
+      },
+      error => {
+        this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
+        if (error.status == 403) {
+          this.alertService.error(`Permission Denied for Visbo Project ${name}`);
+        } else if (error.status == 409) {
+          // this.alertService.error(`Visbo Project ${name} already exists or not allowed`);
+          this.alertService.error('Visbo Project already exists or not allowed');
+        } else if (error.status == 401) {
+          this.alertService.error(`Session expired, please login again`, true);
+          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+        } else {
+          this.alertService.error(error.error.message);
+        }
+      }
+    );
   }
 
   delete(visboproject: VisboProject): void {
     // remove item from list
     this.visboprojects = this.visboprojects.filter(vp => vp !== visboproject);
-    this.visboprojectService.deleteVisboProject(visboproject).subscribe();
+    this.visboprojectService.deleteVisboProject(visboproject)
+      .subscribe(
+        error => {
+          // this.log(`delete VP failed: error: ${error.status} messages: ${error.error.message}`);
+          if (error.status == 403) {
+            this.alertService.error(`Permission Denied: Visbo Project ${name}`, true);
+          } else if (error.status == 401) {
+            this.alertService.error(`Session expired, please login again`, true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          } else {
+            this.alertService.error(error.error.message);
+          }
+        }
+      );
   }
 
-
   gotoClickedRow(visboproject: VisboProject):void {
-    console.log("clicked row %s", visboproject.name);
+    // console.log("clicked row %s", visboproject.name);
     this.router.navigate(['vpv/'.concat(visboproject._id)]);
   }
 
   gotoDetail(visboproject: VisboProject):void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 
   gotoVCDetail(visbocenter: VisboCenter):void {
@@ -111,17 +172,18 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   sortVPTable(n) {
-
-    if (!this.visboprojects) return
-    if (n != this.sortColumn) {
-      this.sortColumn = n;
-      this.sortAscending = undefined;
+    if (n != undefined) {
+      if (!this.visboprojects) return
+      if (n != this.sortColumn) {
+        this.sortColumn = n;
+        this.sortAscending = undefined;
+      }
+      if (this.sortAscending == undefined) {
+        // sort name column ascending, number values desc first
+        this.sortAscending = n == 1 || n == 3 ? true : false;
+      }
+      else this.sortAscending = !this.sortAscending;
     }
-    if (this.sortAscending == undefined) {
-      // sort name column ascending, number values desc first
-      this.sortAscending = n == 1 || n == 3 ? true : false;
-    }
-    else this.sortAscending = !this.sortAscending;
     // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {
       // sort by VP Name
@@ -167,11 +229,15 @@ export class VisboProjectsComponent implements OnInit {
         return result
       })
     }
-    console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
+    // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visboprojects.reverse();
-      console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
+      // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 
+  /** Log a VisboProjectService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('VisboProject: ' + message);
+  }
 }

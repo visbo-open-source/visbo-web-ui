@@ -3,15 +3,15 @@
   <div class="container">
     <div class='row'>
       <div class='col'>
-        <h5 *ngIf="!vpActive">
+        <h2 *ngIf="!vpActive">
           Project Versions
-        </h5>
-        <h5 *ngIf="vpActive">
+        </h2>
+        <h2 *ngIf="vpActive">
           Project Versions in:
           <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
             {{vpActive.name}}
           </button>
-        </h5>
+        </h2>
       </div>
     </div>
   </div>

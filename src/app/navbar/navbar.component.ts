@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit {
   }
 
   gotoClickedItem(action: string):void {
-    console.log("clicked nav item %s", action);
+    // console.log("clicked nav item %s", action);
     this.router.navigate([action]);
   }
 }

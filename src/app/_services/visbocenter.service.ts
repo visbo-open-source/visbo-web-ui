@@ -45,6 +45,33 @@ export class VisboCenterService {
       );
   }
 
+  /** GET VisboCenters from the server */
+  getSysVisboCenters(): Observable<VisboCenter[]> {
+    var url = this.vcUrl + '?systemVC=true'
+    // this.log(`Calling HTTP Request for SysVC: ${url}`);
+
+    return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
+        map(response => response.vc),
+        tap(visbocenters => {
+          this.log(`fetched ${visbocenters.length} VisboCenters `)
+          if (visbocenters.length > 0) {
+            sessionStorage.setItem('isSysAdmin', 'Any');  // MS ToDo Set the correct role
+          } else {
+            sessionStorage.setItem('isSysAdmin', 'None');
+          }
+        }),
+        catchError(this.handleError('getVisboCenters', []))
+      );
+  }
+
+  /* Role of User in sysAdmin */
+  getSysAdminRole() {
+    var result = sessionStorage.getItem('isSysAdmin') || 'None';
+    this.log(`SysAdmin Role: ${result}`);
+
+    return result;
+  }
+
   /** GET VisboCenter by id. Return `undefined` when id not found */
   /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   getVisboCenterNo404<Data>(id: string): Observable<VisboCenter> {
@@ -54,10 +81,10 @@ export class VisboCenterService {
       .pipe(
         map(visbocenters => visbocenters[0]), // returns a {0|1} element array
         tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboCenter id=${id}`);
+          var outcome = h ? `fetched` : `did not find`;
+          this.log(`${outcome} VisboCenter ${id}`);
         }),
-        catchError(this.handleError<VisboCenter>(`getVisboCenter id=${id}`))
+        catchError(this.handleError<VisboCenter>(`getVisboCenter id: ${id}`))
       );
   }
 
@@ -67,8 +94,8 @@ export class VisboCenterService {
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
       map(response => response.vc[0]),
-      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id=${id}`)),
-      catchError(this.handleError<VisboCenter>(`getVisboCenter id=${id}`))
+      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
   }
 
@@ -86,17 +113,17 @@ export class VisboCenterService {
 
   //////// Save methods //////////
 
-  /** POST: add a new Visbo Center to the server */
-  addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
-    // MS ToDo: currently no users were set
-    // the active user is added to the list by the API Post
-    return this.http.post<VisboCenter>(this.vcUrl, visbocenter, httpOptions)
-      .pipe(
-        map(response => { return JSON.parse(JSON.stringify(response)).vc }), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
-        tap(visbocenter => this.log(`added VisboCenter ${visbocenter[0].name} with id=${visbocenter[0]._id}`)),
-        catchError(this.handleError<VisboCenter>('addVisboCenter'))
-      );
+  /** POST: aa a new Visbo Center to the server */
+  addVisboCenter (visbocenter: VisboCenter): Observable<any> {
+    this.log(`Calling HTTP Request: ${this.vcUrl} ${JSON.stringify(visbocenter)}`);
+
+    return this.http.post<VisboCenterResponse>(this.vcUrl, visbocenter, httpOptions).pipe(
+      map(response => response.vc ),
+      tap(vc => this.log(`added VisboCenter ${vc[0].name} with id=${vc[0]._id}`)),
+      catchError(this.handleError<VisboCenter>('addVisboCenter'))
+    );
   }
+
 
   /** DELETE: delete the Visbo Center from the server */
   deleteVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
@@ -115,9 +142,10 @@ export class VisboCenterService {
   updateVisboCenter (visbocenter: VisboCenter): Observable<any> {
     const url = `${this.vcUrl}/${visbocenter._id}`;
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put(url, visbocenter, httpOptions)
+    return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
       .pipe(
-        tap(_ => this.log(`updated VisboCenter ${visbocenter.name} id=${visbocenter._id}`)),
+        map(response => response.vc ),
+        tap(vc => this.log(`updated VisboCenter ${visbocenter.name} with id=${visbocenter._id}`)),
         catchError(this.handleError<any>('updateVisboCenter'))
       );
   }
