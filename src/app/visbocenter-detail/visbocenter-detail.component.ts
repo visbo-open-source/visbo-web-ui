@@ -3,6 +3,8 @@ import { Location } from '@angular/common';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import { FormsModule }   from '@angular/forms';
+
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
@@ -19,6 +21,7 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 export class VisboCenterDetailComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
+  newUserInvite: any = {};
   vcIsAdmin: boolean;
   vcIsSysAdmin: string;
   userIndex: number;
@@ -114,13 +117,15 @@ export class VisboCenterDetailComponent implements OnInit {
       );
   }
 
-  addvcuser(email: string, role: string, message: string, vcid: string): void {
-    email = email.trim();
-    role = role.trim();
-    message = message.trim();
+
+  addNewVCUser(): void {
+    var email = this.newUserInvite.email.trim();
+    var role = this.newUserInvite.role.trim();
+    var inviteMessage = this.newUserInvite.inviteMessage.trim();
+    var vcid = this.visbocenter._id
     this.log(`Add VisboCenter User: ${email} Role: ${role} VC: ${vcid}`);
     if (!email || !role) { return; }
-    this.visbocenterService.addVCUser({ email: email, role: role} as VCUser, message, vcid )
+    this.visbocenterService.addVCUser({ email: email, role: role} as VCUser, inviteMessage, vcid )
       .subscribe(
         user => {
           this.visbocenter.users.push(user);
@@ -173,6 +178,6 @@ export class VisboCenterDetailComponent implements OnInit {
 
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboCenter: ' + message);
+    this.messageService.add('VisboCenter Details: ' + message);
   }
 }

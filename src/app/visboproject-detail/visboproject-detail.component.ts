@@ -16,6 +16,7 @@ import { VPUser } from '../_models/visboproject';
 export class VisboProjectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
+  newUserInvite: any = {};
   vpIsAdmin: boolean;
   userIndex: number;
 
@@ -106,13 +107,14 @@ export class VisboProjectDetailComponent implements OnInit {
       );
   }
 
-  addvpuser(email: string, role: string, message: string, vpid: string): void {
-    email = email.trim();
-    role = role.trim();
-    message = message.trim();
+  addNewVPUser(): void {
+    var email = this.newUserInvite.email.trim();
+    var role = this.newUserInvite.role.trim();
+    var inviteMessage = this.newUserInvite.inviteMessage.trim();
+    var vpid = this.visboproject._id
     this.log(`Add VisboProject User: ${email} Role: ${role} VP: ${vpid}`);
     if (!email || !role) { return; }
-    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, message, vpid )
+    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, inviteMessage, vpid )
       .subscribe(
         user => {
           this.visboproject.users.push(user);

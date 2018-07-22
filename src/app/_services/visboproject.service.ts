@@ -41,14 +41,14 @@ export class VisboProjectService {
     // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectResponse>(this.vpUrl, { headers , params })
       .pipe(
-        map(response => response.vp), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
+        map(response => response.vp),
         tap(visboprojects => this.log(`fetched ${visboprojects.length} VisboProjects `)),
         catchError(this.handleError('getVisboProjects', []))
       );
   }
 
   /** GET VisboProject by id. Return `undefined` when id not found */
-  /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
     const url = `${this.vpUrl}/?id=${id}`;
     this.log(`Calling HTTP Request: ${this.vpUrl}`);
@@ -160,7 +160,6 @@ export class VisboProjectService {
 
       this.log(`HTTP Request failed: ${error.error.message} ${error.status}`);
       // TODO: send the error to remote logging infrastructure
-      // console.log(JSON.stringify(error)); // log to console instead
       this.log(`${operation} failed: ${error.error.message}`);
       // Let the app keep running by returning an empty result.
       return new ErrorObservable(error);

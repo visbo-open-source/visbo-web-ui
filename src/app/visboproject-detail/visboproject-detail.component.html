@@ -1,3 +1,4 @@
+<visbo-navbar></visbo-navbar>
 <div *ngIf="visboproject">
   <div class='container'>
   <h3>Project: {{ visboproject.name | uppercase }}</h3>
@@ -82,29 +83,31 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="VpUserName" class="col-form-label">Name:</label>
-            <input type="email" class="form-control" #VpUserName>
+        <form name="newUserInvite" #f="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+            <label for="email" class="col-form-label">Name:</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+            <div *ngIf="f.submitted && !email.valid" class="help-block">E-Mail address is required</div>
           </div>
-
-
-          <div class="form-group">
-            <label for="VpUserRole" class="col-form-label">Role:</label>
-            <select class="form-control" #VpUserRole>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !role.valid }">
+            <label for="role" class="col-form-label">Role:</label>
+            <select class="form-control"  name="role" [(ngModel)]="newUserInvite.role" #role="ngModel" required>
               <option>User</option>
               <option>Admin</option>
             </select>
+            <div *ngIf="f.submitted && !role.valid" class="help-block">Role of User must be defined</div>
+          </div>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
+            <label for="inviteMessage" class="col-form-label">Message:</label>
+            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" required> </textarea>
+            <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
           </div>
           <div class="form-group">
-            <label for="VpUserMessage" class="col-form-label">Description:</label>
-            <textarea class="form-control" #VpUserMessage></textarea>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Save</button>
+            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVPUser()" data-dismiss="modal">Save</button>
           </div>
         </form>
-      </div>
-      <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="addvpuser(VpUserName.value, VpUserRole.value, VpUserMessage.value, visboproject._id); VpUserName.value=''; VpUserMessage.value=''" data-dismiss="modal">Save</button>
       </div>
     </div>
   </div>

@@ -38,9 +38,8 @@ export class VisboCenterService {
 
     return this.http.get<VisboCenterResponse>(this.vcUrl, httpOptions)
       .pipe(
-        map(response => response.vc), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
+        map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
-        // tap(visbocenters => this.log(`fetched JSON VisboCenters ${JSON.stringify(visbocenters)}`)),
         catchError(this.handleError('getVisboCenters', []))
       );
   }
@@ -186,7 +185,6 @@ export class VisboCenterService {
 
       this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
 
-      // TODO: better job of transforming error for user consumption
       // user no longer authenticated, remove it from the session
       if (error.status == 401) {
         this.log(`${operation} failed: ${error.message}`);

@@ -50,7 +50,7 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         this.isLoggedIn = false;
-        
+
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentToken');
         sessionStorage.removeItem('isSysAdmin');
@@ -108,7 +108,6 @@ export class AuthenticationService {
         // TODO: send the error to remote logging infrastructure
         console.error(error.message, ' ', error.status); // log to console instead
 
-        // TODO: better job of transforming error for user consumption
         this.log(`${operation} failed: ${error.message}`);
 
         // Let the app keep running by returning an empty result.
