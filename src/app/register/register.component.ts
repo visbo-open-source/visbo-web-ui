@@ -1,6 +1,7 @@
 ﻿import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
@@ -11,25 +12,33 @@ import { Login } from '../_models/login';
 })
 
 export class RegisterComponent {
-    model: any = {};
-    loading = false;
+  model: any = {};
+  loading = false;
 
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService,
-        private alertService: AlertService) { }
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    private alertService: AlertService) { }
 
-    register() {
-        this.loading = true;
-        this.authenticationService.createUser(this.model)
-            .subscribe(
-                data => {
-                    this.alertService.success('Registration successful', true);
-                    this.router.navigate(['login']);
-                },
-                error => {
-                    this.alertService.error(error.error.message);
-                    this.loading = false;
-                });
-    }
+  register() {
+    this.loading = true;
+    this.authenticationService.createUser(this.model)
+      .subscribe(
+        data => {
+          this.alertService.success('Registration successful', true);
+          this.router.navigate(['login']);
+        },
+        error => {
+          this.log(`Error during Create User ${error.error.message}`)
+          this.alertService.error(error.error.message);
+          this.loading = false;
+        }
+      );
+  }
+
+  /** Log a VisboProjectService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('Register: ' + message);
+  }
 }

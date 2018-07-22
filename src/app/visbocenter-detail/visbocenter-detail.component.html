@@ -1,22 +1,25 @@
+<visbo-navbar></visbo-navbar>
 <div *ngIf="visbocenter">
   <div class='container'>
   <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
   <form>
     <div class="form-group row">
       <label for="vcDescription" class="col-4 col-md-3 col-form-label">Name:</label>
-      <input type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+      <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.name }} </label>
     </div>
     <div class="form-group row">
       <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-      <textarea name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+      <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.description }} </label>
     </div>
     <div class="form-group row">
       <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
-      <label class="col-8 form-control-static">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm'}} </label>
+      <label class="col-8 form-control-static">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
     <div class="form-group row">
       <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
-      <label class="col-8 form-control-static">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm'}} </label>
+      <label class="col-8 form-control-static">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
 </form>
     <div>
@@ -27,7 +30,7 @@
               Visbo Center Users
           </h5>
         </div>
-        <div class='col-6 col-md-2 align-self-end'>
+        <div *ngIf="vcIsAdmin" class='col-6 col-md-2 align-self-end'>
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VcUserModalCreate">
             Add User
@@ -42,7 +45,7 @@
               <th>Nr.</th>
               <th>e-Mail</th>
               <th>Role</th>
-              <th>Delete</th>
+              <th *ngIf="vcIsAdmin">Delete</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -51,35 +54,25 @@
               <td>{{memberIndex+1}}</td>
               <td>{{member.email}}</td>
               <td>{{member.role}}</td>
-              <td>
-                <button class="Detail" title="Remove User"
-                (click)="removevcuser(member, visbocenter._id)">X</button>
+              <td *ngIf="vcIsAdmin">
+                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                data-toggle="modal" data-target="#VcUserRemove">&times;</button>
               </td>
             </tr>
           </tbody>
           <!--Table body-->
         </table>
-        <!-- <div>
-          <label>Project:
-            <input #vpName />
-          </label>
-          <!-- (click) passes input value to add() and then clears the input --!>
-          <button (click)="addproject(vpName.value, visbocenter._id); vpName.value=''">
-            add
-          </button>
-        </div> -->
-
-        <!-- <p>{{ visbocenter._id }}</p> -->
       </div>
     </div>
-    <button (click)="save()" class="btn btn-primary">save</button>
+    <button *ngIf="vcIsAdmin" (click)="save()" class="btn btn-primary">save</button>
     <button (click)="goBack()">go back</button>
-    <button class="col-2 col-lg-1 bg-warning" style="float: right" title="Delete Visbo Center"
-    (click)="delete(visbocenter)">Delete!</button>
+    <button class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
+      Delete!
+    </button>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Add VC User -->
 <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -90,29 +83,109 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="VcUserName" class="col-form-label">Name:</label>
-            <input type="email" class="form-control" #VcUserName>
+        <form name="newUserInvite" #f="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+            <label for="email" class="col-form-label">Name:</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+            <div *ngIf="f.submitted && !email.valid" class="help-block">E-Mail address is required</div>
           </div>
-
-
-          <div class="form-group">
-            <label for="VcUserRole" class="col-form-label">Role:</label>
-            <select class="form-control" #VcUserRole>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !role.valid }">
+            <label for="role" class="col-form-label">Role:</label>
+            <select class="form-control" name="role" [(ngModel)]="newUserInvite.role" #role="ngModel" required>
               <option>User</option>
               <option>Admin</option>
             </select>
+            <div *ngIf="f.submitted && !role.valid" class="help-block">Role of User must be defined</div>
+          </div>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
+            <label for="inviteMessage" class="col-form-label">Message:</label>
+            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" required> </textarea>
+            <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
           </div>
           <div class="form-group">
-            <label for="VcUserMessage" class="col-form-label">Description:</label>
-            <textarea class="form-control" #VcUserMessage></textarea>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Save</button>
+            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Delete User -->
+<div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="Remove User" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < visbocenter.users.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label class="bg-warning">Do you really want to remove this User from Visbo Center? </label>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="VcName" class="col-form-label">Visbo Center:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">User:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.users[userIndex].email }}</label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Role:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.users[userIndex].role }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="addvcuser(VcUserName.value, VcUserRole.value, VcUserMessage.value, visbocenter._id); VcUserName.value=''; VcUserRole.value=''; VcUserMessage.value=''" data-dismiss="modal">Save</button>
+        <button type="button" class="btn btn-warning" (click)="removevcuser(visbocenter.users[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Delete VC -->
+<div class="modal fade" id="VcDelete" tabindex="-1" role="dialog" aria-labelledby="Delete Visbo Center" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcDeleteTitle">Delete this Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label class="bg-warning">Do you really want to delete this Visbo Center? </label>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="VcName" class="col-form-label">Name:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcDescription" class="col-form-label">Description:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.description }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcProjects" class="col-form-label">Projects:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.vpCount }} </label>
+          </div>
+          <div class="form-group">
+            <label for="VcUsers" class="col-form-label">Users:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.users.length }} </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
       </div>
     </div>
   </div>
