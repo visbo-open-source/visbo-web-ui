@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { VisboUser } from '../_models/Login';
+import { VisboUser } from '../_models/login';
 
 @Injectable()
 export class UserService {
