@@ -21,6 +21,8 @@ import { AlertService } from './_services/alert.service';
 import { NavbarComponent } from './navbar/navbar.component';
 
 import { MessagesComponent } from './messages/messages.component';
+import { SettingsComponent } from './settings/settings.component';
+
 import { MessageService } from './_services/message.service';
 
 // Visbo Centers
@@ -50,6 +52,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,
     MessagesComponent,
+    SettingsComponent,
     DashboardComponent,
     NavbarComponent,
     LoginComponent,
@@ -74,7 +77,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
       useClass: JwtInterceptor,
       multi: true
     },
-
     MessageService
   ],
   bootstrap: [ AppComponent ]
