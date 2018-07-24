@@ -34,10 +34,11 @@ export class VisboCentersComponent implements OnInit {
         .subscribe(visbocenters => this.visbocenters = visbocenters);
   }
 
-  add(name: string): void {
+  add(name: string, description: string): void {
     name = name.trim();
+    description = description.trim();
     if (!name) { return; }
-    this.visbocenterService.addVisboCenter({ name: name } as VisboCenter)
+    this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter)
       .subscribe(vc => { this.visbocenters.push(vc[0]); });
   }
 

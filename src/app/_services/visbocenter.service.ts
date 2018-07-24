@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
 import { VisboCenter } from '../_models/visbocenter';
+import { VCUser } from '../_models/visbocenter';
+import { VCUserResponse } from '../_models/visbocenter';
 import { VisboCenterResponse } from '../_models/visbocenter';
 
 import { MessageService } from './message.service';
@@ -25,7 +28,8 @@ export class VisboCenterService {
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService) { }
+    private messageService: MessageService
+  ) { }
 
 
   /** GET VisboCenters from the server */
@@ -118,6 +122,37 @@ export class VisboCenterService {
       );
   }
 
+  /** POST: add a new User to the Visbo Center */
+  addVCUser (user: VCUser, message: string, vcid: string): Observable<any> {
+    const url = `${this.vcUrl}/${vcid}/user`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
+    return this.http.post<VCUserResponse>(url, user, httpOptions)
+      .pipe(
+        map(response => {
+          // this.log(`added User to Visbo Center Response ${JSON.stringify(response.users)}`)
+          return response.users
+        }),
+        tap(users => this.log(`added Visbo User with id=${users[0]._id}`)),
+        catchError(this.handleError<VCUser>('addVCUser'))
+      );
+  }
+
+
+  /** DELETE: remove a User from the Visbo Center */
+  deleteVCUser (user: VCUser, vcid: string): Observable<any> {
+    const url = `${this.vcUrl}/${vcid}/user/${user.userId}?role=${user.role}`;
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
+    return this.http.delete<VisboCenterResponse>(url, httpOptions).pipe(
+//      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
+      map(result => {
+        this.log(`Remove User Successful:  ${result.message}`);
+        // this.log(`Remove User Successful Detail:  ${JSON.stringify(result)}`);
+        return result.vc[0].users;
+      }),
+      catchError(this.handleError<any>('deleteVisboCenterUser'))
+    );
+  }
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.
@@ -127,15 +162,16 @@ export class VisboCenterService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.message} ${error.status}`);
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
+      this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
+      
       // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
+      // user no longer authenticated, remove it from the session
+      if (error.status == 401) {
+        this.log(`${operation} failed: ${error.message}`);
+        sessionStorage.removeItem('currentUser');
+      }
       // Let the app keep running by returning an empty result.
-      return of(result as T);
+      return new ErrorObservable(error);
     };
   }
 

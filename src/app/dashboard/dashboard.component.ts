@@ -41,6 +41,12 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoClickedVc(visbocenter: VisboCenter):void {
+    // console.log("clicked row %s", visbocenter.name);
+    this.router.navigate(['vp/'+visbocenter._id]);
+    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
+  }
+
+  gotoClickedVcDetail(visbocenter: VisboCenter):void {
     console.log("clicked row %s", visbocenter.name);
     this.router.navigate(['vcDetail/'+visbocenter._id]);
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });

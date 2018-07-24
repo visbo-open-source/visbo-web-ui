@@ -1,9 +1,25 @@
+
+export class VCUser {
+  _id: string;
+  email: string;
+  role: string;
+  userId: string;
+}
+
+export class VCUserResponse {
+  state: string;
+  message: string;
+  users: [ VCUser ]
+}
+
 export class VisboCenter {
   _id: string;
   updatedAt: string;
   createdAt: string;
   name: string;
-  users: [ {email: string, role: string, _id: string} ]
+  users: [ VCUser];
+  description: string;
+  vpCount: number
 }
 
 export class VisboCenterResponse {
