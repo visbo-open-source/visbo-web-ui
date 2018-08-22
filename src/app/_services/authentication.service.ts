@@ -62,6 +62,48 @@ export class AuthenticationService {
       return currentUser;
     }
 
+    pwforgotten(model: any){
+      const url = `${this.authUrl}/pwforgotten`;
+      var newUser = new VisboUser;
+      newUser.email = model.username;
+
+      this.log(`Calling HTTP Request: ${url} for: ${model.username} `);
+
+      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`PW Forgotten Request executed`);
+                if (result) {
+                    this.log(`PW Forgotten Request Successful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwforgotten'))
+          );
+    }
+
+    pwreset(model: any){
+      const url = `${this.authUrl}/pwreset`;
+      var newUser = new VisboUser;
+      newUser.email = model.username;
+
+      this.log(`Calling HTTP Request: ${url} for: ${model.username} `);
+
+      return this.http.post<LoginResponse>(url, model) /* MS Last Option HTTP Headers */
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`PW Reset Request executed`);
+                if (result) {
+                    this.log(`PW Reset Request Successful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwreset'))
+          );
+    }
+
     createUser(model: any){
       const url = `${this.authUrl}/signup`;
       var newUser = new VisboUser;

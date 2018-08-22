@@ -5,6 +5,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent }      from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { PWForgottenComponent } from './pwforgotten/pwforgotten.component';
+import { PWResetComponent } from './pwreset/pwreset.component';
 
 import { DashboardComponent }   from './dashboard/dashboard.component';
 import { VisboCentersComponent }      from './visbocenters/visbocenters.component';
@@ -17,6 +19,8 @@ import { SettingsComponent }   from './settings/settings.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'pwforgotten', component: PWForgottenComponent },
+  { path: 'pwreset', component: PWResetComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
   { path: 'vc', component: VisboCentersComponent, canActivate: [AuthGuard] },
   { path: 'vcDetail/:id', component: VisboCenterDetailComponent, canActivate: [AuthGuard]  },
