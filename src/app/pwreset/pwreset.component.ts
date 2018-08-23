@@ -32,7 +32,7 @@ export class PWResetComponent {
   pwreset() {
     this.loading = true;
     this.model.token = this.token;
-    this.log(`Reset Password Model ${JSON.stringify(this.model)}`)
+    // this.log(`Reset Password Model ${JSON.stringify(this.model)}`)
 
     this.authenticationService.pwreset(this.model)
       .subscribe(
