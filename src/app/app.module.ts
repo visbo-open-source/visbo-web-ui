@@ -16,6 +16,7 @@ import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { RegisterComponent } from './register/register.component';
+import { RegisterConfirmComponent } from './registerconfirm/registerconfirm.component';
 import { PWForgottenComponent } from './pwforgotten/pwforgotten.component';
 import { PWResetComponent } from './pwreset/pwreset.component';
 
@@ -60,6 +61,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     NavbarComponent,
     LoginComponent,
     RegisterComponent,
+    RegisterConfirmComponent,
     PWForgottenComponent,
     PWResetComponent
   ],

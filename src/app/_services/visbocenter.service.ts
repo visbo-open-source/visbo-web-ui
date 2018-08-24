@@ -152,7 +152,7 @@ export class VisboCenterService {
   /** POST: add a new User to the Visbo Center */
   addVCUser (user: VCUser, message: string, vcid: string): Observable<VCUser> {
     const url = `${this.vcUrl}/${vcid}/user`;
-    var reqBody = {};
+    var reqBody: any = {};
     reqBody.email = user.email;
     reqBody.role = user.role;
     reqBody.message = message;

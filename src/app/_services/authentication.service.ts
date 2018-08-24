@@ -104,11 +104,31 @@ export class AuthenticationService {
           );
     }
 
+    registerconfirm(model: any){
+      const url = `${this.authUrl}/confirm`;
+
+      this.log(`Calling HTTP Request: ${url} for: ${model._id} `);
+
+      return this.http.post<LoginResponse>(url, model) /* MS Last Option HTTP Headers */
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`e-mail confirm Request executed`);
+                if (result) {
+                    this.log(`e-mail confirm Request Successful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwreset'))
+          );
+    }
+
     createUser(model: any){
       const url = `${this.authUrl}/signup`;
       var newUser = new VisboUser;
       var newUserProfile = new VisboUserProfile;
-      newUser.email = model.username;
+      if (model.username) newUser.email = model.username;
+      if (model._id) newUser._id = model._id;
       // do not set password before the log statement
       newUserProfile.firstName = model.firstName;
       newUserProfile.lastName = model.lastName;

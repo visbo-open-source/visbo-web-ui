@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent }      from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { RegisterConfirmComponent } from './registerconfirm/registerconfirm.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { PWForgottenComponent } from './pwforgotten/pwforgotten.component';
 import { PWResetComponent } from './pwreset/pwreset.component';
@@ -19,6 +20,8 @@ import { SettingsComponent }   from './settings/settings.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'registerconfirm', component: RegisterConfirmComponent },
+  { path: 'register/:id', component: RegisterComponent },
   { path: 'pwforgotten', component: PWForgottenComponent },
   { path: 'pwreset', component: PWResetComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
