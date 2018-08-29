@@ -123,8 +123,8 @@ export class AuthenticationService {
           );
     }
 
-    createUser(model: any){
-      const url = `${this.authUrl}/signup`;
+    createUser(model: any, hash: string){
+      var url = `${this.authUrl}/signup`;
       var newUser = new VisboUser;
       var newUserProfile = new VisboUserProfile;
       if (model.username) newUser.email = model.username;
@@ -136,9 +136,8 @@ export class AuthenticationService {
       newUserProfile.company = model.company;
       newUser.profile = newUserProfile;
 
-      // newUser.profile = {firstName: firstName, lastName: lastName, phone: phone, company: company};
-
-      this.log(`Calling HTTP Request: ${url} for: ${newUser.email} Profile: ${JSON.stringify(newUser)}`);
+      if (hash) url = url.concat('?hash=', hash)
+      this.log(`Calling HTTP Request: ${url} for: ${newUser.email||newUser._id} hash ${hash} Profile: ${JSON.stringify(newUser)}`);
 
       newUser.password = model.password;
       return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */

@@ -14,6 +14,7 @@ import { Login } from '../_models/login';
 export class RegisterComponent {
   model: any = {};
   userRegister = undefined
+  hash = undefined;
   loading = false;
 
   constructor(
@@ -26,12 +27,14 @@ export class RegisterComponent {
   ngOnInit() {
     // console.log("Init Registration");
     const id = this.route.snapshot.paramMap.get('id');
+    this.hash = this.route.snapshot.queryParams.hash
     if (id) {
-      this.log(`Register for User ${id}`)
+      this.log(`Register for User ${id} hash ${this.hash}`)
       this.userRegister = id;
     } else {
       this.userRegister = undefined;
     }
+    this.model = {};
   }
 
   register() {
@@ -39,7 +42,7 @@ export class RegisterComponent {
     if (this.userRegister) {
       this.model._id = this.userRegister;
     }
-    this.authenticationService.createUser(this.model)
+    this.authenticationService.createUser(this.model, this.hash)
       .subscribe(
         data => {
           this.alertService.success('Registration successful', true);

@@ -30,7 +30,7 @@ export class RegisterConfirmComponent {
     this.authenticationService.registerconfirm(this.model)
       .subscribe(
         data => {
-          this.alertService.success('Register Confirm Request successful.', true);
+          this.alertService.success(`Congratulation, your e-mail address ${data.email} is now confirmed. Please login.`, true);
           this.router.navigate(['login']);
         },
         error => {
