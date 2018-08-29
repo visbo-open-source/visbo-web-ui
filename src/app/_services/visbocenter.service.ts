@@ -152,8 +152,12 @@ export class VisboCenterService {
   /** POST: add a new User to the Visbo Center */
   addVCUser (user: VCUser, message: string, vcid: string): Observable<VCUser> {
     const url = `${this.vcUrl}/${vcid}/user`;
+    var reqBody: any = {};
+    reqBody.email = user.email;
+    reqBody.role = user.role;
+    reqBody.message = message;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.post<VCUserResponse>(url, user, httpOptions)
+    return this.http.post<VCUserResponse>(url, reqBody, httpOptions)
       .pipe(
         map(response => response.users[0]),
         tap(users => this.log(`added Visbo User with id=${users._id}`)),
