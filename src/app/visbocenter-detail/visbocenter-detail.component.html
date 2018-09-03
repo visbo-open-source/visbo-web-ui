@@ -4,7 +4,7 @@
   <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
   <form>
     <div class="form-group row">
-      <label for="vcDescription" class="col-4 col-md-3 col-form-label">Name:</label>
+      <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
       <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
       <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.name }} </label>
     </div>
