@@ -45,7 +45,11 @@ export class RegisterComponent {
     this.authenticationService.createUser(this.model, this.hash)
       .subscribe(
         data => {
-          this.alertService.success('Registration successful', true);
+          if (this.hash) {
+            this.alertService.success(`Congratulation, your e-mail address ${data.email} is now confirmed. Please login.`, true);
+          } else {
+            this.alertService.success(`Congratulation, you registered successfully your e-mail address ${data.email}. Please check your e-Mail for conirmation.`, true);
+          }
           this.router.navigate(['login']);
         },
         error => {

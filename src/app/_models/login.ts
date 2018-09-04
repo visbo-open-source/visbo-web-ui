@@ -22,6 +22,7 @@ export class VisboUserStatus {
   registeredAt: Date;
   lockedUntil: Date;
   lastLoginAt: Date;
+  lastLoginFailedAt: Date;
   loginRetries: number
 };
 

@@ -21,6 +21,7 @@ const httpOptions = {
 export class UserService {
 
   private profileUrl = environment.restUrl.concat('/user/profile');  // URL to api
+  private pwchangeUrl = environment.restUrl.concat('/user/passwordchange');  // URL to api
 
   constructor(
     private http: HttpClient,
@@ -45,6 +46,17 @@ export class UserService {
         map(response => response.user),
         tap(user => this.log(`updated User Profile ${user.email} `)),
         catchError(this.handleError<any>('updateUserProfile'))
+      );
+  }
+
+
+  passwordChange(model: any): Observable<VisboUser> {
+    this.log(`Calling HTTP Put Request: ${this.pwchangeUrl} Body: ${JSON.stringify(model)}`);
+    return this.http.put<VisboUserResponse>(this.pwchangeUrl, model, httpOptions)
+      .pipe(
+        map(response => response.user),
+        tap(user => this.log(`Changed User Password ${user.email} `)),
+        catchError(this.handleError<any>('ChangedPassword'))
       );
   }
 

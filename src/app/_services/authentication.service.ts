@@ -145,11 +145,11 @@ export class AuthenticationService {
             map(result => {
                 // registration successful if there's a user in the response
                 this.log(`Registration Request executed:  ${JSON.stringify(result)}`);
-                if (result && result.user) {
-                    this.log(`Registratioon Request Successful:  ${result.user.email}`);
+                if (result.user) {
+                    this.log(`Registration Request Successful:  ${result.user.email}`);
                     return result.user;
                 }
-                return result;
+                return {};
             }),
             // tap(result => this.log(`registered ${result.user.email} `)),
             catchError(this.handleError<any>('registerUser'))
