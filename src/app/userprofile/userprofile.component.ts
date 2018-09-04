@@ -37,7 +37,21 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUserProfile()
       .subscribe(
         user => {
-          this.model = user;
+          this.user = user;
+          this.model.email = user.email;
+          this.model.updatedAt = user.updatedAt;
+          if (user.profile) {
+            this.model.firstName = user.profile.firstName;
+            this.model.lastName = user.profile.lastName;
+            this.model.company = user.profile.company;
+            this.model.phone = user.profile.phone;
+          }
+          if (user.status) {
+            this.model.registeredAt = user.status.registeredAt;
+            this.model.lastLoginAt = user.status.lastLoginAt;
+            this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
+          }
+
           this.log(`get User Profile success ${user.email}`);
         },
         error => {
@@ -54,11 +68,27 @@ export class UserProfileComponent implements OnInit {
   saveUserProfile(): void {
     this.loading = true;
     this.log(`Save profile info now ${this.model.email}`);
-    this.userService.updateUserProfile(this.model)
+    if (!this.user.profile) this.user.profile = {};
+    this.user.profile.firstName = this.model.firstName;
+    this.user.profile.lastName = this.model.lastName;
+    this.user.profile.company = this.model.company;
+    this.user.profile.phone = this.model.phone;
+
+    this.userService.updateUserProfile(this.user)
       .subscribe(
         user => {
           this.log(`Save profile success updatedAt ${user.updatedAt}`);
-          this.model = user;
+          this.user = user;
+          this.model.email = user.email;
+          this.model.updatedAt = user.updatedAt;
+          this.model.firstName = user.profile.firstName;
+          this.model.lastName = user.profile.lastName;
+          this.model.company = user.profile.company;
+          this.model.phone = user.profile.phone;
+          this.model.registeredAt = user.status.registeredAt;
+          this.model.lastLoginAt = user.status.lastLoginAt;
+          this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
+
           this.alertService.success(`User Profile updated successfully`, true);
           this.loading = false;
         },
