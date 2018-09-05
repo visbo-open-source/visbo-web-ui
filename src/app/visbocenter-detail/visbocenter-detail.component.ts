@@ -72,6 +72,7 @@ export class VisboCenterDetailComponent implements OnInit {
     // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
   }
+
   save(): void {
     this.visbocenterService.updateVisboCenter(this.visbocenter)
       .subscribe(

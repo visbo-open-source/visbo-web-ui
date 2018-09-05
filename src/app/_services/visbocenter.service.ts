@@ -8,10 +8,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboCenter } from '../_models/visbocenter';
-import { VCUser } from '../_models/visbocenter';
-import { VCUserResponse } from '../_models/visbocenter';
-import { VisboCenterResponse } from '../_models/visbocenter';
+import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VCUser, VCUserResponse } from '../_models/visbocenter';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -23,7 +21,7 @@ const httpOptions = {
 @Injectable()
 export class VisboCenterService {
 
-  //   private vcUrl = 'vc';  // URL to web api on same server
+  //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
 
   constructor(

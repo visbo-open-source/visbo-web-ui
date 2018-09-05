@@ -26,6 +26,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 
 import { MessagesComponent } from './messages/messages.component';
 import { SettingsComponent } from './settings/settings.component';
+import { UserProfileComponent } from './userprofile/userprofile.component';
 
 import { MessageService } from './_services/message.service';
 
@@ -57,6 +58,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     VisboProjectVersionsComponent,
     MessagesComponent,
     SettingsComponent,
+    UserProfileComponent,
     DashboardComponent,
     NavbarComponent,
     LoginComponent,
@@ -76,6 +78,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AuthGuard,
     AlertService,
     AuthenticationService,
+    UserService,
     VisboCenterService,
     VisboProjectService,
     VisboProjectVersionService,

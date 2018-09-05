@@ -14,6 +14,17 @@
       <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.description }} </label>
     </div>
     <div class="form-group row">
+      <label for="vpPublic" class="col-4 col-md-3 col-form-label">Visibility:</label>
+      <select *ngIf="vpIsAdmin" class="col-8 form-control"  name="vpPublic" [(ngModel)]="visboproject.vpPublic" #vpPublic="ngModel" required>
+        <option value = false>Only for users from Visbo Project</option>
+        <option value = true>All users from this Visbo Center and this Visbo Project</option>
+      </select>
+      <label *ngIf="!vpIsAdmin && vpPublic" class="col-8 form-control-static">All users from this Visbo Center and this Visbo Project</label>
+      <label *ngIf="!vpIsAdmin && !vpPublic" class="col-8 form-control-static">Only for users from Visbo Project</label>
+      <div *ngIf="f.submitted && !vpPublic.valid" class="help-block">Visibility of Project must be defined</div>
+    </div>
+
+    <div class="form-group row">
       <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
       <label class="col-8 form-control-static">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
@@ -21,8 +32,8 @@
       <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
       <label class="col-8 form-control-static">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
-</form>
-    <div>
+  </form>
+  <div>
     <div class='well'>
       <div class='row'>
         <div class='col'>
@@ -103,9 +114,9 @@
             <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
           </div>
           <div class="form-group">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Save</button>
-            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVPUser()" data-dismiss="modal">Save</button>
+            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Invite</button>
+            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVPUser()" data-dismiss="modal">Invite</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>
       </div>

@@ -1,0 +1,76 @@
+<visbo-navbar></visbo-navbar>
+<div class="col-md-8 col-md-offset-2">
+  <h3>Profile Information for {{model.email}}</h3>
+  <div>
+    <!-- <form name="form" (ngSubmit)="f.form.valid && saveUserProfile()" #f="ngForm" novalidate> -->
+    <form name="form" #f="ngForm" novalidate>
+      <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" #firstName="ngModel" required />
+        <div *ngIf="f.submitted && !firstName.valid" class="help-block">First Name is required</div>
+      </div>
+      <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" #lastName="ngModel" required />
+        <div *ngIf="f.submitted && !lastName.valid" class="help-block">Last Name is required</div>
+      </div>
+      <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !company.valid }">
+        <label for="company">Company</label>
+        <input type="text" class="form-control" name="company" [(ngModel)]="model.company" #company="ngModel" required />
+        <div *ngIf="f.submitted && !company.valid" class="help-block">Company is required</div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" class="form-control" name="phone" [(ngModel)]="model.phone" #phone="ngModel" />
+      </div>
+
+      <button [disabled]="loading" class="btn btn-primary" (click)="f.form.valid && saveUserProfile()"  >Save</button>
+      <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+      <button (click)="userReset()">Reset</button>
+      <button type="button" class="btn btn-secondary" style="float: right" title="Change Password" data-toggle="modal" data-target="#UserModalChanePassword">
+        Change Password
+      </button>
+    </form>
+    <div>
+      Your last Login was at {{model.lastLoginAt | date :'dd.MM.yyyy HH:mm:ss'}}
+      <br>
+      Your last failed login was at {{model.lastLoginAt | date :'dd.MM.yyyy HH:mm:ss'}}
+      <br>
+      Your registered at {{model.registeredAt | date :'dd.MM.yyyy HH:mm'}}
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add VP User -->
+<div class="modal fade" id="UserModalChanePassword" tabindex="-1" role="dialog" aria-labelledby="UserPasswordChangeModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="UserPasswordChangeModalTitle">Change Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="passwordChange" #f="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !oldpassword.valid }">
+            <label for="oldpassword" class="col-form-label">Old Password:</label>
+            <input type="password" class="form-control" name="oldpassword" [(ngModel)]="modelPw.oldpassword" #oldpassword="ngModel" required >
+            <div *ngIf="f.submitted && !oldpassword.valid" class="help-block">Old password is required</div>
+          </div>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !newpassword.valid }">
+            <label for="newpassword" class="col-form-label">New Password:</label>
+            <input type="password" class="form-control" name="newpassword" [(ngModel)]="modelPw.newpassword" #newpassword="ngModel" required >
+            <div *ngIf="f.submitted && !newpassword.valid" class="help-block">New password is required</div>
+          </div>
+
+          <div class="form-group">
+            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Change</button>
+            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="passwordChange()" data-dismiss="modal">Change</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
