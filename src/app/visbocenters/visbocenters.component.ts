@@ -18,7 +18,7 @@ export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: boolean;
+  vcIsSysAdmin: string;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -34,7 +34,6 @@ export class VisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
-    this.getSysVisboCenters(); //done during login
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -70,12 +69,8 @@ export class VisboCentersComponent implements OnInit {
       .subscribe(visbocenters => {
         if (visbocenters.length >0) {
           this.sysvisbocenter = visbocenters[0];
-          this.vcIsSysAdmin = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-          this.log(`User is Sys Admin ${this.sysvisbocenter.name}? ${this.vcIsSysAdmin}`)
-        } else
-          this.vcIsSysAdmin = false
-      }
-    );
+        }
+      });
   }
 
   add(name: string, description: string): void {

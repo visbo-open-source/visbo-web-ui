@@ -20,7 +20,6 @@ const httpOptions = {
 
 @Injectable()
 export class VisboCenterService {
-
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
 
@@ -44,18 +43,20 @@ export class VisboCenterService {
 
   /** GET VisboCenters from the server */
   getSysVisboCenters(): Observable<VisboCenter[]> {
-    var url = this.vcUrl + '?systemVC=true'
-    // this.log(`Calling HTTP Request for SysVC: ${url}`);
+    var url = this.vcUrl + '?systemVC=true';
+    var sysVCRole = undefined;
+    var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);
 
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
         map(response => response.vc),
         tap(visbocenters => {
-          this.log(`fetched ${visbocenters.length} VisboCenters `)
-          if (visbocenters.length > 0) {
-            sessionStorage.setItem('isSysAdmin', 'Any');  // MS ToDo Set the correct role
-          } else {
-            sessionStorage.setItem('isSysAdmin', 'None');
+          sysVCRole = visbocenters[0].users.find(user => user.email == currentUser.email && user.role == 'Admin') ? 'Admin' : undefined;
+          if (!sysVCRole) {
+            // sysVCRole = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'User') ? 'User' : undefined;
           }
+          sessionStorage.setItem('isSysAdmin', sysVCRole);
+          this.log(`fetched ${visbocenters.length} VisboCenters user Role is ${sysVCRole || 'None'}`)
         }),
         catchError(this.handleError('getVisboCenters', []))
       );
@@ -63,7 +64,7 @@ export class VisboCenterService {
 
   /* Role of User in sysAdmin */
   getSysAdminRole() {
-    var result = sessionStorage.getItem('isSysAdmin') || 'None';
+    var result = sessionStorage.getItem('isSysAdmin') || undefined;
     this.log(`SysAdmin Role: ${result}`);
 
     return result;
