@@ -30,10 +30,12 @@ export class VisboCenterService {
 
 
   /** GET VisboCenters from the server */
-  getVisboCenters(): Observable<VisboCenter[]> {
-    this.log(`Calling HTTP Request: ${this.vcUrl}`);
+  getVisboCenters(sysadmin: boolean = false): Observable<VisboCenter[]> {
+    var url = this.vcUrl
+    if (sysadmin) url = url.concat('?sysadmin=1');
 
-    return this.http.get<VisboCenterResponse>(this.vcUrl, httpOptions)
+    this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    return this.http.get<VisboCenterResponse>(url, httpOptions)
       .pipe(
         map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),

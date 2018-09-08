@@ -33,6 +33,7 @@ import { MessageService } from './_services/message.service';
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+
 import { VisboCenterService } from './_services/visbocenter.service';
 
 // Visbo Projects
@@ -46,6 +47,10 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
+// Sys Admin / App Admin
+import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
+import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
+import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +70,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     RegisterComponent,
     RegisterConfirmComponent,
     PWForgottenComponent,
-    PWResetComponent
+    PWResetComponent,
+    SysNavbarComponent,
+    SysVisboCentersComponent,
+    SysVisboSystemComponent
   ],
   imports: [
     BrowserModule,
