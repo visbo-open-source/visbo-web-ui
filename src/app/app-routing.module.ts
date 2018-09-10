@@ -20,6 +20,7 @@ import { UserProfileComponent }   from './userprofile/userprofile.component';
 
 import { SysVisboSystemComponent }  from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent }  from './sysvisbocenters/sysvisbocenters.component';
+import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,7 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'sysadmins', component: SysVisboSystemComponent, canActivate: [AuthGuard] },
   { path: 'sysvc', component: SysVisboCentersComponent, canActivate: [AuthGuard] },
+  { path: 'sysvcDetail/:id', component: SysVisboCenterDetailComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 

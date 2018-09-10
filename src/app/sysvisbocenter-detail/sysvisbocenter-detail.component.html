@@ -1,4 +1,4 @@
-<visbo-navbar></visbo-navbar>
+<sysvisbo-navbar></sysvisbo-navbar>
 <div *ngIf="visbocenter">
   <div class='container'>
   <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
@@ -30,7 +30,7 @@
               Visbo Center Users
           </h5>
         </div>
-        <div *ngIf="vcIsAdmin" class='col-6 col-md-2 align-self-end'>
+        <div *ngIf="vcIsSysAdmin == 'Admin'" class='col-6 col-md-2 align-self-end'>
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VcUserModalCreate">
             Add User
@@ -45,7 +45,7 @@
               <th>Nr.</th>
               <th>e-mail</th>
               <th>Role</th>
-              <th *ngIf="vcIsAdmin">Delete</th>
+              <!-- <th *ngIf="vcIsAdmin">Delete</th> -->
             </tr>
           </thead>
           <!--Table body-->
@@ -54,10 +54,10 @@
               <td>{{memberIndex+1}}</td>
               <td>{{member.email}}</td>
               <td>{{member.role}}</td>
-              <td *ngIf="vcIsAdmin">
+              <!-- <td *ngIf="vcIsAdmin">
                 <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
                 data-toggle="modal" data-target="#VcUserRemove">&times;</button>
-              </td>
+              </td> -->
             </tr>
           </tbody>
           <!--Table body-->

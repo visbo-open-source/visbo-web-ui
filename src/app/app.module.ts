@@ -51,6 +51,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
+import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.comp
     PWResetComponent,
     SysNavbarComponent,
     SysVisboCentersComponent,
-    SysVisboSystemComponent
+    SysVisboSystemComponent,
+    SysVisboCenterDetailComponent
   ],
   imports: [
     BrowserModule,
