@@ -35,6 +35,7 @@ import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
 
 import { VisboCenterService } from './_services/visbocenter.service';
+import { VisboAuditService } from './_services/visboaudit.service';
 
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
@@ -52,6 +53,8 @@ import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
 import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysAuditComponent }  from './sysaudit/sysaudit.component';
+
 
 @NgModule({
   declarations: [
@@ -75,7 +78,8 @@ import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbo
     SysNavbarComponent,
     SysVisboCentersComponent,
     SysVisboSystemComponent,
-    SysVisboCenterDetailComponent
+    SysVisboCenterDetailComponent,
+    SysAuditComponent
   ],
   imports: [
     BrowserModule,
@@ -92,6 +96,7 @@ import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbo
     VisboCenterService,
     VisboProjectService,
     VisboProjectVersionService,
+    VisboAuditService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

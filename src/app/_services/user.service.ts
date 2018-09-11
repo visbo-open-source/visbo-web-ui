@@ -95,7 +95,7 @@ export class UserService {
     };
   }
 
-  /** Log a VisboCenterService message with the MessageService */
+  /** Log a VisboUserService message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboUserService: ' + message);
   }
