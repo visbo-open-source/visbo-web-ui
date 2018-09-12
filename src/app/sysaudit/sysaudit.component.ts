@@ -19,6 +19,8 @@ export class SysAuditComponent implements OnInit {
 
   audit: VisboAudit[];
   auditIndex: number;
+  auditFrom: String;
+  auditTo: String;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
@@ -35,6 +37,8 @@ export class SysAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // if (!this.auditFrom) this.auditFrom = '01.09.2018';
+    // if (!this.auditTo) this.auditTo = '12.09.2018';
     this.getVisboAudits();
   }
 
@@ -43,8 +47,19 @@ export class SysAuditComponent implements OnInit {
   }
 
   getVisboAudits(): void {
-    this.log(`Audit getVisboAudits`);
-    this.visboauditService.getVisboAudits(true)
+    var from: Date, to: Date;
+    this.log(`Audit getVisboAudits from ${this.auditFrom} to ${this.auditTo}`);
+    // set date values if not set or adopt to end of day in case of to date
+    if (this.auditFrom) {
+      from = new Date(this.auditFrom)
+    }
+    if (this.auditTo) {
+      to = new Date(this.auditTo)
+      to.setDate(to.getDate() + 1)
+    }
+
+    this.log(`Audit getVisboAudits recalc from ${from} to ${to}`);
+    this.visboauditService.getVisboAudits(true, from, to)
       .subscribe(
         audit => {
           this.audit = audit;
@@ -70,6 +85,18 @@ export class SysAuditComponent implements OnInit {
   helperAuditIndex(auditIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex
+  }
+
+  helperResponseText(status: number): String {
+    if (status == 200) return "Success"
+    if (status == 304) return "Success (Unchanged)"
+    if (status == 400) return "Bad Request"
+    if (status == 401) return "Not Authenticated"
+    if (status == 403) return "Permission Denied"
+    if (status == 404) return "URL not found"
+    if (status == 409) return "Conflict"
+    if (status == 500) return "Server Error"
+    return status
   }
 
   toggleDetail() {

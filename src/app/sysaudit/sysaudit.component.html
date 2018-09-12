@@ -9,6 +9,16 @@
       </div>
     </div>
   </div>
+  <div class="form-group row">
+    <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
+    <input id="auditFrom" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" >
+    <input type="date" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
+  </div>
+  <div class="form-group row">
+    <label for="auditText" class="col-2 col-form-label">Filter:</label>
+    <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
+    <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
+  </div>
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
@@ -34,7 +44,7 @@
           <td *ngIf="!auditentry.user"> Unknown </td>
           <td>{{auditentry.actionDescription }}</td>
           <td>{{auditentry.actionInfo }}</td>
-          <td>{{auditentry.result.status }}</td>
+          <td>{{helperResponseText(auditentry.result.status) }}</td>
           <!-- <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vc.vpCount}}</td> -->
