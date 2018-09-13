@@ -21,6 +21,7 @@ export class SysAuditComponent implements OnInit {
   auditIndex: number;
   auditFrom: string;
   auditTo: string;
+  auditText: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
