@@ -18,6 +18,11 @@ import { VisboProjectVersionsComponent }      from './visboprojectversions/visbo
 import { SettingsComponent }   from './settings/settings.component';
 import { UserProfileComponent }   from './userprofile/userprofile.component';
 
+import { SysVisboSystemComponent }  from './sysvisbosystem/sysvisbosystem.component';
+import { SysVisboCentersComponent }  from './sysvisbocenters/sysvisbocenters.component';
+import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysAuditComponent }  from './sysaudit/sysaudit.component';
+
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
@@ -35,6 +40,10 @@ const routes: Routes = [
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+  { path: 'sysadmins', component: SysVisboSystemComponent, canActivate: [AuthGuard] },
+  { path: 'sysvc', component: SysVisboCentersComponent, canActivate: [AuthGuard] },
+  { path: 'sysvcDetail/:id', component: SysVisboCenterDetailComponent, canActivate: [AuthGuard] },
+  { path: 'sysaudit', component: SysAuditComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 

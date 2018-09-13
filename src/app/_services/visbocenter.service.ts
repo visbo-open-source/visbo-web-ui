@@ -20,7 +20,6 @@ const httpOptions = {
 
 @Injectable()
 export class VisboCenterService {
-
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
 
@@ -31,10 +30,12 @@ export class VisboCenterService {
 
 
   /** GET VisboCenters from the server */
-  getVisboCenters(): Observable<VisboCenter[]> {
-    this.log(`Calling HTTP Request: ${this.vcUrl}`);
+  getVisboCenters(sysadmin: boolean = false): Observable<VisboCenter[]> {
+    var url = this.vcUrl
+    if (sysadmin) url = url.concat('?sysadmin=1');
 
-    return this.http.get<VisboCenterResponse>(this.vcUrl, httpOptions)
+    this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    return this.http.get<VisboCenterResponse>(url, httpOptions)
       .pipe(
         map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
@@ -44,18 +45,20 @@ export class VisboCenterService {
 
   /** GET VisboCenters from the server */
   getSysVisboCenters(): Observable<VisboCenter[]> {
-    var url = this.vcUrl + '?systemVC=true'
-    // this.log(`Calling HTTP Request for SysVC: ${url}`);
+    var url = this.vcUrl + '?systemVC=true';
+    var sysVCRole = undefined;
+    var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);
 
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
         map(response => response.vc),
         tap(visbocenters => {
-          this.log(`fetched ${visbocenters.length} VisboCenters `)
-          if (visbocenters.length > 0) {
-            sessionStorage.setItem('isSysAdmin', 'Any');  // MS ToDo Set the correct role
-          } else {
-            sessionStorage.setItem('isSysAdmin', 'None');
+          sysVCRole = visbocenters[0].users.find(user => user.email == currentUser.email && user.role == 'Admin') ? 'Admin' : undefined;
+          if (!sysVCRole) {
+            // sysVCRole = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'User') ? 'User' : undefined;
           }
+          sessionStorage.setItem('isSysAdmin', sysVCRole);
+          this.log(`fetched ${visbocenters.length} VisboCenters user Role is ${sysVCRole || 'None'}`)
         }),
         catchError(this.handleError('getVisboCenters', []))
       );
@@ -63,7 +66,7 @@ export class VisboCenterService {
 
   /* Role of User in sysAdmin */
   getSysAdminRole() {
-    var result = sessionStorage.getItem('isSysAdmin') || 'None';
+    var result = sessionStorage.getItem('isSysAdmin') || undefined;
     this.log(`SysAdmin Role: ${result}`);
 
     return result;
@@ -86,8 +89,9 @@ export class VisboCenterService {
   }
 
   /** GET VisboCenter by id. Will 404 if id not found */
-  getVisboCenter(id: string): Observable<VisboCenter> {
-    const url = `${this.vcUrl}/${id}`;
+  getVisboCenter(id: string, sysadmin: boolean = false): Observable<VisboCenter> {
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
       map(response => response.vc[0]),
@@ -123,10 +127,12 @@ export class VisboCenterService {
 
 
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter): Observable<any> {
+  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<any> {
     //const id = typeof visbocenter === 'number' ? visbocenter : visbocenter._id;
     const id = visbocenter._id;
-    const url = `${this.vcUrl}/${id}`;
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
+
     this.log(`Calling HTTP Request: ${url} `);
 
     return this.http.delete<VisboCenter>(url, httpOptions).pipe(

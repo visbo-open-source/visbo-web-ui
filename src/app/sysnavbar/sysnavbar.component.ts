@@ -7,10 +7,10 @@ import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
 @Component({
-  selector: 'visbo-navbar',
-  templateUrl: './navbar.component.html'
+  selector: 'sysvisbo-navbar',
+  templateUrl: './sysnavbar.component.html'
 })
-export class NavbarComponent implements OnInit {
+export class SysNavbarComponent implements OnInit {
   isSysAdmin: string = undefined;
 
   constructor(
