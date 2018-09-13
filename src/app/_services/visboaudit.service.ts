@@ -29,7 +29,7 @@ export class VisboAuditService {
 
 
   /** GET Audits from the server */
-  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date undefined): Observable<VisboAudit[]> {
+  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
     var url = this.serviceUrl
     var queryParams = false
     if (sysadmin) {
