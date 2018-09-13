@@ -19,8 +19,8 @@ export class SysAuditComponent implements OnInit {
 
   audit: VisboAudit[];
   auditIndex: number;
-  auditFrom: String;
-  auditTo: String;
+  auditFrom: string;
+  auditTo: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
@@ -87,7 +87,7 @@ export class SysAuditComponent implements OnInit {
     this.auditIndex = auditIndex
   }
 
-  helperResponseText(status: number): String {
+  helperResponseText(status: number): string {
     if (status == 200) return "Success"
     if (status == 304) return "Success (Unchanged)"
     if (status == 400) return "Bad Request"
@@ -96,7 +96,7 @@ export class SysAuditComponent implements OnInit {
     if (status == 404) return "URL not found"
     if (status == 409) return "Conflict"
     if (status == 500) return "Server Error"
-    return status
+    return status.toString()
   }
 
   toggleDetail() {
@@ -160,7 +160,15 @@ export class SysAuditComponent implements OnInit {
       })
     } else if (this.sortColumn == 5) {
       // sort Result
-      this.audit.sort(function(a, b) { return a.result.status.valueOf() - b.result.status.valueOf() })
+      // this.audit.sort(function(a, b) { return a.result.status.toValue() - b.result.status.toValue() })
+      this.audit.sort(function(a, b) {
+        var result = 0
+        if (a.result.status > b.result.status)
+          result = 1;
+        else if (a.result.status < b.result.status)
+          result = -1;
+        return result
+      })
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
