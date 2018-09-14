@@ -29,10 +29,10 @@ export class LoginComponent implements OnInit {
     // reset login status
     this.authenticationService.logout();
 
-    console.log(`init Login: ${JSON.stringify(this.route.snapshot.queryParams)}`)
+    if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    console.log(`return url ${this.returnUrl}`)
+    // console.log(`return url ${this.returnUrl}`)
   }
 
   login() {
@@ -40,12 +40,21 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
-          console.log(`Login Success ${this.returnUrl}`);
-          this.visbocenterService.getSysVisboCenters().subscribe(vc => vc);
-          this.router.navigate([this.returnUrl]);
+          this.log(`Login Success check sysVC now`);
+          this.visbocenterService.getSysVisboCenters()
+            .subscribe(
+              vc => {
+                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()}`);
+                this.router.navigate([this.returnUrl]);
+              },
+              error => {
+                this.log(`No SysVC found: `);
+                this.router.navigate([this.returnUrl]);
+              }
+            )
         },
         error => {
-          console.log(`Login Failed: ${error.status} ${error.error.message} `);
+          this.log(`Login Failed: ${error.status} ${error.error.message} `);
           this.alertService.error(error.error.message);
           this.loading = false;
         }

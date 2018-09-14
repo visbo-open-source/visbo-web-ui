@@ -1,10 +1,20 @@
 <div class="jumbotron" style="background-color: #ffffff;">
+  <div style="float: right">
+    <img src="assets/visbologo.svg">
+  </div>
   <h2>{{title}}</h2>
   <div class="container">
-    <div class="col-12 col-offset-1">
+    <div class="col-12">
       <alert></alert>
       <router-outlet></router-outlet>
     </div>
   </div>
+</div>
+<div class="col-12 bg-light text-dark">
+  Copyright 2018 © <a href="https://visbo.de/" class="text-secondary">Visbo GmbH</a>, Visbo Visual Board {{version}}
+  <br>
+  <a href="mailto:support@visbo.de" class="text-secondary">Support</a>
+  <a href="https://visbo.de/impressum" class="text-secondary">Impressum</a>
+  <a href="https://visbo.de/events" class="text-secondary">Events</a>
 </div>
 <app-messages></app-messages>
