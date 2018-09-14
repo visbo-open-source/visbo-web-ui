@@ -1,0 +1,136 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Audit
+        </h2>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
+    <input id="auditFrom" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" >
+    <input type="date" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
+  </div>
+  <div class="form-group row">
+    <label for="auditText" class="col-2 col-form-label">Filter:</label>
+    <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
+    <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
+  </div>
+
+  <div class='panel-body'>
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
+          <th (click)="sortTable(2)">User</th>
+          <th (click)="sortTable(3)"> Action</th>
+          <th (click)="sortTable(4)"> Info</th>
+          <th (click)="sortTable(5)"> Result</th>
+          <!-- <th class="d-none d-sm-table-cell" (click)="sortTable(2)">Modified</th>
+          <th class="d-none d-md-table-cell" (click)="sortTable(3)"># Projects</th> -->
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let auditentry of audit; let auditIndex=index" (click)='helperAuditIndex(auditIndex)'
+        data-toggle="modal" data-target="#AuditDetail">
+          <td class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM.yy HH:mm:ss'}}</td>
+          <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
+          <td *ngIf="!auditentry.user"> Unknown </td>
+          <td>{{auditentry.actionDescription }}</td>
+          <td>{{auditentry.actionInfo }}</td>
+          <td>{{helperResponseText(auditentry.result.status) }}</td>
+          <!-- <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-md-table-cell">{{vc.vpCount}}</td> -->
+          <!-- <td>
+            <button class="Detail" title="Detail of Visbo Center" data-toggle="modal" data-target="#AuditDetail">i</button>
+          </td> -->
+          <td>
+            <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
+            data-toggle="modal" data-target="#AuditDetail">i</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="AuditDetail" tabindex="-1" role="dialog" aria-labelledby="Audit Detail" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="auditIndex >= 0 && auditIndex < audit.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="AuditDetailTitle">Detail of Audit Entry</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Created:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-4 col-form-label">User:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Action:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Info:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].actionInfo }} </label>
+          </div>
+          <div *ngIf="audit[auditIndex].vc" class="form-group">
+            <label class="col-4 col-form-label">Visbo Center:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
+          </div>
+          <div *ngIf="audit[auditIndex].vp" class="form-group">
+            <label class="col-4 col-form-label">Visbo Project:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
+          </div>
+          <div *ngIf="audit[auditIndex].vpv" class="form-group">
+            <label class="col-4 col-form-label">Project Version:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].vpv.name }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Result:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].result.status }} </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">tech. Action:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].action }} </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">URL:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].url }} </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">Response Time:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].result.time }} ms </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">User Agent:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].userAgent }}</label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">IP:</label>
+            <label class="col-7 form-control-static">{{ audit[auditIndex].ip }}</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">More</button>
+        <button *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">Lesss</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -34,6 +34,7 @@ export class SysVisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
+    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -41,7 +42,7 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   getVisboCenters(): void {
-    // this.log("VC getVisboCenters");
+    this.log(`VC getVisboCenters ${this.vcIsSysAdmin}`);
     this.visbocenterService.getVisboCenters(true)
       .subscribe(
         visbocenters => {
@@ -121,12 +122,13 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   gotoDetail(visbocenter: VisboCenter):void {
-    this.router.navigate(['vcDetail/'+visbocenter._id]);
+    this.log(`navigate to VC Detail ${visbocenter._id}`);
+    this.router.navigate(['sysvcDetail/'+visbocenter._id]);
   }
 
   gotoClickedRow(visbocenter: VisboCenter):void {
-    // this.log(`clicked row ${visbocenter.name}`);
-    this.router.navigate(['vp/'+visbocenter._id]);
+    this.log(`clicked row ${visbocenter.name}`);
+    // this.router.navigate(['sysvp/'+visbocenter._id]);
   }
 
   sortVCTable(n) {
@@ -178,6 +180,6 @@ export class SysVisboCentersComponent implements OnInit {
 
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboCenter: ' + message);
+    this.messageService.add('Sys VisboCenter: ' + message);
   }
 }

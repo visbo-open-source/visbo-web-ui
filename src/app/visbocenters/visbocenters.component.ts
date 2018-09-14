@@ -61,18 +61,6 @@ export class VisboCentersComponent implements OnInit {
       );
   }
 
-  getSysVisboCenters(): void {
-    var currentUser = this.authenticationService.getActiveUser();
-
-    // console.log("VC getSysVisboCenters for User %s", currentUser.email);
-    this.visbocenterService.getSysVisboCenters()
-      .subscribe(visbocenters => {
-        if (visbocenters.length >0) {
-          this.sysvisbocenter = visbocenters[0];
-        }
-      });
-  }
-
   add(name: string, description: string): void {
     name = name.trim();
     description = description.trim();

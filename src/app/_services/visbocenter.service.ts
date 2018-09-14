@@ -89,8 +89,9 @@ export class VisboCenterService {
   }
 
   /** GET VisboCenter by id. Will 404 if id not found */
-  getVisboCenter(id: string): Observable<VisboCenter> {
-    const url = `${this.vcUrl}/${id}`;
+  getVisboCenter(id: string, sysadmin: boolean = false): Observable<VisboCenter> {
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
       map(response => response.vc[0]),
@@ -126,10 +127,12 @@ export class VisboCenterService {
 
 
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter): Observable<any> {
+  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<any> {
     //const id = typeof visbocenter === 'number' ? visbocenter : visbocenter._id;
     const id = visbocenter._id;
-    const url = `${this.vcUrl}/${id}`;
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
+
     this.log(`Calling HTTP Request: ${url} `);
 
     return this.http.delete<VisboCenter>(url, httpOptions).pipe(
