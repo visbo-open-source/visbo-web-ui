@@ -20,44 +20,46 @@
     <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
   </div>
 
-  <div class='panel-body'>
-    <table class='table table-hover table-sortable'>
-      <!--Table head-->
-      <thead>
-        <tr>
-          <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
-          <th (click)="sortTable(2)">User</th>
-          <th (click)="sortTable(3)"> Action</th>
-          <th (click)="sortTable(4)"> Info</th>
-          <th (click)="sortTable(5)"> Result</th>
-          <!-- <th class="d-none d-sm-table-cell" (click)="sortTable(2)">Modified</th>
-          <th class="d-none d-md-table-cell" (click)="sortTable(3)"># Projects</th> -->
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <!--Table body-->
-      <tbody>
-        <tr *ngFor="let auditentry of audit; let auditIndex=index" (click)='helperAuditIndex(auditIndex)'
-        data-toggle="modal" data-target="#AuditDetail">
-          <td class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM.yy HH:mm:ss'}}</td>
-          <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
-          <td *ngIf="!auditentry.user"> Unknown </td>
-          <td>{{auditentry.actionDescription }}</td>
-          <td>{{auditentry.actionInfo }}</td>
-          <td>{{helperResponseText(auditentry.result.status) }}</td>
-          <!-- <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
-          <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
-          <td class="d-none d-md-table-cell">{{vc.vpCount}}</td> -->
-          <!-- <td>
-            <button class="Detail" title="Detail of Visbo Center" data-toggle="modal" data-target="#AuditDetail">i</button>
-          </td> -->
-          <td>
-            <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
-            data-toggle="modal" data-target="#AuditDetail">i</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class='container-fluid'>
+    <div class='panel-body'>
+      <table class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
+            <th (click)="sortTable(2)">User</th>
+            <th (click)="sortTable(3)"> Action</th>
+            <th (click)="sortTable(4)"> Info</th>
+            <th (click)="sortTable(5)"> Result</th>
+            <!-- <th class="d-none d-sm-table-cell" (click)="sortTable(2)">Modified</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(3)"># Projects</th> -->
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr *ngFor="let auditentry of audit; let auditIndex=index" (click)='helperAuditIndex(auditIndex)'
+          data-toggle="modal" data-target="#AuditDetail">
+            <td class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM HH:mm'}}</td>
+            <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
+            <td *ngIf="!auditentry.user"> Unknown </td>
+            <td>{{auditentry.actionDescription }}</td>
+            <td>{{helperShortenText(auditentry.actionInfo, 30) }}</td>
+            <td>{{helperResponseText(auditentry.result.status) }}</td>
+            <!-- <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+            <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
+            <td class="d-none d-md-table-cell">{{vc.vpCount}}</td> -->
+            <!-- <td>
+              <button class="Detail" title="Detail of Visbo Center" data-toggle="modal" data-target="#AuditDetail">i</button>
+            </td> -->
+            <td>
+              <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
+              data-toggle="modal" data-target="#AuditDetail">i</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

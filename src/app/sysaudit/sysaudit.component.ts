@@ -41,6 +41,7 @@ export class SysAuditComponent implements OnInit {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
     this.getVisboAudits();
+    this.sortTable(1);
   }
 
   onSelect(visboaudit: VisboAudit): void {
@@ -58,13 +59,18 @@ export class SysAuditComponent implements OnInit {
       to = new Date(this.auditTo)
       to.setDate(to.getDate() + 1)
     }
-
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to}`);
+    if (this.auditText) this.auditText = this.auditText.trim();
+    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
     this.visboauditService.getVisboAudits(true, from, to)
       .subscribe(
         audit => {
-          this.audit = audit;
-          this.sortTable(1);
+          this.audit = [];
+          for (var i = 0; i < audit.length; i++){
+            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
+              this.audit.push(audit[i])
+            }
+          }
+          this.sortTable(undefined);
           this.log('get Audit success');
         },
         error => {
@@ -90,7 +96,7 @@ export class SysAuditComponent implements OnInit {
 
   helperResponseText(status: number): string {
     if (status == 200) return "Success"
-    if (status == 304) return "Success (Unchanged)"
+    if (status == 304) return "Success"
     if (status == 400) return "Bad Request"
     if (status == 401) return "Not Authenticated"
     if (status == 403) return "Permission Denied"
@@ -98,6 +104,12 @@ export class SysAuditComponent implements OnInit {
     if (status == 409) return "Conflict"
     if (status == 500) return "Server Error"
     return status.toString()
+  }
+
+  helperShortenText(text: string, len: number): string {
+    if (!text || !len || len < 5 || text.length <= len)
+      return (text);
+    return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
 
   toggleDetail() {
