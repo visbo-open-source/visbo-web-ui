@@ -13,5 +13,5 @@ export class VisboFilesResponse {
 export class VisboDownloadResponse {
   state: string;
   message: string;
-  stream: string;
+  text: string
 }
