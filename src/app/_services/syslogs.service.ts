@@ -51,7 +51,7 @@ export class SysLogsService {
     // options.headers = 'XXX'
     return this.http.get<VisboDownloadResponse>(url, options)
       .pipe(
-        tap( data => this.log(`fetched Log File Response ${(data)}`)),
+        tap( data => this.log(`fetched Log File Response `)),
         // map(data => this.log(`fetched Log File Response ${JSON.stringify(data)}`)),
         // tap(stream => this.log(`fetched Log File`)),
         catchError(this.handleError<VisboFile>(`getSysLog name:${name} `))

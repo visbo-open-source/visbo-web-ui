@@ -10,33 +10,45 @@
     </div>
   </div>
 
-  <div class='container-fluid'>
-    <div class='panel-body'>
-      <table class='table table-hover table-sortable'>
-        <!--Table head-->
-        <thead>
-          <tr>
-            <th class="d-none d-md-table-cell" (click)="sortTable(1)">Name</th>
-            <th (click)="sortTable(2)">Modified</th>
-            <th (click)="sortTable(3)"> Size</th>
-            <th>Detail</th>
-          </tr>
-        </thead>
-        <!--Table body-->
-        <tbody>
-          <tr *ngFor="let fileentry of files; let fileIndex=index"
-            (click)='getVisboLogFile(fileentry)'>
-            <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
-            <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
-            <td>{{formatBytes(fileentry.size) }}</td>
-            <td>
-              <button class="Detail" title="Detail of Visbo Audit" >i</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div *ngIf="!logDataShow">
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th class="d-none d-md-table-cell" (click)="sortTable(1)">Name</th>
+              <th (click)="sortTable(2)">Modified</th>
+              <th (click)="sortTable(3)"> Size</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let fileentry of files; let fileIndex=index" (click)='helperFileIndex(fileIndex)'
+              (click)='getVisboLogFile(fileentry)'>
+              <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
+              <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
+              <td>{{formatBytes(fileentry.size) }}</td>
+              <td>
+                <button class="Detail" title="Detail of Visbo Audit" >i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+</div>
+
+<div *ngIf="logDataShow">
+  Log File Content {{files[fileIndex].name }} from {{files[fileIndex].updatedAt | date :'dd.MM.yy HH:mm' }}
+  <td>
+    <button type="button" class="btn btn-secondary" (click)="switchView()">List</button>
+  </td>
+  <pre> {{logData}}</pre>
+  <!-- <p> {{logData}}</p> -->
+
 </div>
 
 <!-- <div class="modal fade" id="LogFile" tabindex="-1" role="dialog" aria-labelledby="Log Content" aria-hidden="true">
