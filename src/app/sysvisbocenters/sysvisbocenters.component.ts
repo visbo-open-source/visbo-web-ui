@@ -11,7 +11,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { LoginComponent } from '../login/login.component';
 
 @Component({
-  selector: 'app-visbocenters',
+  selector: 'app-sysvisbocenters',
   templateUrl: './sysvisbocenters.component.html'
 })
 export class SysVisboCentersComponent implements OnInit {
@@ -128,7 +128,7 @@ export class SysVisboCentersComponent implements OnInit {
 
   gotoClickedRow(visbocenter: VisboCenter):void {
     this.log(`clicked row ${visbocenter.name}`);
-    // this.router.navigate(['sysvp/'+visbocenter._id]);
+    this.router.navigate(['sysvp/'+visbocenter._id]);
   }
 
   sortVCTable(n) {

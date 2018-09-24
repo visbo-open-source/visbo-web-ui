@@ -53,6 +53,9 @@ import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
 import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
+import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
+
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
 import { SysLogsComponent }  from './syslogs/syslogs.component';
 import { SysLogsService } from './_services/syslogs.service';
@@ -80,6 +83,8 @@ import { SysLogsService } from './_services/syslogs.service';
     SysVisboCentersComponent,
     SysVisboSystemComponent,
     SysVisboCenterDetailComponent,
+    SysVisboProjectsComponent,
+    SysVisboProjectDetailComponent,
     SysAuditComponent,
     SysLogsComponent
   ],
