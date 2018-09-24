@@ -6,8 +6,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-//import { MaterialModule } from './_helpers/material.module';
-
 // Authentication
 import { LoginComponent } from './login/login.component';
 import { AlertComponent } from './_directives/alert.component';
