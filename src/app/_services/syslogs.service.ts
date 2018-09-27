@@ -45,9 +45,14 @@ export class SysLogsService {
   getSysLog(name: string): Observable<any> {
     var url = `${this.serviceUrl}/${name}`;
     this.log(`Calling HTTP Request for a specific log file: ${url}`);
-    return this.http.get<VisboDownloadResponse>(url)
+    var options: any = {};
+    options.observe = 'body';
+    options.responseType = 'text';
+    // options.headers = 'XXX'
+    return this.http.get<VisboDownloadResponse>(url, options)
       .pipe(
-        map(response => this.log(`fetched Log File Response ${JSON.stringify(response)}`)),
+        tap( data => this.log(`fetched Log File Response `)),
+        // map(data => this.log(`fetched Log File Response ${JSON.stringify(data)}`)),
         // tap(stream => this.log(`fetched Log File`)),
         catchError(this.handleError<VisboFile>(`getSysLog name:${name} `))
       );

@@ -1,0 +1,51 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 *ngIf="!vcActive">
+          Projects
+        </h2>
+        <h2 *ngIf="vcActive">
+          Projects in:
+          <button class='panel-heading bg-white btn-white' (click)="gotoVCDetail(vcActive)">
+            {{vcActive.name}}
+          </button>
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div class='panel-body'>
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th class="d-none d-md-table-cell">Nr.</th>
+          <th (click)="sortVPTable(1)">Name</th>
+          <th class="d-none d-sm-table-cell" (click)="sortVPTable(2)">Modified</th>
+          <th class="d-none d-md-table-cell" (click)="sortVPTable(4)"># Versions</th>
+          <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">Visbo Center</th>
+          <th>Info</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
+          <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
+          <td>{{vp.name}}</td>
+          <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-md-table-cell">{{vp.vpvCount}}</td>
+          <td class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
+          <td class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
+          <td>
+            <button class="Detail" title="Detail of Visbo Project"
+            (click)="gotoDetail(vp)">i</button>
+          </td>
+        </tr>
+      </tbody>
+      <!--Table body-->
+    </table>
+  </div>
+</div>

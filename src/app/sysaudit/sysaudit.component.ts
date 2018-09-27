@@ -41,7 +41,7 @@ export class SysAuditComponent implements OnInit {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
     this.getVisboAudits();
-    this.sortTable(1);
+    this.sortTable(undefined);
   }
 
   onSelect(visboaudit: VisboAudit): void {
@@ -121,17 +121,21 @@ export class SysAuditComponent implements OnInit {
     if (!this.audit) return
     this.log(`Sort Table Column ${n}`)
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
+    if (n != undefined) {
+      // sort a different column
       if (n != this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
-      }
-      if (this.sortAscending == undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = (n == 2 || n == 3 || n == 4) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
-      }
-      else this.sortAscending = !this.sortAscending;
+      } else if (this.sortAscending != undefined)
+        this.sortAscending = !this.sortAscending;
+    } else {
+      this.sortColumn = 1
+      this.sortAscending = undefined;
+    }
+    if (this.sortAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortAscending = (n == 2 || n == 3 || n == 4) ? true : false;
+      // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
     }
     // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {

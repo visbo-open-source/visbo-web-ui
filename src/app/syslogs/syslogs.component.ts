@@ -17,6 +17,9 @@ import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models
 export class SysLogsComponent implements OnInit {
 
   files: VisboFile[];
+  fileIndex: number;
+  logDataShow: boolean;
+  logData: string;
 
   sortAscending: boolean;
   sortColumn: number;
@@ -59,30 +62,42 @@ export class SysLogsComponent implements OnInit {
       );
   }
 
-  getVisboLogFile(file: VisboFile): void {
-    this.log(`SysLogs getVisboLogFile`);
-    this.syslogsService.getSysLog(file.name)
-      .subscribe(
-        data => {
-          this.downloadFile(data)
-          this.log('get Log Content success');
-        },
-        error => {
-          this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
-        }
-      );
-  }
+helperFileIndex(fileIndex: number):void {
+  this.fileIndex = fileIndex
+}
 
-  downloadFile(data: any):void {
-    this.log(`download File succeeded`);
-    var blob = new Blob([data], { type: 'text/csv' });
-    var url= window.URL.createObjectURL(blob);
-    window.open(url);
+switchView():void {
+  this.logDataShow = !this.logDataShow;
+}
+
+getVisboLogFile(file: VisboFile): void {
+  this.log(`SysLogs getVisboLogFile`);
+  this.syslogsService.getSysLog(file.name)
+    .subscribe(
+      data => {
+        this.log(`get Log Content success Start:${data.substring(0,30)}`);
+        this.downloadFile(data)
+      },
+      error => {
+        this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
+        this.alertService.error(error.error.message);
+        // redirect to login and come back to current URL
+        if (error.status == 401) {
+          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+        }
+      }
+    );
+}
+
+  downloadFile(data: string):void {
+    var stringPart = data.substring(103, 108)
+    this.log(`download File succeeded :${stringPart}:${data.charCodeAt(106)}`);
+    // this.logData = data.replace(/\n/g, '<br/>') ;
+    this.logData = data;
+    this.logDataShow = true;
+    // var blob = new Blob([data], { type: 'text/plain' });
+    // var url= window.URL.createObjectURL(blob);
+    // window.open(url);
   }
 
   formatBytes(size,precision) {

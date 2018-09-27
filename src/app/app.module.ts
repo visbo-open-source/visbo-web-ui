@@ -6,8 +6,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-//import { MaterialModule } from './_helpers/material.module';
-
 // Authentication
 import { LoginComponent } from './login/login.component';
 import { AlertComponent } from './_directives/alert.component';
@@ -53,6 +51,9 @@ import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
 import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
+import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
+
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
 import { SysLogsComponent }  from './syslogs/syslogs.component';
 import { SysLogsService } from './_services/syslogs.service';
@@ -80,6 +81,8 @@ import { SysLogsService } from './_services/syslogs.service';
     SysVisboCentersComponent,
     SysVisboSystemComponent,
     SysVisboCenterDetailComponent,
+    SysVisboProjectsComponent,
+    SysVisboProjectDetailComponent,
     SysAuditComponent,
     SysLogsComponent
   ],

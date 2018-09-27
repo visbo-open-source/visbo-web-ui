@@ -31,13 +31,18 @@ export class VisboProjectService {
 
 
   /** GET VisboProjects from the server if id is specified get only projects of this vcid*/
-  getVisboProjects(id: string): Observable<VisboProject[]> {
+  getVisboProjects(id: string, sysAdmin: boolean = false): Observable<VisboProject[]> {
     const url = `${this.vpUrl}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (id) {
       params = params.append('vcid', id);
     }
+    if (sysAdmin) {
+      params = params.append('sysadmin', '1')
+    }
+    this.log(`VP getSysVisboProjects ${sysAdmin}`);
+
     // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectResponse>(this.vpUrl, { headers , params })
       .pipe(
@@ -64,8 +69,12 @@ export class VisboProjectService {
   }
 
   /** GET VisboProject by id. Will 404 if id not found */
-  getVisboProject(id: string): Observable<VisboProject> {
+  getVisboProject(id: string, sysAdmin: boolean = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${id}`;
+    let params = new HttpParams();
+    if (sysAdmin) {
+      params = params.append('sysadmin', '1')
+    }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboProjectResponse>(url).pipe(
       map(response => response.vp[0]),

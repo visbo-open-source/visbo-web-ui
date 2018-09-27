@@ -7,7 +7,7 @@
           Visbo Centers
         </h2>
       </div>
-      <div class='col-6 col-md-2 align-self-end'>
+      <div *ngIf="vcIsSysAdmin == 'Admin'" class='col-6 col-md-2 align-self-end'>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-sm btn-primary align-self-end" data-toggle="modal" data-target="#VcModalCreate">
           New Visbo Center
