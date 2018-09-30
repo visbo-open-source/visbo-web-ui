@@ -137,7 +137,7 @@ export class SysUserComponent implements OnInit {
         bLastLoginAt = b.status && b.status.lastLoginAt ? new Date(b.status.lastLoginAt) : undefined
         if (!bLastLoginAt) bLastLoginAt = new Date('2001-01-01');
 
-        return aLastLoginAt - bLastLoginAt
+        return aLastLoginAt.getTime() - bLastLoginAt.getTime()
       })
     } else if (this.sortColumn == 4) {
       this.user.sort(function(a, b) {
@@ -148,7 +148,7 @@ export class SysUserComponent implements OnInit {
         blastLoginFailedAt = b.status && b.status.lastLoginFailedAt ? new Date(b.status.lastLoginFailedAt) : undefined
         if (!blastLoginFailedAt) blastLoginFailedAt = new Date('2001-01-01');
 
-        return alastLoginFailedAt - blastLoginFailedAt
+        return alastLoginFailedAt.getTime() - blastLoginFailedAt.getTime()
       })
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
