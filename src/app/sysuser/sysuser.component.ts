@@ -100,7 +100,7 @@ export class SysUserComponent implements OnInit {
       } else if (this.sortAscending != undefined)
         this.sortAscending = !this.sortAscending;
     } else {
-      this.sortColumn = 1
+      this.sortColumn = 2
       this.sortAscending = undefined;
     }
     if (this.sortAscending == undefined) {
