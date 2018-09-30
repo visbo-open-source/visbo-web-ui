@@ -5,16 +5,16 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { SysLogsService } from '../_services/syslogs.service';
+import { SysLogService } from '../_services/syslog.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { LoginComponent } from '../login/login.component';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 
 @Component({
-  selector: 'app-syslogs',
-  templateUrl: './syslogs.component.html'
+  selector: 'app-syslog',
+  templateUrl: './syslog.component.html'
 })
-export class SysLogsComponent implements OnInit {
+export class SysLogComponent implements OnInit {
 
   files: VisboFile[];
   fileIndex: number;
@@ -25,7 +25,7 @@ export class SysLogsComponent implements OnInit {
   sortColumn: number;
 
   constructor(
-    private syslogsService: SysLogsService,
+    private syslogService: SysLogService,
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
@@ -44,8 +44,8 @@ export class SysLogsComponent implements OnInit {
   // }
 
   getVisboLogs(): void {
-    this.log(`SysLogs getVisboLogs`);
-    this.syslogsService.getSysLogs()
+    this.log(`syslog getVisboLogs`);
+    this.syslogService.getSysLogs()
       .subscribe(
         files => {
           this.files = files
@@ -71,8 +71,8 @@ switchView():void {
 }
 
 getVisboLogFile(file: VisboFile): void {
-  this.log(`SysLogs getVisboLogFile`);
-  this.syslogsService.getSysLog(file.name)
+  this.log(`syslog getVisboLogFile`);
+  this.syslogService.getSysLog(file.name)
     .subscribe(
       data => {
         this.log(`get Log Content success Start:${data.substring(0,30)}`);

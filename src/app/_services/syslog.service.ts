@@ -18,9 +18,9 @@ const httpOptions = {
 };
 
 @Injectable()
-export class SysLogsService {
+export class SysLogService {
 
-  private serviceUrl = environment.restUrl.concat('/syslogs');  // URL to ReST api
+  private serviceUrl = environment.restUrl.concat('/syslog');  // URL to ReST api
 
   constructor(
     private http: HttpClient,
@@ -37,7 +37,7 @@ export class SysLogsService {
       .pipe(
         map(response => response.files),
         tap(files => this.log(`fetched ${files.length} Log Files `)),
-        catchError(this.handleError('getSysLogs', []))
+        catchError(this.handleError('getSysLog', []))
       );
   }
 

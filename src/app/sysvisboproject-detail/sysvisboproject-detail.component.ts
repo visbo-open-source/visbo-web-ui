@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
+import { VisboCenterService }  from '../_services/visbocenter.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VPUser } from '../_models/visboproject';
@@ -18,10 +19,12 @@ export class SysVisboProjectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   newUserInvite: any = {};
   vpIsAdmin: boolean;
+  vpIsSysAdmin: string;
   userIndex: number;
 
   constructor(
     private messageService: MessageService,
+    private visbocenterService: VisboCenterService,
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
@@ -32,6 +35,8 @@ export class SysVisboProjectDetailComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboProject();
+    this.vpIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.log(`SysAdmin Role: ${this.vpIsSysAdmin}`)
   }
 
   getVisboProject(): void {

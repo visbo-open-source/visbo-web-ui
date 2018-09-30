@@ -40,7 +40,7 @@
         <tbody>
           <tr *ngFor="let auditentry of audit; let auditIndex=index" (click)='helperAuditIndex(auditIndex)'
           data-toggle="modal" data-target="#AuditDetail">
-            <td class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM HH:mm'}}</td>
+            <td class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM HH:mm:ss'}}</td>
             <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
             <td *ngIf="!auditentry.user"> Unknown </td>
             <td>{{auditentry.actionDescription }}</td>
@@ -73,6 +73,10 @@
         </button>
       </div>
       <div class="modal-body">
+        <div class="align-items-end">
+          <button class="Paging" title="Prev Audit Entry" (click)='pageAuditIndex(-1)'>Prev</button>
+          <button class="Paging" title="Next Audit Entry" (click)='pageAuditIndex(1)'>Next</button>
+        </div>
         <form>
           <div class="form-group">
             <label class="col-4 col-form-label">Created:</label>
@@ -104,7 +108,7 @@
           </div>
           <div class="form-group">
             <label class="col-4 col-form-label">Result:</label>
-            <label class="col-7 form-control-static">{{ audit[auditIndex].result.status }} </label>
+            <label class="col-7 form-control-static">{{helperResponseText(audit[auditIndex].result.status) }} </label>
           </div>
           <div *ngIf="showMore" class="form-group">
             <label class="col-4 col-form-label">tech. Action:</label>

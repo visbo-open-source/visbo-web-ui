@@ -1,0 +1,119 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Users
+        </h2>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="userMatch" class="col-2 col-form-label">Filter:</label>
+    <input id="userMatch" type="text" class="col-2 col-sm-4 form-control" name="userMatch" [(ngModel)]="userMatch" >
+    <button type="button" class="btn btn-primary" (click)="getSysUsers()">Filter</button>
+  </div>
+
+  <div class='container-fluid'>
+    <div class='panel-body'>
+      <table class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th class="d-none d-md-table-cell">Nr.</th>
+            <th (click)="sortTable(1)">User</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(2)">Updated</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(3)">Last Login</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(4)">Failed Login</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr *ngFor="let userentry of user; let userIndex=index" (click)='helperuserIndex(userIndex)'
+          data-toggle="modal" data-target="#UserDetail">
+            <td class="d-none d-md-table-cell">{{userIndex+1}}</td>
+            <td >{{userentry.email }}</td>
+            <td class="d-none d-md-table-cell">{{userentry.updatedAt | date :'dd.MM.yy'}}</td>
+            <td *ngIf="userentry.status && userentry.status.lastLoginAt" class="d-none d-md-table-cell">{{userentry.status.lastLoginAt | date :'dd.MM.yy'}}</td>
+            <td *ngIf="!(userentry.status && userentry.status.lastLoginAt)" class="d-none d-md-table-cell">Never</td>
+            <td *ngIf="userentry.status && userentry.status.lastLoginFailedAt" class="d-none d-md-table-cell">{{userentry.status.lastLoginFailedAt | date :'dd.MM.yy'}}</td>
+            <td *ngIf="!(userentry.status && userentry.status.lastLoginFailedAt)" class="d-none d-md-table-cell">Never</td>
+            <td>
+              <button class="Detail" title="Detail of Visbo User" (click)='helperUserIndex(userIndex)'
+              data-toggle="modal" data-target="#UserDetail">i</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="UserDetail" tabindex="-1" role="dialog" aria-labelledby="User Detail" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < user.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="UserDetailTitle">Detail of User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="align-items-end">
+          <button class="Paging" title="Prev User" (click)='pageUserIndex(-1)'>Prev</button>
+          <button class="Paging" title="Next User" (click)='pageUserIndex(1)'>Next</button>
+        </div>
+        <form>
+          <div class="form-group">
+            <label class="col-4 col-form-label">User:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].email }} </label>
+          </div>
+          <div *ngIf="user[userIndex].profile"  class="form-group">
+            <label class="col-4 col-form-label">Name:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].profile.firstName}}  {{ user[userIndex].profile.lastName}}</label>
+          </div>
+          <div *ngIf="user[userIndex].profile"  class="form-group">
+            <label class="col-4 col-form-label">Company:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].profile.company}}</label>
+          </div>
+          <div *ngIf="user[userIndex].profile"  class="form-group">
+            <label class="col-4 col-form-label">Phone:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].profile.phone}}</label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">Created:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">Updated:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].updatedAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Registered:</label>
+            <label *ngIf="user[userIndex].status && user[userIndex].status.registeredAt" class="col-7 form-control-static">{{ user[userIndex].status.registeredAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+            <label *ngIf="!(user[userIndex].status && user[userIndex].status.registeredAt)" class="col-7 form-control-static">Not registered yet </label>
+          </div>
+          <div *ngIf="user[userIndex].status && user[userIndex].status.lockedUntil" class="form-group">
+            <label class="col-4 col-form-label">Locked:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].status.lockedUntil | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          </div>
+          <div *ngIf="user[userIndex].status && user[userIndex].status.loginRetries" class="form-group">
+            <label class="col-4 col-form-label">Retries:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].status.loginRetries }} </label>
+          </div>
+          <div *ngIf="user[userIndex].status" class="form-group">
+            <label class="col-4 col-form-label">Last Login:</label>
+            <label class="col-7 form-control-static">{{ user[userIndex].status.lastLoginAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">More</button>
+        <button *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">Lesss</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
