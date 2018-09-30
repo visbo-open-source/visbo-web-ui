@@ -50,3 +50,9 @@ export class VisboUserResponse {
   message: string;
   user: VisboUser
 }
+
+export class VisboUsersResponse {
+  state: string;
+  message: string;
+  user: [VisboUser]
+}

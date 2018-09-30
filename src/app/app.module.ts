@@ -34,6 +34,7 @@ import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-det
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
+import { SysUserService } from './_services/sysuser.service';
 
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
@@ -55,8 +56,9 @@ import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.
 import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
 
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
-import { SysLogsComponent }  from './syslogs/syslogs.component';
-import { SysLogsService } from './_services/syslogs.service';
+import { SysUserComponent }  from './sysuser/sysuser.component';
+import { SysLogComponent }  from './syslog/syslog.component';
+import { SysLogService } from './_services/syslog.service';
 
 @NgModule({
   declarations: [
@@ -84,7 +86,8 @@ import { SysLogsService } from './_services/syslogs.service';
     SysVisboProjectsComponent,
     SysVisboProjectDetailComponent,
     SysAuditComponent,
-    SysLogsComponent
+    SysUserComponent,
+    SysLogComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +105,8 @@ import { SysLogsService } from './_services/syslogs.service';
     VisboProjectService,
     VisboProjectVersionService,
     VisboAuditService,
-    SysLogsService,
+    SysUserService,
+    SysLogService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

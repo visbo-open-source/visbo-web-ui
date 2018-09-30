@@ -94,6 +94,14 @@ export class SysAuditComponent implements OnInit {
     this.auditIndex = auditIndex
   }
 
+  pageAuditIndex(increment: number): void {
+    var newAuditIndex: number;
+    newAuditIndex = this.auditIndex + increment;
+    if (newAuditIndex < 0) newAuditIndex = 0
+    if (newAuditIndex >= this.audit.length) newAuditIndex = this.audit.length-1
+    this.auditIndex = newAuditIndex
+  }
+
   helperResponseText(status: number): string {
     if (status == 200) return "Success"
     if (status == 304) return "Success"

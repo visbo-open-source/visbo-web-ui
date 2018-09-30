@@ -24,7 +24,8 @@ import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbo
 import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
 import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
-import { SysLogsComponent }  from './syslogs/syslogs.component';
+import { SysUserComponent }  from './sysuser/sysuser.component';
+import { SysLogComponent }  from './syslog/syslog.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -49,7 +50,8 @@ const routes: Routes = [
   { path: 'sysvp/:id', component: SysVisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'sysvpDetail/:id', component: SysVisboProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'sysaudit', component: SysAuditComponent, canActivate: [AuthGuard] },
-  { path: 'syslogs', component: SysLogsComponent, canActivate: [AuthGuard] },
+  { path: 'sysuser', component: SysUserComponent, canActivate: [AuthGuard] },
+  { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 
