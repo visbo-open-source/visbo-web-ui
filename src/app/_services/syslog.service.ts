@@ -68,10 +68,8 @@ export class SysLogService {
       this.log(`HTTP Request failed: ${JSON.stringify(error)} status:${error.status}`);
 
       // user no longer authenticated, remove it from the session
-      if (error.status == 401) {
-        this.log(`${operation} failed: ${error.message}`);
-        sessionStorage.removeItem('currentUser');
-      }
+      this.log(`${operation} failed: ${error.message}`);
+
       // Let the app keep running by returning an empty result.
       return throwError(error);
       // return new ErrorObservable(error);
