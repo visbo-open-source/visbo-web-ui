@@ -65,7 +65,8 @@ export class SysUserService {
         sessionStorage.removeItem('currentUser');
       }
       // Let the app keep running by returning an empty result.
-      return new ErrorObservable(error);
+      return throwError(error);
+      // return new ErrorObservable(error);
     };
   }
 
