@@ -81,13 +81,8 @@ export class UserService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
 
-      // user no longer authenticated, remove it from the session
-      if (error.status == 401) {
-        this.log(`${operation} failed: ${error.message}`);
-        sessionStorage.removeItem('currentUser');
-      }
       // Let the app keep running by returning an empty result.
       return throwError(error);
       // return new ErrorObservable(error);

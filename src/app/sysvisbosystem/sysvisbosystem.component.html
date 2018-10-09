@@ -1,25 +1,25 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div *ngIf="sysvisbocenter">
   <div class='container'>
-  <h3>System Visbo Center: {{ sysvisbocenter.name | uppercase }}</h3>
+  <h3>System: {{ sysvisbocenter.name | uppercase }}</h3>
   <form>
-    <div class="form-group row">
+    <!-- <div class="form-group row">
       <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
       <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="sysvisbocenter.name" placeholder="Name">
-      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ sysvisbocenter.name }} </label>
-    </div>
-    <div class="form-group row">
+      <label class="col-8 col-form-label">{{ sysvisbocenter.name }} </label>
+    </div> -->
+    <!-- <div class="form-group row">
       <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
       <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="sysvisbocenter.description" placeholder="Type in your description"></textarea>
       <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ sysvisbocenter.description }} </label>
-    </div>
-    <div class="form-group row">
+    </div> -->
+    <!-- <div class="form-group row">
       <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
       <label class="col-8 form-control-static">{{ sysvisbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-    </div>
+    </div> -->
     <div class="form-group row">
-      <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
-      <label class="col-8 form-control-static">{{ sysvisbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label for="Updated" class="col-4 col-md-3 col-form-label">Updated at:</label>
+      <label class="col-8 col-form-label">{{ sysvisbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
 </form>
     <div>

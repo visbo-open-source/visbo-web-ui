@@ -69,6 +69,7 @@ export class SysVisboProjectsComponent implements OnInit {
             this.alertService.error(error.error.message);
             // redirect to login and come back to current URL
             if (error.status == 401) {
+              this.alertService.error("Session expired, please log in again", true);
               this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             }
           }

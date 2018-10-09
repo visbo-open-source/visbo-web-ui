@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit {
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
-            console.log('get VCs failed not authenticated: Code: %s Message: %s redirect login return URL %s', error.status, error.error.message, this.router.url); // log to console instead
+            this.alertService.error("Session expired, please log in again", true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
-            console.log('get VPs failed not authenticated: Code: %s Message: %s redirect login return URL %s', error.status, error.error.message, this.router.url); // log to console instead
+            this.alertService.error("Session expired, please log in again", true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }

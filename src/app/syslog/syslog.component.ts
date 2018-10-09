@@ -56,6 +56,7 @@ export class SysLogComponent implements OnInit {
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
@@ -83,6 +84,7 @@ getVisboLogFile(file: VisboFile): void {
         this.alertService.error(error.error.message);
         // redirect to login and come back to current URL
         if (error.status == 401) {
+          this.alertService.error("Session expired, please log in again", true);
           this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
         }
       }
@@ -90,14 +92,19 @@ getVisboLogFile(file: VisboFile): void {
 }
 
   downloadFile(data: string):void {
-    var stringPart = data.substring(103, 108)
-    this.log(`download File succeeded :${stringPart}:${data.charCodeAt(106)}`);
+    const LENGTH = 2000;
+    this.log(`download File succeeded Len: ${data.length}`);
     // this.logData = data.replace(/\n/g, '<br/>') ;
-    this.logData = data;
-    this.logDataShow = true;
-    // var blob = new Blob([data], { type: 'text/plain' });
-    // var url= window.URL.createObjectURL(blob);
-    // window.open(url);
+    // var start = data.length > LENGTH ? data.length - LENGTH : 0
+    // var linebreakPosition = data.indexOf("\n", start)
+    // this.log(`line break at Len: ${linebreakPosition}`);
+    // if (linebreakPosition >= 0) start = linebreakPosition
+    // this.logData = data.substr(start);
+    // this.logDataShow = true;
+    var blob = new Blob([data], { type: 'text/plain' });
+    var url= window.URL.createObjectURL(blob);
+    this.log(`Open URL ${url}`);
+    window.open(url);
   }
 
   formatBytes(size,precision) {

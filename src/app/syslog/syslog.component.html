@@ -31,7 +31,7 @@
               <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
               <td>{{formatBytes(fileentry.size) }}</td>
               <td>
-                <button class="Detail" title="Detail of Visbo Audit" >i</button>
+                <button class="Detail" title="Save As" (click)="downloadVisboLogFile(fileentry)">i</button>
               </td>
             </tr>
           </tbody>

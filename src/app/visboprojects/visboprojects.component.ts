@@ -72,13 +72,14 @@ export class VisboProjectsComponent implements OnInit {
                   this.alertService.error(error.error.message);
                   // redirect to login and come back to current URL
                   if (error.status == 401) {
+                    this.alertService.error("Session expired, please log in again", true);
                     this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
                   }
                 }
               );
           },
           error => {
-            this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
+            this.log(`get VP failed: error:  ${error.status} message: ${error.error.message}`);
             // redirect to login and come back to current URL
             if (error.status == 401) {
               this.alertService.error("Session expired, please log in again", true);
