@@ -73,9 +73,13 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="align-items-end">
-          <button class="Paging" title="Prev Audit Entry" (click)='pageAuditIndex(-1)'>Prev</button>
-          <button class="Paging" title="Next Audit Entry" (click)='pageAuditIndex(1)'>Next</button>
+        <div class="row">
+          <div class="col-10">
+            <button type="button" class="btn btn-secondary" title="Prev Audit Entry" (click)='pageAuditIndex(-1)'>Prev</button>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-secondary align-self-end" title="Next Audit Entry" (click)='pageAuditIndex(1)'>Next</button>
+          </div>
         </div>
         <form>
           <div class="form-group">

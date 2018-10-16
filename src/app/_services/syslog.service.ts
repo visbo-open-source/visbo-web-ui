@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
+import { VisboLogLevel, VisboLogLevelResponse } from '../_models/syslog';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -41,7 +42,7 @@ export class SysLogService {
 
   // /** GET Log File by name. Return 403 when name not found */
   getSysLog(name: string): Observable<any> {
-    var url = `${this.serviceUrl}/${name}`;
+    var url = `${this.serviceUrl}/file/${name}`;
     this.log(`Calling HTTP Request for a specific log file: ${url}`);
     var options: any = {};
     options.observe = 'body';
@@ -56,25 +57,46 @@ export class SysLogService {
       );
   }
 
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T> (operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-
-      this.log(`HTTP Request failed: ${JSON.stringify(error)} status:${error.status}`);
-
-      // user no longer authenticated, remove it from the session
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return throwError(error);
-      // return new ErrorObservable(error);
-    };
+  // /** GET Log Level. */
+  getSysLogLevel(): Observable<VisboLogLevel> {
+    var url = `${this.serviceUrl}/config`;
+    this.log(`Calling HTTP Request for log level: ${url}`);
+    return this.http.get<VisboLogLevelResponse>(url)
+      .pipe(
+        tap( data => this.log(`fetched Log Level Response ${JSON.stringify(data)}`)),
+        map(data => data.config),
+        catchError(this.handleError<VisboLogLevel>(`getSysLog config `))
+      );
   }
+
+// /** PUT Log Level. */
+setSysLogLevel(sysLogConfig: VisboLogLevel): Observable<VisboLogLevel> {
+  var url = `${this.serviceUrl}/config`;
+  this.log(`Calling HTTP Request for log level: ${url}`);
+  return this.http.put<VisboLogLevelResponse>(url, sysLogConfig, httpOptions)
+    .pipe(
+      tap( data => this.log(`changed Log Level Response ${JSON.stringify(data)}`)),
+      map( data => data.config),
+      catchError(this.handleError<VisboLogLevel>(`getSysLog config `))
+    );
+}
+
+
+/**
+ * Handle Http operation that failed.
+ * Let the app continue.
+ * @param operation - name of the operation that failed
+ * @param result - optional value to return as the observable result
+ */
+ private handleError<T> (operation = 'operation', result?: T) {
+   return (error: any): Observable<T> => {
+
+     this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
+
+     // Let the app keep running by returning an empty result.
+     return throwError(error);
+   };
+ }
 
   /** Log a VisboLogsService message with the MessageService */
   private log(message: string) {

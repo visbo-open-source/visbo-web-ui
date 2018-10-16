@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Location } from '@angular/common';
 
+import { FormsModule }   from '@angular/forms';
+
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
@@ -34,8 +36,8 @@ export class SysVisboProjectDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getVisboProject();
     this.vpIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.getVisboProject();
     this.log(`SysAdmin Role: ${this.vpIsSysAdmin}`)
   }
 
@@ -43,13 +45,13 @@ export class SysVisboProjectDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    //this.log('VisboProject Detail of: ' + id);
+    this.log('VisboProject Detail of: ' + id);
     this.visboprojectService.getVisboProject(id, true)
       .subscribe(
         visboproject => {
           this.visboproject = visboproject
           this.vpIsAdmin = this.visboproject.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-          this.log(`User is Admin? ${this.vpIsAdmin}`)
+          this.log(`getVisboProject ${visboproject.name} User is Admin? ${this.vpIsAdmin}`)
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);

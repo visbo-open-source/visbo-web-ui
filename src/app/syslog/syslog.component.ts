@@ -9,6 +9,8 @@ import { SysLogService } from '../_services/syslog.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { LoginComponent } from '../login/login.component';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
+import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboLogLevel, VisboLogLevelResponse } from '../_models/syslog';
 
 @Component({
   selector: 'app-syslog',
@@ -20,11 +22,15 @@ export class SysLogComponent implements OnInit {
   fileIndex: number;
   logDataShow: boolean;
   logData: string;
+  vcIsSysAdmin: string;
+  logLevelConfig: VisboLogLevel;
+
 
   sortAscending: boolean;
   sortColumn: number;
 
   constructor(
+    private visbocenterService: VisboCenterService,
     private syslogService: SysLogService,
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
@@ -35,6 +41,7 @@ export class SysLogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
     this.getVisboLogs();
     this.sortTable(1);
   }
@@ -48,7 +55,8 @@ export class SysLogComponent implements OnInit {
     this.syslogService.getSysLogs()
       .subscribe(
         files => {
-          this.files = files
+          this.files = files;
+          this.sortTable(2);
           this.log('get Logs success');
         },
         error => {
@@ -63,33 +71,73 @@ export class SysLogComponent implements OnInit {
       );
   }
 
-helperFileIndex(fileIndex: number):void {
-  this.fileIndex = fileIndex
-}
+  helperFileIndex(fileIndex: number):void {
+    this.fileIndex = fileIndex
+  }
 
-switchView():void {
-  this.logDataShow = !this.logDataShow;
-}
+  switchView():void {
+    this.logDataShow = !this.logDataShow;
+  }
 
-getVisboLogFile(file: VisboFile): void {
-  this.log(`syslog getVisboLogFile`);
-  this.syslogService.getSysLog(file.name)
-    .subscribe(
-      data => {
-        this.log(`get Log Content success Start:${data.substring(0,30)}`);
-        this.downloadFile(data)
-      },
-      error => {
-        this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
-        this.alertService.error(error.error.message);
-        // redirect to login and come back to current URL
-        if (error.status == 401) {
-          this.alertService.error("Session expired, please log in again", true);
-          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+  getVisboLogFile(file: VisboFile): void {
+    this.log(`syslog getVisboLogFile`);
+    this.syslogService.getSysLog(file.name)
+      .subscribe(
+        data => {
+          this.log(`get Log Content success Start:${data.substring(0,30)}`);
+          this.downloadFile(data)
+        },
+        error => {
+          this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          }
         }
-      }
-    );
-}
+      );
+  }
+
+  getLogLevel(): void {
+    this.log(`syslog getLogLevel`);
+    this.syslogService.getSysLogLevel()
+      .subscribe(
+        data => {
+          this.log(`get Log Level success ${JSON.stringify(data)}`);
+          this.logLevelConfig = data;
+        },
+        error => {
+          this.log(`get Log Level failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          }
+        }
+      );
+  }
+
+  setLogLevel(newLogLevel: VisboLogLevel): void {
+    this.log(`syslog setLogLevel`);
+    this.syslogService.setSysLogLevel(newLogLevel)
+      .subscribe(
+        data => {
+          this.log(`set Log Level success ${JSON.stringify(data)}`);
+          this.logLevelConfig = data;
+        },
+        error => {
+          this.log(`set Log Level failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          }
+        }
+      );
+  }
 
   downloadFile(data: string):void {
     const LENGTH = 2000;
@@ -125,7 +173,7 @@ getVisboLogFile(file: VisboFile): void {
       }
       if (this.sortAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = (n == 2 || n == 3 || n == 4) ? true : false;
+        this.sortAscending = ( n == 1 ) ? true : false;
         // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
       }
       else this.sortAscending = !this.sortAscending;
