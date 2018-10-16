@@ -13,15 +13,15 @@
       <textarea *ngIf="vpIsAdmin" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
       <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.description }} </label>
     </div>
-    <div class="form-group row">
+    <div class="form-group row" >
       <label for="vpPublic" class="col-4 col-md-3 col-form-label">Visibility:</label>
-      <select *ngIf="vpIsAdmin" class="col-8 form-control"  name="vpPublic" [(ngModel)]="visboproject.vpPublic" #vpPublic="ngModel" required>
+      <select *ngIf="vpIsAdmin" class="col-8 form-control"  name=vpPublic [(ngModel)]="visboproject.vpPublic" required>
         <option value = false>Only for users from Visbo Project</option>
         <option value = true>All users from this Visbo Center and this Visbo Project</option>
       </select>
-      <label *ngIf="!vpIsAdmin && vpPublic" class="col-8 form-control-static">All users from this Visbo Center and this Visbo Project</label>
-      <label *ngIf="!vpIsAdmin && !vpPublic" class="col-8 form-control-static">Only for users from Visbo Project</label>
       <div *ngIf="f.submitted && !vpPublic.valid" class="help-block">Visibility of Project must be defined</div>
+      <label *ngIf="!vpIsAdmin && visboproject.vpPublic" class="col-8 form-control-static" >All users from this Visbo Center and this Visbo Project</label>
+      <label *ngIf="!vpIsAdmin && !visboproject.vpPublic" class="col-8 form-control-static" >Only for users from Visbo Project</label>
     </div>
 
     <div class="form-group row">

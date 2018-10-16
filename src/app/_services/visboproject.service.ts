@@ -42,7 +42,7 @@ export class VisboProjectService {
     this.log(`VP getSysVisboProjects ${sysAdmin}`);
 
     // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
-    return this.http.get<VisboProjectResponse>(this.vpUrl, { headers , params })
+    return this.http.get<VisboProjectResponse>(url, { headers , params })
       .pipe(
         map(response => response.vp),
         tap(visboprojects => this.log(`fetched ${visboprojects.length} VisboProjects `)),
@@ -53,14 +53,14 @@ export class VisboProjectService {
   /** GET VisboProject by id. Return `undefined` when id not found */
   /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
-    const url = `${this.vpUrl}/?id=${id}`;
+    const url = `${this.vpUrl}`;
     this.log(`Calling HTTP Request: ${this.vpUrl}`);
     return this.http.get<VisboProject[]>(url)
       .pipe(
         map(visboprojects => visboprojects[0]), // returns a {0|1} element array
         tap(h => {
           const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboProject id=${id}`);
+          this.log(`getVisboProject404 ${outcome} VisboProject id=${id}`);
         }),
         catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
       );
@@ -69,16 +69,18 @@ export class VisboProjectService {
   /** GET VisboProject by id. Will 404 if id not found */
   getVisboProject(id: string, sysAdmin: boolean = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${id}`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (sysAdmin) {
       params = params.append('sysadmin', '1')
     }
-    this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboProjectResponse>(url).pipe(
-      map(response => response.vp[0]),
-      // tap(visboproject => this.log(`fetched vp id=${id} ${JSON.stringify(visboproject)}`)),
-      catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
-    );
+    this.log(`Calling HTTP Request for a specific entry: ${url} params ${params}`);
+    return this.http.get<VisboProjectResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vp[0]),
+        tap(visboproject => this.log(`fetched vp id=${visboproject._id} ${visboproject.name}`)),
+        catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
+      );
   }
 
   /* GET VisboProjects whose name contains search term */

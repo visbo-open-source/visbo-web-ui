@@ -161,10 +161,12 @@ export class VisboProjectsComponent implements OnInit {
 
   gotoClickedRow(visboproject: VisboProject):void {
     // console.log("clicked row %s", visboproject.name);
+    this.log(`goto VPV for VP ${visboproject.name}`);
     this.router.navigate(['vpv/'.concat(visboproject._id)]);
   }
 
   gotoDetail(visboproject: VisboProject):void {
+    this.log(`goto Detail for VP ${visboproject.name}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
