@@ -13,6 +13,7 @@ import { Login } from '../_models/login';
 })
 export class LoginComponent implements OnInit {
   model: any = {};
+  restVersionString: string = undefined;
   loading = false;
   returnUrl: string;
 
@@ -28,11 +29,27 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // reset login status
     this.authenticationService.logout();
+    // this.restVersion();
 
     if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     // console.log(`return url ${this.returnUrl}`)
+  }
+
+  restVersion() {
+    if (this.restVersionString) return;
+    this.authenticationService.restVersion()
+      .subscribe(
+        data => {
+          this.restVersionString = data.version;
+          this.log(`Version Status check success ${this.restVersionString}`);
+        },
+        error => {
+          this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
   }
 
   login() {
