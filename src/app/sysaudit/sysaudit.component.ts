@@ -90,6 +90,55 @@ export class SysAuditComponent implements OnInit {
     this.router.navigate(['sysaudit/'+visboaudit._id]);
   }
 
+  downloadVisboAudit():void {
+    this.log(`sysAudit Download ${this.audit.length} Items`);
+    var data: string;
+    var separator = "\t"
+    var lineItem: string
+    var userAgent: string
+    data = 'createdAt' + separator
+          + 'email' + separator
+          + 'actiondDescription' + separator
+          + 'action' + separator
+          + 'url' + separator
+          + 'actionInfo' + separator
+          + 'responseTime' + separator
+          + 'responseStatus' + separator
+          + 'vcid' + separator
+          + 'vcname' + separator
+          + 'vpid' + separator
+          + 'vpname' + separator
+          + 'vpvid' + separator
+          + 'ip' + separator
+          + 'userId' + separator
+          + 'userAgent' +'\n';
+    for (var i = 0; i < this.audit.length; i++) {
+      userAgent = this.audit[i].userAgent.replace(/,/g, ";");
+      lineItem = this.audit[i].createdAt + separator
+                  + this.audit[i].user.email + separator
+                  + this.audit[i].actionDescription + separator
+                  + this.audit[i].action + separator
+                  + this.audit[i].url + separator
+                  + this.audit[i].actionInfo + separator
+                  + (this.audit[i].result ? this.audit[i].result.time : '') + separator
+                  + (this.audit[i].result ? this.audit[i].result.status : '') + separator
+                  + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
+                  + (this.audit[i].vc ? this.audit[i].vc.name : '') + separator
+                  + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
+                  + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
+                  + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
+                  + this.audit[i].ip + separator
+                  + this.audit[i].user.userId + separator
+                  + userAgent + '\n';
+      data = data.concat(lineItem)
+    }
+    this.log(`sysAudit CSV Len ${data.length} `);
+    var blob = new Blob([data], { type: 'text/plain' });
+    var url= window.URL.createObjectURL(blob);
+    this.log(`Open URL ${url}`);
+    window.open(url);
+  }
+
   helperAuditIndex(auditIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex
@@ -194,6 +243,10 @@ export class SysAuditComponent implements OnInit {
         else if (a.result.status < b.result.status)
           result = -1;
         return result
+      })
+    } else if (this.sortColumn == 6) {
+      this.audit.sort(function(a, b) {
+        return a.result.time - b.result.time;
       })
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)

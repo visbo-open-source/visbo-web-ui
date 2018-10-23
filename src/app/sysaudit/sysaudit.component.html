@@ -18,6 +18,7 @@
     <label for="auditText" class="col-2 col-form-label">Filter:</label>
     <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
     <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
+    <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
   </div>
 
   <div class='container-fluid'>
@@ -29,10 +30,9 @@
             <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
             <th (click)="sortTable(2)">User</th>
             <th (click)="sortTable(3)"> Action</th>
-            <th (click)="sortTable(4)"> Info</th>
-            <th (click)="sortTable(5)"> Result</th>
-            <!-- <th class="d-none d-sm-table-cell" (click)="sortTable(2)">Modified</th>
-            <th class="d-none d-md-table-cell" (click)="sortTable(3)"># Projects</th> -->
+            <th class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
+            <th class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
+            <th class="d-none d-lg-table-cell" (click)="sortTable(6)"> Duration</th>
             <th>Detail</th>
           </tr>
         </thead>
@@ -44,14 +44,9 @@
             <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
             <td *ngIf="!auditentry.user"> Unknown </td>
             <td>{{auditentry.actionDescription }}</td>
-            <td>{{helperShortenText(auditentry.actionInfo, 30) }}</td>
-            <td>{{helperResponseText(auditentry.result.status) }}</td>
-            <!-- <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
-            <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
-            <td class="d-none d-md-table-cell">{{vc.vpCount}}</td> -->
-            <!-- <td>
-              <button class="Detail" title="Detail of Visbo Center" data-toggle="modal" data-target="#AuditDetail">i</button>
-            </td> -->
+            <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
+            <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry.result.status) }}</td>
+            <td class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
             <td>
               <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>
@@ -94,7 +89,7 @@
             <label class="col-4 col-form-label">Action:</label>
             <label class="col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
           </div>
-          <div class="form-group">
+          <div *ngIf="audit[auditIndex].actionInfo" class="form-group">
             <label class="col-4 col-form-label">Info:</label>
             <label class="col-7 form-control-static">{{ audit[auditIndex].actionInfo }} </label>
           </div>
