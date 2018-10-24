@@ -56,3 +56,9 @@ export class VisboUsersResponse {
   message: string;
   user: [VisboUser]
 }
+
+export class VisboStatusResponse {
+  state: string;
+  message: string;
+  status: {version: string}
+}

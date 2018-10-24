@@ -5,8 +5,12 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
 import { MessageService } from './message.service';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable()
 export class AuthenticationService {
@@ -152,6 +156,17 @@ export class AuthenticationService {
             // tap(result => this.log(`registered ${result.user.email} `)),
             catchError(this.handleError<any>('registerUser'))
           );
+    }
+
+    restVersion(): Observable<any> {
+      const url = environment.restUrl.concat('/status');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboStatusResponse>(url, httpOptions)
+        .pipe(
+          map(response => response.status),
+          tap(status => this.log(`fetched Status  `)),
+          catchError(this.handleError('getStatus', []))
+        );
     }
 
     /**
