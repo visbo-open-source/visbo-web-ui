@@ -33,6 +33,7 @@
             <th class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
             <th class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
             <th class="d-none d-lg-table-cell" (click)="sortTable(6)"> Duration</th>
+            <th class="d-none d-lg-table-cell" (click)="sortTable(7)"> Size</th>
             <th>Detail</th>
           </tr>
         </thead>
@@ -47,6 +48,7 @@
             <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
             <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry.result.status) }}</td>
             <td class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
+            <td class="d-none d-lg-table-cell" >{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }}</td>
             <td>
               <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>
@@ -120,6 +122,10 @@
           <div *ngIf="showMore" class="form-group">
             <label class="col-4 col-form-label">Response Time:</label>
             <label class="col-7 form-control-static">{{ audit[auditIndex].result.time }} ms </label>
+          </div>
+          <div *ngIf="showMore" class="form-group">
+            <label class="col-4 col-form-label">Response Size:</label>
+            <label class="col-7 form-control-static">{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }} </label>
           </div>
           <div *ngIf="showMore" class="form-group">
             <label class="col-4 col-form-label">User Agent:</label>

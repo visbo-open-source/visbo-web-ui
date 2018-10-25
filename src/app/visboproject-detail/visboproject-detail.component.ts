@@ -83,6 +83,11 @@ export class VisboProjectDetailComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
+
+  gotoVCDetail(visboproject: VisboProject):void {
+    this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject)
       .subscribe(

@@ -109,6 +109,7 @@ export class SysAuditComponent implements OnInit {
           + 'vpid' + separator
           + 'vpname' + separator
           + 'vpvid' + separator
+          + 'size' + separator
           + 'ip' + separator
           + 'userId' + separator
           + 'userAgent' +'\n';
@@ -127,6 +128,7 @@ export class SysAuditComponent implements OnInit {
                   + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
                   + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
                   + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
+                  + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
                   + userAgent + '\n';
@@ -142,6 +144,15 @@ export class SysAuditComponent implements OnInit {
   helperAuditIndex(auditIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex
+  }
+
+  helperFormatBytes(a, b = 2):string {
+    if(0 == a)
+      return "0 B";
+    var c = 1024, d = b || 2;
+    var e = ["B","KB","MB","GB","TB","PB","EB","ZB","YB"];
+    var f = Math.floor(Math.log(a)/Math.log(c));
+    return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]
   }
 
   pageAuditIndex(increment: number): void {
@@ -247,6 +258,10 @@ export class SysAuditComponent implements OnInit {
     } else if (this.sortColumn == 6) {
       this.audit.sort(function(a, b) {
         return a.result.time - b.result.time;
+      })
+    } else if (this.sortColumn == 7) {
+      this.audit.sort(function(a, b) {
+        return (a.result.size || 0) - (b.result.size || 0);
       })
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
