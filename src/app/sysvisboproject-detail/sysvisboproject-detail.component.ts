@@ -126,7 +126,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
     var vpid = this.visboproject._id
     this.log(`Add VisboProject User: ${email} Role: ${role} VP: ${vpid}`);
     if (!email || !role) { return; }
-    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, inviteMessage, vpid )
+    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, inviteMessage, vpid, true )
       .subscribe(
         user => {
           this.visboproject.users.push(user);
