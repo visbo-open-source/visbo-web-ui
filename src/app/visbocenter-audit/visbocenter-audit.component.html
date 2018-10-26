@@ -1,10 +1,10 @@
-<sysvisbo-navbar></sysvisbo-navbar>
+<visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class="container-fluid">
+  <div class="container">
     <div class='row'>
       <div class='col'>
         <h2 class='panel-heading'>
-          Visbo Audit
+          Visbo Center Audit
         </h2>
       </div>
     </div>
@@ -17,7 +17,7 @@
   <div class="form-group row">
     <label for="auditText" class="col-2 col-form-label">Filter:</label>
     <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
-    <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
+    <button type="button" class="btn btn-primary" (click)="getVisboCenterAudits()">Filter</button>
     <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
   </div>
 
@@ -32,8 +32,6 @@
             <th (click)="sortTable(3)"> Action</th>
             <th class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
             <th class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(6)"> Duration</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(7)"> Size</th>
             <th>Detail</th>
           </tr>
         </thead>
@@ -47,8 +45,6 @@
             <td>{{auditentry.actionDescription }}</td>
             <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
             <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry.result.status) }}</td>
-            <td class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
-            <td class="d-none d-lg-table-cell" >{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }}</td>
             <td>
               <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>

@@ -31,6 +31,7 @@ import { MessageService } from './_services/message.service';
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
@@ -66,6 +67,7 @@ import { SysLogService } from './_services/syslog.service';
     AlertComponent,
     VisboCentersComponent,
     VisboCenterDetailComponent,
+    VisboCenterAuditComponent,
     VisboProjectsComponent,
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,

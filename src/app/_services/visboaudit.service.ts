@@ -17,8 +17,8 @@ const httpOptions = {
 
 @Injectable()
 export class VisboAuditService {
-  //   private serviceUrl = 'vc';  // URL to api on same server
-  private serviceUrl = environment.restUrl.concat('/audit');  // URL to web api
+  private serviceBaseUrl = environment.restUrl;  // URL to api on same server
+  private serviceUrl = this.serviceBaseUrl.concat('/audit');  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -44,6 +44,28 @@ export class VisboAuditService {
     }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    return this.http.get<VisboAuditResponse>(url, httpOptions)
+      .pipe(
+        map(response => response.audit),
+        tap(audit => this.log(`fetched ${audit.length} Audits `)),
+        catchError(this.handleError('getVisboAudit', []))
+      );
+  }
+
+  /** GET Audits from the server */
+  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+    var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
+    var queryParams = false
+    if (from) {
+      url = url.concat(queryParams?'&':'?','from=', from.toISOString());
+      queryParams = true;
+    }
+    if (to) {
+      url = url.concat(queryParams?'&':'?','to=', to.toISOString());
+      queryParams = true;
+    }
+
+    this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
     return this.http.get<VisboAuditResponse>(url, httpOptions)
       .pipe(
         map(response => response.audit),
