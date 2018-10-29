@@ -8,14 +8,14 @@ export class MessageService {
 
   initstatus() {
     if (this.activateMessages == undefined) {
-      this.activateMessages = (sessionStorage.getItem('activateMessages') == 'On';
+      this.activateMessages = sessionStorage.getItem('activateMessages') == 'On';
     }
   }
 
   toggle() {
     this.initstatus();
     this.activateMessages = !this.activateMessages
-    sessionStorage.setItem('activateMessages', this.activateMessages?'On':'Off');
+    sessionStorage.setItem('activateMessages', this.activateMessages? 'On':'Off');
     this.activateMessageToggle.emit(this.activateMessages);
     console.log('Messages Toggle to %s', this.activateMessages);
     return this.activateMessages;
