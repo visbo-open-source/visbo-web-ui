@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private visbocenterService: VisboCenterService,
+    private router: Router,
     private messageService: MessageService,
     private alertService: AlertService
   ) { }

@@ -134,10 +134,15 @@ export class VisboProjectService {
   }
 
   /** POST: add a new User to the Visbo Project */
-  addVPUser (user: VPUser, message: string, vpid: string): Observable<VPUser> {
+  addVPUser (user: VPUser, message: string, vpid: string, sysAdmin: boolean = false): Observable<VPUser> {
     const url = `${this.vpUrl}/${vpid}/user`;
-    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
-    return this.http.post<VPUserResponse>(url, user, httpOptions)
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysAdmin) {
+      params = params.append('sysadmin', '1')
+    }
+    this.log(`Calling HTTP Request: ${url} with param sysadmin ${JSON.stringify(params)} for ${user.email} as ${user.role} in VP ${vpid} `);
+    return this.http.post<VPUserResponse>(url, user, { headers , params })
       .pipe(
         map(response => response.users[0]),
         tap(users => this.log(`added Visbo User with id=${users._id}`)),
