@@ -88,6 +88,10 @@ export class VisboProjectDetailComponent implements OnInit {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
+  gotoVPList(visboproject: VisboProject):void {
+    this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject)
       .subscribe(

@@ -92,7 +92,11 @@ export class SysVisboProjectDetailComponent implements OnInit {
   }
 
   gotoVCDetail(visboproject: VisboProject):void {
-    this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
+    this.router.navigate(['sysvcDetail/'.concat(visboproject.vcid)]);
+  }
+
+  gotoVPList(visboproject: VisboProject):void {
+    this.router.navigate(['sysvp/'.concat(visboproject.vcid)]);
   }
 
   save(): void {

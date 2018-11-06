@@ -78,6 +78,10 @@ export class VisboCenterDetailComponent implements OnInit {
     this.location.back();
   }
 
+  gotoVPList(visbocenter: VisboCenter):void {
+    this.router.navigate(['vp/'.concat(visbocenter._id)]);
+  }
+
   save(): void {
     this.visbocenterService.updateVisboCenter(this.visbocenter)
       .subscribe(

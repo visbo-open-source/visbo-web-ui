@@ -1,7 +1,7 @@
 <visbo-navbar></visbo-navbar>
 <div *ngIf="visbocenter">
   <div class='container'>
-    <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
+    <h3>Visbo Center: <a (click)="gotoVPList(visbocenter)">{{ visbocenter.name | uppercase }}</a></h3>
     <form>
       <div class="form-group row">
         <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>

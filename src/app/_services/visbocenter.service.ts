@@ -43,7 +43,7 @@ export class VisboCenterService {
 
   /** GET VisboCenters from the server */
   getSysVisboCenters(): Observable<VisboCenter[]> {
-    var url = this.vcUrl + '?systemVC=true';
+    var url = this.vcUrl + '?systemvc=true';
     var sysVCRole = undefined;
     var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);

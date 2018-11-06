@@ -1,9 +1,10 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div *ngIf="visboproject">
   <div class='container'>
-    <h3>Project: {{ visboproject.name | uppercase }} from Visbo Center
+    <h3>Project: <a (click)="gotoVPList(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
+    <h5>Visbo Center:
       <a (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
-    </h3>
+    </h5>
     <form>
       <div class="form-group row">
         <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
