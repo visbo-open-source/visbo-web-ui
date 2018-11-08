@@ -29,6 +29,7 @@ export class VisboAudit {
   result: {
     time: number;
     status: string;
+    size: number;
   }
 }
 

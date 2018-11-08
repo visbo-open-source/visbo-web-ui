@@ -12,6 +12,8 @@ import { PWResetComponent } from './pwreset/pwreset.component';
 import { DashboardComponent }   from './dashboard/dashboard.component';
 import { VisboCentersComponent }      from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent }  from './visbocenter-detail/visbocenter-detail.component';
+import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
+
 import { VisboProjectsComponent }      from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent }  from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent }      from './visboprojectversions/visboprojectversions.component';
@@ -24,7 +26,8 @@ import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbo
 import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
 import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
-import { SysLogsComponent }  from './syslogs/syslogs.component';
+import { SysUserComponent }  from './sysuser/sysuser.component';
+import { SysLogComponent }  from './syslog/syslog.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -36,6 +39,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
   { path: 'vc', component: VisboCentersComponent, canActivate: [AuthGuard] },
   { path: 'vcDetail/:id', component: VisboCenterDetailComponent, canActivate: [AuthGuard]  },
+  { path: 'vcAudit/:id', component: VisboCenterAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vp', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vp/:id', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vpDetail/:id', component: VisboProjectDetailComponent, canActivate: [AuthGuard]  },
@@ -49,7 +53,8 @@ const routes: Routes = [
   { path: 'sysvp/:id', component: SysVisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'sysvpDetail/:id', component: SysVisboProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'sysaudit', component: SysAuditComponent, canActivate: [AuthGuard] },
-  { path: 'syslogs', component: SysLogsComponent, canActivate: [AuthGuard] },
+  { path: 'sysuser', component: SysUserComponent, canActivate: [AuthGuard] },
+  { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 

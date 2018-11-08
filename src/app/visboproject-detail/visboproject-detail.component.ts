@@ -38,7 +38,7 @@ export class VisboProjectDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    //this.log('VisboProject Detail of: ' + id);
+    this.log('VisboProject Detail of: ' + id);
     this.visboprojectService.getVisboProject(id)
       .subscribe(
         visboproject => {
@@ -83,6 +83,11 @@ export class VisboProjectDetailComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
+
+  gotoVCDetail(visboproject: VisboProject):void {
+    this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject)
       .subscribe(

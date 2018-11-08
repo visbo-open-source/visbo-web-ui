@@ -2,9 +2,12 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Location } from '@angular/common';
 
+import { FormsModule }   from '@angular/forms';
+
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
+import { VisboCenterService }  from '../_services/visbocenter.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VPUser } from '../_models/visboproject';
@@ -18,10 +21,12 @@ export class SysVisboProjectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   newUserInvite: any = {};
   vpIsAdmin: boolean;
+  vpIsSysAdmin: string;
   userIndex: number;
 
   constructor(
     private messageService: MessageService,
+    private visbocenterService: VisboCenterService,
     private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
@@ -31,20 +36,22 @@ export class SysVisboProjectDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.vpIsSysAdmin = this.visbocenterService.getSysAdminRole()
     this.getVisboProject();
+    this.log(`SysAdmin Role: ${this.vpIsSysAdmin}`)
   }
 
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    //this.log('VisboProject Detail of: ' + id);
+    this.log('VisboProject Detail of: ' + id);
     this.visboprojectService.getVisboProject(id, true)
       .subscribe(
         visboproject => {
           this.visboproject = visboproject
           this.vpIsAdmin = this.visboproject.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-          this.log(`User is Admin? ${this.vpIsAdmin}`)
+          this.log(`getVisboProject ${visboproject.name} User is Admin? ${this.vpIsAdmin}`)
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
@@ -83,6 +90,11 @@ export class SysVisboProjectDetailComponent implements OnInit {
   goBack(): void {
     this.location.back();
   }
+
+  gotoVCDetail(visboproject: VisboProject):void {
+    this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject)
       .subscribe(
@@ -114,7 +126,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
     var vpid = this.visboproject._id
     this.log(`Add VisboProject User: ${email} Role: ${role} VP: ${vpid}`);
     if (!email || !role) { return; }
-    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, inviteMessage, vpid )
+    this.visboprojectService.addVPUser({ email: email, role: role} as VPUser, inviteMessage, vpid, true )
       .subscribe(
         user => {
           this.visboproject.users.push(user);

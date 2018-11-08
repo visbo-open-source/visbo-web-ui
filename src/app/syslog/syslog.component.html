@@ -1,0 +1,124 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Log Files
+        </h2>
+      </div>
+      <div *ngIf="vcIsSysAdmin == 'Admin'" class='col-6 col-md-2 align-self-end'>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-sm btn-primary align-self-end" (click)="getLogLevel()" data-toggle="modal" data-target="#ChangeLogLevel">
+          Change Log Level
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th class="d-none d-md-table-cell" (click)="sortTable(1)">Name</th>
+              <th (click)="sortTable(2)">Modified</th>
+              <th (click)="sortTable(3)"> Size</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let fileentry of files; let fileIndex=index" (click)='helperFileIndex(fileIndex)'
+              (click)='getVisboLogFile(fileentry)'>
+              <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
+              <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
+              <td>{{formatBytes(fileentry.size) }}</td>
+              <td>
+                <button class="Detail" title="Save As" (click)="downloadVisboLogFile(fileentry)">i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Change Log Level-->
+<div class="modal fade" id="ChangeLogLevel" tabindex="-1" role="dialog" aria-labelledby="ChangeLogLevelTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ChangeLogLevelTitle">Change Log Level</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="logLevelConfig">
+        <form>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">VC:</label>
+            <select class="col-8 form-control"  name="VC" [(ngModel)]="logLevelConfig.VC">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">VP:</label>
+            <select class="col-8 form-control"  name="VP" [(ngModel)]="logLevelConfig.VP">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">VPV:</label>
+            <select class="col-8 form-control"  name="VPV" [(ngModel)]="logLevelConfig.VPV">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">USER:</label>
+            <select class="col-8 form-control"  name="USER" [(ngModel)]="logLevelConfig.USER">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">MAIL:</label>
+            <select class="col-8 form-control"  name="MAIL" [(ngModel)]="logLevelConfig.MAIL">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">OTHER:</label>
+            <select class="col-8 form-control"  name="OTHER" [(ngModel)]="logLevelConfig.OTHER">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="setLogLevel(logLevelConfig)" data-dismiss="modal">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

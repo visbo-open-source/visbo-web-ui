@@ -1,74 +1,72 @@
 <visbo-navbar></visbo-navbar>
 <div *ngIf="visbocenter">
   <div class='container'>
-  <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
-  <form>
-    <div class="form-group row">
-      <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
-      <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
-      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.name }} </label>
-    </div>
-    <div class="form-group row">
-      <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-      <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
-      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.description }} </label>
-    </div>
-    <div class="form-group row">
-      <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
-      <label class="col-8 form-control-static">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-    </div>
-    <div class="form-group row">
-      <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
-      <label class="col-8 form-control-static">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-    </div>
-</form>
+    <h3>Visbo Center: {{ visbocenter.name | uppercase }}</h3>
+    <form>
+      <div class="form-group row">
+        <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
+        <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+        <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.name }} </label>
+      </div>
+      <div class="form-group row">
+        <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
+        <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+        <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.description }} </label>
+      </div>
+      <div class="form-group row">
+        <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
+        <label class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <button class="flow-right" (click)="gotoVCAudit(visbocenter)">Audit</button>
+      </div>
+    </form>
     <div>
-    <div class='well'>
-      <div class='row'>
-        <div class='col'>
-          <h5 class='panel-heading'>
-              Visbo Center Users
-          </h5>
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                Visbo Center Users
+            </h5>
+          </div>
+          <div *ngIf="vcIsAdmin" class='col'>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
+              Add User
+            </button>
+          </div>
         </div>
-        <div *ngIf="vcIsAdmin" class='col-6 col-md-2 align-self-end'>
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VcUserModalCreate">
-            Add User
-          </button>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>Nr.</th>
+                <th>e-mail</th>
+                <th>Role</th>
+                <th *ngIf="vcIsAdmin">Delete</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr *ngFor="let member of visbocenter.users; let memberIndex=index"> <!-- class="danger"> -->
+                <td>{{memberIndex+1}}</td>
+                <td>{{member.email}}</td>
+                <td>{{member.role}}</td>
+                <td *ngIf="vcIsAdmin">
+                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                  data-toggle="modal" data-target="#VcUserRemove">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
         </div>
       </div>
-      <div class='panel-body'>
-        <table class='table table-hover'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th>Nr.</th>
-              <th>e-mail</th>
-              <th>Role</th>
-              <th *ngIf="vcIsAdmin">Delete</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let member of visbocenter.users; let memberIndex=index"> <!-- class="danger"> -->
-              <td>{{memberIndex+1}}</td>
-              <td>{{member.email}}</td>
-              <td>{{member.role}}</td>
-              <td *ngIf="vcIsAdmin">
-                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
-                data-toggle="modal" data-target="#VcUserRemove">&times;</button>
-              </td>
-            </tr>
-          </tbody>
-          <!--Table body-->
-        </table>
-      </div>
+      <button *ngIf="vcIsAdmin" (click)="save()" class="btn btn-primary">save</button>
+      <button (click)="goBack()">go back</button>
     </div>
-    <button *ngIf="vcIsAdmin" (click)="save()" class="btn btn-primary">save</button>
-    <button (click)="goBack()">go back</button>
   </div>
 </div>
-
 <!-- Modal Add VC User -->
 <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">

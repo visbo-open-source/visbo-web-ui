@@ -48,11 +48,24 @@ export class SysVisboSystemComponent implements OnInit {
 
   getSysVisboCenter(): void {
     this.visbocenterService.getSysVisboCenters()
-      .subscribe(visbocenters => {
-        if (visbocenters.length >0) {
-          this.sysvisbocenter = visbocenters[0];
+      .subscribe(
+        visbocenters => {
+          if (visbocenters.length >0) {
+            this.sysvisbocenter = visbocenters[0];
+          }
+        },
+        error => {
+          this.log(`get VC failed: error: ${error.status} message: ${error.error.message} `);
+          if (error.status == 403) {
+            this.alertService.error(`Permission Denied: Visbo Center ${this.sysvisbocenter.name}`);
+          } else if (error.status == 401) {
+            this.alertService.error(`Session expired, please login again`, true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          } else {
+            this.alertService.error(error.error.message);
+          }
         }
-      });
+      );
   }
 
   goBack(): void {
