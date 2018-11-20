@@ -43,7 +43,7 @@ export class VisboCenterService {
   }
 
   /** GET VisboCenters from the server */
-  getSysVisboCenter(): Observable<VisboCenter> {
+  getSysVisboCenter(): Observable<VisboCenter[]> {
     var url = this.vcUrl + '?systemvc=true&sysadmin=1';
     var sysVCRole = undefined;
     var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
@@ -51,15 +51,17 @@ export class VisboCenterService {
 
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
       map(response => {
-                // TODO: is there a better way to transfer the perm?
-                response.vc[0].perm = response.perm;
-                sessionStorage.setItem('isSysAdmin', sysVCRole);
-                return response.vc[0]
+                if (response.vc && response.vc.length > 0) {
+                  // TODO: is there a better way to transfer the perm?
+                  response.vc[0].perm = response.perm;
+                  sessionStorage.setItem('isSysAdmin', sysVCRole);
+                }
+                return response.vc
               }),
-        tap(visbocenter => {
-          this.log(`fetched System VisboCenter user Role is ${visbocenter.perm.system || 'None'}`)
+        tap(visbocenters => {
+          this.log(`fetched System VisboCenter user Role is ${visbocenters[0].perm.system || 'None'}`)
         }),
-        catchError(this.handleError('getVisboCenters', []))
+        catchError(this.handleError('getSysVisboCenters', []))
       );
   }
 

@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
           this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
-                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()}`);
+                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()} Perm ${vc[0].perm.system}`);
                 this.router.navigate([this.returnUrl]);
               },
               error => {

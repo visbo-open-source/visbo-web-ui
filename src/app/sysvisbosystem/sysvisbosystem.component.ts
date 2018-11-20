@@ -65,14 +65,14 @@ export class SysVisboSystemComponent implements OnInit {
   getSysVisboCenter(): void {
     this.visbocenterService.getSysVisboCenter()
       .subscribe(
-        visbocenter => {
-          this.visbocenter = visbocenter;
+        vc => {
+          this.visbocenter = vc[0];
           this.vcPerm = 0
           this.vpPerm = 0
           this.systemPerm = 0
-          if (visbocenter.perm && visbocenter.perm.vc ) this.vcPerm = visbocenter.perm.vc
-          if (visbocenter.perm && visbocenter.perm.vp ) this.vpPerm = visbocenter.perm.vp
-          if (visbocenter.perm && visbocenter.perm.system ) this.systemPerm = visbocenter.perm.system
+          if (visbocenter.perm && vc[0].perm.vc ) this.vcPerm = vc[0].perm.vc
+          if (visbocenter.perm && vc[0].perm.vp ) this.vpPerm = vc[0].perm.vp
+          if (visbocenter.perm && vc[0].perm.system ) this.systemPerm = vc[0].perm.system
           this.getVisboCenterUsers();
           this.log(`System VisboCenter initialised ${this.visbocenter._id} Perm Sys ${this.systemPerm} VC ${this.vcPerm} VP ${this.vpPerm} `)
         },
