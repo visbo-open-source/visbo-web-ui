@@ -63,7 +63,7 @@ export class SysVisboSystemComponent implements OnInit {
   }
 
   getSysVisboCenter(): void {
-    this.visbocenterService.getSysVisboCenters()
+    this.visbocenterService.getSysVisboCenter()
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;

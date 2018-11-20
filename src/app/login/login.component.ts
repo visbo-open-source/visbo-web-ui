@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Login Success check sysVC now`);
-          this.visbocenterService.getSysVisboCenters()
+          this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
                 this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()}`);
