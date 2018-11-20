@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VCUser, VCUserResponse } from '../_models/visbocenter';
+import { VGUser, VGPermission, VGGroup, VGUserGroup, VGGroupResponse, VGUserResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -43,20 +44,20 @@ export class VisboCenterService {
 
   /** GET VisboCenters from the server */
   getSysVisboCenters(): Observable<VisboCenter[]> {
-    var url = this.vcUrl + '?systemvc=true';
+    var url = this.vcUrl + '?systemvc=true&sysadmin=1';
     var sysVCRole = undefined;
     var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);
 
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
-        map(response => response.vc),
-        tap(visbocenters => {
-          sysVCRole = visbocenters[0].users.find(user => user.email == currentUser.email && user.role == 'Admin') ? 'Admin' : undefined;
-          if (!sysVCRole) {
-            // sysVCRole = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'User') ? 'User' : undefined;
-          }
-          sessionStorage.setItem('isSysAdmin', sysVCRole);
-          this.log(`fetched ${visbocenters.length} VisboCenters user Role is ${sysVCRole || 'None'}`)
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                sessionStorage.setItem('isSysAdmin', sysVCRole);
+                return response.vc[0]
+              }),
+        tap(visbocenter => {
+          this.log(`fetched System VisboCenter user Role is ${visbocenter.perm.system || 'None'}`)
         }),
         catchError(this.handleError('getVisboCenters', []))
       );
@@ -65,7 +66,7 @@ export class VisboCenterService {
   /* Role of User in sysAdmin */
   getSysAdminRole() {
     var result = sessionStorage.getItem('isSysAdmin') || undefined;
-    this.log(`SysAdmin Role: ${result}`);
+    // this.log(`SysAdmin Role: ${result}`);
 
     return result;
   }
@@ -92,7 +93,11 @@ export class VisboCenterService {
     if (sysadmin) url = url.concat('?sysadmin=1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
-      map(response => response.vc[0]),
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                return response.vc[0]
+              }),
       tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id}`)),
       catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
@@ -112,7 +117,7 @@ export class VisboCenterService {
 
   //////// Save methods //////////
 
-  /** POST: aa a new Visbo Center to the server */
+  /** POST: a new Visbo Center to the server */
   addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
     this.log(`Calling HTTP Request: ${this.vcUrl} ${JSON.stringify(visbocenter)}`);
 
@@ -140,8 +145,9 @@ export class VisboCenterService {
   }
 
   /** PUT: update the Visbo Center on the server */
-  updateVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
-    const url = `${this.vcUrl}/${visbocenter._id}`;
+  updateVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<VisboCenter> {
+    var url = `${this.vcUrl}/${visbocenter._id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
     this.log(`Calling HTTP Request PUT: ${url} `);
     return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
       .pipe(
@@ -151,32 +157,91 @@ export class VisboCenterService {
       );
   }
 
-  /** POST: add a new User to the Visbo Center */
-  addVCUser (user: VCUser, message: string, vcid: string): Observable<VCUser> {
-    const url = `${this.vcUrl}/${vcid}/user`;
-    var reqBody: any = {};
-    reqBody.email = user.email;
-    reqBody.role = user.role;
-    reqBody.message = message;
-    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.post<VCUserResponse>(url, reqBody, httpOptions)
+  // GET VisboCenter Users for a specified VC from the server
+  getVCUsers(vcid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vcUrl}/${vcid}/group?userlist=1`;
+    if (sysadmin) {
+      url = url.concat('&sysadmin=1')
+    }
+    return this.http.get<VGUserResponse>(url, httpOptions)
       .pipe(
-        map(response => response.users[0]),
-        tap(users => this.log(`added Visbo User with id=${users._id}`)),
-        catchError(this.handleError<VCUser>('addVCUser'))
+        map(response => {
+          var userGroupMix = new VGUserGroupMix();
+          userGroupMix.users = response.users;
+          userGroupMix.groups = response.groups;
+          return userGroupMix
+        }),
+        // tap(users => this.log(`fetched Users & Groups Users `)),
+        catchError(this.handleError('getVisboCenterUsers', []))
+      );
+  }
+
+  /** POST: add a new User to the Visbo Center */
+  addVCUser (email: string, groupId: string, message: string, vcid: string, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vcUrl}/${vcid}/group/${groupId}/user`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    var reqBody: any = {};
+    reqBody.email = email;
+    reqBody.message = message;
+    this.log(`Calling HTTP Request: ${url} for ${email} in VG ${groupId} in VC ${vcid} `);
+    return this.http.post<VGUserResponse>(url, reqBody, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`added Visbo User to Group with id=${group._id}`)),
+        catchError(this.handleError<any>('addVCUser'))
+      );
+  }
+
+  /** DELETE: remove a User from the Visbo Center */
+  deleteVCUser (user: VGUserGroup, vcid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vcUrl}/${vcid}/group/${user.groupId}/user/${user.userId}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} in VC ${vcid} `);
+    return this.http.delete<VGUserResponse>(url, httpOptions)
+    .pipe(
+      // map(response => response.vc[0].users),
+      tap(users => this.log(`deleted Visbo Center User ${user.email}`)),
+      catchError(this.handleError<any>('deleteVisboCenterUser'))
+    );
+  }
+
+  /** POST: add a new Group to the Visbo Center */
+  addVCGroup (newGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vcUrl}/${newGroup.vcid}/group`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${newGroup.name} in in VC ${newGroup.vcid} `);
+    return this.http.post<VGUserResponse>(url, newGroup, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`added Visbo Group with id=${group._id}`)),
+        catchError(this.handleError<any>('addVCGroup'))
+      );
+  }
+
+  /** PUT: modify a VC Group in the Visbo Center (Change: Name, Global, Permission)*/
+  modifyVCGroup (actGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vcUrl}/${actGroup.vcid}/group/${actGroup._id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${actGroup.name} in in VC ${actGroup.vcid} `);
+    return this.http.put<VGUserResponse>(url, actGroup, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`modified Visbo Group with id=${JSON.stringify(group)}`)),
+        catchError(this.handleError<any>('addVCGroup'))
       );
   }
 
 
-  /** DELETE: remove a User from the Visbo Center */
-  deleteVCUser (user: VCUser, vcid: string): Observable<[VCUser]> {
-    const url = `${this.vcUrl}/${vcid}/user/${user.userId}?role=${user.role}`;
-    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.delete<VisboCenterResponse>(url, httpOptions)
+  /** DELETE: remove a Group from the Visbo Center */
+  deleteVCGroup (group: VGGroup, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vcUrl}/${group.vcid}/group/${group._id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for Group ${group.name} / ${group._id} in VC ${group.vcid} `);
+    return this.http.delete<VGUserResponse>(url, httpOptions)
     .pipe(
-      map(response => response.vc[0].users),
-      tap(users => this.log(`deleted VisboProject User ${user.email}`)),
-      catchError(this.handleError<any>('deleteVisboCenterUser'))
+      // map(response => response.vc[0].users),
+      tap(groups => this.log(`deleted Visbo Center Group ${group.name}`)),
+      catchError(this.handleError<any>('deleteVisboCenterGroup'))
     );
   }
 
