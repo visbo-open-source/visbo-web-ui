@@ -121,7 +121,7 @@
     </div>
     <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
     <button (click)="goBack()">go back</button>
-    <button *ngIf="hasSystemPerm(permSystem.ManageVC)" class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
+    <button *ngIf="hasSystemPerm(permSystem.DeleteVC)" class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
       Delete!
     </button>
   </div>
