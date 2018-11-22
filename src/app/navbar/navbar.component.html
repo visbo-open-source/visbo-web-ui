@@ -18,7 +18,7 @@
       <li class="nav-item">
         <a class="nav-link bg-white"  (click)="gotoClickedItem('profile')">Profile</a>
       </li>
-      <li *ngIf="isSysAdmin" class="nav-item dropdown">
+      <li *ngIf="hasSystemPerm(permSystem.View)" class="nav-item dropdown">
         <a class="nav-link dropdown-toggle bg-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Others
         </a>

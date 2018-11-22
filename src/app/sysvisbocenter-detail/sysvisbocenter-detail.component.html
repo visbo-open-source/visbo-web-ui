@@ -127,7 +127,7 @@
   </div>
 </div>
 
-<!-- Modal Add VC User -->
+<!-- Modal Add System User -->
 <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -157,7 +157,6 @@
             <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
           </div>
           <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
-          <div>FormValid {{f.form.valid}}, emailValid {{email.valid}}, groupValid {{group.valid}}, inviteMessageValid {{inviteMessage.valid}} </div>
           <div class="form-group">
             <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary" >Invite(insensitive)</button>
             <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
@@ -207,7 +206,7 @@
   </div>
 </div>
 
-<!-- Modal Add/Change VC Group -->
+<!-- Modal Add/Change System Group -->
 <div class="modal fade" id="VcGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document" >
     <div class="modal-content">
@@ -268,8 +267,8 @@
                 <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
             </div>
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedVPCreateVPV" [(ngModel)]="actGroup.checkedVPCreateVPV" #checkedVPCreateVPV="ngModel" >
-                <label class="custom-control-label" for="permVP4">Create Visbo Project Version</label>
+                <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedCreateVariant" [(ngModel)]="actGroup.checkedCreateVariant" #checkedCreateVariant="ngModel" >
+                <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="permVP5" name="checkedVPManagePerm" [(ngModel)]="actGroup.checkedVPManagePerm" #checkedVPManagePerm="ngModel" >

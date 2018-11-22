@@ -7,6 +7,8 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html'
@@ -61,7 +63,7 @@ export class LoginComponent implements OnInit {
           this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
-                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()} Perm ${vc[0].perm.system}`);
+                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
                 this.router.navigate([this.returnUrl]);
               },
               error => {

@@ -12,6 +12,8 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VPUser } from '../_models/visboproject';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-sysvisboproject-detail',
   templateUrl: './sysvisboproject-detail.component.html'
@@ -21,7 +23,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   newUserInvite: any = {};
   vpIsAdmin: boolean;
-  vpIsSysAdmin: string;
+  systemPerm: VGPermission = undefined;
   userIndex: number;
 
   constructor(
@@ -36,9 +38,9 @@ export class SysVisboProjectDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.vpIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemPerm = this.visbocenterService.getSysAdminRole()
     this.getVisboProject();
-    this.log(`SysAdmin Role: ${this.vpIsSysAdmin}`)
+    this.log(`SysAdmin Role: ${JSON.stringify(this.systemPerm)}`)
   }
 
   getVisboProject(): void {

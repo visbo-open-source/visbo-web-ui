@@ -8,15 +8,11 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
-import { VGGroup, VGPermission, VGUser, VGUserGroup } from '../_models/visbogroup';
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VCUser } from '../_models/visbocenter';
 import { VisboCenterService }  from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService }  from '../_services/visboproject.service';
-
-const constPermVC = { "View": 1, "ViewAudit": 2, "Modify": 16, "ManagePerm": 32, "CreateVP": 256 };
-const constPermVP = { "View": 1, "ViewAudit": 2, "Modify": 16, "ManagePerm": 32, "CreateVPV": 256, "DeleteVP": 1024 };
-const constPermSystem = { "View": 1, "ViewAudit": 2, "ViewLog":4, "ManagePerm": 32, "ViewVC":128, "CreateVC":256, "ManageVC":512, "DeleteVC":1024 };
 
 @Component({
   selector: 'app-sysvisbocenter-detail',
@@ -31,13 +27,13 @@ export class SysVisboCenterDetailComponent implements OnInit {
   actGroup: any = {};
   vcPerm: number;
   vpPerm: number;
-  systemPerm: number;
+  systemPerm: VGPermission = undefined;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
-  permSystem: any = constPermSystem;
-  permVC: any = constPermVC;
-  permVP: any = constPermVP;
+  permSystem: any = VGPSystem;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
 
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
@@ -58,7 +54,7 @@ constructor(
   ngOnInit() {
     this.getVisboCenter();
     this.getVisboCenterUsers();
-    // this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemPerm = this.visbocenterService.getSysAdminRole()
     // this.log(`SysAdmin Role: ${this.vcIsSysAdmin}`)
   }
 
@@ -73,11 +69,9 @@ constructor(
           this.visbocenter = visbocenter;
           this.vcPerm = 0
           this.vpPerm = 0
-          this.systemPerm = 0
           if (visbocenter.perm && visbocenter.perm.vc ) this.vcPerm = visbocenter.perm.vc
           if (visbocenter.perm && visbocenter.perm.vp ) this.vpPerm = visbocenter.perm.vp
-          if (visbocenter.perm && visbocenter.perm.system ) this.systemPerm = visbocenter.perm.system
-          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${this.systemPerm} VC ${this.vcPerm} VP ${this.vpPerm} `)
+          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.systemPerm)} VC ${this.vcPerm} VP ${this.vpPerm} `)
         },
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
@@ -94,7 +88,7 @@ constructor(
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.systemPerm & perm) > 0
+    return (this.systemPerm.system & perm) > 0
   }
 
   hasVCPerm(perm: number): boolean {
@@ -296,16 +290,12 @@ constructor(
     return perm
   }
 
-  // const constPermVC = { "View": 1, "ViewAudit": 2, "Modify": 16, "ManagePerm": 32, "CreateVP": 256 };
-  // const constPermVP = { "View": 1, "ViewAudit": 2, "Modify": 16, "ManagePerm": 32, "CreateVPV": 256, "DeleteVP": 1024 };
-  // const permSystem = { "View": 1, "ViewAudit": 2, "ViewLog":4, "ManagePerm": 32, "ViewVC":128, "CreateVC":256, "ManageVC":512, "DeleteVC":1024 };
-
   helperVPPerm(newGroup: any): number {
     var perm: number = 0;
     if (newGroup.checkedVPView) perm += this.permVP.View;
     if (newGroup.checkedVPViewAudit) perm += this.permVP.ViewAudit;
     if (newGroup.checkedVPModify) perm += this.permVP.Modify;
-    if (newGroup.checkedVPCreateVPV) perm += this.permVP.CreateVPV;
+    if (newGroup.checkedCreateVariant) perm += this.permVP.CreateVariant;
     if (newGroup.checkedVPManagePerm) perm += this.permVP.ManagePerm;
     if (newGroup.checkedVPDelete) perm += this.permVP.DeleteVP;
 
@@ -329,7 +319,7 @@ constructor(
       this.actGroup.checkedVPView = (curGroup.permission.vp & this.permVP.View) > 0
       this.actGroup.checkedVPViewAudit = (curGroup.permission.vp & this.permVP.ViewAudit) > 0
       this.actGroup.checkedVPModify = (curGroup.permission.vp & this.permVP.Modify) > 0
-      this.actGroup.checkedVPCreateVPV = (curGroup.permission.vp & this.permVP.CreateVPV) > 0
+      this.actGroup.checkedCreateVariant = (curGroup.permission.vp & this.permVP.CreateVariant) > 0
       this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0
       this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0
     } else {

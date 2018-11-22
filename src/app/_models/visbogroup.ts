@@ -11,13 +11,17 @@ export class VGPermission {
   vp: number;
 }
 
-export enum systemPerm1 {
-    'View' = 1
+export enum VGPSystem {
+    "View" = 1, "ViewAudit" = 2, "ViewLog" = 4, "ManagePerm" = 32, "ViewVC" = 128, "CreateVC" = 256, "ManageVC" = 512, "DeleteVC" = 1024
 };
 
-export class VisboPermission {
-    public systemPerm1 : systemPerm1;
-}
+export enum VGPVC {
+    "View" = 1, "ViewAudit" = 2, "Modify" = 16, "ManagePerm" = 32, "CreateVP" = 256
+};
+
+export enum VGPVP {
+    "View" = 1, "ViewAudit" = 2, "Modify" = 16, "ManagePerm" = 32, "CreateVariant" = 256, "DeleteVP" = 1024
+};
 
 export class VGGroup {
   _id: string;
@@ -36,18 +40,12 @@ export class VGUserGroup {
   groupName: string;
 }
 
-export class VGGroupResponse {
-  state: string;
-  message: string;
-  groups: [ VGGroup ];
-}
-
 export class VGUserGroupMix {
   groups: [ VGGroup ];
   users: [VGUserGroup];
 }
 
-export class VGUserResponse {
+export class VGResponse {
   state: string;
   message: string;
   groups: [ VGGroup ];

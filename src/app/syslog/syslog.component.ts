@@ -12,6 +12,8 @@ import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboLogLevel, VisboLogLevelResponse } from '../_models/syslog';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-syslog',
   templateUrl: './syslog.component.html'
@@ -22,7 +24,7 @@ export class SysLogComponent implements OnInit {
   fileIndex: number;
   logDataShow: boolean;
   logData: string;
-  vcIsSysAdmin: string;
+  systemPerm: VGPermission = undefined;
   logLevelConfig: VisboLogLevel;
 
 
@@ -41,7 +43,7 @@ export class SysLogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemPerm = this.visbocenterService.getSysAdminRole()
     this.getVisboLogs();
     this.sortTable(1);
   }

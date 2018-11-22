@@ -9,9 +9,10 @@ import { AuthenticationService } from '../_services/authentication.service';
 
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
-
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService }  from '../_services/visbocenter.service';
+
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { LoginComponent } from '../login/login.component';
 
@@ -25,7 +26,7 @@ export class SysVisboProjectsComponent implements OnInit {
   vcSelected: string;
   vcActive: VisboCenter;
   vcIsAdmin: boolean;
-  vcIsSysAdmin: string;
+  systemPerm: VGPermission = undefined;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -43,7 +44,7 @@ export class SysVisboProjectsComponent implements OnInit {
   ngOnInit() {
     // console.log("Init VisboProjects");
     this.getVisboProjects();
-    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visboproject: VisboProject): void {
@@ -51,7 +52,7 @@ export class SysVisboProjectsComponent implements OnInit {
   }
 
   getVisboProjects(): void {
-    this.log(`VP getSysVisboProjects SysAdminRole ${this.vcIsSysAdmin}`);
+    this.log(`VP getSysVisboProjects SysAdminRole ${JSON.stringify(this.systemPerm)}`);
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     var currentUser = this.authenticationService.getActiveUser();

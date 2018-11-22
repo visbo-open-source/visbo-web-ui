@@ -10,6 +10,8 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { LoginComponent } from '../login/login.component';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-sysvisbocenters',
   templateUrl: './sysvisbocenters.component.html'
@@ -18,7 +20,8 @@ export class SysVisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: string;
+  systemPerm: VGPermission = undefined;
+  permSystem: any = VGPSystem;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -34,7 +37,7 @@ export class SysVisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
-    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -42,7 +45,7 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   getVisboCenters(): void {
-    this.log(`VC getVisboCenters ${this.vcIsSysAdmin}`);
+    this.log(`VC getVisboCenters ${JSON.stringify(this.systemPerm)}`);
     this.visbocenterService.getVisboCenters(true)
       .subscribe(
         visbocenters => {
@@ -129,6 +132,10 @@ export class SysVisboCentersComponent implements OnInit {
   gotoClickedRow(visbocenter: VisboCenter):void {
     this.log(`clicked row ${visbocenter.name}`);
     this.router.navigate(['sysvp/'+visbocenter._id]);
+  }
+
+  hasSystemPerm(perm: number): boolean {
+    return (this.systemPerm & perm) > 0
   }
 
   sortVCTable(n) {

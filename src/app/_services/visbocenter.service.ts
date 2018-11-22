@@ -7,8 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
-import { VCUser, VCUserResponse } from '../_models/visbocenter';
-import { VGUser, VGPermission, VGGroup, VGUserGroup, VGGroupResponse, VGUserResponse, VGUserGroupMix } from '../_models/visbogroup';
+import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -21,6 +20,7 @@ const httpOptions = {
 export class VisboCenterService {
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
+  private systemPerm: VGPermission = undefined;
 
   constructor(
     private http: HttpClient,
@@ -33,7 +33,7 @@ export class VisboCenterService {
     var url = this.vcUrl
     if (sysadmin) url = url.concat('?sysadmin=1');
 
-    this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    this.log(`Calling HTTP Request: ${url} `);
     return this.http.get<VisboCenterResponse>(url, httpOptions)
       .pipe(
         map(response => response.vc),
@@ -52,9 +52,9 @@ export class VisboCenterService {
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
       map(response => {
                 if (response.vc && response.vc.length > 0) {
-                  // TODO: is there a better way to transfer the perm?
                   response.vc[0].perm = response.perm;
-                  sessionStorage.setItem('isSysAdmin', sysVCRole);
+                  this.systemPerm = response.perm;
+                  sessionStorage.setItem('systemPerm', JSON.stringify(response.perm));
                 }
                 return response.vc
               }),
@@ -67,8 +67,12 @@ export class VisboCenterService {
 
   /* Role of User in sysAdmin */
   getSysAdminRole() {
-    var result = sessionStorage.getItem('isSysAdmin') || undefined;
-    // this.log(`SysAdmin Role: ${result}`);
+    var result: any;
+    if (this.systemPerm == undefined)
+      result = JSON.parse(sessionStorage.getItem('systemPerm'));
+    else
+      result = this.systemPerm;
+    this.log(`SysAdmin Role: ${JSON.stringify(result)}`);
 
     return result;
   }
@@ -165,7 +169,7 @@ export class VisboCenterService {
     if (sysadmin) {
       url = url.concat('&sysadmin=1')
     }
-    return this.http.get<VGUserResponse>(url, httpOptions)
+    return this.http.get<VGResponse>(url, httpOptions)
       .pipe(
         map(response => {
           var userGroupMix = new VGUserGroupMix();
@@ -185,8 +189,8 @@ export class VisboCenterService {
     var reqBody: any = {};
     reqBody.email = email;
     reqBody.message = message;
-    this.log(`Calling HTTP Request: ${url} for ${email} in VG ${groupId} in VC ${vcid} `);
-    return this.http.post<VGUserResponse>(url, reqBody, httpOptions)
+    this.log(`Calling HTTP Request: ${url} for ${email} `);
+    return this.http.post<VGResponse>(url, reqBody, httpOptions)
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo User to Group with id=${group._id}`)),
@@ -198,8 +202,8 @@ export class VisboCenterService {
   deleteVCUser (user: VGUserGroup, vcid: string, sysadmin: boolean = false): Observable<any> {
     var url = `${this.vcUrl}/${vcid}/group/${user.groupId}/user/${user.userId}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
-    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} in VC ${vcid} `);
-    return this.http.delete<VGUserResponse>(url, httpOptions)
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} `);
+    return this.http.delete<VGResponse>(url, httpOptions)
     .pipe(
       // map(response => response.vc[0].users),
       tap(users => this.log(`deleted Visbo Center User ${user.email}`)),
@@ -211,8 +215,8 @@ export class VisboCenterService {
   addVCGroup (newGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
     var url = `${this.vcUrl}/${newGroup.vcid}/group`;
     if (sysadmin) url = url.concat('?sysadmin=1')
-    this.log(`Calling HTTP Request: ${url} for ${newGroup.name} in in VC ${newGroup.vcid} `);
-    return this.http.post<VGUserResponse>(url, newGroup, httpOptions)
+    this.log(`Calling HTTP Request: ${url} for ${newGroup.name} `);
+    return this.http.post<VGResponse>(url, newGroup, httpOptions)
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo Group with id=${group._id}`)),
@@ -224,8 +228,8 @@ export class VisboCenterService {
   modifyVCGroup (actGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
     var url = `${this.vcUrl}/${actGroup.vcid}/group/${actGroup._id}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
-    this.log(`Calling HTTP Request: ${url} for ${actGroup.name} in in VC ${actGroup.vcid} `);
-    return this.http.put<VGUserResponse>(url, actGroup, httpOptions)
+    this.log(`Calling HTTP Request: ${url} for ${actGroup.name} Perm: ${JSON.stringify(actGroup.permission)} `);
+    return this.http.put<VGResponse>(url, actGroup, httpOptions)
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`modified Visbo Group with id=${JSON.stringify(group)}`)),
@@ -238,8 +242,8 @@ export class VisboCenterService {
   deleteVCGroup (group: VGGroup, sysadmin: boolean = false): Observable<any> {
     var url = `${this.vcUrl}/${group.vcid}/group/${group._id}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
-    this.log(`Calling HTTP Request: ${url} for Group ${group.name} / ${group._id} in VC ${group.vcid} `);
-    return this.http.delete<VGUserResponse>(url, httpOptions)
+    this.log(`Calling HTTP Request: ${url} for Group ${group.name} `);
+    return this.http.delete<VGResponse>(url, httpOptions)
     .pipe(
       // map(response => response.vc[0].users),
       tap(groups => this.log(`deleted Visbo Center Group ${group.name}`)),

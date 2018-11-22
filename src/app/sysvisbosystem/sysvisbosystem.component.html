@@ -138,7 +138,6 @@
             <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
           </div>
           <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
-          <div>FormValid {{f.form.valid}}, emailValid {{email.valid}}, groupValid {{group.valid}}, inviteMessageValid {{inviteMessage.valid}} </div>
           <div class="form-group">
             <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary" >Invite(insensitive)</button>
             <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
@@ -206,35 +205,61 @@
             <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
             <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
           </div>
-          <!-- VC Permissions -->
-          <div>Define Visbo Center Permission</div>
+          <!-- System Permissions -->
+          <div>Define System Permission</div>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="perm1" name="checkedView" [(ngModel)]="actGroup.checkedView" #checkedView="ngModel">
-              <label class="custom-control-label" for="perm1">View Visbo Center</label>
+              <input type="checkbox" class="custom-control-input" id="sysperm1" name="checkedSystemView" [(ngModel)]="actGroup.checkedSystemView" #checkedSystemView="ngModel">
+              <label class="custom-control-label" for="sysperm1">View Visbo Center</label>
           </div>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="perm2" name="checkedViewAudit" [(ngModel)]="actGroup.checkedViewAudit" #checkedViewAudit="ngModel" >
-              <label class="custom-control-label" for="perm2">View Audit</label>
+              <input type="checkbox" class="custom-control-input" id="sysperm2" name="checkedSystemViewAudit" [(ngModel)]="actGroup.checkedSystemViewAudit" #checkedSystemViewAudit="ngModel" >
+              <label class="custom-control-label" for="sysperm2">View Audit</label>
           </div>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="perm3" name="checkedModify" [(ngModel)]="actGroup.checkedModify" #checkedModify="ngModel" >
-              <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+              <input type="checkbox" class="custom-control-input" id="sysperm3" name="checkedSystemViewLog" [(ngModel)]="actGroup.checkedSystemViewLog" #checkedSystemViewLog="ngModel" >
+              <label class="custom-control-label" for="sysperm3">View Log Files</label>
           </div>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="perm4" name="checkedCreateVP" [(ngModel)]="actGroup.checkedCreateVP" #checkedCreateVP="ngModel" >
-              <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+              <input type="checkbox" class="custom-control-input" id="sysperm4" name="checkedSystemCreateVC" [(ngModel)]="actGroup.checkedSystemCreateVC" #checkedSystemCreateVC="ngModel" >
+              <label class="custom-control-label" for="sysperm4">Create Visbo Center</label>
           </div>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="perm5" name="checkedManagePerm" [(ngModel)]="actGroup.checkedManagePerm" #checkedManagePerm="ngModel" >
-              <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+              <input type="checkbox" class="custom-control-input" id="sysperm5" name="checkedSystemDeleteVC" [(ngModel)]="actGroup.checkedSystemDeleteVC" #checkedSystemDeleteVC="ngModel" >
+              <label class="custom-control-label" for="sysperm5">Delete Visbo Center</label>
+          </div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="sysperm6" name="checkedSystemManagePerm" [(ngModel)]="actGroup.checkedSystemManagePerm" #checkedSystemManagePerm="ngModel" >
+              <label class="custom-control-label" for="sysperm6">Manage Permissions, Users and Groups</label>
           </div>
           <br>
           <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="global" name="checkGlobal" [(ngModel)]="actGroup.checkGlobal" #checkGlobal="ngModel" >
-              <label class="custom-control-label" for="global">Group has Access to all Visbo Projects</label>
+              <label class="custom-control-label" for="global">Group has Access to all Visbo Venters / Projects</label>
           </div>
           <div *ngIf="actGroup.checkGlobal" >
-          <!-- VP Permissions -->
+            <!-- VC Permissions -->
+            <div>Define Visbo Center Permission</div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="perm1" name="checkedView" [(ngModel)]="actGroup.checkedView" #checkedView="ngModel">
+                <label class="custom-control-label" for="perm1">View Visbo Center</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="perm2" name="checkedViewAudit" [(ngModel)]="actGroup.checkedViewAudit" #checkedViewAudit="ngModel" >
+                <label class="custom-control-label" for="perm2">View Audit</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="perm3" name="checkedModify" [(ngModel)]="actGroup.checkedModify" #checkedModify="ngModel" >
+                <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="perm4" name="checkedCreateVP" [(ngModel)]="actGroup.checkedCreateVP" #checkedCreateVP="ngModel" >
+                <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="perm5" name="checkedManagePerm" [(ngModel)]="actGroup.checkedManagePerm" #checkedManagePerm="ngModel" >
+                <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+            </div>
+            <!-- VP Permissions -->
             <div>Define Visbo Project Permission</div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="permVP1" name="checkedVPView" [(ngModel)]="actGroup.checkedVPView" #checkedVPView="ngModel">
@@ -249,8 +274,8 @@
                 <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
             </div>
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedVPCreateVPV" [(ngModel)]="actGroup.checkedVPCreateVPV" #checkedVPCreateVPV="ngModel" >
-                <label class="custom-control-label" for="permVP4">Create Visbo Project Version</label>
+                <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedCreateVariant" [(ngModel)]="actGroup.checkedCreateVariant" #checkedCreateVariant="ngModel" >
+                <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="permVP5" name="checkedVPManagePerm" [(ngModel)]="actGroup.checkedVPManagePerm" #checkedVPManagePerm="ngModel" >
