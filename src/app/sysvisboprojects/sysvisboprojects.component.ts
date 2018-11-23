@@ -26,7 +26,7 @@ export class SysVisboProjectsComponent implements OnInit {
   vcSelected: string;
   vcActive: VisboCenter;
   vcIsAdmin: boolean;
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -44,7 +44,7 @@ export class SysVisboProjectsComponent implements OnInit {
   ngOnInit() {
     // console.log("Init VisboProjects");
     this.getVisboProjects();
-    this.systemPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visboproject: VisboProject): void {
@@ -52,7 +52,7 @@ export class SysVisboProjectsComponent implements OnInit {
   }
 
   getVisboProjects(): void {
-    this.log(`VP getSysVisboProjects SysAdminRole ${JSON.stringify(this.systemPerm)}`);
+    this.log(`VP getSysVisboProjects SysAdminRole ${JSON.stringify(this.combinedPerm)}`);
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     var currentUser = this.authenticationService.getActiveUser();

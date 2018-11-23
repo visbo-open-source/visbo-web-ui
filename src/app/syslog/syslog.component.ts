@@ -24,7 +24,7 @@ export class SysLogComponent implements OnInit {
   fileIndex: number;
   logDataShow: boolean;
   logData: string;
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   logLevelConfig: VisboLogLevel;
 
 
@@ -43,7 +43,7 @@ export class SysLogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.systemPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
     this.getVisboLogs();
     this.sortTable(1);
   }

@@ -23,7 +23,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   newUserInvite: any = {};
   vpIsAdmin: boolean;
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   userIndex: number;
 
   constructor(
@@ -38,9 +38,9 @@ export class SysVisboProjectDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.systemPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
     this.getVisboProject();
-    this.log(`SysAdmin Role: ${JSON.stringify(this.systemPerm)}`)
+    this.log(`SysAdmin Role: ${JSON.stringify(this.combinedPerm)}`)
   }
 
   getVisboProject(): void {

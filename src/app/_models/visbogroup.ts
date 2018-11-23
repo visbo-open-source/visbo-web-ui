@@ -12,7 +12,7 @@ export class VGPermission {
 }
 
 export enum VGPSystem {
-    "View" = 1, "ViewAudit" = 2, "ViewLog" = 4, "ManagePerm" = 32, "ViewVC" = 128, "CreateVC" = 256, "ManageVC" = 512, "DeleteVC" = 1024
+    "View" = 1, "ViewAudit" = 2, "ViewLog" = 4, "ManagePerm" = 32, "ViewVC" = 128, "CreateVC" = 256, "DeleteVC" = 1024
 };
 
 export enum VGPVC {

@@ -13,7 +13,7 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
   templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
 
   constructor(
@@ -28,8 +28,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.systemPerm = this.visbocenterService.getSysAdminRole();
-    this.log(`Navbar Init Sys Role ${JSON.stringify(this.systemPerm)} View ${this.permSystem.View}`)
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
+    this.log(`Navbar Init Sys Role ${JSON.stringify(this.combinedPerm)} View ${this.permSystem.View}`)
   }
 
   gotoClickedItem(action: string):void {
@@ -38,7 +38,7 @@ export class NavbarComponent implements OnInit {
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.systemPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0
   }
 
   /** Log a VisboProjectService message with the MessageService */

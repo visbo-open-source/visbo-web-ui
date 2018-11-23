@@ -13,7 +13,7 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
   templateUrl: './sysnavbar.component.html'
 })
 export class SysNavbarComponent implements OnInit {
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -30,8 +30,8 @@ export class SysNavbarComponent implements OnInit {
   ngOnInit() {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.systemPerm = this.visbocenterService.getSysAdminRole();
-    this.log(`Navbar Init Sys Role ${JSON.stringify(this.systemPerm)} ${this.permSystem.View}`)
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
+    this.log(`Navbar Init Sys Role ${JSON.stringify(this.combinedPerm)} ${this.permSystem.View}`)
   }
 
   gotoClickedItem(action: string):void {
@@ -40,11 +40,14 @@ export class SysNavbarComponent implements OnInit {
   }
 
   hasSystemPerm(perm: number): boolean {
-    this.log(`Check Sys Perm ${JSON.stringify(this.systemPerm)} check ${perm}`)
-    return (this.systemPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  hasVCPerm(perm: number): boolean {
+    return (this.combinedPerm.vc & perm) > 0
+  }
+
+/** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
     this.messageService.add('Sys NavBar: ' + message);
   }

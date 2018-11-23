@@ -25,12 +25,10 @@ export class SysVisboCenterDetailComponent implements OnInit {
   vcGroups: VGGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
-  vcPerm: number;
-  vpPerm: number;
-  systemPerm: VGPermission = undefined;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
+  combinedPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -54,7 +52,7 @@ constructor(
   ngOnInit() {
     this.getVisboCenter();
     this.getVisboCenterUsers();
-    this.systemPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
     // this.log(`SysAdmin Role: ${this.vcIsSysAdmin}`)
   }
 
@@ -67,11 +65,7 @@ constructor(
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
-          this.vcPerm = 0
-          this.vpPerm = 0
-          if (visbocenter.perm && visbocenter.perm.vc ) this.vcPerm = visbocenter.perm.vc
-          if (visbocenter.perm && visbocenter.perm.vp ) this.vpPerm = visbocenter.perm.vp
-          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.systemPerm)} VC ${this.vcPerm} VP ${this.vpPerm} `)
+          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `)
         },
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
@@ -88,15 +82,15 @@ constructor(
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.systemPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0
   }
 
   hasVCPerm(perm: number): boolean {
-    return (this.vcPerm & perm) > 0
+    return (this.combinedPerm.vc & perm) > 0
   }
 
   hasVPPerm(perm: number): boolean {
-    return (this.vpPerm & perm) > 0
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   getVisboCenterUsers(): void {
@@ -132,7 +126,8 @@ constructor(
   }
 
   gotoVPList(visbocenter: VisboCenter):void {
-    this.router.navigate(['sysvp/'.concat(visbocenter._id)]);
+    if (this.hasVPPerm(this.permVC.View))
+      this.router.navigate(['sysvp/'.concat(visbocenter._id)]);
   }
 
   goBack(): void {

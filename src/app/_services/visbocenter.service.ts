@@ -20,7 +20,7 @@ const httpOptions = {
 export class VisboCenterService {
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
-  private systemPerm: VGPermission = undefined;
+  private combinedPerm: VGPermission = undefined;
 
   constructor(
     private http: HttpClient,
@@ -53,8 +53,8 @@ export class VisboCenterService {
       map(response => {
                 if (response.vc && response.vc.length > 0) {
                   response.vc[0].perm = response.perm;
-                  this.systemPerm = response.perm;
-                  sessionStorage.setItem('systemPerm', JSON.stringify(response.perm));
+                  this.combinedPerm = response.perm;
+                  sessionStorage.setItem('combinedPerm', JSON.stringify(response.perm));
                 }
                 return response.vc
               }),
@@ -68,10 +68,10 @@ export class VisboCenterService {
   /* Role of User in sysAdmin */
   getSysAdminRole() {
     var result: any;
-    if (this.systemPerm == undefined)
-      result = JSON.parse(sessionStorage.getItem('systemPerm'));
+    if (this.combinedPerm == undefined)
+      result = JSON.parse(sessionStorage.getItem('combinedPerm'));
     else
-      result = this.systemPerm;
+      result = this.combinedPerm;
     this.log(`SysAdmin Role: ${JSON.stringify(result)}`);
 
     return result;

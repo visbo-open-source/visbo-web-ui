@@ -16,7 +16,7 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 export class SettingsComponent implements OnInit {
 
   activateMessage: boolean;
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -27,8 +27,8 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.activateMessage = this.messageService.getstatus();
-    this.systemPerm = this.visbocenterService.getSysAdminRole();
-    console.log('Sys Admin Role: ', JSON.stringify(this.systemPerm))
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
+    console.log('Sys Admin Role: ', JSON.stringify(this.combinedPerm))
   }
 
   toggleMessages():void {

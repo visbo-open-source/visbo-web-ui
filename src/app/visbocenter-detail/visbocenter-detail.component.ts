@@ -26,11 +26,11 @@ export class VisboCenterDetailComponent implements OnInit {
   vcGroups: VGGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
-  vcPerm: number;
-  vpPerm: number;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
+
+  combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
 
@@ -65,10 +65,8 @@ export class VisboCenterDetailComponent implements OnInit {
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
-          this.vcPerm = 0
-          this.vpPerm = 0
-          if (visbocenter.perm && visbocenter.perm.vc ) this.vcPerm = visbocenter.perm.vc
-          if (visbocenter.perm && visbocenter.perm.vp ) this.vpPerm = visbocenter.perm.vp
+          this.combinedPerm = visbocenter.perm;
+          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm ${JSON.stringify(this.combinedPerm)} `)
         },
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
@@ -85,11 +83,13 @@ export class VisboCenterDetailComponent implements OnInit {
   }
 
   hasVCPerm(perm: number): boolean {
-    return (this.vcPerm & perm) > 0
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vc & perm) > 0
   }
 
   hasVPPerm(perm: number): boolean {
-    return (this.vpPerm & perm) > 0
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   getVisboCenterUsers(): void {

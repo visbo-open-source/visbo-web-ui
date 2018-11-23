@@ -27,12 +27,11 @@ export class SysVisboSystemComponent implements OnInit {
   vcGroups: VGGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
-  vcPerm: number;
-  vpPerm: number;
-  systemPerm: number;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
+
+  combinedPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -56,6 +55,7 @@ export class SysVisboSystemComponent implements OnInit {
   ngOnInit() {
     this.log(`Init SysAdmin`)
     this.getSysVisboCenter();
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
   }
 
   getSysVisboCenter(): void {
@@ -63,16 +63,8 @@ export class SysVisboSystemComponent implements OnInit {
       .subscribe(
         vc => {
           this.visbocenter = vc[0];
-          this.vcPerm = 0
-          this.vpPerm = 0
-          this.systemPerm = 0
-          if (vc[0].perm) {
-            if (vc[0].perm.vc) this.vcPerm = vc[0].perm.vc
-            if (vc[0].perm.vp) this.vpPerm = vc[0].perm.vp
-            if (vc[0].perm.system) this.systemPerm = vc[0].perm.system
-          }
           this.getVisboCenterUsers();
-          this.log(`System VisboCenter initialised ${this.visbocenter._id} Perm Sys ${this.systemPerm} VC ${this.vcPerm} VP ${this.vpPerm} `)
+          this.log(`System VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `)
         },
         error => {
           this.log(`get VC failed: error: ${error.status} message: ${error.error.message} `);
@@ -89,15 +81,15 @@ export class SysVisboSystemComponent implements OnInit {
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.systemPerm & perm) > 0
+    return (this.combinedPerm.system & perm) > 0
   }
 
   hasVCPerm(perm: number): boolean {
-    return (this.vcPerm & perm) > 0
+    return (this.combinedPerm.vc & perm) > 0
   }
 
   hasVPPerm(perm: number): boolean {
-    return (this.vpPerm & perm) > 0
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   getVisboCenterUsers(): void {

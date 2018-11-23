@@ -20,8 +20,10 @@ export class SysVisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  systemPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -37,7 +39,7 @@ export class SysVisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
-    this.systemPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -45,7 +47,7 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   getVisboCenters(): void {
-    this.log(`VC getVisboCenters ${JSON.stringify(this.systemPerm)}`);
+    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)}`);
     this.visbocenterService.getVisboCenters(true)
       .subscribe(
         visbocenters => {
@@ -131,11 +133,21 @@ export class SysVisboCentersComponent implements OnInit {
 
   gotoClickedRow(visbocenter: VisboCenter):void {
     this.log(`clicked row ${visbocenter.name}`);
-    this.router.navigate(['sysvp/'+visbocenter._id]);
+    // check that the user has Permission to see VPs
+    if (this.hasVPPerm(this.permVC.View))
+      this.router.navigate(['sysvp/'+visbocenter._id]);
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.systemPerm & perm) > 0
+    return (this.combinedPerm.system & perm) > 0
+  }
+
+  hasVCPerm(perm: number): boolean {
+    return (this.combinedPerm.vc & perm) > 0
+  }
+
+  hasVPPerm(perm: number): boolean {
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   sortVCTable(n) {

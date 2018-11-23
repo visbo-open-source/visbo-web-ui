@@ -9,7 +9,7 @@
       <li class="nav-item">
         <a class="nav-link bg-white" (click)="gotoClickedItem('sysadmins')">Administrators</a>
       </li>
-      <li *ngIf="hasSystemPerm(permSystem.View)" class="nav-item">
+      <li *ngIf="hasVCPerm(permVC.View)" class="nav-item">
         <a class="nav-link bg-white" (click)="gotoClickedItem('sysvc')">Visbo Centers</a>
       </li>
       <li class="nav-item">

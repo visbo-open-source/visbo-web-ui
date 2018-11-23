@@ -30,7 +30,8 @@
       </thead>
       <!--Table body-->
       <tbody>
-        <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" > <!-- class="danger"> -->
+
+        <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" >
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
           <td>{{vc.name}}</td>
           <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
