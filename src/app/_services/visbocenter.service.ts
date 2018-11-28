@@ -64,7 +64,8 @@ export class VisboCenterService {
 
   /* Role of User in sysAdmin */
   getSysAdminRole() {
-    var result = sessionStorage.getItem('isSysAdmin') || undefined;
+    var result = sessionStorage.getItem('isSysAdmin');
+    if (result != 'Admin' && result != 'User') result = '';
     this.log(`SysAdmin Role: ${result}`);
 
     return result;
