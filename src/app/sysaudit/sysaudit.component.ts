@@ -25,6 +25,7 @@ export class SysAuditComponent implements OnInit {
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
+  today: Date = new Date();
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -184,6 +185,11 @@ export class SysAuditComponent implements OnInit {
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
+  }
+
+  isToday(checkDate: Date): Boolean {
+//    this.log(`Check Date ${checkDate} ${checkDate.toDateString()}`);
+    return true
   }
 
   sortTable(n) {

@@ -53,7 +53,7 @@
             </thead>
             <!--Table body-->
             <tbody>
-              <tr *ngFor="let member of vcUsers; let memberIndex=index"> <!-- class="danger"> -->
+              <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.email}}</td>
                 <td>{{member.groupName}}</td>
@@ -101,7 +101,7 @@
             </thead>
             <!--Table body-->
             <tbody>
-              <tr *ngFor="let member of vcGroups; let memberIndex=index">
+              <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.name}}</td>
                 <td>{{member.users.length}}</td>
@@ -148,7 +148,7 @@
             <label for="group" class="col-form-label">Group:</label>
             <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
               <option></option>
-              <option *ngFor="let groupItem of vcGroups">{{groupItem.name}}</option>
+              <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
             </select>
             <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
           </div>
@@ -171,7 +171,7 @@
 
 <!-- Modal Delete User -->
 <div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="VcUserModalRemoveTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vcUsers.length">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vgUsers.length">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center</h5>
@@ -190,17 +190,17 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">User:</label>
-            <label class="col-8 form-control-static">{{ vcUsers[userIndex].email }}</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].email }}</label>
           </div>
           <div class="form-group">
             <label class="col-form-label">Group:</label>
-            <label class="col-8 form-control-static">{{ vcUsers[userIndex].groupName }}</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].groupName }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCUser(vcUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>
@@ -293,7 +293,7 @@
 
 <!-- Modal Delete Group -->
 <div class="modal fade" id="VcGroupRemove" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalRemoveTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vcGroups.length">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vgGroups.length">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="VcUserRemoveTitle">Remove Group from Visbo Center</h5>
@@ -312,17 +312,17 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">Group:</label>
-            <label class="col-8 form-control-static">{{ vcGroups[groupIndex].name }}</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].name }}</label>
           </div>
           <div class="form-group">
             <label class="col-form-label">Members:</label>
-            <label class="col-8 form-control-static">{{ vcGroups[groupIndex].users.length }}</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].users.length }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vcGroups[groupIndex])" data-dismiss="modal">Remove</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>
