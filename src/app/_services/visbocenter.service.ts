@@ -17,7 +17,7 @@ const httpOptions = {
 };
 
 @Injectable()
-export class VisboCenterService {
+export class VisboCenterService  {
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
   private combinedPerm: VGPermission = undefined;
