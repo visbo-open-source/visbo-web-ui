@@ -49,18 +49,6 @@ export class VisboProjectService {
       );
   }
 
-  /* Role of User in sysAdmin */
-  getSysAdminRole() {
-    var result: any;
-    if (this.combinedPerm == undefined)
-      result = JSON.parse(sessionStorage.getItem('combinedPerm'));
-    else
-      result = this.combinedPerm;
-    this.log(`SysAdmin Role: ${JSON.stringify(result)}`);
-
-    return result;
-  }
-
   /** GET VisboProject by id. Return `undefined` when id not found */
   /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
@@ -193,7 +181,7 @@ export class VisboProjectService {
 
   /** POST: add a new Group to the Visbo Project */
   addVPGroup (newGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
-    var url = `${this.vpUrl}/${newGroup.vpid}/group`;
+    var url = `${this.vpUrl}/${newGroup.vpids[0]}/group`;
     if (sysadmin) url = url.concat('?sysadmin=1')
     this.log(`Calling HTTP Request: ${url} for ${newGroup.name} `);
     return this.http.post<VGResponse>(url, newGroup, httpOptions)
@@ -206,7 +194,7 @@ export class VisboProjectService {
 
   /** PUT: modify a VP Group in the Visbo Project (Change: Name, Global, Permission)*/
   modifyVPGroup (actGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
-    var url = `${this.vpUrl}/${actGroup.vpid}/group/${actGroup._id}`;
+    var url = `${this.vpUrl}/${actGroup.vpids[0]}/group/${actGroup._id}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
     this.log(`Calling HTTP Request: ${url} for ${actGroup.name} Perm: ${JSON.stringify(actGroup.permission)} `);
     return this.http.put<VGResponse>(url, actGroup, httpOptions)
@@ -217,10 +205,9 @@ export class VisboProjectService {
       );
   }
 
-
   /** DELETE: remove a Group from the Visbo Project */
   deleteVPGroup (group: VGGroup, sysadmin: boolean = false): Observable<any> {
-    var url = `${this.vpUrl}/${group.vpid}/group/${group._id}`;
+    var url = `${this.vpUrl}/${group.vpids[0]}/group/${group._id}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
     this.log(`Calling HTTP Request: ${url} for Group ${group.name} `);
     return this.http.delete<VGResponse>(url, httpOptions)
