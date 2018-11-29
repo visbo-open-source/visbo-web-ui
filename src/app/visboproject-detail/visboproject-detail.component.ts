@@ -345,8 +345,8 @@ export class VisboProjectDetailComponent implements OnInit {
         );
     } else {
       // create new Group
-      this.log(`Add VisboCenter Group: Group: ${newGroup.name} VP: ${newGroup.vpid} Perm: ${JSON.stringify(newGroup.permission)}`);
-      this.visbocenterService.addVPGroup(newGroup)
+      this.log(`Add VisboCenter Group: Group: ${newGroup.name} VP: ${newGroup.vpids[0]} Perm: ${JSON.stringify(newGroup.permission)}`);
+      this.visboprojectService.addVPGroup(newGroup)
         .subscribe(
           group => {
             // Add Group to Group list
@@ -372,7 +372,7 @@ export class VisboProjectDetailComponent implements OnInit {
 
   removeVPGroup(group: VGGroup ): void {
     this.log(`Remove VisboProject Group: ${group.name}/${group._id} VC: ${group.vcid}`);
-    this.visbocenterService.deleteVPGroup(group)
+    this.visboprojectService.deleteVPGroup(group)
       .subscribe(
         response => {
           this.log(`Remove VisboProject Group result: ${JSON.stringify(response)}`);

@@ -27,7 +27,7 @@ export class VGGroup {
   _id: string;
   name: string;
   vcid: string;
-  vpids: [strings]; 
+  vpids: string[]; 
   groupType: string;
   global: boolean;
   permission: VGPermission;
