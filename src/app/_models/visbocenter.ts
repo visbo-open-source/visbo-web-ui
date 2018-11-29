@@ -19,11 +19,13 @@ export class VisboCenter {
   name: string;
   users: [ VCUser];
   description: string;
-  vpCount: number
+  vpCount: number;
+  perm: {system: number, vc: number, vp: number};
 }
 
 export class VisboCenterResponse {
   state: string;
   message: string;
-  vc: [ VisboCenter ]
+  vc: [ VisboCenter ];
+  perm: {system: number, vc: number, vp: number};
 }

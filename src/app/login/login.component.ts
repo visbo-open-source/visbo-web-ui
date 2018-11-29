@@ -7,12 +7,15 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
   model: any = {};
+  restVersionString: string = undefined;
   loading = false;
   returnUrl: string;
 
@@ -28,11 +31,27 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // reset login status
     this.authenticationService.logout();
+    // this.restVersion();
 
-    console.log(`init Login: ${JSON.stringify(this.route.snapshot.queryParams)}`)
+    if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    console.log(`return url ${this.returnUrl}`)
+    // console.log(`return url ${this.returnUrl}`)
+  }
+
+  restVersion() {
+    if (this.restVersionString) return;
+    this.authenticationService.restVersion()
+      .subscribe(
+        data => {
+          this.restVersionString = data.version;
+          this.log(`Version Status check success ${this.restVersionString}`);
+        },
+        error => {
+          this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
   }
 
   login() {
@@ -40,12 +59,21 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
-          console.log(`Login Success ${this.returnUrl}`);
-          this.visbocenterService.getSysVisboCenters().subscribe(vc => vc);
-          this.router.navigate([this.returnUrl]);
+          this.log(`Login Success check sysVC now`);
+          this.visbocenterService.getSysVisboCenter()
+            .subscribe(
+              vc => {
+                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
+                this.router.navigate([this.returnUrl]);
+              },
+              error => {
+                this.log(`No SysVC found: `);
+                this.router.navigate([this.returnUrl]);
+              }
+            )
         },
         error => {
-          console.log(`Login Failed: ${error.status} ${error.error.message} `);
+          this.log(`Login Failed: ${error.status} ${error.error.message} `);
           this.alertService.error(error.error.message);
           this.loading = false;
         }

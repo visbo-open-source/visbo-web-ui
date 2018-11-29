@@ -1,10 +1,48 @@
 <div class="jumbotron" style="background-color: #ffffff;">
+  <div style="float: right">
+    <img src="assets/visbologo.svg">
+  </div>
   <h2>{{title}}</h2>
-  <div class="container">
-    <div class="col-12 col-offset-1">
-      <alert></alert>
-      <router-outlet></router-outlet>
+  <!-- <div class="wrapper"> -->
+    <div class="container-fluid">
+        <alert></alert>
+        <router-outlet></router-outlet>
+    <!-- </div> -->
+  </div>
+</div>
+<div class="col-12 bg-light text-dark">
+  Copyright 2018 © <a href="https://visbo.de/" class="text-secondary">Visbo GmbH</a>,
+  <a data-toggle="modal" data-target="#versionModal" >Visbo Visual Board {{version}}</a>
+  <div class="row">
+    <div class="col">
+      <a href="mailto:support@visbo.de" >Support</a>
+    </div>
+    <div class="col">
+      <a href="https://visbo.de/impressum">Impressum</a>
+    </div>
+    <div class="col">
+      <a href="https://visbo.de/events">Events</a>
+    </div>
+</div>
+</div>
+<app-messages></app-messages>
+
+<!-- Modal Add VP User -->
+<div class="modal fade" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="versionModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="versionModalTitle">Version Info</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group row">
+          <label for="restServer" class="col-4 col-md-3 col-form-label">Server Version:</label>
+          <label class="col-8 form-control-static">{{ restVersionString }} </label>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<app-messages></app-messages>

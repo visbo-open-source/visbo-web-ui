@@ -18,7 +18,7 @@ export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: boolean;
+  vcIsSysAdmin: string;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -34,7 +34,6 @@ export class VisboCentersComponent implements OnInit {
 
   ngOnInit() {
     this.getVisboCenters();
-    this.getSysVisboCenters(); //done during login
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -56,26 +55,11 @@ export class VisboCentersComponent implements OnInit {
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
       );
-  }
-
-  getSysVisboCenters(): void {
-    var currentUser = this.authenticationService.getActiveUser();
-
-    // console.log("VC getSysVisboCenters for User %s", currentUser.email);
-    this.visbocenterService.getSysVisboCenters()
-      .subscribe(visbocenters => {
-        if (visbocenters.length >0) {
-          this.sysvisbocenter = visbocenters[0];
-          this.vcIsSysAdmin = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-          this.log(`User is Sys Admin ${this.sysvisbocenter.name}? ${this.vcIsSysAdmin}`)
-        } else
-          this.vcIsSysAdmin = false
-      }
-    );
   }
 
   add(name: string, description: string): void {
@@ -111,16 +95,16 @@ export class VisboCentersComponent implements OnInit {
     this.visbocenters = this.visbocenters.filter(vc => vc !== visbocenter);
     this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
       error => {
-        this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
-        // this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
-        // if (error.status == 403) {
-        //   this.alertService.error(`Permission Denied: Visbo Center ${name}`);
-        // } else if (error.status == 401) {
-        //   this.alertService.error(`Session expired, please login again`, true);
-        //   this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-        // } else {
-        //   this.alertService.error(error.error.message);
-        // }
+        // this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
+        this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
+        if (error.status == 403) {
+          this.alertService.error(`Permission Denied: Visbo Center ${name}`);
+        } else if (error.status == 401) {
+          this.alertService.error(`Session expired, please login again`, true);
+          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+        } else {
+          this.alertService.error(error.error.message);
+        }
       }
     );
   }

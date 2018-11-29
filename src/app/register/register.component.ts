@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -13,20 +13,43 @@ import { Login } from '../_models/login';
 
 export class RegisterComponent {
   model: any = {};
+  userRegister = undefined
+  hash = undefined;
   loading = false;
 
   constructor(
     private messageService: MessageService,
+    private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
     private alertService: AlertService) { }
 
+  ngOnInit() {
+    // console.log("Init Registration");
+    const id = this.route.snapshot.paramMap.get('id');
+    this.hash = this.route.snapshot.queryParams.hash
+    if (id) {
+      this.log(`Register for User ${id} hash ${this.hash}`)
+      this.userRegister = id;
+    } else {
+      this.userRegister = undefined;
+    }
+    this.model = {};
+  }
+
   register() {
     this.loading = true;
-    this.authenticationService.createUser(this.model)
+    if (this.userRegister) {
+      this.model._id = this.userRegister;
+    }
+    this.authenticationService.createUser(this.model, this.hash)
       .subscribe(
         data => {
-          this.alertService.success('Registration successful', true);
+          if (this.hash) {
+            this.alertService.success(`Congratulation, your e-mail address ${data.email} is now confirmed. Please login.`, true);
+          } else {
+            this.alertService.success(`Congratulation, you registered successfully your e-mail address ${data.email}. Please check your e-Mail for conirmation.`, true);
+          }
           this.router.navigate(['login']);
         },
         error => {

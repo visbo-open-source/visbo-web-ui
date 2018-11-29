@@ -135,15 +135,11 @@ export class VisboProjectVersionService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.message} ${error.status}`);
       // send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-      // better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
+      this.log(`HTTP Request ${operation} failed: ${error.message} ${error.status}`);
 
-      if ( error.status = 401 ) {
-        this.authenticationService.logout();
-      }
+      // better job of transforming error for user consumption
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

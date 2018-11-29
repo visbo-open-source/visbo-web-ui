@@ -1,28 +1,34 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
 @Injectable()
 export class MessageService {
   messages: string[] = [];
+  activateMessages: boolean = undefined;
+  activateMessageToggle = new EventEmitter(true);
+
+  initstatus() {
+    if (this.activateMessages == undefined) {
+      this.activateMessages = sessionStorage.getItem('activateMessages') == 'On';
+    }
+  }
 
   toggle() {
-    var status: string;
-    status = sessionStorage.getItem('activateMessages') || '';
-    status = status == '' ? 'On' : '';
-    sessionStorage.setItem('activateMessages', status);
-    // console.log('Messages Toggle to %s', status);
-    return status == 'On';
+    this.initstatus();
+    this.activateMessages = !this.activateMessages
+    sessionStorage.setItem('activateMessages', this.activateMessages? 'On':'Off');
+    this.activateMessageToggle.emit(this.activateMessages);
+    console.log('Messages Toggle to %s', this.activateMessages);
+    return this.activateMessages;
   }
 
   getstatus() {
-    var status: string;
-    status = sessionStorage.getItem('activateMessages') || '';
-    // console.log('Messages Status return %s', status)
-    return status == 'On'
+    this.initstatus();
+    return this.activateMessages
   }
 
   add(message: string) {
     this.messages.push(message);
-    if (this.messages.length > 10) this.messages.shift();
+    if (this.messages.length > 20) this.messages.shift();
   }
 
   clear() {

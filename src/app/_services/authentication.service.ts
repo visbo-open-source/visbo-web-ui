@@ -1,14 +1,16 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
+import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
 import { MessageService } from './message.service';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable()
 export class AuthenticationService {
@@ -62,11 +64,73 @@ export class AuthenticationService {
       return currentUser;
     }
 
-    createUser(model: any){
-      const url = `${this.authUrl}/signup`;
+    pwforgotten(model: any){
+      const url = `${this.authUrl}/pwforgotten`;
+      var newUser = new VisboUser;
+      newUser.email = model.username;
+
+      this.log(`Calling HTTP Request: ${url} for: ${model.username} `);
+
+      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`PW Forgotten Request executed`);
+                if (result) {
+                    this.log(`PW Forgotten Request Successful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwforgotten'))
+          );
+    }
+
+    pwreset(model: any){
+      const url = `${this.authUrl}/pwreset`;
+
+      this.log(`Calling HTTP Request: ${url} with: ${model.token} `);
+
+      return this.http.post<LoginResponse>(url, model)
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`PW Reset Request executed`);
+                if (result) {
+                  this.log(`PW Reset Request Successful:  ${JSON.stringify(result)}`);
+                } else {
+                  this.log(`PW Reset Request Unsuccessful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwreset'))
+          );
+    }
+
+    registerconfirm(model: any){
+      const url = `${this.authUrl}/confirm`;
+
+      this.log(`Calling HTTP Request: ${url} for: ${model._id} `);
+
+      return this.http.post<LoginResponse>(url, model) /* MS Last Option HTTP Headers */
+          .pipe(
+            map(result => {
+                // registration successful if there's a user in the response
+                this.log(`e-mail confirm Request executed`);
+                if (result) {
+                    this.log(`e-mail confirm Request Successful:  ${JSON.stringify(result)}`);
+                }
+                return result;
+            }),
+            catchError(this.handleError<any>('pwreset'))
+          );
+    }
+
+    createUser(model: any, hash: string){
+      var url = `${this.authUrl}/signup`;
       var newUser = new VisboUser;
       var newUserProfile = new VisboUserProfile;
-      newUser.email = model.username;
+      if (model.username) newUser.email = model.username;
+      if (model._id) newUser._id = model._id;
       // do not set password before the log statement
       newUserProfile.firstName = model.firstName;
       newUserProfile.lastName = model.lastName;
@@ -74,9 +138,8 @@ export class AuthenticationService {
       newUserProfile.company = model.company;
       newUser.profile = newUserProfile;
 
-      // newUser.profile = {firstName: firstName, lastName: lastName, phone: phone, company: company};
-
-      this.log(`Calling HTTP Request: ${url} for: ${newUser.email} Profile: ${JSON.stringify(newUser)}`);
+      if (hash) url = url.concat('?hash=', hash)
+      this.log(`Calling HTTP Request: ${url} for: ${newUser.email||newUser._id} hash ${hash} Profile: ${JSON.stringify(newUser)}`);
 
       newUser.password = model.password;
       return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
@@ -84,15 +147,26 @@ export class AuthenticationService {
             map(result => {
                 // registration successful if there's a user in the response
                 this.log(`Registration Request executed:  ${JSON.stringify(result)}`);
-                if (result && result.user) {
-                    this.log(`Registratioon Request Successful:  ${result.user.email}`);
+                if (result.user) {
+                    this.log(`Registration Request Successful:  ${result.user.email}`);
                     return result.user;
                 }
-                return result;
+                return {};
             }),
             // tap(result => this.log(`registered ${result.user.email} `)),
             catchError(this.handleError<any>('registerUser'))
           );
+    }
+
+    restVersion(): Observable<any> {
+      const url = environment.restUrl.concat('/status');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboStatusResponse>(url, httpOptions)
+        .pipe(
+          map(response => response.status),
+          tap(status => this.log(`fetched Status  `)),
+          catchError(this.handleError('getStatus', []))
+        );
     }
 
     /**
@@ -104,14 +178,12 @@ export class AuthenticationService {
     private handleError<T> (operation = 'operation', result?: T) {
       return (error: any): Observable<T> => {
 
-        this.log(`HTTP Request failed: ${error.message} ${error.status}`);
         // TODO: send the error to remote logging infrastructure
-        console.error(error.message, ' ', error.status); // log to console instead
-
-        this.log(`${operation} failed: ${error.message}`);
+        this.log(`${operation} failed: ${error.status}, ${error.statusText}, ${error.message}`);
 
         // Let the app keep running by returning an empty result.
-        return new ErrorObservable(error);
+        return throwError(error);
+        // return new ErrorObservable(error);
         //return of(result as T);
       };
     }
