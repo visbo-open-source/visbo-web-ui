@@ -42,10 +42,12 @@ export class VisboProject {
   vc: {
     name: string;
   }
+  perm: {system: number, vc: number, vp: number};
 }
 
 export class VisboProjectResponse {
   state: string;
   message: string;
-  vp: [ VisboProject ]
+  vp: [ VisboProject ];
+  perm: {system: number, vc: number, vp: number};
 }

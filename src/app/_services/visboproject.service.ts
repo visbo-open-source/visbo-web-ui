@@ -76,7 +76,11 @@ export class VisboProjectService {
     this.log(`Calling HTTP Request for a specific entry: ${url} params ${params}`);
     return this.http.get<VisboProjectResponse>(url, { headers , params })
       .pipe(
-        map(response => response.vp[0]),
+        map(response => {
+                  // TODO: is there a better way to transfer the perm?
+                  response.vp[0].perm = response.perm;
+                  return response.vp[0]
+                }),
         tap(visboproject => this.log(`fetched vp id=${visboproject._id} ${visboproject.name}`)),
         catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
       );

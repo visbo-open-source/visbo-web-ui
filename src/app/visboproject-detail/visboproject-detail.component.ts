@@ -20,7 +20,6 @@ export class VisboProjectDetailComponent implements OnInit {
   newUserInvite: any = {};
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
-  vpIsAdmin: boolean;
   actGroup: any = {};
   userIndex: number;
   groupIndex: number;
@@ -59,8 +58,9 @@ export class VisboProjectDetailComponent implements OnInit {
       .subscribe(
         visboproject => {
           this.visboproject = visboproject
-          this.vpIsAdmin = this.visboproject.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-          this.log(`User is Admin? ${this.vpIsAdmin}`)
+          this.combinedPerm = visboproject.perm;
+
+          this.log(`User Perm ${JSON.stringify(this.combinedPerm)}`)
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
@@ -250,7 +250,7 @@ export class VisboProjectDetailComponent implements OnInit {
             this.alertService.error(`Session expired, please login again`, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
-            this.log(`Error during remove VP user ${error.error.message}`); // log to console instead
+            this.log(`Error during remove User from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
           }
         }
@@ -303,9 +303,12 @@ export class VisboProjectDetailComponent implements OnInit {
   addModifyVPGroup(): void {
     var newGroup = new VGGroup;
 
+    this.log(`Modify VisboProject Group: Group: ${this.actGroup.groupName} VC: ${this.visboproject.vcid} VP: ${this.visboproject._id} }`);
     newGroup.name = this.actGroup.groupName.trim();
-    newGroup.global = this.actGroup.checkGlobal;
+    newGroup.global = false;
     newGroup.vcid = this.visboproject.vcid;
+    newGroup.vpids = [];
+    newGroup.vpids.push(this.visboproject._id);
     newGroup.permission = new VGPermission;
     newGroup.permission.vp = this.helperVPPerm(this.actGroup);
 
@@ -317,7 +320,7 @@ export class VisboProjectDetailComponent implements OnInit {
         .subscribe(
           group => {
             // Add Group to Group list
-            // this.log(`Modify VisboCenter Group Push: ${JSON.stringify(group)}`);
+            this.log(`Modify VisboProject Group Push: ${JSON.stringify(group)}`);
             this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup._id !== newGroup._id);
             this.vgGroups.push(group);
             // update User List to reflect new Group Name & ID
@@ -390,7 +393,7 @@ export class VisboProjectDetailComponent implements OnInit {
             this.alertService.error(`Session expired, please login again`, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
-            this.log(`Error during remove VP user ${error.error.message}`); // log to console instead
+            this.log(`Error during remove Group from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
           }
         }
