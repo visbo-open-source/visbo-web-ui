@@ -14,8 +14,8 @@ export class VCUserResponse {
 
 export class VisboCenter {
   _id: string;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: Date;
+  createdAt: Date;
   name: string;
   users: [ VCUser];
   description: string;

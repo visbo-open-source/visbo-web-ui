@@ -1,10 +1,44 @@
+export class VPUser {
+  _id: string;
+  email: string;
+  role: string;
+  userId: string;
+}
+
+export class VPVariant {
+  _id: string;
+  variantName: string;
+  email: string;
+  createdAt: Date;
+  vpvCount: number;
+}
+
+export class VPLock {
+  variantName: string;
+  email: string;
+  createdAt: Date;
+  expiresAt: Date;
+}
+
+export class VPUserResponse {
+  state: string;
+  message: string;
+  users: [ VPUser ]
+}
+
 export class VisboProject {
   _id: string;
   updatedAt: string;
   createdAt: string;
   vcid: string;
   name: string;
-  users: [ {email: string, role: string, _id: string} ]
+  description: string;
+  vpType: number;
+  vpPublic: boolean;
+  vpvCount: number;
+  variant: [VPVariant];
+  lock: [VPLock];
+  users: [ VPUser ];
   vc: {
     name: string;
   }

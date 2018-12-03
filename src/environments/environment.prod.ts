@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  restUrl: 'http://visbo.myhome-server.de:3484'
+  restUrl: 'https://my.visbo.net/api' // the new production server
 };

@@ -8,10 +8,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboCenter } from '../_models/visbocenter';
-import { VCUser } from '../_models/visbocenter';
-import { VCUserResponse } from '../_models/visbocenter';
-import { VisboCenterResponse } from '../_models/visbocenter';
+import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VCUser, VCUserResponse } from '../_models/visbocenter';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -22,8 +20,7 @@ const httpOptions = {
 
 @Injectable()
 export class VisboCenterService {
-
-  //   private vcUrl = 'vc';  // URL to web api on same server
+  //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
 
   constructor(
@@ -33,16 +30,46 @@ export class VisboCenterService {
 
 
   /** GET VisboCenters from the server */
-  getVisboCenters(): Observable<VisboCenter[]> {
-    this.log(`Calling HTTP Request: ${this.vcUrl}`);
+  getVisboCenters(sysadmin: boolean = false): Observable<VisboCenter[]> {
+    var url = this.vcUrl
+    if (sysadmin) url = url.concat('?sysadmin=1');
 
-    return this.http.get<VisboCenterResponse>(this.vcUrl, httpOptions)
+    this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    return this.http.get<VisboCenterResponse>(url, httpOptions)
       .pipe(
-        map(response => response.vc), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
+        map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
-        // tap(visbocenters => this.log(`fetched JSON VisboCenters ${JSON.stringify(visbocenters)}`)),
         catchError(this.handleError('getVisboCenters', []))
       );
+  }
+
+  /** GET VisboCenters from the server */
+  getSysVisboCenters(): Observable<VisboCenter[]> {
+    var url = this.vcUrl + '?systemVC=true';
+    var sysVCRole = undefined;
+    var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);
+
+    return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
+        map(response => response.vc),
+        tap(visbocenters => {
+          sysVCRole = visbocenters[0].users.find(user => user.email == currentUser.email && user.role == 'Admin') ? 'Admin' : undefined;
+          if (!sysVCRole) {
+            // sysVCRole = this.sysvisbocenter.users.find(user => user.email == currentUser.email && user.role == 'User') ? 'User' : undefined;
+          }
+          sessionStorage.setItem('isSysAdmin', sysVCRole);
+          this.log(`fetched ${visbocenters.length} VisboCenters user Role is ${sysVCRole || 'None'}`)
+        }),
+        catchError(this.handleError('getVisboCenters', []))
+      );
+  }
+
+  /* Role of User in sysAdmin */
+  getSysAdminRole() {
+    var result = sessionStorage.getItem('isSysAdmin') || undefined;
+    this.log(`SysAdmin Role: ${result}`);
+
+    return result;
   }
 
   /** GET VisboCenter by id. Return `undefined` when id not found */
@@ -54,21 +81,22 @@ export class VisboCenterService {
       .pipe(
         map(visbocenters => visbocenters[0]), // returns a {0|1} element array
         tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboCenter id=${id}`);
+          var outcome = h ? `fetched` : `did not find`;
+          this.log(`${outcome} VisboCenter ${id}`);
         }),
-        catchError(this.handleError<VisboCenter>(`getVisboCenter id=${id}`))
+        catchError(this.handleError<VisboCenter>(`getVisboCenter id: ${id}`))
       );
   }
 
   /** GET VisboCenter by id. Will 404 if id not found */
-  getVisboCenter(id: string): Observable<VisboCenter> {
-    const url = `${this.vcUrl}/${id}`;
+  getVisboCenter(id: string, sysadmin: boolean = false): Observable<VisboCenter> {
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
       map(response => response.vc[0]),
-      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id=${id}`)),
-      catchError(this.handleError<VisboCenter>(`getVisboCenter id=${id}`))
+      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
   }
 
@@ -86,23 +114,25 @@ export class VisboCenterService {
 
   //////// Save methods //////////
 
-  /** POST: add a new Visbo Center to the server */
+  /** POST: aa a new Visbo Center to the server */
   addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
-    // MS ToDo: currently no users were set
-    // the active user is added to the list by the API Post
-    return this.http.post<VisboCenter>(this.vcUrl, visbocenter, httpOptions)
-      .pipe(
-        map(response => { return JSON.parse(JSON.stringify(response)).vc }), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
-        tap(visbocenter => this.log(`added VisboCenter ${visbocenter[0].name} with id=${visbocenter[0]._id}`)),
-        catchError(this.handleError<VisboCenter>('addVisboCenter'))
-      );
+    this.log(`Calling HTTP Request: ${this.vcUrl} ${JSON.stringify(visbocenter)}`);
+
+    return this.http.post<VisboCenterResponse>(this.vcUrl, visbocenter, httpOptions).pipe(
+      map(response => response.vc[0] ),
+      tap(vc => this.log(`added VisboCenter ${vc.name} with id=${vc._id}`)),
+      catchError(this.handleError<VisboCenter>('addVisboCenter'))
+    );
   }
 
+
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
+  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<any> {
     //const id = typeof visbocenter === 'number' ? visbocenter : visbocenter._id;
     const id = visbocenter._id;
-    const url = `${this.vcUrl}/${id}`;
+    var url = `${this.vcUrl}/${id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1');
+
     this.log(`Calling HTTP Request: ${url} `);
 
     return this.http.delete<VisboCenter>(url, httpOptions).pipe(
@@ -112,43 +142,42 @@ export class VisboCenterService {
   }
 
   /** PUT: update the Visbo Center on the server */
-  updateVisboCenter (visbocenter: VisboCenter): Observable<any> {
+  updateVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${visbocenter._id}`;
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put(url, visbocenter, httpOptions)
+    return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
       .pipe(
-        tap(_ => this.log(`updated VisboCenter ${visbocenter.name} id=${visbocenter._id}`)),
+        map(response => response.vc[0] ),
+        tap(vc => this.log(`updated VisboCenter ${vc.name} with id=${vc._id}`)),
         catchError(this.handleError<any>('updateVisboCenter'))
       );
   }
 
   /** POST: add a new User to the Visbo Center */
-  addVCUser (user: VCUser, message: string, vcid: string): Observable<any> {
+  addVCUser (user: VCUser, message: string, vcid: string): Observable<VCUser> {
     const url = `${this.vcUrl}/${vcid}/user`;
+    var reqBody: any = {};
+    reqBody.email = user.email;
+    reqBody.role = user.role;
+    reqBody.message = message;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.post<VCUserResponse>(url, user, httpOptions)
+    return this.http.post<VCUserResponse>(url, reqBody, httpOptions)
       .pipe(
-        map(response => {
-          // this.log(`added User to Visbo Center Response ${JSON.stringify(response.users)}`)
-          return response.users
-        }),
-        tap(users => this.log(`added Visbo User with id=${users[0]._id}`)),
+        map(response => response.users[0]),
+        tap(users => this.log(`added Visbo User with id=${users._id}`)),
         catchError(this.handleError<VCUser>('addVCUser'))
       );
   }
 
 
   /** DELETE: remove a User from the Visbo Center */
-  deleteVCUser (user: VCUser, vcid: string): Observable<any> {
+  deleteVCUser (user: VCUser, vcid: string): Observable<[VCUser]> {
     const url = `${this.vcUrl}/${vcid}/user/${user.userId}?role=${user.role}`;
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VC ${vcid} `);
-    return this.http.delete<VisboCenterResponse>(url, httpOptions).pipe(
-//      tap(response => this.log(`deleted VisboCenter User ${user.email}`)),
-      map(result => {
-        this.log(`Remove User Successful:  ${result.message}`);
-        // this.log(`Remove User Successful Detail:  ${JSON.stringify(result)}`);
-        return result.vc[0].users;
-      }),
+    return this.http.delete<VisboCenterResponse>(url, httpOptions)
+    .pipe(
+      map(response => response.vc[0].users),
+      tap(users => this.log(`deleted VisboProject User ${user.email}`)),
       catchError(this.handleError<any>('deleteVisboCenterUser'))
     );
   }
@@ -163,8 +192,7 @@ export class VisboCenterService {
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
-      
-      // TODO: better job of transforming error for user consumption
+
       // user no longer authenticated, remove it from the session
       if (error.status == 401) {
         this.log(`${operation} failed: ${error.message}`);

@@ -8,9 +8,11 @@ import { MessageService } from '../_services/message.service';
 })
 export class MessagesComponent implements OnInit {
 
+  activateMessage: boolean;
   constructor(public messageService: MessageService) {}
 
   ngOnInit() {
+    this.activateMessage = this.messageService.getstatus();
   }
 
 }

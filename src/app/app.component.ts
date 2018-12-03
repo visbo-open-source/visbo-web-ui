@@ -6,4 +6,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Your Projects served with Visbo ';
+  version = '0.9';
 }

@@ -46,11 +46,8 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
-the final destination for production is that the client is part of the visbo-rest-server environment. As long as it is not configured, do the following:
-Compile with the following options:
-`ng build -prod --output-path=../visbo-rest-server/public/ui --base-href /ui/`
-This defines the base path for the loader to use /ui/ and specifies the destination folder.
-Restart the Rest Server.
+the final destination for production is a location inside nginx. Either compile and copy the files from dist to the nginx folder or specify the nginx folder during build:
+`ng build --prod --output-path=nginx_folder`
 
 ## Running unit tests
 

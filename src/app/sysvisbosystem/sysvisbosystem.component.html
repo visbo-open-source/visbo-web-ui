@@ -1,0 +1,148 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div *ngIf="sysvisbocenter">
+  <div class='container'>
+  <h3>System Visbo Center: {{ sysvisbocenter.name | uppercase }}</h3>
+  <form>
+    <div class="form-group row">
+      <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
+      <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="sysvisbocenter.name" placeholder="Name">
+      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ sysvisbocenter.name }} </label>
+    </div>
+    <div class="form-group row">
+      <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
+      <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="sysvisbocenter.description" placeholder="Type in your description"></textarea>
+      <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ sysvisbocenter.description }} </label>
+    </div>
+    <div class="form-group row">
+      <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
+      <label class="col-8 form-control-static">{{ sysvisbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+    <div class="form-group row">
+      <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
+      <label class="col-8 form-control-static">{{ sysvisbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+</form>
+    <div>
+    <div class='well'>
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+              Visbo Center Users
+          </h5>
+        </div>
+        <div *ngIf="vcIsAdmin" class='col-6 col-md-2 align-self-end'>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VcUserModalCreate">
+            Add User
+          </button>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th>Nr.</th>
+              <th>e-mail</th>
+              <th>Role</th>
+              <th *ngIf="vcIsAdmin">Delete</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let member of sysvisbocenter.users; let memberIndex=index"> <!-- class="danger"> -->
+              <td>{{memberIndex+1}}</td>
+              <td>{{member.email}}</td>
+              <td>{{member.role}}</td>
+              <td *ngIf="vcIsAdmin">
+                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                data-toggle="modal" data-target="#VcUserRemove">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+          <!--Table body-->
+        </table>
+      </div>
+    </div>
+    <button *ngIf="vcIsAdmin" (click)="save()" class="btn btn-primary">save</button>
+    <button (click)="goBack()">go back</button>
+  </div>
+</div>
+
+<!-- Modal Add VC User -->
+<div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcUserModalCenterTitle">Add a new User to the Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="newUserInvite" #f="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+            <label for="email" class="col-form-label">Name:</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+            <div *ngIf="f.submitted && !email.valid" class="help-block">E-mail address is required</div>
+          </div>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !role.valid }">
+            <label for="role" class="col-form-label">Role:</label>
+            <select class="form-control" name="role" [(ngModel)]="newUserInvite.role" #role="ngModel" required>
+              <option>User</option>
+              <option>Admin</option>
+            </select>
+            <div *ngIf="f.submitted && !role.valid" class="help-block">Role of User must be defined</div>
+          </div>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
+            <label for="inviteMessage" class="col-form-label">Message:</label>
+            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" required> </textarea>
+            <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
+          </div>
+          <div class="form-group">
+            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Invite</button>
+            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Delete User -->
+<div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="Remove User" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < sysvisbocenter.users.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label class="bg-warning">Do you really want to remove this User from Visbo Center? </label>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="VcName" class="col-form-label">Visbo Center:</label>
+            <label class="col-8 form-control-static">{{ sysvisbocenter.name }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">User:</label>
+            <label class="col-8 form-control-static">{{ sysvisbocenter.users[userIndex].email }}</label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Role:</label>
+            <label class="col-8 form-control-static">{{ sysvisbocenter.users[userIndex].role }}</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning" (click)="removevcuser(sysvisbocenter.users[userIndex], sysvisbocenter._id)" data-dismiss="modal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>

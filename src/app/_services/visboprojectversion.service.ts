@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -14,7 +15,6 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionResponse } from '../_models/visboprojectversion';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -43,7 +43,7 @@ export class VisboProjectVersionService {
     // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(this.vpvUrl, { headers , params })
       .pipe(
-        map(response => response.vpv), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
+        map(response => response.vpv),
         tap(visboprojectversions => this.log(`fetched ${visboprojectversions.length} VisboProjectVersions `)),
         catchError(this.handleError('getVisboProjectVersions', []))
       );
@@ -96,7 +96,7 @@ export class VisboProjectVersionService {
     newVPV.name = visboprojectversion.name;
     return this.http.post<VisboProjectVersion>(this.vpvUrl, visboprojectversion, httpOptions)
       .pipe(
-        map(response => { return JSON.parse(JSON.stringify(response)).vpv }), // map the JSON to an object? MS Todo Check ${xeroes[0].Name}
+        map(response => { return JSON.parse(JSON.stringify(response)).vpv }),
         tap((visboprojectversion: VisboProjectVersion) => this.log(`added VisboProjectVersion w/ id=${visboprojectversion._id}`)),
         catchError(this.handleError<VisboProjectVersion>('addVisboProjectVersion'))
       );
@@ -136,15 +136,13 @@ export class VisboProjectVersionService {
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.message} ${error.status}`);
-      // TODO: send the error to remote logging infrastructure
+      // send the error to remote logging infrastructure
       console.error(error); // log to console instead
-      if ( error.status = 401 ) this.authenticationService.logout();
-      // TODO: better job of transforming error for user consumption
+      // better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
 
       if ( error.status = 401 ) {
         this.authenticationService.logout();
-        //this.router.navigate(['/login']); // MS Todo: Set a ReturnURL so the user is redirected to this page again after login
       }
       // Let the app keep running by returning an empty result.
       return of(result as T);

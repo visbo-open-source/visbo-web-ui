@@ -16,17 +16,26 @@ import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { RegisterComponent } from './register/register.component';
+import { RegisterConfirmComponent } from './registerconfirm/registerconfirm.component';
+import { PWForgottenComponent } from './pwforgotten/pwforgotten.component';
+import { PWResetComponent } from './pwreset/pwreset.component';
+
 import { AlertService } from './_services/alert.service';
 
 import { NavbarComponent } from './navbar/navbar.component';
 
 import { MessagesComponent } from './messages/messages.component';
+import { SettingsComponent } from './settings/settings.component';
+import { UserProfileComponent } from './userprofile/userprofile.component';
+
 import { MessageService } from './_services/message.service';
 
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+
 import { VisboCenterService } from './_services/visbocenter.service';
+import { VisboAuditService } from './_services/visboaudit.service';
 
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
@@ -39,6 +48,13 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
+// Sys Admin / App Admin
+import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
+import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
+import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
+import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysAuditComponent }  from './sysaudit/sysaudit.component';
+
 
 @NgModule({
   declarations: [
@@ -50,10 +66,20 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,
     MessagesComponent,
+    SettingsComponent,
+    UserProfileComponent,
     DashboardComponent,
     NavbarComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    RegisterConfirmComponent,
+    PWForgottenComponent,
+    PWResetComponent,
+    SysNavbarComponent,
+    SysVisboCentersComponent,
+    SysVisboSystemComponent,
+    SysVisboCenterDetailComponent,
+    SysAuditComponent
   ],
   imports: [
     BrowserModule,
@@ -66,15 +92,16 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AuthGuard,
     AlertService,
     AuthenticationService,
+    UserService,
     VisboCenterService,
     VisboProjectService,
     VisboProjectVersionService,
+    VisboAuditService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
     },
-
     MessageService
   ],
   bootstrap: [ AppComponent ]

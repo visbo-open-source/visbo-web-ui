@@ -18,6 +18,14 @@ export class VisboUserProfile {
   address: VisboUserAddress;
 };
 
+export class VisboUserStatus {
+  registeredAt: Date;
+  lockedUntil: Date;
+  lastLoginAt: Date;
+  lastLoginFailedAt: Date;
+  loginRetries: number
+};
+
 export class VisboUser {
   _id: string;
   updatedAt: string;
@@ -26,6 +34,7 @@ export class VisboUser {
   password: string;
   name: string;
   profile: VisboUserProfile;
+  status: VisboUserStatus;
   _v: number
 };
 
@@ -33,5 +42,11 @@ export class LoginResponse {
   state: string;
   message: string;
   token: string;
+  user: VisboUser
+}
+
+export class VisboUserResponse {
+  state: string;
+  message: string;
   user: VisboUser
 }
