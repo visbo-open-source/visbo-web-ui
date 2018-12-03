@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
+import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -45,7 +43,7 @@ export class VisboCenterService {
 
   /** GET VisboCenters from the server */
   getSysVisboCenters(): Observable<VisboCenter[]> {
-    var url = this.vcUrl + '?systemVC=true';
+    var url = this.vcUrl + '?systemvc=true';
     var sysVCRole = undefined;
     var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     this.log(`Calling HTTP Request for SysVC: ${url} for user ${currentUser.email}`);
@@ -191,15 +189,11 @@ export class VisboCenterService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
 
-      // user no longer authenticated, remove it from the session
-      if (error.status == 401) {
-        this.log(`${operation} failed: ${error.message}`);
-        sessionStorage.removeItem('currentUser');
-      }
       // Let the app keep running by returning an empty result.
-      return new ErrorObservable(error);
+      return throwError(error);
+      // return new ErrorObservable(error);
     };
   }
 

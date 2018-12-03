@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { MessageService } from '../_services/message.service';
 
 @Component({
@@ -9,10 +9,16 @@ import { MessageService } from '../_services/message.service';
 export class MessagesComponent implements OnInit {
 
   activateMessage: boolean;
+
   constructor(public messageService: MessageService) {}
 
   ngOnInit() {
     this.activateMessage = this.messageService.getstatus();
+    this.messageService.activateMessageToggle.subscribe(
+      (status) => {
+        this.activateMessage = this.messageService.getstatus();
+      }
+    );
   }
 
 }

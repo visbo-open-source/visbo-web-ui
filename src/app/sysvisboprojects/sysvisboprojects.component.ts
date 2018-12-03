@@ -58,18 +58,37 @@ export class SysVisboProjectsComponent implements OnInit {
 
     this.vcSelected = id;
     if (id) {
-      this.visboprojectService.getVisboProjects(id, true)
+      this.visbocenterService.getVisboCenter(id, true)
         .subscribe(
-          visboprojects => {
-            this.visboprojects = visboprojects;
-            this.sortVPTable(1);
+          visbocenters => {
+            this.vcActive = visbocenters;
+            this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
+            this.log(`User is Admin? ${this.vcIsAdmin}`)
+            this.visboprojectService.getVisboProjects(id, true)
+              .subscribe(
+                visboprojects => {
+                  this.visboprojects = visboprojects;
+                  this.sortVPTable(1);
+                },
+                error => {
+                  this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
+                  this.alertService.error(error.error.message);
+                  // redirect to login and come back to current URL
+                  if (error.status == 401) {
+                    this.alertService.error("Session expired, please log in again", true);
+                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+                  }
+                }
+              );
           },
           error => {
-            this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
             // redirect to login and come back to current URL
             if (error.status == 401) {
+              this.alertService.error("Session expired, please log in again", true);
               this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            } else {
+              this.alertService.error(error.error.message);
             }
           }
         );

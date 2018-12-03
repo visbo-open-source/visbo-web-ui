@@ -1,6 +1,7 @@
 ﻿import { Component } from '@angular/core';
 import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -8,8 +9,8 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
 @Component({
-    moduleId: module.id,
-    templateUrl: 'pwreset.component.html'
+  selector: 'visbo-pwreset',
+  templateUrl: 'pwreset.component.html'
 })
 
 export class PWResetComponent {
@@ -32,7 +33,6 @@ export class PWResetComponent {
   pwreset() {
     this.loading = true;
     this.model.token = this.token;
-    // this.log(`Reset Password Model ${JSON.stringify(this.model)}`)
 
     this.authenticationService.pwreset(this.model)
       .subscribe(
@@ -41,9 +41,9 @@ export class PWResetComponent {
           this.router.navigate(['login']);
         },
         error => {
-          this.log(`Error during Reset Password ${error.error.message}`)
-          this.alertService.error(error.error.message);
           this.loading = false;
+          this.log(`Error during Reset Password ${error.error.message}`)
+          this.alertService.error(`Password Reset: ${error.error.message}`);
         }
       );
   }

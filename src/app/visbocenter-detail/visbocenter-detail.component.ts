@@ -68,9 +68,18 @@ export class VisboCenterDetailComponent implements OnInit {
         }
       );
   }
+
+  gotoVCAudit(visbocenter: VisboCenter):void {
+    this.router.navigate(['vcAudit/'.concat(visbocenter._id)]);
+  }
+
   goBack(): void {
     // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
+  }
+
+  gotoVPList(visbocenter: VisboCenter):void {
+    this.router.navigate(['vp/'.concat(visbocenter._id)]);
   }
 
   save(): void {

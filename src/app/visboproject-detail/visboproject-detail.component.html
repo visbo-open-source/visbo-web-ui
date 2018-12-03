@@ -1,87 +1,89 @@
 <visbo-navbar></visbo-navbar>
 <div *ngIf="visboproject">
   <div class='container'>
-  <h3>Project: {{ visboproject.name | uppercase }}</h3>
-  <form>
-    <div class="form-group row">
-      <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
-      <input *ngIf="vpIsAdmin" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
-      <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.name }} </label>
-    </div>
-    <div class="form-group row">
-      <label for="vpDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-      <textarea *ngIf="vpIsAdmin" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
-      <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.description }} </label>
-    </div>
-    <div class="form-group row">
-      <label for="vpPublic" class="col-4 col-md-3 col-form-label">Visibility:</label>
-      <select *ngIf="vpIsAdmin" class="col-8 form-control"  name="vpPublic" [(ngModel)]="visboproject.vpPublic" #vpPublic="ngModel" required>
-        <option value = false>Only for users from Visbo Project</option>
-        <option value = true>All users from this Visbo Center and this Visbo Project</option>
-      </select>
-      <label *ngIf="!vpIsAdmin && vpPublic" class="col-8 form-control-static">All users from this Visbo Center and this Visbo Project</label>
-      <label *ngIf="!vpIsAdmin && !vpPublic" class="col-8 form-control-static">Only for users from Visbo Project</label>
-      <div *ngIf="f.submitted && !vpPublic.valid" class="help-block">Visibility of Project must be defined</div>
-    </div>
+    <h3>Project: <a (click)="gotoVPList(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
+    <h5>Visbo Center:
+      <a (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
+    </h5>
+    <form>
+      <div class="form-group row">
+        <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
+        <input *ngIf="vpIsAdmin" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
+        <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.name }} </label>
+      </div>
+      <div class="form-group row">
+        <label for="vpDescription" class="col-4 col-md-3 col-form-label">Description:</label>
+        <textarea *ngIf="vpIsAdmin" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
+        <label *ngIf="!vpIsAdmin" class="col-8 form-control-static">{{ visboproject.description }} </label>
+      </div>
+      <div class="form-group row" >
+        <label for="vpPublic" class="col-4 col-md-3 col-form-label">Visibility:</label>
+        <select *ngIf="vpIsAdmin" class="col-8 form-control"  name=vpPublic [(ngModel)]="visboproject.vpPublic" required>
+          <option value = false>Only for users from Visbo Project</option>
+          <option value = true>All users from this Visbo Center and this Visbo Project</option>
+        </select>
+        <div *ngIf="f.submitted && !vpPublic.valid" class="help-block">Visibility of Project must be defined</div>
+        <label *ngIf="!vpIsAdmin && visboproject.vpPublic" class="col-8 form-control-static" >All users from this Visbo Center and this Visbo Project</label>
+        <label *ngIf="!vpIsAdmin && !visboproject.vpPublic" class="col-8 form-control-static" >Only for users from Visbo Project</label>
+      </div>
 
-    <div class="form-group row">
-      <label for="Created" class="col-4 col-md-3 col-form-label">Created at:</label>
-      <label class="col-8 form-control-static">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-    </div>
-    <div class="form-group row">
-      <label for="Created" class="col-4 col-md-3 col-form-label">Updated at:</label>
-      <label class="col-8 form-control-static">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-    </div>
-  </form>
-  <div>
-    <div class='well'>
-      <div class='row'>
-        <div class='col'>
-          <h5 class='panel-heading'>
-              Project Users
-          </h5>
+      <div class="form-group row">
+        <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
+        <span>
+          <label class="col-6 form-control-static">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+          <label class="col-6 form-control-static align-self-end">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        </span>
+      </div>
+    </form>
+    <div>
+      <div class='well'>
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                Project Users
+            </h5>
+          </div>
+          <div class='col-6 col-md-2 align-self-end' *ngIf="vpIsAdmin">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VpUserModalCreate">
+              Add User
+            </button>
+          </div>
         </div>
-        <div class='col-6 col-md-2 align-self-end' *ngIf="vpIsAdmin">
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary align-self-end" data-toggle="modal" data-target="#VpUserModalCreate">
-            Add User
-          </button>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>Nr.</th>
+                <th>e-mail</th>
+                <th>Role</th>
+                <th *ngIf="vpIsAdmin">Delete</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr *ngFor="let member of visboproject.users; let memberIndex=index"> <!-- class="danger"> -->
+                <td>{{memberIndex+1}}</td>
+                <td>{{member.email}}</td>
+                <td>{{member.role}}</td>
+                <td *ngIf="vpIsAdmin">
+                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                  data-toggle="modal" data-target="#VpUserRemove">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
         </div>
       </div>
-      <div class='panel-body'>
-        <table class='table table-hover'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th>Nr.</th>
-              <th>e-mail</th>
-              <th>Role</th>
-              <th *ngIf="vpIsAdmin">Delete</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let member of visboproject.users; let memberIndex=index"> <!-- class="danger"> -->
-              <td>{{memberIndex+1}}</td>
-              <td>{{member.email}}</td>
-              <td>{{member.role}}</td>
-              <td *ngIf="vpIsAdmin">
-                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
-                data-toggle="modal" data-target="#VpUserRemove">&times;</button>
-              </td>
-            </tr>
-          </tbody>
-          <!--Table body-->
-        </table>
-      </div>
+      <button *ngIf="vpIsAdmin" (click)="save()" class="btn btn-primary">save</button>
+      <button (click)="goBack()">go back</button>
+      <button *ngIf="vpIsAdmin" class="bg-warning" style="float: right" title="Delete Project" data-toggle="modal" data-target="#VpDelete">
+        Delete!
+      </button>
     </div>
-    <button *ngIf="vpIsAdmin" (click)="save()" class="btn btn-primary">save</button>
-    <button (click)="goBack()">go back</button>
-    <button *ngIf="vpIsAdmin" class="bg-warning" style="float: right" title="Delete Project" data-toggle="modal" data-target="#VpDelete">
-      Delete!
-    </button>
   </div>
-</div>
 
 <!-- Modal Add VP User -->
 <div class="modal fade" id="VpUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpUserModalCreateTitle" aria-hidden="true">

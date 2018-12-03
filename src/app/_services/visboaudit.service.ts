@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
+import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
@@ -19,8 +17,8 @@ const httpOptions = {
 
 @Injectable()
 export class VisboAuditService {
-  //   private serviceUrl = 'vc';  // URL to api on same server
-  private serviceUrl = environment.restUrl.concat('/audit');  // URL to web api
+  private serviceBaseUrl = environment.restUrl;  // URL to api on same server
+  private serviceUrl = this.serviceBaseUrl.concat('/audit');  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -46,6 +44,28 @@ export class VisboAuditService {
     }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    return this.http.get<VisboAuditResponse>(url, httpOptions)
+      .pipe(
+        map(response => response.audit),
+        tap(audit => this.log(`fetched ${audit.length} Audits `)),
+        catchError(this.handleError('getVisboAudit', []))
+      );
+  }
+
+  /** GET Audits from the server */
+  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+    var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
+    var queryParams = false
+    if (from) {
+      url = url.concat(queryParams?'&':'?','from=', from.toISOString());
+      queryParams = true;
+    }
+    if (to) {
+      url = url.concat(queryParams?'&':'?','to=', to.toISOString());
+      queryParams = true;
+    }
+
+    this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
     return this.http.get<VisboAuditResponse>(url, httpOptions)
       .pipe(
         map(response => response.audit),
@@ -90,15 +110,11 @@ export class VisboAuditService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
 
-      // user no longer authenticated, remove it from the session
-      if (error.status == 401) {
-        this.log(`${operation} failed: ${error.message}`);
-        sessionStorage.removeItem('currentUser');
-      }
       // Let the app keep running by returning an empty result.
-      return new ErrorObservable(error);
+      return throwError(error);
+      // return new ErrorObservable(error);
     };
   }
 

@@ -12,11 +12,12 @@ import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
 @Component({
-  selector: 'app-sysaudit',
-  templateUrl: './sysaudit.component.html'
+  selector: 'app-visbocenter-audit',
+  templateUrl: './visbocenter-audit.component.html'
 })
-export class SysAuditComponent implements OnInit {
+export class VisboCenterAuditComponent implements OnInit {
 
+  // @Input() visbocenter: VisboCenter;
   audit: VisboAudit[];
   auditIndex: number;
   auditFrom: string;
@@ -40,17 +41,19 @@ export class SysAuditComponent implements OnInit {
   ngOnInit() {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
-    this.getVisboAudits();
+    this.getVisboCenterAudits();
     this.sortTable(undefined);
   }
 
-  onSelect(visboaudit: VisboAudit): void {
-    this.getVisboAudits();
-  }
+  // onSelect(visboaudit: VisboAudit): void {
+  //   this.getVisboAudits();
+  // }
 
-  getVisboAudits(): void {
+  getVisboCenterAudits(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    var currentUser = this.authenticationService.getActiveUser();
     var from: Date, to: Date;
-    this.log(`Audit getVisboAudits from ${this.auditFrom} to ${this.auditTo}`);
+    this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo}`);
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditFrom) {
       from = new Date(this.auditFrom)
@@ -60,8 +63,8 @@ export class SysAuditComponent implements OnInit {
       to.setDate(to.getDate() + 1)
     }
     if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboAudits(true, from, to)
+    this.log(`Audit getVisboCenterAudits recalc from ${from} to ${to} filter ${this.auditText}`);
+    this.visboauditService.getVisboCenterAudits(id, from, to)
       .subscribe(
         audit => {
           this.audit = [];
@@ -83,11 +86,6 @@ export class SysAuditComponent implements OnInit {
           }
         }
       );
-  }
-
-  gotoDetail(visboaudit: VisboAudit):void {
-    this.log(`navigate to Audit Detail ${visboaudit._id}`);
-    this.router.navigate(['sysaudit/'+visboaudit._id]);
   }
 
   downloadVisboAudit():void {
@@ -273,6 +271,6 @@ export class SysAuditComponent implements OnInit {
 
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('Sys Audit: ' + message);
+    this.messageService.add('VC Audit: ' + message);
   }
 }

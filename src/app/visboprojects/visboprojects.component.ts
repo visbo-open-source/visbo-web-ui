@@ -72,6 +72,7 @@ export class VisboProjectsComponent implements OnInit {
                   this.alertService.error(error.error.message);
                   // redirect to login and come back to current URL
                   if (error.status == 401) {
+                    this.alertService.error("Session expired, please log in again", true);
                     this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
                   }
                 }
@@ -160,10 +161,12 @@ export class VisboProjectsComponent implements OnInit {
 
   gotoClickedRow(visboproject: VisboProject):void {
     // console.log("clicked row %s", visboproject.name);
+    this.log(`goto VPV for VP ${visboproject.name}`);
     this.router.navigate(['vpv/'.concat(visboproject._id)]);
   }
 
   gotoDetail(visboproject: VisboProject):void {
+    this.log(`goto Detail for VP ${visboproject.name}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
