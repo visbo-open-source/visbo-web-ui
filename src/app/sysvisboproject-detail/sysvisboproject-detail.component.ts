@@ -27,7 +27,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
   vpIsAdmin: boolean;
   combinedPerm: VGPermission = undefined;
   userIndex: number;
-  
+
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
   sortGroupColumn: number = 1;
@@ -122,7 +122,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
     // this.goBack();
     this.visboprojectService.deleteVisboProject(visboproject)
       .subscribe(
-        () => { this.goBack },
+        () => { this.goBack() },
         error => {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {

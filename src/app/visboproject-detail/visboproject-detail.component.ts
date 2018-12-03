@@ -112,13 +112,20 @@ export class VisboProjectDetailComponent implements OnInit {
       );
   }
 
+  goBack(): void {
+    this.location.back();
+  }
+
   delete(visboproject: VisboProject): void {
     // remove item from list
     // this.visboprojectService.deleteVisboProject(visboproject).subscribe();
     // this.goBack();
     this.visboprojectService.deleteVisboProject(visboproject)
       .subscribe(
-        () => { this.goBack },
+        () => {
+            this.log(`delete VP success`);
+            this.goBack();
+          },
         error => {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
@@ -131,10 +138,6 @@ export class VisboProjectDetailComponent implements OnInit {
           }
         }
       );
-  }
-
-  goBack(): void {
-    this.location.back();
   }
 
   gotoVCDetail(visboproject: VisboProject):void {
