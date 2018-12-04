@@ -125,9 +125,10 @@ export class VisboCenterService  {
 
   /** POST: a new Visbo Center to the server */
   addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
-    this.log(`Calling HTTP Request: ${this.vcUrl} ${JSON.stringify(visbocenter)}`);
+    this.log(`Calling HTTP Request: ${url} ${JSON.stringify(visbocenter)}`);
+    var url = this.vcUrl + '?sysadmin=1'
 
-    return this.http.post<VisboCenterResponse>(this.vcUrl, visbocenter, httpOptions).pipe(
+    return this.http.post<VisboCenterResponse>(url, visbocenter, httpOptions).pipe(
       map(response => response.vc[0] ),
       tap(vc => this.log(`added VisboCenter ${vc.name} with id=${vc._id}`)),
       catchError(this.handleError<VisboCenter>('addVisboCenter'))
