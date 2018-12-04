@@ -60,7 +60,7 @@ export class VisboCenterDetailComponent implements OnInit {
 
     // this.log(`VisboCenter Detail of: ${id}`);
     // this.log(`VisboCenter Detail of: ${id} permVCDef ${this.permVC["2"]} ${this.permVC.ViewAudit}`);
-    this.visbocenterService.getVisboCenter(id)
+    this.visbocenterService.getVisboCenter(id) 
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
