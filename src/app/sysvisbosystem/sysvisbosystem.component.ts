@@ -10,7 +10,6 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP  } from '../_models/visbogroup';
-import { VCUser } from '../_models/visbocenter';
 import { VisboCenterService }  from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService }  from '../_services/visboproject.service';

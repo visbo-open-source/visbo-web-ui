@@ -12,6 +12,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService }  from '../_services/visbocenter.service';
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { LoginComponent } from '../login/login.component';
 
@@ -24,9 +25,12 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
-  vcIsAdmin: boolean;
   sortAscending: boolean;
   sortColumn: number;
+
+  combinedPerm: VGPermission = undefined;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -48,6 +52,16 @@ export class VisboProjectsComponent implements OnInit {
     this.getVisboProjects();
   }
 
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vp & perm) > 0
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vc & perm) > 0
+  }
+
   getVisboProjects(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
@@ -59,8 +73,7 @@ export class VisboProjectsComponent implements OnInit {
         .subscribe(
           visbocenters => {
             this.vcActive = visbocenters;
-            this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-            this.log(`User is Admin? ${this.vcIsAdmin}`)
+            this.combinedPerm = visbocenters.perm;
             this.visboprojectService.getVisboProjects(id)
               .subscribe(
                 visboprojects => {

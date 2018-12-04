@@ -1,10 +1,3 @@
-export class VPUser {
-  _id: string;
-  email: string;
-  role: string;
-  userId: string;
-}
-
 export class VPVariant {
   _id: string;
   variantName: string;
@@ -20,12 +13,6 @@ export class VPLock {
   expiresAt: Date;
 }
 
-export class VPUserResponse {
-  state: string;
-  message: string;
-  users: [ VPUser ]
-}
-
 export class VisboProject {
   _id: string;
   updatedAt: string;
@@ -38,7 +25,6 @@ export class VisboProject {
   vpvCount: number;
   variant: [VPVariant];
   lock: [VPLock];
-  users: [ VPUser ];
   vc: {
     name: string;
   }

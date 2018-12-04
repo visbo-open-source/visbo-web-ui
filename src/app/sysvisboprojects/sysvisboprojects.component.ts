@@ -25,8 +25,11 @@ export class SysVisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
-  vcIsAdmin: boolean;
+
   combinedPerm: VGPermission = undefined;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
+
   sortAscending: boolean;
   sortColumn: number;
 
@@ -63,8 +66,8 @@ export class SysVisboProjectsComponent implements OnInit {
         .subscribe(
           visbocenters => {
             this.vcActive = visbocenters;
-            this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-            this.log(`User is Admin? ${this.vcIsAdmin}`)
+            this.combinedPerm = visbocenters.perm;
+            this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`)
             this.visboprojectService.getVisboProjects(id, true)
               .subscribe(
                 visboprojects => {

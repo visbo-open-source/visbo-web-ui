@@ -8,7 +8,6 @@ import { MessageService } from '../_services/message.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { VPUser } from '../_models/visboproject';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -60,8 +59,7 @@ export class VisboProjectDetailComponent implements OnInit {
         visboproject => {
           this.visboproject = visboproject
           this.combinedPerm = visboproject.perm;
-
-          this.log(`User Perm ${JSON.stringify(this.combinedPerm)}`)
+          this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`)
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
