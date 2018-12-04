@@ -24,7 +24,7 @@
       </div>
     </form>
     <div class="btn-toolbar" style="">
-      <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
+      <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVPAudit(visboproject)">View Audit</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
       <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
     </div>
@@ -52,6 +52,7 @@
                 <th>Nr.</th>
                 <th (click)="sortUserTable(1)">e-mail</th>
                 <th (click)="sortUserTable(2)">Group</th>
+                <th>Type</th>
                 <th *ngIf="hasVPPerm(permVP.ManagePerm)">Delete</th>
               </tr>
             </thead>
@@ -61,9 +62,12 @@
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.email}}</td>
                 <td>{{member.groupName}}</td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm)">
-                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                <td>{{member.groupType == 'VP' ? '' : 'Global'}}</td>
+                <td *ngIf="hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
+                  <button class="btn btn-sm" title="Remove User" (click)='helperRemoveUser(memberIndex)'
                   data-toggle="modal" data-target="#VpUserRemove">&times;</button>
+                </td>
+                <td *ngIf="!(hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP')">
                 </td>
               </tr>
             </tbody>
@@ -105,13 +109,15 @@
             <tbody>
               <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
-                <td>{{member.name}}</td>
+                <td (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate">{{member.name}}</td>
                 <td>{{member.users.length}}</td>
                 <td *ngIf="member.global">Global</td>
                 <td *ngIf="!member.global"></td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm)">
-                  <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                <td *ngIf="hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false">
+                  <button class="btn btn-sm" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
                   data-toggle="modal" data-target="#VpGroupRemove">&times;</button>
+                </td>
+                <td *ngIf="!(hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false)">
                 </td>
                 <td>
                   <button class="Detail" title="Detail of Group"
@@ -150,7 +156,7 @@
             <label for="group" class="col-form-label">Group:</label>
             <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
               <option></option>
-              <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
+              <option *ngFor="let groupItem of vgGroupsInvite">{{groupItem.name}}</option>
             </select>
             <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
           </div>
@@ -160,7 +166,7 @@
           </div>
           <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
           <div class="form-group">
-            <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary" >Invite(insensitive)</button>
+            <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary" >Invite</button>
             <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary" (click)="addNewVPUser()" data-dismiss="modal">Invite</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
@@ -212,7 +218,8 @@
   <div class="modal-dialog modal-dialog-centered" role="document" >
     <div class="modal-content">
       <div class="modal-header">
-        <h5 *ngIf="actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Modify a Group in the Visbo Project</h5>
+        <h5 *ngIf="actGroup.confirm == 'Modify'" class="modal-title" id="VpGroupModalCenterTitle">Modify a Group in the Visbo Project</h5>
+        <h5 *ngIf="actGroup.confirm == 'View'" class="modal-title" id="VpGroupModalCenterTitle">View a Group in the Visbo Project</h5>
         <h5 *ngIf="!actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Add a new Group to the Visbo Project</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -222,7 +229,8 @@
         <form name="actGroup" #f="ngForm" novalidate>
           <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
             <label for="groupName" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+            <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+            <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
             <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
           </div>
           <!-- VP Permissions -->
@@ -253,8 +261,8 @@
           </div>
 
           <div class="form-group">
-            <button *ngIf="!(f.form.valid && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
-            <button *ngIf="(f.form.valid && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+            <!-- <button *ngIf="!(f.form.valid && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button> -->
+            <button *ngIf="(f.form.valid && hasVPPerm(permVP.ManagePerm) && actGroup.confirm != 'View')" type="submit" class="btn btn-primary" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>

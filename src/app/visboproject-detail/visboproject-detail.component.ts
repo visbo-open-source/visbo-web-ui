@@ -20,6 +20,7 @@ export class VisboProjectDetailComponent implements OnInit {
   newUserInvite: any = {};
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
+  vgGroupsInvite: VGGroup[];
   actGroup: any = {};
   userIndex: number;
   groupIndex: number;
@@ -94,7 +95,9 @@ export class VisboProjectDetailComponent implements OnInit {
         mix => {
           this.vgUsers = mix.users;
           this.vgGroups = mix.groups;
-          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`)
+          this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType == 'VP');
+
+          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}, Invite Groups ${this.vgGroupsInvite.length}`)
           this.sortUserTable();
           this.sortGroupTable();
         },
@@ -140,6 +143,11 @@ export class VisboProjectDetailComponent implements OnInit {
       );
   }
 
+  gotoVPAudit(visboproject: VisboProject):void {
+    this.log(`goto VP Audit: ${visboproject._id}`);
+    this.router.navigate(['vpAudit/'.concat(visboproject._id)]);
+  }
+
   gotoVCDetail(visboproject: VisboProject):void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
@@ -175,7 +183,8 @@ export class VisboProjectDetailComponent implements OnInit {
   addNewVPUser(): void {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
+    var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
+    var groupId = inviteGroup._id;
     var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
     var vpid = this.visboproject._id
     this.log(`Add VisboProject User: ${email} Group: ${groupName}/${groupId} VP: ${vpid}`);
@@ -189,6 +198,8 @@ export class VisboProjectDetailComponent implements OnInit {
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
+          newUserGroup.groupType = inviteGroup.groupType;
+          newUserGroup.internal = inviteGroup.internal;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
           this.sortUserTable();
@@ -275,10 +286,12 @@ export class VisboProjectDetailComponent implements OnInit {
   initGroup(curGroup: VGGroup): void {
 
     if (curGroup) {
-      this.actGroup.confirm = 'Modify';
+      this.actGroup.confirm = (curGroup.groupType == 'VP') ? 'Modify' : 'View';
       this.actGroup.gid = curGroup._id;
       this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
       this.actGroup.groupName = curGroup.name;
+      this.actGroup.groupType = curGroup.groupType;
+      this.actGroup.internal = curGroup.internal;
       this.actGroup.checkGlobal = curGroup.global;
       this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0
       this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0
@@ -296,10 +309,12 @@ export class VisboProjectDetailComponent implements OnInit {
       this.actGroup.confirm = 'Add';
       this.actGroup.gid = undefined;
       this.actGroup.groupName = '';
+      this.actGroup.groupType = 'VP';
+      this.actGroup.internal = false;
       this.actGroup.checkGlobal = false;
       this.actGroup.checkedView = true;
     }
-    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid}`);
+    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
 
   }
 

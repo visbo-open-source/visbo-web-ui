@@ -65,7 +65,8 @@ constructor(
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
-          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `)
+          this.combinedPerm = visbocenter.perm;
+          // this.log(`VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `)
         },
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
@@ -126,7 +127,8 @@ constructor(
   }
 
   gotoVPList(visbocenter: VisboCenter):void {
-    if (this.hasVPPerm(this.permVC.View))
+    this.log(`GoTo VP List ${JSON.stringify(this.combinedPerm)}`)
+    if (this.hasVPPerm(this.permVP.View))
       this.router.navigate(['sysvp/'.concat(visbocenter._id)]);
   }
 

@@ -297,10 +297,12 @@ export class VisboCenterDetailComponent implements OnInit {
   initGroup(curGroup: VGGroup): void {
 
     if (curGroup) {
-      this.actGroup.confirm = 'Modify';
+      this.actGroup.confirm = (curGroup.groupType == 'VC') ? 'Modify' : 'View';
       this.actGroup.gid = curGroup._id;
       this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
       this.actGroup.groupName = curGroup.name;
+      this.actGroup.groupType = curGroup.groupType;
+      this.actGroup.internal = curGroup.internal;
       this.actGroup.checkGlobal = curGroup.global;
       this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0
       this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0
@@ -318,10 +320,12 @@ export class VisboCenterDetailComponent implements OnInit {
       this.actGroup.confirm = 'Add';
       this.actGroup.gid = undefined;
       this.actGroup.groupName = '';
+      this.actGroup.groupType = 'VC';
+      this.actGroup.internal = false;
       this.actGroup.checkGlobal = false;
       this.actGroup.checkedView = true;
     }
-    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid}`);
+    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
 
   }
 

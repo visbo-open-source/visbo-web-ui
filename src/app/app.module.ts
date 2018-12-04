@@ -41,6 +41,7 @@ import { SysUserService } from './_services/sysuser.service';
 import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent } from './visboproject-detail/visboproject-detail.component';
+import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -87,6 +88,7 @@ import { SysLogService } from './_services/syslog.service';
     SysVisboCenterDetailComponent,
     SysVisboProjectsComponent,
     SysVisboProjectDetailComponent,
+    VisboProjectAuditComponent,
     SysAuditComponent,
     SysUserComponent,
     SysLogComponent

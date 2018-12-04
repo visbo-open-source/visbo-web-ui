@@ -104,7 +104,7 @@ export class VisboCenterService  {
                 response.vc[0].perm = response.perm;
                 return response.vc[0]
               }),
-      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id}`)),
+      tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
       catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
   }

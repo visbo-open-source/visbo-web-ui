@@ -221,7 +221,8 @@
         <form name="actGroup" #f="ngForm" novalidate>
           <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
             <label for="groupName" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+            <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+            <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
             <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
           </div>
           <!-- VC Permissions -->

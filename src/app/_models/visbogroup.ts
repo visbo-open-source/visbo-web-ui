@@ -27,8 +27,9 @@ export class VGGroup {
   _id: string;
   name: string;
   vcid: string;
-  vpids: string[]; 
+  vpids: string[];
   groupType: string;
+  internal: boolean;
   global: boolean;
   permission: VGPermission;
   users: [VGUser]
@@ -39,6 +40,8 @@ export class VGUserGroup {
   email: string;
   groupId: string;
   groupName: string;
+  groupType: string;
+  internal: boolean;
 }
 
 export class VGUserGroupMix {
