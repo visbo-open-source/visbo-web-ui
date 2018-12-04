@@ -223,7 +223,7 @@
             <label for="groupName" class="col-form-label">Name:</label>
             <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
             <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
-            <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
+            <div *ngIf="f.submitted && !actGroup.groupName.valid" class="help-block">Group Name is required</div>
           </div>
           <!-- VC Permissions -->
           <div>Define Visbo Center Permission</div>
