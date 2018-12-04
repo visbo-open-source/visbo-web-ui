@@ -112,11 +112,11 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  addproject(name: string, vcid: string, desc: string, vpPublic: boolean): void {
+  addproject(name: string, vcid: string, desc: string): void {
     name = name.trim();
-    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} Public ${vpPublic}`);
+    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} `);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject).subscribe(
+    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid } as VisboProject).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
