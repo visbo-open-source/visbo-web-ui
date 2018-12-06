@@ -250,6 +250,7 @@ export class SysVisboSystemComponent implements OnInit {
     if (newGroup.checkedSystemView) perm += this.permSystem.View;
     if (newGroup.checkedSystemViewAudit) perm += this.permSystem.ViewAudit;
     if (newGroup.checkedSystemViewLog) perm += this.permSystem.ViewLog;
+    if (newGroup.checkedSystemModify) perm += this.permSystem.Modify;
     if (newGroup.checkedSystemCreateVC) perm += this.permSystem.CreateVC;
     if (newGroup.checkedSystemDeleteVC) perm += this.permSystem.DeleteVC;
     if (newGroup.checkedSystemManagePerm) perm += this.permSystem.ManagePerm;
@@ -290,6 +291,7 @@ export class SysVisboSystemComponent implements OnInit {
       this.actGroup.checkedSystemView = (curGroup.permission.system & this.permSystem.View) > 0
       this.actGroup.checkedSystemViewAudit = (curGroup.permission.system & this.permSystem.ViewAudit) > 0
       this.actGroup.checkedSystemViewLog = (curGroup.permission.system & this.permSystem.ViewLog) > 0
+      this.actGroup.checkedSystemModify = (curGroup.permission.system & this.permSystem.Modify) > 0
       this.actGroup.checkedSystemCreateVC = (curGroup.permission.system & this.permSystem.CreateVC) > 0
       this.actGroup.checkedSystemDeleteVC = (curGroup.permission.system & this.permSystem.DeleteVC) > 0
       this.actGroup.checkedSystemManagePerm = (curGroup.permission.system & this.permSystem.ManagePerm) > 0

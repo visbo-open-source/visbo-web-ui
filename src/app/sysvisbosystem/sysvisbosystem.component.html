@@ -220,6 +220,10 @@
               <label class="custom-control-label" for="sysperm3">View Log Files</label>
           </div>
           <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="sysperm3a" name="checkedSystemModify" [(ngModel)]="actGroup.checkedSystemModify" #checkedSystemModify="ngModel" >
+              <label class="custom-control-label" for="sysperm3a">Modify System</label>
+          </div>
+          <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="sysperm4" name="checkedSystemCreateVC" [(ngModel)]="actGroup.checkedSystemCreateVC" #checkedSystemCreateVC="ngModel" >
               <label class="custom-control-label" for="sysperm4">Create Visbo Center</label>
           </div>
