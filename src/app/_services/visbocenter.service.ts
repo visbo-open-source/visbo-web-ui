@@ -21,6 +21,7 @@ export class VisboCenterService  {
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
   private combinedPerm: VGPermission = undefined;
+  private systemVC: number = undefined;
 
   constructor(
     private http: HttpClient,
@@ -55,6 +56,7 @@ export class VisboCenterService  {
                   response.vc[0].perm = response.perm;
                   this.combinedPerm = response.perm;
                   sessionStorage.setItem('combinedPerm', JSON.stringify(response.perm));
+                  sessionStorage.setItem('systemVC', response.vc[0]._id);
                 }
                 return response.vc
               }),
@@ -73,6 +75,18 @@ export class VisboCenterService  {
     else
       result = this.combinedPerm;
     this.log(`SysAdmin Role: ${JSON.stringify(result)}`);
+
+    return result;
+  }
+
+  /* VCID of System */
+  getSysVCId() {
+    var result: any;
+    if (this.systemVC == undefined)
+      result = sessionStorage.getItem('systemVC');
+    else
+      result = this.systemVC;
+    this.log(`Sysem VC ID: ${result}`);
 
     return result;
   }
@@ -125,8 +139,8 @@ export class VisboCenterService  {
 
   /** POST: a new Visbo Center to the server */
   addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
-    this.log(`Calling HTTP Request: ${url} ${JSON.stringify(visbocenter)}`);
     var url = this.vcUrl + '?sysadmin=1'
+    this.log(`Calling HTTP Request: ${url} ${JSON.stringify(visbocenter)}`);
 
     return this.http.post<VisboCenterResponse>(url, visbocenter, httpOptions).pipe(
       map(response => response.vc[0] ),

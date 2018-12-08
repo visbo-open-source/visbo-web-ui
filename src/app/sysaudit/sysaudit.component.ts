@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+// import from 'rxjs/Rx';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
@@ -97,7 +98,8 @@ export class SysAuditComponent implements OnInit {
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'createdAt' + separator
+    data = 'date' + separator
+          + 'time UTC' + separator
           + 'email' + separator
           + 'actiondDescription' + separator
           + 'action' + separator
@@ -114,9 +116,12 @@ export class SysAuditComponent implements OnInit {
           + 'ip' + separator
           + 'userId' + separator
           + 'userAgent' +'\n';
+    var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
+      createdAt = new Date(this.audit[i].createdAt).toISOString();
       userAgent = this.audit[i].userAgent.replace(/,/g, ";");
-      lineItem = this.audit[i].createdAt + separator
+      lineItem = createdAt.substr(0, 10) + separator
+                  + createdAt.substr(11, 12) + separator
                   + this.audit[i].user.email + separator
                   + this.audit[i].actionDescription + separator
                   + this.audit[i].action + separator
@@ -138,8 +143,14 @@ export class SysAuditComponent implements OnInit {
     this.log(`sysAudit CSV Len ${data.length} `);
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
-    this.log(`Open URL ${url}`);
-    window.open(url);
+    var fileName = 'auditlog.csv'
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   helperAuditIndex(auditIndex: number):void {

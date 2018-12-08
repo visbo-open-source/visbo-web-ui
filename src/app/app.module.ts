@@ -35,6 +35,7 @@ import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audi
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
+import { VisboSettingService } from './_services/visbosetting.service';
 import { SysUserService } from './_services/sysuser.service';
 
 // Visbo Projects
@@ -106,6 +107,7 @@ import { SysLogService } from './_services/syslog.service';
     AuthenticationService,
     UserService,
     VisboCenterService,
+    VisboSettingService,
     VisboProjectService,
     VisboProjectVersionService,
     VisboAuditService,
