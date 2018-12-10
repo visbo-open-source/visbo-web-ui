@@ -339,6 +339,7 @@ export class VisboProjectDetailComponent implements OnInit {
             this.log(`Modify VisboProject Group Push: ${JSON.stringify(group)}`);
             this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup._id !== newGroup._id);
             this.vgGroups.push(group);
+            this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType == 'VP');
             // update User List to reflect new Group Name & ID
             for (var i=0; i < this.vgUsers.length; i++) {
               if (this.vgUsers[i].groupId == newGroup._id) {
@@ -371,6 +372,7 @@ export class VisboProjectDetailComponent implements OnInit {
             // Add Group to Group list
             // this.log(`Add VisboCenter Group Push: ${JSON.stringify(group)}`);
             this.vgGroups.push(group);
+            this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType == 'VP');
             this.alertService.success(`Group ${group.name} added successfully`);
           },
           error => {
@@ -389,15 +391,16 @@ export class VisboProjectDetailComponent implements OnInit {
     }
   }
 
-  removeVPGroup(group: VGGroup ): void {
-    this.log(`Remove VisboProject Group: ${group.name}/${group._id} VC: ${group.vcid}`);
-    this.visboprojectService.deleteVPGroup(group)
+  removeVPGroup(group: VGGroup, vpid: string ): void {
+    this.log(`Remove VisboProject Group: ${group.name}/${group._id} VP: ${vpid}`);
+    this.visboprojectService.deleteVPGroup(group, vpid)
       .subscribe(
         response => {
           this.log(`Remove VisboProject Group result: ${JSON.stringify(response)}`);
           // filter user from vgUsers
           this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup !== group);
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
+          this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType == 'VP');
           this.alertService.success(`Group ${group.name} removed successfully`);
         },
         error => {

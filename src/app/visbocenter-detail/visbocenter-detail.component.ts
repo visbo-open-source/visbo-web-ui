@@ -240,7 +240,7 @@ export class VisboCenterDetailComponent implements OnInit {
           // this.visbocenter.users = users;
           // filter user from vgUsers
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser !== user);
-          // TODO: filter user from vgGroups
+          // filter user from vgGroups
           for (var i=0; i<this.vgGroups.length; i++) {
             if (this.vgGroups[i]._id == user.groupId) {
               for (var j=0; j<this.vgGroups[i].users.length; j++) {
@@ -352,7 +352,7 @@ export class VisboCenterDetailComponent implements OnInit {
             // this.log(`Modify VisboCenter Group Push: ${JSON.stringify(group)}`);
             this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup._id !== newGroup._id);
             this.vgGroups.push(group);
-            // TODO update User List to reflect new Group Name & ID
+            // update User List to reflect new Group Name & ID
             for (var i=0; i < this.vgUsers.length; i++) {
               if (this.vgUsers[i].groupId == newGroup._id) {
                 this.vgUsers[i].groupName = group.name

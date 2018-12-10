@@ -166,7 +166,7 @@ export class SysVisboSystemComponent implements OnInit {
     this.visbocenterService.addVCUser(email, groupId, inviteMessage, vcid, true )
       .subscribe(
         group => {
-          // TODO: Add User to User & Group list
+          // Add User to User & Group list
           var newUserGroup = new VGUserGroup();
           newUserGroup.userId = group.users.filter(user => user.email == email)[0].userId;
           newUserGroup.email = email;
@@ -215,7 +215,7 @@ export class SysVisboSystemComponent implements OnInit {
           // this.visbocenter.users = users;
           // filter user from vcUsers
           this.vcUsers = this.vcUsers.filter(vcUser => vcUser !== user);
-          // TODO: filter user from vcGroups
+          // filter user from vcGroups
           for (var i=0; i<this.vcGroups.length; i++) {
             if (this.vcGroups[i]._id == user.groupId) {
               for (var j=0; j<this.vcGroups[i].users.length; j++) {
@@ -347,7 +347,7 @@ export class SysVisboSystemComponent implements OnInit {
             // this.log(`Modify VisboCenter Group Push: ${JSON.stringify(group)}`);
             this.vcGroups = this.vcGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
             this.vcGroups.push(group);
-            // TODO update User List to reflect new Group Name & ID
+            // update User List to reflect new Group Name & ID
             for (var i=0; i < this.vcUsers.length; i++) {
               if (this.vcUsers[i].groupId == newGroup._id) {
                 this.vcUsers[i].groupName = group.name

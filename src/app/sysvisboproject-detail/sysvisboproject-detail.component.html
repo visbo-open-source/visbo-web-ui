@@ -35,12 +35,6 @@
                 Visbo Project Users
             </h5>
           </div>
-          <div *ngIf="hasVPPerm(permVP.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VpUserModalCreate">
-              Add User
-            </button>
-          </div>
         </div>
         <div class='panel-body'>
           <table class='table table-hover'>
@@ -50,7 +44,6 @@
                 <th>Nr.</th>
                 <th (click)="sortUserTable(1)">e-mail</th>
                 <th (click)="sortUserTable(2)">Group</th>
-                <th *ngIf="hasVPPerm(permVP.ManagePerm)">Delete</th>
               </tr>
             </thead>
             <!--Table body-->
@@ -59,10 +52,6 @@
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.email}}</td>
                 <td>{{member.groupName}}</td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm)">
-                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
-                  data-toggle="modal" data-target="#VpUserRemove">&times;</button>
-                </td>
               </tr>
             </tbody>
             <!--Table body-->
@@ -79,12 +68,6 @@
                 Visbo Project Groups
             </h5>
           </div>
-          <div *ngIf="hasVPPerm(permVP.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VpGroupModalCreate">
-              Add Group
-            </button>
-          </div>
         </div>
         <div class='panel-body'>
           <table class='table table-hover'>
@@ -95,7 +78,6 @@
                 <th (click)="sortGroupTable(1)">Group</th>
                 <th (click)="sortGroupTable(2)">Members</th>
                 <th >Flag</th>
-                <th *ngIf="hasVPPerm(permVP.ManagePerm)">Delete</th>
                 <th>Info</th>
               </tr>
             </thead>
@@ -107,10 +89,6 @@
                 <td>{{member.users.length}}</td>
                 <td *ngIf="member.global">Global</td>
                 <td *ngIf="!member.global"></td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm)">
-                  <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
-                  data-toggle="modal" data-target="#VpGroupRemove">&times;</button>
-                </td>
                 <td>
                   <button class="Detail" title="Detail of Group"
                    (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate">i</button>
@@ -124,39 +102,55 @@
     </div>
   </div>
 
-  <!-- Modal Add VP User -->
-  <div class="modal fade" id="VpUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpUserModalCreateTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+
+  <!-- Modal Add/Change System Group -->
+  <div class="modal fade" id="VpGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpGroupModalCreateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VpUserModalCenterTitle">Add a new User to the Project</h5>
+          <h5 *ngIf="actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Modify a Group in the Visbo Center</h5>
+          <h5 *ngIf="!actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Add a new Group to the Visbo Center</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form name="newUserInvite" #f="ngForm" novalidate>
+          <form name="actGroup" #f="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
-              <label for="email" class="col-form-label">Name:</label>
-              <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
-              <div *ngIf="f.submitted && !email.valid" class="help-block">E-Mail address is required</div>
+              <label for="groupName" class="col-form-label">Name:</label>
+              <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+              <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
             </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !role.valid }">
-              <label for="role" class="col-form-label">Role:</label>
-              <select class="form-control"  name="role" [(ngModel)]="newUserInvite.role" #role="ngModel" required>
-                <option>User</option>
-                <option>Admin</option>
-              </select>
-              <div *ngIf="f.submitted && !role.valid" class="help-block">Role of User must be defined</div>
+            <!-- VP Permissions -->
+            <div>
+              <div>Define Visbo Project Permission</div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP1" name="checkedVPView" [(ngModel)]="actGroup.checkedVPView" #checkedVPView="ngModel">
+                  <label class="custom-control-label" for="permVP1">View Visbo Project</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP2" name="checkedVPViewAudit" [(ngModel)]="actGroup.checkedVPViewAudit" #checkedVPViewAudit="ngModel" >
+                  <label class="custom-control-label" for="permVP2">View Project Audit</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP3" name="checkedVPModify" [(ngModel)]="actGroup.checkedVPModify" #checkedVPModify="ngModel" >
+                  <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedCreateVariant" [(ngModel)]="actGroup.checkedCreateVariant" #checkedCreateVariant="ngModel" >
+                  <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP5" name="checkedVPManagePerm" [(ngModel)]="actGroup.checkedVPManagePerm" #checkedVPManagePerm="ngModel" >
+                  <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="permVP6" name="checkedVPDelete" [(ngModel)]="actGroup.checkedVPDelete" #checkedVPDelete="ngModel" >
+                  <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
+              </div>
             </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
-              <label for="inviteMessage" class="col-form-label">Message:</label>
-              <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" required> </textarea>
-              <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
-            </div>
+
             <div class="form-group">
-              <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Invite</button>
-              <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVPUser()" data-dismiss="modal">Invite</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
           </form>
@@ -164,4 +158,5 @@
       </div>
     </div>
   </div>
+
 </div>

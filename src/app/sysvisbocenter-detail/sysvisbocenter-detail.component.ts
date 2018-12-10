@@ -20,8 +20,8 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 export class SysVisboCenterDetailComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
-  vcUsers: VGUserGroup[];
-  vcGroups: VGGroup[];
+  vgUsers: VGUserGroup[];
+  vgGroups: VGGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
   userIndex: number;
@@ -101,9 +101,9 @@ constructor(
     this.visbocenterService.getVCUsers(id, true)
       .subscribe(
         mix => {
-          this.vcUsers = mix.users;
-          this.vcGroups = mix.groups;
-          this.log(`fetched Users ${this.vcUsers.length}, Groups ${this.vcGroups.length}`)
+          this.vgUsers = mix.users;
+          this.vgGroups = mix.groups;
+          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`)
           this.sortUserTable();
           this.sortGroupTable();
         },
@@ -188,7 +188,7 @@ constructor(
   addNewVCUser(): void {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vcGroups.filter(group => group.name == groupName)[0]._id;
+    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
     var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
     var vcid = this.visbocenter._id
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
@@ -196,18 +196,18 @@ constructor(
     this.visbocenterService.addVCUser(email, groupId, inviteMessage, vcid, true )
       .subscribe(
         group => {
-          // TODO: Add User to User & Group list
+          // Add User to User & Group list
           var newUserGroup = new VGUserGroup();
           newUserGroup.userId = group.users.filter(user => user.email == email)[0].userId;
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
-          this.vcUsers.push(newUserGroup);
+          this.vgUsers.push(newUserGroup);
           this.sortUserTable();
-          for (var i=0; i< this.vcGroups.length; i++) {
-            if (this.vcGroups[i]._id == group._id) {
-              this.vcGroups[i] = group;
+          for (var i=0; i< this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id == group._id) {
+              this.vgGroups[i] = group;
               break;
             }
           }
@@ -243,14 +243,14 @@ constructor(
         users => {
           // this.log(`Remove VisboCenter User result: ${JSON.stringify(result)}`);
           // this.visbocenter.users = users;
-          // filter user from vcUsers
-          this.vcUsers = this.vcUsers.filter(vcUser => vcUser !== user);
-          // TODO: filter user from vcGroups
-          for (var i=0; i<this.vcGroups.length; i++) {
-            if (this.vcGroups[i]._id == user.groupId) {
-              for (var j=0; j<this.vcGroups[i].users.length; j++) {
-                if (this.vcGroups[i].users[j].userId == user.userId) {
-                  this.vcGroups[i].users.splice(j, 1); // remove item from array
+          // filter user from vgUsers
+          this.vgUsers = this.vgUsers.filter(vcUser => vcUser !== user);
+          // filter user from vgGroups
+          for (var i=0; i<this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id == user.groupId) {
+              for (var j=0; j<this.vgGroups[i].users.length; j++) {
+                if (this.vgGroups[i].users[j].userId == user.userId) {
+                  this.vgGroups[i].users.splice(j, 1); // remove item from array
                   break;
                 }
               }
@@ -351,12 +351,12 @@ constructor(
           group => {
             // Add Group to Group list
             // this.log(`Modify VisboCenter Group Push: ${JSON.stringify(group)}`);
-            this.vcGroups = this.vcGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
-            this.vcGroups.push(group);
-            // TODO update User List to reflect new Group Name & ID
-            for (var i=0; i < this.vcUsers.length; i++) {
-              if (this.vcUsers[i].groupId == newGroup._id) {
-                this.vcUsers[i].groupName = group.name
+            this.vgGroups = this.vgGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
+            this.vgGroups.push(group);
+            // update User List to reflect new Group Name & ID
+            for (var i=0; i < this.vgUsers.length; i++) {
+              if (this.vgUsers[i].groupId == newGroup._id) {
+                this.vgUsers[i].groupName = group.name
               }
             }
             this.sortUserTable();
@@ -384,7 +384,7 @@ constructor(
           group => {
             // Add Group to Group list
             // this.log(`Add VisboCenter Group Push: ${JSON.stringify(group)}`);
-            this.vcGroups.push(group);
+            this.vgGroups.push(group);
             this.alertService.success(`Group ${group.name} added successfully`);
           },
           error => {
@@ -409,9 +409,9 @@ constructor(
       .subscribe(
         response => {
           this.log(`Remove VisboCenter Group result: ${JSON.stringify(response)}`);
-          // filter user from vcUsers
-          this.vcGroups = this.vcGroups.filter(vcGroup => vcGroup !== group);
-          this.vcUsers = this.vcUsers.filter(vcUser => vcUser.groupId !== group._id);
+          // filter user from vgUsers
+          this.vgGroups = this.vgGroups.filter(vcGroup => vcGroup !== group);
+          this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
           this.alertService.success(`Group ${group.name} removed successfully`);
         },
         error => {
@@ -432,7 +432,7 @@ constructor(
 
   sortUserTable(n: number = undefined) {
 
-    if (!this.vcUsers) return
+    if (!this.vgUsers) return
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortUserColumn == undefined) {
       if (n != this.sortUserColumn) {
@@ -449,7 +449,7 @@ constructor(
     // this.log(`Sort Users Column ${this.sortUserColumn}`); // log to console instead
     if (this.sortUserColumn == 1) {
       // sort user email
-      this.vcUsers.sort(function(a, b) {
+      this.vgUsers.sort(function(a, b) {
         var result = 0
         if (a.email > b.email)
           result = 1;
@@ -459,7 +459,7 @@ constructor(
       })
     } else if (this.sortUserColumn == 2) {
       // sort user group name
-      this.vcUsers.sort(function(a, b) {
+      this.vgUsers.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)
         if (a.groupName.toLowerCase() > b.groupName.toLowerCase())
@@ -471,14 +471,14 @@ constructor(
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortUserColumn, this.sortUserAscending)
     if (!this.sortUserAscending) {
-      this.vcUsers.reverse();
+      this.vgUsers.reverse();
       // console.log("Sort VC Column %d %s Reverse", this.sortUserColumn, this.sortUserAscending)
     }
   }
 
   sortGroupTable(n: number = undefined) {
 
-    if (!this.vcGroups) return
+    if (!this.vgGroups) return
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortGroupColumn == undefined) {
       if (n != this.sortGroupColumn) {
@@ -495,7 +495,7 @@ constructor(
     // this.log(`Sort Groups Column ${this.sortGroupColumn}`); // log to console instead
     if (this.sortGroupColumn == 1) {
       // sort user email
-      this.vcGroups.sort(function(a, b) {
+      this.vgGroups.sort(function(a, b) {
         var result = 0
         if (a.name.toLowerCase() > b.name.toLowerCase())
           result = 1;
@@ -505,7 +505,7 @@ constructor(
       })
     } else if (this.sortGroupColumn == 2) {
       // sort user group name
-      this.vcGroups.sort(function(a, b) {
+      this.vgGroups.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)
         return b.users.length - a.users.length
@@ -513,7 +513,7 @@ constructor(
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortGroupColumn, this.sortGroupAscending)
     if (!this.sortGroupAscending) {
-      this.vcGroups.reverse();
+      this.vgGroups.reverse();
       // console.log("Sort VC Column %d %s Reverse", this.sortGroupColumn, this.sortGroupAscending)
     }
   }

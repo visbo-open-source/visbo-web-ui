@@ -92,20 +92,20 @@ export class VisboCenterService  {
   }
 
   /** GET VisboCenter by id. Return `undefined` when id not found */
-  /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  getVisboCenterNo404<Data>(id: string): Observable<VisboCenter> {
-    const url = `${this.vcUrl}/?id=${id}`;
-    this.log(`Calling HTTP Request: ${this.vcUrl}`);
-    return this.http.get<VisboCenter[]>(url)
-      .pipe(
-        map(visbocenters => visbocenters[0]), // returns a {0|1} element array
-        tap(h => {
-          var outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboCenter ${id}`);
-        }),
-        catchError(this.handleError<VisboCenter>(`getVisboCenter id: ${id}`))
-      );
-  }
+  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // getVisboCenterNo404<Data>(id: string): Observable<VisboCenter> {
+  //   const url = `${this.vcUrl}/?id=${id}`;
+  //   this.log(`Calling HTTP Request: ${this.vcUrl}`);
+  //   return this.http.get<VisboCenter[]>(url)
+  //     .pipe(
+  //       map(visbocenters => visbocenters[0]), // returns a {0|1} element array
+  //       tap(h => {
+  //         var outcome = h ? `fetched` : `did not find`;
+  //         this.log(`${outcome} VisboCenter ${id}`);
+  //       }),
+  //       catchError(this.handleError<VisboCenter>(`getVisboCenter id: ${id}`))
+  //     );
+  // }
 
   /** GET VisboCenter by id. Will 404 if id not found */
   getVisboCenter(id: string, sysadmin: boolean = false): Observable<VisboCenter> {

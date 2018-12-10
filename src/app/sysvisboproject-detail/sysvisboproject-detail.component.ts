@@ -398,33 +398,6 @@ export class SysVisboProjectDetailComponent implements OnInit {
     }
   }
 
-  removeVPGroup(group: VGGroup ): void {
-    this.log(`Remove VisboProject Group: ${group.name}/${group._id} VC: ${group.vcid}`);
-    this.visboprojectService.deleteVPGroup(group)
-      .subscribe(
-        response => {
-          this.log(`Remove VisboProject Group result: ${JSON.stringify(response)}`);
-          // filter user from vgUsers
-          this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup !== group);
-          this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
-          this.alertService.success(`Group ${group.name} removed successfully`);
-        },
-        error => {
-          this.log(`Remove VisboProject Group error: ${error.error.message}`);
-          if (error.status == 403) {
-            this.alertService.error(`Permission Denied: Remove Group from Visbo Project`);
-          } else if (error.status == 401) {
-            this.log('Re-login add VC user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
-            this.log(`Error during remove Group from VP user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
-          }
-        }
-      );
-  }
-
   sortUserTable(n: number = undefined) {
 
     if (!this.vgUsers) return

@@ -97,7 +97,7 @@ export class VisboAuditService {
   }
 
   // /** GET Audit by id. Return `undefined` when id not found */
-  // /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   // getVisboAuditNo404<Data>(id: string): Observable<VisboAudit> {
   //   const url = `${this.serviceUrl}/?id=${id}`;
   //   this.log(`Calling HTTP Request: ${this.serviceUrl}`);

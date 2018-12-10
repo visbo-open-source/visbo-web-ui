@@ -210,8 +210,8 @@ export class VisboProjectService {
   }
 
   /** DELETE: remove a Group from the Visbo Project */
-  deleteVPGroup (group: VGGroup, sysadmin: boolean = false): Observable<any> {
-    var url = `${this.vpUrl}/${group.vpids[0]}/group/${group._id}`;
+  deleteVPGroup (group: VGGroup, vpid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vpUrl}/${vpid}/group/${group._id}`;
     if (sysadmin) url = url.concat('?sysadmin=1')
     this.log(`Calling HTTP Request: ${url} for Group ${group.name} `);
     return this.http.delete<VGResponse>(url, httpOptions)
@@ -232,7 +232,7 @@ export class VisboProjectService {
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.error.message} ${error.status}`);
-      // TODO: send the error to remote logging infrastructure
+      // send the error to remote logging infrastructure
       this.log(`${operation} failed: ${error.error.message}`);
       // Let the app keep running by returning an empty result.
       return throwError(error);
