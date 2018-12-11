@@ -3,7 +3,8 @@ export class VisboSetting {
   _id: string;
   vcid: string;
   name: string;
-  uid: number;
+  type: string;
+  userId: string;
   value: any;
   timestamp: Date;
 };
