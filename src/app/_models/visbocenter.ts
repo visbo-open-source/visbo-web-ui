@@ -5,6 +5,7 @@ export class VisboCenter {
   name: string;
   description: string;
   vpCount: number;
+  deletedAt:Date;
   perm: {system: number, vc: number, vp: number};
 }
 
