@@ -21,6 +21,7 @@ export class SysVisboCentersComponent implements OnInit {
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
   combinedPerm: VGPermission = undefined;
+  deleted: boolean = false;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -38,17 +39,25 @@ export class SysVisboCentersComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getVisboCenters();
+    this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
+    this.getVisboCenters(this.deleted);
     this.combinedPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visbocenter: VisboCenter): void {
-    this.getVisboCenters();
+    this.getVisboCenters(this.deleted);
   }
 
-  getVisboCenters(): void {
-    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)}`);
-    this.visbocenterService.getVisboCenters(true)
+  toggleVisboCenters(): void {
+    this.deleted = !this.deleted
+    this.log(`VC toggleVisboCenters ${this.deleted}`);
+    this.getVisboCenters(this.deleted);
+  }
+
+  getVisboCenters(deleted: boolean): void {
+    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)} deleted ${deleted} ${this.deleted}`);
+    this.visbocenterService.getVisboCenters(true, deleted)
       .subscribe(
         visbocenters => {
           this.visbocenters = visbocenters;
@@ -127,8 +136,9 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   gotoDetail(visbocenter: VisboCenter):void {
-    this.log(`navigate to VC Detail ${visbocenter._id}`);
-    this.router.navigate(['sysvcDetail/'+visbocenter._id]);
+    var deleted = visbocenter.deletedAt ? true : false;
+    this.log(`navigate to VC Detail ${visbocenter._id} Deleted ${deleted}`);
+    this.router.navigate(['sysvcDetail/'+visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   gotoClickedRow(visbocenter: VisboCenter):void {

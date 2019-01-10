@@ -48,7 +48,7 @@
                 <th>Nr.</th>
                 <th (click)="sortUserTable(1)">e-mail</th>
                 <th (click)="sortUserTable(2)">Group</th>
-                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
               </tr>
             </thead>
             <!--Table body-->
@@ -57,7 +57,7 @@
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.email}}</td>
                 <td>{{member.groupName}}</td>
-                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
                   <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
                   data-toggle="modal" data-target="#VcUserRemove">&times;</button>
                 </td>
@@ -92,7 +92,7 @@
                 <th (click)="sortGroupTable(1)">Group</th>
                 <th (click)="sortGroupTable(2)">Members</th>
                 <th >Flag</th>
-                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
                 <th>Info</th>
               </tr>
             </thead>
@@ -104,7 +104,7 @@
                 <td>{{member.users.length}}</td>
                 <td *ngIf="member.global">Global</td>
                 <td *ngIf="!member.global"></td>
-                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
                   <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
                   data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
                 </td>
@@ -119,10 +119,14 @@
         </div>
       </div>
     </div>
-    <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
-    <button (click)="goBack()">go back</button>
-    <button *ngIf="hasSystemPerm(permSystem.DeleteVC)" class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
+    <button *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
+    <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary">Restore</button>
+    <button class="btn btn-secondary" (click)="goBack()">go back</button>
+    <button *ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">
       Delete!
+    </button>
+    <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">
+      Destroy!
     </button>
   </div>
 
@@ -280,8 +284,8 @@
             </div>
 
             <div class="form-group">
-              <button *ngIf="!(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
-              <button *ngIf="(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+              <button *ngIf="!(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
+              <button *ngIf="(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
           </form>
@@ -339,7 +343,8 @@
         </div>
         <div class="modal-body">
           <div>
-            <label class="bg-warning">Do you really want to delete this Visbo Center? </label>
+            <label *ngIf="!deleted" class="bg-warning">Do you really want to delete this Visbo Center? </label>
+            <label *ngIf="deleted" class="bg-danger text-white">Do you really want to destroy this Visbo Center? </label>
           </div>
           <form>
             <div class="form-group">
@@ -358,7 +363,8 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
+          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
+          <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visbocenter)" data-dismiss="modal">Destroy</button>
         </div>
       </div>
     </div>

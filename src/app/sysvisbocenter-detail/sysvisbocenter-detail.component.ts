@@ -31,6 +31,7 @@ export class SysVisboCenterDetailComponent implements OnInit {
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
+  deleted: boolean = false;
 
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
@@ -49,6 +50,7 @@ constructor(
   ) { }
 
   ngOnInit() {
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboCenter();
     this.getVisboCenterUsers();
     this.combinedPerm = this.visbocenterService.getSysAdminRole()
@@ -59,8 +61,8 @@ constructor(
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    this.log(`VisboCenter Detail of: ${id}`);
-    this.visbocenterService.getVisboCenter(id, true)
+    this.log(`VisboCenter Detail of: ${id} Deleted ${this.deleted}`);
+    this.visbocenterService.getVisboCenter(id, true, this.deleted)
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
@@ -97,8 +99,8 @@ constructor(
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    this.log('VisboCenter UserList of: ' + id);
-    this.visbocenterService.getVCUsers(id, true)
+    this.log(`VisboCenter UserList of ${id} Deleted ${this.deleted}`);
+    this.visbocenterService.getVCUsers(id, true, this.deleted)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;
@@ -137,7 +139,8 @@ constructor(
   }
 
   save(): void {
-    this.visbocenterService.updateVisboCenter(this.visbocenter, true)
+    this.log(`PUT VC: ${this.visbocenter.name} ID: ${this.visbocenter._id} Deleted: ${this.deleted}`);
+    this.visbocenterService.updateVisboCenter(this.visbocenter, true, this.deleted)
       .subscribe(
         vc => {
           this.alertService.success(`Visbo Center ${vc.name} updated successfully`, true);
@@ -160,8 +163,8 @@ constructor(
   }
 
   delete(visbocenter: VisboCenter): void {
-    this.log(`Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
-    this.visbocenterService.deleteVisboCenter(visbocenter, true)
+    this.log(`Delete VC: ${visbocenter.name} ID: ${visbocenter._id} Deleted: ${this.deleted}`);
+    this.visbocenterService.deleteVisboCenter(visbocenter, true, this.deleted)
       .subscribe(
         vc => {
           this.alertService.success(`Visbo Center ${visbocenter.name} deleted successfully`, true);

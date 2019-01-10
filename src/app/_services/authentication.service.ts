@@ -55,7 +55,6 @@ export class AuthenticationService {
 
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentToken');
-        sessionStorage.removeItem('isSysAdmin');
 
     }
 

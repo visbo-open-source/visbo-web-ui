@@ -30,9 +30,17 @@ export class VisboCenterService  {
 
 
   /** GET VisboCenters from the server */
-  getVisboCenters(sysadmin: boolean = false): Observable<VisboCenter[]> {
+  getVisboCenters(sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter[]> {
     var url = this.vcUrl
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    var separator = '?'
+    if (sysadmin) {
+      url = url.concat(separator, 'sysadmin=1');
+      separator = '&'
+    }
+    if (deleted) {
+      url = url.concat(separator, 'deleted=1');
+      separator = '&'
+    }
 
     this.log(`Calling HTTP Request: ${url} `);
     return this.http.get<VisboCenterResponse>(url, httpOptions)
@@ -108,9 +116,17 @@ export class VisboCenterService  {
   // }
 
   /** GET VisboCenter by id. Will 404 if id not found */
-  getVisboCenter(id: string, sysadmin: boolean = false): Observable<VisboCenter> {
+  getVisboCenter(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     var url = `${this.vcUrl}/${id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    var separator = '?'
+    if (sysadmin) {
+      url = url.concat(separator, 'sysadmin=1');
+      separator = '&'
+    }
+    if (deleted) {
+      url = url.concat(separator, 'deleted=1');
+      separator = '&'
+    }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url).pipe(
       map(response => {
@@ -151,11 +167,18 @@ export class VisboCenterService  {
 
 
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<any> {
-    //const id = typeof visbocenter === 'number' ? visbocenter : visbocenter._id;
+  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
     const id = visbocenter._id;
     var url = `${this.vcUrl}/${id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    var separator = '?'
+    if (sysadmin) {
+      url = url.concat(separator, 'sysadmin=1');
+      separator = '&'
+    }
+    if (deleted) {
+      url = url.concat(separator, 'deleted=1');
+      separator = '&'
+    }
 
     this.log(`Calling HTTP Request: ${url} `);
 
@@ -166,9 +189,17 @@ export class VisboCenterService  {
   }
 
   /** PUT: update the Visbo Center on the server */
-  updateVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false): Observable<VisboCenter> {
+  updateVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     var url = `${this.vcUrl}/${visbocenter._id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1')
+    var separator = '?'
+    if (sysadmin) {
+      url = url.concat(separator, 'sysadmin=1');
+      separator = '&'
+    }
+    if (deleted) {
+      url = url.concat(separator, 'deleted=1');
+      separator = '&'
+    }
     this.log(`Calling HTTP Request PUT: ${url} `);
     return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
       .pipe(
@@ -179,11 +210,18 @@ export class VisboCenterService  {
   }
 
   // GET VisboCenter Users for a specified VC from the server
-  getVCUsers(vcid: string, sysadmin: boolean = false): Observable<any> {
+  getVCUsers(vcid: string, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
     var url = `${this.vcUrl}/${vcid}/group?userlist=1`;
+    var separator = '&'
     if (sysadmin) {
-      url = url.concat('&sysadmin=1')
+      url = url.concat(separator, 'sysadmin=1');
+      separator = '&'
     }
+    if (deleted) {
+      url = url.concat(separator, 'deleted=1');
+      separator = '&'
+    }
+    this.log(`Calling HTTP Request GET Users: ${url} `);
     return this.http.get<VGResponse>(url, httpOptions)
       .pipe(
         map(response => {
