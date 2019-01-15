@@ -1,7 +1,7 @@
 {
   "name": "visbo-client",
-  "version": "0.0.0",
-  "license": "MIT",
+  "version": "1.0.0",
+  "license": "Visbo GmbH",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
