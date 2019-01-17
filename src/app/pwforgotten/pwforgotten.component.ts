@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -17,9 +17,16 @@ export class PWForgottenComponent {
 
   constructor(
     private messageService: MessageService,
+    private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
     private alertService: AlertService) { }
+
+  ngOnInit() {
+    if (this.route.snapshot.queryParams.email)
+      this.model.username = this.route.snapshot.queryParams.email
+    this.log(`Password Forgotten for User ${this.model.username}`)
+  }
 
   pwforgotten() {
     this.loading = true;

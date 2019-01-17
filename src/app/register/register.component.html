@@ -28,8 +28,11 @@
           </div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel" required >
+            <label for="password-new" data-toggle="tooltip" data-placement="top" data-delay='50'
+              title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
+              Password (*)
+            </label>
+            <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off">
             <div *ngIf="f.submitted && !password.valid" class="help-block">Password is required</div>
         </div>
         <div class="form-group">

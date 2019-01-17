@@ -58,8 +58,13 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
-        data => {
-          this.log(`Login Success check sysVC now`);
+        user => {
+          // this.log(`Login Success Result ${JSON.stringify(user)}`);
+          if (user.status && user.status.expiresAt) {
+            var expiration = new Date(user.status.expiresAt)
+            this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
+            this.alertService.error(`Your password expires at ${expiration.toLocaleString()}. Please change your password before`, true);
+          }
           this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
@@ -78,6 +83,13 @@ export class LoginComponent implements OnInit {
           this.loading = false;
         }
       );
+  }
+
+  pwforgotten() {
+    var email = this.model.username.trim();
+    this.log(`Login: Forward to password forgotten ${email} `);
+    // MS TODO: Check if user name is an e-Mail Address
+    this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
   }
 
   relogin() {

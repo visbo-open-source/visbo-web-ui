@@ -124,6 +124,7 @@ export class VisboProjectDetailComponent implements OnInit {
     this.visboprojectService.deleteVisboProject(visboproject)
       .subscribe(
         () => {
+            this.alertService.success(`Visbo Project ${visboproject.name} deleted successfully`, true);
             this.log(`delete VP success`);
             this.goBack();
           },
