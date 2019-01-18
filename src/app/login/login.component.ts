@@ -36,7 +36,8 @@ export class LoginComponent implements OnInit {
     if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    // console.log(`return url ${this.returnUrl}`)
+    console.log(`return url ${this.returnUrl}`)
+    if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
   restVersion() {
