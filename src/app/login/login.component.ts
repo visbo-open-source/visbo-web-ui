@@ -7,12 +7,15 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
   model: any = {};
+  restVersionString: string = undefined;
   loading = false;
   returnUrl: string;
 
@@ -28,6 +31,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // reset login status
     this.authenticationService.logout();
+    // this.restVersion();
 
     if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
@@ -35,16 +39,36 @@ export class LoginComponent implements OnInit {
     // console.log(`return url ${this.returnUrl}`)
   }
 
+  restVersion() {
+    if (this.restVersionString) return;
+    this.authenticationService.restVersion()
+      .subscribe(
+        data => {
+          this.restVersionString = data.version;
+          this.log(`Version Status check success ${this.restVersionString}`);
+        },
+        error => {
+          this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
+  }
+
   login() {
     this.loading = true;
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
-        data => {
-          this.log(`Login Success check sysVC now`);
-          this.visbocenterService.getSysVisboCenters()
+        user => {
+          // this.log(`Login Success Result ${JSON.stringify(user)}`);
+          if (user.status && user.status.expiresAt) {
+            var expiration = new Date(user.status.expiresAt)
+            this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
+            this.alertService.error(`Your password expires at ${expiration.toLocaleString()}. Please change your password before`, true);
+          }
+          this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
-                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()}`);
+                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
                 this.router.navigate([this.returnUrl]);
               },
               error => {
@@ -59,6 +83,13 @@ export class LoginComponent implements OnInit {
           this.loading = false;
         }
       );
+  }
+
+  pwforgotten() {
+    var email = this.model.username.trim();
+    this.log(`Login: Forward to password forgotten ${email} `);
+    // MS TODO: Check if user name is an e-Mail Address
+    this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
   }
 
   relogin() {

@@ -21,7 +21,7 @@ export class JwtInterceptor implements HttpInterceptor {
    //  intercept(observable: Observable<Response>): Observable<Response> {
    //     return observable.catch((err, source) => {
    //       //if (err.status  == 401 && !_.endsWith(err.url, 'api/auth/login')) {
-   //       if (err.status  == 401 ) { /* MS TOdo: do not redirect on login page */
+   //       if (err.status  == 401 ) { 
    //             this._router.navigate(['/login']);
    //             return Observable.empty();
    //         } else {

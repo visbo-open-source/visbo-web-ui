@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+// import from 'rxjs/Rx';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
@@ -25,6 +26,7 @@ export class SysAuditComponent implements OnInit {
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
+  today: Date = new Date();
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -41,6 +43,7 @@ export class SysAuditComponent implements OnInit {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
     this.getVisboAudits();
+    this.sortTable(undefined);
   }
 
   onSelect(visboaudit: VisboAudit): void {
@@ -58,13 +61,18 @@ export class SysAuditComponent implements OnInit {
       to = new Date(this.auditTo)
       to.setDate(to.getDate() + 1)
     }
-
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to}`);
+    if (this.auditText) this.auditText = this.auditText.trim();
+    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
     this.visboauditService.getVisboAudits(true, from, to)
       .subscribe(
         audit => {
-          this.audit = audit;
-          this.sortTable(1);
+          this.audit = [];
+          for (var i = 0; i < audit.length; i++){
+            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
+              this.audit.push(audit[i])
+            }
+          }
+          this.sortTable(undefined);
           this.log('get Audit success');
         },
         error => {
@@ -72,6 +80,7 @@ export class SysAuditComponent implements OnInit {
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
@@ -83,14 +92,92 @@ export class SysAuditComponent implements OnInit {
     this.router.navigate(['sysaudit/'+visboaudit._id]);
   }
 
+  downloadVisboAudit():void {
+    this.log(`sysAudit Download ${this.audit.length} Items`);
+    var data: string;
+    var separator = "\t"
+    var lineItem: string
+    var userAgent: string
+    data = 'date' + separator
+          + 'time UTC' + separator
+          + 'email' + separator
+          + 'actiondDescription' + separator
+          + 'action' + separator
+          + 'url' + separator
+          + 'actionInfo' + separator
+          + 'responseTime' + separator
+          + 'responseStatus' + separator
+          + 'vcid' + separator
+          + 'vcname' + separator
+          + 'vpid' + separator
+          + 'vpname' + separator
+          + 'vpvid' + separator
+          + 'size' + separator
+          + 'ip' + separator
+          + 'userId' + separator
+          + 'userAgent' +'\n';
+    var createdAt;
+    for (var i = 0; i < this.audit.length; i++) {
+      createdAt = new Date(this.audit[i].createdAt).toISOString();
+      userAgent = this.audit[i].userAgent.replace(/,/g, ";");
+      lineItem = createdAt.substr(0, 10) + separator
+                  + createdAt.substr(11, 12) + separator
+                  + this.audit[i].user.email + separator
+                  + this.audit[i].actionDescription + separator
+                  + this.audit[i].action + separator
+                  + this.audit[i].url + separator
+                  + this.audit[i].actionInfo + separator
+                  + (this.audit[i].result ? this.audit[i].result.time : '') + separator
+                  + (this.audit[i].result ? this.audit[i].result.status : '') + separator
+                  + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
+                  + (this.audit[i].vc ? this.audit[i].vc.name : '') + separator
+                  + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
+                  + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
+                  + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
+                  + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
+                  + this.audit[i].ip + separator
+                  + this.audit[i].user.userId + separator
+                  + userAgent + '\n';
+      data = data.concat(lineItem)
+    }
+    this.log(`sysAudit CSV Len ${data.length} `);
+    var blob = new Blob([data], { type: 'text/plain' });
+    var url= window.URL.createObjectURL(blob);
+    var fileName = 'auditlog.csv'
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   helperAuditIndex(auditIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex
   }
 
+  helperFormatBytes(a, b = 2):string {
+    if(0 == a)
+      return "0 B";
+    var c = 1024, d = b || 2;
+    var e = ["B","KB","MB","GB","TB","PB","EB","ZB","YB"];
+    var f = Math.floor(Math.log(a)/Math.log(c));
+    return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]
+  }
+
+  pageAuditIndex(increment: number): void {
+    var newAuditIndex: number;
+    newAuditIndex = this.auditIndex + increment;
+    if (newAuditIndex < 0) newAuditIndex = 0
+    if (newAuditIndex >= this.audit.length) newAuditIndex = this.audit.length-1
+    this.auditIndex = newAuditIndex
+  }
+
   helperResponseText(status: number): string {
     if (status == 200) return "Success"
-    if (status == 304) return "Success (Unchanged)"
+    if (status == 304) return "Success"
     if (status == 400) return "Bad Request"
     if (status == 401) return "Not Authenticated"
     if (status == 403) return "Permission Denied"
@@ -100,26 +187,41 @@ export class SysAuditComponent implements OnInit {
     return status.toString()
   }
 
+  helperShortenText(text: string, len: number): string {
+    if (!text || !len || len < 5 || text.length <= len)
+      return (text);
+    return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
+  }
+
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
+  }
+
+  isToday(checkDate: Date): Boolean {
+//    this.log(`Check Date ${checkDate} ${checkDate.toDateString()}`);
+    return true
   }
 
   sortTable(n) {
     if (!this.audit) return
     this.log(`Sort Table Column ${n}`)
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
+    if (n != undefined) {
+      // sort a different column
       if (n != this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
-      }
-      if (this.sortAscending == undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = (n == 2 || n == 3 || n == 4) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
-      }
-      else this.sortAscending = !this.sortAscending;
+      } else if (this.sortAscending != undefined)
+        this.sortAscending = !this.sortAscending;
+    } else {
+      this.sortColumn = 1
+      this.sortAscending = undefined;
+    }
+    if (this.sortAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortAscending = (n == 2 || n == 3 || n == 4) ? true : false;
+      // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
     }
     // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn == 1) {
@@ -169,6 +271,14 @@ export class SysAuditComponent implements OnInit {
         else if (a.result.status < b.result.status)
           result = -1;
         return result
+      })
+    } else if (this.sortColumn == 6) {
+      this.audit.sort(function(a, b) {
+        return a.result.time - b.result.time;
+      })
+    } else if (this.sortColumn == 7) {
+      this.audit.sort(function(a, b) {
+        return (a.result.size || 0) - (b.result.size || 0);
       })
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
