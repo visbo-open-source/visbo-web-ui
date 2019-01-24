@@ -24,9 +24,10 @@
           <th class="d-none d-md-table-cell">Nr.</th>
           <!-- <th>Name</th> -->
           <th (click)="sortVPVTable(1)">Changed</th>
+          <th class="d-none d-md-table-cell">Status</th>
           <th (click)="sortVPVTable(2)" class="d-none d-md-table-cell">End Date</th>
           <th (click)="sortVPVTable(3)">Ampel</th>
-          <th (click)="sortVPVTable(4)">Erlös</th>
+          <th (click)="sortVPVTable(4)">Budget</th>
           <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">Variant Name</th>
           <!-- <th>Info</th> -->
         </tr>
@@ -37,11 +38,12 @@
           <td class="d-none d-md-table-cell">{{vpvIndex+1}}</td>
           <!-- <td>{{vpv.name}}</td> -->
           <td class="d-none d-lg-table-cell">{{vpv.timestamp | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td class="d-none d-md-table-cell">{{vpv.status}}</td>
           <td class="d-none d-md-table-cell d-lg-none">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
           <td class="d-md-none">{{vpv.timestamp | date :'MMM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
           <td>{{vpv.ampelStatus}}</td>
-          <td>{{vpv.Erloes}}</td>
+          <td>{{vpv.Erloes | number : '1.2-2'}}</td>
           <td class="d-none d-md-table-cell">{{vpv.variantName}}</td>
           <!-- <td>
             <button class="Detail" title="Detail of Visbo Project Version"

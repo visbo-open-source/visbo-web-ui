@@ -6,9 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-// import { VisboCenter } from '../_models/visbocenter';
 import { VisboProject, VisboProjectResponse } from '../_models/visboproject';
-import { VPUser, VPUserResponse } from '../_models/visboproject';
+import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
 
@@ -77,7 +76,11 @@ export class VisboProjectService {
     this.log(`Calling HTTP Request for a specific entry: ${url} params ${params}`);
     return this.http.get<VisboProjectResponse>(url, { headers , params })
       .pipe(
-        map(response => response.vp[0]),
+        map(response => {
+                  // TODO: is there a better way to transfer the perm?
+                  response.vp[0].perm = response.perm;
+                  return response.vp[0]
+                }),
         tap(visboproject => this.log(`fetched vp id=${visboproject._id} ${visboproject.name}`)),
         catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
       );
@@ -133,33 +136,89 @@ export class VisboProjectService {
       );
   }
 
-  /** POST: add a new User to the Visbo Project */
-  addVPUser (user: VPUser, message: string, vpid: string, sysAdmin: boolean = false): Observable<VPUser> {
-    const url = `${this.vpUrl}/${vpid}/user`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysadmin', '1')
+  // GET VisboProject Users for a specified VP from the server
+  getVPUsers(vpid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vpUrl}/${vpid}/group?userlist=1`;
+    if (sysadmin) {
+      url = url.concat('&sysadmin=1')
     }
-    this.log(`Calling HTTP Request: ${url} with param sysadmin ${JSON.stringify(params)} for ${user.email} as ${user.role} in VP ${vpid} `);
-    return this.http.post<VPUserResponse>(url, user, { headers , params })
+    return this.http.get<VGResponse>(url, httpOptions)
       .pipe(
-        map(response => response.users[0]),
-        tap(users => this.log(`added Visbo User with id=${users._id}`)),
-        catchError(this.handleError<VPUser>('addVPUser'))
+        map(response => {
+          var userGroupMix = new VGUserGroupMix();
+          userGroupMix.users = response.users;
+          userGroupMix.groups = response.groups;
+          return userGroupMix
+        }),
+        // tap(users => this.log(`fetched Users & Groups Users `)),
+        catchError(this.handleError('getVisboProjectUsers', []))
       );
   }
 
+  /** POST: add a new User to the Visbo Project */
+  addVPUser (email: string, groupId: string, message: string, vpid: string, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vpUrl}/${vpid}/group/${groupId}/user`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    var reqBody: any = {};
+    reqBody.email = email;
+    reqBody.message = message;
+    this.log(`Calling HTTP Request: ${url} for ${email} `);
+    return this.http.post<VGResponse>(url, reqBody, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`added Visbo User to Group with id=${group._id}`)),
+        catchError(this.handleError<any>('addVPUser'))
+      );
+  }
 
   /** DELETE: remove a User from the Visbo Project */
-  deleteVPUser (user: VPUser, vpid: string): Observable<[VPUser]> {
-    const url = `${this.vpUrl}/${vpid}/user/${user.userId}?role=${user.role}`;
-    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.role} in VP ${vpid} `);
-    return this.http.delete<VisboProjectResponse>(url, httpOptions)
+  deleteVPUser (user: VGUserGroup, vpid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vpUrl}/${vpid}/group/${user.groupId}/user/${user.userId}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} `);
+    return this.http.delete<VGResponse>(url, httpOptions)
     .pipe(
-      map(response => response.vp[0].users),
-      tap(users => this.log(`deleted VisboProject User ${user.email} from ${vpid} `)),
-      catchError(this.handleError<any>('deleteVisboCenterUser'))
+      tap(users => this.log(`deleted Visbo Project User ${user.email}`)),
+      catchError(this.handleError<any>('deleteVisboProjectUser'))
+    );
+  }
+
+  /** POST: add a new Group to the Visbo Project */
+  addVPGroup (newGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vpUrl}/${newGroup.vpids[0]}/group`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${newGroup.name} `);
+    return this.http.post<VGResponse>(url, newGroup, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`added Visbo Group with id=${group._id}`)),
+        catchError(this.handleError<any>('addVPGroup'))
+      );
+  }
+
+  /** PUT: modify a VP Group in the Visbo Project (Change: Name, Global, Permission)*/
+  modifyVPGroup (actGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+    var url = `${this.vpUrl}/${actGroup.vpids[0]}/group/${actGroup._id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for ${actGroup.name} Perm: ${JSON.stringify(actGroup.permission)} `);
+    return this.http.put<VGResponse>(url, actGroup, httpOptions)
+      .pipe(
+        map(response => response.groups[0]),
+        tap(group => this.log(`modified Visbo Group with id=${JSON.stringify(group)}`)),
+        catchError(this.handleError<any>('addVPGroup'))
+      );
+  }
+
+  /** DELETE: remove a Group from the Visbo Project */
+  deleteVPGroup (group: VGGroup, vpid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vpUrl}/${vpid}/group/${group._id}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for Group ${group.name} `);
+    return this.http.delete<VGResponse>(url, httpOptions)
+    .pipe(
+      // map(response => response.vc[0].users),
+      tap(groups => this.log(`deleted Visbo Project Group ${group.name}`)),
+      catchError(this.handleError<any>('deleteVisboProjectGroup'))
     );
   }
 
@@ -173,7 +232,7 @@ export class VisboProjectService {
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.error.message} ${error.status}`);
-      // TODO: send the error to remote logging infrastructure
+      // send the error to remote logging infrastructure
       this.log(`${operation} failed: ${error.error.message}`);
       // Let the app keep running by returning an empty result.
       return throwError(error);

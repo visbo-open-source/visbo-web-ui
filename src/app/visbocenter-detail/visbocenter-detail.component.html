@@ -5,22 +5,27 @@
     <form>
       <div class="form-group row">
         <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
-        <input *ngIf="vcIsAdmin" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
-        <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.name }} </label>
+        <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
       </div>
       <div class="form-group row">
         <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-        <textarea *ngIf="vcIsAdmin" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
-        <label *ngIf="!vcIsAdmin" class="col-8 form-control-static">{{ visbocenter.description }} </label>
+        <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
       </div>
       <div class="form-group row">
         <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
         <label class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
         <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-        <button class="flow-right" (click)="gotoVCAudit(visbocenter)">Audit</button>
       </div>
     </form>
-    <div>
+    <div class="btn-toolbar" style="">
+      <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
+      <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
+      <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+    </div>
+
+    <div *ngIf="!showGroups" >
       <div >
         <div class='row'>
           <div class='col'>
@@ -28,7 +33,7 @@
                 Visbo Center Users
             </h5>
           </div>
-          <div *ngIf="vcIsAdmin" class='col'>
+          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
               Add User
@@ -41,18 +46,18 @@
             <thead>
               <tr>
                 <th>Nr.</th>
-                <th>e-mail</th>
-                <th>Role</th>
-                <th *ngIf="vcIsAdmin">Delete</th>
+                <th (click)="sortUserTable(1)">e-mail</th>
+                <th (click)="sortUserTable(2)">Group</th>
+                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
               </tr>
             </thead>
             <!--Table body-->
             <tbody>
-              <tr *ngFor="let member of visbocenter.users; let memberIndex=index"> <!-- class="danger"> -->
+              <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
                 <td>{{member.email}}</td>
-                <td>{{member.role}}</td>
-                <td *ngIf="vcIsAdmin">
+                <td>{{member.groupName}}</td>
+                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
                   <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
                   data-toggle="modal" data-target="#VcUserRemove">&times;</button>
                 </td>
@@ -62,11 +67,66 @@
           </table>
         </div>
       </div>
-      <button *ngIf="vcIsAdmin" (click)="save()" class="btn btn-primary">save</button>
+      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
+      <button (click)="goBack()">go back</button>
+    </div>
+
+    <div *ngIf="showGroups" >
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                Visbo Center Groups
+            </h5>
+          </div>
+          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
+              Add Group
+            </button>
+          </div>
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>Nr.</th>
+                <th (click)="sortGroupTable(1)">Group</th>
+                <th (click)="sortGroupTable(2)">Members</th>
+                <th >Flag</th>
+                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr *ngFor="let member of vgGroups; let memberIndex=index">
+                <td>{{memberIndex+1}}</td>
+                <td>{{member.name}}</td>
+                <td>{{member.users.length}}</td>
+                <td *ngIf="member.global">Global</td>
+                <td *ngIf="!member.global"></td>
+                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                  <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                  data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
+                </td>
+                <td>
+                  <button class="Detail" title="Detail of Group"
+                   (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
+                </td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
+        </div>
+      </div>
+      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
       <button (click)="goBack()">go back</button>
     </div>
   </div>
 </div>
+
 <!-- Modal Add VC User -->
 <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -84,22 +144,23 @@
             <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
             <div *ngIf="f.submitted && !email.valid" class="help-block">E-mail address is required</div>
           </div>
-          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !role.valid }">
-            <label for="role" class="col-form-label">Role:</label>
-            <select class="form-control" name="role" [(ngModel)]="newUserInvite.role" #role="ngModel" required>
-              <option>User</option>
-              <option>Admin</option>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !group.valid }">
+            <label for="group" class="col-form-label">Group:</label>
+            <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
+              <option></option>
+              <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
             </select>
-            <div *ngIf="f.submitted && !role.valid" class="help-block">Role of User must be defined</div>
+            <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
           </div>
           <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
             <label for="inviteMessage" class="col-form-label">Message:</label>
-            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" required> </textarea>
-            <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Message for the user invitation necessary</div>
+            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
           </div>
+          <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
           <div class="form-group">
-            <button *ngIf="!f.form.valid" type="submit" class="btn btn-primary" >Invite</button>
-            <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
+            <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary" >Invite(insensitive)</button>
+            <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
+            <!-- <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button> -->
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>
@@ -109,18 +170,18 @@
 </div>
 
 <!-- Modal Delete User -->
-<div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="Remove User" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < visbocenter.users.length">
+<div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="VcUserModalRemoveTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vgUsers.length">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center</h5>
+        <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center Group</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div>
-          <label class="bg-warning">Do you really want to remove this User from Visbo Center? </label>
+          <label class="bg-warning">Do you really want to remove this User from the Visbo Center Group? </label>
         </div>
         <form>
           <div class="form-group">
@@ -129,17 +190,140 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">User:</label>
-            <label class="col-8 form-control-static">{{ visbocenter.users[userIndex].email }}</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].email }}</label>
           </div>
           <div class="form-group">
-            <label class="col-form-label">Role:</label>
-            <label class="col-8 form-control-static">{{ visbocenter.users[userIndex].role }}</label>
+            <label class="col-form-label">Group:</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].groupName }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removevcuser(visbocenter.users[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add/Change VC Group -->
+<div class="modal fade" id="VcGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 *ngIf="actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Modify a Group in the Visbo Center</h5>
+        <h5 *ngIf="!actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Add a new Group to the Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="actGroup" #f="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+            <label for="groupName" class="col-form-label">Name:</label>
+            <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
+            <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
+            <div *ngIf="f.submitted && !actGroup.groupName.valid" class="help-block">Group Name is required</div>
+          </div>
+          <!-- VC Permissions -->
+          <div>Define Visbo Center Permission</div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="perm1" name="checkedView" [(ngModel)]="actGroup.checkedView" #checkedView="ngModel">
+              <label class="custom-control-label" for="perm1">View Visbo Center</label>
+          </div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="perm2" name="checkedViewAudit" [(ngModel)]="actGroup.checkedViewAudit" #checkedViewAudit="ngModel" >
+              <label class="custom-control-label" for="perm2">View Audit</label>
+          </div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="perm3" name="checkedModify" [(ngModel)]="actGroup.checkedModify" #checkedModify="ngModel" >
+              <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+          </div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="perm4" name="checkedCreateVP" [(ngModel)]="actGroup.checkedCreateVP" #checkedCreateVP="ngModel" >
+              <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+          </div>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="perm5" name="checkedManagePerm" [(ngModel)]="actGroup.checkedManagePerm" #checkedManagePerm="ngModel" >
+              <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+          </div>
+          <br>
+          <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="global" name="checkGlobal" [(ngModel)]="actGroup.checkGlobal" #checkGlobal="ngModel" >
+              <label class="custom-control-label" for="global">Group has Access to all Visbo Projects</label>
+          </div>
+          <div *ngIf="actGroup.checkGlobal" >
+          <!-- VP Permissions -->
+            <div>Define Visbo Project Permission</div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP1" name="checkedVPView" [(ngModel)]="actGroup.checkedVPView" #checkedVPView="ngModel">
+                <label class="custom-control-label" for="permVP1">View Visbo Project</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP2" name="checkedVPViewAudit" [(ngModel)]="actGroup.checkedVPViewAudit" #checkedVPViewAudit="ngModel" >
+                <label class="custom-control-label" for="permVP2">View Project Audit</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP3" name="checkedVPModify" [(ngModel)]="actGroup.checkedVPModify" #checkedVPModify="ngModel" >
+                <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedCreateVariant" [(ngModel)]="actGroup.checkedCreateVariant" #checkedCreateVariant="ngModel" >
+                <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP5" name="checkedVPManagePerm" [(ngModel)]="actGroup.checkedVPManagePerm" #checkedVPManagePerm="ngModel" >
+                <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP6" name="checkedVPDelete" [(ngModel)]="actGroup.checkedVPDelete" #checkedVPDelete="ngModel" >
+                <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <button *ngIf="!(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
+            <button *ngIf="(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Delete Group -->
+<div class="modal fade" id="VcGroupRemove" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalRemoveTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vgGroups.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VcUserRemoveTitle">Remove Group from Visbo Center</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label class="bg-warning">Do you really want to remove this Group from Visbo Center? </label>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="VcName" class="col-form-label">Visbo Center:</label>
+            <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Group:</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].name }}</label>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Members:</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].users.length }}</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>

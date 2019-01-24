@@ -74,8 +74,30 @@ export class VisboAuditService {
       );
   }
 
+  /** GET Audits from the server */
+  getVisboProjectAudits(vpid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+    var url = this.serviceBaseUrl.concat('/vp/', vpid,'/audit');
+    var queryParams = false
+    if (from) {
+      url = url.concat(queryParams?'&':'?','from=', from.toISOString());
+      queryParams = true;
+    }
+    if (to) {
+      url = url.concat(queryParams?'&':'?','to=', to.toISOString());
+      queryParams = true;
+    }
+
+    this.log(`Calling HTTP Request: ${url} for VP ${vpid}`);
+    return this.http.get<VisboAuditResponse>(url, httpOptions)
+      .pipe(
+        map(response => response.audit),
+        tap(audit => this.log(`fetched ${audit.length} Audits `)),
+        catchError(this.handleError('getVisboAudit', []))
+      );
+  }
+
   // /** GET Audit by id. Return `undefined` when id not found */
-  // /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
   // getVisboAuditNo404<Data>(id: string): Observable<VisboAudit> {
   //   const url = `${this.serviceUrl}/?id=${id}`;
   //   this.log(`Calling HTTP Request: ${this.serviceUrl}`);

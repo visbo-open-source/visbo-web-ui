@@ -35,12 +35,14 @@ import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audi
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
+import { VisboSettingService } from './_services/visbosetting.service';
 import { SysUserService } from './_services/sysuser.service';
 
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent } from './visboproject-detail/visboproject-detail.component';
+import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -87,6 +89,7 @@ import { SysLogService } from './_services/syslog.service';
     SysVisboCenterDetailComponent,
     SysVisboProjectsComponent,
     SysVisboProjectDetailComponent,
+    VisboProjectAuditComponent,
     SysAuditComponent,
     SysUserComponent,
     SysLogComponent
@@ -104,6 +107,7 @@ import { SysLogService } from './_services/syslog.service';
     AuthenticationService,
     UserService,
     VisboCenterService,
+    VisboSettingService,
     VisboProjectService,
     VisboProjectVersionService,
     VisboAuditService,

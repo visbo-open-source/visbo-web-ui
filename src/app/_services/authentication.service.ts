@@ -55,7 +55,6 @@ export class AuthenticationService {
 
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentToken');
-        sessionStorage.removeItem('isSysAdmin');
 
     }
 
@@ -178,7 +177,7 @@ export class AuthenticationService {
     private handleError<T> (operation = 'operation', result?: T) {
       return (error: any): Observable<T> => {
 
-        // TODO: send the error to remote logging infrastructure
+        // OPTIONAL send the error to remote logging infrastructure
         this.log(`${operation} failed: ${error.status}, ${error.statusText}, ${error.message}`);
 
         // Let the app keep running by returning an empty result.

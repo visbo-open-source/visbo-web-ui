@@ -136,7 +136,14 @@ export class VisboCenterAuditComponent implements OnInit {
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    window.open(url);
+    var fileName = `auditlog-VC.csv`
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   helperAuditIndex(auditIndex: number):void {

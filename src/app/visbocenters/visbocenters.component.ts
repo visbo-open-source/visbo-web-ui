@@ -18,7 +18,6 @@ export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: string;
   sortAscending: boolean;
   sortColumn: number;
 

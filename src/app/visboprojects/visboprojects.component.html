@@ -13,7 +13,7 @@
           </button>
         </h2>
       </div>
-      <div class='col-6 col-md-2 align-self-end' *ngIf="vcActive && vcIsAdmin">
+      <div class='col-6 col-md-2 align-self-end' *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-sm btn-primary align-self-end" data-toggle="modal" data-target="#VpModalCreate">
           New Visbo Project
@@ -76,25 +76,11 @@
             <label class="col-form-label">Description:</label>
             <textarea class="form-control" #vpDescription></textarea>
           </div>
-          <!-- <div class="form-group">
-            <label class="col-form-label">Public:</label>
-            <input type="text" class="form-control" #vpPublic>
-          </div> -->
-          <div class="form-group">
-            <label for="VpPublic" class="col-form-label">Access:</label>
-            <select class="form-control" #VpPublic>
-              <option value="0">All Users in Project</option>
-              <option value="1">All Users in Visbo Center</option>
-            </select>
-          </div>
-          <!-- <div class="checkbox">
-            <label><input type="checkbox" #vpPublic>Public</label>
-          </div> -->
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, VpPublic.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">Save</button>
+        <button type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">Save</button>
       </div>
     </div>
   </div>
