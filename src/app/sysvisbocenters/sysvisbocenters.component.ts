@@ -10,6 +10,8 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { LoginComponent } from '../login/login.component';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-sysvisbocenters',
   templateUrl: './sysvisbocenters.component.html'
@@ -18,7 +20,11 @@ export class SysVisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: string;
+  combinedPerm: VGPermission = undefined;
+  deleted: boolean = false;
+  permSystem: any = VGPSystem;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -33,17 +39,25 @@ export class SysVisboCentersComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getVisboCenters();
-    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
+    this.getVisboCenters(this.deleted);
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
   }
 
   onSelect(visbocenter: VisboCenter): void {
-    this.getVisboCenters();
+    this.getVisboCenters(this.deleted);
   }
 
-  getVisboCenters(): void {
-    this.log(`VC getVisboCenters ${this.vcIsSysAdmin}`);
-    this.visbocenterService.getVisboCenters(true)
+  toggleVisboCenters(): void {
+    this.deleted = !this.deleted
+    this.log(`VC toggleVisboCenters ${this.deleted}`);
+    this.getVisboCenters(this.deleted);
+  }
+
+  getVisboCenters(deleted: boolean): void {
+    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)} deleted ${deleted} ${this.deleted}`);
+    this.visbocenterService.getVisboCenters(true, deleted)
       .subscribe(
         visbocenters => {
           this.visbocenters = visbocenters;
@@ -63,14 +77,14 @@ export class SysVisboCentersComponent implements OnInit {
       );
   }
 
-  getSysVisboCenters(): void {
+  getSysVisboCenter(): void {
     var currentUser = this.authenticationService.getActiveUser();
 
-    // console.log("VC getSysVisboCenters for User %s", currentUser.email);
-    this.visbocenterService.getSysVisboCenters()
-      .subscribe(visbocenters => {
-        if (visbocenters.length >0) {
-          this.sysvisbocenter = visbocenters[0];
+    // console.log("VC getSysVisboCenter for User %s", currentUser.email);
+    this.visbocenterService.getSysVisboCenter()
+      .subscribe(vc => {
+        if (vc.length >0) {
+          this.sysvisbocenter = vc[0];
         }
       });
   }
@@ -122,13 +136,28 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   gotoDetail(visbocenter: VisboCenter):void {
-    this.log(`navigate to VC Detail ${visbocenter._id}`);
-    this.router.navigate(['sysvcDetail/'+visbocenter._id]);
+    var deleted = visbocenter.deletedAt ? true : false;
+    this.log(`navigate to VC Detail ${visbocenter._id} Deleted ${deleted}`);
+    this.router.navigate(['sysvcDetail/'+visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   gotoClickedRow(visbocenter: VisboCenter):void {
     this.log(`clicked row ${visbocenter.name}`);
-    this.router.navigate(['sysvp/'+visbocenter._id]);
+    // check that the user has Permission to see VPs
+    if (this.hasVPPerm(this.permVC.View))
+      this.router.navigate(['sysvp/'+visbocenter._id]);
+  }
+
+  hasSystemPerm(perm: number): boolean {
+    return (this.combinedPerm.system & perm) > 0
+  }
+
+  hasVCPerm(perm: number): boolean {
+    return (this.combinedPerm.vc & perm) > 0
+  }
+
+  hasVPPerm(perm: number): boolean {
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   sortVCTable(n) {

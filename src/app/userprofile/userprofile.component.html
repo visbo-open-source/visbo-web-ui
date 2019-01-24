@@ -60,7 +60,10 @@
             <div *ngIf="fpw.submitted && !oldpassword.valid" class="help-block">Old password is required</div>
           </div>
           <div class="form-group" [ngClass]="{ 'has-error': fpw.submitted && !newpassword.valid }">
-            <label for="newpassword" class="col-form-label">New Password:</label>
+            <label for="newpassword" class="col-form-label" data-toggle="tooltip" data-placement="top" data-delay='50'
+              title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
+              New Password(*):
+            </label>
             <input type="password" class="form-control" name="newpassword" [(ngModel)]="modelPw.newpassword" #newpassword="ngModel" required autocomplete="off">
             <div *ngIf="fpw.submitted && !newpassword.valid" class="help-block">New password is required</div>
           </div>
