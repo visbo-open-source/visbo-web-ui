@@ -9,7 +9,7 @@ import { AlertService } from './_services/alert.service';
 })
 export class AppComponent implements OnInit {
   title = 'Your Projects served with Visbo ';
-  version = '1.0';
+  version = '1.1';
   restVersionString = undefined;
 
   constructor(

@@ -7,7 +7,7 @@
           Visbo Log Files
         </h2>
       </div>
-      <div *ngIf="vcIsSysAdmin == 'Admin'" class='col-6 col-md-2 align-self-end'>
+      <div class='col-6 col-md-2 align-self-end'>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-sm btn-primary align-self-end" (click)="getLogLevel()" data-toggle="modal" data-target="#ChangeLogLevel">
           Change Log Level
@@ -57,67 +57,83 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" *ngIf="logLevelConfig">
+      <div class="modal-body" *ngIf="logLevelSetting">
         <form>
           <div class="form-group row">
             <label class="col-3 col-form-label">VC:</label>
-            <select class="col-8 form-control"  name="VC" [(ngModel)]="logLevelConfig.VC">
+            <select class="col-8 form-control"  name="VC" [(ngModel)]="logLevelSetting.value.VC">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
           </div>
           <div class="form-group row">
             <label class="col-3 col-form-label">VP:</label>
-            <select class="col-8 form-control"  name="VP" [(ngModel)]="logLevelConfig.VP">
+            <select class="col-8 form-control"  name="VP" [(ngModel)]="logLevelSetting.value.VP">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
           </div>
           <div class="form-group row">
             <label class="col-3 col-form-label">VPV:</label>
-            <select class="col-8 form-control"  name="VPV" [(ngModel)]="logLevelConfig.VPV">
+            <select class="col-8 form-control"  name="VPV" [(ngModel)]="logLevelSetting.value.VPV">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
           </div>
           <div class="form-group row">
             <label class="col-3 col-form-label">USER:</label>
-            <select class="col-8 form-control"  name="USER" [(ngModel)]="logLevelConfig.USER">
+            <select class="col-8 form-control"  name="USER" [(ngModel)]="logLevelSetting.value.USER">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
           </div>
           <div class="form-group row">
             <label class="col-3 col-form-label">MAIL:</label>
-            <select class="col-8 form-control"  name="MAIL" [(ngModel)]="logLevelConfig.MAIL">
+            <select class="col-8 form-control"  name="MAIL" [(ngModel)]="logLevelSetting.value.MAIL">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
           </div>
           <div class="form-group row">
             <label class="col-3 col-form-label">OTHER:</label>
-            <select class="col-8 form-control"  name="OTHER" [(ngModel)]="logLevelConfig.OTHER">
+            <select class="col-8 form-control"  name="OTHER" [(ngModel)]="logLevelSetting.value.OTHER">
               <option value = fatal>Fatal</option>
               <option value = warn>Warning</option>
               <option value = info>Information</option>
               <option value = debug>Debug</option>
-              <option value = trace>Trace</option>            </select>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">All:</label>
+            <select class="col-8 form-control"  name="All" [(ngModel)]="logLevelSetting.value.All">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="setLogLevel(logLevelConfig)" data-dismiss="modal">Save</button>
+        <button type="button" class="btn btn-primary" (click)="setLogLevel()" data-dismiss="modal">Save</button>
       </div>
     </div>
   </div>

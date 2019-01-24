@@ -1,22 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-// import from 'rxjs/Rx';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboAudit } from '../_models/visboaudit';
-import { VisboCenterService } from '../_services/visbocenter.service';
+
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
 @Component({
-  selector: 'app-sysaudit',
-  templateUrl: './sysaudit.component.html'
+  selector: 'app-visboproject-audit',
+  templateUrl: './visboproject-audit.component.html'
 })
-export class SysAuditComponent implements OnInit {
+export class VisboProjectAuditComponent implements OnInit {
 
   audit: VisboAudit[];
   auditIndex: number;
@@ -26,11 +25,9 @@ export class SysAuditComponent implements OnInit {
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
-  today: Date = new Date();
 
   constructor(
     private visboauditService: VisboAuditService,
-    private visbocenterService: VisboCenterService,
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
@@ -42,17 +39,19 @@ export class SysAuditComponent implements OnInit {
   ngOnInit() {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
-    this.getVisboAudits();
+    this.getVisboProjectAudits();
     this.sortTable(undefined);
   }
 
-  onSelect(visboaudit: VisboAudit): void {
-    this.getVisboAudits();
-  }
+  // onSelect(visboaudit: VisboAudit): void {
+  //   this.getVisboAudits();
+  // }
 
-  getVisboAudits(): void {
+  getVisboProjectAudits(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    var currentUser = this.authenticationService.getActiveUser();
     var from: Date, to: Date;
-    this.log(`Audit getVisboAudits from ${this.auditFrom} to ${this.auditTo}`);
+    this.log(`Audit getVisboProjectAudits from ${this.auditFrom} to ${this.auditTo}`);
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditFrom) {
       from = new Date(this.auditFrom)
@@ -62,8 +61,8 @@ export class SysAuditComponent implements OnInit {
       to.setDate(to.getDate() + 1)
     }
     if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboAudits(true, from, to)
+    this.log(`Audit getVisboProjectAudits recalc from ${from} to ${to} filter ${this.auditText}`);
+    this.visboauditService.getVisboProjectAudits(id, from, to)
       .subscribe(
         audit => {
           this.audit = [];
@@ -87,19 +86,13 @@ export class SysAuditComponent implements OnInit {
       );
   }
 
-  gotoDetail(visboaudit: VisboAudit):void {
-    this.log(`navigate to Audit Detail ${visboaudit._id}`);
-    this.router.navigate(['sysaudit/'+visboaudit._id]);
-  }
-
   downloadVisboAudit():void {
     this.log(`sysAudit Download ${this.audit.length} Items`);
     var data: string;
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'date' + separator
-          + 'time UTC' + separator
+    data = 'createdAt' + separator
           + 'email' + separator
           + 'actiondDescription' + separator
           + 'action' + separator
@@ -116,12 +109,9 @@ export class SysAuditComponent implements OnInit {
           + 'ip' + separator
           + 'userId' + separator
           + 'userAgent' +'\n';
-    var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
-      createdAt = new Date(this.audit[i].createdAt).toISOString();
       userAgent = this.audit[i].userAgent.replace(/,/g, ";");
-      lineItem = createdAt.substr(0, 10) + separator
-                  + createdAt.substr(11, 12) + separator
+      lineItem = this.audit[i].createdAt + separator
                   + this.audit[i].user.email + separator
                   + this.audit[i].actionDescription + separator
                   + this.audit[i].action + separator
@@ -143,14 +133,8 @@ export class SysAuditComponent implements OnInit {
     this.log(`sysAudit CSV Len ${data.length} `);
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
-    var fileName = 'auditlog.csv'
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.href = url;
-    a.download = fileName;
-    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
-    a.click();
-    window.URL.revokeObjectURL(url);
+    this.log(`Open URL ${url}`);
+    window.open(url);
   }
 
   helperAuditIndex(auditIndex: number):void {
@@ -196,11 +180,6 @@ export class SysAuditComponent implements OnInit {
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
-  }
-
-  isToday(checkDate: Date): Boolean {
-//    this.log(`Check Date ${checkDate} ${checkDate.toDateString()}`);
-    return true
   }
 
   sortTable(n) {
@@ -290,6 +269,6 @@ export class SysAuditComponent implements OnInit {
 
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('Sys Audit: ' + message);
+    this.messageService.add('VC Audit: ' + message);
   }
 }

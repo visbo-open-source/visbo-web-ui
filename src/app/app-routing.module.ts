@@ -13,6 +13,7 @@ import { DashboardComponent }   from './dashboard/dashboard.component';
 import { VisboCentersComponent }      from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent }  from './visbocenter-detail/visbocenter-detail.component';
 import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
+import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
 
 import { VisboProjectsComponent }      from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent }  from './visboproject-detail/visboproject-detail.component';
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'vp', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vp/:id', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vpDetail/:id', component: VisboProjectDetailComponent, canActivate: [AuthGuard]  },
+  { path: 'vpAudit/:id', component: VisboProjectAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },

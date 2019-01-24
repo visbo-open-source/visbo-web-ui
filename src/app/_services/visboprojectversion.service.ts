@@ -50,20 +50,20 @@ export class VisboProjectVersionService {
   }
 
   /** GET VisboProjectVersion by id. Return `undefined` when id not found */
-  /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
-    const url = `${this.vpvUrl}/?id=${id}`;
-    this.log(`Calling HTTP Request: ${this.vpvUrl}`);
-    return this.http.get<VisboProjectVersion[]>(url)
-      .pipe(
-        map(visboprojects => visboprojects[0]), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboProjectVersion id=${id}`);
-        }),
-        catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
-      );
-  }
+  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
+  //   const url = `${this.vpvUrl}/?id=${id}`;
+  //   this.log(`Calling HTTP Request: ${this.vpvUrl}`);
+  //   return this.http.get<VisboProjectVersion[]>(url)
+  //     .pipe(
+  //       map(visboprojects => visboprojects[0]), // returns a {0|1} element array
+  //       tap(h => {
+  //         const outcome = h ? `fetched` : `did not find`;
+  //         this.log(`${outcome} VisboProjectVersion id=${id}`);
+  //       }),
+  //       catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
+  //     );
+  // }
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboProjectVersion(id: string): Observable<VisboProjectVersion> {

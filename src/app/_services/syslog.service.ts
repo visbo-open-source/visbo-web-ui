@@ -7,7 +7,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
-import { VisboLogLevel, VisboLogLevelResponse } from '../_models/syslog';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -56,31 +55,6 @@ export class SysLogService {
         catchError(this.handleError<VisboFile>(`getSysLog name:${name} `))
       );
   }
-
-  // /** GET Log Level. */
-  getSysLogLevel(): Observable<VisboLogLevel> {
-    var url = `${this.serviceUrl}/config`;
-    this.log(`Calling HTTP Request for log level: ${url}`);
-    return this.http.get<VisboLogLevelResponse>(url)
-      .pipe(
-        tap( data => this.log(`fetched Log Level Response ${JSON.stringify(data)}`)),
-        map(data => data.config),
-        catchError(this.handleError<VisboLogLevel>(`getSysLog config `))
-      );
-  }
-
-// /** PUT Log Level. */
-setSysLogLevel(sysLogConfig: VisboLogLevel): Observable<VisboLogLevel> {
-  var url = `${this.serviceUrl}/config`;
-  this.log(`Calling HTTP Request for log level: ${url}`);
-  return this.http.put<VisboLogLevelResponse>(url, sysLogConfig, httpOptions)
-    .pipe(
-      tap( data => this.log(`changed Log Level Response ${JSON.stringify(data)}`)),
-      map( data => data.config),
-      catchError(this.handleError<VisboLogLevel>(`getSysLog config `))
-    );
-}
-
 
 /**
  * Handle Http operation that failed.
