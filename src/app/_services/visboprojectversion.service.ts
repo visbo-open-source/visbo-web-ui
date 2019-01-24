@@ -50,20 +50,20 @@ export class VisboProjectVersionService {
   }
 
   /** GET VisboProjectVersion by id. Return `undefined` when id not found */
-  /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
-    const url = `${this.vpvUrl}/?id=${id}`;
-    this.log(`Calling HTTP Request: ${this.vpvUrl}`);
-    return this.http.get<VisboProjectVersion[]>(url)
-      .pipe(
-        map(visboprojects => visboprojects[0]), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboProjectVersion id=${id}`);
-        }),
-        catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
-      );
-  }
+  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
+  //   const url = `${this.vpvUrl}/?id=${id}`;
+  //   this.log(`Calling HTTP Request: ${this.vpvUrl}`);
+  //   return this.http.get<VisboProjectVersion[]>(url)
+  //     .pipe(
+  //       map(visboprojects => visboprojects[0]), // returns a {0|1} element array
+  //       tap(h => {
+  //         const outcome = h ? `fetched` : `did not find`;
+  //         this.log(`${outcome} VisboProjectVersion id=${id}`);
+  //       }),
+  //       catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
+  //     );
+  // }
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboProjectVersion(id: string): Observable<VisboProjectVersion> {
@@ -135,15 +135,11 @@ export class VisboProjectVersionService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request failed: ${error.message} ${error.status}`);
       // send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-      // better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
+      this.log(`HTTP Request ${operation} failed: ${error.message} ${error.status}`);
 
-      if ( error.status = 401 ) {
-        this.authenticationService.logout();
-      }
+      // better job of transforming error for user consumption
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

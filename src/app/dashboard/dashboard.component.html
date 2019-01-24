@@ -11,9 +11,9 @@
         <div class="card" style="width: 18rem;">
           <div class="card-body d-flex flex-column">
             <h3 class="card-title">{{vc.name}}</h3>
-            <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy hh:mm'}}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
             <p class="card-text">{{vc.description}}</p>
-            <p class="card-subtitle">{{vc.users.length}} Users</p>
+            <!-- <p class="card-subtitle">{{vc.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
               <button type="button" class="btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</button>
               <button type="button" class="btn btn-secondary" (click)="gotoClickedVcDetail(vc)">Detail</button>
@@ -36,9 +36,9 @@
         <div class="card" style="width: 18rem;">
           <div class="card-body d-flex flex-column">
             <h3 class="card-title">{{vp.name}}</h3>
-            <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy hh:mm'}}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
             <p class="card-text">{{vp.description}}</p>
-            <p class="card-subtitle">{{vp.users.length}} Users</p>
+            <!-- <p class="card-subtitle">{{vp.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
               <button type="button" class="btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpvCount}} Versions</button>
               <button type="button" class="btn btn-secondary" (click)="gotoClickedVpDetail(vp)">Detail</button>

@@ -39,6 +39,7 @@ export class RegisterComponent {
 
   register() {
     this.loading = true;
+    this.log(`Call register Service`)
     if (this.userRegister) {
       this.model._id = this.userRegister;
     }

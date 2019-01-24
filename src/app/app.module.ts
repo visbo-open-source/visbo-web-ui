@@ -6,8 +6,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-//import { MaterialModule } from './_helpers/material.module';
-
 // Authentication
 import { LoginComponent } from './login/login.component';
 import { AlertComponent } from './_directives/alert.component';
@@ -33,14 +31,18 @@ import { MessageService } from './_services/message.service';
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
+import { VisboSettingService } from './_services/visbosetting.service';
+import { SysUserService } from './_services/sysuser.service';
 
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent } from './visboproject-detail/visboproject-detail.component';
+import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -53,8 +55,13 @@ import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
 import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
-import { SysAuditComponent }  from './sysaudit/sysaudit.component';
+import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
+import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
 
+import { SysAuditComponent }  from './sysaudit/sysaudit.component';
+import { SysUserComponent }  from './sysuser/sysuser.component';
+import { SysLogComponent }  from './syslog/syslog.component';
+import { SysLogService } from './_services/syslog.service';
 
 @NgModule({
   declarations: [
@@ -62,6 +69,7 @@ import { SysAuditComponent }  from './sysaudit/sysaudit.component';
     AlertComponent,
     VisboCentersComponent,
     VisboCenterDetailComponent,
+    VisboCenterAuditComponent,
     VisboProjectsComponent,
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,
@@ -79,7 +87,12 @@ import { SysAuditComponent }  from './sysaudit/sysaudit.component';
     SysVisboCentersComponent,
     SysVisboSystemComponent,
     SysVisboCenterDetailComponent,
-    SysAuditComponent
+    SysVisboProjectsComponent,
+    SysVisboProjectDetailComponent,
+    VisboProjectAuditComponent,
+    SysAuditComponent,
+    SysUserComponent,
+    SysLogComponent
   ],
   imports: [
     BrowserModule,
@@ -94,9 +107,12 @@ import { SysAuditComponent }  from './sysaudit/sysaudit.component';
     AuthenticationService,
     UserService,
     VisboCenterService,
+    VisboSettingService,
     VisboProjectService,
     VisboProjectVersionService,
     VisboAuditService,
+    SysUserService,
+    SysLogService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
