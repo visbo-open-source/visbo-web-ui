@@ -32,8 +32,9 @@
               title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
               Password (*)
             </label>
-            <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off">
-            <div *ngIf="f.submitted && !password.valid" class="help-block">Password is required</div>
+            <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{policyPW}} >
+            <div *ngIf="!password.valid" class="help-block">New password has to follow the Policy.</div>
+            <div *ngIf="!password.valid" class="help-block">Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.</div>
         </div>
         <div class="form-group">
             <button [disabled]="loading" class="btn btn-primary">Register</button>

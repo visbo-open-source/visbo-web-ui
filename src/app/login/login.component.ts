@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
   }
 
   pwforgotten() {
-    var email = this.model.username.trim();
+    var email = (this.model.username || '').trim();
     this.log(`Login: Forward to password forgotten ${email} `);
     // MS TODO: Check if user name is an e-Mail Address
     this.router.navigate(['pwforgotten'], { queryParams: { email: email }});

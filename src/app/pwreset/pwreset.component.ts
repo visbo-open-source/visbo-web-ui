@@ -8,6 +8,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { environment } from '../../environments/environment';
+
 @Component({
   selector: 'visbo-pwreset',
   templateUrl: 'pwreset.component.html'
@@ -15,6 +17,8 @@ import { Login } from '../_models/login';
 
 export class PWResetComponent {
   model: any = {};
+
+  policyPW: string = environment.policyPW
   loading = false;
   token = '';
 
