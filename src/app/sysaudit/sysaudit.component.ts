@@ -115,7 +115,9 @@ export class SysAuditComponent implements OnInit {
           + 'size' + separator
           + 'ip' + separator
           + 'userId' + separator
-          + 'userAgent' +'\n';
+          + 'userAgent' + separator
+          + 'VC Details' + separator
+          + 'VP Details' + '\n';
     var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
       createdAt = new Date(this.audit[i].createdAt).toISOString();
@@ -137,7 +139,9 @@ export class SysAuditComponent implements OnInit {
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + '\n';
+                  + userAgent + separator
+                  + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
+                  + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
       data = data.concat(lineItem)
     }
     this.log(`sysAudit CSV Len ${data.length} `);
