@@ -26,7 +26,7 @@ export class SysAuditComponent implements OnInit {
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
-  today: Date = new Date();
+  today: Date;
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -42,6 +42,12 @@ export class SysAuditComponent implements OnInit {
   ngOnInit() {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
+    this.today = new Date();
+    this.today.setHours(0);
+    this.today.setMinutes(0);
+    this.today.setSeconds(0);
+    this.today.setMilliseconds(0);
+    this.log(`Audit Today ${this.today}`);
     this.getVisboAudits();
     this.sortTable(undefined);
   }
@@ -63,15 +69,10 @@ export class SysAuditComponent implements OnInit {
     }
     if (this.auditText) this.auditText = this.auditText.trim();
     this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboAudits(true, from, to)
+    this.visboauditService.getVisboAudits(true, from, to, this.auditText)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
           this.log('get Audit success');
         },
@@ -203,8 +204,8 @@ export class SysAuditComponent implements OnInit {
   }
 
   isToday(checkDate: Date): Boolean {
-//    this.log(`Check Date ${checkDate} ${checkDate.toDateString()}`);
-    return true
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return checkDate > this.today.toISOString()
   }
 
   sortTable(n) {

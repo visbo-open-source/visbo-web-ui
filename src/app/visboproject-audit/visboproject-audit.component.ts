@@ -62,15 +62,10 @@ export class VisboProjectAuditComponent implements OnInit {
     }
     if (this.auditText) this.auditText = this.auditText.trim();
     this.log(`Audit getVisboProjectAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboProjectAudits(id, from, to)
+    this.visboauditService.getVisboProjectAudits(id, from, to, this.auditText)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
           this.log('get Audit success');
         },
