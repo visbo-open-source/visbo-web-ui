@@ -6,7 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AngularFontAwesomeModule } from 'angular-font-awesome';
+// import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Authentication
 import { LoginComponent } from './login/login.component';
@@ -100,7 +100,7 @@ import { SysLogService } from './_services/syslog.service';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    AngularFontAwesomeModule,
+    // AngularFontAwesomeModule,
     // MaterialModule,
     HttpClientModule
   ],
