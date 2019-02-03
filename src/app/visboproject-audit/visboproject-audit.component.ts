@@ -25,6 +25,7 @@ export class VisboProjectAuditComponent implements OnInit {
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
+  today: Date;
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -39,6 +40,11 @@ export class VisboProjectAuditComponent implements OnInit {
   ngOnInit() {
     // if (!this.auditFrom) this.auditFrom = '01.09.2018';
     // if (!this.auditTo) this.auditTo = '12.09.2018';
+    this.today = new Date();
+    this.today.setHours(0);
+    this.today.setMinutes(0);
+    this.today.setSeconds(0);
+    this.today.setMilliseconds(0);
     this.getVisboProjectAudits();
     this.sortTable(undefined);
   }
@@ -62,15 +68,10 @@ export class VisboProjectAuditComponent implements OnInit {
     }
     if (this.auditText) this.auditText = this.auditText.trim();
     this.log(`Audit getVisboProjectAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboProjectAudits(id, from, to)
+    this.visboauditService.getVisboProjectAudits(id, from, to, this.auditText)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
           this.log('get Audit success');
         },
@@ -180,6 +181,11 @@ export class VisboProjectAuditComponent implements OnInit {
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
+  }
+
+  isToday(checkDate: string): Boolean {
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return new Date(checkDate) > this.today
   }
 
   sortTable(n) {

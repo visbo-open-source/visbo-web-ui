@@ -6,6 +6,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { environment } from '../../environments/environment';
+
 @Component({
     moduleId: module.id,
     templateUrl: 'register.component.html'
@@ -13,6 +15,7 @@ import { Login } from '../_models/login';
 
 export class RegisterComponent {
   model: any = {};
+  policyPW: string = environment.policyPW
   userRegister = undefined
   hash = undefined;
   loading = false;

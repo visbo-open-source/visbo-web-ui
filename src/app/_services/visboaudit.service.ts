@@ -27,7 +27,7 @@ export class VisboAuditService {
 
 
   /** GET Audits from the server */
-  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
     var url = this.serviceUrl
     var queryParams = false
     if (sysadmin) {
@@ -42,6 +42,10 @@ export class VisboAuditService {
       url = url.concat(queryParams?'&':'?','to=', to.toISOString());
       queryParams = true;
     }
+    if (text) {
+      url = url.concat(queryParams?'&':'?','text=', text);
+      queryParams = true;
+    }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
     return this.http.get<VisboAuditResponse>(url, httpOptions)
@@ -53,7 +57,7 @@ export class VisboAuditService {
   }
 
   /** GET Audits from the server */
-  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
     var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
     var queryParams = false
     if (from) {
@@ -62,6 +66,10 @@ export class VisboAuditService {
     }
     if (to) {
       url = url.concat(queryParams?'&':'?','to=', to.toISOString());
+      queryParams = true;
+    }
+    if (text) {
+      url = url.concat(queryParams?'&':'?','text=', text);
       queryParams = true;
     }
 
@@ -75,7 +83,7 @@ export class VisboAuditService {
   }
 
   /** GET Audits from the server */
-  getVisboProjectAudits(vpid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+  getVisboProjectAudits(vpid: string, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
     var url = this.serviceBaseUrl.concat('/vp/', vpid,'/audit');
     var queryParams = false
     if (from) {
@@ -84,6 +92,10 @@ export class VisboAuditService {
     }
     if (to) {
       url = url.concat(queryParams?'&':'?','to=', to.toISOString());
+      queryParams = true;
+    }
+    if (text) {
+      url = url.concat(queryParams?'&':'?','text=', text);
       queryParams = true;
     }
 
