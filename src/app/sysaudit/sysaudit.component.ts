@@ -203,9 +203,9 @@ export class SysAuditComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  isToday(checkDate: Date): Boolean {
+  isToday(checkDate: string): Boolean {
     // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
-    return checkDate > this.today.toISOString()
+    return new Date(checkDate) > this.today
   }
 
   sortTable(n) {
