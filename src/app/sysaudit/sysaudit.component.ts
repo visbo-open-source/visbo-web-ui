@@ -47,7 +47,6 @@ export class SysAuditComponent implements OnInit {
     this.today.setMinutes(0);
     this.today.setSeconds(0);
     this.today.setMilliseconds(0);
-    this.log(`Audit Today ${this.today}`);
     this.getVisboAudits();
     this.sortTable(undefined);
   }

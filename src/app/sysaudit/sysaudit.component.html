@@ -132,6 +132,10 @@
             <label class="py-0 m-0 col-4 form-control-static">IP:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ip }}</label>
           </div>
+          <div *ngIf="showMore && audit[auditIndex].ttl">
+            <label class="py-0 m-0 col-4 form-control-static">TTL:</label>
+            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM.yyyy' }}</label>
+          </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
