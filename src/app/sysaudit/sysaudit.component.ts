@@ -20,13 +20,17 @@ export class SysAuditComponent implements OnInit {
 
   audit: VisboAudit[];
   auditIndex: number;
-  auditFrom: string;
-  auditTo: string;
+  auditFrom: Date;
+  auditTo: Date;
+  auditCount: number;
   auditText: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
   today: Date;
+  auditType: string;
+  auditTypeAction: string;
+  auditTypeList: [any];
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -40,8 +44,22 @@ export class SysAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // if (!this.auditFrom) this.auditFrom = '01.09.2018';
-    // if (!this.auditTo) this.auditTo = '12.09.2018';
+    if (!this.auditFrom) {
+      this.auditFrom = new Date();
+      this.auditFrom.setDate(this.auditFrom.getDate()-7)
+    }
+    if (!this.auditTo) {
+      this.auditTo = new Date();
+    }
+    this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
+    this.auditTypeList = [
+      {name: "All", action: ""},
+      {name: "Read", action: "GET"},
+      {name: "Create", action: "POST"},
+      {name: "Update", action: "PUT"},
+      {name: "Delete", action: "DELETE"}
+    ];
+    this.auditCount = 10;
     this.today = new Date();
     this.today.setHours(0);
     this.today.setMinutes(0);
@@ -67,8 +85,14 @@ export class SysAuditComponent implements OnInit {
       to.setDate(to.getDate() + 1)
     }
     if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboAudits(true, from, to, this.auditText)
+    for (var i = 1; i < this.auditTypeList.length; i++) {
+      if (this.auditType == this.auditTypeList[i].name) {
+        this.auditTypeAction = this.auditTypeList[i].action;
+        break;
+      }
+    }
+    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText} ${this.auditCount} ${this.auditTypeAction}`);
+    this.visboauditService.getVisboAudits(true, from, to, this.auditText, this.auditCount, this.auditTypeAction)
       .subscribe(
         audit => {
           this.audit = audit;
@@ -116,6 +140,7 @@ export class SysAuditComponent implements OnInit {
           + 'ip' + separator
           + 'userId' + separator
           + 'userAgent' + separator
+          + 'ttl' + separator
           + 'VC Details' + separator
           + 'VP Details' + '\n';
     var createdAt;
@@ -140,6 +165,7 @@ export class SysAuditComponent implements OnInit {
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
                   + userAgent + separator
+                  + (this.audit[i].ttl || '') + separator
                   + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
                   + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
       data = data.concat(lineItem)

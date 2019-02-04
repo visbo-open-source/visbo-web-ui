@@ -10,13 +10,25 @@
     </div>
   </div>
   <div class="form-group row">
-    <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
-    <input id="auditFrom" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" >
+    <label for="auditFromField" class="col-2 col-form-label">From / To:</label>
+    <input id="auditFromField" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" >
     <input type="date" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
   </div>
   <div class="form-group row">
     <label for="auditText" class="col-2 col-form-label">Filter:</label>
     <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
+
+    <label for="maxcount" class="col-form-label">Max:</label>
+    <select class="col-1 form-control" name="maxcount" [(ngModel)]="auditCount">
+      <option>10</option>
+      <option>50</option>
+      <option>100</option>
+      <option>500</option>
+    </select>
+
+    <select class="col-1 form-control" name="actiontype" [(ngModel)]="auditType">
+      <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
+    </select>
     <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
     <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
   </div>

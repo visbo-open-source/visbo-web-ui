@@ -27,7 +27,7 @@ export class VisboAuditService {
 
 
   /** GET Audits from the server */
-  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
+  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined, text: string = undefined, maxcount: number= undefined, actionType: string=undefined): Observable<VisboAudit[]> {
     var url = this.serviceUrl
     var queryParams = false
     if (sysadmin) {
@@ -44,6 +44,14 @@ export class VisboAuditService {
     }
     if (text) {
       url = url.concat(queryParams?'&':'?','text=', text);
+      queryParams = true;
+    }
+    if (maxcount) {
+      url = url.concat(queryParams?'&':'?','maxcount=', maxcount.toString());
+      queryParams = true;
+    }
+    if (actionType) {
+      url = url.concat(queryParams?'&':'?','action=', actionType);
       queryParams = true;
     }
 
