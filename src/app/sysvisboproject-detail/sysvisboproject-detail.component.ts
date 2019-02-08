@@ -30,8 +30,10 @@ export class SysVisboProjectDetailComponent implements OnInit {
   newUserInvite: any = {};
 
   combinedPerm: VGPermission = undefined;
+  permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
+  deleted: boolean = false;
 
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
@@ -79,6 +81,11 @@ export class SysVisboProjectDetailComponent implements OnInit {
           }
         }
       );
+  }
+
+  gotoVPAudit(visboproject: VisboProject):void {
+    this.log(`GoTo VP Audit ${visboproject.name} ${this.visboproject.name}`)
+    this.router.navigate(['vpAudit/'.concat(visboproject._id)], { queryParams: { sysadmin: 1 }});
   }
 
   hasSystemPerm(perm: number): boolean {
@@ -148,11 +155,6 @@ export class SysVisboProjectDetailComponent implements OnInit {
           }
         }
       );
-  }
-
-  gotoVPAudit(visboproject: VisboProject):void {
-    this.log(`goto VP Audit: ${visboproject._id}`);
-    this.router.navigate(['vpAudit/'.concat(visboproject._id)]);
   }
 
   gotoVCDetail(visboproject: VisboProject):void {

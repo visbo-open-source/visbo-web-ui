@@ -124,7 +124,8 @@ constructor(
   }
 
   gotoVCAudit(visbocenter: VisboCenter):void {
-    this.router.navigate(['sysvcAudit/'.concat(visbocenter._id)]);
+    this.log(`GoTo VC Audit ${visbocenter.name} ${this.visbocenter.name}`)
+    this.router.navigate(['vcAudit/'.concat(visbocenter._id)], { queryParams: { sysadmin: 1 }});
   }
 
   gotoVPList(visbocenter: VisboCenter):void {

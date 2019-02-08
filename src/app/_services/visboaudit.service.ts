@@ -18,7 +18,6 @@ const httpOptions = {
 @Injectable()
 export class VisboAuditService {
   private serviceBaseUrl = environment.restUrl;  // URL to api on same server
-  private serviceUrl = this.serviceBaseUrl.concat('/audit');  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -28,7 +27,7 @@ export class VisboAuditService {
 
   /** GET Audits from the server */
   getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined, text: string = undefined, maxcount: number= undefined, actionType: string=undefined): Observable<VisboAudit[]> {
-    var url = this.serviceUrl
+    var url = this.serviceBaseUrl.concat('/audit');
     var queryParams = false
     if (sysadmin) {
       url = url.concat(queryParams?'&':'?','sysadmin=1');
@@ -65,9 +64,13 @@ export class VisboAuditService {
   }
 
   /** GET Audits from the server */
-  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
+  getVisboCenterAudits(sysadmin: boolean = false, vcid: string, from: Date = undefined, to: Date = undefined, text: string = undefined, maxcount: number= undefined, actionType: string=undefined): Observable<VisboAudit[]> {
     var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
     var queryParams = false
+    if (sysadmin) {
+      url = url.concat(queryParams?'&':'?','sysadmin=1');
+      queryParams = true;
+    }
     if (from) {
       url = url.concat(queryParams?'&':'?','from=', from.toISOString());
       queryParams = true;
@@ -78,6 +81,14 @@ export class VisboAuditService {
     }
     if (text) {
       url = url.concat(queryParams?'&':'?','text=', text);
+      queryParams = true;
+    }
+    if (maxcount) {
+      url = url.concat(queryParams?'&':'?','maxcount=', maxcount.toString());
+      queryParams = true;
+    }
+    if (actionType) {
+      url = url.concat(queryParams?'&':'?','action=', actionType);
       queryParams = true;
     }
 
@@ -91,9 +102,14 @@ export class VisboAuditService {
   }
 
   /** GET Audits from the server */
-  getVisboProjectAudits(vpid: string, from: Date = undefined, to: Date = undefined, text: string = undefined): Observable<VisboAudit[]> {
+  getVisboProjectAudits(sysadmin: boolean = false, vpid: string, from: Date = undefined, to: Date = undefined, text: string = undefined, maxcount: number= undefined, actionType: string=undefined): Observable<VisboAudit[]> {
     var url = this.serviceBaseUrl.concat('/vp/', vpid,'/audit');
+    this.log(`Calling HTTP Request Prepare URL: ${url} for VP ${vpid}`);
     var queryParams = false
+    if (sysadmin) {
+      url = url.concat(queryParams?'&':'?','sysadmin=1');
+      queryParams = true;
+    }
     if (from) {
       url = url.concat(queryParams?'&':'?','from=', from.toISOString());
       queryParams = true;
@@ -106,6 +122,14 @@ export class VisboAuditService {
       url = url.concat(queryParams?'&':'?','text=', text);
       queryParams = true;
     }
+    if (maxcount) {
+      url = url.concat(queryParams?'&':'?','maxcount=', maxcount.toString());
+      queryParams = true;
+    }
+    if (actionType) {
+      url = url.concat(queryParams?'&':'?','action=', actionType);
+      queryParams = true;
+    }
 
     this.log(`Calling HTTP Request: ${url} for VP ${vpid}`);
     return this.http.get<VisboAuditResponse>(url, httpOptions)
@@ -115,33 +139,6 @@ export class VisboAuditService {
         catchError(this.handleError('getVisboAudit', []))
       );
   }
-
-  // /** GET Audit by id. Return `undefined` when id not found */
-  // /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  // getVisboAuditNo404<Data>(id: string): Observable<VisboAudit> {
-  //   const url = `${this.serviceUrl}/?id=${id}`;
-  //   this.log(`Calling HTTP Request: ${this.serviceUrl}`);
-  //   return this.http.get<VisboAudit[]>(url)
-  //     .pipe(
-  //       map(audit => audit[0]), // returns a {0|1} element array
-  //       tap(h => {
-  //         var outcome = h ? `fetched` : `did not find`;
-  //         this.log(`${outcome} VisboAudit ${id}`);
-  //       }),
-  //       catchError(this.handleError<VisboAudit>(`getVisboAudit id: ${id}`))
-  //     );
-  // }
-
-  // /** GET Audit by id. Will 404 if id not found */
-  // getVisboAudit(id: string, sysadmin: boolean = false): Observable<VisboAudit> {
-  //   var url = `${this.serviceUrl}/${id}`;
-  //   this.log(`Calling HTTP Request for a specific entry: ${url}`);
-  //   return this.http.get<VisboAuditResponse>(url).pipe(
-  //     map(response => response.audit[0]),
-  //     tap(audit => this.log(`fetched Audit ${audit._id}`)),
-  //     catchError(this.handleError<VisboAudit>(`getVisboAudit id:${id}`))
-  //   );
-  // }
 
   /**
    * Handle Http operation that failed.

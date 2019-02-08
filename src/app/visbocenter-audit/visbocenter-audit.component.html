@@ -1,4 +1,9 @@
-<visbo-navbar></visbo-navbar>
+<div *ngIf="!sysadmin">
+  <visbo-navbar></visbo-navbar>
+</div>
+<div *ngIf="sysadmin">
+  <sysvisbo-navbar></sysvisbo-navbar>
+</div>
 <div class='well'>
   <div class="container">
     <div class='row'>
@@ -6,17 +11,32 @@
         <h2 class='panel-heading'>
           Visbo Center Audit
         </h2>
+        <h6 *ngIf="visbocenter" class='panel-heading'>
+          {{visbocenter.name}}
+        </h6>
       </div>
     </div>
   </div>
   <div class="form-group row">
     <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
-    <input id="auditFrom" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" >
-    <input type="date" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
+    <input id="auditFrom" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom" value="2019-02-01">
+    <input id="auditTo" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
   </div>
   <div class="form-group row">
     <label for="auditText" class="col-2 col-form-label">Filter:</label>
     <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
+
+    <label for="auditCount" class="col-form-label">Max:</label>
+    <select class="col-1 form-control" name="auditCount" [(ngModel)]="auditCount">
+      <option>50</option>
+      <option>100</option>
+      <option>500</option>
+      <option>2000</option>
+    </select>
+
+    <select class="col-1 form-control" id="auditType" name="auditType" [(ngModel)]="auditType">
+      <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
+    </select>
     <button type="button" class="btn btn-primary" (click)="getVisboCenterAudits()">Filter</button>
     <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
   </div>
