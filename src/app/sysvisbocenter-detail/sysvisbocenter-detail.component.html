@@ -20,7 +20,7 @@
       </div>
     </form>
     <div class="btn-toolbar" style="">
-      <!-- <button type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button> -->
+      <button *ngIf="hasSystemPerm(permSystem.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
       <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
     </div>

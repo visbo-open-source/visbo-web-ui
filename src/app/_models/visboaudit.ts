@@ -39,3 +39,8 @@ export class VisboAuditResponse {
   message: string;
   audit: [ VisboAudit ]
 }
+
+export class VisboAuditActionType {
+  "name": string;
+  "action": string
+}
