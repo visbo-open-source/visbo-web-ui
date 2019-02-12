@@ -25,6 +25,7 @@ export class VisboAudit {
   actionInfo: string;
   url: string;
   ip: string;
+  ttl: Date;
   userAgent: string;
   result: {
     time: number;
@@ -37,4 +38,9 @@ export class VisboAuditResponse {
   state: string;
   message: string;
   audit: [ VisboAudit ]
+}
+
+export class VisboAuditActionType {
+  "name": string;
+  "action": string
 }

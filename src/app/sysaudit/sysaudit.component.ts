@@ -7,7 +7,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { VisboAudit } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditActionType } from '../_models/visboaudit';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
@@ -20,13 +20,17 @@ export class SysAuditComponent implements OnInit {
 
   audit: VisboAudit[];
   auditIndex: number;
-  auditFrom: string;
-  auditTo: string;
+  auditFrom: Date;
+  auditTo: Date;
+  auditCount: number;
   auditText: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
-  today: Date = new Date();
+  today: Date;
+  auditType: string;
+  auditTypeAction: string;
+  auditTypeList: any[];
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -40,38 +44,63 @@ export class SysAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // if (!this.auditFrom) this.auditFrom = '01.09.2018';
-    // if (!this.auditTo) this.auditTo = '12.09.2018';
+    if (!this.auditFrom) {
+      this.auditFrom = new Date();
+      this.auditFrom.setDate(this.auditFrom.getDate()-7);
+      this.auditFrom.setMinutes(0);
+      this.auditFrom.setSeconds(0);
+      this.auditFrom.setMilliseconds(0);
+    }
+    if (!this.auditTo) {
+      this.auditTo = new Date();
+    }
+    // this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
+    this.auditTypeList = [
+      {name: "All", action: ""},
+      {name: "Read", action: "GET"},
+      {name: "Create", action: "POST"},
+      {name: "Update", action: "PUT"},
+      {name: "Delete", action: "DELETE"}
+    ];
+    this.auditCount = 50;
+    this.auditType = this.auditTypeList[0].name;
+    this.today = new Date();
+    this.today.setHours(0);
+    this.today.setMinutes(0);
+    this.today.setSeconds(0);
+    this.today.setMilliseconds(0);
     this.getVisboAudits();
     this.sortTable(undefined);
   }
 
-  onSelect(visboaudit: VisboAudit): void {
-    this.getVisboAudits();
-  }
+  // onSelect(visboaudit: VisboAudit): void {
+  //   this.getVisboAudits();
+  // }
 
   getVisboAudits(): void {
     var from: Date, to: Date;
-    this.log(`Audit getVisboAudits from ${this.auditFrom} to ${this.auditTo}`);
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditFrom) {
       from = new Date(this.auditFrom)
     }
     if (this.auditTo) {
       to = new Date(this.auditTo)
-      to.setDate(to.getDate() + 1)
+    } else {
+      to = new Date()
     }
+    this.log(`Audit getVisboAudits from ${from.toLocaleDateString()} to ${to.toLocaleDateString()}`);
     if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboAudits(true, from, to)
+    for (var i = 0; i < this.auditTypeList.length; i++) {
+      if (this.auditType == this.auditTypeList[i].name) {
+        this.auditTypeAction = this.auditTypeList[i].action;
+        break;
+      }
+    }
+    this.log(`Audit getVisboAudits recalc from ${from.toLocaleDateString()} to ${to.toLocaleDateString()} filter ${this.auditText} ${this.auditCount} ${this.auditTypeAction}`);
+    this.visboauditService.getVisboAudits(true, from, to, this.auditText, this.auditCount, this.auditTypeAction)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
           this.log('get Audit success');
         },
@@ -115,7 +144,10 @@ export class SysAuditComponent implements OnInit {
           + 'size' + separator
           + 'ip' + separator
           + 'userId' + separator
-          + 'userAgent' +'\n';
+          + 'userAgent' + separator
+          + 'ttl' + separator
+          + 'VC Details' + separator
+          + 'VP Details' + '\n';
     var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
       createdAt = new Date(this.audit[i].createdAt).toISOString();
@@ -137,7 +169,10 @@ export class SysAuditComponent implements OnInit {
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + '\n';
+                  + userAgent + separator
+                  + (this.audit[i].ttl || '') + separator
+                  + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
+                  + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
       data = data.concat(lineItem)
     }
     this.log(`sysAudit CSV Len ${data.length} `);
@@ -198,9 +233,9 @@ export class SysAuditComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  isToday(checkDate: Date): Boolean {
-//    this.log(`Check Date ${checkDate} ${checkDate.toDateString()}`);
-    return true
+  isToday(checkDate: string): Boolean {
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return new Date(checkDate) > this.today
   }
 
   sortTable(n) {

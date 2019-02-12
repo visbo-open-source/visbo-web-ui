@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
@@ -8,6 +8,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboAudit } from '../_models/visboaudit';
 
+import { VisboProjectService }  from '../_services/visboproject.service';
+import { VisboProject } from '../_models/visboproject';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
@@ -17,35 +19,90 @@ import { LoginComponent } from '../login/login.component';
 })
 export class VisboProjectAuditComponent implements OnInit {
 
+  visboproject: VisboProject;
+  combinedPerm: any;
+
   audit: VisboAudit[];
   auditIndex: number;
-  auditFrom: string;
-  auditTo: string;
+  auditFrom: Date;
+  auditTo: Date;
+  auditCount: number;
   auditText: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
+  today: Date;
+  auditType: string;
+  auditTypeAction: string;
+  auditTypeList: any[];
+  sysadmin: boolean;
 
   constructor(
     private visboauditService: VisboAuditService,
+    private visboprojectService: VisboProjectService,
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
-    // if (!this.auditFrom) this.auditFrom = '01.09.2018';
-    // if (!this.auditTo) this.auditTo = '12.09.2018';
+    this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
+    this.getVisboProject();
+    this.auditTypeList = [];
+    if (!this.auditFrom) {
+      this.auditFrom = new Date();
+      this.auditFrom.setDate(this.auditFrom.getDate()-7);
+      this.auditFrom.setMinutes(0);
+      this.auditFrom.setSeconds(0);
+      this.auditFrom.setMilliseconds(0);
+    }
+    if (!this.auditTo) {
+      this.auditTo = new Date();
+    }
+    this.auditTypeList = [
+      {name: "All", action: ""},
+      {name: "Read", action: "GET"},
+      {name: "Create", action: "POST"},
+      {name: "Update", action: "PUT"},
+      {name: "Delete", action: "DELETE"}
+    ];
+    this.auditCount = 50;
+    this.auditType = this.auditTypeList[0].name;
+    this.today = new Date();
+    this.today.setHours(0);
+    this.today.setMinutes(0);
+    this.today.setSeconds(0);
+    this.today.setMilliseconds(0);
+
     this.getVisboProjectAudits();
     this.sortTable(undefined);
   }
 
-  // onSelect(visboaudit: VisboAudit): void {
-  //   this.getVisboAudits();
-  // }
+  getVisboProject(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log('VisboProject Detail of: ' + id);
+    this.visboprojectService.getVisboProject(id, this.sysadmin)
+      .subscribe(
+        visboproject => {
+          this.visboproject = visboproject
+          this.combinedPerm = visboproject.perm;
+          this.log(`Get VisboProject ${id} ${this.visboproject.name} Perm ${JSON.stringify(this.combinedPerm)}`)
+        },
+        error => {
+          this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status == 401) {
+            this.alertService.error(`Session expired, please login again`, true);
+            // redirect to login and come back to current URL
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          } else {
+            this.alertService.error(error.error.message);
+          }
+        }
+      );
+  }
 
   getVisboProjectAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -58,24 +115,20 @@ export class VisboProjectAuditComponent implements OnInit {
     }
     if (this.auditTo) {
       to = new Date(this.auditTo)
-      to.setDate(to.getDate() + 1)
+    } else {
+      to = new Date()
     }
     if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboProjectAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboProjectAudits(id, from, to)
+    this.log(`Audit getVisboProjectAudits VP ${id} recalc from ${from} to ${to} filter ${this.auditText}`);
+    this.visboauditService.getVisboProjectAudits(this.sysadmin, id, from, to, this.auditText, this.auditCount, this.auditTypeAction)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
-          this.log('get Audit success');
+          this.log(`get Audit success ${this.audit.length} for ${this.visboproject.name}`);
         },
         error => {
-          this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
+          this.log(`get Audit failed: error: ${error.status} message: ${JSON.stringify(error)}`);
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
@@ -92,7 +145,8 @@ export class VisboProjectAuditComponent implements OnInit {
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'createdAt' + separator
+    data = 'date' + separator
+          + 'time UTC' + separator
           + 'email' + separator
           + 'actiondDescription' + separator
           + 'action' + separator
@@ -108,10 +162,16 @@ export class VisboProjectAuditComponent implements OnInit {
           + 'size' + separator
           + 'ip' + separator
           + 'userId' + separator
-          + 'userAgent' +'\n';
+          + 'userAgent' + separator
+          + 'ttl' + separator
+          + 'VC Details' + separator
+          + 'VP Details' + '\n';
+    var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
+      createdAt = new Date(this.audit[i].createdAt).toISOString();
       userAgent = this.audit[i].userAgent.replace(/,/g, ";");
-      lineItem = this.audit[i].createdAt + separator
+      lineItem = createdAt.substr(0, 10) + separator
+                  + createdAt.substr(11, 8) + separator
                   + this.audit[i].user.email + separator
                   + this.audit[i].actionDescription + separator
                   + this.audit[i].action + separator
@@ -127,14 +187,24 @@ export class VisboProjectAuditComponent implements OnInit {
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + '\n';
+                  + userAgent + separator
+                  + (this.audit[i].ttl || '') + separator
+                  + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
+                  + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
       data = data.concat(lineItem)
     }
     this.log(`sysAudit CSV Len ${data.length} `);
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    window.open(url);
+    var fileName = `auditlog-VP.csv`
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   helperAuditIndex(auditIndex: number):void {
@@ -180,6 +250,11 @@ export class VisboProjectAuditComponent implements OnInit {
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
+  }
+
+  isToday(checkDate: string): Boolean {
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return new Date(checkDate) > this.today
   }
 
   sortTable(n) {
@@ -269,6 +344,6 @@ export class VisboProjectAuditComponent implements OnInit {
 
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VC Audit: ' + message);
+    this.messageService.add('Audit: ' + message);
   }
 }

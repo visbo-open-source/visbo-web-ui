@@ -8,6 +8,8 @@ import { MessageService } from '../_services/message.service';
 import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
 
+import { environment } from '../../environments/environment';
+
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html'
@@ -17,6 +19,8 @@ export class UserProfileComponent implements OnInit {
   user: VisboUser;
   model: any = {};
   modelPw: any = {};
+
+  policyPW: string = environment.policyPW
   loading = false;
 
   constructor(
