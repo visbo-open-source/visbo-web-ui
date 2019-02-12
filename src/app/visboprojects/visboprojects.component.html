@@ -13,11 +13,17 @@
           </button>
         </h2>
       </div>
-      <div class='col-6 col-md-2 align-self-end' *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-sm btn-primary align-self-end" data-toggle="modal" data-target="#VpModalCreate">
-          New Visbo Project
-        </button>
+      <div class='btn-group align-self-bottom'>
+        <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='col-6'>
+            <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
+            <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
+        </div>
+        <div class='col-6 ' *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#VpModalCreate">
+            New Visbo Project
+          </button>
+        </div>
       </div>
     </div>
   </div>

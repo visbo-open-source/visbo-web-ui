@@ -28,6 +28,7 @@ export class VisboProjectDetailComponent implements OnInit {
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
+  deleted: boolean = false;
 
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
@@ -45,6 +46,7 @@ export class VisboProjectDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboProject();
     this.getVisboProjectUsers();
   }
@@ -54,7 +56,7 @@ export class VisboProjectDetailComponent implements OnInit {
     var currentUser = this.authenticationService.getActiveUser();
 
     this.log('VisboProject Detail of: ' + id);
-    this.visboprojectService.getVisboProject(id)
+    this.visboprojectService.getVisboProject(id, false, this.deleted)
       .subscribe(
         visboproject => {
           this.visboproject = visboproject
@@ -87,8 +89,8 @@ export class VisboProjectDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
 
-    this.log('VisboProject UserList of: ' + id);
-    this.visboprojectService.getVPUsers(id)
+    this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUsers(id, false, this.deleted)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;
