@@ -123,7 +123,7 @@ export class VisboProjectDetailComponent implements OnInit {
     // remove item from list
     // this.visboprojectService.deleteVisboProject(visboproject).subscribe();
     // this.goBack();
-    this.visboprojectService.deleteVisboProject(visboproject)
+    this.visboprojectService.deleteVisboProject(visboproject, this.deleted)
       .subscribe(
         () => {
             this.alertService.success(`Visbo Project ${visboproject.name} deleted successfully`, true);
@@ -145,8 +145,8 @@ export class VisboProjectDetailComponent implements OnInit {
   }
 
   gotoVPAudit(visboproject: VisboProject):void {
-    this.log(`goto VP Audit: ${visboproject._id}`);
-    this.router.navigate(['vpAudit/'.concat(visboproject._id)]);
+    this.log(`goto VP Audit: ${visboproject._id} Deleted ${this.deleted}`);
+    this.router.navigate(['vpAudit/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
   gotoVCDetail(visboproject: VisboProject):void {
@@ -154,11 +154,12 @@ export class VisboProjectDetailComponent implements OnInit {
   }
 
   gotoVPList(visboproject: VisboProject):void {
-    this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+    this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
+    this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
   save(): void {
-    this.visboprojectService.updateVisboProject(this.visboproject)
+    this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
         (vp) => {
           this.alertService.success(`Visbo Project ${vp.name} updated successfully`, true);

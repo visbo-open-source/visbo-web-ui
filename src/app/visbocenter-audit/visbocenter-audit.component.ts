@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStat
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { VisboAudit, VisboAuditActionType } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
@@ -33,6 +33,7 @@ export class VisboCenterAuditComponent implements OnInit {
   auditTypeAction: string;
   auditTypeList: any[];
   sysadmin: boolean;
+  deleted: boolean = false;
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -47,8 +48,9 @@ export class VisboCenterAuditComponent implements OnInit {
   ngOnInit() {
 
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
+    this.deleted = this.route.snapshot.queryParams['deleted'] == true;
     const id = this.route.snapshot.paramMap.get('id');
-    this.visbocenterService.getVisboCenter(id, this.sysadmin)
+    this.visbocenterService.getVisboCenter(id, this.sysadmin, this.deleted)
       .subscribe(
         visbocenter => {
           this.visbocenter = visbocenter;
@@ -72,6 +74,7 @@ export class VisboCenterAuditComponent implements OnInit {
     if (!this.auditFrom) {
       this.auditFrom = new Date();
       this.auditFrom.setDate(this.auditFrom.getDate()-7);
+      this.auditFrom.setHours(0);
       this.auditFrom.setMinutes(0);
       this.auditFrom.setSeconds(0);
       this.auditFrom.setMilliseconds(0);
@@ -101,26 +104,28 @@ export class VisboCenterAuditComponent implements OnInit {
   getVisboCenterAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
-    var from: Date, to: Date;
-    this.log(`Audit getVisboCenterAudits from ${this.auditFrom.toLocaleDateString()} to ${this.auditTo.toLocaleDateString()}`);
+    var queryAudit = new QueryAuditType;
+    this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditFrom) {
-      from = new Date(this.auditFrom)
+      queryAudit.from = new Date(this.auditFrom)
     }
     if (this.auditTo) {
-      to = new Date(this.auditTo)
+      queryAudit.to = new Date(this.auditTo)
     } else {
-      to = new Date()
+      queryAudit.to = new Date()
     }
-    if (this.auditText) this.auditText = this.auditText.trim();
+    if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
       if (this.auditType == this.auditTypeList[i].name) {
-        this.auditTypeAction = this.auditTypeList[i].action;
+        queryAudit.actionType = this.auditTypeList[i].action;
         break;
       }
     }
-    this.log(`Audit getVisboCenterAudits recalc from ${from.toLocaleDateString()} to ${to.toLocaleDateString()} filter ${this.auditText}`);
-    this.visboauditService.getVisboCenterAudits(this.sysadmin, id, from, to, this.auditText, this.auditCount, this.auditTypeAction)
+    queryAudit.maxcount = this.auditCount;
+
+    this.log(`Audit getVisboCenterAudits VC ${id} recalc Query ${JSON.stringify(queryAudit)}`);
+    this.visboauditService.getVisboCenterAudits(id, this.sysadmin, this.deleted, queryAudit)
       .subscribe(
         audit => {
           this.audit = audit;

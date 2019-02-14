@@ -126,10 +126,13 @@ export class VisboProjectService {
   }
 
   /** PUT: update the Visbo Project on the server */
-  updateVisboProject (visboproject: VisboProject): Observable<VisboProject> {
+  updateVisboProject (visboproject: VisboProject, deleted: boolean = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${visboproject._id}`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) params = params.append('deleted', '1')
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put<VisboProjectResponse>(url, visboproject, httpOptions)
+    return this.http.put<VisboProjectResponse>(url, visboproject, { headers , params })
       .pipe(
         map(response => response.vp[0]),
         tap(_ => this.log(`updated VisboProject id=${visboproject._id} url=${this.vpUrl}`)),

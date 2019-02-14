@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -28,10 +28,13 @@ export class VisboSettingService  {
   /** GET VCSettings from the server */
   getVCSettings(vcid: number, sysadmin: boolean = false): Observable<VisboSetting[]> {
     var url = `${this.vcUrl}/${vcid}/setting`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
 
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboSettingResponse>(url, httpOptions)
+    return this.http.get<VisboSettingResponse>(url, { headers , params })
       .pipe(
         map(response => response.vcsetting),
         tap(visbosettings => this.log(`fetched ${visbosettings.length} VCSettings `)),
@@ -42,29 +45,37 @@ export class VisboSettingService  {
   /** GET VCSetting by id. Will 404 if id not found */
   getVCSetting(vcid: number, id: string, sysadmin: boolean = false): Observable<VisboSetting> {
     var url = `${this.vcUrl}/${vcid}/setting/${id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboSettingResponse>(url).pipe(
-      map(response => {
-                return response.vcsetting[0]
-              }),
-      tap(visbosetting => this.log(`fetched VC Setting ${visbosetting.name} id:${id} `)),
-      catchError(this.handleError<VisboSetting>(`getVCSetting id:${id}`))
-    );
+    return this.http.get<VisboSettingResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+                  return response.vcsetting[0]
+                }),
+        tap(visbosetting => this.log(`fetched VC Setting ${visbosetting.name} id:${id} `)),
+        catchError(this.handleError<VisboSetting>(`getVCSetting id:${id}`))
+      );
   }
 
   /** GET VCSetting by name */
   getVCSettingByName(vcid: number, name: string, sysadmin: boolean = false): Observable<VisboSetting> {
     var url = `${this.vcUrl}/${vcid}/setting?name=${name}`;
-    if (sysadmin) url = url.concat('&sysadmin=1');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboSettingResponse>(url).pipe(
-      map(response => {
-                return response.vcsetting[0]
-              }),
-      tap(vcsetting => this.log(`fetched VC Setting ${vcsetting.name} id:${vcsetting._id} `)),
-      catchError(this.handleError<VisboSetting>(`getVCSetting vcid:${vcid}`))
-    );
+    return this.http.get<VisboSettingResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+                  return response.vcsetting[0]
+                }),
+        tap(vcsetting => this.log(`fetched VC Setting ${vcsetting.name} id:${vcsetting._id} `)),
+        catchError(this.handleError<VisboSetting>(`getVCSetting vcid:${vcid}`))
+      );
   }
 
   //////// Save methods //////////
@@ -72,16 +83,20 @@ export class VisboSettingService  {
   /** POST: a new Visbo Center Setting to the server */
   addVCSetting (vcid: number, visbosetting: VisboSetting, sysadmin: boolean = false): Observable<VisboSetting> {
     var url = `${this.vcUrl}/${vcid}/setting`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
 
     this.log(`Calling HTTP Request: ${url} ${JSON.stringify(visbosetting)}`);
     var url = this.vcUrl + '?sysadmin=1'
 
-    return this.http.post<VisboSettingResponse>(url, visbosetting, httpOptions).pipe(
-      map(response => response.vcsetting[0] ),
-      tap(vcsetting => this.log(`added VCSetting ${vcsetting.name} with id=${vcsetting._id}`)),
-      catchError(this.handleError<VisboSetting>('addVCSetting'))
-    );
+    return this.http.post<VisboSettingResponse>(url, visbosetting, { headers , params })
+      .pipe(
+        map(response => response.vcsetting[0] ),
+        tap(vcsetting => this.log(`added VCSetting ${vcsetting.name} with id=${vcsetting._id}`)),
+        catchError(this.handleError<VisboSetting>('addVCSetting'))
+      );
   }
 
 
@@ -90,23 +105,30 @@ export class VisboSettingService  {
     //const id = typeof visbosetting === 'number' ? visbosetting : visbosetting._id;
     const id = visbosetting._id;
     var url = `${this.vcUrl}/${vcid}/setting/${id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
 
     this.log(`Calling HTTP Request: ${url} `);
 
-    return this.http.delete<VisboSetting>(url, httpOptions).pipe(
-      tap(response => this.log(`deleted VCSetting id=${id}`)),
-      catchError(this.handleError<VisboSetting>('deleteVCSetting'))
-    );
+    return this.http.delete<VisboSetting>(url, { headers , params })
+      .pipe(
+        tap(response => this.log(`deleted VCSetting id=${id}`)),
+        catchError(this.handleError<VisboSetting>('deleteVCSetting'))
+      );
   }
 
   /** PUT: update the Visbo Center Setting on the server */
   updateVCSetting (vcid: number, visbosetting: VisboSetting, sysadmin: boolean = false): Observable<VisboSetting> {
     const id = visbosetting._id;
     var url = `${this.vcUrl}/${vcid}/setting/${id}`;
-    if (sysadmin) url = url.concat('?sysadmin=1')
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put<VisboSettingResponse>(url, visbosetting, httpOptions)
+    return this.http.put<VisboSettingResponse>(url, visbosetting, { headers , params })
       .pipe(
         map(response => response.vcsetting[0] ),
         tap(vcsetting => this.log(`updated VCSetting ${vcsetting.name} with id=${vcsetting._id}`)),

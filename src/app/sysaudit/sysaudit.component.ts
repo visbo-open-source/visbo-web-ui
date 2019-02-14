@@ -7,7 +7,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { VisboAudit, VisboAuditActionType } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
@@ -47,6 +47,7 @@ export class SysAuditComponent implements OnInit {
     if (!this.auditFrom) {
       this.auditFrom = new Date();
       this.auditFrom.setDate(this.auditFrom.getDate()-7);
+      this.auditFrom.setHours(0);
       this.auditFrom.setMinutes(0);
       this.auditFrom.setSeconds(0);
       this.auditFrom.setMilliseconds(0);
@@ -80,24 +81,26 @@ export class SysAuditComponent implements OnInit {
   getVisboAudits(): void {
     var from: Date, to: Date;
     // set date values if not set or adopt to end of day in case of to date
+    var queryAudit = new QueryAuditType;
     if (this.auditFrom) {
-      from = new Date(this.auditFrom)
+      queryAudit.from = new Date(this.auditFrom)
     }
     if (this.auditTo) {
-      to = new Date(this.auditTo)
+      queryAudit.to = new Date(this.auditTo)
     } else {
-      to = new Date()
+      queryAudit.to = new Date()
     }
-    this.log(`Audit getVisboAudits from ${from.toLocaleDateString()} to ${to.toLocaleDateString()}`);
-    if (this.auditText) this.auditText = this.auditText.trim();
+    if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
       if (this.auditType == this.auditTypeList[i].name) {
-        this.auditTypeAction = this.auditTypeList[i].action;
+        queryAudit.actionType = this.auditTypeList[i].action;
         break;
       }
     }
-    this.log(`Audit getVisboAudits recalc from ${from.toLocaleDateString()} to ${to.toLocaleDateString()} filter ${this.auditText} ${this.auditCount} ${this.auditTypeAction}`);
-    this.visboauditService.getVisboAudits(true, from, to, this.auditText, this.auditCount, this.auditTypeAction)
+    queryAudit.maxcount = this.auditCount;
+
+    this.log(`Audit getSystemAudits recalc Query ${JSON.stringify(queryAudit)}`);
+    this.visboauditService.getVisboAudits(true, queryAudit)
       .subscribe(
         audit => {
           this.audit = audit;

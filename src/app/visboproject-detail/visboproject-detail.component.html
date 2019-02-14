@@ -53,7 +53,7 @@
                 <th (click)="sortUserTable(1)">e-mail</th>
                 <th (click)="sortUserTable(2)">Group</th>
                 <th>Type</th>
-                <th *ngIf="hasVPPerm(permVP.ManagePerm)">Delete</th>
+                <th *ngIf="!deleted && hasVPPerm(permVP.ManagePerm)">Delete</th>
               </tr>
             </thead>
             <!--Table body-->
@@ -63,11 +63,11 @@
                 <td>{{member.email}}</td>
                 <td>{{member.groupName}}</td>
                 <td>{{member.groupType == 'VP' ? '' : 'Global'}}</td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
+                <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
                   <button class="btn btn-sm" title="Remove User" (click)='helperRemoveUser(memberIndex)'
                   data-toggle="modal" data-target="#VpUserRemove">&times;</button>
                 </td>
-                <td *ngIf="!(hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP')">
+                <td *ngIf="!(!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP')">
                 </td>
               </tr>
             </tbody>
@@ -101,7 +101,7 @@
                 <th (click)="sortGroupTable(1)">Group</th>
                 <th (click)="sortGroupTable(2)">Members</th>
                 <th >Flag</th>
-                <th *ngIf="hasVPPerm(permVP.ManagePerm)">Delete</th>
+                <th *ngIf="!deleted && hasVPPerm(permVP.ManagePerm)">Delete</th>
                 <th>Info</th>
               </tr>
             </thead>
@@ -113,11 +113,11 @@
                 <td>{{member.users.length}}</td>
                 <td *ngIf="member.global">Global</td>
                 <td *ngIf="!member.global"></td>
-                <td *ngIf="hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false">
+                <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false">
                   <button class="btn btn-sm" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
                   data-toggle="modal" data-target="#VpGroupRemove">&times;</button>
                 </td>
-                <td *ngIf="!(hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false)">
+                <td *ngIf="!(!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false)">
                 </td>
                 <td>
                   <button class="Detail" title="Detail of Group"
@@ -130,9 +130,17 @@
         </div>
       </div>
     </div>
-    <button *ngIf="hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary">save</button>
-    <button (click)="goBack()">go back</button>
-    <button *ngIf="hasVPPerm(permVP.DeleteVP)" class="bg-warning" style="float: right" title="Delete Visbo Project" data-toggle="modal" data-target="#VpDelete">Delete</button>
+    <div>
+      <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary">save</button>
+      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">Restore</button>
+      <button (click)="goBack()">go back</button>
+      <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="bg-warning" style="float: right" title="Delete Visbo Project" data-toggle="modal" data-target="#VpDelete">
+        Delete!
+      </button>
+      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="bg-danger text-white" style="float: right" title="Destroy Visbo Project" data-toggle="modal" data-target="#VpDelete">
+        Destroy!
+      </button>
+    </div>
   </div>
 
   <!-- Modal Add VP User -->
@@ -261,8 +269,8 @@
             </div>
 
             <div class="form-group">
-              <!-- <button *ngIf="!(f.form.valid && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button> -->
-              <button *ngIf="(f.form.valid && hasVPPerm(permVP.ManagePerm) && actGroup.confirm != 'View')" type="submit" class="btn btn-primary" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+              <button *ngIf="!(f.form.valid && !deleted && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
+              <button *ngIf="(f.form.valid && !deleted && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
           </form>
@@ -321,7 +329,8 @@
         </div>
         <div class="modal-body">
           <div>
-            <label class="bg-warning">Do you really want to delete this Project? </label>
+            <label *ngIf="!deleted" class="bg-warning">Do you really want to delete this Project? </label>
+            <label *ngIf="deleted" class="bg-danger text-white">Do you really want to destroy this Project? </label>
           </div>
           <form>
             <div class="form-group">
@@ -340,7 +349,8 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning" (click)="delete(visboproject)" data-dismiss="modal">Delete</button>
+          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboproject)" data-dismiss="modal">Delete</button>
+          <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboproject)" data-dismiss="modal">Destroy</button>
         </div>
       </div>
     </div>
