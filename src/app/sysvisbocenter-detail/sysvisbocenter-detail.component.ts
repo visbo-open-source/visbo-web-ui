@@ -125,7 +125,9 @@ constructor(
 
   gotoVCAudit(visbocenter: VisboCenter):void {
     this.log(`GoTo VC Audit ${visbocenter.name} ${this.visbocenter.name}`)
-    this.router.navigate(['vcAudit/'.concat(visbocenter._id)], { queryParams: { sysadmin: 1 }});
+    var queryParams = this.deleted ? { sysadmin: 1, deleted: 1 } : { sysadmin: 1 };
+    this.log(`GoTo VC Audit ${visbocenter.name} ${this.visbocenter.name} ${JSON.stringify(queryParams)}`)
+    this.router.navigate(['vcAudit/'.concat(visbocenter._id)], { queryParams: queryParams});
   }
 
   gotoVPList(visbocenter: VisboCenter):void {

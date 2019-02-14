@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -32,18 +32,14 @@ export class VisboCenterService  {
   /** GET VisboCenters from the server */
   getVisboCenters(sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter[]> {
     var url = this.vcUrl
-    var separator = '?'
-    if (sysadmin) {
-      url = url.concat(separator, 'sysadmin=1');
-      separator = '&'
-    }
-    if (deleted) {
-      url = url.concat(separator, 'deleted=1');
-      separator = '&'
-    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
 
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboCenterResponse>(url, httpOptions)
+    return this.http.get<VisboCenterResponse>(url, { headers , params })
       .pipe(
         map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
@@ -118,17 +114,13 @@ export class VisboCenterService  {
   /** GET VisboCenter by id. Will 404 if id not found */
   getVisboCenter(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     var url = `${this.vcUrl}/${id}`;
-    var separator = '?'
-    if (sysadmin) {
-      url = url.concat(separator, 'sysadmin=1');
-      separator = '&'
-    }
-    if (deleted) {
-      url = url.concat(separator, 'deleted=1');
-      separator = '&'
-    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboCenterResponse>(url).pipe(
+    return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
       map(response => {
                 // TODO: is there a better way to transfer the perm?
                 response.vc[0].perm = response.perm;
@@ -170,19 +162,14 @@ export class VisboCenterService  {
   deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
     const id = visbocenter._id;
     var url = `${this.vcUrl}/${id}`;
-    var separator = '?'
-    if (sysadmin) {
-      url = url.concat(separator, 'sysadmin=1');
-      separator = '&'
-    }
-    if (deleted) {
-      url = url.concat(separator, 'deleted=1');
-      separator = '&'
-    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
 
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
     this.log(`Calling HTTP Request: ${url} `);
 
-    return this.http.delete<VisboCenter>(url, httpOptions).pipe(
+    return this.http.delete<VisboCenter>(url, { headers , params }).pipe(
       tap(response => this.log(`deleted VisboCenter id=${id}`)),
       catchError(this.handleError<VisboCenter>('deleteVisboCenter'))
     );
@@ -191,17 +178,13 @@ export class VisboCenterService  {
   /** PUT: update the Visbo Center on the server */
   updateVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     var url = `${this.vcUrl}/${visbocenter._id}`;
-    var separator = '?'
-    if (sysadmin) {
-      url = url.concat(separator, 'sysadmin=1');
-      separator = '&'
-    }
-    if (deleted) {
-      url = url.concat(separator, 'deleted=1');
-      separator = '&'
-    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
     this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put<VisboCenterResponse>(url, visbocenter, httpOptions)
+    return this.http.put<VisboCenterResponse>(url, visbocenter, { headers , params })
       .pipe(
         map(response => response.vc[0] ),
         tap(vc => this.log(`updated VisboCenter ${vc.name} with id=${vc._id}`)),
@@ -212,17 +195,13 @@ export class VisboCenterService  {
   // GET VisboCenter Users for a specified VC from the server
   getVCUsers(vcid: string, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
     var url = `${this.vcUrl}/${vcid}/group?userlist=1`;
-    var separator = '&'
-    if (sysadmin) {
-      url = url.concat(separator, 'sysadmin=1');
-      separator = '&'
-    }
-    if (deleted) {
-      url = url.concat(separator, 'deleted=1');
-      separator = '&'
-    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
     this.log(`Calling HTTP Request GET Users: ${url} `);
-    return this.http.get<VGResponse>(url, httpOptions)
+    return this.http.get<VGResponse>(url, { headers , params })
       .pipe(
         map(response => {
           var userGroupMix = new VGUserGroupMix();

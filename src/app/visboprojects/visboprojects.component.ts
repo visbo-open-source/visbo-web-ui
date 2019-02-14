@@ -25,6 +25,7 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
+  deleted: boolean = false;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -44,12 +45,14 @@ export class VisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // console.log("Init VisboProjects");
-    this.getVisboProjects();
+    this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
+    this.log(`Init VP Deleted: ${this.deleted}`)
+    this.getVisboProjects(this.deleted);
   }
 
   onSelect(visboproject: VisboProject): void {
-    this.getVisboProjects();
+    this.getVisboProjects(this.deleted);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -62,7 +65,16 @@ export class VisboProjectsComponent implements OnInit {
     return (this.combinedPerm.vc & perm) > 0
   }
 
-  getVisboProjects(): void {
+  toggleVisboProjects(): void {
+    this.deleted = !this.deleted
+    var url = this.route.snapshot.url.join('/')
+    this.log(`VP toggleVisboProjects ${this.deleted} URL ${url}`);
+    this.getVisboProjects(this.deleted);
+    // MS TODO: go to the current url and add delete flag
+    this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
+  getVisboProjects(deleted: boolean): void {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     var currentUser = this.authenticationService.getActiveUser();
@@ -74,7 +86,7 @@ export class VisboProjectsComponent implements OnInit {
           visbocenters => {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
-            this.visboprojectService.getVisboProjects(id)
+            this.visboprojectService.getVisboProjects(id, false, deleted)
               .subscribe(
                 visboprojects => {
                   this.visboprojects = visboprojects;
@@ -105,7 +117,7 @@ export class VisboProjectsComponent implements OnInit {
     } else {
       this.vcSelected = null;
       this.vcActive = null;
-      this.visboprojectService.getVisboProjects(null)
+      this.visboprojectService.getVisboProjects(null, false, deleted)
         .subscribe(
           visboprojects => {
             this.visboprojects = visboprojects;
@@ -172,15 +184,18 @@ export class VisboProjectsComponent implements OnInit {
       );
   }
 
+  // get the versions of the project
   gotoClickedRow(visboproject: VisboProject):void {
-    // console.log("clicked row %s", visboproject.name);
-    this.log(`goto VPV for VP ${visboproject.name}`);
-    this.router.navigate(['vpv/'.concat(visboproject._id)]);
+    var deleted = visboproject.deletedAt ? true : false;
+    this.log(`goto VPV for VP ${visboproject._id} Deleted ${deleted}`);
+    this.router.navigate(['vpv/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
+  // get the details of the project
   gotoDetail(visboproject: VisboProject):void {
-    this.log(`goto Detail for VP ${visboproject.name}`);
-    this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
+    var deleted = visboproject.deletedAt ? true : false;
+    this.log(`goto Detail for VP ${visboproject._id}`);
+    this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   gotoVCDetail(visbocenter: VisboCenter):void {
