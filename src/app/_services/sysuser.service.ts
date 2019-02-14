@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -29,16 +29,14 @@ export class SysUserService {
   /** GET Audits from the server */
   getSysUsers(userMatch: string): Observable<VisboUser[]> {
     var url = this.serviceUrl
-    var queryParams = false
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
 
-    if (userMatch) {
-      url = url.concat(queryParams?'&':'?','email=', userMatch);
-      queryParams = true;
-    }
-    // url = url.concat(queryParams?'&':'?','maxcount=', 6);
+    if (userMatch) params = params.append('email', userMatch);
+    params = params.append('maxcount', '50');
 
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboUsersResponse>(url, httpOptions)
+    return this.http.get<VisboUsersResponse>(url, { headers , params })
       .pipe(
         map(response => response.user),
         tap(user => this.log(`fetched ${user.length} Users `)),

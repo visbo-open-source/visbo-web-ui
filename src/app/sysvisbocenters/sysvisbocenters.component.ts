@@ -39,6 +39,7 @@ export class SysVisboCentersComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.log(`Init SysVC Deleted: ${this.deleted}`)
     this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboCenters(this.deleted);
@@ -53,10 +54,12 @@ export class SysVisboCentersComponent implements OnInit {
     this.deleted = !this.deleted
     this.log(`VC toggleVisboCenters ${this.deleted}`);
     this.getVisboCenters(this.deleted);
+    this.router.navigate(['sysvc'], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    // this.router.navigate(['sysvcDetail/'+visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   getVisboCenters(deleted: boolean): void {
-    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)} deleted ${deleted} ${this.deleted}`);
+    this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)} deleted ${this.deleted}`);
     this.visbocenterService.getVisboCenters(true, deleted)
       .subscribe(
         visbocenters => {

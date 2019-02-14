@@ -15,8 +15,8 @@ export class VPLock {
 
 export class VisboProject {
   _id: string;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: Date;
+  createdAt: Date;
   vcid: string;
   name: string;
   description: string;
@@ -27,8 +27,10 @@ export class VisboProject {
   lock: [VPLock];
   vc: {
     name: string;
+    deletedAt: Date;
   }
   perm: {system: number, vc: number, vp: number};
+  deletedAt: Date;
 }
 
 export class VisboProjectResponse {

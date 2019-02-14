@@ -44,3 +44,11 @@ export class VisboAuditActionType {
   "name": string;
   "action": string
 }
+
+export class QueryAuditType {
+  "from": Date;
+  "to": Date;
+  "text": string;
+  "actionType": string;
+  "maxcount": number;
+}
