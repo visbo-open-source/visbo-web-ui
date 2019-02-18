@@ -49,6 +49,7 @@ import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-a
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
+import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -75,6 +76,7 @@ import { SysLogService } from './_services/syslog.service';
     VisboProjectsComponent,
     VisboProjectDetailComponent,
     VisboProjectVersionsComponent,
+    VisboProjectVersionDetailComponent,
     MessagesComponent,
     SettingsComponent,
     UserProfileComponent,
