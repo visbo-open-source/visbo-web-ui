@@ -26,14 +26,14 @@ export class SysUserService {
   ) { }
 
 
-  /** GET Audits from the server */
+  /** GET Users from the server */
   getSysUsers(userMatch: string): Observable<VisboUser[]> {
     var url = this.serviceUrl
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 
     if (userMatch) params = params.append('email', userMatch);
-    params = params.append('maxcount', '50');
+    params = params.append('maxcount', '100');
 
     this.log(`Calling HTTP Request: ${url} `);
     return this.http.get<VisboUsersResponse>(url, { headers , params })

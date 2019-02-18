@@ -23,11 +23,13 @@ export class VisboProjectVersion {
   VorlagenName: string;
   Dauer: number;
 // Missing AllPhases
-  timestamp: string;
+  timestamp: Date;
   volumen: number;
   complexity: number;
   description: string;
-  businessUnit: string
+  businessUnit: string;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 export class VisboProjectVersionResponse {
