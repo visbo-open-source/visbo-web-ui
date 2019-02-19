@@ -37,6 +37,7 @@
     "ngx-bootstrap": "^3.2.0",
     "node-js": "^1.0.0",
     "popper": "^1.0.1",
+    "braces": "^2.3.1",
     "popper.js": "^1.14.7",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
