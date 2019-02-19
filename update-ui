@@ -17,7 +17,7 @@ then
 fi
 
 echo "03: Install subcomponents from NODE environment"
-npm install
+npm ci
 if [ $? -ne 0 ]
 then
   echo "FATAL: Install of NODE components failed."
