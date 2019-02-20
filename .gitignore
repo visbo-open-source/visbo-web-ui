@@ -2,5 +2,3 @@
 node_modules
 dist/
 src/environments/environment.prod.ts
-package-lock.json
-package-lock.json

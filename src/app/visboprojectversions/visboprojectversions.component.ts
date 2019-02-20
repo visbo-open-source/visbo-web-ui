@@ -10,6 +10,8 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+
 import { LoginComponent } from '../login/login.component';
 
 @Component({
@@ -21,8 +23,13 @@ export class VisboProjectVersionsComponent implements OnInit {
   visboprojectversions: VisboProjectVersion[];
   vpSelected: string;
   vpActive: VisboProject;
+  deleted: boolean = false;
   sortAscending: boolean;
   sortColumn: number;
+
+  combinedPerm: VGPermission = undefined;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -43,22 +50,28 @@ export class VisboProjectVersionsComponent implements OnInit {
     this.getVisboProjectVersions();
   }
 
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vp & perm) > 0
+  }
+
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     this.vpSelected = id;
-    console.log("get VP name if ID is used %s", id);
+    this.log(`get VP name if ID is used ${id}`);
     if (id) {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
           visboproject => {
             this.vpActive = visboproject;
-            console.log("get VP name if ID is used %s", this.vpActive.name);
-            this.visboprojectversionService.getVisboProjectVersions(id)
+            this.combinedPerm = visboproject.perm;
+            this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted)
               .subscribe(
                 visboprojectversions => this.visboprojectversions = visboprojectversions,
                 error => {
-                  console.log('get VPVs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+                  this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   // redirect to login and come back to current URL
                   if (error.status == 403) {
                     this.alertService.error(`Permission Denied for Visbo Project Versions`);
@@ -72,7 +85,7 @@ export class VisboProjectVersionsComponent implements OnInit {
               );
           },
           error => {
-            console.log('get VPV VP failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+            this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project`);
             } else if (error.status == 401) {
@@ -89,7 +102,7 @@ export class VisboProjectVersionsComponent implements OnInit {
         .subscribe(
           visboprojectversions => this.visboprojectversions = visboprojectversions,
           error => {
-            console.log('get VPVs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+            this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             // redirect to login and come back to current URL
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project Versions`);
@@ -104,11 +117,20 @@ export class VisboProjectVersionsComponent implements OnInit {
     }
   }
 
-  gotoDetail(visboprojectversion: VisboProjectVersion):void {
-    console.log("clicked Details %s", visboprojectversion.name);
-    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
+  toggleVisboProjectVersions(): void {
+    this.deleted = !this.deleted
+    var url = this.route.snapshot.url.join('/')
+    this.log(`VP toggleVisboProjectVersions ${this.deleted} URL ${url}`);
+    this.getVisboProjectVersions();
+    // MS TODO: go to the current url and add delete flag
+    this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
+
+  gotoClickedRow(visboprojectversion: VisboProjectVersion):void {
+    this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
+    this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
+}
 
   gotoVPDetail(visboproject: VisboProject):void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
@@ -141,7 +163,7 @@ export class VisboProjectVersionsComponent implements OnInit {
       // sort by VPV endDate
       this.visboprojectversions.sort(function(a, b) {
         var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
+        // this.log("Sort VC Date %s", a.updatedAt)
         if (a.endDate > b.endDate)
           result = 1;
         else if (a.endDate < b.endDate)
@@ -152,7 +174,7 @@ export class VisboProjectVersionsComponent implements OnInit {
       // sort by VPV ampelStatus
       this.visboprojectversions.sort(function(a, b) {
         var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
+        // this.log("Sort VC Date %s", a.updatedAt)
         if (a.ampelStatus > b.ampelStatus)
           result = 1;
         else if (a.ampelStatus < b.ampelStatus)
@@ -163,7 +185,7 @@ export class VisboProjectVersionsComponent implements OnInit {
       // sort by VPV Erloes
       this.visboprojectversions.sort(function(a, b) {
         var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
+        // this.log("Sort VC Date %s", a.updatedAt)
         if (a.Erloes > b.Erloes)
           result = 1;
         else if (a.Erloes < b.Erloes)
@@ -186,4 +208,8 @@ export class VisboProjectVersionsComponent implements OnInit {
     }
   }
 
+  /** Log a VisboProjectService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('VisboProjectVersion: ' + message);
+  }
 }

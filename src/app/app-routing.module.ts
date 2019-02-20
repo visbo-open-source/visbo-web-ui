@@ -18,6 +18,8 @@ import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-a
 import { VisboProjectsComponent }      from './visboprojects/visboprojects.component';
 import { VisboProjectDetailComponent }  from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent }      from './visboprojectversions/visboprojectversions.component';
+import { VisboProjectVersionDetailComponent }      from './visboprojectversion-detail/visboprojectversion-detail.component';
+
 import { SettingsComponent }   from './settings/settings.component';
 import { UserProfileComponent }   from './userprofile/userprofile.component';
 
@@ -47,6 +49,7 @@ const routes: Routes = [
   { path: 'vpAudit/:id', component: VisboProjectAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
+  { path: 'vpvDetail/:id', component: VisboProjectVersionDetailComponent, canActivate: [AuthGuard]  },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'sysadmins', component: SysVisboSystemComponent, canActivate: [AuthGuard] },
