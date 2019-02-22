@@ -34,6 +34,7 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
     this.log(`Start init User Get Profile `);
+    this.modelPw = {}
     this.getUserProfile();
   }
 
@@ -113,8 +114,12 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
+  passwordInit(): void {
+    this.modelPw = {}
+  }
+
   passwordChange(): void {
-    this.log(`Password Change ${this.model.email} ${this.modelPw.oldpassword}`);
+    this.log(`Password Change ${this.model.email} Len Old ${this.modelPw.oldpassword.length} New ${this.modelPw.newpassword.length}`);
     var model: any = {};
     model.oldpassword = this.modelPw.oldpassword;
     model.password = this.modelPw.newpassword;
