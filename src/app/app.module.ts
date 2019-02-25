@@ -75,6 +75,7 @@ import { SysLogService } from './_services/syslog.service';
     VisboCenterAuditComponent,
     VisboProjectsComponent,
     VisboProjectDetailComponent,
+    VisboProjectAuditComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
     MessagesComponent,
@@ -93,7 +94,6 @@ import { SysLogService } from './_services/syslog.service';
     SysVisboCenterDetailComponent,
     SysVisboProjectsComponent,
     SysVisboProjectDetailComponent,
-    VisboProjectAuditComponent,
     SysAuditComponent,
     SysUserComponent,
     SysLogComponent
