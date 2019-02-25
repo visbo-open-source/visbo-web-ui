@@ -71,17 +71,6 @@ export class VisboCenterAuditComponent implements OnInit {
       );
 
     this.auditTypeList = [];
-    if (!this.auditFrom) {
-      this.auditFrom = new Date();
-      this.auditFrom.setDate(this.auditFrom.getDate()-7);
-      this.auditFrom.setHours(0);
-      this.auditFrom.setMinutes(0);
-      this.auditFrom.setSeconds(0);
-      this.auditFrom.setMilliseconds(0);
-    }
-    if (!this.auditTo) {
-      this.auditTo = new Date();
-    }
     this.auditTypeList = [
       {name: "All", action: ""},
       {name: "Read", action: "GET"},
@@ -107,13 +96,21 @@ export class VisboCenterAuditComponent implements OnInit {
     var queryAudit = new QueryAuditType;
     this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
-    if (this.auditFrom) {
-      queryAudit.from = new Date(this.auditFrom)
-    }
+
     if (this.auditTo) {
       queryAudit.to = new Date(this.auditTo)
     } else {
       queryAudit.to = new Date()
+    }
+    if (this.auditFrom) {
+      queryAudit.from = new Date(this.auditFrom)
+    } else {
+      queryAudit.from = new Date(queryAudit.to);
+      queryAudit.from.setDate(queryAudit.from.getDate()-7);
+      queryAudit.from.setHours(0);
+      queryAudit.from.setMinutes(0);
+      queryAudit.from.setSeconds(0);
+      queryAudit.from.setMilliseconds(0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {

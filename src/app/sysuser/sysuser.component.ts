@@ -8,7 +8,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboUser } from '../_models/login';
 import { SysUserService } from '../_services/sysuser.service';
 import { LoginComponent } from '../login/login.component';
-
+ 
 @Component({
   selector: 'app-sysuser',
   templateUrl: './sysuser.component.html'

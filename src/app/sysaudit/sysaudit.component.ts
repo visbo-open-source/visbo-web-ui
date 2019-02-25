@@ -44,17 +44,6 @@ export class SysAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (!this.auditFrom) {
-      this.auditFrom = new Date();
-      this.auditFrom.setDate(this.auditFrom.getDate()-7);
-      this.auditFrom.setHours(0);
-      this.auditFrom.setMinutes(0);
-      this.auditFrom.setSeconds(0);
-      this.auditFrom.setMilliseconds(0);
-    }
-    if (!this.auditTo) {
-      this.auditTo = new Date();
-    }
     // this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
     this.auditTypeList = [
       {name: "All", action: ""},
@@ -79,16 +68,22 @@ export class SysAuditComponent implements OnInit {
   // }
 
   getVisboAudits(): void {
-    var from: Date, to: Date;
-    // set date values if not set or adopt to end of day in case of to date
     var queryAudit = new QueryAuditType;
-    if (this.auditFrom) {
-      queryAudit.from = new Date(this.auditFrom)
-    }
+    // set date values if not set or adopt to end of day in case of to date
     if (this.auditTo) {
       queryAudit.to = new Date(this.auditTo)
     } else {
       queryAudit.to = new Date()
+    }
+    if (this.auditFrom) {
+      queryAudit.from = new Date(this.auditFrom)
+    } else {
+      queryAudit.from = new Date(queryAudit.to);
+      queryAudit.from.setDate(queryAudit.from.getDate()-7);
+      queryAudit.from.setHours(0);
+      queryAudit.from.setMinutes(0);
+      queryAudit.from.setSeconds(0);
+      queryAudit.from.setMilliseconds(0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
