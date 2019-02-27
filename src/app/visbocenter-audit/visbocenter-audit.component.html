@@ -70,7 +70,7 @@
             <td *ngIf="!auditentry.user"> Unknown </td>
             <td>{{auditentry.actionDescription }}</td>
             <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
-            <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry.result.status) }}</td>
+            <td class="d-none d-lg-table-cell" >{{auditentry.result.statusText || helperResponseText(auditentry.result.status) }}</td>
             <td>
               <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>
@@ -124,7 +124,7 @@
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
           </div>
           <label class="py-0 m-0 col-4 form-control-static">Result:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{helperResponseText(audit[auditIndex].result.status) }} </label>
+          <label class="py-0 m-0 col-7 form-control-static">{{audit[auditIndex].result.statusText || helperResponseText(audit[auditIndex].result.status) }} </label>
           <div *ngIf="showMore">
             <label class="py-0 m-0 col-4 form-control-static">tech. Action:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].action }} </label>

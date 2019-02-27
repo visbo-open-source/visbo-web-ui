@@ -59,7 +59,7 @@
             <td *ngIf="!auditentry.user"> Unknown </td>
             <td>{{auditentry.actionDescription }}</td>
             <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
-            <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry.result.status) }}</td>
+            <td class="d-none d-lg-table-cell" >{{auditentry.result.statusText || helperResponseText(auditentry.result.status) }}</td>
             <td class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
             <td class="d-none d-lg-table-cell" >{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }}</td>
             <td>
@@ -118,7 +118,7 @@
           </div>
           <div>
             <label class="py-0 m-0 col-4 form-control-static">Result:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{helperResponseText(audit[auditIndex].result.status) }} </label>
+            <label class="py-0 m-0 col-7 form-control-static">{{auditentry.result.statusText || helperResponseText(audit[auditIndex].result.status) }} </label>
           </div>
           <div *ngIf="showMore">
             <label class="py-0 m-0 col-4 form-control-static">tech. Action:</label>
