@@ -231,7 +231,10 @@ export class VisboCenterAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex
   }
 
-  helperResponseText(status: number): string {
+  helperResponseText(visboaudit: VisboAudit): string {
+    if (!visboaudit.result) return "Unknown"
+    if (visboaudit.result.statusText) return visboaudit.result.statusText;
+    var status = visboaudit.result.status
     if (status == 200) return "Success"
     if (status == 304) return "Success"
     if (status == 400) return "Bad Request"
