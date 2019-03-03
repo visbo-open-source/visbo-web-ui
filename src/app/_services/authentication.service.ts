@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
 import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
 import { MessageService } from './message.service';
 
+import * as JWT from 'jwt-decode';
+
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
@@ -16,12 +18,24 @@ const httpOptions = {
 export class AuthenticationService {
 
   isLoggedIn: boolean = false;
+  logoutTime: Date = undefined;
+
   constructor(
       private http: HttpClient,
+      // private store: Store<AuthState>,
       private messageService: MessageService
     ) { }
 
     private authUrl = environment.restUrl.concat('/token/user');  // URL to web api
+
+    logoutCheck() {
+
+      if (!this.isLoggedIn) return undefined;
+      // this.log(`Logout Check ${this.logoutTime}`);
+
+      return this.logoutTime;
+    }
+
 
     login(username: string, password: string) {
       const url = `${this.authUrl}/login`;
@@ -34,13 +48,18 @@ export class AuthenticationService {
             .pipe(
               map(result => {
                 // login successful if there's a jwt token in the response
-                this.log(`Login Request Successful:  ${result.user.email}`);
                 if (result && result.token) {
                     this.log(`Login Request Successful:  ${result.user.email}`);
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
                     sessionStorage.setItem('currentUser', JSON.stringify(result.user));
                     sessionStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
+                    var decoded: any;
+                    decoded = JWT(result.token)
+                    // this.log(`Login token expiration:  ${decoded.exp}`);
+                    this.logoutTime = new Date(decoded.exp * 1000);
+                    this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+
                     return result.user;
                 };
                 return null;

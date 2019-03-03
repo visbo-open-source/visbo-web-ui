@@ -208,7 +208,10 @@ export class SysAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex
   }
 
-  helperResponseText(status: number): string {
+  helperResponseText(visboaudit: VisboAudit): string {
+    if (!visboaudit.result) return "Unknown"
+    if (visboaudit.result.statusText) return visboaudit.result.statusText;
+    var status = visboaudit.result.status
     if (status == 200) return "Success"
     if (status == 304) return "Success"
     if (status == 400) return "Bad Request"
@@ -216,6 +219,7 @@ export class SysAuditComponent implements OnInit {
     if (status == 403) return "Permission Denied"
     if (status == 404) return "URL not found"
     if (status == 409) return "Conflict"
+    if (status == 423) return "Locked"
     if (status == 500) return "Server Error"
     return status.toString()
   }
