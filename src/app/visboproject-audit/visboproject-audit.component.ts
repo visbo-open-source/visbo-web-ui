@@ -16,8 +16,10 @@ import { LoginComponent } from '../login/login.component';
 var encodeCSV = function(source: string): string {
   var result: string;
   if (!source) return source;
-  result = source.replace(/\t/g, " ")
-  result = result.replace(/=/g, "%3D")
+  result = source.replace(/\t/g, " ");
+  if (result[0] == '='  || result[0] == '+'  || result[0] == '-' ) {
+      result = "'".concat(result)
+  }
   return result;
 }
 
