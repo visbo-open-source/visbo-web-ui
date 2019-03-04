@@ -12,6 +12,16 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
+var encodeCSV = function(source: string): string {
+  var result: string;
+  if (!source) return source;
+  result = source.replace(/\t/g, " ");
+  if (result[0] == '='  || result[0] == '+'  || result[0] == '-' ) {
+      result = "'".concat(result)
+  }
+  return result;
+}
+
 @Component({
   selector: 'app-sysaudit',
   templateUrl: './sysaudit.component.html'
@@ -152,25 +162,25 @@ export class SysAuditComponent implements OnInit {
       userAgent = this.audit[i].userAgent.replace(/,/g, ";");
       lineItem = createdAt.substr(0, 10) + separator
                   + createdAt.substr(11, 12) + separator
-                  + this.audit[i].user.email + separator
-                  + this.audit[i].actionDescription + separator
+                  + encodeCSV(this.audit[i].user.email ) + separator
+                  + encodeCSV(this.audit[i].actionDescription) + separator
                   + this.audit[i].action + separator
                   + this.audit[i].url + separator
                   + this.audit[i].actionInfo + separator
                   + (this.audit[i].result ? this.audit[i].result.time : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.status : '') + separator
                   + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
-                  + (this.audit[i].vc ? this.audit[i].vc.name : '') + separator
+                  + (this.audit[i].vc ? encodeCSV(this.audit[i].vc.name) : '') + separator
                   + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
-                  + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
+                  + (this.audit[i].vp ? encodeCSV(this.audit[i].vp.name) : '') + separator
                   + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + separator
+                  + encodeCSV(userAgent) + separator
                   + (this.audit[i].ttl || '') + separator
-                  + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
-                  + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
+                  + (this.audit[i].vc ? (encodeCSV(this.audit[i].vc.vcjson) || '') : '') + separator
+                  + (this.audit[i].vp ? (encodeCSV(this.audit[i].vp.vpjson) || '') : '') + '\n';
       data = data.concat(lineItem)
     }
     this.log(`sysAudit CSV Len ${data.length} `);
