@@ -159,7 +159,7 @@ export class SysAuditComponent implements OnInit {
     var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
       createdAt = new Date(this.audit[i].createdAt).toISOString();
-      userAgent = this.audit[i].userAgent.replace(/,/g, ";");
+      userAgent = (this.audit[i].userAgent|| '').replace(/,/g, ";");
       lineItem = createdAt.substr(0, 10) + separator
                   + createdAt.substr(11, 12) + separator
                   + encodeCSV(this.audit[i].user.email ) + separator
