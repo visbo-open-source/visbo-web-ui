@@ -11,6 +11,16 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
+var encodeCSV = function(source: string): string {
+  var result: string;
+  if (!source) return source;
+  result = source.replace(/\t/g, " ");
+  if (result[0] == '='  || result[0] == '+'  || result[0] == '-' ) {
+      result = "'".concat(result)
+  }
+  return result;
+}
+
 @Component({
   selector: 'app-visbocenter-audit',
   templateUrl: './visbocenter-audit.component.html'
@@ -71,17 +81,6 @@ export class VisboCenterAuditComponent implements OnInit {
       );
 
     this.auditTypeList = [];
-    if (!this.auditFrom) {
-      this.auditFrom = new Date();
-      this.auditFrom.setDate(this.auditFrom.getDate()-7);
-      this.auditFrom.setHours(0);
-      this.auditFrom.setMinutes(0);
-      this.auditFrom.setSeconds(0);
-      this.auditFrom.setMilliseconds(0);
-    }
-    if (!this.auditTo) {
-      this.auditTo = new Date();
-    }
     this.auditTypeList = [
       {name: "All", action: ""},
       {name: "Read", action: "GET"},
@@ -107,13 +106,21 @@ export class VisboCenterAuditComponent implements OnInit {
     var queryAudit = new QueryAuditType;
     this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
-    if (this.auditFrom) {
-      queryAudit.from = new Date(this.auditFrom)
-    }
+
     if (this.auditTo) {
       queryAudit.to = new Date(this.auditTo)
     } else {
       queryAudit.to = new Date()
+    }
+    if (this.auditFrom) {
+      queryAudit.from = new Date(this.auditFrom)
+    } else {
+      queryAudit.from = new Date(queryAudit.to);
+      queryAudit.from.setDate(queryAudit.from.getDate()-7);
+      queryAudit.from.setHours(0);
+      queryAudit.from.setMinutes(0);
+      queryAudit.from.setSeconds(0);
+      queryAudit.from.setMilliseconds(0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
@@ -174,28 +181,28 @@ export class VisboCenterAuditComponent implements OnInit {
     var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
       createdAt = new Date(this.audit[i].createdAt).toISOString();
-      userAgent = this.audit[i].userAgent.replace(/,/g, ";");
+      userAgent = (this.audit[i].userAgent|| '').replace(/,/g, ";");
       lineItem = createdAt.substr(0, 10) + separator
                   + createdAt.substr(11, 8) + separator
-                  + this.audit[i].user.email + separator
-                  + this.audit[i].actionDescription + separator
+                  + encodeCSV(this.audit[i].user.email) + separator
+                  + encodeCSV(this.audit[i].actionDescription) + separator
                   + this.audit[i].action + separator
                   + this.audit[i].url + separator
                   + this.audit[i].actionInfo + separator
                   + (this.audit[i].result ? this.audit[i].result.time : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.status : '') + separator
                   + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
-                  + (this.audit[i].vc ? this.audit[i].vc.name : '') + separator
+                  + (this.audit[i].vc ? encodeCSV(this.audit[i].vc.name) : '') + separator
                   + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
-                  + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
+                  + (this.audit[i].vp ? encodeCSV(this.audit[i].vp.name) : '') + separator
                   + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + separator
+                  + encodeCSV(userAgent) + separator
                   + (this.audit[i].ttl || '') + separator
-                  + (this.audit[i].vc ? (this.audit[i].vc.vcjson || '') : '') + separator
-                  + (this.audit[i].vp ? (this.audit[i].vp.vpjson || '') : '') + '\n';
+                  + (this.audit[i].vc ? (encodeCSV(this.audit[i].vc.vcjson) || '') : '') + separator
+                  + (this.audit[i].vp ? (encodeCSV(this.audit[i].vp.vpjson) || '') : '') + '\n';
       data = data.concat(lineItem)
     }
     this.log(`VC Audit CSV Len ${data.length} `);
@@ -234,15 +241,18 @@ export class VisboCenterAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex
   }
 
-  helperResponseText(status: number): string {
-    if (status == 200) return "Success"
-    if (status == 304) return "Success"
-    if (status == 400) return "Bad Request"
-    if (status == 401) return "Not Authenticated"
-    if (status == 403) return "Permission Denied"
-    if (status == 404) return "URL not found"
-    if (status == 409) return "Conflict"
-    if (status == 500) return "Server Error"
+  helperResponseText(visboaudit: VisboAudit): string {
+    if (visboaudit.result.statusText) return visboaudit.result.statusText;
+    var status = visboaudit.result.status
+    if (status == "200") return "Success"
+    if (status == "304") return "Success"
+    if (status == "400") return "Bad Request"
+    if (status == "401") return "Not Authenticated"
+    if (status == "403") return "Permission Denied"
+    if (status == "404") return "URL not found"
+    if (status == "409") return "Conflict"
+    if (status == "423") return "Locked"
+    if (status == "500") return "Server Error"
     return status.toString()
   }
 

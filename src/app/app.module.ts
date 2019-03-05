@@ -25,6 +25,7 @@ import { AlertService } from './_services/alert.service';
 import { NavbarComponent } from './navbar/navbar.component';
 
 import { MessagesComponent } from './messages/messages.component';
+import { LogoutTimerComponent } from './logouttimer/logouttimer.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './userprofile/userprofile.component';
 
@@ -75,9 +76,11 @@ import { SysLogService } from './_services/syslog.service';
     VisboCenterAuditComponent,
     VisboProjectsComponent,
     VisboProjectDetailComponent,
+    VisboProjectAuditComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
     MessagesComponent,
+    LogoutTimerComponent,
     SettingsComponent,
     UserProfileComponent,
     DashboardComponent,
@@ -93,7 +96,6 @@ import { SysLogService } from './_services/syslog.service';
     SysVisboCenterDetailComponent,
     SysVisboProjectsComponent,
     SysVisboProjectDetailComponent,
-    VisboProjectAuditComponent,
     SysAuditComponent,
     SysUserComponent,
     SysLogComponent

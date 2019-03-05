@@ -48,5 +48,7 @@ echo "05: Remove the Visbo UI Client from production directory"
 rm -rf /var/www/visbo-web-ui/*
 echo "06: Copy the Visbo UI Client to production directory"
 cp -r dist/* /var/www/visbo-web-ui
+find /var/www/visbo-web-ui -type d -exec chmod 755 {} +
+find /var/www/visbo-web-ui -type f -exec chmod 644 {} +
 
 echo "Visbo UI Client Updated Successfully"

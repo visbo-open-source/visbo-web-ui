@@ -26,10 +26,12 @@ export class VisboAudit {
   url: string;
   ip: string;
   ttl: Date;
+  sysAdmin: boolean;
   userAgent: string;
   result: {
     time: number;
     status: string;
+    statusText: string;
     size: number;
   }
 }
