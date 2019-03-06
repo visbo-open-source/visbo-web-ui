@@ -98,7 +98,7 @@
             <label class="py-0 m-0 col-4 form-control-static">User:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
             <label class="py-0 m-0 col-4 form-control-static">Action:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
+            <label class="py-0 m-0 col-7 form-control-static">{{ helperFormatActionDescription(audit[auditIndex]) }} </label>
           </div>
           <div *ngIf="audit[auditIndex].actionInfo">
             <label class="py-0 m-0 col-4 form-control-static">Info:</label>
