@@ -135,7 +135,8 @@ export class SysAuditComponent implements OnInit {
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'date' + separator
+    data = 'sep=' + separator + '\n'  // to force excel to use the separator
+    data = data + 'date' + separator
           + 'time UTC' + separator
           + 'email' + separator
           + 'actionDescription' + separator
