@@ -135,10 +135,11 @@ export class SysAuditComponent implements OnInit {
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'date' + separator
+    data = 'sep=' + separator + '\n'  // to force excel to use the separator
+    data = data + 'date' + separator
           + 'time UTC' + separator
           + 'email' + separator
-          + 'actiondDescription' + separator
+          + 'actionDescription' + separator
           + 'action' + separator
           + 'url' + separator
           + 'actionInfo' + separator
@@ -199,6 +200,20 @@ export class SysAuditComponent implements OnInit {
   helperAuditIndex(auditIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex
+  }
+
+  helperFormatActionDescription(auditentry: VisboAudit): string {
+    this.log(`AuditDescription  ${auditentry.actionDescription} `);
+    var desc: string;
+    if (auditentry.actionDescription == "GET"
+    || auditentry.actionDescription == "POST"
+    || auditentry.actionDescription == "PUT"
+    || auditentry.actionDescription == "DELETE") {
+      desc = auditentry.actionDescription.concat(' ', auditentry.url)
+      if (desc.length > 20) desc = desc.substring(0, 17) + '...';
+      return desc
+    }
+    return auditentry.actionDescription
   }
 
   helperFormatBytes(a, b = 2):string {
