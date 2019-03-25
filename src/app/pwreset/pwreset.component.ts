@@ -18,7 +18,7 @@ import { environment } from '../../environments/environment';
 export class PWResetComponent {
   model: any = {};
 
-  policyPW: string = environment.policyPW
+  policyPW: string;
   loading = false;
   token = '';
 
@@ -30,6 +30,11 @@ export class PWResetComponent {
     private alertService: AlertService) { }
 
   ngOnInit(){
+    if (environment['policyPW']) {
+      this.policyPW = environment['policyPW']
+    } else {
+      this.policyPW = ".{8,}"
+    }
     this.token = this.route.snapshot.queryParams.token
     this.log(`Init PW Reset Token ${this.token}`);
   }

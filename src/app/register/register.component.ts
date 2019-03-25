@@ -15,7 +15,7 @@ import { environment } from '../../environments/environment';
 
 export class RegisterComponent {
   model: any = {};
-  policyPW: string = environment.policyPW
+  policyPW: string;
   userRegister = undefined
   hash = undefined;
   loading = false;
@@ -29,6 +29,11 @@ export class RegisterComponent {
 
   ngOnInit() {
     // console.log("Init Registration");
+    if (environment['policyPW']) {
+      this.policyPW = environment['policyPW']
+    } else {
+      this.policyPW = ".{8,}"
+    }
     const id = this.route.snapshot.paramMap.get('id');
     this.hash = this.route.snapshot.queryParams.hash
     if (id) {
