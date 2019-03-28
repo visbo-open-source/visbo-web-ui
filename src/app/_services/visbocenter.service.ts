@@ -220,7 +220,7 @@ export class VisboCenterService  {
     if (sysadmin) url = url.concat('?sysadmin=1')
     var reqBody: any = {};
     reqBody.email = email;
-    reqBody.message = message;
+    reqBody.message = message ||'';
     this.log(`Calling HTTP Request: ${url} for ${email} `);
     return this.http.post<VGResponse>(url, reqBody, httpOptions)
       .pipe(
@@ -290,6 +290,7 @@ export class VisboCenterService  {
    * @param result - optional value to return as the observable result
    */
   private handleError<T> (operation = 'operation', result?: T) {
+    this.log(`HTTP Request ${operation} failed. Result ${JSON.stringify(result)}`);
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);

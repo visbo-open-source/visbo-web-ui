@@ -183,7 +183,8 @@ export class VisboCenterDetailComponent implements OnInit {
   addNewVCUser(): void {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
+    var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
+    var groupId = inviteGroup._id;
     var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
     var vcid = this.visbocenter._id
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
@@ -197,6 +198,8 @@ export class VisboCenterDetailComponent implements OnInit {
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
+          newUserGroup.groupType = inviteGroup.groupType;
+          newUserGroup.internal = inviteGroup.internal;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
           this.sortUserTable();
@@ -209,13 +212,13 @@ export class VisboCenterDetailComponent implements OnInit {
           this.alertService.success(`User ${email} added successfully`);
         },
         error => {
-          this.log(`Add VisboCenter User error: ${error.error.message}`);
+          this.log(`Add VisboCenter User error: ${JSON.stringify(error)}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Add User to Visbo Center`);
           } else if (error.status == 401) {
             this.alertService.error(`Session expired, please login again`, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
+          } else if (error.error) {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
           }
