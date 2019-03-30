@@ -16,7 +16,7 @@ import { environment } from '../../environments/environment';
 export class RegisterComponent {
   model: any = {};
   policyPW: string;
-  userRegister = undefined
+  userRegister = undefined;
   hash = undefined;
   loading = false;
 
