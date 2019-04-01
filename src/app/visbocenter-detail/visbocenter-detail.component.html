@@ -23,9 +23,10 @@
       <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
       <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+      <button type="button" class="btn btn-sm" (click)="showProjectUser()">Show Project Users</button>
     </div>
 
-    <div *ngIf="!showGroups" >
+    <div *ngIf="!showGroups && !showProjectUsers" >
       <div >
         <div class='row'>
           <div class='col'>
@@ -67,11 +68,9 @@
           </table>
         </div>
       </div>
-      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
-      <button (click)="goBack()">go back</button>
     </div>
 
-    <div *ngIf="showGroups" >
+    <div *ngIf="showGroups && !showProjectUsers" >
       <div >
         <div class='row'>
           <div class='col'>
@@ -121,9 +120,45 @@
           </table>
         </div>
       </div>
-      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
-      <button (click)="goBack()">go back</button>
     </div>
+
+    <div *ngIf="showProjectUsers" >
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                Visbo Project Users
+            </h5>
+          </div>
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>Nr.</th>
+                <th (click)="sortVPUserTable(1)">e-mail</th>
+                <th (click)="sortVPUserTable(2)">Project</th>
+                <th>Group</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr *ngFor="let member of vgVPUsers; let memberIndex=index" (click)="gotoVPDetail(member.vpid)"> <!-- class="danger"> -->
+                <td>{{memberIndex+1}}</td>
+                <td>{{member.users.email}}</td>
+                <td>{{member.vp.name}}</td>
+                <td>{{member.groupName}}</td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary">save</button>
+    <button (click)="goBack()">go back</button>
   </div>
 </div>
 

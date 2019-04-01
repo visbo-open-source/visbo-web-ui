@@ -207,9 +207,10 @@ export class VisboCenterService  {
           var userGroupMix = new VGUserGroupMix();
           userGroupMix.users = response.users;
           userGroupMix.groups = response.groups;
+          userGroupMix.vpusers = response.vpusers;
           return userGroupMix
         }),
-        // tap(users => this.log(`fetched Users & Groups Users `)),
+        tap(users => this.log(`fetched Users & Groups Users `)),
         catchError(this.handleError('getVisboCenterUsers', []))
       );
   }
