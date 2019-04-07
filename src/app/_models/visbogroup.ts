@@ -44,9 +44,18 @@ export class VGUserGroup {
   internal: boolean;
 }
 
+export class VGProjectUserGroup {
+  vpid: string;
+  users: VGUser;
+  groupName: string;
+  groupType: string;
+  vp: {name: string};
+}
+
 export class VGUserGroupMix {
   groups: [ VGGroup ];
   users: [VGUserGroup];
+  vpusers: [VGProjectUserGroup];
 }
 
 export class VGResponse {
@@ -54,4 +63,5 @@ export class VGResponse {
   message: string;
   groups: [ VGGroup ];
   users: [VGUserGroup];
+  vpusers: [VGProjectUserGroup];
 }

@@ -20,7 +20,7 @@ export class UserProfileComponent implements OnInit {
   model: any = {};
   modelPw: any = {};
 
-  policyPW: string = environment.policyPW
+  policyPW: string;
   loading = false;
 
   constructor(
@@ -33,6 +33,11 @@ export class UserProfileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (environment['policyPW']) {
+      this.policyPW = environment['policyPW']
+    } else {
+      this.policyPW = ".{8,}"
+    }
     this.log(`Start init User Get Profile `);
     this.modelPw = {}
     this.getUserProfile();

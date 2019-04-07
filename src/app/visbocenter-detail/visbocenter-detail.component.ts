@@ -8,7 +8,7 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenterService }  from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService }  from '../_services/visboproject.service';
@@ -22,11 +22,13 @@ export class VisboCenterDetailComponent implements OnInit {
   @Input() visbocenter: VisboCenter;
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
+  vgVPUsers: VGProjectUserGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
+  showProjectUsers: boolean;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -34,6 +36,8 @@ export class VisboCenterDetailComponent implements OnInit {
 
   sortUserColumn: number = 1;
   sortUserAscending: boolean = true;
+  sortVPUserColumn: number = 1;
+  sortVPUserAscending: boolean = true;
   sortGroupColumn: number = 1;
   sortGroupAscending: boolean = true;
 
@@ -100,7 +104,8 @@ export class VisboCenterDetailComponent implements OnInit {
         mix => {
           this.vgUsers = mix.users;
           this.vgGroups = mix.groups;
-          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`)
+          this.vgVPUsers = mix.vpusers;
+          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length} Project Users ${this.vgVPUsers.length}`)
           this.sortUserTable();
           this.sortGroupTable();
         },
@@ -129,6 +134,10 @@ export class VisboCenterDetailComponent implements OnInit {
 
   gotoVPList(visbocenter: VisboCenter):void {
     this.router.navigate(['vp/'.concat(visbocenter._id)]);
+  }
+
+  gotoVPDetail(vpid: string):void {
+    this.router.navigate(['vpDetail/'.concat(vpid)]);
   }
 
   save(): void {
@@ -177,13 +186,19 @@ export class VisboCenterDetailComponent implements OnInit {
   }
 
   toggleUserGroup(): void {
+    this.showProjectUsers = false;
     this.showGroups = !this.showGroups;
+  }
+
+  showProjectUser(): void {
+    this.showProjectUsers = true;
   }
 
   addNewVCUser(): void {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
+    var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
+    var groupId = inviteGroup._id;
     var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
     var vcid = this.visbocenter._id
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
@@ -197,6 +212,8 @@ export class VisboCenterDetailComponent implements OnInit {
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
+          newUserGroup.groupType = inviteGroup.groupType;
+          newUserGroup.internal = inviteGroup.internal;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
           this.sortUserTable();
@@ -209,13 +226,13 @@ export class VisboCenterDetailComponent implements OnInit {
           this.alertService.success(`User ${email} added successfully`);
         },
         error => {
-          this.log(`Add VisboCenter User error: ${error.error.message}`);
+          this.log(`Add VisboCenter User error: ${JSON.stringify(error)}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Add User to Visbo Center`);
           } else if (error.status == 401) {
             this.alertService.error(`Session expired, please login again`, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
+          } else if (error.error) {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
           }
@@ -475,7 +492,57 @@ export class VisboCenterDetailComponent implements OnInit {
     }
   }
 
-  sortGroupTable(n: number = undefined) {
+sortVPUserTable(n: number = undefined) {
+
+  // this.log(`Sort VPUsers Column ${n||0}`); // log to console instead
+  if (!this.vgVPUsers) return
+  // change sort order otherwise sort same column same direction
+  if (n != undefined || this.sortVPUserColumn == undefined) {
+    if (n != this.sortVPUserColumn) {
+      this.sortVPUserColumn = n;
+      this.sortVPUserAscending = undefined;
+    }
+    if (this.sortVPUserAscending == undefined) {
+      // sort name column ascending, number values desc first
+      this.sortVPUserAscending = (n == 1 || n == 2) ? true : false;
+      // console.log("Sort VC Column undefined", this.sortVPUserColumn, this.sortVPUserAscending)
+    }
+    else this.sortVPUserAscending = !this.sortVPUserAscending;
+  }
+  this.log(`Sort VP Users Column ${this.sortVPUserColumn} Asc: ${this.sortVPUserAscending}`); // log to console instead
+  if (this.sortVPUserColumn == 1) {
+    // sort user email
+    this.log(`Sort VP Users `); // log to console instead
+    this.vgVPUsers.sort(function(a, b) {
+      var result = 0
+      console.log(`Sort VP Users JSON ${JSON.stringify(a)}`); // log to console instead
+
+      if (a.users.email > b.users.email)
+        result = 1;
+      else if (a.users.email < b.users.email)
+        result = -1;
+      return result
+    })
+  } else if (this.sortVPUserColumn == 2) {
+    // sort project name
+    this.vgVPUsers.sort(function(a, b) {
+      var result = 0
+      // console.log("Sort VC Date %s", a.updatedAt)
+      if (a.vp.name.toLowerCase() > b.vp.name.toLowerCase())
+        result = 1;
+      else if (a.vp.name.toLowerCase() < b.vp.name.toLowerCase())
+        result = -1;
+      return result
+    })
+  }
+  this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`); // log to console instead
+  if (!this.sortVPUserAscending) {
+    this.vgVPUsers.reverse();
+    // console.log("Sort VC Column %d %s Reverse", this.sortVPUserColumn, this.sortVPUserAscending)
+  }
+}
+
+sortGroupTable(n: number = undefined) {
 
     if (!this.vgGroups) return
     // change sort order otherwise sort same column same direction
