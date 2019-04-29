@@ -6,7 +6,7 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
@@ -79,6 +79,15 @@ export class VisboProjectDetailComponent implements OnInit {
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm == undefined) return false
     return (this.combinedPerm.vp & perm) > 0
+  }
+
+  getVPPerm(): number {
+    if (this.combinedPerm == undefined) return 0
+    return this.combinedPerm.vp
+  }
+
+  getVPType(vpType: number): string {
+    return VPTYPE[vpType];
   }
 
   toggleUserGroup(): void {

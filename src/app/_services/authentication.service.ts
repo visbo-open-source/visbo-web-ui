@@ -197,7 +197,7 @@ export class AuthenticationService {
       return (error: any): Observable<T> => {
 
         // OPTIONAL send the error to remote logging infrastructure
-        this.log(`${operation} failed: ${error.status}, ${error.statusText}, ${error.message}`);
+        this.log(`${operation} failed: ${JSON.stringify(error)} Status: ${error.status}, StatusText: ${error.statusText}, Message: ${error.message}`);
 
         // Let the app keep running by returning an empty result.
         return throwError(error);

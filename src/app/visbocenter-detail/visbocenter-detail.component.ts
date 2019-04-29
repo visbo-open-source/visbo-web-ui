@@ -89,6 +89,11 @@ export class VisboCenterDetailComponent implements OnInit {
     return (this.combinedPerm.vc & perm) > 0
   }
 
+  getVCPerm(): number {
+    if (this.combinedPerm == undefined) return 0
+    return this.combinedPerm.vc
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm == undefined) return false
     return (this.combinedPerm.vp & perm) > 0

@@ -7,7 +7,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboCenter } from '../_models/visbocenter';
@@ -63,6 +63,10 @@ export class VisboProjectsComponent implements OnInit {
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm == undefined) return false
     return (this.combinedPerm.vc & perm) > 0
+  }
+
+  getVPType(vpType: number): string {
+    return VPTYPE[vpType];
   }
 
   toggleVisboProjects(): void {
@@ -251,13 +255,12 @@ export class VisboProjectsComponent implements OnInit {
     } else if (this.sortColumn == 4) {
       // sort by VC vpvCount
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.vpvCount > b.vpvCount)
-          result = 1;
-        else if (a.vpvCount < b.vpvCount)
-          result = -1;
-        return result
+        return a.vpvCount - b.vpvCount
+      })
+    } else if (this.sortColumn == 5) {
+      // sort by VP vpType
+      this.visboprojects.sort(function(a, b) {
+        return a.vpType - b.vpType
       })
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
