@@ -38,6 +38,7 @@ export class VisboAuditService {
       if (queryAudit.text) params = params.append('text', queryAudit.text);
       if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
       if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
     }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
@@ -63,6 +64,7 @@ export class VisboAuditService {
       if (queryAudit.text) params = params.append('text', queryAudit.text);
       if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
       if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
     }
 
     this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
@@ -88,7 +90,8 @@ export class VisboAuditService {
       if (queryAudit.text) params = params.append('text', queryAudit.text);
       if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
       if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
-    }
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
+  }
 
     this.log(`Calling HTTP Request: ${url} for VP ${vpid}`);
     return this.http.get<VisboAuditResponse>(url, { headers , params })

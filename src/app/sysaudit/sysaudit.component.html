@@ -26,6 +26,11 @@
       <option>2000</option>
     </select>
 
+    <label for="auditArea" class="col-form-label">Area:</label>
+    <select class="col-1 form-control" id="auditType" name="auditArea" [(ngModel)]="auditArea">
+      <option *ngFor="let actionItem of auditAreaList">{{actionItem.name}}</option>
+    </select>
+    <label for="auditArea" class="col-form-label">Action:</label>
     <select class="col-1 form-control" id="auditType" name="actiontype" [(ngModel)]="auditType">
       <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
     </select>
@@ -146,7 +151,7 @@
           </div>
           <div *ngIf="showMore && audit[auditIndex].ttl">
             <label class="py-0 m-0 col-4 form-control-static">TTL:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM.yyyy' }}</label>
+            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM HH:mm' }}</label>
           </div>
         </form>
       </div>

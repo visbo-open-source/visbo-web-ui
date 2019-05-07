@@ -40,7 +40,21 @@ export class SysAuditComponent implements OnInit {
   today: Date;
   auditType: string;
   auditTypeAction: string;
-  auditTypeList: any[];
+  auditTypeList: any[] = [
+    {name: "All", action: ""},
+    {name: "Read", action: "GET"},
+    {name: "Create", action: "POST"},
+    {name: "Update", action: "PUT"},
+    {name: "Delete", action: "DELETE"}
+  ];
+  auditArea: string;
+  auditAreaAction: string;
+  auditAreaList: any[] = [
+    {name: "All", action: ""},
+    {name: "System", action: "sys"},
+    {name: "Visbo Center", action: "vc"},
+    {name: "Visbo Project", action: "vp"}
+  ];
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -55,15 +69,9 @@ export class SysAuditComponent implements OnInit {
 
   ngOnInit() {
     // this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
-    this.auditTypeList = [
-      {name: "All", action: ""},
-      {name: "Read", action: "GET"},
-      {name: "Create", action: "POST"},
-      {name: "Update", action: "PUT"},
-      {name: "Delete", action: "DELETE"}
-    ];
     this.auditCount = 50;
     this.auditType = this.auditTypeList[0].name;
+    this.auditArea = this.auditAreaList[0].name;
     this.today = new Date();
     this.today.setHours(0);
     this.today.setMinutes(0);
@@ -99,6 +107,12 @@ export class SysAuditComponent implements OnInit {
     for (var i = 0; i < this.auditTypeList.length; i++) {
       if (this.auditType == this.auditTypeList[i].name) {
         queryAudit.actionType = this.auditTypeList[i].action;
+        break;
+      }
+    }
+    for (var i = 0; i < this.auditAreaList.length; i++) {
+      if (this.auditArea == this.auditAreaList[i].name) {
+        queryAudit.area = this.auditAreaList[i].action;
         break;
       }
     }

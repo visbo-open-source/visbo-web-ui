@@ -44,7 +44,13 @@ export class VisboProjectAuditComponent implements OnInit {
   today: Date;
   auditType: string;
   auditTypeAction: string;
-  auditTypeList: any[];
+  auditTypeList: any[] = [
+    {name: "All", action: ""},
+    {name: "Read", action: "GET"},
+    {name: "Create", action: "POST"},
+    {name: "Update", action: "PUT"},
+    {name: "Delete", action: "DELETE"}
+  ];
   sysadmin: boolean;
   deleted: boolean = false;
 
@@ -62,13 +68,6 @@ export class VisboProjectAuditComponent implements OnInit {
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboProject();
-    this.auditTypeList = [
-      {name: "All", action: ""},
-      {name: "Read", action: "GET"},
-      {name: "Create", action: "POST"},
-      {name: "Update", action: "PUT"},
-      {name: "Delete", action: "DELETE"}
-    ];
     this.auditCount = 50;
     this.auditType = this.auditTypeList[0].name;
     this.today = new Date();

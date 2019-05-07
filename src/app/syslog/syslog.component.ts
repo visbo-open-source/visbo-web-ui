@@ -125,6 +125,7 @@ export class SysLogComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`set Log Level success ${JSON.stringify(data)}`);
+          this.alertService.success('Successfully changed Log Level', true);
           this.logLevelSetting = data;
         },
         error => {
