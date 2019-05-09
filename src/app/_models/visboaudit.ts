@@ -52,5 +52,6 @@ export class QueryAuditType {
   "to": Date;
   "text": string;
   "actionType": string;
+  "area": string;
   "maxcount": number;
 }
