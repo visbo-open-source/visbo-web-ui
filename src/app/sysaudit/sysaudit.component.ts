@@ -50,10 +50,11 @@ export class SysAuditComponent implements OnInit {
   auditArea: string;
   auditAreaAction: string;
   auditAreaList: any[] = [
-    {name: "All", action: ""},
     {name: "System", action: "sys"},
     {name: "Visbo Center", action: "vc"},
-    {name: "Visbo Project", action: "vp"}
+    {name: "Visbo Project", action: "vp"},
+    {name: "Other", action: "other"},
+    {name: "All", action: ""}
   ];
 
   constructor(
@@ -123,6 +124,7 @@ export class SysAuditComponent implements OnInit {
       .subscribe(
         audit => {
           this.audit = audit;
+          this.alertService.success('Successfully accessed Audit', true);
           this.sortTable(undefined);
           this.log('get Audit success');
         },
