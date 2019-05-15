@@ -18,9 +18,10 @@ import { environment } from '../../environments/environment';
 export class PWResetComponent {
   model: any = {};
 
-  policyPW: string;
   loading = false;
   token = '';
+  PWPolicy: string;
+  PWPolicyDescription: string;
 
   constructor(
     private messageService: MessageService,
@@ -30,11 +31,7 @@ export class PWResetComponent {
     private alertService: AlertService) { }
 
   ngOnInit(){
-    if (environment['policyPW']) {
-      this.policyPW = environment['policyPW']
-    } else {
-      this.policyPW = ".{8,}"
-    }
+    this.getPWPolicy();
     this.token = this.route.snapshot.queryParams.token
     this.log(`Init PW Reset Token ${this.token}`);
   }
@@ -53,6 +50,22 @@ export class PWResetComponent {
           this.loading = false;
           this.log(`Error during Reset Password ${error.error.message}`)
           this.alertService.error(`Password Reset: ${error.error.message}`);
+        }
+      );
+  }
+
+  getPWPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success ${JSON.stringify(data)}`);
+          this.PWPolicy = data.PWPolicy
+          this.PWPolicyDescription = data.Description
+
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
         }
       );
   }

@@ -5,7 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse, VisboStatusPWPolicyResponse } from '../_models/login';
 import { MessageService } from './message.service';
 
 import * as JWT from 'jwt-decode';
@@ -19,6 +19,7 @@ export class AuthenticationService {
 
   isLoggedIn: boolean = false;
   logoutTime: Date = undefined;
+  pwPolicy: any = undefined;
 
   constructor(
       private http: HttpClient,
@@ -185,6 +186,24 @@ export class AuthenticationService {
           tap(status => this.log(`fetched Status  `)),
           catchError(this.handleError('getStatus', []))
         );
+    }
+
+    initPWPolicy(): Observable<any> {
+      const url = environment.restUrl.concat('/status/pwpolicy');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
+        .pipe(
+          map(response => {
+              this.pwPolicy = response.value;
+              return response.value
+            }),
+          tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
+          catchError(this.handleError('initPWPolicy', []))
+        );
+    }
+
+    getPWPolicy(){
+      return this.pwPolicy;
     }
 
     /**

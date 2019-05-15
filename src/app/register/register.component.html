@@ -29,12 +29,12 @@
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
             <label for="password-new" data-toggle="tooltip" data-placement="top" data-delay='50'
-              title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
+              title="Password Rule: {{PWPolicyDescription}}">
               Password (*)
             </label>
-            <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{policyPW}} >
+            <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
             <div *ngIf="!password.valid" class="help-block">New password has to follow the Policy.</div>
-            <div *ngIf="!password.valid" class="help-block">Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.</div>
+            <div *ngIf="!password.valid && PWPolicyDescription" class="help-block">{{PWPolicyDescription}}</div>
         </div>
         <form name="legal" #fLegal="ngForm" novalidate>
           <div>Terms of Use & Data Protection</div>

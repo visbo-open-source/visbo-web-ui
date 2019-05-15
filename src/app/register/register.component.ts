@@ -15,7 +15,8 @@ import { environment } from '../../environments/environment';
 
 export class RegisterComponent {
   model: any = {};
-  policyPW: string;
+  PWPolicy: string;
+  PWPolicyDescription: string;
   userRegister = undefined;
   hash = undefined;
   loading = false;
@@ -28,12 +29,7 @@ export class RegisterComponent {
     private alertService: AlertService) { }
 
   ngOnInit() {
-    // console.log("Init Registration");
-    if (environment['policyPW']) {
-      this.policyPW = environment['policyPW']
-    } else {
-      this.policyPW = ".{8,}"
-    }
+    this.getPWPolicy();
     const id = this.route.snapshot.paramMap.get('id');
     this.hash = this.route.snapshot.queryParams.hash
     if (id) {
@@ -65,6 +61,22 @@ export class RegisterComponent {
           this.log(`Error during Create User ${error.error.message}`)
           this.alertService.error(error.error.message);
           this.loading = false;
+        }
+      );
+  }
+
+  getPWPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success ${JSON.stringify(data)}`);
+          this.PWPolicy = data.PWPolicy
+          this.PWPolicyDescription = data.Description
+
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
         }
       );
   }
