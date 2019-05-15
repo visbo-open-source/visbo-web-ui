@@ -86,7 +86,7 @@ export class SystasksComponent implements OnInit {
       }
       else this.sortAscending = !this.sortAscending;
     }
-    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
+    // this.log(`Sort VC Column ${this.sortColumn} Asc ${this.sortAscending} `)
     if (this.sortColumn == 1) {
       this.vcsetting.sort(function(a, b) {
         var result = 0
@@ -99,19 +99,32 @@ export class SystasksComponent implements OnInit {
     } else if (this.sortColumn == 2) {
       this.vcsetting.sort(function(a, b) {
         var result = 0
-        if (a.updatedAt > b.updatedAt)
+        if (a.value.lastRun > b.value.lastRun)
           result = 1;
-        else if (a.updatedAt < b.updatedAt)
+        else if (a.value.lastRun < b.value.lastRun)
           result = -1;
-        return result
+        return result;
       })
     } else if (this.sortColumn == 3) {
       this.vcsetting.sort(function(a, b) {
-        return a.size - b.size
+        var result = 0
+        if (a.value.nextRun > b.value.nextRun)
+          result = 1;
+        else if (a.value.nextRun < b.value.nextRun)
+          result = -1;
+        return result;
+      })
+    } else if (this.sortColumn == 4) {
+      this.vcsetting.sort(function(a, b) {
+        var val1 = 0, val2 = 0;
+        if (a.value.taskSpecific && a.value.taskSpecific.result ) val1 = a.value.taskSpecific.result
+        if (b.value.taskSpecific && b.value.taskSpecific.result ) val2 = b.value.taskSpecific.result
+        return val1 - val2
       })
     }
 
     if (!this.sortAscending) {
+      this.log(`Sort VC Column Reverse `)
       this.vcsetting.reverse();
     }
   }
