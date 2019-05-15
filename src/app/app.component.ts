@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.restVersion();
-    this.pwPolicy();
+    // this.pwPolicy();
   }
 
   restVersion() {

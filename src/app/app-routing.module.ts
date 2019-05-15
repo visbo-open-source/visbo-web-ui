@@ -31,6 +31,7 @@ import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvis
 import { SysAuditComponent }  from './sysaudit/sysaudit.component';
 import { SysUserComponent }  from './sysuser/sysuser.component';
 import { SysLogComponent }  from './syslog/syslog.component';
+import { SystasksComponent }  from './systasks/systasks.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -60,6 +61,7 @@ const routes: Routes = [
   { path: 'sysaudit', component: SysAuditComponent, canActivate: [AuthGuard] },
   { path: 'sysuser', component: SysUserComponent, canActivate: [AuthGuard] },
   { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
+  { path: 'systasks', component: SystasksComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
 ];
 

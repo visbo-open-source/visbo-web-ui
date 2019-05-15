@@ -78,6 +78,25 @@ export class VisboSettingService  {
       );
   }
 
+
+  /** GET VCSetting by type */
+  getVCSettingByType(vcid: number, type: string, sysadmin: boolean = false): Observable<VisboSetting> {
+    var url = `${this.vcUrl}/${vcid}/setting?type=${type}`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboSettingResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+                  return response.vcsetting
+                }),
+        tap(vcsetting => this.log(`fetched VC Settings ${vcsetting.length} `)),
+        catchError(this.handleError<VisboSetting>(`getVCSetting vcid:${vcid}`))
+      );
+  }
+
   //////// Save methods //////////
 
   /** POST: a new Visbo Center Setting to the server */
