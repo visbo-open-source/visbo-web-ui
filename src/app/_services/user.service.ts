@@ -1,15 +1,15 @@
-﻿import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboUser, VisboUserResponse } from '../_models/login';
-
 import { MessageService } from './message.service';
+import { LoginComponent } from '../login/login.component';
 
+import { VisboUser, VisboUserResponse } from '../_models/login';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -26,7 +26,7 @@ export class UserService {
     private messageService: MessageService
   ) { }
 
-// MS TODO Check correct Observable Type VisboUser instead of any
+  // MS TODO Check correct Observable Type VisboUser instead of any
   getUserProfile(): Observable<any> {
     this.log(`Calling HTTP Get Request: ${this.profileUrl}`);
     return this.http.get<VisboUserResponse>(this.profileUrl, httpOptions)
@@ -58,20 +58,6 @@ export class UserService {
       );
   }
 
-  // getAll() {
-  //     return this.http.get<VisboUser[]>('/api/users');
-  // }
-  //
-  // getById(id: number) {
-  //     return this.http.get('/api/users/' + id);
-  // }
-  //
-  // create(user: VisboUser) {
-  //     return this.http.post('/api/users', user);
-  // }
-  // delete(id: number) {
-  //     return this.http.delete('/api/users/' + id);
-  // }
   /**
    * Handle Http operation that failed.
    * Let the app continue.
@@ -89,7 +75,7 @@ export class UserService {
     };
   }
 
-  /** Log a VisboUserService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboUserService: ' + message);
   }

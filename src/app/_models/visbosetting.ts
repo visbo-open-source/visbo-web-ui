@@ -12,5 +12,11 @@ export class VisboSetting {
 export class VisboSettingResponse {
   state: string;
   message: string;
-  vcsetting: [VisboSetting];
+  vcsetting: VisboSetting;
+}
+
+export class VisboSettingListResponse {
+  state: string;
+  message: string;
+  vcsetting: [ VisboSetting ];
 }

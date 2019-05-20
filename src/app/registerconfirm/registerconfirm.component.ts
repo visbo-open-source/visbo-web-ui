@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
@@ -8,11 +8,11 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
 @Component({
-    moduleId: module.id,
-    templateUrl: 'registerconfirm.component.html'
+  selector: 'app-registerconfirm',
+  templateUrl: './registerconfirm.component.html',
+  styleUrls: ['./registerconfirm.component.css']
 })
-
-export class RegisterConfirmComponent {
+export class RegisterconfirmComponent implements OnInit {
   model: any = {};
 
   constructor(
@@ -42,7 +42,7 @@ export class RegisterConfirmComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Register Confirm: ' + message);
   }

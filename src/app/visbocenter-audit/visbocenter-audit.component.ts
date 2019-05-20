@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -23,9 +22,10 @@ var encodeCSV = function(source: string): string {
 
 @Component({
   selector: 'app-visbocenter-audit',
-  templateUrl: './visbocenter-audit.component.html'
+  templateUrl: './visbocenter-audit.component.html',
+  styleUrls: ['./visbocenter-audit.component.css']
 })
-export class VisboCenterAuditComponent implements OnInit {
+export class VisbocenterAuditComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
   combinedPerm: any;
@@ -69,7 +69,6 @@ export class VisboCenterAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] == true;
     const id = this.route.snapshot.paramMap.get('id');
@@ -270,7 +269,7 @@ export class VisboCenterAuditComponent implements OnInit {
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len)
+    if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
@@ -370,7 +369,7 @@ export class VisboCenterAuditComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VC Audit: ' + message);
   }

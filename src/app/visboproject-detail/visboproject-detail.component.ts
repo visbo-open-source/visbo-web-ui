@@ -1,19 +1,22 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
+import { FormsModule }   from '@angular/forms';
+
+import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { MessageService } from '../_services/message.service';
 import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
   selector: 'app-visboproject-detail',
-  templateUrl: './visboproject-detail.component.html'
+  templateUrl: './visboproject-detail.component.html',
+  styleUrls: ['./visboproject-detail.component.css']
 })
-export class VisboProjectDetailComponent implements OnInit {
+export class VisboprojectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
   newUserInvite: any = {};
@@ -196,8 +199,10 @@ export class VisboProjectDetailComponent implements OnInit {
     var groupName = this.newUserInvite.groupName.trim();
     var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
     var groupId = inviteGroup._id;
-    var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
-    var vpid = this.visboproject._id
+    var inviteMessage = '';
+    if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
+    var vpid = this.visboproject._id;
+
     this.log(`Add VisboProject User: ${email} Group: ${groupName}/${groupId} VP: ${vpid}`);
     if (!email || !groupId) { return; }
     this.visboprojectService.addVPUser(email, groupId, inviteMessage, vpid )
@@ -326,7 +331,6 @@ export class VisboProjectDetailComponent implements OnInit {
       this.actGroup.checkedView = true;
     }
     this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
-
   }
 
   addModifyVPGroup(): void {
@@ -443,7 +447,7 @@ export class VisboProjectDetailComponent implements OnInit {
       }
       if (this.sortUserAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
+        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
         // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
       }
       else this.sortUserAscending = !this.sortUserAscending;

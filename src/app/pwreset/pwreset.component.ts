@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
@@ -11,11 +11,11 @@ import { Login } from '../_models/login';
 import { environment } from '../../environments/environment';
 
 @Component({
-  selector: 'visbo-pwreset',
-  templateUrl: 'pwreset.component.html'
+  selector: 'app-pwreset',
+  templateUrl: './pwreset.component.html',
+  styleUrls: ['./pwreset.component.css']
 })
-
-export class PWResetComponent {
+export class PwresetComponent implements OnInit {
   model: any = {};
 
   loading = false;
@@ -70,7 +70,7 @@ export class PWResetComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('PW Reset: ' + message);
   }

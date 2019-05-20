@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingResponse, VisboSettingListResponse } from '../_models/visbosetting';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -34,7 +34,7 @@ export class VisboSettingService  {
     if (sysadmin) params = params.append('sysadmin', '1');
 
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboSettingResponse>(url, { headers , params })
+    return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
         map(response => response.vcsetting),
         tap(visbosettings => this.log(`fetched ${visbosettings.length} VCSettings `)),
@@ -80,20 +80,18 @@ export class VisboSettingService  {
 
 
   /** GET VCSetting by type */
-  getVCSettingByType(vcid: number, type: string, sysadmin: boolean = false): Observable<VisboSetting> {
+  getVCSettingByType(vcid: number, type: string, sysadmin: boolean = false): Observable<VisboSetting[]> {
     var url = `${this.vcUrl}/${vcid}/setting?type=${type}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 
     if (sysadmin) params = params.append('sysadmin', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboSettingResponse>(url, { headers , params })
+    return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
-        map(response => {
-                  return response.vcsetting
-                }),
-        tap(vcsetting => this.log(`fetched VC Settings ${vcsetting.length} `)),
-        catchError(this.handleError<VisboSetting>(`getVCSetting vcid:${vcid}`))
+        map(response => response.vcsetting),
+        tap(visbosettings => this.log(`fetched ${visbosettings.length} VCSettings `)),
+        catchError(this.handleError('getVCSettings by Type', []))
       );
   }
 
@@ -172,7 +170,7 @@ export class VisboSettingService  {
     };
   }
 
-  /** Log a VisboSettingService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboSettingService: ' + message);
   }

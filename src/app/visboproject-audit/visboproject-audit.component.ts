@@ -1,7 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -25,9 +23,10 @@ var encodeCSV = function(source: string): string {
 
 @Component({
   selector: 'app-visboproject-audit',
-  templateUrl: './visboproject-audit.component.html'
+  templateUrl: './visboproject-audit.component.html',
+  styleUrls: ['./visboproject-audit.component.css']
 })
-export class VisboProjectAuditComponent implements OnInit {
+export class VisboprojectAuditComponent implements OnInit {
 
   visboproject: VisboProject;
   combinedPerm: any;
@@ -261,7 +260,7 @@ export class VisboProjectAuditComponent implements OnInit {
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len)
+    if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
@@ -361,7 +360,7 @@ export class VisboProjectAuditComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Audit: ' + message);
   }

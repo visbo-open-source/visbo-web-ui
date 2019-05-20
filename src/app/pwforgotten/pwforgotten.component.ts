@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
@@ -7,11 +7,11 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
 @Component({
-    moduleId: module.id,
-    templateUrl: 'pwforgotten.component.html'
+  selector: 'app-pwforgotten',
+  templateUrl: './pwforgotten.component.html',
+  styleUrls: ['./pwforgotten.component.css']
 })
-
-export class PWForgottenComponent {
+export class PwforgottenComponent implements OnInit {
   model: any = {};
   loading = false;
 
@@ -44,7 +44,7 @@ export class PWForgottenComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('PW Forgotten: ' + message);
   }

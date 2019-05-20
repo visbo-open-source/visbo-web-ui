@@ -119,7 +119,7 @@ export class VisboAuditService {
     };
   }
 
-  /** Log a VisboAuditService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboAuditService: ' + message);
   }

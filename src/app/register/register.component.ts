@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
@@ -9,8 +9,9 @@ import { Login } from '../_models/login';
 import { environment } from '../../environments/environment';
 
 @Component({
-    moduleId: module.id,
-    templateUrl: 'register.component.html'
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 
 export class RegisterComponent {
@@ -81,7 +82,7 @@ export class RegisterComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Register: ' + message);
   }

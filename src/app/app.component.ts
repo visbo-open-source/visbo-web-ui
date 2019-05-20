@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('App: ' + message);
   }
