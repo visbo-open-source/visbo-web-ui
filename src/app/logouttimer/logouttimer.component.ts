@@ -63,7 +63,7 @@ export class LogoutTimerComponent implements OnInit {
     //       }
     //    );
   }
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     // console.log('logoutTimer: ' + message)
     this.messageService.add('logoutTimer: ' + message);

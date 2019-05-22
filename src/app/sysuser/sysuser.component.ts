@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
@@ -8,12 +7,13 @@ import { AlertService } from '../_services/alert.service';
 import { VisboUser } from '../_models/login';
 import { SysUserService } from '../_services/sysuser.service';
 import { LoginComponent } from '../login/login.component';
- 
+
 @Component({
   selector: 'app-sysuser',
-  templateUrl: './sysuser.component.html'
+  templateUrl: './sysuser.component.html',
+  styleUrls: ['./sysuser.component.css']
 })
-export class SysUserComponent implements OnInit {
+export class SysuserComponent implements OnInit {
 
   user: VisboUser[];
   userIndex: number;
@@ -34,10 +34,6 @@ export class SysUserComponent implements OnInit {
     this.getSysUsers();
     this.sortTable(undefined);
   }
-
-  // onSelect(visboaudit: VisboAudit): void {
-  //   this.getSysUsers();
-  // }
 
   getSysUsers(): void {
     if (this.userMatch) this.userMatch = this.userMatch.trim();
@@ -61,11 +57,6 @@ export class SysUserComponent implements OnInit {
       );
   }
 
-  // gotoDetail(visboaudit: VisboAudit):void {
-  //   this.log(`navigate to Audit Detail ${visboaudit._id}`);
-  //   this.router.navigate(['sysaudit/'+visboaudit._id]);
-  // }
-
   helperUserIndex(userIndex: number):void {
     this.userIndex = userIndex
   }
@@ -79,8 +70,9 @@ export class SysUserComponent implements OnInit {
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len)
+    if (!text || !len || len < 5 || text.length <= len) {
       return (text);
+    }
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
 
@@ -159,7 +151,7 @@ export class SysUserComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Sys User: ' + message);
   }

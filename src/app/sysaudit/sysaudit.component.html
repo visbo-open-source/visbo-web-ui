@@ -9,30 +9,36 @@
       </div>
     </div>
   </div>
-  <div class="form-group row">
-    <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
-    <input id="auditFrom" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom">
-    <input id="auditTo" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
-  </div>
-  <div class="form-group row">
-    <label for="auditText" class="col-2 col-form-label">Filter:</label>
-    <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" [(ngModel)]="auditText" >
+  <form name="form" (ngSubmit)="getVisboAudits()" #f="ngForm" novalidate>
+    <div class="form-group row">
+      <label for="auditFrom" class="col-2 col-form-label">From / To:</label>
+      <input id="auditFrom" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom">
+      <input id="auditTo" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
+    </div>
+    <div class="form-group row">
+      <label for="auditText" class="col-2 col-form-label">Filter:</label>
+      <input id="auditText" type="text" class="col-2 col-sm-4 form-control" name="auditText" (ngSubmit)="getVisboAudits()" [(ngModel)]="auditText" >
 
-    <label for="auditCount" class="col-form-label">Max:</label>
-    <select class="col-1 form-control" name="auditCount" [(ngModel)]="auditCount">
-      <option>50</option>
-      <option>100</option>
-      <option>500</option>
-      <option>2000</option>
-    </select>
+      <label for="auditCount" class="col-form-label">Max:</label>
+      <select class="col-1 form-control" name="auditCount" [(ngModel)]="auditCount">
+        <option>50</option>
+        <option>100</option>
+        <option>500</option>
+        <option>2000</option>
+      </select>
 
-    <select class="col-1 form-control" id="auditType" name="actiontype" [(ngModel)]="auditType">
-      <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
-    </select>
-    <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
-    <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
-  </div>
-
+      <label for="auditArea" class="col-form-label">Area:</label>
+      <select class="col-1 form-control" id="auditType" name="auditArea" [(ngModel)]="auditArea">
+        <option *ngFor="let actionItem of auditAreaList">{{actionItem.name}}</option>
+      </select>
+      <label for="auditArea" class="col-form-label">Action:</label>
+      <select class="col-1 form-control" id="auditType" name="actiontype" [(ngModel)]="auditType">
+        <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
+      </select>
+      <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
+      <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
+    </div>
+  </form>
   <div class='container-fluid'>
     <div class='panel-body'>
       <table class='table table-hover table-sortable'>
@@ -146,7 +152,7 @@
           </div>
           <div *ngIf="showMore && audit[auditIndex].ttl">
             <label class="py-0 m-0 col-4 form-control-static">TTL:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM.yyyy' }}</label>
+            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM HH:mm' }}</label>
           </div>
         </form>
       </div>

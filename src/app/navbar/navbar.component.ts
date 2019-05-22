@@ -41,7 +41,7 @@ export class NavbarComponent implements OnInit {
     return (this.combinedPerm.system & perm) > 0
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('NavBar: ' + message);
   }

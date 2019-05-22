@@ -1,24 +1,24 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Location } from '@angular/common';
+import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { FormsModule }   from '@angular/forms';
 
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
+import { VisboCenter } from '../_models/visbocenter';
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenterService }  from '../_services/visbocenter.service';
-import { VisboProjectService }  from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
-
-import { VGGroup, VGUserGroup, VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VisboProjectService }  from '../_services/visboproject.service';
 
 @Component({
   selector: 'app-sysvisboproject-detail',
-  templateUrl: './sysvisboproject-detail.component.html'
+  templateUrl: './sysvisboproject-detail.component.html',
+  styleUrls: ['./sysvisboproject-detail.component.css']
 })
-export class SysVisboProjectDetailComponent implements OnInit {
-
+export class SysvisboprojectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
@@ -194,8 +194,9 @@ export class SysVisboProjectDetailComponent implements OnInit {
     var groupName = this.newUserInvite.groupName.trim();
     var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
     var groupId = inviteGroup._id;
-    var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
-    var vpid = this.visboproject._id
+    var inviteMessage = '';
+    if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
+    var vpid = this.visboproject._id;
     this.log(`Add VisboProject User: ${email} Group: ${groupName}/${groupId} VP: ${vpid}`);
     if (!email || !groupId) { return; }
     this.visboprojectService.addVPUser(email, groupId, inviteMessage, vpid, true)
@@ -411,10 +412,9 @@ export class SysVisboProjectDetailComponent implements OnInit {
       }
       if (this.sortUserAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
+        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
         // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
-      }
-      else this.sortUserAscending = !this.sortUserAscending;
+      } else this.sortUserAscending = !this.sortUserAscending;
     }
     // this.log(`Sort Users Column ${this.sortUserColumn}`); // log to console instead
     if (this.sortUserColumn == 1) {
@@ -488,7 +488,7 @@ export class SysVisboProjectDetailComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectDetail: ' + message);
   }

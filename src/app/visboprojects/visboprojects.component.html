@@ -35,6 +35,7 @@
         <tr>
           <th class="d-none d-md-table-cell">Nr.</th>
           <th (click)="sortVPTable(1)">Name</th>
+          <th class="d-none d-md-table-cell" (click)="sortVPTable(5)">Type</th>
           <th class="d-none d-md-table-cell" (click)="sortVPTable(2)">Modified</th>
           <th class="d-none d-md-table-cell" (click)="sortVPTable(4)"># Versions</th>
           <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">Visbo Center</th>
@@ -46,6 +47,7 @@
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td>{{vp.name}}</td>
+          <td class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
           <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vp.vpvCount}}</td>

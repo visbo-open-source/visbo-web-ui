@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 //import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
@@ -16,11 +16,11 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 
 @Component({
   selector: 'app-sysvisbosystem',
-  templateUrl: './sysvisbosystem.component.html'
+  templateUrl: './sysvisbosystem.component.html',
+  styleUrls: ['./sysvisbosystem.component.css']
 })
-export class SysVisboSystemComponent implements OnInit {
+export class SysvisbosystemComponent implements OnInit {
 
-  // @Input() visbocenter: VisboCenter;
   visbocenter: VisboCenter;
   vcUsers: VGUserGroup[];
   vcGroups: VGGroup[];
@@ -159,8 +159,9 @@ export class SysVisboSystemComponent implements OnInit {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
     var groupId = this.vcGroups.filter(group => group.name == groupName)[0]._id;
-    var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
-    var vcid = this.visbocenter._id
+    var inviteMessage = '';
+    if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
+    var vcid = this.visbocenter._id;
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
     if (!email || !groupId) { return; }
     this.visbocenterService.addVCUser(email, groupId, inviteMessage, vcid, true )
@@ -428,19 +429,17 @@ export class SysVisboSystemComponent implements OnInit {
 
     if (!this.vcUsers) return
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortUserColumn == undefined) {
+    if (n != undefined || this.sortUserColumn == undefined ) {
       if (n != this.sortUserColumn) {
         this.sortUserColumn = n;
         this.sortUserAscending = undefined;
       }
       if (this.sortUserAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
+        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
         // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
-      }
-      else this.sortUserAscending = !this.sortUserAscending;
+      } else this.sortUserAscending = !this.sortUserAscending;
     }
-    // this.log(`Sort Users Column ${this.sortUserColumn}`); // log to console instead
     if (this.sortUserColumn == 1) {
       // sort user email
       this.vcUsers.sort(function(a, b) {
@@ -512,7 +511,7 @@ export class SysVisboSystemComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Sys VisboCenter: ' + message);
   }

@@ -1,3 +1,7 @@
+export enum VPTYPE {
+    "Project" = 0, "Portfolio" = 1, "Template" = 2
+};
+
 export class VPVariant {
   _id: string;
   variantName: string;

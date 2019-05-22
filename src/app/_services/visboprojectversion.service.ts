@@ -154,7 +154,7 @@ export class VisboProjectVersionService {
     };
   }
 
-  /** Log a VisboProjectVersionService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectVersionService: ' + message);
   }

@@ -302,7 +302,7 @@ export class VisboCenterService  {
     };
   }
 
-  /** Log a VisboCenterService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenterService: ' + message);
   }

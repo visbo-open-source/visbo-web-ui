@@ -9,7 +9,7 @@ import { AlertService } from './_services/alert.service';
 })
 export class AppComponent implements OnInit {
   title = 'Your Projects served with Visbo ';
-  version = '1.1';
+  version = '1.2';
   restVersionString = undefined;
 
   constructor(
@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.restVersion();
+    // this.pwPolicy();
   }
 
   restVersion() {
@@ -37,7 +38,20 @@ export class AppComponent implements OnInit {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  pwPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success`);
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
+  }
+
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('App: ' + message);
   }

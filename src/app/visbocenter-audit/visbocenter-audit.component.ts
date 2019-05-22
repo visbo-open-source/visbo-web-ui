@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -23,9 +22,10 @@ var encodeCSV = function(source: string): string {
 
 @Component({
   selector: 'app-visbocenter-audit',
-  templateUrl: './visbocenter-audit.component.html'
+  templateUrl: './visbocenter-audit.component.html',
+  styleUrls: ['./visbocenter-audit.component.css']
 })
-export class VisboCenterAuditComponent implements OnInit {
+export class VisbocenterAuditComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
   combinedPerm: any;
@@ -41,7 +41,20 @@ export class VisboCenterAuditComponent implements OnInit {
   today: Date;
   auditType: string;
   auditTypeAction: string;
-  auditTypeList: any[];
+  auditTypeList: any[] = [
+    {name: "All", action: ""},
+    {name: "Read", action: "GET"},
+    {name: "Create", action: "POST"},
+    {name: "Update", action: "PUT"},
+    {name: "Delete", action: "DELETE"}
+  ];
+  auditArea: string;
+  auditAreaAction: string;
+  auditAreaList: any[] = [
+    {name: "All", action: ""},
+    {name: "Visbo Center", action: "vc"},
+    {name: "Visbo Project", action: "vp"}
+  ];
   sysadmin: boolean;
   deleted: boolean = false;
 
@@ -56,7 +69,6 @@ export class VisboCenterAuditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] == true;
     const id = this.route.snapshot.paramMap.get('id');
@@ -80,16 +92,9 @@ export class VisboCenterAuditComponent implements OnInit {
         }
       );
 
-    this.auditTypeList = [];
-    this.auditTypeList = [
-      {name: "All", action: ""},
-      {name: "Read", action: "GET"},
-      {name: "Create", action: "POST"},
-      {name: "Update", action: "PUT"},
-      {name: "Delete", action: "DELETE"}
-    ];
     this.auditCount = 50;
     this.auditType = this.auditTypeList[0].name;
+    this.auditArea = this.auditAreaList[0].name;
     this.today = new Date();
     this.today.setHours(0);
     this.today.setMinutes(0);
@@ -126,6 +131,12 @@ export class VisboCenterAuditComponent implements OnInit {
     for (var i = 0; i < this.auditTypeList.length; i++) {
       if (this.auditType == this.auditTypeList[i].name) {
         queryAudit.actionType = this.auditTypeList[i].action;
+        break;
+      }
+    }
+    for (var i = 0; i < this.auditAreaList.length; i++) {
+      if (this.auditArea == this.auditAreaList[i].name) {
+        queryAudit.area = this.auditAreaList[i].action;
         break;
       }
     }
@@ -258,7 +269,7 @@ export class VisboCenterAuditComponent implements OnInit {
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len)
+    if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
@@ -358,7 +369,7 @@ export class VisboCenterAuditComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VC Audit: ' + message);
   }

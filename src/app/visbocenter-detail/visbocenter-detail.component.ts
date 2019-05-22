@@ -1,23 +1,23 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { FormsModule }   from '@angular/forms';
 
+import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { MessageService } from '../_services/message.service';
-import { VisboCenter } from '../_models/visbocenter';
+
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { VisboCenterService }  from '../_services/visbocenter.service';
-import { VisboProject } from '../_models/visboproject';
-import { VisboProjectService }  from '../_services/visboproject.service';
+import { VisboCenter } from '../_models/visbocenter';
+import { VisboCenterService } from '../_services/visbocenter.service';
 
 @Component({
   selector: 'app-visbocenter-detail',
-  templateUrl: './visbocenter-detail.component.html'
+  templateUrl: './visbocenter-detail.component.html',
+  styleUrls: ['./visbocenter-detail.component.css']
 })
-export class VisboCenterDetailComponent implements OnInit {
+export class VisbocenterDetailComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
   vgUsers: VGUserGroup[];
@@ -44,7 +44,6 @@ export class VisboCenterDetailComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
-    private visboprojectService: VisboProjectService,
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
@@ -87,6 +86,11 @@ export class VisboCenterDetailComponent implements OnInit {
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm == undefined) return false
     return (this.combinedPerm.vc & perm) > 0
+  }
+
+  getVCPerm(): number {
+    if (this.combinedPerm == undefined) return 0
+    return this.combinedPerm.vc
   }
 
   hasVPPerm(perm: number): boolean {
@@ -199,7 +203,8 @@ export class VisboCenterDetailComponent implements OnInit {
     var groupName = this.newUserInvite.groupName.trim();
     var inviteGroup = this.vgGroups.filter(group => group.name == groupName)[0]
     var groupId = inviteGroup._id;
-    var inviteMessage = (this.newUserInvite.inviteMessage || '').trim();
+    var inviteMessage = '';
+    if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
     var vcid = this.visbocenter._id
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
     if (!email || !groupId) { return; }
@@ -342,9 +347,7 @@ export class VisboCenterDetailComponent implements OnInit {
       this.actGroup.checkedView = true;
     }
     this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
-
   }
-
 
   addModifyVCGroup(): void {
     var newGroup = new VGGroup;
@@ -457,10 +460,9 @@ export class VisboCenterDetailComponent implements OnInit {
       }
       if (this.sortUserAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
+        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
         // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
-      }
-      else this.sortUserAscending = !this.sortUserAscending;
+      } else this.sortUserAscending = !this.sortUserAscending;
     }
     // this.log(`Sort Users Column ${this.sortUserColumn}`); // log to console instead
     if (this.sortUserColumn == 1) {
@@ -492,58 +494,55 @@ export class VisboCenterDetailComponent implements OnInit {
     }
   }
 
-sortVPUserTable(n: number = undefined) {
-
-  // this.log(`Sort VPUsers Column ${n||0}`); // log to console instead
-  if (!this.vgVPUsers) return
-  // change sort order otherwise sort same column same direction
-  if (n != undefined || this.sortVPUserColumn == undefined) {
-    if (n != this.sortVPUserColumn) {
-      this.sortVPUserColumn = n;
-      this.sortVPUserAscending = undefined;
+  sortVPUserTable(n: number = undefined) {
+    // this.log(`Sort VPUsers Column ${n||0}`); // log to console instead
+    if (!this.vgVPUsers) return
+    // change sort order otherwise sort same column same direction
+    if (n != undefined || this.sortVPUserColumn == undefined) {
+      if (n != this.sortVPUserColumn) {
+        this.sortVPUserColumn = n;
+        this.sortVPUserAscending = undefined;
+      }
+      if (this.sortVPUserAscending == undefined) {
+        // sort name column ascending, number values desc first
+        this.sortVPUserAscending = (n == 1 || n == 2) ? true : false;
+        // console.log("Sort VC Column undefined", this.sortVPUserColumn, this.sortVPUserAscending)
+      } else this.sortVPUserAscending = !this.sortVPUserAscending;
     }
-    if (this.sortVPUserAscending == undefined) {
-      // sort name column ascending, number values desc first
-      this.sortVPUserAscending = (n == 1 || n == 2) ? true : false;
-      // console.log("Sort VC Column undefined", this.sortVPUserColumn, this.sortVPUserAscending)
+    this.log(`Sort VP Users Column ${this.sortVPUserColumn} Asc: ${this.sortVPUserAscending}`); // log to console instead
+    if (this.sortVPUserColumn == 1) {
+      // sort user email
+      this.log(`Sort VP Users `); // log to console instead
+      this.vgVPUsers.sort(function(a, b) {
+        var result = 0
+        console.log(`Sort VP Users JSON ${JSON.stringify(a)}`); // log to console instead
+
+        if (a.users.email > b.users.email)
+          result = 1;
+        else if (a.users.email < b.users.email)
+          result = -1;
+        return result
+      })
+    } else if (this.sortVPUserColumn == 2) {
+      // sort project name
+      this.vgVPUsers.sort(function(a, b) {
+        var result = 0
+        // console.log("Sort VC Date %s", a.updatedAt)
+        if (a.vp.name.toLowerCase() > b.vp.name.toLowerCase())
+          result = 1;
+        else if (a.vp.name.toLowerCase() < b.vp.name.toLowerCase())
+          result = -1;
+        return result
+      })
     }
-    else this.sortVPUserAscending = !this.sortVPUserAscending;
+    this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`); // log to console instead
+    if (!this.sortVPUserAscending) {
+      this.vgVPUsers.reverse();
+      // console.log("Sort VC Column %d %s Reverse", this.sortVPUserColumn, this.sortVPUserAscending)
+    }
   }
-  this.log(`Sort VP Users Column ${this.sortVPUserColumn} Asc: ${this.sortVPUserAscending}`); // log to console instead
-  if (this.sortVPUserColumn == 1) {
-    // sort user email
-    this.log(`Sort VP Users `); // log to console instead
-    this.vgVPUsers.sort(function(a, b) {
-      var result = 0
-      console.log(`Sort VP Users JSON ${JSON.stringify(a)}`); // log to console instead
 
-      if (a.users.email > b.users.email)
-        result = 1;
-      else if (a.users.email < b.users.email)
-        result = -1;
-      return result
-    })
-  } else if (this.sortVPUserColumn == 2) {
-    // sort project name
-    this.vgVPUsers.sort(function(a, b) {
-      var result = 0
-      // console.log("Sort VC Date %s", a.updatedAt)
-      if (a.vp.name.toLowerCase() > b.vp.name.toLowerCase())
-        result = 1;
-      else if (a.vp.name.toLowerCase() < b.vp.name.toLowerCase())
-        result = -1;
-      return result
-    })
-  }
-  this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`); // log to console instead
-  if (!this.sortVPUserAscending) {
-    this.vgVPUsers.reverse();
-    // console.log("Sort VC Column %d %s Reverse", this.sortVPUserColumn, this.sortVPUserAscending)
-  }
-}
-
-sortGroupTable(n: number = undefined) {
-
+  sortGroupTable(n: number = undefined) {
     if (!this.vgGroups) return
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortGroupColumn == undefined) {
@@ -584,7 +583,7 @@ sortGroupTable(n: number = undefined) {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);
   }

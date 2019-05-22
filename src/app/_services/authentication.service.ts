@@ -5,7 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse, VisboStatusPWPolicyResponse } from '../_models/login';
 import { MessageService } from './message.service';
 
 import * as JWT from 'jwt-decode';
@@ -19,6 +19,7 @@ export class AuthenticationService {
 
   isLoggedIn: boolean = false;
   logoutTime: Date = undefined;
+  pwPolicy: any = undefined;
 
   constructor(
       private http: HttpClient,
@@ -187,6 +188,24 @@ export class AuthenticationService {
         );
     }
 
+    initPWPolicy(): Observable<any> {
+      const url = environment.restUrl.concat('/status/pwpolicy');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
+        .pipe(
+          map(response => {
+              this.pwPolicy = response.value;
+              return response.value
+            }),
+          tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
+          catchError(this.handleError('initPWPolicy', []))
+        );
+    }
+
+    getPWPolicy(){
+      return this.pwPolicy;
+    }
+
     /**
      * Handle Http operation that failed.
      * Let the app continue.
@@ -197,7 +216,7 @@ export class AuthenticationService {
       return (error: any): Observable<T> => {
 
         // OPTIONAL send the error to remote logging infrastructure
-        this.log(`${operation} failed: ${error.status}, ${error.statusText}, ${error.message}`);
+        this.log(`${operation} failed: ${JSON.stringify(error)} Status: ${error.status}, StatusText: ${error.statusText}, Message: ${error.message}`);
 
         // Let the app keep running by returning an empty result.
         return throwError(error);
@@ -206,7 +225,7 @@ export class AuthenticationService {
       };
     }
 
-    /** Log AuthenticationService message with the MessageService */
+    /** Log a message with the MessageService */
     private log(message: string) {
       this.messageService.add('AuthenticationService: ' + message);
     }

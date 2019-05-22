@@ -1,0 +1,25 @@
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { SysvisbocenterDetailComponent } from './sysvisbocenter-detail.component';
+
+describe('SysvisbocenterDetailComponent', () => {
+  let component: SysvisbocenterDetailComponent;
+  let fixture: ComponentFixture<SysvisbocenterDetailComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ SysvisbocenterDetailComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SysvisbocenterDetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

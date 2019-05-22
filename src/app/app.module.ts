@@ -16,9 +16,9 @@ import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { RegisterComponent } from './register/register.component';
-import { RegisterConfirmComponent } from './registerconfirm/registerconfirm.component';
-import { PWForgottenComponent } from './pwforgotten/pwforgotten.component';
-import { PWResetComponent } from './pwreset/pwreset.component';
+import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
+import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
+import { PwresetComponent } from './pwreset/pwreset.component';
 
 import { AlertService } from './_services/alert.service';
 
@@ -33,8 +33,8 @@ import { MessageService } from './_services/message.service';
 
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
-import { VisboCenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
-import { VisboCenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
+import { VisbocenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
+import { VisbocenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
@@ -44,8 +44,8 @@ import { SysUserService } from './_services/sysuser.service';
 // Visbo Projects
 import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
-import { VisboProjectDetailComponent } from './visboproject-detail/visboproject-detail.component';
-import { VisboProjectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
+import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
+import { VisboprojectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -56,27 +56,28 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Sys Admin / App Admin
 import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
-import { SysVisboSystemComponent } from './sysvisbosystem/sysvisbosystem.component';
+import { SysvisbosystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
-import { SysVisboCenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysvisbocenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
 import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
-import { SysVisboProjectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
+import { SysvisboprojectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
 
-import { SysAuditComponent }  from './sysaudit/sysaudit.component';
-import { SysUserComponent }  from './sysuser/sysuser.component';
+import { SysauditComponent }  from './sysaudit/sysaudit.component';
+import { SysuserComponent }  from './sysuser/sysuser.component';
 import { SysLogComponent }  from './syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
+import { SystasksComponent } from './systasks/systasks.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AlertComponent,
     VisboCentersComponent,
-    VisboCenterDetailComponent,
-    VisboCenterAuditComponent,
+    VisbocenterDetailComponent,
+    VisbocenterAuditComponent,
     VisboProjectsComponent,
-    VisboProjectDetailComponent,
-    VisboProjectAuditComponent,
+    VisboprojectDetailComponent,
+    VisboprojectAuditComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
     MessagesComponent,
@@ -87,18 +88,19 @@ import { SysLogService } from './_services/syslog.service';
     NavbarComponent,
     LoginComponent,
     RegisterComponent,
-    RegisterConfirmComponent,
-    PWForgottenComponent,
-    PWResetComponent,
+    RegisterconfirmComponent,
+    PwforgottenComponent,
+    PwresetComponent,
     SysNavbarComponent,
     SysVisboCentersComponent,
-    SysVisboSystemComponent,
-    SysVisboCenterDetailComponent,
+    SysvisbosystemComponent,
+    SysvisbocenterDetailComponent,
     SysVisboProjectsComponent,
-    SysVisboProjectDetailComponent,
-    SysAuditComponent,
-    SysUserComponent,
-    SysLogComponent
+    SysvisboprojectDetailComponent,
+    SysauditComponent,
+    SysuserComponent,
+    SysLogComponent,
+    SystasksComponent
   ],
   imports: [
     BrowserModule,

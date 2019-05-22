@@ -62,3 +62,12 @@ export class VisboStatusResponse {
   message: string;
   status: {version: string}
 }
+
+export class VisboStatusPWPolicyResponse {
+  state: string;
+  message: string;
+  value: {
+    PWPolicy: string,
+    Description: string
+  }
+}

@@ -19,140 +19,142 @@
         <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
       </div>
     </form>
-    <div class="btn-toolbar" style="">
-      <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
-      <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
-      <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
-      <button type="button" class="btn btn-sm" (click)="showProjectUser()">Show Project Users</button>
-    </div>
+    <div *ngIf="getVCPerm() != permVC.View">
+      <div class="btn-toolbar" style="">
+        <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVCAudit(visbocenter)">View Audit</button>
+        <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
+        <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+        <button *ngIf="vgVPUsers.length > 0" type="button" class="btn btn-sm" (click)="showProjectUser()">Show Project Users</button>
+      </div>
 
-    <div *ngIf="!showGroups && !showProjectUsers" >
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                Visbo Center Users
-            </h5>
+      <div *ngIf="!showGroups && !showProjectUsers" >
+        <div >
+          <div class='row'>
+            <div class='col'>
+              <h5 class='panel-heading'>
+                  Visbo Center Users
+              </h5>
+            </div>
+            <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
+                Add User
+              </button>
+            </div>
           </div>
-          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
-              Add User
-            </button>
+          <div class='panel-body'>
+            <table class='table table-hover'>
+              <!--Table head-->
+              <thead>
+                <tr>
+                  <th>Nr.</th>
+                  <th (click)="sortUserTable(1)">e-mail</th>
+                  <th (click)="sortUserTable(2)">Group</th>
+                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                </tr>
+              </thead>
+              <!--Table body-->
+              <tbody>
+                <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
+                  <td>{{memberIndex+1}}</td>
+                  <td>{{member.email}}</td>
+                  <td>{{member.groupName}}</td>
+                  <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                    <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                    data-toggle="modal" data-target="#VcUserRemove">&times;</button>
+                  </td>
+                </tr>
+              </tbody>
+              <!--Table body-->
+            </table>
           </div>
-        </div>
-        <div class='panel-body'>
-          <table class='table table-hover'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th>Nr.</th>
-                <th (click)="sortUserTable(1)">e-mail</th>
-                <th (click)="sortUserTable(2)">Group</th>
-                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
-              </tr>
-            </thead>
-            <!--Table body-->
-            <tbody>
-              <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
-                <td>{{memberIndex+1}}</td>
-                <td>{{member.email}}</td>
-                <td>{{member.groupName}}</td>
-                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
-                  data-toggle="modal" data-target="#VcUserRemove">&times;</button>
-                </td>
-              </tr>
-            </tbody>
-            <!--Table body-->
-          </table>
         </div>
       </div>
-    </div>
 
-    <div *ngIf="showGroups && !showProjectUsers" >
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                Visbo Center Groups
-            </h5>
+      <div *ngIf="showGroups && !showProjectUsers" >
+        <div >
+          <div class='row'>
+            <div class='col'>
+              <h5 class='panel-heading'>
+                  Visbo Center Groups
+              </h5>
+            </div>
+            <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
+                Add Group
+              </button>
+            </div>
           </div>
-          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
-              Add Group
-            </button>
+          <div class='panel-body'>
+            <table class='table table-hover'>
+              <!--Table head-->
+              <thead>
+                <tr>
+                  <th>Nr.</th>
+                  <th (click)="sortGroupTable(1)">Group</th>
+                  <th (click)="sortGroupTable(2)">Members</th>
+                  <th >Flag</th>
+                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                  <th>Info</th>
+                </tr>
+              </thead>
+              <!--Table body-->
+              <tbody>
+                <tr *ngFor="let member of vgGroups; let memberIndex=index">
+                  <td>{{memberIndex+1}}</td>
+                  <td>{{member.name}}</td>
+                  <td>{{member.users.length}}</td>
+                  <td *ngIf="member.global">Global</td>
+                  <td *ngIf="!member.global"></td>
+                  <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                    <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                    data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
+                  </td>
+                  <td>
+                    <button class="Detail" title="Detail of Group"
+                     (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
+                  </td>
+                </tr>
+              </tbody>
+              <!--Table body-->
+            </table>
           </div>
-        </div>
-        <div class='panel-body'>
-          <table class='table table-hover'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th>Nr.</th>
-                <th (click)="sortGroupTable(1)">Group</th>
-                <th (click)="sortGroupTable(2)">Members</th>
-                <th >Flag</th>
-                <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
-                <th>Info</th>
-              </tr>
-            </thead>
-            <!--Table body-->
-            <tbody>
-              <tr *ngFor="let member of vgGroups; let memberIndex=index">
-                <td>{{memberIndex+1}}</td>
-                <td>{{member.name}}</td>
-                <td>{{member.users.length}}</td>
-                <td *ngIf="member.global">Global</td>
-                <td *ngIf="!member.global"></td>
-                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                  <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
-                  data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
-                </td>
-                <td>
-                  <button class="Detail" title="Detail of Group"
-                   (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
-                </td>
-              </tr>
-            </tbody>
-            <!--Table body-->
-          </table>
         </div>
       </div>
-    </div>
 
-    <div *ngIf="showProjectUsers" >
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                Visbo Project Users
-            </h5>
+      <div *ngIf="showProjectUsers" >
+        <div >
+          <div class='row'>
+            <div class='col'>
+              <h5 class='panel-heading'>
+                  Visbo Project Users
+              </h5>
+            </div>
           </div>
-        </div>
-        <div class='panel-body'>
-          <table class='table table-hover'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th>Nr.</th>
-                <th (click)="sortVPUserTable(1)">e-mail</th>
-                <th (click)="sortVPUserTable(2)">Project</th>
-                <th>Group</th>
-              </tr>
-            </thead>
-            <!--Table body-->
-            <tbody>
-              <tr *ngFor="let member of vgVPUsers; let memberIndex=index" (click)="gotoVPDetail(member.vpid)"> <!-- class="danger"> -->
-                <td>{{memberIndex+1}}</td>
-                <td>{{member.users.email}}</td>
-                <td>{{member.vp.name}}</td>
-                <td>{{member.groupName}}</td>
-              </tr>
-            </tbody>
-            <!--Table body-->
-          </table>
+          <div class='panel-body'>
+            <table class='table table-hover'>
+              <!--Table head-->
+              <thead>
+                <tr>
+                  <th>Nr.</th>
+                  <th (click)="sortVPUserTable(1)">e-mail</th>
+                  <th (click)="sortVPUserTable(2)">Project</th>
+                  <th>Group</th>
+                </tr>
+              </thead>
+              <!--Table body-->
+              <tbody>
+                <tr *ngFor="let member of vgVPUsers; let memberIndex=index" (click)="gotoVPDetail(member.vpid)"> <!-- class="danger"> -->
+                  <td>{{memberIndex+1}}</td>
+                  <td>{{member.users.email}}</td>
+                  <td>{{member.vp.name}}</td>
+                  <td>{{member.groupName}}</td>
+                </tr>
+              </tbody>
+              <!--Table body-->
+            </table>
+          </div>
         </div>
       </div>
     </div>
