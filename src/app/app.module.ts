@@ -67,6 +67,7 @@ import { SysuserComponent }  from './sysuser/sysuser.component';
 import { SysLogComponent }  from './syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
+import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { SystasksComponent } from './systasks/systasks.component';
     SysauditComponent,
     SysuserComponent,
     SysLogComponent,
-    SystasksComponent
+    SystasksComponent,
+    SysconfigComponent
   ],
   imports: [
     BrowserModule,

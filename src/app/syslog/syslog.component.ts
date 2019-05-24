@@ -102,8 +102,8 @@ export class SysLogComponent implements OnInit {
     this.log(`syslog getLogLevel`);
     this.visbosettingService.getVCSettingByName(this.systemVC, 'DEBUG', true)
       .subscribe(
-        data => {
-          this.logLevelSetting = data;
+        vcsetting => {
+          this.logLevelSetting = vcsetting[0];
           this.log(`get Log Level success ${JSON.stringify(this.logLevelSetting)}`);
         },
         error => {

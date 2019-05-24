@@ -1,0 +1,81 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Config System View
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(2)">Info</th>
+              <th (click)="sortTable(3)">Updated</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <tr *ngFor="let entry of vcsetting; let settingIndex=index" (click)='helperConfigIndex(settingIndex)' data-toggle="modal" data-target="#ConfigDetail">
+              <td>{{entry.name }}</td>
+              <td class="d-none d-md-table-cell">{{getMainInfo(entry)}}</td>
+              <td>{{entry.updatedAt | date :'dd.MM HH:mm:ss' }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ConfigDetail" tabindex="-1" role="dialog" aria-labelledby="Config Detail" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="configIndex >= 0 && configIndex < vcsetting.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Detail of Config</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-10">
+            <button type="button" class="btn btn-secondary" title="Prev Config" (click)='pageConfigIndex(-1)'>Prev</button>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-secondary align-self-end" title="Next Config" (click)='pageConfigIndex(1)'>Next</button>
+          </div>
+        </div>
+        <form>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Config:</label>
+            <label class="col-7 form-control-static">{{ vcsetting[configIndex].name }} </label>
+          </div>
+          <div *ngIf="vcsetting[configIndex].value">
+
+            <div *ngFor="let prop of currenSettingValue" class="form-group">
+              <label class="col-4 col-form-label">{{prop.name}}:</label>
+              <label class="col-7 form-control-static">{{ prop.value }}</label>
+              <!-- <input type="text" class="col-7 form-control" [(ngModel)]="currenSettingValue[prop].value" placeholder="{{prop.value}}"> -->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
