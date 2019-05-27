@@ -11,6 +11,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
+import { VGPermission, VGPSystem } from '../_models/visbogroup';
+
 @Component({
   selector: 'app-sysconfig',
   templateUrl: './sysconfig.component.html',
@@ -19,6 +21,8 @@ import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 export class SysconfigComponent implements OnInit {
 
     systemVC: number;
+    combinedPerm: VGPermission = undefined;
+    permSystem: any = VGPSystem;
     vcsetting: VisboSetting[];
     currenSettingValue: {name: string, value: string, type: string}[];
     configIndex: number;
@@ -36,6 +40,8 @@ export class SysconfigComponent implements OnInit {
   ngOnInit() {
     this.systemVC = this.visbocenterService.getSysVCId()
     this.getVisboConfig();
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    // this.log(`getVisboConfig Perm ${JSON.stringify(this.combinedPerm)}`);
   }
 
   getVisboConfig(): void {
@@ -81,35 +87,35 @@ export class SysconfigComponent implements OnInit {
     return result || "";
   }
 
-  convertToConfigList(obj: any, child: boolean = false): void {
-    if (!child) this.currenSettingValue = [];
-    for (var prop in obj) {
-        // skip loop if the property is from prototype
-        this.log(`Convert Setting ${prop} value ${obj[prop]} type ${typeof obj[prop]}`)
-        if (typeof obj[prop] == "object") {
-          this.convertToConfigList(obj[prop], true)
-        } else {
-          var propObject = {name: prop, value: obj[prop], type: typeof obj[prop]}
-          this.currenSettingValue.push(propObject);
-        }
-    }
-
-  }
-
   helperConfigIndex(configIndex: number):void {
+    this.log(`Update Config Index ${configIndex} `)
     this.configIndex = configIndex;
-    // this.log(`Convert Setting ${configIndex}`)
-    this.convertToConfigList(this.vcsetting[configIndex].value, false);
-    this.log(`Convert Setting Done ${this.currenSettingValue.length}`)
   }
 
-  pageConfigIndex(increment: number): void {
-    var newconfigIndex: number;
-    newconfigIndex = this.configIndex + increment;
-    if (newconfigIndex < 0) newconfigIndex = 0
-    if (newconfigIndex >= this.vcsetting.length) newconfigIndex = this.vcsetting.length-1
-    this.configIndex = newconfigIndex
-    this.helperConfigIndex(newconfigIndex  )
+  updateConfig(configIndex: number):void {
+    this.configIndex = configIndex;
+    this.log(`Update Config ${configIndex} ${this.vcsetting[configIndex].name}`)
+    this.visbosettingService.updateVCSetting(this.systemVC, this.vcsetting[configIndex], true)
+      .subscribe(
+        data => {
+          this.log(`set System Config success ${JSON.stringify(data)}`);
+          this.alertService.success('Successfully changed System Configuration', true);
+          this.vcsetting[configIndex] = data;
+        },
+        error => {
+          this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          }
+        }
+      );
+}
+
+  hasSystemPerm(perm: number): boolean {
+    return (this.combinedPerm.system & perm) > 0
   }
 
   sortTable(n) {
