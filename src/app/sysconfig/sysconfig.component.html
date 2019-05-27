@@ -1,0 +1,274 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Config System View
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(2)">Info</th>
+              <th (click)="sortTable(3)">Updated</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody *ngIf="vcsetting && vcsetting.length>=4">
+            <tr (click)="helperConfigIndex(0)" data-toggle="modal" data-target="#ConfigDebug">
+              <td>{{vcsetting[0].name }}</td>
+              <td class="d-none d-md-table-cell">{{getMainInfo(vcsetting[0])}}</td>
+              <td>{{vcsetting[0].updatedAt | date :'dd.MM HH:mm:ss' }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+            <tr (click)="helperConfigIndex(1)" data-toggle="modal" data-target="#ConfigPWPolicy">
+              <td>{{vcsetting[1].name }}</td>
+              <td class="d-none d-md-table-cell">{{getMainInfo(vcsetting[1])}}</td>
+              <td>{{vcsetting[1].updatedAt | date :'dd.MM HH:mm:ss' }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+            <tr (click)="helperConfigIndex(2)" data-toggle="modal" data-target="#ConfigSMTP">
+              <td>{{vcsetting[2].name }}</td>
+              <td class="d-none d-md-table-cell">{{getMainInfo(vcsetting[2])}}</td>
+              <td>{{vcsetting[2].updatedAt | date :'dd.MM HH:mm:ss' }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+            <tr (click)="helperConfigIndex(3)" data-toggle="modal" data-target="#ConfigUIUrl">
+              <td>{{vcsetting[3].name }}</td>
+              <td class="d-none d-md-table-cell">{{getMainInfo(vcsetting[3])}}</td>
+              <td>{{vcsetting[3].updatedAt | date :'dd.MM HH:mm:ss' }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ConfigUIUrl" tabindex="-1" role="dialog" aria-labelledby="Config UI URL" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="configIndex>=0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Config UI URL</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'UIUrl'">
+            <div class="form-group">
+              <label for="configUIUrl" class="col-3 col-form-label">UI Url:</label>
+              <input type="text" name=configUIUrl class="col-7 form-control" [(ngModel)]="vcsetting[configIndex].value.UIUrl" placeholder="URL for Web UI">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button *ngIf="hasSystemPerm(permSystem.Modify)" type="button" class="btn btn-primary" (click)="updateConfig(configIndex)" data-dismiss="modal">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ConfigPWPolicy" tabindex="-1" role="dialog" aria-labelledby="Config Password Policy" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="configIndex>=0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Config Password Policy</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'PWPolicy'">
+            <div class="form-group">
+              <label for="configPWPolicy" class="col-4 col-form-label">PW Policy Regex:</label>
+              <input type="text" name=configPWPolicy class="form-control" [(ngModel)]="vcsetting[configIndex].value.PWPolicy">
+            </div>
+            <div class="form-group">
+              <label for="configPWPolicyDesc" class="col-4 col-form-label">PW Policy Description:</label>
+              <textarea name=configPWPolicyDesc class="form-control" [(ngModel)]="vcsetting[configIndex].value.Description"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button *ngIf="hasSystemPerm(permSystem.Modify)" type="button" class="btn btn-primary" (click)="updateConfig(configIndex)" data-dismiss="modal">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ConfigSMTP" tabindex="-1" role="dialog" aria-labelledby="Config SMTP Setting" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="configIndex>=0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Config SMTP Setting</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'SMTP'">
+            <div class="form-group">
+              <label for="configSMTPHost" class="col-4 col-form-label">SMTP Host:</label>
+              <input type="text" name=configSMTPHost class="form-control" [(ngModel)]="vcsetting[configIndex].value.host">
+            </div>
+            <div class="form-group">
+              <label for="configSMTPUser" class="col-4 col-form-label">User:</label>
+              <input type="text" name=configSMTPUser class="form-control" [(ngModel)]="vcsetting[configIndex].value.auth.user">
+            </div>
+            <div class="form-group">
+              <label for="configSMTPUserPW" class="col-4 col-form-label">Password:</label>
+              <input type="password" name=configSMTPUserPW class="form-control" [(ngModel)]="vcsetting[configIndex].value.auth.pass">
+            </div>
+            <div class="form-group">
+              <label for="configSMTPPort" class="col-4 col-form-label">Port:</label>
+              <input type="number" name=configSMTPPort class="form-control" [(ngModel)]="vcsetting[configIndex].value.port">
+            </div>
+            <div class="form-group">
+              <label for="configSMTPConTimeout" class="col-4 col-form-label">Connection Timeout:</label>
+              <input type="number" name=configSMTPConTimeout class="form-control" [(ngModel)]="vcsetting[configIndex].value.connectionTimeout">
+            </div>
+            <div class="form-group">
+              <label for="configSMTPGreetTimeout" class="col-4 col-form-label">Greeting Timeout:</label>
+              <input type="number" name=configSMTPGreetTimeout class="form-control" [(ngModel)]="vcsetting[configIndex].value.greetingTimeout">
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check1" name="configSMTPPool" [(ngModel)]="vcsetting[configIndex].value.pool" #configSMTPPool="ngModel">
+                <label class="custom-control-label" for="check1">Pool Connections</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check2" name="configSMTPSecure" [(ngModel)]="vcsetting[configIndex].value.secure" #configSMTPSecure="ngModel">
+                <label class="custom-control-label" for="check2">Secure Connection</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check3" name="configSMTPTls" [(ngModel)]="vcsetting[configIndex].value.requireTLS" #configSMTPTls="ngModel">
+                <label class="custom-control-label" for="check3">Require TLS</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button *ngIf="hasSystemPerm(permSystem.Modify)" type="button" class="btn btn-primary" (click)="updateConfig(configIndex)" data-dismiss="modal">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ConfigDebug" tabindex="-1" role="dialog" aria-labelledby="Config Debug Setting" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="configIndex>=0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Config Debug Setting</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'DEBUG'">
+          <div class="form-group row">
+
+            <label class="col-3 col-form-label">VC:</label>
+            <select class="col-8 form-control"  name="VC" [(ngModel)]="vcsetting[configIndex].value.VC">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">VP:</label>
+            <select class="col-8 form-control"  name="VP" [(ngModel)]="vcsetting[configIndex].value.VP">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">VPV:</label>
+            <select class="col-8 form-control"  name="VPV" [(ngModel)]="vcsetting[configIndex].value.VPV">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">USER:</label>
+            <select class="col-8 form-control"  name="USER" [(ngModel)]="vcsetting[configIndex].value.USER">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">MAIL:</label>
+            <select class="col-8 form-control"  name="MAIL" [(ngModel)]="vcsetting[configIndex].value.MAIL">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">OTHER:</label>
+            <select class="col-8 form-control"  name="OTHER" [(ngModel)]="vcsetting[configIndex].value.OTHER">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label class="col-3 col-form-label">All:</label>
+            <select class="col-8 form-control"  name="All" [(ngModel)]="vcsetting[configIndex].value.All">
+              <option value = fatal>Fatal</option>
+              <option value = warn>Warning</option>
+              <option value = info>Information</option>
+              <option value = debug>Debug</option>
+              <option value = trace>Trace</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button *ngIf="hasSystemPerm(permSystem.Modify)" type="button" class="btn btn-primary" (click)="updateConfig(configIndex)" data-dismiss="modal">Update</button>
+      </div>
+    </div>
+  </div>
+</div>

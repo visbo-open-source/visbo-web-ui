@@ -56,6 +56,7 @@ export class VisboCenterService  {
 
     return this.http.get<VisboCenterResponse>(url, httpOptions).pipe(
       map(response => {
+                this.log(`fetched System VisboCenter ${JSON.stringify(response)}`)
                 if (response.vc && response.vc.length > 0) {
                   response.vc[0].perm = response.perm;
                   this.combinedPerm = response.perm;
