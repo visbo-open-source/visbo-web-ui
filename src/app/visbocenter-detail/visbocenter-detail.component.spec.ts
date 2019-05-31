@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { VisbocenterDetailComponent } from './visbocenter-detail.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 describe('VisbocenterDetailComponent', () => {
   let component: VisbocenterDetailComponent;
@@ -8,7 +9,10 @@ describe('VisbocenterDetailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisbocenterDetailComponent ]
+      declarations: [
+        VisbocenterDetailComponent,
+        NavbarComponent
+      ]
     })
     .compileComponents();
   }));

@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SysvisboprojectDetailComponent } from './sysvisboproject-detail.component';
+import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
 
 describe('SysvisboprojectDetailComponent', () => {
   let component: SysvisboprojectDetailComponent;
@@ -8,7 +9,10 @@ describe('SysvisboprojectDetailComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SysvisboprojectDetailComponent ]
+      declarations: [
+        SysvisboprojectDetailComponent,
+        SysNavbarComponent
+      ]
     })
     .compileComponents();
   }));
