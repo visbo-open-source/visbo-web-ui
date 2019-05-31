@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { FormsModule }   from '@angular/forms';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
@@ -88,9 +90,14 @@ export class LoginComponent implements OnInit {
 
   pwforgotten() {
     var email = (this.model.username || '').trim();
-    this.log(`Login: Forward to password forgotten ${email} `);
+    this.log(`Forward to password forgotten ${email} `);
     // MS TODO: Check if user name is an e-Mail Address
     this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
+  }
+
+  register() {
+    this.log(`Forward to Register `);
+    this.router.navigate(['register']);
   }
 
   relogin() {

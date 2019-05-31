@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SystasksComponent } from './systasks.component';
+import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
 
 describe('SystasksComponent', () => {
   let component: SystasksComponent;
@@ -8,7 +9,10 @@ describe('SystasksComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SystasksComponent ]
+      declarations: [
+        SystasksComponent,
+        SysNavbarComponent
+      ]
     })
     .compileComponents();
   }));
