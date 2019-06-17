@@ -75,7 +75,7 @@
       </div>
       <div class="modal-body">
         <form>
-          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'UIUrl'">
+          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'UI URL'">
             <div class="form-group">
               <label for="configUIUrl" class="col-3 col-form-label">UI Url:</label>
               <input type="text" name=configUIUrl class="col-7 form-control" [(ngModel)]="vcsetting[configIndex].value.UIUrl" placeholder="URL for Web UI">
@@ -102,7 +102,7 @@
       </div>
       <div class="modal-body">
         <form>
-          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'PWPolicy'">
+          <div *ngIf="vcsetting[configIndex].value && vcsetting[configIndex].name == 'PW Policy'">
             <div class="form-group">
               <label for="configPWPolicy" class="col-4 col-form-label">PW Policy Regex:</label>
               <input type="text" name=configPWPolicy class="form-control" [(ngModel)]="vcsetting[configIndex].value.PWPolicy">

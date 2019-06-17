@@ -43,8 +43,9 @@ export class SystasksComponent implements OnInit {
       .subscribe(
         vcsetting => {
           this.vcsetting = vcsetting;
-          this.sortTable(1);
+          this.sortTable(undefined);
           this.log('get Settings success ' + vcsetting.length);
+          this.alertService.clear();
         },
         error => {
           this.log(`get Settings failed: error: ${error.status} message: ${error.error.message}`);
@@ -70,21 +71,45 @@ export class SystasksComponent implements OnInit {
     this.taskIndex = newtaskIndex
   }
 
+  executeTask(): void {
+    this.log(`execute Task Immediately: ${this.vcsetting[this.taskIndex].name} `);
+    this.vcsetting[this.taskIndex].value.nextRun = new Date();
+    this.visbosettingService.updateVCSetting(this.systemVC, this.vcsetting[this.taskIndex], true)
+      .subscribe(
+        data => {
+          this.log(`execute Task success ${JSON.stringify(data)}`);
+          this.alertService.success('Successfully set Task to execute', false);
+          this.vcsetting[this.taskIndex] = data;
+        },
+        error => {
+          this.log(`execute Task failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(error.error.message);
+          // redirect to login and come back to current URL
+          if (error.status == 401) {
+            this.alertService.error("Session expired, please log in again", true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          }
+        }
+      );
+  }
+
   sortTable(n) {
     if (!this.vcsetting) return
-    this.log(`Sort Table Column ${n}`)
+    this.log(`Sort Table Column ${n} ${this.sortColumn}`)
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortColumn == undefined) {
+      if (this.sortColumn == undefined) this.sortColumn = 1;
       if (n != this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
       if (this.sortAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 1 ) ? true : false;
+        this.sortAscending = ( n == 0 ) ? true : false;
         // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
       }
       else this.sortAscending = !this.sortAscending;
+      this.log(`Sort Order ${this.sortAscending}`)
     }
     // this.log(`Sort VC Column ${this.sortColumn} Asc ${this.sortAscending} `)
     if (this.sortColumn == 1) {

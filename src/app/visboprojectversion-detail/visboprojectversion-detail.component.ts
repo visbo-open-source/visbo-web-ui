@@ -48,8 +48,9 @@ export class VisboProjectVersionDetailComponent implements OnInit {
     this.visboprojectversionService.getVisboProjectVersion(id, this.deleted)
       .subscribe(
         visboprojectversion => {
+          this.combinedPerm = visboprojectversion.perm;
           this.visboprojectversion = visboprojectversion
-          this.log(`Get VisboProjectVersion for VPV ${id} ${visboprojectversion.name} `)
+          this.log(`Get VisboProjectVersion for VPV ${id} ${visboprojectversion.name} ${JSON.stringify(this.combinedPerm)}`)
         },
         error => {
           this.log(`get VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -66,6 +67,11 @@ export class VisboProjectVersionDetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vp & perm) > 0
   }
 
   delete(visboprojectversion: VisboProjectVersion): void {
