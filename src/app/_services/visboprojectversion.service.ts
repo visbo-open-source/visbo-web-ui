@@ -32,7 +32,7 @@ export class VisboProjectVersionService {
     private authenticationService: AuthenticationService ) { }
 
 
-  /** GET VisboProjectVersions from the server if id is specified get only projects of this vcid*/
+  /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
   getVisboProjectVersions(id: string, deleted: boolean = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -67,16 +67,21 @@ export class VisboProjectVersionService {
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboProjectVersion(id: string, deleted: boolean = false): Observable<VisboProjectVersion> {
-    const url = `${this.vpvUrl}/${id}`;
+    const url = `${this.vpvUrl}/${id}`; 
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (deleted) params = params.append('deleted', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url} Params ${params}`);
-    return this.http.get<VisboProjectVersionResponse>(url, { headers , params }).pipe(
-      map(response => response.vpv[0]),
-      tap(visboprojectversion => this.log(`fetched Specific Version `)),
-      catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
-    );
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+                  // TODO: is there a better way to transfer the perm?
+                  response.vpv[0].perm = response.perm;
+                  return response.vpv[0]
+                }),
+        tap(visboprojectversion => this.log(`fetched Specific Version `)),
+        catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
+      );
   }
 
   /* GET VisboProjectVersions whose name contains search term */

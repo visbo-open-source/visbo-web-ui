@@ -43,3 +43,9 @@ export class VisboProjectResponse {
   vp: [ VisboProject ];
   perm: {system: number, vc: number, vp: number};
 }
+
+export class VisboProjectLockResponse {
+  state: string;
+  message: string;
+  lock: [VPLock];
+}

@@ -28,6 +28,7 @@ export class VisboProjectVersion {
   complexity: number;
   description: string;
   businessUnit: string;
+  perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
   createdAt: Date;
 }
@@ -35,5 +36,6 @@ export class VisboProjectVersion {
 export class VisboProjectVersionResponse {
   state: string;
   message: string;
-  vpv: [ VisboProjectVersion ]
+  vpv: [ VisboProjectVersion ];
+  perm: {system: number, vc: number, vp: number};
 }

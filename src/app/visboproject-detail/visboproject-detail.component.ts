@@ -64,7 +64,7 @@ export class VisboprojectDetailComponent implements OnInit {
         visboproject => {
           this.visboproject = visboproject
           this.combinedPerm = visboproject.perm;
-          this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`)
+          this.log(`Get VisboProject for VP ${id} Perm ${JSON.stringify(this.combinedPerm)} `)
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
@@ -435,6 +435,39 @@ export class VisboprojectDetailComponent implements OnInit {
         }
       );
   }
+
+  unlockVP(lockIndex: number ): void {
+    var vpid = this.visboproject._id;
+    var variantNameLock = this.visboproject.lock[lockIndex].variantName;
+    this.log(`Remove VisboProject Lock: ${this.visboproject.name} Variant ${variantNameLock} ${this.visboproject.lock[lockIndex].expiresAt} VPID: ${vpid}`);
+    this.visboprojectService.unlockVP(variantNameLock, vpid)
+      .subscribe(
+        response => {
+          this.log(`Remove VisboProject Lock result: ${JSON.stringify(response)}`);
+          for (var i = 0; i < this.visboproject.lock.length; i++) {
+            if (this.visboproject.lock[i].variantName == variantNameLock) {
+              this.visboproject.lock.splice(i, 1);
+              break;
+            }
+          }
+          this.alertService.success(`Lock ${variantNameLock} removed successfully`);
+        },
+        error => {
+          this.log(`Remove VisboProject Lock error: ${error.error.message}`);
+          if (error.status == 403) {
+            this.alertService.error(`Permission Denied: Remove Lock from Visbo Project`);
+          } else if (error.status == 401) {
+            this.log('Re-login add VC user'); // log to console instead
+            this.alertService.error(`Session expired, please login again`, true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          } else {
+            this.log(`Error during remove Lock from VP  ${error.error.message}`); // log to console instead
+            this.alertService.error(error.error.message);
+          }
+        }
+      );
+  }
+
 
   sortUserTable(n: number = undefined) {
 
