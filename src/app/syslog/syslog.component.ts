@@ -85,7 +85,7 @@ export class SysLogComponent implements OnInit {
 
   getVisboLogFile(file: VisboFile): void {
     this.log(`syslog getVisboLogFile`);
-    this.syslogService.getSysLog(file.name)
+    this.syslogService.getSysLog(file.folder, file.name)
       .subscribe(
         data => {
           this.log(`get Log Content success Start:${data.substring(0,30)}`);
