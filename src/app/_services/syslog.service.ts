@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -27,11 +27,15 @@ export class SysLogService {
 
 
   /** GET List of Logs from the server */
-  getSysLogs(): Observable<VisboFile[]> {
+  getSysLogs(ageDays: number): Observable<VisboFile[]> {
     var url = this.serviceUrl
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    params = params.append('ageDays', ageDays.toString());
 
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboFilesResponse>(url, httpOptions)
+    return this.http.get<VisboFilesResponse>(url, { headers , params })
       .pipe(
         map(response => response.files),
         tap(files => this.log(`fetched ${files.length} Log Files `)),
@@ -40,8 +44,8 @@ export class SysLogService {
   }
 
   // /** GET Log File by name. Return 403 when name not found */
-  getSysLog(name: string): Observable<any> {
-    var url = `${this.serviceUrl}/file/${name}`;
+  getSysLog(folder: string, name: string): Observable<any> {
+    var url = `${this.serviceUrl}/file/${folder}/${name}`;
     this.log(`Calling HTTP Request for a specific log file: ${url}`);
     var options: any = {};
     options.observe = 'body';
