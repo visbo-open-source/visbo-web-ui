@@ -25,6 +25,7 @@ export class VisboAudit {
   actionInfo: string;
   url: string;
   ip: string;
+  host: string;
   ttl: Date;
   sysAdmin: boolean;
   userAgent: string;
