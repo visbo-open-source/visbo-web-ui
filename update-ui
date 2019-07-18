@@ -5,23 +5,32 @@ git status
 if [ $? -ne 0 ]
 then
   echo "FATAL: Local Changes have to be checked first before upgrading."
-  exit
+  exit 1
 fi
 
 echo  "02: Pull Branch from Repository Server"
 updateCmdOrg=`date -r update-ui '+%Y-%m-%dT%H:%M:%S'`
 updatePackageOrg=`date -r package-lock.json '+%Y-%m-%dT%H:%M:%S'`
-git pull
+pullOutput=`git pull`
 if [ $? -ne 0 ]
 then
   echo "FATAL: Pull Failed to update Visbo UI  Branch."
-  exit
+  exit 1
 fi
+
+echo "Pull Result"
+echo "$pullOutput"
+if [ "$pullOutput" = "Already up to date." ]
+then
+  echo "INFO: No changes in the ReST UI Branch."
+  exit 0
+fi
+
 updateCmdAct=`date -r update-ui '+%Y-%m-%dT%H:%M:%S'`
 if [ "$updateCmdOrg" != "$updateCmdAct" ]
 then
   echo "WARN: Update Script has changed in between, please restart update again."
-  exit
+  exit 2
 fi
 
 updatePackageAct=`date -r package-lock.json '+%Y-%m-%dT%H:%M:%S'`
@@ -32,7 +41,7 @@ then
   if [ $? -ne 0 ]
   then
     echo "FATAL: Install of NODE components failed."
-    exit
+    exit 1
   fi
 fi
 
@@ -41,7 +50,7 @@ ng build --prod
 if [ $? -ne 0 ]
 then
   echo "FATAL: Error during compiling the Visbo UI Branch."
-  exit
+  exit 1
 fi
 
 echo "05: Remove the Visbo UI Client from production directory"
