@@ -52,9 +52,9 @@
               <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
               <td class="d-none d-md-table-cell">{{fileentry.folder }}</td>
               <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
-              <td>{{formatBytes(fileentry.size) }}</td>
+              <td>{{formatBytes(fileentry.size, undefined) }}</td>
               <td>
-                <button class="Detail" title="Save As" (click)="downloadVisboLogFile(fileentry)">i</button>
+                <button class="Detail" title="Save As" (click)="getVisboLogFile(fileentry)">i</button>
               </td>
             </tr>
           </tbody>
