@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SysVisboProjectsComponent } from './sysvisboprojects.component';
-import { NavbarComponent } from '../navbar/navbar.component';
+import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
 
 describe('SysVisboProjectsComponent', () => {
   let component: SysVisboProjectsComponent;

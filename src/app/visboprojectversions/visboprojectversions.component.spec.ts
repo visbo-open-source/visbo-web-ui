@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import 'jasmine';
 
 import { VisboProjectVersionsComponent } from './visboprojectversions.component';
 import { NavbarComponent } from '../navbar/navbar.component';

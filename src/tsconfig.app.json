@@ -2,13 +2,14 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "baseUrl": "./",
-    "sourceMap": true,
     "types": []
   },
+  "include": [
+    "src/**/*.ts",
+    "**/*.ts"
+  ],
   "exclude": [
-    "test.ts",
-    "**/*.spec.ts",
-    "**/testing/*"
+    "src/test.ts",
+    "src/**/*.spec.ts"
   ]
 }
