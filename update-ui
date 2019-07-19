@@ -1,5 +1,11 @@
 #!/bin/bash
 cd $HOME/GitHub/visbo-server-ui
+continueOnEmptyPull=0
+echo "Args:$#:"
+if [ $# -gt 0 -a "$1" = "force" ]
+then
+  continueOnEmptyPull=1
+fi
 echo "01: Checking Local Status of Visbo UI Branch"
 git status
 if [ $? -ne 0 ]
@@ -12,6 +18,7 @@ echo  "02: Pull Branch from Repository Server"
 updateCmdOrg=`date -r update-ui '+%Y-%m-%dT%H:%M:%S'`
 updatePackageOrg=`date -r package-lock.json '+%Y-%m-%dT%H:%M:%S'`
 pullOutput=`git pull`
+
 if [ $? -ne 0 ]
 then
   echo "FATAL: Pull Failed to update Visbo UI  Branch."
@@ -20,7 +27,8 @@ fi
 
 echo "Pull Result"
 echo "$pullOutput"
-if [ "$pullOutput" = "Already up to date." ]
+
+if [ "$continueOnEmptyPull" -eq 0 -a "$pullOutput" = "Already up to date." ]
 then
   echo "INFO: No changes in the ReST UI Branch."
   exit 0
@@ -37,7 +45,7 @@ updatePackageAct=`date -r package-lock.json '+%Y-%m-%dT%H:%M:%S'`
 if [ "$updatePackageOrg" != "$updatePackageAct" ]
 then
   echo "03: Install subcomponents from NODE environment"
-  npm ci
+  npm install
   if [ $? -ne 0 ]
   then
     echo "FATAL: Install of NODE components failed."
