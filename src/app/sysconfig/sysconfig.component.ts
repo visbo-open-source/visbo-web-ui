@@ -14,7 +14,7 @@ import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 import { VGPermission, VGPSystem } from '../_models/visbogroup';
 
 @Component({
-  selector: 'app-sysconfig',
+  selector: 'app-sysconfig', 
   templateUrl: './sysconfig.component.html',
   styleUrls: ['./sysconfig.component.css']
 })
