@@ -10,8 +10,8 @@ import { AlertService } from './_services/alert.service';
 export class AppComponent implements OnInit {
   title = 'Your Projects served with Visbo ';
   version = '1.2';
-  restVersionDate = undefined;
-  restUIVersionDate = undefined;
+  restVersionDate = new Date();
+  restUIVersionDate = new Date();
 
   constructor(
     private messageService: MessageService,
