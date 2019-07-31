@@ -25,7 +25,6 @@ export class AppComponent implements OnInit {
   }
 
   restVersion() {
-    if (this.restVersionDate) return;
     this.authenticationService.restVersion()
       .subscribe(
         data => {
