@@ -1,6 +1,6 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
+  <div class="container-fluid">
     <div class='row'>
       <div class='col'>
         <h2 class='panel-heading'>
@@ -14,6 +14,21 @@
         </button>
       </div>
     </div>
+    <div class='col'>
+      <form name="form" (ngSubmit)="getVisboLogs()" #f="ngForm" novalidate>
+        <div class="form-group row">
+          <label for="auditCount" class="col-form-label">Max age in days:</label>
+          <select class="col-1 form-control" name="ageDays" [(ngModel)]="ageDays">
+            <option>0</option>
+            <option>3</option>
+            <option>7</option>
+            <option>30</option>
+            <option>365</option>
+          </select>
+          <button type="button" class="btn btn-primary" (click)="getVisboLogs()">Refresh</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div>
@@ -24,6 +39,7 @@
           <thead>
             <tr>
               <th class="d-none d-md-table-cell" (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell">Host</th>
               <th (click)="sortTable(2)">Modified</th>
               <th (click)="sortTable(3)"> Size</th>
               <th>Detail</th>
@@ -34,10 +50,11 @@
             <tr *ngFor="let fileentry of files; let fileIndex=index" (click)='helperFileIndex(fileIndex)'
               (click)='getVisboLogFile(fileentry)'>
               <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
+              <td class="d-none d-md-table-cell">{{fileentry.folder }}</td>
               <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
-              <td>{{formatBytes(fileentry.size) }}</td>
+              <td>{{formatBytes(fileentry.size, undefined) }}</td>
               <td>
-                <button class="Detail" title="Save As" (click)="downloadVisboLogFile(fileentry)">i</button>
+                <button class="Detail" title="Save As" (click)="getVisboLogFile(fileentry)">i</button>
               </td>
             </tr>
           </tbody>

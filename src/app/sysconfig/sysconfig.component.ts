@@ -14,7 +14,7 @@ import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 import { VGPermission, VGPSystem } from '../_models/visbogroup';
 
 @Component({
-  selector: 'app-sysconfig',
+  selector: 'app-sysconfig', 
   templateUrl: './sysconfig.component.html',
   styleUrls: ['./sysconfig.component.css']
 })
@@ -24,8 +24,7 @@ export class SysconfigComponent implements OnInit {
     combinedPerm: VGPermission = undefined;
     permSystem: any = VGPSystem;
     vcsetting: VisboSetting[];
-    currenSettingValue: {name: string, value: string, type: string}[];
-    configIndex: number;
+    editIndex: number;
     sortAscending: boolean;
     sortColumn: number;
 
@@ -45,7 +44,7 @@ export class SysconfigComponent implements OnInit {
   }
 
   getVisboConfig(): void {
-    this.log(`getVisboConfig`);
+    this.log(`get VisboConfig Values`);
     this.visbosettingService.getVCSettingByType(this.systemVC, 'SysConfig', true)
       .subscribe(
         vcsetting => {
@@ -82,25 +81,46 @@ export class SysconfigComponent implements OnInit {
         case 'DEBUG':
           result = JSON.stringify(entry.value).substring(0,60).concat("...");
           break;
+        case 'Log Age':
+          result = entry.value.duration;
+          break;
+        case 'REDIS':
+          result = entry.value.host;
+          break;
       }
     }
     return result || "";
   }
 
-  helperConfigIndex(configIndex: number):void {
-    this.log(`Update Config Index ${configIndex} `)
-    this.configIndex = configIndex;
+  helperConfigName(config: string):number {
+    for (var i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name == config) {
+        return i;
+      }
+    }
+    return undefined;
   }
 
-  updateConfig(configIndex: number):void {
-    this.configIndex = configIndex;
-    this.log(`Update Config ${configIndex} ${this.vcsetting[configIndex].name}`)
-    this.visbosettingService.updateVCSetting(this.systemVC, this.vcsetting[configIndex], true)
+  editConfigName(config: string):number {
+    this.log(`Edit Config  ${config}`)
+    for (var i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name == config) {
+        this.editIndex = i;
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  updateConfig(setting: VisboSetting):void {
+    // if (!setting) return;
+    this.log(`Update Config  ${JSON.stringify(setting)}`)
+    this.visbosettingService.updateVCSetting(this.systemVC, setting, true)
       .subscribe(
         data => {
           this.log(`set System Config success ${JSON.stringify(data)}`);
           this.alertService.success('Successfully changed System Configuration', true);
-          this.vcsetting[configIndex] = data;
+          this.vcsetting[this.helperConfigName(setting.name)] = data;
         },
         error => {
           this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);

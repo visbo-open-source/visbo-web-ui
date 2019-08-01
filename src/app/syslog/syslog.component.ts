@@ -21,6 +21,7 @@ export class SysLogComponent implements OnInit {
 
   files: VisboFile[];
   fileIndex: number;
+  ageDays: number
   logDataShow: boolean;
   logData: string;
   logLevelSetting: VisboSetting;
@@ -39,7 +40,10 @@ export class SysLogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.systemVC = this.visbocenterService.getSysVCId()
+    this.systemVC = this.visbocenterService.getSysVCId();
+    this.ageDays = 3;
+    this.sortColumn = 2;
+
     this.getVisboLogs();
     this.sortTable(1);
     this.log(`syslog init VC ID ${this.systemVC}`);
@@ -51,11 +55,12 @@ export class SysLogComponent implements OnInit {
 
   getVisboLogs(): void {
     this.log(`syslog getVisboLogs`);
-    this.syslogService.getSysLogs()
+    this.sortAscending = !this.sortAscending;
+    this.syslogService.getSysLogs(this.ageDays)
       .subscribe(
         files => {
           this.files = files;
-          this.sortTable(2);
+          this.sortTable(this.sortColumn);
           this.log('get Logs success');
         },
         error => {
@@ -80,7 +85,7 @@ export class SysLogComponent implements OnInit {
 
   getVisboLogFile(file: VisboFile): void {
     this.log(`syslog getVisboLogFile`);
-    this.syslogService.getSysLog(file.name)
+    this.syslogService.getSysLog(file.folder, file.name)
       .subscribe(
         data => {
           this.log(`get Log Content success Start:${data.substring(0,30)}`);

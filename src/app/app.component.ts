@@ -10,7 +10,8 @@ import { AlertService } from './_services/alert.service';
 export class AppComponent implements OnInit {
   title = 'Your Projects served with Visbo ';
   version = '1.2';
-  restVersionString = undefined;
+  restVersionDate = new Date();
+  restUIVersionDate = new Date();
 
   constructor(
     private messageService: MessageService,
@@ -24,12 +25,13 @@ export class AppComponent implements OnInit {
   }
 
   restVersion() {
-    if (this.restVersionString) return;
     this.authenticationService.restVersion()
       .subscribe(
         data => {
-          this.restVersionString = data.version;
-          this.log(`Version Status check success ${this.restVersionString}`);
+          this.log(`Version Status check result ${JSON.stringify(data)}`);
+          this.restVersionDate = new Date(data.version);
+          this.restUIVersionDate = new Date(data.versionUI);
+          this.log(`Version Status check success ${data.version}/${this.restVersionDate} UI ${data.versionUI}/${this.restUIVersionDate}`);
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
