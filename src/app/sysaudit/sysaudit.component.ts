@@ -55,6 +55,10 @@ export class SysauditComponent implements OnInit {
       {name: "Visbo Project", action: "vp"},
       {name: "All", action: ""}
     ];
+    chart: boolean = false;
+    graphData: any = "Graph Data not set";
+    graphLegend: any = "Graph Legend not set"
+    graphDataLineChart: any = "Graph Time Data not set";
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -78,7 +82,6 @@ export class SysauditComponent implements OnInit {
       this.today.setSeconds(0);
       this.today.setMilliseconds(0);
       this.getVisboAudits();
-      this.sortTable(undefined);
     }
 
     // onSelect(visboaudit: VisboAudit): void {
@@ -95,13 +98,6 @@ export class SysauditComponent implements OnInit {
       }
       if (this.auditFrom) {
         queryAudit.from = new Date(this.auditFrom)
-      } else {
-        queryAudit.from = new Date(queryAudit.to);
-        queryAudit.from.setDate(queryAudit.from.getDate()-7);
-        queryAudit.from.setHours(0);
-        queryAudit.from.setMinutes(0);
-        queryAudit.from.setSeconds(0);
-        queryAudit.from.setMilliseconds(0);
       }
       if (this.auditText) queryAudit.text = this.auditText.trim();
       for (var i = 0; i < this.auditTypeList.length; i++) {
@@ -125,6 +121,8 @@ export class SysauditComponent implements OnInit {
             this.audit = audit;
             this.alertService.success('Successfully accessed Audit', true);
             this.sortTable(undefined);
+            this.groupGraphData();
+            this.groupgraphDataLineChart();
             this.log('get Audit success');
           },
           error => {
@@ -137,6 +135,7 @@ export class SysauditComponent implements OnInit {
             }
           }
         );
+      this.chart = false;
     }
 
     gotoDetail(visboaudit: VisboAudit):void {
@@ -210,6 +209,72 @@ export class SysauditComponent implements OnInit {
       this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
       a.click();
       window.URL.revokeObjectURL(url);
+    }
+
+    switchChart() {
+      this.chart = !this.chart
+      this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
+    }
+
+    groupGraphData() {
+      this.graphLegend = [["string", "Action Type"],
+                          ["number", "Count"]
+        ];
+      var graphSum = [];
+      var graphData = [];
+      var auditElement: any;
+      for (auditElement in this.audit) {
+        // this.log(`Group Graph Chart Element ${JSON.stringify(this.audit[auditElement])}`);
+        if (this.audit[auditElement].action) {
+          graphSum[this.audit[auditElement].action] = (graphSum[this.audit[auditElement].action] || 0) + 1;
+          // this.log(`Group Graph Chart Element ${graphSum[this.audit[auditElement].action]} ${this.audit[auditElement].action}`);
+        }
+      }
+      var graphElement: any;
+      var i = 0;
+      // this.graphData = [];
+      for (graphElement in graphSum) {
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        graphData.push([graphElement, graphSum[graphElement]])
+      }
+      this.graphData = graphData;
+    }
+
+    groupgraphDataLineChart() {
+      var graphSum = [];
+      var graphData = [];
+      var auditElement: any;
+      var dateString: string;
+      for (auditElement in this.audit) {
+        if (this.audit[auditElement].createdAt) {
+          dateString = this.audit[auditElement].createdAt.toString();
+          dateString = dateString.substr(5,5);
+          if (graphSum[dateString] == undefined) graphSum[dateString] = [0,0,0,0];
+          graphSum[dateString][0] = graphSum[dateString][0] + 1;
+          if (this.audit[auditElement].vpv) graphSum[dateString][3] = graphSum[dateString][3] + 1;
+          else if (this.audit[auditElement].vp) graphSum[dateString][2] = graphSum[dateString][2] + 1;
+          else if (this.audit[auditElement].vc && !this.audit[auditElement].sysAdmin) graphSum[dateString][1] = graphSum[dateString][1] + 1;
+          // this.log(`Group Graph Time Chart Element ${dateString} ${graphSum[dateString]}`);
+        }
+      }
+      var graphElement: any;
+      var i = 0;
+      // this.graphData = [];
+      for (graphElement in graphSum) {
+        // this.log(`Group Graph Time Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        graphData.push([graphElement, graphSum[graphElement][0], graphSum[graphElement][1], graphSum[graphElement][2], graphSum[graphElement][3]])
+      }
+      graphData.sort(function(a, b) {
+        var result = 0
+        if (a[0] > b[0])
+          result = -1;
+        else if (a[0] < b[0])
+          result = 1;
+        return result
+      })
+      graphData.push(["Date", "All", "VC", "VP", "VPV"]);
+      graphData.reverse();
+      this.graphDataLineChart = graphData;
     }
 
     helperAuditIndex(auditIndex: number):void {

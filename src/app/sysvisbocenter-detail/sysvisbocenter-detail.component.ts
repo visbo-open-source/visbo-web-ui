@@ -51,6 +51,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.log(`SysVisboCenter Init: ${JSON.stringify(this.visbocenter)}`)
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboCenter();
     this.getVisboCenterUsers();
