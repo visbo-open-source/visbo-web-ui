@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboProject, VisboProjectResponse } from '../_models/visboproject';
+import { VisboProject, VisboProjectResponse, VisboProjectLockResponse } from '../_models/visboproject';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -227,6 +227,19 @@ export class VisboProjectService {
       // map(response => response.vc[0].users),
       tap(groups => this.log(`deleted Visbo Project Group ${group.name}`)),
       catchError(this.handleError<any>('deleteVisboProjectGroup'))
+    );
+  }
+
+  /** DELETE: unlock Visbo Project Variant */
+  unlockVP (variantName: string, vpid: string, sysadmin: boolean = false): Observable<any> {
+    var url = `${this.vpUrl}/${vpid}/lock?variantName=${variantName}`;
+    if (sysadmin) url = url.concat('?sysadmin=1')
+    this.log(`Calling HTTP Request: ${url} for Lock ${variantName} `);
+    return this.http.delete<VisboProjectLockResponse>(url, httpOptions)
+    .pipe(
+      // map(response => response.vc[0].users),
+      tap(lock => this.log(`deleted Visbo Project Lock ${variantName}`)),
+      catchError(this.handleError<any>('deleteVisboProjectLock'))
     );
   }
 

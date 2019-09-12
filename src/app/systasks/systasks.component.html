@@ -7,6 +7,11 @@
           Visbo Task System View
         </h2>
       </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-primary" (click)="getVisboTasks()">
+          Refresh
+        </button>
+      </div>
     </div>
   </div>
 
@@ -17,19 +22,19 @@
           <!--Table head-->
           <thead>
             <tr>
-              <th class="d-none d-md-table-cell" (click)="sortTable(1)">Name</th>
-              <th (click)="sortTable(2)">Last Run</th>
-              <th (click)="sortTable(2)">Next Run</th>
-              <th (click)="sortTable(2)">Last Result</th>
+              <th (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(2)">Last Run</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(3)">Next Run</th>
+              <th (click)="sortTable(4)">Last Result</th>
               <th>Detail</th>
             </tr>
           </thead>
           <!-- Table body -->
           <tbody>
             <tr *ngFor="let entry of vcsetting; let settingIndex=index" (click)='helperTaskIndex(settingIndex)' data-toggle="modal" data-target="#TaskDetail">
-              <td class="d-none d-md-table-cell">{{entry.name }}</td>
-              <td>{{entry.value.lastRun | date :'dd.MM HH:mm:ss' }}</td>
-              <td>{{entry.value.nextRun | date :'dd.MM HH:mm:ss' }}</td>
+              <td>{{entry.name }}</td>
+              <td class="d-none d-md-table-cell">{{entry.value.lastRun | date :'dd.MM HH:mm:ss' }}</td>
+              <td class="d-none d-md-table-cell">{{entry.value.nextRun | date :'dd.MM HH:mm:ss' }}</td>
               <td>{{entry.value.taskSpecific && entry.value.taskSpecific.result }}</td>
               <td>
                 <button class="Detail" title="detail">i</button>
@@ -92,7 +97,8 @@
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="executeTask()" data-dismiss="modal">Execute</button>
       </div>
     </div>
   </div>

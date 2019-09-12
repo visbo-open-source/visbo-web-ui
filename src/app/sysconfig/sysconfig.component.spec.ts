@@ -1,24 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SysauditComponent } from './sysaudit.component';
+import { SysconfigComponent } from './sysconfig.component';
 import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
 
-describe('SysauditComponent', () => {
-  let component: SysauditComponent;
-  let fixture: ComponentFixture<SysauditComponent>;
+describe('SysconfigComponent', () => {
+  let component: SysconfigComponent;
+  let fixture: ComponentFixture<SysconfigComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        SysauditComponent,
-        SysNavbarComponent,
+        SysconfigComponent,
+        SysNavbarComponent
       ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SysauditComponent);
+    fixture = TestBed.createComponent(SysconfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

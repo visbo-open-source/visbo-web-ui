@@ -60,24 +60,21 @@ export class VisboSettingService  {
       );
   }
 
-  /** GET VCSetting by name */
-  getVCSettingByName(vcid: number, name: string, sysadmin: boolean = false): Observable<VisboSetting> {
+  /** GET VCSetting by type */
+  getVCSettingByName(vcid: number, name: string, sysadmin: boolean = false): Observable<VisboSetting[]> {
     var url = `${this.vcUrl}/${vcid}/setting?name=${name}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 
     if (sysadmin) params = params.append('sysadmin', '1');
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboSettingResponse>(url, { headers , params })
+    return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
-        map(response => {
-                  return response.vcsetting[0]
-                }),
-        tap(vcsetting => this.log(`fetched VC Setting ${vcsetting.name} id:${vcsetting._id} `)),
-        catchError(this.handleError<VisboSetting>(`getVCSetting vcid:${vcid}`))
+        map(response => response.vcsetting),
+        tap(visbosettings => this.log(`fetched ${visbosettings.length} VCSettings `)),
+        catchError(this.handleError('getVCSettings by Name', []))
       );
   }
-
 
   /** GET VCSetting by type */
   getVCSettingByType(vcid: number, type: string, sysadmin: boolean = false): Observable<VisboSetting[]> {

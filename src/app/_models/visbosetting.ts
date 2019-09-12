@@ -1,6 +1,8 @@
 
 export class VisboSetting {
   _id: string;
+  updatedAt: Date;
+  createdAt: Date;
   vcid: string;
   name: string;
   type: string;

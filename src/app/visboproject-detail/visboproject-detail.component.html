@@ -82,7 +82,7 @@
       </div>
 
       <div *ngIf="showGroups" >
-        <div >
+        <div>
           <div class='row'>
             <div class='col'>
               <h5 class='panel-heading'>
@@ -132,6 +132,43 @@
               <!--Table body-->
             </table>
           </div>
+        </div>
+      </div>
+
+      <!-- Show Locks -->
+      <div *ngIf="visboproject.lock.length >0">
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                Visbo Project Locks
+            </h5>
+          </div>
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Expires</th>
+                <th>Variant</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr *ngFor="let lock of visboproject.lock; let lockIndex=index">
+                <td>{{visboproject.lock[lockIndex].email}}</td>
+                <td>{{visboproject.lock[lockIndex].expiresAt | date :'dd.MM HH:mm'}}</td>
+                <td>{{visboproject.lock[lockIndex].variantName}}</td>
+                <td *ngIf="!deleted && hasVPPerm(permVP.Modify)">
+                  <button class="btn btn-sm" title="Unlock" (click)='unlockVP(lockIndex)'
+                  data-toggle="modal" data-target="#VpUnlock">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
         </div>
       </div>
     </div>
@@ -244,7 +281,7 @@
               <label for="groupName" class="col-form-label">Name:</label>
               <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
               <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
-              <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
+              <div *ngIf="f.submitted && !actGroup.groupName.valid" class="help-block">Group Name is required</div>
             </div>
             <!-- VP Permissions -->
             <div>Define Visbo Project Permission</div>

@@ -49,10 +49,10 @@ export class SysauditComponent implements OnInit {
     auditArea: string;
     auditAreaAction: string;
     auditAreaList: any[] = [
+      {name: "Overview", action: "other"},
       {name: "System", action: "sys"},
       {name: "Visbo Center", action: "vc"},
       {name: "Visbo Project", action: "vp"},
-      {name: "Other", action: "other"},
       {name: "All", action: ""}
     ];
 

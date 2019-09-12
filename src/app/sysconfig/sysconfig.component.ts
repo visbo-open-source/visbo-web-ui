@@ -11,18 +11,22 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
-@Component({
-  selector: 'app-systasks',
-  templateUrl: './systasks.component.html',
-  styleUrls: ['./systasks.component.css']
-})
-export class SystasksComponent implements OnInit {
+import { VGPermission, VGPSystem } from '../_models/visbogroup';
 
-  systemVC: number;
-  vcsetting: VisboSetting[];
-  taskIndex: number;
-  sortAscending: boolean;
-  sortColumn: number;
+@Component({
+  selector: 'app-sysconfig', 
+  templateUrl: './sysconfig.component.html',
+  styleUrls: ['./sysconfig.component.css']
+})
+export class SysconfigComponent implements OnInit {
+
+    systemVC: number;
+    combinedPerm: VGPermission = undefined;
+    permSystem: any = VGPSystem;
+    vcsetting: VisboSetting[];
+    editIndex: number;
+    sortAscending: boolean;
+    sortColumn: number;
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -34,18 +38,19 @@ export class SystasksComponent implements OnInit {
 
   ngOnInit() {
     this.systemVC = this.visbocenterService.getSysVCId()
-    this.getVisboTasks();
+    this.getVisboConfig();
+    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    // this.log(`getVisboConfig Perm ${JSON.stringify(this.combinedPerm)}`);
   }
 
-  getVisboTasks(): void {
-    this.log(`getVisboTasks`);
-    this.visbosettingService.getVCSettingByType(this.systemVC, 'Task', true)
+  getVisboConfig(): void {
+    this.log(`get VisboConfig Values`);
+    this.visbosettingService.getVCSettingByType(this.systemVC, 'SysConfig', true)
       .subscribe(
         vcsetting => {
           this.vcsetting = vcsetting;
-          this.sortTable(undefined);
+          this.sortTable(1);
           this.log('get Settings success ' + vcsetting.length);
-          this.alertService.clear();
         },
         error => {
           this.log(`get Settings failed: error: ${error.status} message: ${error.error.message}`);
@@ -59,30 +64,66 @@ export class SystasksComponent implements OnInit {
       );
   }
 
-  helperTaskIndex(taskIndex: number):void {
-    this.taskIndex = taskIndex
+  getMainInfo(entry: VisboSetting): string {
+    // this.log('get Main Value ' + entry.name);
+    var result = "";
+    if (entry.value) {
+      switch (entry.name) {
+        case 'UI URL':
+          result = entry.value.UIUrl;
+          break;
+        case 'SMTP':
+          result = entry.value.auth && entry.value.auth.user;
+          break;
+        case 'PW Policy':
+          result = (entry.value.Description || "").substring(0,60).concat("...");
+          break;
+        case 'DEBUG':
+          result = JSON.stringify(entry.value).substring(0,60).concat("...");
+          break;
+        case 'Log Age':
+          result = entry.value.duration;
+          break;
+        case 'REDIS':
+          result = entry.value.host;
+          break;
+      }
+    }
+    return result || "";
   }
 
-  pageTaskIndex(increment: number): void {
-    var newtaskIndex: number;
-    newtaskIndex = this.taskIndex + increment;
-    if (newtaskIndex < 0) newtaskIndex = 0
-    if (newtaskIndex >= this.vcsetting.length) newtaskIndex = this.vcsetting.length-1
-    this.taskIndex = newtaskIndex
+  helperConfigName(config: string):number {
+    for (var i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name == config) {
+        return i;
+      }
+    }
+    return undefined;
   }
 
-  executeTask(): void {
-    this.log(`execute Task Immediately: ${this.vcsetting[this.taskIndex].name} `);
-    this.vcsetting[this.taskIndex].value.nextRun = new Date();
-    this.visbosettingService.updateVCSetting(this.systemVC, this.vcsetting[this.taskIndex], true)
+  editConfigName(config: string):number {
+    this.log(`Edit Config  ${config}`)
+    for (var i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name == config) {
+        this.editIndex = i;
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  updateConfig(setting: VisboSetting):void {
+    // if (!setting) return;
+    this.log(`Update Config  ${JSON.stringify(setting)}`)
+    this.visbosettingService.updateVCSetting(this.systemVC, setting, true)
       .subscribe(
         data => {
-          this.log(`execute Task success ${JSON.stringify(data)}`);
-          this.alertService.success('Successfully set Task to execute', false);
-          this.vcsetting[this.taskIndex] = data;
+          this.log(`set System Config success ${JSON.stringify(data)}`);
+          this.alertService.success('Successfully changed System Configuration', true);
+          this.vcsetting[this.helperConfigName(setting.name)] = data;
         },
         error => {
-          this.log(`execute Task failed: error: ${error.status} message: ${error.error.message}`);
+          this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
           // redirect to login and come back to current URL
           if (error.status == 401) {
@@ -91,25 +132,27 @@ export class SystasksComponent implements OnInit {
           }
         }
       );
+}
+
+  hasSystemPerm(perm: number): boolean {
+    return (this.combinedPerm.system & perm) > 0
   }
 
   sortTable(n) {
     if (!this.vcsetting) return
-    this.log(`Sort Table Column ${n} ${this.sortColumn}`)
+    this.log(`Sort Table Column ${n} old ${this.sortColumn}`)
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortColumn == undefined) {
-      if (this.sortColumn == undefined) this.sortColumn = 1;
       if (n != this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
       if (this.sortAscending == undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 0 ) ? true : false;
+        this.sortAscending = ( n == 1 ) ? true : false;
         // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
       }
       else this.sortAscending = !this.sortAscending;
-      this.log(`Sort Order ${this.sortAscending}`)
     }
     // this.log(`Sort VC Column ${this.sortColumn} Asc ${this.sortAscending} `)
     if (this.sortColumn == 1) {
@@ -122,29 +165,15 @@ export class SystasksComponent implements OnInit {
         return result
       })
     } else if (this.sortColumn == 2) {
-      this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.value.lastRun > b.value.lastRun)
-          result = 1;
-        else if (a.value.lastRun < b.value.lastRun)
-          result = -1;
-        return result;
-      })
+      return 0; // No Sorting
     } else if (this.sortColumn == 3) {
       this.vcsetting.sort(function(a, b) {
         var result = 0
-        if (a.value.nextRun > b.value.nextRun)
+        if (a.updatedAt > b.updatedAt)
           result = 1;
-        else if (a.value.nextRun < b.value.nextRun)
+        else if (a.updatedAt < b.updatedAt)
           result = -1;
         return result;
-      })
-    } else if (this.sortColumn == 4) {
-      this.vcsetting.sort(function(a, b) {
-        var val1 = 0, val2 = 0;
-        if (a.value.taskSpecific && a.value.taskSpecific.result ) val1 = a.value.taskSpecific.result
-        if (b.value.taskSpecific && b.value.taskSpecific.result ) val2 = b.value.taskSpecific.result
-        return val1 - val2
       })
     }
 
@@ -157,7 +186,9 @@ export class SystasksComponent implements OnInit {
 
   /** Log message with the MessageService */
   private log(message: string) {
-    this.messageService.add('Sys Tasks: ' + message);
+    this.messageService.add('Sys Config: ' + message);
   }
+
+
 
 }
