@@ -57,7 +57,7 @@ export class PieChartComponent implements OnInit {
 
     // Listen for the 'select' event, and call my function selectHandler() when
     // the user selects something on the chart.
-    google.visualization.events.addListener(chart, 'select', selectHandler);
+    this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
     chart.draw(data, this.graphOptions || options);
   }
 
