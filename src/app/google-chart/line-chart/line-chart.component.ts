@@ -12,6 +12,7 @@ export class LineChartComponent implements OnInit {
 
   private gLib: any;
   @Input() graphData: any;
+  @Input() graphOptions: any;
 
   constructor(
     private gChartService : GoogleChartService,
@@ -23,32 +24,17 @@ export class LineChartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.log(`Google Chart Line Chart Init ${JSON.stringify(this.graphData)}`);
+    // this.log(`Google Chart Line Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
   private drawChart(){
-    // let data = this.gLib.visualization.arrayToDataTable([
-    //   ['Year', 'Sales', 'Expenses'],
-    //   ['2004',  1000,      400],
-    //   ['2005',  1170,      460],
-    //   ['2006',  660,       1120],
-    //   ['2007',  1030,      540]
-    // ]);
-    // let options = {'title':'Sales & Expenses',
-    //                 'width': '100%',
-    //                 'height': '100%'};
-    //
-    // let chart = new this.gLib.visualization.LineChart(document.getElementById('divLineChart'));
-    //
-    // chart.draw(data, options);
-
-    this.log(`Google Chart Pie Chart Draw ${this.graphData.length}`);
+    // this.log(`Google Chart Line Chart Draw ${this.graphData.length}`);
     let chart = new this.gLib.visualization.LineChart(document.getElementById('divLineChart'));
     let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let options = {'title':'Audit Activity by Time'};
+    let options = {'title':'Line Chart'};
 
-    chart.draw(data, options);
+    chart.draw(data, this.graphOptions || options);
   }
 
   /** Log a message with the MessageService */

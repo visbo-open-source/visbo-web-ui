@@ -37,20 +37,20 @@
       </select>
       <button type="button" class="btn btn-primary" (click)="getVisboAudits()">Filter</button>
       <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
-      <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="switchChart()">Chart</button>
+      <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="switchChart()">{{chartButton}}</button>
     </div>
   </form>
   <div *ngIf="chart" class='container-fluid'>
     <h3 class='panel-heading'>
       Visbo Chart
-      <div class="row">
-        <div class="col-7">
-          <app-line-chart [graphData]="graphDataLineChart"></app-line-chart>
+      <!-- <div class="row"> -->
+        <div class="col">
+          <app-pie-chart [graphData]="graphData" [graphLegend]="graphLegend" [graphOptions]="graphOptions"></app-pie-chart>
         </div>
-        <div class="col-5">
-          <app-pie-chart [graphData]="graphData" [graphLegend]="graphLegend"></app-pie-chart>
+        <div class="col">
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
         </div>
-      </div>
+      <!-- </div> -->
       <!-- <div class="row">
         <div class="col-12">
           <app-table-chart></app-table-chart>
