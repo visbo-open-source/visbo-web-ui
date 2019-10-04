@@ -68,6 +68,12 @@ export class SysauditComponent implements OnInit {
     };
     graphDataLineChart: any = "Graph Time Data not set";
     graphOptionsLineChart: any = {'title':'Audit Activity by Time'}
+    graphDataColumnChart: any = "Graph VisboCenter Data not set";
+    graphOptionsColumnChart: any = {
+      'title':'Audit Activity by User',
+      'isStacked': true,
+      'hAxis': {'direction':-1, 'slantedText':true, 'slantedTextAngle':45 }
+    }
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -136,6 +142,7 @@ export class SysauditComponent implements OnInit {
             this.sortTable(undefined);
             this.groupGraphData();
             this.groupgraphDataLineChart();
+            this.groupgraphDataColumnChart();
             this.chart = chartFlag;
           },
           error => {
@@ -321,6 +328,48 @@ export class SysauditComponent implements OnInit {
       graphData.push(["Date", "All", "VC", "VP", "VPV"]);
       graphData.reverse();
       this.graphDataLineChart = graphData;
+    }
+
+    groupgraphDataColumnChart() {
+      var graphSum = [];
+      var graphData = [];
+      var auditElement: any;
+      var userString: string, minDateString: string, maxDateString: string;
+      for (auditElement in this.audit) {
+        if (this.audit[auditElement].user && this.audit[auditElement].user.email) {
+          userString = this.audit[auditElement].user.email;
+          if (graphSum[userString] == undefined) graphSum[userString] = [userString, 0, 0, 0, 0, 0, ''];
+          if (this.audit[auditElement].vpv) graphSum[userString][3] = graphSum[userString][3] + 1;
+          else if (this.audit[auditElement].vp) graphSum[userString][2] = graphSum[userString][2] + 1;
+          else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() != this.sysVCId) graphSum[userString][1] = graphSum[userString][1] + 1;
+          else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() == this.sysVCId) graphSum[userString][4] = graphSum[userString][4] + 1;
+          else graphSum[userString][5] = graphSum[userString][5] + 1;
+
+          // this.log(`Group Graph Time Chart Element ${userString}: ${graphSum[userString]}`);
+        }
+      }
+      var graphElement: any;
+      for (graphElement in graphSum) {
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        graphData.push(graphSum[graphElement])
+      }
+
+      graphData.sort(function(a, b) {
+        var result = 0
+        var firstSum = a[1] + a[2] + a[3] + a[4] + a[5];
+        var secondSum = b[1] + b[2] + b[3] + b[4] + b[5];
+        if (firstSum > secondSum)
+          result = -1;
+        else if (firstSum > secondSum)
+          result = 1;
+        return result
+      })
+      graphData.push(['User', 'VC', 'VP', 'VPV', 'System', 'Other', { role: 'annotation' } ]);
+      graphData.reverse();
+      this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[0])}`);
+      this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[1])}`);
+
+      this.graphDataColumnChart = graphData;
     }
 
     helperAuditIndex(auditIndex: number):void {
