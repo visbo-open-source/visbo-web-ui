@@ -54,7 +54,7 @@ then
 fi
 
 echo "04: Compile for Production"
-nice ng build --prod
+ng build --prod
 if [ $? -ne 0 ]
 then
   echo "FATAL: Error during compiling the Visbo UI Branch."
