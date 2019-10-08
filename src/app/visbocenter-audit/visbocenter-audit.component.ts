@@ -120,12 +120,12 @@ export class VisbocenterAuditComponent implements OnInit {
     if (this.auditFrom) {
       queryAudit.from = new Date(this.auditFrom)
     } else {
-      queryAudit.from = new Date(queryAudit.to);
-      queryAudit.from.setDate(queryAudit.from.getDate()-7);
-      queryAudit.from.setHours(0);
-      queryAudit.from.setMinutes(0);
-      queryAudit.from.setSeconds(0);
-      queryAudit.from.setMilliseconds(0);
+      // queryAudit.from = new Date(queryAudit.to);
+      // queryAudit.from.setDate(queryAudit.from.getDate()-7);
+      // queryAudit.from.setHours(0);
+      // queryAudit.from.setMinutes(0);
+      // queryAudit.from.setSeconds(0);
+      // queryAudit.from.setMilliseconds(0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {

@@ -69,6 +69,8 @@ import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
+import { GoogleChartModule } from './google-chart/google-chart.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -110,7 +112,8 @@ import { SysconfigComponent } from './sysconfig/sysconfig.component';
     AppRoutingModule,
     // AngularFontAwesomeModule,
     // MaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    GoogleChartModule
   ],
   providers: [
     AuthGuard,
@@ -131,6 +134,8 @@ import { SysconfigComponent } from './sysconfig/sysconfig.component';
     },
     MessageService
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }
