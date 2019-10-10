@@ -1,10 +1,14 @@
-﻿<div class="col-md-6 col-md-offset-3">
+<div class="col-md-6 col-md-offset-3">
     <h2>Password Reset</h2>
     <form name="form" (ngSubmit)="f.form.valid && pwreset()" #f="ngForm" novalidate>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
-            <label for="password">new Password</label>
-            <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel" required />
-            <div *ngIf="f.submitted && !password.valid" class="help-block">Password is required</div>
+            <label for="password" data-toggle="tooltip" data-placement="top" data-delay='50'
+              title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
+              New Password (*)
+            </label>
+            <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
+            <div *ngIf="!password.valid" class="help-block">New password has to follow the Policy.</div>
+            <div *ngIf="!password.valid" class="help-block">Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.</div>
         </div>
 
         <div class="form-group">

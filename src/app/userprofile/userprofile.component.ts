@@ -7,6 +7,9 @@ import { MessageService } from '../_services/message.service';
 
 import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
+import { AuthenticationService } from '../_services/authentication.service';
+
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-userprofile',
@@ -17,6 +20,9 @@ export class UserProfileComponent implements OnInit {
   user: VisboUser;
   model: any = {};
   modelPw: any = {};
+
+  PWPolicy: string;
+  PWPolicyDescription: string;
   loading = false;
 
   constructor(
@@ -24,12 +30,15 @@ export class UserProfileComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private authenticationService: AuthenticationService,
     //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
+    this.getPWPolicy();
     this.log(`Start init User Get Profile `);
+    this.modelPw = {}
     this.getUserProfile();
   }
 
@@ -109,8 +118,12 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
+  passwordInit(): void {
+    this.modelPw = {}
+  }
+
   passwordChange(): void {
-    this.log(`Password Change ${this.model.email} ${this.modelPw.oldpassword}`);
+    this.log(`Password Change ${this.model.email} Len Old ${this.modelPw.oldpassword.length} New ${this.modelPw.newpassword.length}`);
     var model: any = {};
     model.oldpassword = this.modelPw.oldpassword;
     model.password = this.modelPw.newpassword;
@@ -146,9 +159,24 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
-
   userReset(): void {
     this.getUserProfile();
+  }
+
+  getPWPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success ${JSON.stringify(data)}`);
+          this.PWPolicy = data.PWPolicy
+          this.PWPolicyDescription = data.Description
+
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
   }
 
   /** Log a message with the MessageService */

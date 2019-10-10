@@ -1,31 +1,62 @@
-import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { Component, OnInit, Input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { VisboAudit } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
+import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 import { LoginComponent } from '../login/login.component';
 
+var encodeCSV = function(source: string): string {
+  var result: string;
+  if (!source) return source;
+  result = source.replace(/\t/g, " ");
+  if (result[0] == '='  || result[0] == '+'  || result[0] == '-' ) {
+      result = "'".concat(result)
+  }
+  return result;
+}
+
 @Component({
   selector: 'app-visbocenter-audit',
-  templateUrl: './visbocenter-audit.component.html'
+  templateUrl: './visbocenter-audit.component.html',
+  styleUrls: ['./visbocenter-audit.component.css']
 })
-export class VisboCenterAuditComponent implements OnInit {
+export class VisbocenterAuditComponent implements OnInit {
 
-  // @Input() visbocenter: VisboCenter;
+  @Input() visbocenter: VisboCenter;
+  combinedPerm: any;
   audit: VisboAudit[];
   auditIndex: number;
-  auditFrom: string;
-  auditTo: string;
+  auditFrom: Date;
+  auditTo: Date;
+  auditCount: number;
   auditText: string;
   showMore: boolean;
   sortAscending: boolean;
   sortColumn: number;
+  today: Date;
+  auditType: string;
+  auditTypeAction: string;
+  auditTypeList: any[] = [
+    {name: "All", action: ""},
+    {name: "Read", action: "GET"},
+    {name: "Create", action: "POST"},
+    {name: "Update", action: "PUT"},
+    {name: "Delete", action: "DELETE"}
+  ];
+  auditArea: string;
+  auditAreaAction: string;
+  auditAreaList: any[] = [
+    {name: "All", action: ""},
+    {name: "Visbo Center", action: "vc"},
+    {name: "Visbo Project", action: "vp"}
+  ];
+  sysadmin: boolean;
+  deleted: boolean = false;
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -34,45 +65,88 @@ export class VisboCenterAuditComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
-    // if (!this.auditFrom) this.auditFrom = '01.09.2018';
-    // if (!this.auditTo) this.auditTo = '12.09.2018';
+    this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
+    this.deleted = this.route.snapshot.queryParams['deleted'] == true;
+    const id = this.route.snapshot.paramMap.get('id');
+    this.visbocenterService.getVisboCenter(id, this.sysadmin, this.deleted)
+      .subscribe(
+        visbocenter => {
+          this.visbocenter = visbocenter;
+          this.combinedPerm = visbocenter.perm;
+          this.log(`VisboCenter initialised ${this.visbocenter._id} Perm ${JSON.stringify(this.combinedPerm)} `)
+        },
+        error => {
+          this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status == 403) {
+            this.alertService.error(`Permission Denied`);
+          } else if (error.status == 401) {
+            this.alertService.error(`Session expired, please login again`, true);
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+          } else {
+            this.alertService.error(error.error.message);
+          }
+        }
+      );
+
+    this.auditCount = 50;
+    this.auditType = this.auditTypeList[0].name;
+    this.auditArea = this.auditAreaList[0].name;
+    this.today = new Date();
+    this.today.setHours(0);
+    this.today.setMinutes(0);
+    this.today.setSeconds(0);
+    this.today.setMilliseconds(0);
+
     this.getVisboCenterAudits();
     this.sortTable(undefined);
   }
 
-  // onSelect(visboaudit: VisboAudit): void {
-  //   this.getVisboAudits();
-  // }
-
   getVisboCenterAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
     var currentUser = this.authenticationService.getActiveUser();
-    var from: Date, to: Date;
-    this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo}`);
+    var queryAudit = new QueryAuditType;
+    this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
-    if (this.auditFrom) {
-      from = new Date(this.auditFrom)
-    }
+
     if (this.auditTo) {
-      to = new Date(this.auditTo)
-      to.setDate(to.getDate() + 1)
+      queryAudit.to = new Date(this.auditTo)
+    } else {
+      queryAudit.to = new Date()
     }
-    if (this.auditText) this.auditText = this.auditText.trim();
-    this.log(`Audit getVisboCenterAudits recalc from ${from} to ${to} filter ${this.auditText}`);
-    this.visboauditService.getVisboCenterAudits(id, from, to)
+    if (this.auditFrom) {
+      queryAudit.from = new Date(this.auditFrom)
+    } else {
+      // queryAudit.from = new Date(queryAudit.to);
+      // queryAudit.from.setDate(queryAudit.from.getDate()-7);
+      // queryAudit.from.setHours(0);
+      // queryAudit.from.setMinutes(0);
+      // queryAudit.from.setSeconds(0);
+      // queryAudit.from.setMilliseconds(0);
+    }
+    if (this.auditText) queryAudit.text = this.auditText.trim();
+    for (var i = 0; i < this.auditTypeList.length; i++) {
+      if (this.auditType == this.auditTypeList[i].name) {
+        queryAudit.actionType = this.auditTypeList[i].action;
+        break;
+      }
+    }
+    for (var i = 0; i < this.auditAreaList.length; i++) {
+      if (this.auditArea == this.auditAreaList[i].name) {
+        queryAudit.area = this.auditAreaList[i].action;
+        break;
+      }
+    }
+    queryAudit.maxcount = this.auditCount;
+
+    this.log(`Audit getVisboCenterAudits VC ${id} recalc Query ${JSON.stringify(queryAudit)}`);
+    this.visboauditService.getVisboCenterAudits(id, this.sysadmin, this.deleted, queryAudit)
       .subscribe(
         audit => {
-          this.audit = [];
-          for (var i = 0; i < audit.length; i++){
-            if (!this.auditText || JSON.stringify(audit[i]).toUpperCase().indexOf(this.auditText.toUpperCase()) >= 0 ) {
-              this.audit.push(audit[i])
-            }
-          }
+          this.audit = audit;
           this.sortTable(undefined);
           this.log('get Audit success');
         },
@@ -94,7 +168,9 @@ export class VisboCenterAuditComponent implements OnInit {
     var separator = "\t"
     var lineItem: string
     var userAgent: string
-    data = 'createdAt' + separator
+    data = 'sep=' + separator + '\n'  // to force excel to use the separator
+    data = data + 'date' + separator
+          + 'time UTC' + separator
           + 'email' + separator
           + 'actiondDescription' + separator
           + 'action' + separator
@@ -110,33 +186,49 @@ export class VisboCenterAuditComponent implements OnInit {
           + 'size' + separator
           + 'ip' + separator
           + 'userId' + separator
-          + 'userAgent' +'\n';
+          + 'userAgent' + separator
+          + 'ttl' + separator
+          + 'VC Details' + separator
+          + 'VP Details' + '\n';
+    var createdAt;
     for (var i = 0; i < this.audit.length; i++) {
-      userAgent = this.audit[i].userAgent.replace(/,/g, ";");
-      lineItem = this.audit[i].createdAt + separator
-                  + this.audit[i].user.email + separator
-                  + this.audit[i].actionDescription + separator
+      createdAt = new Date(this.audit[i].createdAt).toISOString();
+      userAgent = (this.audit[i].userAgent|| '').replace(/,/g, ";");
+      lineItem = createdAt.substr(0, 10) + separator
+                  + createdAt.substr(11, 8) + separator
+                  + encodeCSV(this.audit[i].user.email) + separator
+                  + encodeCSV(this.audit[i].actionDescription) + separator
                   + this.audit[i].action + separator
                   + this.audit[i].url + separator
                   + this.audit[i].actionInfo + separator
                   + (this.audit[i].result ? this.audit[i].result.time : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.status : '') + separator
                   + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
-                  + (this.audit[i].vc ? this.audit[i].vc.name : '') + separator
+                  + (this.audit[i].vc ? encodeCSV(this.audit[i].vc.name) : '') + separator
                   + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
-                  + (this.audit[i].vp ? this.audit[i].vp.name : '') + separator
+                  + (this.audit[i].vp ? encodeCSV(this.audit[i].vp.name) : '') + separator
                   + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
                   + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
                   + this.audit[i].ip + separator
                   + this.audit[i].user.userId + separator
-                  + userAgent + '\n';
+                  + encodeCSV(userAgent) + separator
+                  + (this.audit[i].ttl || '') + separator
+                  + (this.audit[i].vc ? (encodeCSV(this.audit[i].vc.vcjson) || '') : '') + separator
+                  + (this.audit[i].vp ? (encodeCSV(this.audit[i].vp.vpjson) || '') : '') + '\n';
       data = data.concat(lineItem)
     }
-    this.log(`sysAudit CSV Len ${data.length} `);
+    this.log(`VC Audit CSV Len ${data.length} `);
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    window.open(url);
+    var fileName = `auditlog-VC.csv`
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName;
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   helperAuditIndex(auditIndex: number):void {
@@ -161,20 +253,23 @@ export class VisboCenterAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex
   }
 
-  helperResponseText(status: number): string {
-    if (status == 200) return "Success"
-    if (status == 304) return "Success"
-    if (status == 400) return "Bad Request"
-    if (status == 401) return "Not Authenticated"
-    if (status == 403) return "Permission Denied"
-    if (status == 404) return "URL not found"
-    if (status == 409) return "Conflict"
-    if (status == 500) return "Server Error"
+  helperResponseText(visboaudit: VisboAudit): string {
+    if (visboaudit.result.statusText) return visboaudit.result.statusText;
+    var status = visboaudit.result.status
+    if (status == "200") return "Success"
+    if (status == "304") return "Success"
+    if (status == "400") return "Bad Request"
+    if (status == "401") return "Not Authenticated"
+    if (status == "403") return "Permission Denied"
+    if (status == "404") return "URL not found"
+    if (status == "409") return "Conflict"
+    if (status == "423") return "Locked"
+    if (status == "500") return "Server Error"
     return status.toString()
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len)
+    if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
   }
@@ -182,6 +277,11 @@ export class VisboCenterAuditComponent implements OnInit {
   toggleDetail() {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
+  }
+
+  isToday(checkDate: string): Boolean {
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return new Date(checkDate) > this.today
   }
 
   sortTable(n) {
@@ -269,7 +369,7 @@ export class VisboCenterAuditComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VC Audit: ' + message);
   }

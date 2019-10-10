@@ -18,7 +18,6 @@ export class VisboCentersComponent implements OnInit {
 
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
-  vcIsSysAdmin: string;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -165,7 +164,7 @@ export class VisboCentersComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter: ' + message);
   }

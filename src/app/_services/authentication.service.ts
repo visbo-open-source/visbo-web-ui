@@ -5,8 +5,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse, VisboStatusPWPolicyResponse } from '../_models/login';
 import { MessageService } from './message.service';
+
+import * as JWT from 'jwt-decode';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -16,12 +18,25 @@ const httpOptions = {
 export class AuthenticationService {
 
   isLoggedIn: boolean = false;
+  logoutTime: Date = undefined;
+  pwPolicy: any = undefined;
+
   constructor(
       private http: HttpClient,
+      // private store: Store<AuthState>,
       private messageService: MessageService
     ) { }
 
     private authUrl = environment.restUrl.concat('/token/user');  // URL to web api
+
+    logoutCheck() {
+
+      if (!this.isLoggedIn) return undefined;
+      // this.log(`Logout Check ${this.logoutTime}`);
+
+      return this.logoutTime;
+    }
+
 
     login(username: string, password: string) {
       const url = `${this.authUrl}/login`;
@@ -34,13 +49,18 @@ export class AuthenticationService {
             .pipe(
               map(result => {
                 // login successful if there's a jwt token in the response
-                this.log(`Login Request Successful:  ${result.user.email}`);
                 if (result && result.token) {
                     this.log(`Login Request Successful:  ${result.user.email}`);
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
                     sessionStorage.setItem('currentUser', JSON.stringify(result.user));
                     sessionStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
+                    var decoded: any;
+                    decoded = JWT(result.token)
+                    // this.log(`Login token expiration:  ${decoded.exp}`);
+                    this.logoutTime = new Date(decoded.exp * 1000);
+                    this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+
                     return result.user;
                 };
                 return null;
@@ -55,7 +75,6 @@ export class AuthenticationService {
 
         sessionStorage.removeItem('currentUser');
         sessionStorage.removeItem('currentToken');
-        sessionStorage.removeItem('isSysAdmin');
 
     }
 
@@ -169,6 +188,24 @@ export class AuthenticationService {
         );
     }
 
+    initPWPolicy(): Observable<any> {
+      const url = environment.restUrl.concat('/status/pwpolicy');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
+        .pipe(
+          map(response => {
+              this.pwPolicy = response.value;
+              return response.value
+            }),
+          tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
+          catchError(this.handleError('initPWPolicy', []))
+        );
+    }
+
+    getPWPolicy(){
+      return this.pwPolicy;
+    }
+
     /**
      * Handle Http operation that failed.
      * Let the app continue.
@@ -178,8 +215,8 @@ export class AuthenticationService {
     private handleError<T> (operation = 'operation', result?: T) {
       return (error: any): Observable<T> => {
 
-        // TODO: send the error to remote logging infrastructure
-        this.log(`${operation} failed: ${error.status}, ${error.statusText}, ${error.message}`);
+        // OPTIONAL send the error to remote logging infrastructure
+        this.log(`${operation} failed: ${JSON.stringify(error)} Status: ${error.status}, StatusText: ${error.statusText}, Message: ${error.message}`);
 
         // Let the app keep running by returning an empty result.
         return throwError(error);
@@ -188,7 +225,7 @@ export class AuthenticationService {
       };
     }
 
-    /** Log AuthenticationService message with the MessageService */
+    /** Log a message with the MessageService */
     private log(message: string) {
       this.messageService.add('AuthenticationService: ' + message);
     }

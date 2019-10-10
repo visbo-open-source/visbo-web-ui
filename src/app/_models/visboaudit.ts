@@ -25,10 +25,14 @@ export class VisboAudit {
   actionInfo: string;
   url: string;
   ip: string;
+  host: string;
+  ttl: Date;
+  sysAdmin: boolean;
   userAgent: string;
   result: {
     time: number;
     status: string;
+    statusText: string;
     size: number;
   }
 }
@@ -37,4 +41,18 @@ export class VisboAuditResponse {
   state: string;
   message: string;
   audit: [ VisboAudit ]
+}
+
+export class VisboAuditActionType {
+  "name": string;
+  "action": string
+}
+
+export class QueryAuditType {
+  "from": Date;
+  "to": Date;
+  "text": string;
+  "actionType": string;
+  "area": string;
+  "maxcount": number;
 }

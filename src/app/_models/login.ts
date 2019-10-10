@@ -29,7 +29,7 @@ export class VisboUserStatus {
 export class VisboUser {
   _id: string;
   updatedAt: string;
-  createdAT: string;
+  createdAt: string;
   email: string;
   password: string;
   name: string;
@@ -61,4 +61,13 @@ export class VisboStatusResponse {
   state: string;
   message: string;
   status: {version: string}
+}
+
+export class VisboStatusPWPolicyResponse {
+  state: string;
+  message: string;
+  value: {
+    PWPolicy: string,
+    Description: string
+  }
 }

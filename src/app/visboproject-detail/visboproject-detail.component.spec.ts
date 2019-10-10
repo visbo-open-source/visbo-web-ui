@@ -1,20 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VisboProjectDetailComponent } from './visboproject-detail.component';
+import { VisboprojectDetailComponent } from './visboproject-detail.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 
-describe('VisboProjectDetailComponent', () => {
-  let component: VisboProjectDetailComponent;
-  let fixture: ComponentFixture<VisboProjectDetailComponent>;
+describe('VisboprojectDetailComponent', () => {
+  let component: VisboprojectDetailComponent;
+  let fixture: ComponentFixture<VisboprojectDetailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisboProjectDetailComponent ]
+      declarations: [
+        VisboprojectDetailComponent,
+        NavbarComponent
+      ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboProjectDetailComponent);
+    fixture = TestBed.createComponent(VisboprojectDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

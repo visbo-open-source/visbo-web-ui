@@ -6,12 +6,15 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
 @Component({
   selector: 'visbo-navbar',
   templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
-  isSysAdmin: string = undefined;
+  combinedPerm: VGPermission = undefined;
+  permSystem: any = VGPSystem;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,8 +28,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.isSysAdmin = this.visbocenterService.getSysAdminRole();
-    this.log(`Navbar Init Sys Role ${this.isSysAdmin}`)
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
+    this.log(`Navbar Init Sys Role ${JSON.stringify(this.combinedPerm)} View ${this.permSystem.View}`)
   }
 
   gotoClickedItem(action: string):void {
@@ -34,7 +37,11 @@ export class NavbarComponent implements OnInit {
     this.router.navigate([action]);
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  hasSystemPerm(perm: number): boolean {
+    return (this.combinedPerm.system & perm) > 0
+  }
+
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('NavBar: ' + message);
   }

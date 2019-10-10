@@ -1,0 +1,105 @@
+<sysvisbo-navbar></sysvisbo-navbar>
+<div class='well'>
+  <div class="container">
+    <div class='row'>
+      <div class='col'>
+        <h2 class='panel-heading'>
+          Visbo Task System View
+        </h2>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm btn-primary" (click)="getVisboTasks()">
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(2)">Last Run</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(3)">Next Run</th>
+              <th (click)="sortTable(4)">Last Result</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <tr *ngFor="let entry of vcsetting; let settingIndex=index" (click)='helperTaskIndex(settingIndex)' data-toggle="modal" data-target="#TaskDetail">
+              <td>{{entry.name }}</td>
+              <td class="d-none d-md-table-cell">{{entry.value.lastRun | date :'dd.MM HH:mm:ss' }}</td>
+              <td class="d-none d-md-table-cell">{{entry.value.nextRun | date :'dd.MM HH:mm:ss' }}</td>
+              <td>{{entry.value.taskSpecific && entry.value.taskSpecific.result }}</td>
+              <td>
+                <button class="Detail" title="detail">i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="TaskDetail" tabindex="-1" role="dialog" aria-labelledby="Task Detail" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="taskIndex >= 0 && taskIndex < vcsetting.length">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="TaskDetailTitle">Detail of Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-10">
+            <button type="button" class="btn btn-secondary" title="Prev Task" (click)='pageTaskIndex(-1)'>Prev</button>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-secondary align-self-end" title="Next Task" (click)='pageTaskIndex(1)'>Next</button>
+          </div>
+        </div>
+        <form>
+          <div class="form-group">
+            <label class="col-4 col-form-label">Task:</label>
+            <label class="col-7 form-control-static">{{ vcsetting[taskIndex].name }} </label>
+          </div>
+          <div *ngIf="vcsetting[taskIndex].value">
+            <div class="form-group">
+              <label class="col-4 col-form-label">Last Run:</label>
+              <label class="col-7 form-control-static">{{ vcsetting[taskIndex].value.lastRun | date :'dd.MM HH:mm:ss' }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-4 col-form-label">Next Run:</label>
+              <label class="col-7 form-control-static">{{ vcsetting[taskIndex].value.nextRun | date :'dd.MM HH:mm:ss' }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-4 col-form-label">Last Duration:</label>
+              <label class="col-7 form-control-static">{{ vcsetting[taskIndex].value.lastDuration | date :'mm:ss:SSS' }}</label>
+            </div>
+            <div *ngIf="vcsetting[taskIndex].value.taskSpecific">
+              <div class="form-group">
+                <label class="col-4 col-form-label">Result:</label>
+                <label class="col-7 form-control-static">{{ vcsetting[taskIndex].value.taskSpecific.result }}</label>
+              </div>
+              <div class="form-group">
+                <label class="col-4 col-form-label">Message:</label>
+                <label class="col-7 form-control-static">{{ vcsetting[taskIndex].value.taskSpecific.resultDescription }}</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="executeTask()" data-dismiss="modal">Execute</button>
+      </div>
+    </div>
+  </div>
+</div>

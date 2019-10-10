@@ -1,9 +1,6 @@
-export class VPUser {
-  _id: string;
-  email: string;
-  role: string;
-  userId: string;
-}
+export enum VPTYPE {
+    "Project" = 0, "Portfolio" = 1, "Template" = 2
+};
 
 export class VPVariant {
   _id: string;
@@ -20,16 +17,10 @@ export class VPLock {
   expiresAt: Date;
 }
 
-export class VPUserResponse {
-  state: string;
-  message: string;
-  users: [ VPUser ]
-}
-
 export class VisboProject {
   _id: string;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: Date;
+  createdAt: Date;
   vcid: string;
   name: string;
   description: string;
@@ -38,14 +29,23 @@ export class VisboProject {
   vpvCount: number;
   variant: [VPVariant];
   lock: [VPLock];
-  users: [ VPUser ];
   vc: {
     name: string;
+    deletedAt: Date;
   }
+  perm: {system: number, vc: number, vp: number};
+  deletedAt: Date;
 }
 
 export class VisboProjectResponse {
   state: string;
   message: string;
-  vp: [ VisboProject ]
+  vp: [ VisboProject ];
+  perm: {system: number, vc: number, vp: number};
+}
+
+export class VisboProjectLockResponse {
+  state: string;
+  message: string;
+  lock: [VPLock];
 }

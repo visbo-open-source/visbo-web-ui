@@ -9,8 +9,9 @@ import { AlertService } from './_services/alert.service';
 })
 export class AppComponent implements OnInit {
   title = 'Your Projects served with Visbo ';
-  version = '1.0';
-  restVersionString = undefined;
+  version = '1.2';
+  restVersionString = 'V undefined';
+  restUIVersionString = 'V undefined';
 
   constructor(
     private messageService: MessageService,
@@ -20,15 +21,17 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.restVersion();
+    // this.pwPolicy();
   }
 
   restVersion() {
-    if (this.restVersionString) return;
     this.authenticationService.restVersion()
       .subscribe(
         data => {
-          this.restVersionString = data.version;
-          this.log(`Version Status check success ${this.restVersionString}`);
+          this.log(`Version Status check result ${JSON.stringify(data)}`);
+          if (data.version) this.restVersionString = data.version;
+          if (data.versionUI) this.restUIVersionString = data.versionUI;
+          this.log(`Version Status check success ${data.version}/${this.restVersionString} UI ${data.versionUI}/${this.restUIVersionString}`);
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
@@ -37,7 +40,20 @@ export class AppComponent implements OnInit {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  pwPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success`);
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
+  }
+
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('App: ' + message);
   }

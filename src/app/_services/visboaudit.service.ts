@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import { VisboAudit, VisboAuditResponse } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditResponse, QueryAuditType } from '../_models/visboaudit';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -18,7 +18,6 @@ const httpOptions = {
 @Injectable()
 export class VisboAuditService {
   private serviceBaseUrl = environment.restUrl;  // URL to api on same server
-  private serviceUrl = this.serviceBaseUrl.concat('/audit');  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -27,24 +26,23 @@ export class VisboAuditService {
 
 
   /** GET Audits from the server */
-  getVisboAudits(sysadmin: boolean = false, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
-    var url = this.serviceUrl
-    var queryParams = false
-    if (sysadmin) {
-      url = url.concat(queryParams?'&':'?','sysadmin=1');
-      queryParams = true;
-    }
-    if (from) {
-      url = url.concat(queryParams?'&':'?','from=', from.toISOString());
-      queryParams = true;
-    }
-    if (to) {
-      url = url.concat(queryParams?'&':'?','to=', to.toISOString());
-      queryParams = true;
+  getVisboAudits(sysadmin: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
+    var url = this.serviceBaseUrl.concat('/audit');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (queryAudit) {
+      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
+      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
+      if (queryAudit.text) params = params.append('text', queryAudit.text);
+      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
+      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
     }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
-    return this.http.get<VisboAuditResponse>(url, httpOptions)
+    return this.http.get<VisboAuditResponse>(url, { headers , params })
       .pipe(
         map(response => response.audit),
         tap(audit => this.log(`fetched ${audit.length} Audits `)),
@@ -52,21 +50,25 @@ export class VisboAuditService {
       );
   }
 
-  /** GET Audits from the server */
-  getVisboCenterAudits(vcid: string, from: Date = undefined, to: Date = undefined): Observable<VisboAudit[]> {
+  /** GET VC Audits from the server */
+  getVisboCenterAudits(vcid: string, sysadmin: boolean = false, deleted: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
     var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
-    var queryParams = false
-    if (from) {
-      url = url.concat(queryParams?'&':'?','from=', from.toISOString());
-      queryParams = true;
-    }
-    if (to) {
-      url = url.concat(queryParams?'&':'?','to=', to.toISOString());
-      queryParams = true;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
+    if (queryAudit) {
+      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
+      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
+      if (queryAudit.text) params = params.append('text', queryAudit.text);
+      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
+      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
     }
 
     this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
-    return this.http.get<VisboAuditResponse>(url, httpOptions)
+    return this.http.get<VisboAuditResponse>(url, { headers , params })
       .pipe(
         map(response => response.audit),
         tap(audit => this.log(`fetched ${audit.length} Audits `)),
@@ -74,32 +76,31 @@ export class VisboAuditService {
       );
   }
 
-  // /** GET Audit by id. Return `undefined` when id not found */
-  // /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  // getVisboAuditNo404<Data>(id: string): Observable<VisboAudit> {
-  //   const url = `${this.serviceUrl}/?id=${id}`;
-  //   this.log(`Calling HTTP Request: ${this.serviceUrl}`);
-  //   return this.http.get<VisboAudit[]>(url)
-  //     .pipe(
-  //       map(audit => audit[0]), // returns a {0|1} element array
-  //       tap(h => {
-  //         var outcome = h ? `fetched` : `did not find`;
-  //         this.log(`${outcome} VisboAudit ${id}`);
-  //       }),
-  //       catchError(this.handleError<VisboAudit>(`getVisboAudit id: ${id}`))
-  //     );
-  // }
+  /** GET VP Audits from the server */
+  getVisboProjectAudits(vpid: string, sysadmin: boolean = false, deleted: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
+    var url = this.serviceBaseUrl.concat('/vp/', vpid,'/audit');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
 
-  // /** GET Audit by id. Will 404 if id not found */
-  // getVisboAudit(id: string, sysadmin: boolean = false): Observable<VisboAudit> {
-  //   var url = `${this.serviceUrl}/${id}`;
-  //   this.log(`Calling HTTP Request for a specific entry: ${url}`);
-  //   return this.http.get<VisboAuditResponse>(url).pipe(
-  //     map(response => response.audit[0]),
-  //     tap(audit => this.log(`fetched Audit ${audit._id}`)),
-  //     catchError(this.handleError<VisboAudit>(`getVisboAudit id:${id}`))
-  //   );
-  // }
+    if (sysadmin) params = params.append('sysadmin', '1');
+    if (deleted) params = params.append('deleted', '1');
+    if (queryAudit) {
+      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
+      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
+      if (queryAudit.text) params = params.append('text', queryAudit.text);
+      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
+      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
+      if (queryAudit.area) params = params.append('area', queryAudit.area);
+  }
+
+    this.log(`Calling HTTP Request: ${url} for VP ${vpid}`);
+    return this.http.get<VisboAuditResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.audit),
+        tap(audit => this.log(`fetched ${audit.length} Audits `)),
+        catchError(this.handleError('getVisboAudit', []))
+      );
+  }
 
   /**
    * Handle Http operation that failed.
@@ -118,7 +119,7 @@ export class VisboAuditService {
     };
   }
 
-  /** Log a VisboAuditService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboAuditService: ' + message);
   }

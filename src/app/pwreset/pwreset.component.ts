@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
@@ -8,15 +8,20 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
-@Component({
-  selector: 'visbo-pwreset',
-  templateUrl: 'pwreset.component.html'
-})
+import { environment } from '../../environments/environment';
 
-export class PWResetComponent {
+@Component({
+  selector: 'app-pwreset',
+  templateUrl: './pwreset.component.html',
+  styleUrls: ['./pwreset.component.css']
+})
+export class PwresetComponent implements OnInit {
   model: any = {};
+
   loading = false;
   token = '';
+  PWPolicy: string;
+  PWPolicyDescription: string;
 
   constructor(
     private messageService: MessageService,
@@ -26,6 +31,7 @@ export class PWResetComponent {
     private alertService: AlertService) { }
 
   ngOnInit(){
+    this.getPWPolicy();
     this.token = this.route.snapshot.queryParams.token
     this.log(`Init PW Reset Token ${this.token}`);
   }
@@ -48,7 +54,23 @@ export class PWResetComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  getPWPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success ${JSON.stringify(data)}`);
+          this.PWPolicy = data.PWPolicy
+          this.PWPolicyDescription = data.Description
+
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
+  }
+
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('PW Reset: ' + message);
   }

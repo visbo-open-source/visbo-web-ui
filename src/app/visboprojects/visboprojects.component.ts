@@ -7,11 +7,12 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService }  from '../_services/visbocenter.service';
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { LoginComponent } from '../login/login.component';
 
@@ -24,9 +25,13 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
-  vcIsAdmin: boolean;
+  deleted: boolean = false;
   sortAscending: boolean;
   sortColumn: number;
+
+  combinedPerm: VGPermission = undefined;
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -40,15 +45,40 @@ export class VisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // console.log("Init VisboProjects");
-    this.getVisboProjects();
+    this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
+    this.log(`Init VP Deleted: ${this.deleted}`)
+    this.getVisboProjects(this.deleted);
   }
 
   onSelect(visboproject: VisboProject): void {
-    this.getVisboProjects();
+    this.getVisboProjects(this.deleted);
   }
 
-  getVisboProjects(): void {
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vp & perm) > 0
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm == undefined) return false
+    return (this.combinedPerm.vc & perm) > 0
+  }
+
+  getVPType(vpType: number): string {
+    return VPTYPE[vpType];
+  }
+
+  toggleVisboProjects(): void {
+    this.deleted = !this.deleted
+    var url = this.route.snapshot.url.join('/')
+    this.log(`VP toggleVisboProjects ${this.deleted} URL ${url}`);
+    this.getVisboProjects(this.deleted);
+    // MS TODO: go to the current url and add delete flag
+    this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
+  getVisboProjects(deleted: boolean): void {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     var currentUser = this.authenticationService.getActiveUser();
@@ -59,9 +89,8 @@ export class VisboProjectsComponent implements OnInit {
         .subscribe(
           visbocenters => {
             this.vcActive = visbocenters;
-            this.vcIsAdmin = this.vcActive.users.find(user => user.email == currentUser.email && user.role == 'Admin') ? true : false;
-            this.log(`User is Admin? ${this.vcIsAdmin}`)
-            this.visboprojectService.getVisboProjects(id)
+            this.combinedPerm = visbocenters.perm;
+            this.visboprojectService.getVisboProjects(id, false, deleted)
               .subscribe(
                 visboprojects => {
                   this.visboprojects = visboprojects;
@@ -92,7 +121,7 @@ export class VisboProjectsComponent implements OnInit {
     } else {
       this.vcSelected = null;
       this.vcActive = null;
-      this.visboprojectService.getVisboProjects(null)
+      this.visboprojectService.getVisboProjects(null, false, deleted)
         .subscribe(
           visboprojects => {
             this.visboprojects = visboprojects;
@@ -112,11 +141,11 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  addproject(name: string, vcid: string, desc: string, vpPublic: boolean): void {
+  addproject(name: string, vcid: string, desc: string): void {
     name = name.trim();
-    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} Public ${vpPublic}`);
+    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} `);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject).subscribe(
+    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid } as VisboProject).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
@@ -159,15 +188,18 @@ export class VisboProjectsComponent implements OnInit {
       );
   }
 
+  // get the versions of the project
   gotoClickedRow(visboproject: VisboProject):void {
-    // console.log("clicked row %s", visboproject.name);
-    this.log(`goto VPV for VP ${visboproject.name}`);
-    this.router.navigate(['vpv/'.concat(visboproject._id)]);
+    var deleted = visboproject.deletedAt ? true : false;
+    this.log(`goto VPV for VP ${visboproject._id} Deleted ${deleted}`);
+    this.router.navigate(['vpv/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
+  // get the details of the project
   gotoDetail(visboproject: VisboProject):void {
-    this.log(`goto Detail for VP ${visboproject.name}`);
-    this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
+    var deleted = visboproject.deletedAt ? true : false;
+    this.log(`goto Detail for VP ${visboproject._id}`);
+    this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   gotoVCDetail(visbocenter: VisboCenter):void {
@@ -223,13 +255,12 @@ export class VisboProjectsComponent implements OnInit {
     } else if (this.sortColumn == 4) {
       // sort by VC vpvCount
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.vpvCount > b.vpvCount)
-          result = 1;
-        else if (a.vpvCount < b.vpvCount)
-          result = -1;
-        return result
+        return a.vpvCount - b.vpvCount
+      })
+    } else if (this.sortColumn == 5) {
+      // sort by VP vpType
+      this.visboprojects.sort(function(a, b) {
+        return a.vpType - b.vpType
       })
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
@@ -239,7 +270,7 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProject: ' + message);
   }

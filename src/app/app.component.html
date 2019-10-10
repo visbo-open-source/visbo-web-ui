@@ -7,27 +7,30 @@
     <div class="container-fluid">
         <alert></alert>
         <router-outlet></router-outlet>
-    <!-- </div> -->
   </div>
 </div>
 <div class="col-12 bg-light text-dark">
-  Copyright 2018 © <a href="https://visbo.de/" class="text-secondary">Visbo GmbH</a>,
+  Copyright 2019 © <a href="https://visbo.de/" class="text-secondary">Visbo GmbH</a>,
   <a data-toggle="modal" data-target="#versionModal" >Visbo Visual Board {{version}}</a>
   <div class="row">
     <div class="col">
       <a href="mailto:support@visbo.de" >Support</a>
     </div>
     <div class="col">
-      <a href="https://visbo.de/impressum">Impressum</a>
+      <a href="https://visbo.de/impressum" target="_blank">Impressum</a>
     </div>
     <div class="col">
-      <a href="https://visbo.de/events">Events</a>
+      <a href="https://visbo.de/visbo-terms-conditions" target="_blank">Terms of Use</a>
     </div>
+    <div class="col">
+      <a href="https://visbo.de/visbo-data-protection/" target="_blank">Data Protection</a>
+    </div>
+  </div>
 </div>
-</div>
+<app-logouttimer></app-logouttimer>
 <app-messages></app-messages>
 
-<!-- Modal Add VP User -->
+<!-- Modal Version Info -->
 <div class="modal fade" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="versionModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -39,8 +42,12 @@
       </div>
       <div class="modal-body">
         <div class="form-group row">
-          <label for="restServer" class="col-4 col-md-3 col-form-label">Server Version:</label>
+          <label for="restServer" class="col-4 col-form-label">Server Version:</label>
           <label class="col-8 form-control-static">{{ restVersionString }} </label>
+        </div>
+        <div class="form-group row">
+          <label for="restUIServer" class="col-4 col-form-label">UI Version:</label>
+          <label class="col-8 form-control-static">{{ restUIVersionString }} </label>
         </div>
       </div>
     </div>

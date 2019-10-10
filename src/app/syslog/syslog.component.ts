@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
@@ -10,7 +9,9 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { LoginComponent } from '../login/login.component';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { VisboLogLevel, VisboLogLevelResponse } from '../_models/syslog';
+import { VisboSettingService } from '../_services/visbosetting.service';
+
+import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
 @Component({
   selector: 'app-syslog',
@@ -20,30 +21,32 @@ export class SysLogComponent implements OnInit {
 
   files: VisboFile[];
   fileIndex: number;
+  ageDays: number
   logDataShow: boolean;
   logData: string;
-  vcIsSysAdmin: string;
-  logLevelConfig: VisboLogLevel;
-
+  logLevelSetting: VisboSetting;
+  systemVC: number;
 
   sortAscending: boolean;
   sortColumn: number;
 
   constructor(
     private visbocenterService: VisboCenterService,
+    private visbosettingService: VisboSettingService,
     private syslogService: SysLogService,
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
-    private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.vcIsSysAdmin = this.visbocenterService.getSysAdminRole()
+    this.systemVC = this.visbocenterService.getSysVCId();
+    this.ageDays = 3;
+    this.sortColumn = 2;
+
     this.getVisboLogs();
     this.sortTable(1);
+    this.log(`syslog init VC ID ${this.systemVC}`);
   }
 
   // onSelect(visboaudit: VisboAudit): void {
@@ -52,11 +55,12 @@ export class SysLogComponent implements OnInit {
 
   getVisboLogs(): void {
     this.log(`syslog getVisboLogs`);
-    this.syslogService.getSysLogs()
+    this.sortAscending = !this.sortAscending;
+    this.syslogService.getSysLogs(this.ageDays)
       .subscribe(
         files => {
           this.files = files;
-          this.sortTable(2);
+          this.sortTable(this.sortColumn);
           this.log('get Logs success');
         },
         error => {
@@ -81,11 +85,11 @@ export class SysLogComponent implements OnInit {
 
   getVisboLogFile(file: VisboFile): void {
     this.log(`syslog getVisboLogFile`);
-    this.syslogService.getSysLog(file.name)
+    this.syslogService.getSysLog(file.folder, file.name)
       .subscribe(
         data => {
           this.log(`get Log Content success Start:${data.substring(0,30)}`);
-          this.downloadFile(data)
+          this.downloadFile(data, file.name)
         },
         error => {
           this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
@@ -101,11 +105,11 @@ export class SysLogComponent implements OnInit {
 
   getLogLevel(): void {
     this.log(`syslog getLogLevel`);
-    this.syslogService.getSysLogLevel()
+    this.visbosettingService.getVCSettingByName(this.systemVC, 'DEBUG', true)
       .subscribe(
-        data => {
-          this.log(`get Log Level success ${JSON.stringify(data)}`);
-          this.logLevelConfig = data;
+        vcsetting => {
+          this.logLevelSetting = vcsetting[0];
+          this.log(`get Log Level success ${JSON.stringify(this.logLevelSetting)}`);
         },
         error => {
           this.log(`get Log Level failed: error: ${error.status} message: ${error.error.message}`);
@@ -119,13 +123,14 @@ export class SysLogComponent implements OnInit {
       );
   }
 
-  setLogLevel(newLogLevel: VisboLogLevel): void {
+  setLogLevel(): void {
     this.log(`syslog setLogLevel`);
-    this.syslogService.setSysLogLevel(newLogLevel)
+    this.visbosettingService.updateVCSetting(this.systemVC, this.logLevelSetting, true)
       .subscribe(
         data => {
           this.log(`set Log Level success ${JSON.stringify(data)}`);
-          this.logLevelConfig = data;
+          this.alertService.success('Successfully changed Log Level', true);
+          this.logLevelSetting = data;
         },
         error => {
           this.log(`set Log Level failed: error: ${error.status} message: ${error.error.message}`);
@@ -139,12 +144,17 @@ export class SysLogComponent implements OnInit {
       );
   }
 
-  downloadFile(data: string):void {
+  downloadFile(data: string, fileName: string):void {
     this.log(`download File succeeded Len: ${data.length}`);
     var blob = new Blob([data], { type: 'text/plain' });
     var url= window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    window.open(url);
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName + '.log';
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   formatBytes(size,precision) {

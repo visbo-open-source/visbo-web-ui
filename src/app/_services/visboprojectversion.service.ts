@@ -32,15 +32,15 @@ export class VisboProjectVersionService {
     private authenticationService: AuthenticationService ) { }
 
 
-  /** GET VisboProjectVersions from the server if id is specified get only projects of this vcid*/
-  getVisboProjectVersions(id: string): Observable<VisboProjectVersion[]> {
+  /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
+  getVisboProjectVersions(id: string, deleted: boolean = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (id) {
-      params = params.append('vpid', id);
-    }
-    // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    if (id) params = params.append('vpid', id);
+    if (deleted) params = params.append('deleted', '1');
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(this.vpvUrl, { headers , params })
       .pipe(
         map(response => response.vpv),
@@ -50,30 +50,38 @@ export class VisboProjectVersionService {
   }
 
   /** GET VisboProjectVersion by id. Return `undefined` when id not found */
-  /** MS Todo Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
-    const url = `${this.vpvUrl}/?id=${id}`;
-    this.log(`Calling HTTP Request: ${this.vpvUrl}`);
-    return this.http.get<VisboProjectVersion[]>(url)
-      .pipe(
-        map(visboprojects => visboprojects[0]), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} VisboProjectVersion id=${id}`);
-        }),
-        catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
-      );
-  }
+  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
+  // getVisboProjectVersionNo404<Data>(id: string): Observable<VisboProjectVersion> {
+  //   const url = `${this.vpvUrl}/?id=${id}`;
+  //   this.log(`Calling HTTP Request: ${this.vpvUrl}`);
+  //   return this.http.get<VisboProjectVersion[]>(url)
+  //     .pipe(
+  //       map(visboprojects => visboprojects[0]), // returns a {0|1} element array
+  //       tap(h => {
+  //         const outcome = h ? `fetched` : `did not find`;
+  //         this.log(`${outcome} VisboProjectVersion id=${id}`);
+  //       }),
+  //       catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
+  //     );
+  // }
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
-  getVisboProjectVersion(id: string): Observable<VisboProjectVersion> {
-    const url = `${this.vpvUrl}/${id}`;
-    this.log(`Calling HTTP Request for a specific entry: ${url}`);
-    return this.http.get<VisboProjectVersionResponse>(url).pipe(
-      map(response => response.vpv[0]),
-      // tap(visboprojectversion => this.log(`fetched vpv id=${id} ${JSON.stringify(visboprojectversion)}`)),
-      catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
-    );
+  getVisboProjectVersion(id: string, deleted: boolean = false): Observable<VisboProjectVersion> {
+    const url = `${this.vpvUrl}/${id}`; 
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) params = params.append('deleted', '1');
+    this.log(`Calling HTTP Request for a specific entry: ${url} Params ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+                  // TODO: is there a better way to transfer the perm?
+                  response.vpv[0].perm = response.perm;
+                  return response.vpv[0]
+                }),
+        tap(visboprojectversion => this.log(`fetched Specific Version `)),
+        catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
+      );
   }
 
   /* GET VisboProjectVersions whose name contains search term */
@@ -103,23 +111,29 @@ export class VisboProjectVersionService {
   }
 
   /** DELETE: delete the Visbo Project from the server */
-  deleteVisboProjectVersion (visboprojectversion: VisboProjectVersion): Observable<VisboProjectVersion> {
+  deleteVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<VisboProjectVersion> {
     //const id = typeof visboprojectversion === 'number' ? visboprojectversion : visboprojectversion._id;
     const id = visboprojectversion._id;
     const url = `${this.vpvUrl}/${id}`;
-    this.log(`Calling HTTP Request: ${url} `);
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) params = params.append('deleted', '1');
+    this.log(`Calling HTTP Request Delete: ${url} Params ${params}`);
 
-    return this.http.delete<VisboProjectVersion>(url, httpOptions).pipe(
+    return this.http.delete<VisboProjectVersion>(url, { headers , params }).pipe(
       tap(_ => this.log(`deleted VisboProjectVersion id=${id}`)),
-      catchError(this.handleError<VisboProjectVersion>('deleteVisboProject'))
+      catchError(this.handleError<VisboProjectVersion>('deleteVisboProjectVersion'))
     );
   }
 
   /** PUT: update the Visbo Project on the server */
-  updateVisboProject (visboprojectversion: VisboProjectVersion): Observable<any> {
+  updateVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<any> {
     const url = `${this.vpvUrl}/${visboprojectversion._id}`;
-    this.log(`Calling HTTP Request PUT: ${url} `);
-    return this.http.put(url, visboprojectversion, httpOptions)
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) params = params.append('deleted', '1');
+    this.log(`Calling HTTP Request PUT: ${url} Params ${params}`);
+    return this.http.put(url, visboprojectversion, { headers , params })
       .pipe(
         tap(_ => this.log(`updated VisboProjectVersion id=${visboprojectversion._id} url=${this.vpvUrl}`)),
         catchError(this.handleError<any>('updateVisboProjectVersion'))
@@ -145,7 +159,7 @@ export class VisboProjectVersionService {
     };
   }
 
-  /** Log a VisboProjectVersionService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectVersionService: ' + message);
   }

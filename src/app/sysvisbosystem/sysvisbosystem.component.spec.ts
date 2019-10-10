@@ -1,20 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VisboCenterDetailComponent } from './visbocenter-detail.component';
+import { SysvisbosystemComponent } from './sysvisbosystem.component';
+import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
 
-describe('VisboCenterDetailComponent', () => {
-  let component: VisboCenterDetailComponent;
-  let fixture: ComponentFixture<VisboCenterDetailComponent>;
+describe('SysvisbosystemComponent', () => {
+  let component: SysvisbosystemComponent;
+  let fixture: ComponentFixture<SysvisbosystemComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisboCenterDetailComponent ]
+      declarations: [
+        SysvisbosystemComponent,
+        SysNavbarComponent
+      ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboCenterDetailComponent);
+    fixture = TestBed.createComponent(SysvisbosystemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

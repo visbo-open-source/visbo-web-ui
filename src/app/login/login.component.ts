@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { FormsModule }   from '@angular/forms';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
+
+import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +38,8 @@ export class LoginComponent implements OnInit {
     if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    // console.log(`return url ${this.returnUrl}`)
+    console.log(`return url ${this.returnUrl}`)
+    if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
   restVersion() {
@@ -56,12 +61,17 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
-        data => {
-          this.log(`Login Success check sysVC now`);
-          this.visbocenterService.getSysVisboCenters()
+        user => {
+          // this.log(`Login Success Result ${JSON.stringify(user)}`);
+          if (user.status && user.status.expiresAt) {
+            var expiration = new Date(user.status.expiresAt)
+            this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
+            this.alertService.error(`Your password expires at ${expiration.toLocaleString()}. Please change your password before`, true);
+          }
+          this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
-                this.log(`Login Success ${this.returnUrl} Role ${this.visbocenterService.getSysAdminRole()}`);
+                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
                 this.router.navigate([this.returnUrl]);
               },
               error => {
@@ -78,6 +88,18 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  pwforgotten() {
+    var email = (this.model.username || '').trim();
+    this.log(`Forward to password forgotten ${email} `);
+    // MS TODO: Check if user name is an e-Mail Address
+    this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
+  }
+
+  register() {
+    this.log(`Forward to Register `);
+    this.router.navigate(['register']);
+  }
+
   relogin() {
     // called after server respons with 401 "not authenticated"
     this.authenticationService.logout();
@@ -87,7 +109,7 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Login: ' + message);
   }

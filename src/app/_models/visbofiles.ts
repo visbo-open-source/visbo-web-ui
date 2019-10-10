@@ -1,4 +1,5 @@
 export class VisboFile {
+  folder: string;
   name: string;
   updatedAt: Date;
   size: number

@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
@@ -6,14 +6,19 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { environment } from '../../environments/environment';
+
 @Component({
-    moduleId: module.id,
-    templateUrl: 'register.component.html'
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 
 export class RegisterComponent {
   model: any = {};
-  userRegister = undefined
+  PWPolicy: string;
+  PWPolicyDescription: string;
+  userRegister = undefined;
   hash = undefined;
   loading = false;
 
@@ -25,7 +30,7 @@ export class RegisterComponent {
     private alertService: AlertService) { }
 
   ngOnInit() {
-    // console.log("Init Registration");
+    this.getPWPolicy();
     const id = this.route.snapshot.paramMap.get('id');
     this.hash = this.route.snapshot.queryParams.hash
     if (id) {
@@ -39,6 +44,7 @@ export class RegisterComponent {
 
   register() {
     this.loading = true;
+    this.log(`Call register Service`)
     if (this.userRegister) {
       this.model._id = this.userRegister;
     }
@@ -60,7 +66,23 @@ export class RegisterComponent {
       );
   }
 
-  /** Log a VisboProjectService message with the MessageService */
+  getPWPolicy() {
+    this.authenticationService.initPWPolicy()
+      .subscribe(
+        data => {
+          this.log(`Init PW Policy success ${JSON.stringify(data)}`);
+          this.PWPolicy = data.PWPolicy
+          this.PWPolicyDescription = data.Description
+
+        },
+        error => {
+          this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(error.error.message);
+        }
+      );
+  }
+
+  /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('Register: ' + message);
   }
