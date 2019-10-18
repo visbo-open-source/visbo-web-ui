@@ -1,3 +1,18 @@
+export class VPVKeyMetrics {
+  costCurrentActual: number;
+  costCurrentTotal: number;
+  costBaseLastActual: number;
+  costBaseLastTotal: number;
+  timeCompletionCurrentActual: number;
+  timeCompletionBaseLastActual: number;
+  endDateCurrent: Date;
+  endDateBaseLast: Date;
+  deliverableCompletionCurrentActual: number;
+  deliverableCompletionCurrentTotal: number;
+  deliverableBaseLastActual: number;
+  deliverableBaseLastTotal: number;
+};
+
 export class VisboProjectVersion {
   _id: string;
   name: string;
@@ -28,6 +43,7 @@ export class VisboProjectVersion {
   complexity: number;
   description: string;
   businessUnit: string;
+  keyMetrics: VPVKeyMetrics;
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
   createdAt: Date;

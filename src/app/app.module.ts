@@ -52,6 +52,11 @@ import { VisboProjectVersionService } from './_services/visboprojectversion.serv
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
 import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
+// Visbo Portfolio Versions
+// import { VisboPortfolioVersionService } from './_services/visboprojectversion.service';
+import { VisboPortfolioVersionsComponent } from './visboportfolioversions/visboportfolioversions.component';
+// import { VisboPortfolioVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
+
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Sys Admin / App Admin
@@ -83,6 +88,7 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboprojectAuditComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
+    VisboPortfolioVersionsComponent,
     MessagesComponent,
     LogoutTimerComponent,
     SettingsComponent,

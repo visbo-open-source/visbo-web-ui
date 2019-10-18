@@ -5,7 +5,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService }  from '../_services/visboproject.service';
 
 @Component({
@@ -84,7 +84,11 @@ export class DashboardComponent implements OnInit {
 
   gotoClickedVp(visboproject: VisboProject):void {
     console.log("clicked row %s", visboproject.name);
-    this.router.navigate(['vpv/'+visboproject._id]);
+    if (visboproject.vpType == VPTYPE["Portfolio"]) {
+      this.router.navigate(['vpf/'+visboproject._id]);
+    } else {
+      this.router.navigate(['vpv/'+visboproject._id]);
+    }
     //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 

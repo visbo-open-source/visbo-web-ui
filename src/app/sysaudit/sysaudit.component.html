@@ -43,25 +43,16 @@
   <div *ngIf="chart" class='container-fluid'>
     <h3 class='panel-heading'>
       Visbo Chart
-      <!-- <div class="row"> -->
-        <div class="col">
-          <app-pie-chart [graphData]="graphData" [graphLegend]="graphLegend" [graphOptions]="graphOptions"></app-pie-chart>
-        </div>
-        <div class="col">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
-        </div>
-        <div class="col">
-          <app-column-chart [graphData]="graphDataColumnChart" [graphOptions]="graphOptionsColumnChart"></app-column-chart>
-        </div> 
-      <!-- </div> -->
-      <!-- <div class="row">
-        <div class="col-12">
-          <app-table-chart></app-table-chart>
-        </div>
-      </div> -->
-
+      <div class="col">
+        <app-pie-chart [graphData]="graphData" [graphLegend]="graphLegend" [graphOptions]="graphOptions" [parentThis]="parentThis"></app-pie-chart>
+      </div>
+      <div class="col">
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
+      </div>
+      <div class="col">
+        <app-column-chart [graphData]="graphDataColumnChart" [graphOptions]="graphOptionsColumnChart"></app-column-chart>
+      </div>
     </h3>
-
   </div>
   <div *ngIf="!chart" class='container-fluid'>
     <div class='panel-body'>

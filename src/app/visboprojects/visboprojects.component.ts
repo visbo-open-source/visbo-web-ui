@@ -191,8 +191,14 @@ export class VisboProjectsComponent implements OnInit {
   // get the versions of the project
   gotoClickedRow(visboproject: VisboProject):void {
     var deleted = visboproject.deletedAt ? true : false;
-    this.log(`goto VPV for VP ${visboproject._id} Deleted ${deleted}`);
-    this.router.navigate(['vpv/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+    // MS TODO: use enumerator for Type
+    if (visboproject.vpType == 1) {
+      this.log(`goto VPF for VP ${visboproject._id} Deleted ${deleted}`);
+      this.router.navigate(['vpf/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+    } else {
+      this.log(`goto VPV for VP ${visboproject._id} Deleted ${deleted}`);
+      this.router.navigate(['vpv/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+    }
   }
 
   // get the details of the project
