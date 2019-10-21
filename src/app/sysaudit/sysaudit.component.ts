@@ -59,6 +59,7 @@ export class SysauditComponent implements OnInit {
     ];
     sysVCId: string = '';
     chart: boolean = false;
+    parentThis: any;
     chartButton: string = "Chart";
     graphData: any[] = [];
     graphLegend: any = "Graph Legend not set"
@@ -107,6 +108,7 @@ export class SysauditComponent implements OnInit {
     getVisboAudits(): void {
       var queryAudit = new QueryAuditType;
 
+      this.parentThis = this;
       // set date values if not set or adopt to end of day in case of to date
       if (this.auditTo) {
         queryAudit.to = new Date(this.auditTo)

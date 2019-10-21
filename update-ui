@@ -34,13 +34,6 @@ then
   exit 0
 fi
 
-updateCmdAct=`date -r update-ui '+%Y-%m-%dT%H:%M:%S'`
-if [ "$updateCmdOrg" != "$updateCmdAct" ]
-then
-  echo "WARN: Update Script has changed in between, please restart update again."
-  exit 2
-fi
-
 updatePackageAct=`date -r package-lock.json '+%Y-%m-%dT%H:%M:%S'`
 if [ "$updatePackageOrg" != "$updatePackageAct" ]
 then
@@ -51,6 +44,13 @@ then
     echo "FATAL: Install of NODE components failed."
     exit 1
   fi
+fi
+
+updateCmdAct=`date -r update-ui '+%Y-%m-%dT%H:%M:%S'`
+if [ "$updateCmdOrg" != "$updateCmdAct" ]
+then
+  echo "WARN: Update Script has changed in between, please restart update again."
+  exit 2
 fi
 
 echo "04: Compile for Production"
