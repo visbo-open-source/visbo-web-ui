@@ -47,7 +47,7 @@
         <button type="button" class="btn btn-md btn-secondary" title="Previous Period" (click)='getRefDateVersions(-1)'>Prev</button>
       </div>
       <h3 class="col-6">
-        {{vpvRefDate | date: 'dd.MM.yyy'}}
+        Project Status from {{vpvRefDate | date: 'dd.MM.yyy'}}
       </h3>
       <div class="col-1">
         <button type="button" class="btn btn-md btn-secondary align-self-end" title="Next Period" (click)='getRefDateVersions(1)'>Next</button>

@@ -23,7 +23,7 @@ class VPVKeyMetricsCalc {
   savingCostTotal: number;
   savingCostActual: number;
   savingEndDate: number;
-  status: number;
+  score: number;
   keyMetrics: VPVKeyMetrics;
 };
 
@@ -35,7 +35,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   visboportfolioversions: VisboPortfolioVersion[];
   visboprojectversions: VisboProjectVersion[];
-  visbokeymetrics: VPVKeyMetricsCalc[];
+  visbokeymetrics: VPVKeyMetricsCalc[] = [];
 
   vpSelected: string;
   vpActive: VisboProject;
@@ -51,7 +51,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   graphBubbleOptions: any = undefined;
 
   sortAscending: boolean;
-  sortColumn: number;
+  sortColumn: number = 6;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -162,6 +162,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
+          this.sortKeyMetricsTable(undefined);
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -217,11 +218,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   visboKeyMetricsCalc(): void {
     // Calculate the keyMetrics Values to show in Chart and List
-    this.log(`calc keyMetrics Start`);
     this.visbokeymetrics = [];
 
     if (!this.visboprojectversions) return;
-    this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
+    // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       if (this.visboprojectversions[i].keyMetrics) {
         var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
@@ -239,9 +239,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
           (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
           elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
-        elementKeyMetric.status = 0;
-        elementKeyMetric.status += elementKeyMetric.savingEndDate >= 0 ? (elementKeyMetric.savingEndDate > 0 ? 2: 1): 0;
-        elementKeyMetric.status += elementKeyMetric.savingCostTotal >= 0 ? (elementKeyMetric.savingCostTotal > 0 ? 2: 1): 0;
+        elementKeyMetric.score = 0;
+        var negative = elementKeyMetric.savingEndDate > 0 ? 1 : -1;
+        elementKeyMetric.score += Math.max(elementKeyMetric.savingEndDate, 20 * negative) * 5;
+        elementKeyMetric.score += elementKeyMetric.savingCostTotal;
+        // elementKeyMetric.score += elementKeyMetric.savingEndDate >= 0 ? (elementKeyMetric.savingEndDate > 0 ? 2: 1): 0;
+        // elementKeyMetric.score += elementKeyMetric.savingCostTotal >= 0 ? (elementKeyMetric.savingCostTotal > 0 ? 2: 1): 0;
 
         this.visbokeymetrics.push(elementKeyMetric)
       }
@@ -254,7 +257,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
         'width': '1200',
         'title':'Savings in Cost and End Date against Budget',
-        'colorAxis': {'colors': ['red', 'green'], minValue: 0, maxValue: 4},
+        'colorAxis': {'colors': ['red', 'green'], minValue: -200, maxValue: 200},
         'vAxis': {'title': 'Savings in end date (weeks)'},
         'hAxis': {'title': 'Savings in Overallcost % of Budget', minValue: -100, maxValue: 100},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
@@ -262,7 +265,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       };
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
-    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Status', 'Cost Total Budget']);
+    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Score', 'Cost Total Budget in k€']);
     var rangeSavingEndDate = 0;
     var rangeBudgetRange = 0
     for (var i = 0; i < this.visbokeymetrics.length; i++) {
@@ -272,8 +275,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         this.visbokeymetrics[i].name,
         this.visbokeymetrics[i].savingCostTotal,
         this.visbokeymetrics[i].savingEndDate,
-        this.visbokeymetrics[i].status,
-        this.visboprojectversions[i].keyMetrics.costBaseLastTotal
+        this.visbokeymetrics[i].score,
+        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal / 1000)
       ])
     }
     this.graphBubbleOptions.hAxis.minValue = -rangeBudgetRange;
@@ -338,7 +341,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   sortKeyMetricsTable(n) {
-    if (!this.visbokeymetrics) return
+    if (!this.visbokeymetrics) return;
     if (n != undefined) {
       if (n != this.sortColumn) {
         this.sortColumn = n;
@@ -350,7 +353,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       }
       else this.sortAscending = !this.sortAscending;
     }
-    this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
+    // this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
 
     if (this.sortColumn == 1) {
       // sort by VPV name
@@ -406,9 +409,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       // sort by keyMetrics Status
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
-        if (a.status > b.status)
+        if (a.score > b.score)
           result = 1;
-        else if (a.status < b.status)
+        else if (a.score < b.score)
           result = -1;
         return result
       })
