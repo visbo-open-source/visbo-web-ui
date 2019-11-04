@@ -1,61 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import * as moment from 'moment';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProject } from '../_models/visboproject';
-import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { LoginComponent } from '../login/login.component';
-
-class VPVKeyMetricsCalc {
-  _id: string;
-  name: string;
-  vpid: string;
-  timestamp: Date;
-  savingCostTotal: number;
-  savingCostActual: number;
-  savingEndDate: number;
-  score: number;
-  keyMetrics: VPVKeyMetrics;
-};
-
 @Component({
-  selector: 'app-visboportfolioversions',
-  templateUrl: './visboportfolioversions.component.html'
+  selector: 'app-visboportfolio-versions',
+  templateUrl: './visboportfolio-versions.component.html'
 })
 export class VisboPortfolioVersionsComponent implements OnInit {
 
-  visboportfolioversions: VisboPortfolioVersion[];
-  visboprojectversions: VisboProjectVersion[];
-  visbokeymetrics: VPVKeyMetricsCalc[] = [];
+    visboportfolioversions: VisboPortfolioVersion[];
+    visboprojectversions: VisboProjectVersion[];
+    visbokeymetrics: VPVKeyMetricsCalc[] = [];
 
-  vpSelected: string;
-  vpActive: VisboProject;
-  vpfActive: VisboPortfolioVersion;
-  vpvRefDate: Date = new Date();
-  refDateInterval: string = "month";
-  vpfActiveIndex: number;
-  deleted: boolean = false;
-  chartButton: string = "List";
-  chart: boolean = true;
+    dropDown: any[] = [];
+    dropDownSelected: string;
+    dropDownValue: number;
 
-  graphBubbleData: any[] = [];
-  graphBubbleOptions: any = undefined;
+    vpSelected: string;
+    vpActive: VisboProject;
+    vpfActive: VisboPortfolioVersion;
+    vpvRefDate: Date = new Date();
+    refDateInterval: string = "month";
+    vpfActiveIndex: number;
+    deleted: boolean = false;
+    chartButton: string = "Show List";
+    chart: boolean = true;
+    parentThis: any;
 
-  sortAscending: boolean;
-  sortColumn: number = 6;
+    graphBubbleData: any[] = [];
+    graphBubbleOptions: any = undefined;
 
-  combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+    sortAscending: boolean;
+    sortColumn: number = 6;
+
+    combinedPerm: VGPermission = undefined;
+    permVC: any = VGPVC;
+    permVP: any = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -63,17 +56,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.getVisboPortfolioVersions();
   }
-
-  // onSelect(visboprojectversion: VisboProjectVersion): void {
-  //   this.getVisboPortfolioVersions();
-  // }
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm == undefined) return false
@@ -82,6 +70,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   getVisboPortfolioVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    this.parentThis = this;
     var i: number;
     this.vpSelected = id;
     this.log(`get VP name if ID is used ${id}`);
@@ -100,18 +89,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
                   this.vpfActive = visboportfolioversions[0];
                   this.vpfActiveIndex = visboportfolioversions.length;
                   this.combinedPerm = visboportfolioversions[0].perm;
+                  this.dropDownInit();
                   this.getVisboPortfolioKeyMetrics();
                   this.log(`get VPF Index ${this.vpfActiveIndex}`);
                   // this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} First ${visboportfolioversions[0].timestamp} Last ${visboportfolioversions[visboportfolioversions.length-1].timestamp} Perm ${JSON.stringify(this.combinedPerm)}`);
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  // redirect to login and come back to current URL
                   if (error.status == 403) {
                     this.alertService.error(`Permission Denied for Visbo Project Versions`);
-                  } else if (error.status == 401) {
-                    this.alertService.error(`Session expired, please login again`, true);
-                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -122,9 +108,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.alertService.error(error.error.message);
             }
@@ -137,12 +120,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           visboportfolioversions => this.visboportfolioversions = visboportfolioversions,
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-            // redirect to login and come back to current URL
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project Versions`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.alertService.error(error.error.message);
             }
@@ -172,12 +151,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-          // redirect to login and come back to current URL
           if (error.status == 403) {
             this.alertService.error(`Permission Denied for Visbo Portfolio KeyMetrics`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -201,17 +176,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         if (increment > 0) quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
-        newRefDate.setHours(0);
-        newRefDate.setMinutes(0);
-        newRefDate.setSeconds(0);
-        newRefDate.setMilliseconds(0);
+        newRefDate.setHours(0, 0, 0, 0);
         var diff = newRefDate.getTime() - this.vpvRefDate.getTime()
         if (diff == 0) {
           newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
         }
         break;
     }
-    console.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
+    this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
+    var today = new Date();
+    if (newRefDate > today) { newRefDate = today }
+    this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
     this.getVisboPortfolioKeyMetrics();
   }
@@ -230,22 +205,33 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
         elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
+        // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
         elementKeyMetric.savingCostTotal = ((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
         if (elementKeyMetric.savingCostTotal > 100) elementKeyMetric.savingCostTotal = 100;
         if (elementKeyMetric.savingCostTotal < -100) elementKeyMetric.savingCostTotal = -100;
         elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
         elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
+
+        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
         elementKeyMetric.savingEndDate = this.helperDateDiff(
           (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
           (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
           elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
-        elementKeyMetric.score = 0;
-        var negative = elementKeyMetric.savingEndDate > 0 ? 1 : -1;
-        elementKeyMetric.score += Math.max(elementKeyMetric.savingEndDate, 20 * negative) * 5;
-        elementKeyMetric.score += elementKeyMetric.savingCostTotal;
-        // elementKeyMetric.score += elementKeyMetric.savingEndDate >= 0 ? (elementKeyMetric.savingEndDate > 0 ? 2: 1): 0;
-        // elementKeyMetric.score += elementKeyMetric.savingCostTotal >= 0 ? (elementKeyMetric.savingCostTotal > 0 ? 2: 1): 0;
 
+        // // Calculate the Score as a combination of Saving in Time & Cost
+        // var negative = elementKeyMetric.savingEndDate > 0 ? 1 : -1;
+        // elementKeyMetric.score = 0;
+        // elementKeyMetric.score += Math.max(elementKeyMetric.savingEndDate, 20 * negative) * 5;
+        // elementKeyMetric.score += elementKeyMetric.savingCostTotal;
+
+        // Calculate the Delivery Completion
+        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {
+          elementKeyMetric.deliveryCompletionTotal = 100;
+        } else {
+          elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
+        }
+        // this.log(`calc keyMetrics Delivery Completion Detail ${JSON.stringify(elementKeyMetric.keyMetrics)} `);
+        this.log(`calc keyMetrics Delivery Completion ${elementKeyMetric.deliveryCompletionTotal} ${elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal} ${elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal}`);
         this.visbokeymetrics.push(elementKeyMetric)
       }
     }
@@ -256,68 +242,82 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.graphBubbleOptions = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
         'width': '1200',
-        'title':'Savings in Cost and End Date against Budget',
-        'colorAxis': {'colors': ['red', 'green'], minValue: -200, maxValue: 200},
-        'vAxis': {'title': 'Savings in end date (weeks)'},
-        'hAxis': {'title': 'Savings in Overallcost % of Budget', minValue: -100, maxValue: 100},
+        'title':'Savings in Cost and End Date against Base Line',
+        'colorAxis': {'colors': ['red', 'green'], 'minValue': 0, 'maxValue': 100, 'legend': {'position': 'none'}},
+        'vAxis': {'title': 'Savings in end date (weeks)', 'baselineColor': 'blue'},
+        'hAxis': {'title': 'Savings in Overall Cost % from Base Line', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'},
+        // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 12 } }
+        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 11 } }
       };
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
-    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Score', 'Cost Total Budget in k€']);
+    if (this.visbokeymetrics.length > 30) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
+    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Delivery Completion in %', 'Cost Total (Base Line) in k']);
     var rangeSavingEndDate = 0;
-    var rangeBudgetRange = 0
+    var rangeBaseLineRange = 0
     for (var i = 0; i < this.visbokeymetrics.length; i++) {
       rangeSavingEndDate = Math.max(rangeSavingEndDate, Math.abs(this.visbokeymetrics[i].savingEndDate));
-      rangeBudgetRange = Math.max(rangeBudgetRange, Math.abs(this.visbokeymetrics[i].savingCostTotal));
+      rangeBaseLineRange = Math.max(rangeBaseLineRange, Math.abs(this.visbokeymetrics[i].savingCostTotal));
       keyMetrics.push([
         this.visbokeymetrics[i].name,
         this.visbokeymetrics[i].savingCostTotal,
         this.visbokeymetrics[i].savingEndDate,
-        this.visbokeymetrics[i].score,
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal / 1000)
+        this.visbokeymetrics[i].deliveryCompletionTotal,
+        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal)
       ])
     }
-    this.graphBubbleOptions.hAxis.minValue = -rangeBudgetRange;
-    this.graphBubbleOptions.hAxis.maxValue = rangeBudgetRange;
-    this.graphBubbleOptions.vAxis.minValue = -rangeSavingEndDate;
-    this.graphBubbleOptions.vAxis.maxValue = rangeSavingEndDate;
-    // this.log(`visboKeyMetrics Range budget ${rangeBudgetRange} endDate ${rangeSavingEndDate} Options ${JSON.stringify(this.graphBubbleOptions)}`);
+    if (rangeBaseLineRange > 0) {
+      rangeBaseLineRange *= 1.1;
+      this.graphBubbleOptions.hAxis.minValue = -rangeBaseLineRange;
+      this.graphBubbleOptions.hAxis.maxValue = rangeBaseLineRange;
+    }
+    if (rangeSavingEndDate > 0) {
+      rangeSavingEndDate *= 1.1;
+      this.graphBubbleOptions.vAxis.minValue = -rangeSavingEndDate;
+      this.graphBubbleOptions.vAxis.maxValue = rangeSavingEndDate;
+    }
+    // this.log(`visboKeyMetrics Range budget ${rangeBaseLineRange} endDate ${rangeSavingEndDate} Options ${JSON.stringify(this.graphBubbleOptions)}`);
     this.graphBubbleData = keyMetrics;
-  }
-
-  // toggleVisboPortfolioVersions(): void {
-  //   this.deleted = !this.deleted
-  //   var url = this.route.snapshot.url.join('/')
-  //   this.log(`VP toggleVisboPortfolioVersions ${this.deleted} URL ${url}`);
-  //   this.getVisboPortfolioVersions();
-  //   // MS TODO: go to the current url and add delete flag
-  //   this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-  // }
-  //
-  toggleVisboPortfolioVersion(): void {
-    this.log(`VPF toggleVisboPortfolioVersion ${this.vpfActiveIndex}`);
-    var index = this.visboportfolioversions.length - this.vpfActiveIndex;
-    this.vpfActive = this.visboportfolioversions[index]
-
-    this.log(`VPF toggleVisboPortfolioVersion ${this.vpfActive.timestamp}`);
-    this.getVisboPortfolioKeyMetrics();
   }
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc):void {
     this.log(`goto VP ${vpv.name} (${vpv.vpid}) Deleted? ${this.deleted}`);
-    this.router.navigate(['vpv/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
-  // gotoVPDetail(visboportfolio: VisboProject):void {
-  //   this.router.navigate(['vpDetail/'.concat(visboportfolio._id)]);
-  // }
-  //
+  chartSelectRow(row: number, label: string) {
+    // this.log(`Bubble Chart: ${row} ${label}`);
+    var vpv = this.visbokeymetrics.find(x => x.name == label)
+
+    this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
+    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
+  dropDownInit() {
+    this.log(`Init Drop Down List ${this.visboportfolioversions.length}`);
+    this.dropDown = [];
+    var len = this.visboportfolioversions.length;
+
+    for (var i = 0; i < len; i++) {
+      var timestamp = new Date(this.visboportfolioversions[i].timestamp);
+      var text = 'Version '.concat((len -i).toString(), ' from ', moment(timestamp).format('DD.MM.YYYY HH:mm'));
+      this.dropDown.push({name: text, version: i })
+    }
+    if (len > 0 ) this.dropDownSelected = this.dropDown[0].name;
+    // this.log(`Init Drop Down List Finished ${this.dropDown.length} Selected ${this.dropDownSelected}`);
+  }
+
+  changePFVersion() {
+    this.dropDownValue = this.dropDown.find(x => x.name == this.dropDownSelected).version;
+    this.log(`Change Drop Down ${this.dropDownSelected} ${this.dropDownValue}`);
+    this.vpfActive = this.visboportfolioversions[this.dropDownValue];
+    this.getVisboPortfolioKeyMetrics();
+  }
 
   switchChart() {
     this.chart = !this.chart
-    this.chartButton = this.chart ? "List" : "Chart";
+    this.chartButton = this.chart ? "Show List" : "Show Chart";
     // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
   }
 
@@ -409,9 +409,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       // sort by keyMetrics Status
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
-        if (a.score > b.score)
+        if (a.deliveryCompletionTotal > b.deliveryCompletionTotal)
           result = 1;
-        else if (a.score < b.score)
+        else if (a.deliveryCompletionTotal < b.deliveryCompletionTotal)
           result = -1;
         return result
       })

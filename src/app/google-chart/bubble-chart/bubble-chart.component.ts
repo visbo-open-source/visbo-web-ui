@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -13,10 +12,10 @@ export class BubbleChartComponent implements OnInit {
   private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
+  @Input() parentThis: any;
 
   constructor(
-    private gChartService : GoogleChartService,
-    private messageService: MessageService
+    private gChartService : GoogleChartService
   ) {
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages':['corechart','table']});
@@ -31,14 +30,26 @@ export class BubbleChartComponent implements OnInit {
     // this.log(`Google Chart Bubble Chart Draw ${this.graphData.length}`);
     let chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
     let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    let parentThis = this.parentThis;
 
     let options = {'title':'Bubble Chart'};
 
-    chart.draw(data, this.graphOptions || options);
-  }
+    // The select handler. Call the chart's getSelection() method
+    function selectHandler() {
+      var selectedItem = chart.getSelection()[0];
+      if (parentThis == undefined) console.log(`Bubble: The user clicked and this is undefined`)
+      else if (selectedItem) {
+        var row = selectedItem.row;
+        var label = data.getValue(selectedItem.row, 0);
+        parentThis.log(`Bubble: The user selected Row ${row} ${label}`)
+        parentThis.chartSelectRow(row, label);
+      }
+    }
 
-  /** Log a message with the MessageService */
-  private log(message: string) {
-    this.messageService.add('Bubble Chart: ' + message);
+    // Listen for the 'select' event, and call my function selectHandler() when
+    // the user selects something on the chart.
+    this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
+
+    chart.draw(data, this.graphOptions || options);
   }
 }

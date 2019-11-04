@@ -46,6 +46,7 @@ import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboprojectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
+import { VisboProjectKeyMetricsComponent }  from './visboproject-keymetrics/visboproject-keymetrics.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -53,9 +54,7 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
 // Visbo Portfolio Versions
-// import { VisboPortfolioVersionService } from './_services/visboprojectversion.service';
-import { VisboPortfolioVersionsComponent } from './visboportfolioversions/visboportfolioversions.component';
-// import { VisboPortfolioVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
+import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -86,6 +85,7 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboProjectsComponent,
     VisboprojectDetailComponent,
     VisboprojectAuditComponent,
+    VisboProjectKeyMetricsComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
     VisboPortfolioVersionsComponent,

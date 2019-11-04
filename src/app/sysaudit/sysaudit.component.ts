@@ -68,7 +68,29 @@ export class SysauditComponent implements OnInit {
       'sliceVisibilityThreshold': .025
     };
     graphDataLineChart: any = "Graph Time Data not set";
-    graphOptionsLineChart: any = {'title':'Audit Activity by Time'}
+    graphOptionsLineChart: any = {
+      'title':'Audit Activity by Time',
+      // 'width': '1200',
+      'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
+      'vAxis': {
+        'title': 'Number of Activities',
+        'minorGridlines': {'count': 0}
+      },
+      'hAxis': {
+        'format': 'dd.MM.yy',
+        'gridlines': {
+          'count': -1,
+          // 'units': {
+          //   'days': {'format': ['dd.MM.yy']},
+          //   'hours': {'format': ['HH:mm']}
+          // }
+        },
+        'minorGridlines': {'count': 0}
+      },
+      'pointSize': 6,
+      'curveType': 'function',
+      'colors': ['blue', 'red', 'green', 'yellow']
+    }
     graphDataColumnChart: any = "Graph VisboCenter Data not set";
     graphOptionsColumnChart: any = {
       'title':'Audit Activity by User',
@@ -93,10 +115,7 @@ export class SysauditComponent implements OnInit {
       this.auditType = this.auditTypeList[0].name;
       this.auditArea = this.auditAreaList[0].name;
       this.today = new Date();
-      this.today.setHours(0);
-      this.today.setMinutes(0);
-      this.today.setSeconds(0);
-      this.today.setMilliseconds(0);
+      this.today.setHours(0, 0, 0, 0);
       this.sysVCId = this.visbocenterService.getSysVCId();
       this.getVisboAudits();
     }
@@ -150,11 +169,6 @@ export class SysauditComponent implements OnInit {
           error => {
             this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
             this.alertService.error(error.error.message);
-            // redirect to login and come back to current URL
-            if (error.status == 401) {
-              this.alertService.error("Session expired, please log in again", true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-            }
           }
         );
     }
@@ -282,53 +296,33 @@ export class SysauditComponent implements OnInit {
       var graphSum = [];
       var graphData = [];
       var auditElement: any;
-      var dateString: string, minDateString: string, maxDateString: string;
       for (auditElement in this.audit) {
         if (this.audit[auditElement].createdAt) {
-          dateString = this.audit[auditElement].createdAt.toString();
-          dateString = dateString.substr(0,10);
-          if (minDateString == undefined || minDateString > dateString) minDateString = dateString;
-          if (maxDateString == undefined || maxDateString < dateString) maxDateString = dateString;
-          if (graphSum[dateString] == undefined) graphSum[dateString] = [0,0,0,0];
-          graphSum[dateString][0] = graphSum[dateString][0] + 1;
-          if (this.audit[auditElement].vpv) graphSum[dateString][3] = graphSum[dateString][3] + 1;
-          else if (this.audit[auditElement].vp) graphSum[dateString][2] = graphSum[dateString][2] + 1;
-          else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() != this.sysVCId) graphSum[dateString][1] = graphSum[dateString][1] + 1;
-          // this.log(`Group Graph Time Chart Element ${dateString} ${graphSum[dateString]}`);
+          var activityDay: Date = new Date(this.audit[auditElement].createdAt);
+          var activityIndex: number;
+          activityDay.setHours(0,0,0,0);
+          activityIndex = Math.trunc(activityDay.getTime() / 1000 / 60 / 60 / 24);
+          // // activityDay = activityDay.substr(0,10);
+          // this.log(`Group Graph Time Chart Element ${activityIndex} ${activityDay}`);
+          if (graphSum[activityIndex] == undefined) graphSum[activityIndex] = [new Date(activityDay), 0,0,0,0];
+          graphSum[activityIndex][1] = graphSum[activityIndex][1] + 1;
+          if (this.audit[auditElement].vpv) graphSum[activityIndex][4] = graphSum[activityIndex][4] + 1;
+          else if (this.audit[auditElement].vp) graphSum[activityIndex][3] = graphSum[activityIndex][3] + 1;
+          else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() != this.sysVCId) graphSum[activityIndex][2] = graphSum[activityIndex][2] + 1;
+          // this.log(`Group Graph Time Chart Element ${activityIndex} ${JSON.stringify(graphSum[activityIndex])}`);
         }
       }
-      // this.log(`Min/Max Date ${minDateString} ${maxDateString}`);
-      var graphElement: any;
-      var i = 0;
-
-      var iDate = new Date(minDateString)
-      var iDateString = this.formatDate(iDate);
-      var maxDate = new Date(maxDateString)
-      while (iDate <= maxDate) {
-        if (graphSum[iDateString]){
-          graphData.push([iDateString, graphSum[iDateString][0], graphSum[iDateString][1], graphSum[iDateString][2], graphSum[iDateString][3]])
-        } else {
-          graphData.push([iDateString, 0,0,0,0])
-        }
-
-        iDate.setDate(iDate.getDate()+1);
-        iDateString = this.formatDate(iDate);
+      // var graphElement: any;
+      for (var graphElement in graphSum) {
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        graphData.push(graphSum[graphElement])
       }
 
-      // for (graphElement in graphSum) {
-      //   this.log(`Group Graph Time Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
-      //   graphData.push([graphElement, graphSum[graphElement][0], graphSum[graphElement][1], graphSum[graphElement][2], graphSum[graphElement][3]])
-      // }
-      graphData.sort(function(a, b) {
-        var result = 0
-        if (a[0] > b[0])
-          result = -1;
-        else if (a[0] < b[0])
-          result = 1;
-        return result
-      })
+      graphData.sort(function(a, b) { return b[0] - a[0] });
       graphData.push(["Date", "All", "VC", "VP", "VPV"]);
       graphData.reverse();
+      this.graphOptionsLineChart.hAxis.gridlines.count = graphData.length - 1;
+      this.log(`Group Graph Time Chart Gridlines ${graphData.length - 1} `);
       this.graphDataLineChart = graphData;
     }
 

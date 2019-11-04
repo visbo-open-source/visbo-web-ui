@@ -68,13 +68,7 @@ export class VisboprojectDetailComponent implements OnInit {
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            // redirect to login and come back to current URL
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
-            this.alertService.error(error.error.message);
-          }
+          this.alertService.error(error.error.message);
         }
       );
   }
@@ -117,9 +111,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Get VP Users failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -146,9 +137,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${visboproject.name}`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -179,14 +167,10 @@ export class VisboprojectDetailComponent implements OnInit {
         },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
-          // redirect to login and come back to current URL
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${this.visboproject.name}`);
           } else if (error.status == 409) {
             this.alertService.error(`Visbo Project ${this.visboproject.name} exists already`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -231,9 +215,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Add VisboProject User error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Add User to Visbo Project`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during add VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -275,10 +256,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Remove VisboProject User error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Remove User from Visbo Project`);
-          } else if (error.status == 401) {
-            this.log('Re-login remove VP user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during remove User from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -371,9 +348,6 @@ export class VisboprojectDetailComponent implements OnInit {
             this.log(`Modify VisboProject Group error: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied: Modify Group to Visbo Project`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.log(`Error during modify VP Group ${error.error.message}`); // log to console instead
               this.alertService.error(error.error.message);
@@ -396,9 +370,6 @@ export class VisboprojectDetailComponent implements OnInit {
             this.log(`Add VisboCenter Group error: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
               this.alertService.error(error.error.message);
@@ -424,10 +395,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Remove VisboProject Group error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Remove Group from Visbo Project`);
-          } else if (error.status == 401) {
-            this.log('Re-login add VC user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during remove Group from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -456,10 +423,6 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Remove VisboProject Lock error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Remove Lock from Visbo Project`);
-          } else if (error.status == 401) {
-            this.log('Re-login add VC user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during remove Lock from VP  ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);

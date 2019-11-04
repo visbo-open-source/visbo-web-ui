@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import 'jasmine';
 
-import { VisboPortfolioVersionsComponent } from './visboportfolioversions.component';
+import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 
-describe('VisboPortfolioVersionsComponent', () => {
-  let component: VisboPortfolioVersionsComponent;
-  let fixture: ComponentFixture<VisboPortfolioVersionsComponent>;
+describe('VisboProjectVersionsComponent', () => {
+  let component: VisboProjectKeyMetricsComponent;
+  let fixture: ComponentFixture<VisboProjectKeyMetricsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        VisboPortfolioVersionsComponent,
+        VisboProjectKeyMetricsComponent,
         NavbarComponent
       ]
     })
@@ -19,7 +19,7 @@ describe('VisboPortfolioVersionsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboPortfolioVersionsComponent);
+    fixture = TestBed.createComponent(VisboProjectKeyMetricsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

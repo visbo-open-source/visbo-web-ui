@@ -52,11 +52,6 @@ export class VisboCentersComponent implements OnInit {
         error => {
           this.log(`get VCs failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -78,9 +73,6 @@ export class VisboCentersComponent implements OnInit {
           this.alertService.error(`Permission Denied for Visbo Center ${name}`);
         } else if (error.status == 409) {
           this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
-        } else if (error.status == 401) {
-          this.alertService.error(`Session expired, please login again`, true);
-          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
         } else {
           this.alertService.error(error.error.message);
         }
@@ -98,9 +90,6 @@ export class VisboCentersComponent implements OnInit {
         this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
         if (error.status == 403) {
           this.alertService.error(`Permission Denied: Visbo Center ${name}`);
-        } else if (error.status == 401) {
-          this.alertService.error(`Session expired, please login again`, true);
-          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
         } else {
           this.alertService.error(error.error.message);
         }
