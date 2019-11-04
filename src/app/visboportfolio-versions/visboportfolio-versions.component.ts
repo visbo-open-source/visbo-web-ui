@@ -281,6 +281,13 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.graphBubbleData = keyMetrics;
   }
 
+  // get the details of the project
+  gotoVPDetail(visboproject: VisboProject):void {
+    var deleted = visboproject.deletedAt ? true : false;
+    this.log(`goto Detail for VP ${visboproject._id}`);
+    this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+  }
+
   gotoClickedRow(vpv: VPVKeyMetricsCalc):void {
     this.log(`goto VP ${vpv.name} (${vpv.vpid}) Deleted? ${this.deleted}`);
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
