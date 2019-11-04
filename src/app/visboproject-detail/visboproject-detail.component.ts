@@ -123,15 +123,13 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   delete(visboproject: VisboProject): void {
-    // remove item from list
-    // this.visboprojectService.deleteVisboProject(visboproject).subscribe();
-    // this.goBack();
     this.visboprojectService.deleteVisboProject(visboproject, this.deleted)
       .subscribe(
         () => {
             this.alertService.success(`Visbo Project ${visboproject.name} deleted successfully`, true);
             this.log(`delete VP success`);
-            this.goBack();
+            // could not use go back as it is used from different places and produces access denied if it returns to KeyMetrics View
+            this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
           },
         error => {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);

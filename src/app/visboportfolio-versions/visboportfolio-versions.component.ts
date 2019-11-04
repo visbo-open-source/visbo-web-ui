@@ -88,11 +88,13 @@ export class VisboPortfolioVersionsComponent implements OnInit {
                   this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} Perm ${JSON.stringify(this.combinedPerm)}`);
                   this.vpfActive = visboportfolioversions[0];
                   this.vpfActiveIndex = visboportfolioversions.length;
-                  this.combinedPerm = visboportfolioversions[0].perm;
-                  this.dropDownInit();
-                  this.getVisboPortfolioKeyMetrics();
-                  this.log(`get VPF Index ${this.vpfActiveIndex}`);
-                  // this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} First ${visboportfolioversions[0].timestamp} Last ${visboportfolioversions[visboportfolioversions.length-1].timestamp} Perm ${JSON.stringify(this.combinedPerm)}`);
+                  if (visboportfolioversions.length > 0) {
+                    this.combinedPerm = visboportfolioversions[0].perm;
+                    this.dropDownInit();
+                    this.getVisboPortfolioKeyMetrics();
+                    this.log(`get VPF Index ${this.vpfActiveIndex}`);
+                    // this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} First ${visboportfolioversions[0].timestamp} Last ${visboportfolioversions[visboportfolioversions.length-1].timestamp} Perm ${JSON.stringify(this.combinedPerm)}`);
+                  }
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -240,20 +242,20 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   visboKeyMetricsCostVsEndDate(): void {
     this.graphBubbleOptions = {
-        // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '1200',
+        // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
+        'width': '100%',
         'title':'Savings in Cost and End Date against Base Line',
         'colorAxis': {'colors': ['red', 'green'], 'minValue': 0, 'maxValue': 100, 'legend': {'position': 'none'}},
         'vAxis': {'title': 'Savings in end date (weeks)', 'baselineColor': 'blue'},
         'hAxis': {'title': 'Savings in Overall Cost % from Base Line', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 11 } }
+        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 13 } }
       };
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
     if (this.visbokeymetrics.length > 30) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
-    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Delivery Completion in %', 'Cost Total (Base Line) in k']);
+    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Delivery Completion in %', 'Cost Total (Base Line) in k\u20AC']);
     var rangeSavingEndDate = 0;
     var rangeBaseLineRange = 0
     for (var i = 0; i < this.visbokeymetrics.length; i++) {

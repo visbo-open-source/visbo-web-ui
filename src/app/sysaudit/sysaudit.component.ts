@@ -317,7 +317,11 @@ export class SysauditComponent implements OnInit {
         // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
         graphData.push(graphSum[graphElement])
       }
-
+      if (graphData.length == 1) {
+        var dayBefore = new Date(graphData[0][0].toISOString());
+        dayBefore.setMinutes(dayBefore.getMinutes()-1);
+        graphData.push([dayBefore, 0,0,0,0]);
+      }
       graphData.sort(function(a, b) { return b[0] - a[0] });
       graphData.push(["Date", "All", "VC", "VP", "VPV"]);
       graphData.reverse();

@@ -14,7 +14,7 @@
         </h2>
       </div>
       <div class='btn-group '>
-        <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='col-6'>
+        <div *ngIf="hasVPPerm(permVP.DeleteVP)">
         <!-- <div class='col-6'> -->
             <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Deleted</button>
             <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Existing</button>
@@ -60,7 +60,7 @@
             <th class="text-right" (click)="sortKeyMetricsTable(3)">Saving End Date</th>
             <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)">Total Cost (Base Line)</th>
             <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
-            <th class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(6)">Score</th>
+            <th class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(6)">Delivery Completion</th>
           </tr>
         </thead>
         <!--Table body-->
@@ -72,7 +72,7 @@
             <td class="text-right">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
             <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
             <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
-            <td class="text-right">{{vp.score }}</td>
+            <td class="text-right">{{vp.deliveryCompletionTotal }}</td>
           </tr>
         </tbody>
       </table>

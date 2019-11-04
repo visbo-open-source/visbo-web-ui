@@ -24,7 +24,7 @@ export class VPVKeyMetricsCalc {
   savingCostActual: number;
   savingEndDate: number;
   deliveryCompletionTotal: number;
-  score: number;
+  deliveryCompletionActual: number;
   keyMetrics: VPVKeyMetrics;
 };
 

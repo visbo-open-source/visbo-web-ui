@@ -39,6 +39,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   typeMetric: string = this.typeMetricList[0].name;
   typeMetricChart: string = this.typeMetricList[0].metric;
 
+  colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#3399cc'];
+
   graphDataLineChart: any[] = [];
   graphOptionsLineChart: any = undefined;
 
@@ -173,10 +175,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
 
         // Calculate the Delivery Completion
-        var negative = elementKeyMetric.savingEndDate > 0 ? 1 : -1;
-        elementKeyMetric.score = 0;
-        elementKeyMetric.score += Math.max(elementKeyMetric.savingEndDate, 20 * negative) * 5;
-        elementKeyMetric.score += elementKeyMetric.savingCostTotal;
+        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {
+          elementKeyMetric.deliveryCompletionTotal = 100;
+        } else {
+          elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
+        }
+        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) {
+          elementKeyMetric.deliveryCompletionActual = 100;
+        } else {
+          elementKeyMetric.deliveryCompletionActual = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) * 100
+        }
 
         this.visbokeymetrics.push(elementKeyMetric)
       }
@@ -187,11 +195,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '1200',
-        'title':'Actual & Total Cost Plan vs. Base Line',
+        'width': '100%',
+        'title':'Actual & Total Cost: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'vAxis': {'title': 'Cost in k'},
+        'vAxis': {'title': 'Cost in k\u20AC'},
         'hAxis': {format: 'dd.MM.yy'},
         'pointSize': 10,
         'curveType': 'function',
@@ -201,7 +209,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
             '2': { lineWidth: 6, pointShape: 'circle' },
             '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
           },
-        'colors': ['blue', 'blue', 'green', 'green']
+        'colors': this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -237,8 +245,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   visboKeyMetricsDatesOverTime(): void {
     this.graphOptionsLineChart = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '1200',
-        'title':'Completion of Dead Lines vs. Base Line',
+        'width': '100%',
+        'title':'Completion of Dead Lines: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
         'vAxis': {'title': 'Sum of weighted completed dead lines'},
@@ -251,7 +259,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
             '2': { lineWidth: 6, pointShape: 'circle' },
             '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
           },
-        'colors': ['blue', 'blue', 'green', 'green']
+          'colors': this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -287,8 +295,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   visboKeyMetricsDeliveriesOverTime(): void {
     this.graphOptionsLineChart = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '1200',
-        'title':'Completion of Deliveries vs. Base Line',
+        'width': '100%',
+        'title':'Completion of Deliveries: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
         'vAxis': {'title': 'Sum of weighted completed deliveries'},
@@ -301,7 +309,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
             '2': { lineWidth: 6, pointShape: 'circle' },
             '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
           },
-        'colors': ['blue', 'blue', 'green', 'green']
+          'colors': this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -531,9 +539,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       // sort by keyMetrics Status
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
-        if (a.score > b.score)
+        if (a.deliveryCompletionTotal > b.deliveryCompletionTotal)
           result = 1;
-        else if (a.score < b.score)
+        else if (a.deliveryCompletionTotal < b.deliveryCompletionTotal)
           result = -1;
         return result
       })
