@@ -39,7 +39,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   typeMetric: string = this.typeMetricList[0].name;
   typeMetricChart: string = this.typeMetricList[0].metric;
 
-  colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#3399cc'];
+  // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#3399cc'];
+  colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB'];
+  series: any =  {
+    '0': { lineWidth: 3, pointShape: 'diamond', lineDashStyle: [6, 6] },
+    '1': { lineWidth: 4, pointShape: 'diamond' },
+    '2': { lineWidth: 3, pointShape: 'circle', lineDashStyle: [6, 6] },
+    '3': { lineWidth: 4, pointShape: 'circle' }
+  };
 
   graphDataLineChart: any[] = [];
   graphOptionsLineChart: any = undefined;
@@ -203,12 +210,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         'hAxis': {format: 'dd.MM.yy'},
         'pointSize': 10,
         'curveType': 'function',
-        'series': {
-            '0': { lineWidth: 6, pointShape: 'circle' },
-            '1': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] },
-            '2': { lineWidth: 6, pointShape: 'circle' },
-            '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
-          },
+        'series': this.series,
         'colors': this.colors
       };
     var keyMetricsCost: any = [];
@@ -218,25 +220,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       if (!this.visboprojectversions[i].keyMetrics) this.visboprojectversions[i].keyMetrics =  new VPVKeyMetrics;
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
+        Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0)
       ])
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
-    var duplicate = keyMetricsCost.length - 1;
-    // this.log(`visboKeyMetrics duplicate ${duplicate} ${JSON.stringify(this.visboprojectversions[duplicate])}`);
-    keyMetricsCost.push([
-      new Date(),
-      keyMetricsCost[duplicate][1],
-      keyMetricsCost[duplicate][2],
-      keyMetricsCost[duplicate][3],
-      keyMetricsCost[duplicate][4],
-    ])
+    var len = keyMetricsCost.length;
+    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len-1])}`);
+    if (len == 1) {
+      keyMetricsCost.push([
+        new Date(),
+        keyMetricsCost[len-1][1],
+        keyMetricsCost[len-1][2],
+        keyMetricsCost[len-1][3],
+        keyMetricsCost[len-1][4],
+      ])
+    }
 
-    keyMetricsCost.push(['Timestamp', 'Actual Cost', 'Actual Cost (Base Line)', 'Total Cost', 'Total Cost (Base Line)']);
+    keyMetricsCost.push(['Timestamp', 'Total Cost (Base Line)', 'Actual Cost (Base Line)', 'Total Cost', 'Actual Cost']);
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;
@@ -246,20 +250,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
         'width': '100%',
-        'title':'Completion of Dead Lines: Plan vs. Base Line',
+        'title':'Acceleration or Delay of Dead Lines: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'vAxis': {'title': 'Sum of weighted completed dead lines'},
+        'vAxis': {'title': 'Average Acceleration/Delay in Days'},
         'hAxis': {format: 'dd.MM.yy'},
         'pointSize': 10,
         'curveType': 'function',
-        'series': {
-            '0': { lineWidth: 6, pointShape: 'circle' },
-            '1': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] },
-            '2': { lineWidth: 6, pointShape: 'circle' },
-            '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
-          },
-          'colors': this.colors
+        'series': this.series,
+        'colors': this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -268,25 +267,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       if (!this.visboprojectversions[i].keyMetrics) this.visboprojectversions[i].keyMetrics = new VPVKeyMetrics;
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100)/100,
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100)/100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100)/100
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100)/100
       ])
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
-    var duplicate = keyMetricsCost.length - 1;
-    // this.log(`visboKeyMetrics duplicate ${duplicate} ${JSON.stringify(this.visboprojectversions[duplicate])}`);
-    keyMetricsCost.push([
-      new Date(),
-      keyMetricsCost[duplicate][1],
-      keyMetricsCost[duplicate][2],
-      keyMetricsCost[duplicate][3],
-      keyMetricsCost[duplicate][4],
-    ])
+    var len = keyMetricsCost.length - 1;
+    // this.log(`visboKeyMetrics duplicate ${len-1} ${JSON.stringify(this.visboprojectversions[len-1])}`);
+    if (len == 1) {
+      keyMetricsCost.push([
+        new Date(),
+        keyMetricsCost[len-1][1],
+        keyMetricsCost[len-1][2],
+        keyMetricsCost[len-1][3],
+        keyMetricsCost[len-1][4],
+      ])
+    }
 
-    keyMetricsCost.push(['Timestamp', 'Actual Date Completion', 'Actual Dates (Base Line)', 'Total Date Completion', 'Total Dates (Base Line)']);
+    keyMetricsCost.push(['Timestamp', 'Total Dates (Base Line)', 'Actual Dates (Base Line)', 'Total Date Completion', 'Actual Date Completion']);
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;
@@ -299,17 +300,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         'title':'Completion of Deliveries: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'vAxis': {'title': 'Sum of weighted completed deliveries'},
+        'vAxis': {'title': 'Average difference in Days per dead line'},
         'hAxis': {format: 'dd.MM.yy'},
         'curveType': 'function',
         'pointSize': 10,
-        'series': {
-            '0': { lineWidth: 6, pointShape: 'circle' },
-            '1': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] },
-            '2': { lineWidth: 6, pointShape: 'circle' },
-            '3': { lineWidth: 2, pointShape: 'diamond', lineDashStyle: [4, 4] }
-          },
-          'colors': this.colors
+        'series': this.series,
+        'colors': this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -327,14 +323,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
-    var duplicate = keyMetricsCost.length - 1;
-    // this.log(`visboKeyMetrics duplicate ${duplicate} ${JSON.stringify(this.visboprojectversions[duplicate])}`);
+    var len = keyMetricsCost.length;
+    // this.log(`visboKeyMetrics duplicate ${len-1} ${JSON.stringify(this.visboprojectversions[len-1])}`);
     keyMetricsCost.push([
       new Date(),
-      keyMetricsCost[duplicate][1],
-      keyMetricsCost[duplicate][2],
-      keyMetricsCost[duplicate][3],
-      keyMetricsCost[duplicate][4],
+      keyMetricsCost[len-1][1],
+      keyMetricsCost[len-1][2],
+      keyMetricsCost[len-1][3],
+      keyMetricsCost[len-1][4]
     ])
 
     keyMetricsCost.push(['Timestamp', 'Actual Delivery Completion', 'Actual Delivery (Base Line)', 'Total Delivery Completion', 'Total Delivery (Base Line)']);
