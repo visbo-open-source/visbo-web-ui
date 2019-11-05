@@ -232,8 +232,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         } else {
           elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
         }
-        // this.log(`calc keyMetrics Delivery Completion Detail ${JSON.stringify(elementKeyMetric.keyMetrics)} `);
-        this.log(`calc keyMetrics Delivery Completion ${elementKeyMetric.deliveryCompletionTotal} ${elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal} ${elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal}`);
         this.visbokeymetrics.push(elementKeyMetric)
       }
     }
@@ -245,7 +243,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
         'width': '100%',
         'title':'Savings in Cost and End Date against Base Line',
-        'colorAxis': {'colors': ['red', 'green'], 'minValue': 0, 'maxValue': 100, 'legend': {'position': 'none'}},
+        'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
         'vAxis': {'title': 'Savings in end date (weeks)', 'baselineColor': 'blue'},
         'hAxis': {'title': 'Savings in Overall Cost % from Base Line', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
@@ -254,18 +252,21 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       };
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
-    if (this.visbokeymetrics.length > 30) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
+    if (this.visbokeymetrics.length > 20) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
     keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Delivery Completion in %', 'Cost Total (Base Line) in k\u20AC']);
     var rangeSavingEndDate = 0;
     var rangeBaseLineRange = 0
     for (var i = 0; i < this.visbokeymetrics.length; i++) {
       rangeSavingEndDate = Math.max(rangeSavingEndDate, Math.abs(this.visbokeymetrics[i].savingEndDate));
       rangeBaseLineRange = Math.max(rangeBaseLineRange, Math.abs(this.visbokeymetrics[i].savingCostTotal));
+      var colorValue = (this.visbokeymetrics[i].savingCostTotal >= 0 ? 1 : 0) +
+                        (this.visbokeymetrics[i].savingEndDate >= 0 ? 1 : 0);
       keyMetrics.push([
         this.visbokeymetrics[i].name,
         this.visbokeymetrics[i].savingCostTotal,
         this.visbokeymetrics[i].savingEndDate,
-        this.visbokeymetrics[i].deliveryCompletionTotal,
+        // this.visbokeymetrics[i].deliveryCompletionTotal,
+        colorValue,
         Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal)
       ])
     }

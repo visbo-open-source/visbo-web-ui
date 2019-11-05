@@ -325,13 +325,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // we need at least 2 items for Line Chart and show the current status for today
     var len = keyMetricsCost.length;
     // this.log(`visboKeyMetrics duplicate ${len-1} ${JSON.stringify(this.visboprojectversions[len-1])}`);
-    keyMetricsCost.push([
-      new Date(),
-      keyMetricsCost[len-1][1],
-      keyMetricsCost[len-1][2],
-      keyMetricsCost[len-1][3],
-      keyMetricsCost[len-1][4]
-    ])
+    if (len == 1) {
+      keyMetricsCost.push([
+        new Date(),
+        keyMetricsCost[len-1][1],
+        keyMetricsCost[len-1][2],
+        keyMetricsCost[len-1][3],
+        keyMetricsCost[len-1][4],
+      ])
+    }
 
     keyMetricsCost.push(['Timestamp', 'Actual Delivery Completion', 'Actual Delivery (Base Line)', 'Total Delivery Completion', 'Total Delivery (Base Line)']);
     keyMetricsCost.reverse();
