@@ -250,7 +250,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart = {
         // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
         'width': '100%',
-        'title':'Acceleration or Delay of Dead Lines: Plan vs. Base Line',
+        'title':'Acceleration/Delay of Deadlines: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
         'vAxis': {'title': 'Average Acceleration/Delay in Days'},
@@ -306,7 +306,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
 
     // keyMetricsCost.push(['Timestamp', 'Total Dates (Base Line)', 'Actual Dates (Base Line)', 'Total Date Completion', 'Actual Date Completion']);
-    keyMetricsCost.push(['Timestamp', 'Total Dates', 'Actual Dates']);
+    keyMetricsCost.push(['Timestamp', 'Total Deadlines', 'Actual Deadlines']);
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;
@@ -319,7 +319,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         'title':'Completion of Deliveries: Plan vs. Base Line',
 
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'vAxis': {'title': 'Average difference in Days per dead line'},
+        'vAxis': {'title': 'Average difference in Days per Deadline'},
         'hAxis': {format: 'dd.MM.yy'},
         'curveType': 'function',
         'pointSize': 10,
@@ -333,10 +333,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       if (!this.visboprojectversions[i].keyMetrics) this.visboprojectversions[i].keyMetrics = new VPVKeyMetrics;
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100)/100,
+        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentTotal || 0) * 100)/100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100)/100
+        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100)/100
       ])
       this.log(`visboKeyMetrics push ${JSON.stringify(keyMetricsCost[keyMetricsCost.length-1])}`);
     }
@@ -354,7 +354,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       ])
     }
 
-    keyMetricsCost.push(['Timestamp', 'Actual Delivery Completion', 'Actual Delivery (Base Line)', 'Total Delivery Completion', 'Total Delivery (Base Line)']);
+    keyMetricsCost.push(['Timestamp', 'Total Delivery (Base Line)', 'Actual Delivery (Base Line)', 'Total Delivery Completion', 'Actual Delivery Completion' ]);
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;
