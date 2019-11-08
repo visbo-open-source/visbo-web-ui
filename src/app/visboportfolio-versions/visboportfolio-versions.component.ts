@@ -253,7 +253,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
     if (this.visbokeymetrics.length > 20) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
-    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Delivery Completion in %', 'Cost Total (Base Line) in k\u20AC']);
+    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Cost/Time Score', 'Total Cost (Base Line) in k\u20AC']);
     var rangeSavingEndDate = 0;
     var rangeBaseLineRange = 0
     for (var i = 0; i < this.visbokeymetrics.length; i++) {
