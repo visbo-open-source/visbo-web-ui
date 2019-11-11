@@ -21,7 +21,7 @@
       <input id="auditText" type="text" class="col-2 col-sm-3 form-control" name="auditText" (ngSubmit)="getVisboAudits()" [(ngModel)]="auditText" >
 
       <label for="auditCount" class="col-1 col-form-label">Max:</label>
-      <select class="col-1 form-control" name="auditCount" [(ngModel)]="auditCount">
+      <select class="col-1 form-control mx-1" name="auditCount" [(ngModel)]="auditCount">
         <option>50</option>
         <option>100</option>
         <option>500</option>
@@ -29,16 +29,18 @@
       </select>
 
       <!-- <label for="auditArea" class="col-1 col-form-label">Area:</label> -->
-      <select class="col-1 form-control" id="auditType" name="auditArea" [(ngModel)]="auditArea">
+      <select class="col-1 form-control mx-1" id="auditType" name="auditArea" [(ngModel)]="auditArea">
         <option *ngFor="let actionItem of auditAreaList">{{actionItem.name}}</option>
       </select>
       <!-- <label for="auditArea" class="col-form-label">Action:</label> -->
-      <select class="col-1 form-control" id="auditType" name="actiontype" [(ngModel)]="auditType">
+      <select class="col-1 form-control mx-1" id="auditType" name="actiontype" [(ngModel)]="auditType">
         <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
       </select>
-      <button type="button" class="btn btn-sm btn-primary ml-auto" (click)="getVisboAudits()">Filter</button>
-      <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="downloadVisboAudit()">Download</button>
-      <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="switchChart()">{{chartButton}}</button>
+      <div class='btn-group '>
+        <button type="button" class="btn btn-sm btn-primary ml-auto mx-1" (click)="getVisboAudits()">Filter</button>
+        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="downloadVisboAudit()">Download</button>
+        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="switchChart()">{{chartButton}}</button>
+      </div>
     </div>
   </form>
   <div *ngIf="chart" class='container-fluid'>

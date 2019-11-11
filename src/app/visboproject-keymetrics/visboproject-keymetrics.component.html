@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='row'>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='pb-3 row'>
       <div class="col-4">
         <div class='btn-group'>
           <button type="button" class="btn btn-primary ml-auto" (click)="switchChart()">{{chartButton}}</button>
@@ -35,17 +35,43 @@
         </div>
       </div>
     </div>
+    <div *ngIf="chart && vpvActive">
+      <form>
+        <div class="row">
+          <label for="vpName" class="col-3 col-md-2">Name:</label>
+          <label class="col-8">{{ vpvActive.name }} from {{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </label>
+        </div>
+        <div class="row">
+          <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
+          <label class="col">{{ vpvActive.endDate || vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}} </label>
+        </div>
+        <div class="row" *ngIf="vpvActive.leadPerson">
+          <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
+          <label class="col">{{ vpvActive.leadPerson }} </label>
+        </div>
+        <div class="row" *ngIf="vpvActive.ampelStatus">
+          <!-- <label class="col-3 col-md-2">Ampel:</label> -->
+          <i class="px-3 col-3 col-md-2 fas fa-traffic-light"></i>
+          <div class="col">
+            <i *ngIf="vpvActive.ampelStatus == 1" class="fas fa-circle" style="color:green"></i>
+            <i *ngIf="vpvActive.ampelStatus == 2" class="fas fa-circle" style="color:yellow"></i>
+            <i *ngIf="vpvActive.ampelStatus == 3" class="fas fa-circle" style="color:red"></i>
+            <label class="px-3"> {{ vpvActive.ampelErlaeuterung }}</label>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div *ngIf="chart && graphDataLineChart.length > 0" class='container-fluid'>
       <div *ngIf="typeMetricChart == 'Costs'" class="col">
-        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
       <div *ngIf="typeMetricChart == 'Dates'" class="col">
-        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
       <div *ngIf="typeMetricChart == 'Deliveries'" class="col">
-        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
   </div>
 

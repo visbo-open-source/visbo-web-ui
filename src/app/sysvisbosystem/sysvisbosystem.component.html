@@ -9,8 +9,8 @@
     </div>
   </form>
   <div class="btn-toolbar" style="">
-    <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
-    <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+    <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+    <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
   </div>
   <div *ngIf="!showGroups" >
     <div >
@@ -21,10 +21,7 @@
           </h5>
         </div>
         <div *ngIf="hasSystemPerm(permSystem.ManagePerm)" class='col'>
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
-            Add User
-          </button>
+          <button type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
         </div>
       </div>
       <div class='panel-body'>

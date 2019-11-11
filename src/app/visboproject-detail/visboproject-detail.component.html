@@ -28,9 +28,9 @@
     </form>
     <div *ngIf="getVPPerm() != permVP.View">
       <div class="btn-toolbar" style="">
-        <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVPAudit(visboproject)">View Audit</button>
-        <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
-        <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+        <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">View Audit</button>
+        <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">Show Groups</button>
+        <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">Show Users</button>
       </div>
 
       <div *ngIf="!showGroups" >
@@ -43,9 +43,7 @@
             </div>
             <div *ngIf="hasVPPerm(permVP.ManagePerm)" class='col'>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#VpUserModalCreate">
-                Add User
-              </button>
+              <button type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VpUserModalCreate">Add User</button>
             </div>
           </div>
           <div class='panel-body'>
@@ -173,15 +171,11 @@
       </div>
     </div>
     <div>
-      <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary">save</button>
-      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">Restore</button>
+      <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">save</button>
+      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">Restore</button>
       <button (click)="goBack()">go back</button>
-      <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="bg-warning" style="float: right" title="Delete Visbo Project" data-toggle="modal" data-target="#VpDelete">
-        Delete!
-      </button>
-      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="bg-danger text-white" style="float: right" title="Destroy Visbo Project" data-toggle="modal" data-target="#VpDelete">
-        Destroy!
-      </button>
+      <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="Delete Visbo Project" data-toggle="modal" data-target="#VpDelete">Delete!</button>
+      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="Destroy Visbo Project" data-toggle="modal" data-target="#VpDelete">Destroy!</button>
     </div>
   </div>
 

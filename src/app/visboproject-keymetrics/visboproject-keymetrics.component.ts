@@ -26,6 +26,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   vpSelected: string;
   vpActive: VisboProject;
   deleted: boolean = false;
+  vpvActive: VisboProjectVersion;
 
   chartButton: string = "Show List";
   chart: boolean = true;
@@ -42,9 +43,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#3399cc'];
   colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB'];
   series: any =  {
-    '0': { lineWidth: 3, pointShape: 'star', lineDashStyle: [6, 6] },
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] },
     '1': { lineWidth: 4, pointShape: 'star' },
-    '2': { lineWidth: 3, pointShape: 'triangle', lineDashStyle: [6, 6] },
+    '2': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8] },
     '3': { lineWidth: 4, pointShape: 'triangle' }
   };
 
@@ -85,6 +86,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     var i: number;
     this.vpSelected = id;
+    this.parentThis = this;
     var chartFlag = this.chart;
 
     this.log(`get VP name if ID is used ${id}`);
@@ -159,6 +161,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.visbokeymetrics = [];
 
     if (!this.visboprojectversions) return;
+    this.vpvActive = this.visboprojectversions[this.visboprojectversions.length - 1]
     this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       if (this.visboprojectversions[i].keyMetrics) {
@@ -235,7 +238,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i+1].timestamp}`);
         continue;
       }
-      this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
+      // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
@@ -405,7 +408,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
-}
+  }
+
+  chartSelectRow(row: number, col: number, label: string) {
+    // this.log(`Line Chart: User selected ${row} ${col} ${label}`);
+    this.vpvActive = this.visboprojectversions.find(x => (new Date(x.timestamp)).getTime() == (new Date(label)).getTime());
+    this.log(`Line Chart: User selected ${row} ${col} ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+  }
 
   gotoVPDetail(visboproject: VisboProject):void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
