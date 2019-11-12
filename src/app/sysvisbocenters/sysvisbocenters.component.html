@@ -1,20 +1,15 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Centers
-        </h2>
-      </div>
-      <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='col-6 col-md-2'>
-          <button *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
-          <button *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
-      </div>
-      <div *ngIf="hasSystemPerm(permSystem.CreateVC)" class='col-6 col-md-2'>
-        <!-- Button trigger modal -->
-        <button type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
-      </div>
+  <div class='row'>
+    <div class='col'>
+      <h2 class='panel-heading ml-0'>
+        Visbo Centers
+      </h2>
+    </div>
+    <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='btn-group'>
+        <button *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
+        <button *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
+        <button *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
     </div>
   </div>
 

@@ -18,7 +18,7 @@
     </div>
     <div class="form-group row">
       <label for="auditText" class="col-1 col-form-label">Filter:</label>
-      <input id="auditText" type="text" class="col-2 col-sm-3 form-control" name="auditText" (ngSubmit)="getVisboAudits()" [(ngModel)]="auditText" >
+      <input id="auditText" type="text" class="col-2 col-sm-3 form-control" name="auditText" [(ngModel)]="auditText" >
 
       <label for="auditCount" class="col-1 col-form-label">Max:</label>
       <select class="col-1 form-control mx-1" name="auditCount" [(ngModel)]="auditCount">
@@ -108,11 +108,17 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-10">
+          <!-- <div class="col-10">
             <button type="button" class="btn btn-secondary" title="Prev Audit Entry" (click)='pageAuditIndex(-1)'>Prev</button>
           </div>
           <div class="col-2">
             <button type="button" class="btn btn-secondary align-self-end" title="Next Audit Entry" (click)='pageAuditIndex(1)'>Next</button>
+          </div> -->
+          <div class="col-11">
+            <h3 title="Previous Entry" (click)='pageAuditIndex(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
+          </div>
+          <div class="col-1">
+            <h3 title="Next Entry" (click)='pageAuditIndex(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
           </div>
         </div>
         <form>

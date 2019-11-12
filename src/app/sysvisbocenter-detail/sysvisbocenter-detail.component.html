@@ -1,126 +1,124 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div *ngIf="visbocenter">
-  <div class='container'>
   <h3>Visbo Center: <a (click)="gotoVPList(visbocenter)">{{ visbocenter.name | uppercase }}</a></h3>
-    <form>
-      <div class="form-group row">
-        <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
-        <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
-        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
-      </div>
-      <div class="form-group row">
-        <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-        <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
-        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
-      </div>
-      <div class="form-group row">
-        <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
-        <label class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-        <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      </div>
-    </form>
-    <div class="btn-toolbar" style="">
-      <button *ngIf="hasSystemPerm(permSystem.ViewAudit)" type="button" class="btn btn-md btn-light mx-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
-      <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-      <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
+  <form>
+    <div class="form-group row">
+      <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
+      <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+      <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
     </div>
-
-    <div *ngIf="!showGroups" >
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                Visbo Center Users
-            </h5>
-          </div>
-          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
-          </div>
-        </div>
-        <div class='panel-body'>
-          <table class='table table-hover'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th>Nr.</th>
-                <th (click)="sortUserTable(1)">e-mail</th>
-                <th (click)="sortUserTable(2)">Group</th>
-                <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
-              </tr>
-            </thead>
-            <!--Table body-->
-            <tbody>
-              <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
-                <td>{{memberIndex+1}}</td>
-                <td>{{member.email}}</td>
-                <td>{{member.groupName}}</td>
-                <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
-                  <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
-                  data-toggle="modal" data-target="#VcUserRemove">&times;</button>
-                </td>
-              </tr>
-            </tbody>
-            <!--Table body-->
-          </table>
-        </div>
-      </div>
+    <div class="form-group row">
+      <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
+      <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+      <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
     </div>
-    <div *ngIf="showGroups" >
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                Visbo Center Groups
-            </h5>
-          </div>
-          <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">Add Group</button>
-          </div>
-        </div>
-        <div class='panel-body'>
-          <table class='table table-hover'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th>Nr.</th>
-                <th (click)="sortGroupTable(1)">Group</th>
-                <th (click)="sortGroupTable(2)">Members</th>
-                <th >Flag</th>
-                <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
-                <th>Info</th>
-              </tr>
-            </thead>
-            <!--Table body-->
-            <tbody>
-              <tr *ngFor="let member of vgGroups; let memberIndex=index">
-                <td>{{memberIndex+1}}</td>
-                <td>{{member.name}}</td>
-                <td>{{member.users.length}}</td>
-                <td *ngIf="member.global">Global</td>
-                <td *ngIf="!member.global"></td>
-                <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
-                  <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
-                  data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
-                </td>
-                <td>
-                  <button class="Detail" title="Detail of Group"
-                   (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
-                </td>
-              </tr>
-            </tbody>
-            <!--Table body-->
-          </table>
-        </div>
-      </div>
+    <div class="form-group row">
+      <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
+      <label class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
-    <button *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mr-1">save</button>
-    <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary mr-1">Restore</button>
-    <button class="btn btn-secondary mr-1" (click)="goBack()">go back</button>
-    <button *ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
-    <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
+  </form>
+  <div class="btn-toolbar" style="">
+    <button *ngIf="hasSystemPerm(permSystem.ViewAudit)" type="button" class="btn btn-md btn-light mx-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
+    <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+    <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
   </div>
+
+  <div *ngIf="!showGroups" >
+    <div >
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+              Visbo Center Users
+          </h5>
+        </div>
+        <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th>Nr.</th>
+              <th (click)="sortUserTable(1)">e-mail</th>
+              <th (click)="sortUserTable(2)">Group</th>
+              <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
+              <td>{{memberIndex+1}}</td>
+              <td>{{member.email}}</td>
+              <td>{{member.groupName}}</td>
+              <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
+                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                data-toggle="modal" data-target="#VcUserRemove">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+          <!--Table body-->
+        </table>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showGroups" >
+    <div >
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+              Visbo Center Groups
+          </h5>
+        </div>
+        <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">Add Group</button>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th>Nr.</th>
+              <th (click)="sortGroupTable(1)">Group</th>
+              <th (click)="sortGroupTable(2)">Members</th>
+              <th >Flag</th>
+              <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
+              <th>Info</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let member of vgGroups; let memberIndex=index">
+              <td>{{memberIndex+1}}</td>
+              <td>{{member.name}}</td>
+              <td>{{member.users.length}}</td>
+              <td *ngIf="member.global">Global</td>
+              <td *ngIf="!member.global"></td>
+              <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
+                <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
+              </td>
+              <td>
+                <button class="Detail" title="Detail of Group"
+                 (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
+              </td>
+            </tr>
+          </tbody>
+          <!--Table body-->
+        </table>
+      </div>
+    </div>
+  </div>
+  <button *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mr-1">save</button>
+  <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary mr-1">Restore</button>
+  <button class="btn btn-secondary mr-1" (click)="goBack()">go back</button>
+  <button *ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
+  <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
 
   <!-- Modal Add System User -->
   <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">

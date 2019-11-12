@@ -38,15 +38,22 @@ export class LineChartComponent implements OnInit {
 
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {
-      var selectedItem = chart.getSelection()[0];
-      // parentThis.log(`Chart Line: The user selected ${JSON.stringify(selectedItem)}`)
-      if (parentThis == undefined) console.log(`Chart Line: The user clicked and this is undefined`)
-      else if (selectedItem) {
-        var row = selectedItem.row;
-        var col = selectedItem.column;
-        var label = data.getValue(selectedItem.row, 0);
-        // parentThis.log(`Chart Line: The user selected Row ${row} ${col} ${label}`)
-        parentThis.chartSelectRow(row, col, label);
+      var list = chart.getSelection();
+      if (!list || list.length == 0 ) {
+         console.log(`Chart Line: chartGetSelection is undefined`, list || list.length)
+      } else {
+        var selectedItem = list[0];
+        parentThis.log(`Chart Line: The user selected ${JSON.stringify(selectedItem)}`)
+        if (parentThis == undefined) console.log(`Chart Line: The user clicked and this is undefined`)
+        else if (selectedItem) {
+          var row = selectedItem.row;
+          var col = selectedItem.column;
+          parentThis.log(`Chart Line: The user selected Row ${row} ${col} ${label}`)
+          if (row) {
+            var label = data.getValue(selectedItem.row, 0);
+            parentThis.chartSelectRow(row, col, label);
+          }
+        }
       }
     }
 

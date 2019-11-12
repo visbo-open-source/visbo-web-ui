@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -65,6 +66,7 @@ export class VisbocenterAuditComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private location: Location,
     private router: Router
   ) { }
 
@@ -258,6 +260,11 @@ export class VisbocenterAuditComponent implements OnInit {
     if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
+  }
+
+  goBack(): void {
+    // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
+    this.location.back();
   }
 
   toggleDetail() {

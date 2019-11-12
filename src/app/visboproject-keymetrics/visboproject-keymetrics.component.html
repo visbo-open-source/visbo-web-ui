@@ -1,76 +1,72 @@
 <visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 *ngIf="!vpActive">
-          Project Key Metrics
-        </h2>
-        <h2 *ngIf="vpActive">
-          Project Key Metrics for:
-          <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
-            {{vpActive.name}}
-          </button>
-        </h2>
-      </div>
-      <div class='btn-group '>
-        <div *ngIf="hasVPPerm(permVP.DeleteVP)">
-        <!-- <div class='col-6'> -->
-            <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Deleted</button>
-            <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Existing</button>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='pb-3 row'>
-      <div class="col-4">
-        <div class='btn-group'>
-          <button type="button" class="btn btn-primary ml-auto" (click)="switchChart()">{{chartButton}}</button>
-        </div>
-      </div>
-      <div class="col-8">
-        <div *ngIf="chart && graphDataLineChart.length > 0" class='container-fluid'>
-          <select class="col-4 form-control" id="typeMetric" name="metric" [(ngModel)]="typeMetric" (change)="changeChart();">
-            <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="chart && vpvActive">
-      <form>
-        <div class="row">
-          <label for="vpName" class="col-3 col-md-2">Name:</label>
-          <label class="col-8">{{ vpvActive.name }} from {{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </label>
-        </div>
-        <div class="row">
-          <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
-          <label class="col">{{ vpvActive.endDate || vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}} </label>
-        </div>
-        <div class="row" *ngIf="vpvActive.leadPerson">
-          <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
-          <label class="col">{{ vpvActive.leadPerson }} </label>
-        </div>
-        <div class="row" *ngIf="vpvActive.ampelStatus">
-          <!-- <label class="col-3 col-md-2">Ampel:</label> -->
-          <i class="px-3 col-3 col-md-2 fas fa-traffic-light"></i>
-          <div class="col">
-            <i *ngIf="vpvActive.ampelStatus == 1" class="fas fa-circle" style="color:green"></i>
-            <i *ngIf="vpvActive.ampelStatus == 2" class="fas fa-circle" style="color:yellow"></i>
-            <i *ngIf="vpvActive.ampelStatus == 3" class="fas fa-circle" style="color:red"></i>
-            <label class="px-3"> {{ vpvActive.ampelErlaeuterung }}</label>
-          </div>
-        </div>
-      </form>
+  <div class='row'>
+    <div class='col'>
+      <h2 *ngIf="!vpActive">
+        Project Key Metrics
+      </h2>
+      <h2 *ngIf="vpActive">
+        Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+      </h2>
     </div>
   </div>
+  <div class='pb-3 row'>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class="col-2">
+        <button type="button" class="btn btn-primary ml-auto" (click)="switchChart()">{{chartButton}}</button>
+    </div>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class="col-8">
+      <!-- <div *ngIf="chart && graphDataLineChart.length > 0" class='container-fluid'> -->
+        <select *ngIf="chart && graphDataLineChart.length > 0" class="col-4 form-control" id="typeMetric" name="metric" [(ngModel)]="typeMetric" (change)="changeChart();">
+          <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+        </select>
+      <!-- </div> -->
+    </div>
+    <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='btn-group col-2'>
+      <!-- <div *ngIf="hasVPPerm(permVP.DeleteVP)"> -->
+          <button *ngIf="!deleted" type="button" class="m-1 btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Deleted</button>
+          <button *ngIf="deleted" type="button" class="m-1 btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Existing</button>
+      <!-- </div> -->
+    </div>
+    <!-- <div *ngIf="hasVPPerm(permVP.DeleteVP)" class="float-right">
+      <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary float-right" (click)="toggleVisboProjectVersions()">Show Deleted</button>
+      <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary float-right" (click)="toggleVisboProjectVersions()">Show Existing</button>
+    </div> -->
+  </div>
+  <div *ngIf="chart && vpvActive">
+    <form>
+      <div class="row">
+        <label for="vpName" class="col-3 col-md-2">Name:</label>
+        <label class="col-8">{{ vpvActive.name }} from {{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </label>
+      </div>
+      <div class="row">
+        <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
+        <label class="col">{{ vpvActive.endDate || vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}} </label>
+      </div>
+      <div class="row" *ngIf="vpvActive.leadPerson">
+        <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
+        <label class="col">{{ vpvActive.leadPerson }} </label>
+      </div>
+      <div class="row" *ngIf="vpvActive.ampelStatus">
+        <!-- <label class="col-3 col-md-2">Ampel:</label> -->
+        <h5 class="px-3 col-3 col-md-2 fas fa-traffic-light"></h5>
+        <div class="col">
+          <i *ngIf="vpvActive.ampelStatus == 1" class="fas fa-circle" style="color:green"></i>
+          <i *ngIf="vpvActive.ampelStatus == 2" class="fas fa-circle" style="color:yellow"></i>
+          <h5 *ngIf="vpvActive.ampelStatus == 3" class="fas fa-circle" style="color:red"></h5>
+          <label class="px-3"> {{ vpvActive.ampelErlaeuterung }}</label>
+        </div>
+      </div>
+    </form>
+  </div>
 
-  <div *ngIf="chart && graphDataLineChart.length > 0" class='container-fluid'>
-      <div *ngIf="typeMetricChart == 'Costs'" class="col">
+  <div *ngIf="chart && graphDataLineChart.length > 0" >
+      <div *ngIf="typeMetricChart == 'Costs'">
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
-      <div *ngIf="typeMetricChart == 'Dates'" class="col">
+      <div *ngIf="typeMetricChart == 'Dates'">
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
-      <div *ngIf="typeMetricChart == 'Deliveries'" class="col">
+      <div *ngIf="typeMetricChart == 'Deliveries'">
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
   </div>
