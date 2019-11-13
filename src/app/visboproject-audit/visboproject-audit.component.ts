@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -59,6 +60,7 @@ export class VisboprojectAuditComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
+    private location: Location,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -203,6 +205,10 @@ export class VisboprojectAuditComponent implements OnInit {
     this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   helperAuditIndex(auditIndex: number):void {
