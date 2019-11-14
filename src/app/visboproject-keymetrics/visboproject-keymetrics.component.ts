@@ -162,9 +162,48 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   visboKeyMetricsCalc(): void {
     // Calculate the keyMetrics Values to show in Chart and List
+    this.visbokeymetrics = [];
+
     if (!this.visboprojectversions) return;
+    this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
+    for (var i = 0; i < this.visboprojectversions.length; i++) {
+      if (this.visboprojectversions[i].keyMetrics) {
+        var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
+        elementKeyMetric.name = this.visboprojectversions[i].name;
+        elementKeyMetric._id = this.visboprojectversions[i]._id;
+        elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
+        elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
+        elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
+        // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
+        elementKeyMetric.savingCostTotal = ((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
+        if (elementKeyMetric.savingCostTotal > 100) elementKeyMetric.savingCostTotal = 100;
+        if (elementKeyMetric.savingCostTotal < -100) elementKeyMetric.savingCostTotal = -100;
+        elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
+        elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
+
+        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
+        elementKeyMetric.savingEndDate = this.helperDateDiff(
+          (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
+          (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
+          elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+
+        // Calculate the Delivery Completion
+        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {
+          elementKeyMetric.deliveryCompletionTotal = 100;
+        } else {
+          elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
+        }
+        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) {
+          elementKeyMetric.deliveryCompletionActual = 100;
+        } else {
+          elementKeyMetric.deliveryCompletionActual = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) * 100
+        }
+
+        this.visbokeymetrics.push(elementKeyMetric)
+      }
+    }
     // first element is the latest
-    this.setVpvActive(this.visboprojectversions[0]);
+    this.setVpvActive(this.visboprojectversions[this.visboprojectversions.length - 1]);
     this.visboKeyMetricsCostOverTime();
   }
 
