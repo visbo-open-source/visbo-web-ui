@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-md navbar-white bg-white sticky-top">
-  <a class="navbar-brand bg-white" (click)="gotoClickedItem('sysdashboard')">Overviews</a>
+<nav class="navbar navbar-expand-md bg-light sticky-top">
+  <a class="navbar-brand bg-light" (click)="gotoClickedItem('sysdashboard')">Overviews</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <i class="fas fa-bars"></i>
   </button>
@@ -7,39 +7,39 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link bg-white" (click)="gotoClickedItem('sysadmins')">Administrators</a>
+        <a class="nav-link bg-light" (click)="gotoClickedItem('sysadmins')">Administrators</a>
       </li>
       <li *ngIf="hasVCPerm(permVC.View)" class="nav-item">
-        <a class="nav-link bg-white" (click)="gotoClickedItem('sysvc')">Visbo Centers</a>
+        <a class="nav-link bg-light" (click)="gotoClickedItem('sysvc')">Visbo Centers</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-white" (click)="gotoClickedItem('sysuser')">Users</a>
+        <a class="nav-link bg-light" (click)="gotoClickedItem('sysuser')">Users</a>
       </li>
       <li *ngIf="hasSystemPerm(permSystem.ViewAudit)" class="nav-item">
-        <a class="nav-link bg-white"  (click)="gotoClickedItem('sysaudit')">Audit</a>
+        <a class="nav-link bg-light"  (click)="gotoClickedItem('sysaudit')">Audit</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle bg-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle bg-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Others
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <div *ngIf="hasSystemPerm(permSystem.ViewLog)">
-            <a class="dropdown-item bg-white"  (click)="gotoClickedItem('syslog')">Log Files</a>
-            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"  (click)="gotoClickedItem('syslog')">Log Files</a>
+            <!-- <div class="dropdown-divider"></div> -->
           </div>
           <div >
-            <a class="dropdown-item bg-white"  (click)="gotoClickedItem('systasks')">Tasks</a>
-            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"  (click)="gotoClickedItem('systasks')">Tasks</a>
+            <!-- <div class="dropdown-divider"></div> -->
           </div>
           <div >
-            <a class="dropdown-item bg-white"  (click)="gotoClickedItem('sysconfig')">Configuration</a>
-            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"  (click)="gotoClickedItem('sysconfig')">Configuration</a>
+            <!-- <div class="dropdown-divider"></div> -->
           </div>
-          <a class="dropdown-item bg-white" (click)="gotoClickedItem('sysothers')">Others</a>
+          <a class="dropdown-item" (click)="gotoClickedItem('sysothers')">Others</a>
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-white align-right"  (click)="gotoClickedItem('/')">Back</a>
+        <a class="nav-link bg-light align-right"  (click)="gotoClickedItem('/')">Back</a>
       </li>
     </ul>
   </div>

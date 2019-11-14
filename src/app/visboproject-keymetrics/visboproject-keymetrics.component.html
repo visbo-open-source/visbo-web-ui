@@ -35,24 +35,56 @@
   <div *ngIf="chart && vpvActive">
     <form>
       <div class="row">
-        <label for="vpName" class="col-3 col-md-2">Name:</label>
-        <label class="col-8">{{ vpvActive.name }} from {{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </label>
+        <label for="vpName" class="col-3 col-md-2">Status of:</label>
+        <dt class="col-8">{{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </dt>
       </div>
       <div class="row">
-        <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
-        <label class="col">{{ vpvActive.endDate || vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}} </label>
+        <label for="vpvKeyMetrics" class="col-3 col-md-2">Project Quality:</label>
+        <h5 class="col-2" (click)="switchTo('Costs')">
+          <a>
+            <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityCost == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Total Cost</span>
+          </a>
+        </h5>
+        <h5 class="col-2" (click)="switchTo('Deliveries')">
+          <a>
+            <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Actual Deliveries</span>
+          </a>
+        </h5>
+        <h5 class="col-2" (click)="switchTo('Deadlines')">
+          <a>
+            <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityDeadlines == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Actual Deadlines</span>
+          </a>
+        </h5>
       </div>
       <div class="row" *ngIf="vpvActive.leadPerson">
         <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
         <label class="col">{{ vpvActive.leadPerson }} </label>
       </div>
+      <div class="row">
+        <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
+        <div class="col">
+          <span> {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
+          <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
+          <span *ngIf="delayEndDate < 0" class="text-success"> {{delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
+          <span *ngIf="delayEndDate == 0" class="text-success"> in Time</span>
+        </div>
+      </div>
       <div class="row" *ngIf="vpvActive.ampelStatus">
         <!-- <label class="col-3 col-md-2">Ampel:</label> -->
-        <h5 class="px-3 col-3 col-md-2 fas fa-traffic-light"></h5>
+        <h4 class="px-3 col-3 col-md-2 fas fa-traffic-light"></h4>
         <div class="col">
-          <i *ngIf="vpvActive.ampelStatus == 1" class="fas fa-circle" style="color:green"></i>
-          <i *ngIf="vpvActive.ampelStatus == 2" class="fas fa-circle" style="color:yellow"></i>
-          <h5 *ngIf="vpvActive.ampelStatus == 3" class="fas fa-circle" style="color:red"></h5>
+          <h5 *ngIf="vpvActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></h5>
+          <h5 *ngIf="vpvActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></h5>
+          <h5 *ngIf="vpvActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></h5>
           <label class="px-3"> {{ vpvActive.ampelErlaeuterung }}</label>
         </div>
       </div>
@@ -63,7 +95,7 @@
       <div *ngIf="typeMetricChart == 'Costs'">
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
-      <div *ngIf="typeMetricChart == 'Dates'">
+      <div *ngIf="typeMetricChart == 'Deadlines'">
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
       </div>
       <div *ngIf="typeMetricChart == 'Deliveries'">

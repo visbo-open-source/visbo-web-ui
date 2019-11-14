@@ -48,8 +48,7 @@ export class LineChartComponent implements OnInit {
         else if (selectedItem) {
           var row = selectedItem.row;
           var col = selectedItem.column;
-          parentThis.log(`Chart Line: The user selected Row ${row} ${col} ${label}`)
-          if (row) {
+          if (row >= 0) {
             var label = data.getValue(selectedItem.row, 0);
             parentThis.chartSelectRow(row, col, label);
           }
