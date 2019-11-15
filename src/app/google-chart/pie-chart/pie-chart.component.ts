@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -17,8 +16,7 @@ export class PieChartComponent implements OnInit {
   @Input() parentThis: any;
 
   constructor(
-    private gChartService : GoogleChartService,
-    private messageService: MessageService,
+    private gChartService : GoogleChartService
   ) {
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages':['corechart','table']});
@@ -54,8 +52,7 @@ export class PieChartComponent implements OnInit {
       if (selectedItem) {
         var label = data.getValue(selectedItem.row, 0);
         var value = data.getValue(selectedItem.row, 1);
-        console.log(`The user selected Row ${label} ${value}`);
-        parentThis.log(`The user selected Row ${label} ${value}`)
+        parentThis.log(`The user selected Row ${selectedItem.row} ${label} ${value}`)
       }
     }
 
@@ -64,10 +61,4 @@ export class PieChartComponent implements OnInit {
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
     chart.draw(data, this.graphOptions || options);
   }
-
-  /** Log a message with the MessageService */
-  private log(message: string) {
-    this.messageService.add('Chart Pie: ' + message);
-  }
-
 }

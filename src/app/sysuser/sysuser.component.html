@@ -1,20 +1,17 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Users
-        </h2>
-      </div>
+  <div class='row'>
+    <h2 class='panel-heading'>
+      Visbo Users
+    </h2>
+  </div>
+  <form name="form" (ngSubmit)="getSysUsers()" #f="ngForm" novalidate>
+    <div class="form-group row">
+      <label for="userMatch" class="col-2 col-form-label">Filter:</label>
+      <input id="userMatch" type="text" class="col-2 col-sm-4 form-control mx-1" name="userMatch" [(ngModel)]="userMatch" >
+      <button type="button" class="btn btn-primary mx-1" (click)="getSysUsers()">Filter</button>
     </div>
-  </div>
-  <div class="form-group row">
-    <label for="userMatch" class="col-2 col-form-label">Filter:</label>
-    <input id="userMatch" type="text" class="col-2 col-sm-4 form-control" name="userMatch" [(ngModel)]="userMatch" >
-    <button type="button" class="btn btn-primary" (click)="getSysUsers()">Filter</button>
-  </div>
-
+  </form>
   <div class='container-fluid'>
     <div class='panel-body'>
       <table class='table table-hover table-sortable'>

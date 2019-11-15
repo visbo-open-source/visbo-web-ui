@@ -44,25 +44,18 @@ export class LogoutTimerComponent implements OnInit {
           if (!logoutTime) logoutTime = current
           var diff = Math.round((logoutTime.getTime() - current.getTime())/1000)
           // this.log(`Check Logout Time ${logoutTime.toISOString()} diff ${diff}`)
-          if (diff > 0 && diff <= 60) {
+          if (diff > 0 && diff <= 120) {
             this.alertService.error(`AutoLogout: Session expires in ${diff} Seconds`, true);
           }
           if (diff < 0) {
             this.log(`Logout Time passed`);
             this.alertService.error("AutoLogout: Session expired, please log in again", true);
-            this.router.navigate(['login']);
-            // this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
+            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
       );
-
-    // this.authenticationService.logoutCheck().subscribe(
-    //       data => {
-    //           console.log(JSON.stringify(data));
-    //           this.log(JSON.stringify(data));
-    //       }
-    //    );
   }
+
   /** Log a message with the MessageService */
   private log(message: string) {
     // console.log('logoutTimer: ' + message)

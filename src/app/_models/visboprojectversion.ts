@@ -4,13 +4,28 @@ export class VPVKeyMetrics {
   costBaseLastActual: number;
   costBaseLastTotal: number;
   timeCompletionCurrentActual: number;
+  timeCompletionCurrentTotal: number;
   timeCompletionBaseLastActual: number;
+  timeCompletionBaseLastTotal: number;
   endDateCurrent: Date;
   endDateBaseLast: Date;
   deliverableCompletionCurrentActual: number;
   deliverableCompletionCurrentTotal: number;
-  deliverableBaseLastActual: number;
-  deliverableBaseLastTotal: number;
+  deliverableCompletionBaseLastActual: number;
+  deliverableCompletionBaseLastTotal: number;
+};
+
+export class VPVKeyMetricsCalc {
+  _id: string;
+  name: string;
+  vpid: string;
+  timestamp: Date;
+  savingCostTotal: number;
+  savingCostActual: number;
+  savingEndDate: number;
+  deliveryCompletionTotal: number;
+  deliveryCompletionActual: number;
+  keyMetrics: VPVKeyMetrics;
 };
 
 export class VisboProjectVersion {

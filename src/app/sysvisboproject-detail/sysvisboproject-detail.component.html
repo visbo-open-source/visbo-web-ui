@@ -22,9 +22,9 @@
       </div>
     </form>
     <div class="btn-toolbar" style="">
-      <button *ngIf="hasSystemPerm(permSystem.ViewAudit)" type="button" class="btn btn-sm" (click)="gotoVPAudit(visboproject)">View Audit</button>
-      <button *ngIf="!showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Groups</button>
-      <button *ngIf="showGroups" type="button" class="btn btn-sm" (click)="toggleUserGroup()">Show Users</button>
+      <button *ngIf="hasSystemPerm(permSystem.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">View Audit</button>
+      <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+      <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
     </div>
 
     <div *ngIf="!showGroups" >

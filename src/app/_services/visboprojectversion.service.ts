@@ -11,10 +11,8 @@ import { AuthenticationService } from './authentication.service'
 import { environment } from '../../environments/environment';
 
 // import { VisboCenter } from '../_models/visbocenter';
-import { VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboProjectVersionResponse } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
-import { VisboPortfolioVersionResponse } from '../_models/visboportfolioversion';
+import { VisboProjectVersion, VisboProjectVersionResponse, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboPortfolioVersion, VisboPortfolioVersionResponse } from '../_models/visboportfolioversion';
 
 import { MessageService } from './message.service';
 
@@ -36,12 +34,14 @@ export class VisboProjectVersionService {
 
 
   /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
-  getVisboProjectVersions(id: string, deleted: boolean = false): Observable<VisboProjectVersion[]> {
+  getVisboProjectVersions(id: string, deleted: boolean = false, variantName: string = undefined, keyMetrics: boolean = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (id) params = params.append('vpid', id);
     if (deleted) params = params.append('deleted', '1');
+    if (variantName != undefined) params = params.append('variantName', variantName);
+    if (keyMetrics) params = params.append('keyMetrics', '1');
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(this.vpvUrl, { headers , params })

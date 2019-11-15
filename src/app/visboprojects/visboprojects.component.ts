@@ -99,23 +99,12 @@ export class VisboProjectsComponent implements OnInit {
                 error => {
                   this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
                   this.alertService.error(error.error.message);
-                  // redirect to login and come back to current URL
-                  if (error.status == 401) {
-                    this.alertService.error("Session expired, please log in again", true);
-                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-                  }
                 }
               );
           },
           error => {
             this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
-            // redirect to login and come back to current URL
-            if (error.status == 401) {
-              this.alertService.error("Session expired, please log in again", true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-            } else {
-              this.alertService.error(error.error.message);
-            }
+            this.alertService.error(error.error.message);
           }
         );
     } else {
@@ -129,13 +118,7 @@ export class VisboProjectsComponent implements OnInit {
           },
           error => {
             this.log(`get VPs all failed: error:  ${error.status} message: ${error.error.message}`);
-            // redirect to login and come back to current URL
-            if (error.status == 401) {
-              this.alertService.error("Session expired, please log in again", true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-            } else {
-              this.alertService.error(error.error.message);
-            }
+            this.alertService.error(error.error.message);
           }
         );
     }
@@ -159,9 +142,6 @@ export class VisboProjectsComponent implements OnInit {
         } else if (error.status == 409) {
           // this.alertService.error(`Visbo Project ${name} already exists or not allowed`);
           this.alertService.error('Visbo Project already exists or not allowed');
-        } else if (error.status == 401) {
-          this.alertService.error(`Session expired, please login again`, true);
-          this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
         } else {
           this.alertService.error(error.error.message);
         }
@@ -178,9 +158,6 @@ export class VisboProjectsComponent implements OnInit {
           // this.log(`delete VP failed: error: ${error.status} messages: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${name}`, true);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -197,7 +174,7 @@ export class VisboProjectsComponent implements OnInit {
       this.router.navigate(['vpf/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
     } else {
       this.log(`goto VPV for VP ${visboproject._id} Deleted ${deleted}`);
-      this.router.navigate(['vpv/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+      this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
     }
   }
 

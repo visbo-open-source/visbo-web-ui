@@ -1,0 +1,152 @@
+<visbo-navbar></visbo-navbar>
+<div class='well'>
+  <div class='row'>
+    <div class='col'>
+      <h2 *ngIf="!vpActive">
+        Project Key Metrics
+      </h2>
+      <h2 *ngIf="vpActive">
+        Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+      </h2>
+    </div>
+  </div>
+  <div class='pb-3 row'>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class="col-2">
+        <button type="button" class="btn btn-primary ml-auto" (click)="switchChart()">{{chartButton}}</button>
+    </div>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class="col-8">
+      <!-- <div *ngIf="chart && graphDataLineChart.length > 0" class='container-fluid'> -->
+        <select *ngIf="chart && graphDataLineChart.length > 0" class="col-4 form-control" id="typeMetric" name="metric" [(ngModel)]="typeMetric" (change)="changeChart();">
+          <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+        </select>
+      <!-- </div> -->
+    </div>
+    <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='btn-group col-2'>
+      <!-- <div *ngIf="hasVPPerm(permVP.DeleteVP)"> -->
+          <button *ngIf="!deleted" type="button" class="m-1 btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Deleted</button>
+          <button *ngIf="deleted" type="button" class="m-1 btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Existing</button>
+      <!-- </div> -->
+    </div>
+    <!-- <div *ngIf="hasVPPerm(permVP.DeleteVP)" class="float-right">
+      <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary float-right" (click)="toggleVisboProjectVersions()">Show Deleted</button>
+      <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary float-right" (click)="toggleVisboProjectVersions()">Show Existing</button>
+    </div> -->
+  </div>
+  <div *ngIf="chart && vpvActive">
+    <form>
+      <div class="row">
+        <label for="vpName" class="col-3 col-md-2">Status of:</label>
+        <dt class="col-8">{{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </dt>
+      </div>
+      <div class="row">
+        <label for="vpvKeyMetrics" class="col-3 col-md-2">Project Quality:</label>
+        <h5 class="col-2" (click)="switchTo('Costs')">
+          <a>
+            <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityCost == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Total Cost</span>
+          </a>
+        </h5>
+        <h5 class="col-2" (click)="switchTo('Deliveries')">
+          <a>
+            <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Actual Deliveries</span>
+          </a>
+        </h5>
+        <h5 class="col-2" (click)="switchTo('Deadlines')">
+          <a>
+            <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
+            <span *ngIf="qualityDeadlines == 2" class="fas fa-question-circle" style="color:orange"></span>
+            <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            <span> Actual Deadlines</span>
+          </a>
+        </h5>
+      </div>
+      <div class="row" *ngIf="vpvActive.leadPerson">
+        <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
+        <label class="col">{{ vpvActive.leadPerson }} </label>
+      </div>
+      <div class="row">
+        <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
+        <div class="col">
+          <span> {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
+          <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
+          <span *ngIf="delayEndDate < 0" class="text-success"> {{delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
+          <span *ngIf="delayEndDate == 0" class="text-success"> in Time</span>
+        </div>
+      </div>
+      <div class="row" *ngIf="vpvActive.ampelStatus">
+        <!-- <label class="col-3 col-md-2">Ampel:</label> -->
+        <h4 class="px-3 col-3 col-md-2 fas fa-traffic-light"></h4>
+        <div class="col">
+          <h5 *ngIf="vpvActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></h5>
+          <h5 *ngIf="vpvActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></h5>
+          <h5 *ngIf="vpvActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></h5>
+          <label class="px-3"> {{ vpvActive.ampelErlaeuterung }}</label>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="chart && graphDataLineChart.length > 0" >
+      <div *ngIf="typeMetricChart == 'Costs'">
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+      </div>
+      <div *ngIf="typeMetricChart == 'Deadlines'">
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+      </div>
+      <div *ngIf="typeMetricChart == 'Deliveries'">
+        <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+      </div>
+  </div>
+
+  <div *ngIf="!chart" class='container-fluid'>
+    <div class='panel-body'>
+      <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
+            <th class="text-right" (click)="sortKeyMetricsTable(2)">Saving Cost</th>
+            <th class="text-right" (click)="sortKeyMetricsTable(3)">Saving End Date</th>
+            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)">Total Cost (Base Line)</th>
+            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
+            <th class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(6)">Delivery Completion</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vp)'
+          data-toggle="modal" data-target="#ProjectDetail">
+            <td>{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
+            <td class="text-right">{{vp.savingCostTotal | number:'1.0-0'}} %</td>
+            <td class="text-right">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
+            <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+            <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
+            <td class="text-right">{{vp.deliveryCompletionTotal | number:'1.0-0' }} %</td>
+          </tr>
+        </tbody>
+      </table>
+      <table *ngIf="!hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th (click)="sortKeyMetricsTable(1)">Project</th>
+            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Timestamp</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vp)'
+          data-toggle="modal" data-target="#ProjectDetail">
+            <td>{{vp.name }}</td>
+            <td class="text-right">{{vp.timestamp  | date :'dd.MM.yyyy'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
