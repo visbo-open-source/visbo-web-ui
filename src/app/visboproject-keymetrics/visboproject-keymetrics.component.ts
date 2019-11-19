@@ -662,6 +662,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboProjectVersion: ' + message);
+    this.messageService.add('VisboProjectKeyMetrics: ' + message);
   }
 }
