@@ -32,6 +32,7 @@ export class BubbleChartComponent implements OnInit {
     let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     let parentThis = this.parentThis;
 
+    parentThis.log("Google Chart Bubble Draw/Refresh");
     let options = {'title':'Bubble Chart'};
 
     // The select handler. Call the chart's getSelection() method

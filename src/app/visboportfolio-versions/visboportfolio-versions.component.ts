@@ -29,6 +29,20 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     dropDownSelected: string;
     dropDownValue: number;
 
+    colorMetric: any[] = [{name: "Critical", color: 'red'}, {name: "Warning", color: 'yellow'}, {name: "Good", color: 'green'} ];
+
+    typeMetricList: any[] = [
+      {name: "Total Cost", metric: "Costs"},
+      {name: "Change in End Date (weeks)", metric: "EndDate"},
+      {name: "Reached Deadlines", metric: "Deadlines"},
+      {name: "Reached Deliveries", metric: "Deliveries"}
+    ];
+    typeMetricX: string = this.typeMetricList[0].name;
+    typeMetricY: string = this.typeMetricList[1].name;
+
+    typeMetricChartX: string = this.typeMetricList[0].metric;
+    typeMetricChartY: string = this.typeMetricList[1].metric;
+
     vpSelected: string;
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
@@ -39,9 +53,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     chartButton: string = "Show List";
     chart: boolean = true;
     parentThis: any;
-
+    showChart: boolean = true;
     graphBubbleData: any[] = [];
     graphBubbleOptions: any = undefined;
+    graphBubbleLabelX: string;
+    graphBubbleLabelY: string;
 
     sortAscending: boolean;
     sortColumn: number = 6;
@@ -166,6 +182,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`get getRefDateVersions ${this.vpvRefDate} ${increment}`);
     var newRefDate = new Date(this.vpvRefDate.getTime());
     switch(this.refDateInterval) {
+      case 'day':
+        newRefDate.setDate(newRefDate.getDate() + increment)
+        break;
       case 'week':
         newRefDate.setDate(newRefDate.getDate() + increment * 7)
         break;
@@ -208,80 +227,218 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
         elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
         // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
-        elementKeyMetric.savingCostTotal = ((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
-        if (elementKeyMetric.savingCostTotal > 100) elementKeyMetric.savingCostTotal = 100;
-        if (elementKeyMetric.savingCostTotal < -100) elementKeyMetric.savingCostTotal = -100;
-        elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
-        elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
+        elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1) || 0;
+        // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
+        elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1) || 0;
+        // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
 
         // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
         elementKeyMetric.savingEndDate = this.helperDateDiff(
-          (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
-          (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
+          (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
+          (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'w') || 0;
           elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
 
-        // // Calculate the Score as a combination of Saving in Time & Cost
-        // var negative = elementKeyMetric.savingEndDate > 0 ? 1 : -1;
-        // elementKeyMetric.score = 0;
-        // elementKeyMetric.score += Math.max(elementKeyMetric.savingEndDate, 20 * negative) * 5;
-        // elementKeyMetric.score += elementKeyMetric.savingCostTotal;
+        // Calculate the Deadlines Completion
+        elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal || 1) || 0;
+        elementKeyMetric.timeCompletionActual = (elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || 1) || 0;
 
         // Calculate the Delivery Completion
-        if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {
-          elementKeyMetric.deliveryCompletionTotal = 100;
-        } else {
-          elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
-        }
+        elementKeyMetric.deliveryCompletionTotal = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal || 1) || 0;
+        elementKeyMetric.deliveryCompletionActual = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual || 1) || 0;
+
         this.visbokeymetrics.push(elementKeyMetric)
       }
     }
-    this.visboKeyMetricsCostVsEndDate();
+    this.visboKeyMetricsCalcBubble();
   }
 
-  visboKeyMetricsCostVsEndDate(): void {
+  changeChart() {
+    this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
+    this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
+    this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
+    this.chart = undefined;
+    this.visboKeyMetricsCalcBubble();
+  }
+
+  drawChart() {
+    this.chart = true;
+  }
+
+  visboKeyMetricsCalcBubble(): void {
     this.graphBubbleOptions = {
         // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
         'width': '100%',
-        'title':'Savings in Cost and End Date against Base Line',
-        'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
-        'vAxis': {'title': 'Savings in end date (weeks)', 'baselineColor': 'blue'},
-        'hAxis': {'title': 'Savings in Overall Cost % from Base Line', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'},
+        // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
+        // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
+        // 'vAxis': {'title': 'Delayed \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 End date (weeks) \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 Ahead', 'baselineColor': 'blue'},
+        'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
+        'hAxis': {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'baselineColor': 'blue'},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 13 } }
+        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 13 } },
+        'tooltip': { 'showColorCode': false }
       };
+
+    this.graphBubbleAxis(); // set the Axis Description and properties
+
     var keyMetrics: any = [];
     if (!this.visbokeymetrics) return;
     if (this.visbokeymetrics.length > 20) this.graphBubbleOptions.bubble.textStyle.fontSize = 1
-    keyMetrics.push(['ID', 'Savings Cost in %', 'Savings End Date (weeks)', 'Cost/Time Score', 'Total Cost (Base Line) in k\u20AC']);
-    var rangeSavingEndDate = 0;
-    var rangeBaseLineRange = 0
+    keyMetrics.push(['ID', this.graphBubbleLabelX, this.graphBubbleLabelY, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (var i = 0; i < this.visbokeymetrics.length; i++) {
-      rangeSavingEndDate = Math.max(rangeSavingEndDate, Math.abs(this.visbokeymetrics[i].savingEndDate));
-      rangeBaseLineRange = Math.max(rangeBaseLineRange, Math.abs(this.visbokeymetrics[i].savingCostTotal));
-      var colorValue = (this.visbokeymetrics[i].savingCostTotal >= 0 ? 1 : 0) +
-                        (this.visbokeymetrics[i].savingEndDate >= 0 ? 1 : 0);
+      // var colorValue = (this.visbokeymetrics[i].savingCostTotal <= 1 ? 1 : 0) +
+      //                   (this.visbokeymetrics[i].savingEndDate <= 0 ? 1 : 0);
+      var colorValue = 0;
+      var valueX: number;
+      var valueY: number;
+      switch (this.typeMetricChartX) {
+        case 'Costs':
+          valueX = this.visbokeymetrics[i].savingCostTotal;
+          colorValue += valueX <= 1 ? 1 : 0;
+          break;
+        case 'EndDate':
+          valueX = this.visbokeymetrics[i].savingEndDate;
+          colorValue += valueX <= 0 ? 1 : 0;
+          break;
+        case 'Deadlines':
+          valueX = this.visbokeymetrics[i].timeCompletionActual;
+          colorValue += valueX >= 1 ? 1 : 0;
+          break;
+        case 'Deliveries':
+          valueX = this.visbokeymetrics[i].deliveryCompletionActual;
+          colorValue += valueX >= 1 ? 1 : 0;
+          break;
+      }
+      switch (this.typeMetricChartY) {
+        case 'Costs':
+          valueY = this.visbokeymetrics[i].savingCostTotal;
+          colorValue += valueY <= 1 ? 1 : 0;
+          break;
+        case 'EndDate':
+          valueY = this.visbokeymetrics[i].savingEndDate;
+          colorValue += valueY <= 0 ? 1 : 0;
+          break;
+        case 'Deadlines':
+          valueY = this.visbokeymetrics[i].timeCompletionActual;
+          colorValue += valueY >= 1 ? 1 : 0;
+          break;
+        case 'Deliveries':
+          valueY = this.visbokeymetrics[i].deliveryCompletionActual;
+          colorValue += valueY >= 1 ? 1 : 0;
+          break;
+      }
+
       keyMetrics.push([
         this.visbokeymetrics[i].name,
-        this.visbokeymetrics[i].savingCostTotal,
-        this.visbokeymetrics[i].savingEndDate,
-        // this.visbokeymetrics[i].deliveryCompletionTotal,
-        colorValue,
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal)
+        valueX,
+        valueY,
+        this.colorMetric[colorValue].name,
+        Math.trunc(this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
       ])
     }
-    if (rangeBaseLineRange > 0) {
-      rangeBaseLineRange *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = -rangeBaseLineRange;
-      this.graphBubbleOptions.hAxis.maxValue = rangeBaseLineRange;
-    }
-    if (rangeSavingEndDate > 0) {
-      rangeSavingEndDate *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = -rangeSavingEndDate;
-      this.graphBubbleOptions.vAxis.maxValue = rangeSavingEndDate;
-    }
-    // this.log(`visboKeyMetrics Range budget ${rangeBaseLineRange} endDate ${rangeSavingEndDate} Options ${JSON.stringify(this.graphBubbleOptions)}`);
+    this.calcRangeAxis();
     this.graphBubbleData = keyMetrics;
+  }
+
+  calcRangeAxis(): void {
+    var rangeAxis: number = 0;
+
+    for (var i=0; i < this.visbokeymetrics.length; i++) {
+      switch (this.typeMetricChartX) {
+        case 'Costs':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingCostTotal-1));
+          break;
+        case 'EndDate':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingEndDate));
+          break;
+        case 'Deadlines':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].timeCompletionActual-1));
+          break;
+        case 'Deliveries':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].deliveryCompletionActual-1));
+          break;
+      }
+    }
+    if (this.typeMetricChartX == 'EndDate') {
+      rangeAxis *= 1.1;
+      this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
+      this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
+    } else {
+      rangeAxis *= 1.1;
+      this.graphBubbleOptions.hAxis.minValue = 1-rangeAxis;
+      this.graphBubbleOptions.hAxis.maxValue = 1+rangeAxis;
+    }
+
+    rangeAxis = 0;
+    for (var i=0; i < this.visbokeymetrics.length; i++) {
+      switch (this.typeMetricChartY) {
+        case 'Costs':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingCostTotal-1));
+          break;
+        case 'EndDate':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingEndDate));
+          break;
+        case 'Deadlines':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].timeCompletionActual-1));
+          break;
+        case 'Deliveries':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].deliveryCompletionActual-1));
+          break;
+      }
+    }
+    if (this.typeMetricChartY == 'EndDate') {
+      rangeAxis *= 1.1;
+      this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
+      this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
+    } else {
+      rangeAxis *= 1.1;
+      this.graphBubbleOptions.vAxis.minValue = 1-rangeAxis;
+      this.graphBubbleOptions.vAxis.maxValue = 1+rangeAxis;
+    }
+  }
+
+  graphBubbleAxis(): void {
+    switch (this.typeMetricChartX) {
+      case 'Costs':
+        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelX = 'Planned Total Cost in %';
+        break;
+      case 'EndDate':
+        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'title': 'Change in End Date (weeks)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelX = 'Change in End Date (Weeks)';
+        break;
+      case 'Deadlines':
+        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deadlines', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelX = 'Achieved Deadlines in %';
+        break;
+      case 'Deliveries':
+        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deliveries', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelX = 'Achieved Deliveries in %';
+        break;
+    }
+    switch (this.typeMetricChartY) {
+      case 'Costs':
+        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelY = 'Planned Total Cost in %';
+        break;
+      case 'EndDate':
+        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'title': 'Change in End Date (weeks)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelY = 'Change in End Date (Weeks)';
+        break;
+      case 'Deadlines':
+        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deadlines', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelY = 'Achieved Deadlines in %';
+      break;
+      case 'Deliveries':
+        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deliveries', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleLabelY = 'Achieved Deliveries in %';
+        break;
+    }
+    this.graphBubbleOptions.series = {};
+    this.graphBubbleOptions.series.Critical = {color: this.colorMetric[0].color};
+    this.graphBubbleOptions.series.Warning = {color: this.colorMetric[1].color};
+    this.graphBubbleOptions.series.Good = {color: this.colorMetric[2].color};
+    // this.log(`Series: ${JSON.stringify(this.graphBubbleOptions.series)}`)
   }
 
   // get the details of the project

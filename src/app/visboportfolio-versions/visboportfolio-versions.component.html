@@ -27,16 +27,41 @@
 
   <div class='container-fluid'>
     <div class="row">
-      <h3 title="Previous Period" (click)='getRefDateVersions(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
-      <h3 class="col-6 d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</h3>
-      <div class="col-4 d-block d-lg-none">Metrics: {{vpvRefDate | date: 'dd.MM'}}</div>
-      <h3 title="Next Period" (click)='getRefDateVersions(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
-      <select class="col-2 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+      <!-- <h3 class="m-0" title="Previous Period" (click)='getRefDateVersions(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3> -->
+      <div style="font-size: 2em" class="col-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></div>
+      <!-- <h3 class=" d-flex justify-content-center col-9 d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</h3>
+      <h3 class="col-9 d-block d-lg-none d-flex justify-content-center">Metrics: {{vpvRefDate | date: 'dd.MM'}}</h3> -->
+      <h3 class="d-flex justify-content-center col-9">
+        <div class="d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
+        <div class="d-block d-lg-none">Metrics: {{vpvRefDate | date: 'dd.MM'}}</div>
+      </h3>
+      <div style="font-size: 2em" class="col-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></div>
+      <select class="col-1 align-right form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
         <option>day</option>
         <option>week</option>
         <option>month</option>
         <option>quarter</option>
       </select>
+    </div>
+    <div class="row">
+      <!-- <div class="d-flex justify-content-center"> -->
+
+        <label class="col-2 my-2">Performance of:</label>
+        <div class="Col-3">
+          <select class="form-control" id="typeMetricX" name="metricX" [(ngModel)]="typeMetricX" (change)="changeChart();">
+            <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+          </select>
+        </div>
+        <label class="col-1 my-2">against</label>
+        <div class="Col-3">
+          <select class="form-control" id="typeMetricY" name="metricY" [(ngModel)]="typeMetricY" (change)="changeChart();">
+            <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+          </select>
+        </div>
+        <div class="Col-2">
+          <button type="button" class="btn btn-secondary ml-2" (click)="drawChart()">Go!</button>
+        </div>
+      <!-- </div> -->
     </div>
   </div>
   <div *ngIf="visbokeymetrics.length > 0">
@@ -46,14 +71,14 @@
       </div>
     </div>
 
-    <div *ngIf="!chart" class='container-fluid'>
+    <div *ngIf="chart==false" class='container-fluid'>
       <div class='panel-body'>
         <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
           <thead>
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Project</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(2)">Saving Cost</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)">Saving End Date</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(2)">Change Total Cost</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(3)">Change End Date</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)">Total Cost (Base Line)</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
               <th class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(6)">Delivery Completion</th>
@@ -64,7 +89,7 @@
             <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vp)'
             data-toggle="modal" data-target="#ProjectDetail">
               <td>{{vp.name }}</td>
-              <td class="text-right">{{vp.savingCostTotal | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.savingCostTotal*100 | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
               <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
               <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
@@ -93,8 +118,8 @@
     </div>
   </div>
   <div *ngIf="visbokeymetrics.length == 0">
-    <h3>
-      No Project Versions related to {{vpvRefDate | date: 'dd.MM.yyy'}}
+    <h3 class="d-flex justify-content-center">
+      No Project Versions related to this Date
     </h3>
   </div>
 </div>
