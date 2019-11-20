@@ -149,9 +149,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   getVisboPortfolioKeyMetrics(): void {
+    var chart = this.chart
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
-    var chartFlag = this.chart;
-    this.chart = false;
+    this.showChart = false;
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
       .subscribe(
@@ -161,11 +161,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboKeyMetricsCalc();
           this.sortKeyMetricsTable(undefined);
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.chart = chartFlag;
+            this.chart = chart;
           } else {
             this.chart = false;
           }
-
+          this.showChart = true;
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -253,17 +253,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   changeChart() {
-    var chart = this.chart;
     this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
     this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
-    this.chart = undefined;
     this.visboKeyMetricsCalcBubble();
-    this.chart = true;
+    this.showChart = true;
   }
 
   drawChart(visible: boolean) {
-    this.chart = visible;
+    this.showChart = visible;
   }
 
   visboKeyMetricsCalcBubble(): void {
