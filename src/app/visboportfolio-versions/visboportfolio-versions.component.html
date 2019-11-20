@@ -44,24 +44,15 @@
       </select>
     </div>
     <div class="row">
-      <!-- <div class="d-flex justify-content-center"> -->
-
-        <label class="col-2 my-2">Performance of:</label>
-        <div class="Col-3">
-          <select class="form-control" id="typeMetricX" name="metricX" [(ngModel)]="typeMetricX" (change)="changeChart();">
-            <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
-          </select>
-        </div>
-        <label class="col-1 my-2">against</label>
-        <div class="Col-3">
-          <select class="form-control" id="typeMetricY" name="metricY" [(ngModel)]="typeMetricY" (change)="changeChart();">
-            <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
-          </select>
-        </div>
-        <div class="Col-2">
-          <button type="button" class="btn btn-secondary ml-2" (click)="drawChart()">Go!</button>
-        </div>
-      <!-- </div> -->
+      <div class="my-1">
+        <span>Performance of: </span>
+        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(undefined)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
+        <span> against </span>
+        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(undefined)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
+      </div>
+      <div class="mx-2">
+        <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" (click)= "drawChart(undefined)" data-target="#VpfMetricSelector">Change</button>
+      </div>
     </div>
   </div>
   <div *ngIf="visbokeymetrics.length > 0">
@@ -77,11 +68,14 @@
           <thead>
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Project</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(2)">Change Total Cost</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)">Change End Date</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)">Total Cost (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
-              <th class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(6)">Delivery Completion</th>
+              <th *ngIf="selectedMetric('Costs')" class="text-right" (click)="sortKeyMetricsTable(2)">Change Total Cost</th>
+              <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">Total Cost (Base Line)</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">Change End Date</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
+              <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">Achieved Deadlines</th>
+              <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Deadlines (Base Line)</th>
+              <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">Achieved Deliveries</th>
+              <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">Deliveries (Base Line)</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -89,11 +83,14 @@
             <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vp)'
             data-toggle="modal" data-target="#ProjectDetail">
               <td>{{vp.name }}</td>
-              <td class="text-right">{{vp.savingCostTotal*100 | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
-              <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
-              <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
-              <td class="text-right">{{vp.deliveryCompletionTotal | number:'1.0-0' }} %</td>
+              <td *ngIf="selectedMetric('Costs')" class="text-right">{{vp.savingCostTotal*100 | number:'1.0-0'}} %</td>
+              <td *ngIf="selectedMetric('Costs')" class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('EndDate')" class="text-right">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
+              <td *ngIf="selectedMetric('EndDate')" class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
+              <td *ngIf="selectedMetric('Deadlines')" class="text-right">{{vp.timeCompletionActual*100 | number:'1.0-0'}} %</td>
+              <td *ngIf="selectedMetric('Deadlines')" class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('Deliveries')" class="text-right">{{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %</td>
+              <td *ngIf="selectedMetric('Deliveries')" class="text-right">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
             </tr>
           </tbody>
         </table>
@@ -121,5 +118,39 @@
     <h3 class="d-flex justify-content-center">
       No Project Versions related to this Date
     </h3>
+  </div>
+</div>
+
+<!-- Modal Change Key metrics -->
+<div class="modal fade" id="VpfMetricSelector" tabindex="-1" role="dialog" aria-labelledby="VpfMetricSelectorTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VpfMetricSelectorTitle">Change Key Metrics</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="newUserInvite" #f="ngForm" novalidate>
+          <div class="form-group">
+            <label for="typeMetricX" class="col-form-label">X-Axis:</label>
+            <select class="form-control" id="typeMetricX" name="typeMetricX" [(ngModel)]="typeMetricX">
+              <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="typeMetricY" class="col-form-label">Y-Axis:</label>
+            <select class="form-control" id="typeMetricY" name="typeMetricY" [(ngModel)]="typeMetricY">
+              <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">Change</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>

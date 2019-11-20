@@ -34,8 +34,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     typeMetricList: any[] = [
       {name: "Total Cost", metric: "Costs"},
       {name: "Change in End Date (weeks)", metric: "EndDate"},
-      {name: "Reached Deadlines", metric: "Deadlines"},
-      {name: "Reached Deliveries", metric: "Deliveries"}
+      {name: "Achieved Deadlines", metric: "Deadlines"},
+      {name: "Achieved Deliveries", metric: "Deliveries"}
     ];
     typeMetricX: string = this.typeMetricList[0].name;
     typeMetricY: string = this.typeMetricList[1].name;
@@ -253,15 +253,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   changeChart() {
+    var chart = this.chart;
     this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
     this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
     this.chart = undefined;
     this.visboKeyMetricsCalcBubble();
+    this.chart = true;
   }
 
-  drawChart() {
-    this.chart = true;
+  drawChart(visible: boolean) {
+    this.chart = visible;
   }
 
   visboKeyMetricsCalcBubble(): void {
@@ -273,6 +275,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         // 'vAxis': {'title': 'Delayed \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 End date (weeks) \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 Ahead', 'baselineColor': 'blue'},
         'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
         'hAxis': {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'baselineColor': 'blue'},
+        // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
         'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 13 } },
@@ -342,8 +345,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   calcRangeAxis(): void {
     var rangeAxis: number = 0;
+    var minSize: number = Infinity, maxSize: number = 0;
 
     for (var i=0; i < this.visbokeymetrics.length; i++) {
+      minSize = Math.min(minSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
+      maxSize = Math.max(maxSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
       switch (this.typeMetricChartX) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingCostTotal-1));
@@ -359,6 +365,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           break;
       }
     }
+    // Set the Min/Max Values for the Size of the bubbles decreased/increased by 20%
+    // minSize = Math.max(minSize - 100, 0)
+    // maxSize += 100;
+    minSize *= 0.8
+    maxSize *= 1.2;
+    if (!this.graphBubbleOptions.sizeAxis) this.graphBubbleOptions.sizeAxis = {};
+    this.graphBubbleOptions.sizeAxis.minValue = minSize;
+    this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
+
     if (this.typeMetricChartX == 'EndDate') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
@@ -482,6 +497,14 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.getVisboPortfolioKeyMetrics();
   }
 
+  selectedMetric(metric: string): boolean {
+    if (this.typeMetricChartX == metric || this.typeMetricChartY == metric) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   switchChart() {
     this.chart = !this.chart
     this.chartButton = this.chart ? "Show List" : "Show Chart";
@@ -509,6 +532,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   sortKeyMetricsTable(n) {
     if (!this.visbokeymetrics) return;
+
     if (n != undefined) {
       if (n != this.sortColumn) {
         this.sortColumn = n;
@@ -543,22 +567,22 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         return result
       })
     } else if (this.sortColumn == 3) {
-      // sort by keyMetrics saving EndDate
-      this.visbokeymetrics.sort(function(a, b) {
-        var result = 0
-        if (a.savingEndDate > b.savingEndDate)
-          result = 1;
-        else if (a.savingEndDate < b.savingEndDate)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 4) {
       // sort by keyMetrics TotalCost
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
         if (a.keyMetrics.costBaseLastTotal > b.keyMetrics.costBaseLastTotal)
           result = 1;
         else if (a.keyMetrics.costBaseLastTotal < b.keyMetrics.costBaseLastTotal)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 4) {
+      // sort by keyMetrics saving EndDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.savingEndDate > b.savingEndDate)
+          result = 1;
+        else if (a.savingEndDate < b.savingEndDate)
           result = -1;
         return result
       })
@@ -573,14 +597,24 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         return result
       })
     } else if (this.sortColumn == 6) {
-      // sort by keyMetrics Status
+      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
-        var result = 0
-        if (a.deliveryCompletionTotal > b.deliveryCompletionTotal)
-          result = 1;
-        else if (a.deliveryCompletionTotal < b.deliveryCompletionTotal)
-          result = -1;
-        return result
+        return a.timeCompletionActual - b.timeCompletionActual
+      })
+    } else if (this.sortColumn == 7) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.keyMetrics.timeCompletionBaseLastActual - b.keyMetrics.timeCompletionBaseLastActual
+      })
+    } else if (this.sortColumn == 8) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.deliveryCompletionActual - b.deliveryCompletionActual
+      })
+    } else if (this.sortColumn == 9) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.keyMetrics.deliverableCompletionBaseLastActual - b.keyMetrics.deliverableCompletionBaseLastActual
       })
     }
     if (!this.sortAscending) {
