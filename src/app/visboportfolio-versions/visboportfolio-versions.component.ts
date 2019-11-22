@@ -504,7 +504,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     }
   }
 
-  showChartOption(newStatus: boolean): void {
+  showChartOption(newStatus: boolean = undefined): void {
     if (newStatus == undefined) this.chart = !this.chart
     else this.chart = newStatus
     this.chartButton = this.chart ? "Show List" : "Show Chart";

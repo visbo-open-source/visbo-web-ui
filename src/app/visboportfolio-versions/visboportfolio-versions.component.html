@@ -12,7 +12,7 @@
   </div>
   <div  *ngIf="vpfActiveIndex" class='row'>
     <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='col-2'>
-        <button type="button" class="btn btn-primary ml-auto" (click)="showChartOption()">{{chartButton}}</button>
+        <button type="button" class="btn btn-primary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
     </div>
     <label class="col-2 my-2">Portfolio Verion:</label>
     <select class="col-4 form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected" (change)="changePFVersion();">
