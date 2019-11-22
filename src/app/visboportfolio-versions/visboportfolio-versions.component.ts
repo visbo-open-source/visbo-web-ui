@@ -50,8 +50,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     refDateInterval: string = "month";
     vpfActiveIndex: number;
     deleted: boolean = false;
-    chartButton: string = "Show List";
-    chart: boolean = true;
+    chart: boolean;
+    chartButton: string;
     parentThis: any;
     showChart: boolean = true;
     graphBubbleData: any[] = [];
@@ -76,6 +76,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.showChartOption(true);
     this.getVisboPortfolioVersions();
   }
 
@@ -161,9 +162,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboKeyMetricsCalc();
           this.sortKeyMetricsTable(undefined);
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.chart = chart;
+            this.showChartOption(chart);
           } else {
-            this.chart = false;
+            this.showChartOption(false);
           }
           this.showChart = true;
         },
@@ -503,8 +504,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     }
   }
 
-  switchChart() {
-    this.chart = !this.chart
+  showChartOption(newStatus: boolean): void {
+    if (newStatus == undefined) this.chart = !this.chart
+    else this.chart = newStatus
     this.chartButton = this.chart ? "Show List" : "Show Chart";
     // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
   }
