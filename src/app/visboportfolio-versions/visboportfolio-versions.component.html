@@ -51,7 +51,8 @@
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
       </div>
       <div class="mx-2">
-        <button type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
+        <button *ngIf= "showChart" type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
+        <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-secondary ml-2" (click)= "drawChart(true)">Show Chart</button>
       </div>
     </div>
   </div>

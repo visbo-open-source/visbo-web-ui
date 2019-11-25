@@ -252,6 +252,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0)
       ])
     }
+    if (keyMetrics.length == 0) {
+      this.log(`visboKeyMetrics empty`);
+      keyMetrics.push([new Date(), 0, 0, 0, 0])
+    }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
     var len = keyMetricsCost.length;
@@ -306,6 +310,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100)/100
       ])
       this.log(`visboKeyMetrics push ${JSON.stringify(keyMetrics[keyMetrics.length-1])}`);
+    }
+    if (keyMetrics.length == 0) {
+      this.log(`visboKeyMetrics empty`);
+      keyMetrics.push([new Date(), 0, 0, 0, 0])
     }
     keyMetrics.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -381,10 +389,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         //   - (this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0)))
       ])
     }
+    if (keyMetrics.length == 0) {
+      this.log(`visboKeyMetrics empty`);
+      keyMetrics.push([new Date(), 0, 0, 0, 0])
+    }
     keyMetrics.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
-    var len = keyMetrics.length - 1;
-    // this.log(`visboKeyMetrics duplicate ${len-1} ${JSON.stringify(this.visboprojectversions[len-1])}`);
+    var len = keyMetrics.length;
+    this.log(`visboKeyMetrics duplicate ${len-1} ${JSON.stringify(this.visboprojectversions[len-1])}`);
     if (len == 1) {
       keyMetrics.push([
         new Date(),
