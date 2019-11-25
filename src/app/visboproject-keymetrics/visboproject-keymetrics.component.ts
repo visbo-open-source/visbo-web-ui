@@ -252,9 +252,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0)
       ])
     }
-    if (keyMetrics.length == 0) {
-      this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0])
+    if (keyMetricsCost.length == 0) {
+      this.log(`keyMetricsCost empty`);
+      keyMetricsCost.push([new Date(), 0, 0, 0, 0])
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
