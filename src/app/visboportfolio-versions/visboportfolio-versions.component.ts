@@ -467,6 +467,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  gotoVC(visboproject: VisboProject):void {
+    this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+  }
+
   chartSelectRow(row: number, label: string) {
     // this.log(`Bubble Chart: ${row} ${label}`);
     var vpv = this.visbokeymetrics.find(x => x.name == label)

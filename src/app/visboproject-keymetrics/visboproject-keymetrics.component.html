@@ -8,6 +8,9 @@
       <h2 *ngIf="vpActive">
         Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
       </h2>
+      <h5>Visbo Center:
+        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+      </h5>
     </div>
   </div>
   <div class='pb-3 row'>
@@ -38,45 +41,86 @@
         <label for="vpName" class="col-3 col-md-2">Status of:</label>
         <dt class="col-8">{{ vpvActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </dt>
       </div>
-      <div class="row">
-        <label for="vpvKeyMetrics" class="col-3 col-md-2">Project Quality:</label>
-        <h5 class="col-2" (click)="switchTo('Costs')">
-          <a>
-            <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
-            <span *ngIf="qualityCost == 2" class="fas fa-question-circle" style="color:orange"></span>
-            <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-            <span> Total Cost</span>
-          </a>
-        </h5>
-        <h5 class="col-2" (click)="switchTo('Deliveries')">
-          <a>
-            <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
-            <span *ngIf="qualityDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
-            <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-            <span> Actual Deliveries</span>
-          </a>
-        </h5>
-        <h5 class="col-2" (click)="switchTo('Deadlines')">
-          <a>
-            <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
-            <span *ngIf="qualityDeadlines == 2" class="fas fa-question-circle" style="color:orange"></span>
-            <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-            <span> Actual Deadlines</span>
-          </a>
-        </h5>
-      </div>
+      <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th>Key Metric</th>
+            <th>Actual</th>
+            <th>Total</th>
+            <th class="d-none d-md-table-cell">Ahead/Delay</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr (click)="switchTo('Costs')">
+            <td>Cost Achievement</td>
+            <td title="Actual Cost Achievement">
+              <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
+              <span *ngIf="qualityCost == 2" class="fas fa-question-circle" style="color:orange"></span>
+              <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            </td>
+            <td title="Total Cost Achievement">
+              <span *ngIf="qualityTotalCost == 1" class="fas fa-check-circle" style="color:green"></span>
+              <span *ngIf="qualityTotalCost == 2" class="fas fa-question-circle" style="color:orange"></span>
+              <span *ngIf="qualityTotalCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            </td>
+            <td class="d-none d-md-table-cell"></td>
+          </tr>
+          <tr (click)="switchTo('Deliveries')">
+            <td>Delivery Achievement</td>
+            <td title="Actual Delivery Achievement">
+              <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
+              <span *ngIf="qualityDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
+              <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+            </td>
+            <td>
+              <span *ngIf="vpvActive.keyMetrics.deliverableCompletionCurrentTotal < vpvActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">Missing</span>
+              <span *ngIf="vpvActive.keyMetrics.deliverableCompletionCurrentTotal == vpvActive.keyMetrics.deliverableCompletionBaseLastTotal" >in Plan</span>
+            </td>
+            <td class="d-none d-md-table-cell" title="Status Actual Deliveries in Time">
+              <span *ngIf="delayActualDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
+              <span *ngIf="delayActualDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+              <span *ngIf="delayTotalDelivery == 2" class="fas fa-question-circle" style="color:orange"></span>
+              <span *ngIf="delayTotalDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+              <span *ngIf="delayActualDelivery > 1 || delayTotalDelivery > 1"> Delay</span>
+            </td>
+          </tr>
+          <tr (click)="switchTo('Deadlines')">
+            <td>Deadline Achievement</td>
+            <td>
+              <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green" title="Actual Deadline Achievement"></span>
+              <span *ngIf="qualityDeadlines == 2" class="fas fa-question-circle" style="color:orange" title="Actual Deadline Achievement"></span>
+              <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red" title="Actual Deadline Achievement"></span>
+            </td>
+            <td>
+              <span *ngIf="vpvActive.keyMetrics.timeCompletionCurrentTotal < vpvActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">Missing</span>
+              <span *ngIf="vpvActive.keyMetrics.timeCompletionCurrentTotal == vpvActive.keyMetrics.timeCompletionBaseLastTotal" >in Plan</span>
+            </td>
+            <td class="d-none d-md-table-cell">
+              <span *ngIf="delayActualDeadlines == 2" class="fas fa-question-circle" style="color:orange" title="Status Actual Deadlines in Time"></span>
+              <span *ngIf="delayActualDeadlines == 3" class="fas fa-exclamation-circle" style="color:red" title="Status Actual Deadlines in Time"></span>
+              <span *ngIf="delayTotalDeadlines == 2" class="fas fa-question-circle" style="color:orange" title="Status Total Deadlines in Time"></span>
+              <span *ngIf="delayTotalDeadlines == 3" class="fas fa-exclamation-circle" style="color:red" title="Status Total Deadlines in Time"></span>
+              <span *ngIf="delayActualDeadlines > 1 || delayTotalDeadlines > 1"> Delay</span>
+            </td>
+          </tr>
+          <tr (click)="switchTo('Deadlines')">
+            <td>Project End Date</td>
+            <td></td>
+            <td>{{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</td>
+            <td class="d-none d-md-table-cell">
+              <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
+              <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
+              <span *ngIf="delayEndDate == 0" class="text-success"> in Time</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       <div class="row" *ngIf="vpvActive.leadPerson">
         <label for="vpvLead" class="col-3 col-md-2">Project Manager:</label>
         <label class="col">{{ vpvActive.leadPerson }} </label>
-      </div>
-      <div class="row">
-        <label for="EndDate" class="col-3 col-md-2">Project ends at:</label>
-        <div class="col">
-          <span> {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
-          <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
-          <span *ngIf="delayEndDate < 0" class="text-success"> {{delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
-          <span *ngIf="delayEndDate == 0" class="text-success"> in Time</span>
-        </div>
       </div>
       <div class="row" *ngIf="vpvActive.ampelStatus">
         <!-- <label class="col-3 col-md-2">Ampel:</label> -->

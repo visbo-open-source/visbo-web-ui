@@ -8,6 +8,9 @@
       <h2 *ngIf="vpActive">
         Portfolio Project List for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
       </h2>
+      <h5>Visbo Center:
+        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+      </h5>
     </div>
   </div>
   <div  *ngIf="vpfActiveIndex" class='row'>
