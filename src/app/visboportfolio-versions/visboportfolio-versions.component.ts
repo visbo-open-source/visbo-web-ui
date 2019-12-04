@@ -50,8 +50,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     refDateInterval: string = "month";
     vpfActiveIndex: number;
     deleted: boolean = false;
-    chartButton: string = "Show List";
-    chart: boolean = true;
+    chart: boolean;
+    chartButton: string;
     parentThis: any;
     showChart: boolean = true;
     graphBubbleData: any[] = [];
@@ -76,6 +76,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.showChartOption(true);
     this.getVisboPortfolioVersions();
   }
 
@@ -149,9 +150,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   getVisboPortfolioKeyMetrics(): void {
+    var chart = this.chart
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
-    var chartFlag = this.chart;
-    this.chart = false;
+    this.showChart = false;
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
       .subscribe(
@@ -161,11 +162,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboKeyMetricsCalc();
           this.sortKeyMetricsTable(undefined);
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.chart = chartFlag;
+            this.showChartOption(chart);
           } else {
-            this.chart = false;
+            this.showChartOption(false);
           }
-
+          this.showChart = true;
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -253,17 +254,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   changeChart() {
-    var chart = this.chart;
     this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
     this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
-    this.chart = undefined;
     this.visboKeyMetricsCalcBubble();
-    this.chart = true;
+    this.showChart = true;
   }
 
   drawChart(visible: boolean) {
-    this.chart = visible;
+    this.showChart = visible;
   }
 
   visboKeyMetricsCalcBubble(): void {
@@ -468,6 +467,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  gotoVC(visboproject: VisboProject):void {
+    this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+  }
+
   chartSelectRow(row: number, label: string) {
     // this.log(`Bubble Chart: ${row} ${label}`);
     var vpv = this.visbokeymetrics.find(x => x.name == label)
@@ -505,8 +508,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     }
   }
 
-  switchChart() {
-    this.chart = !this.chart
+  showChartOption(newStatus: boolean = undefined): void {
+    if (newStatus == undefined) this.chart = !this.chart
+    else this.chart = newStatus
     this.chartButton = this.chart ? "Show List" : "Show Chart";
     // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
   }
