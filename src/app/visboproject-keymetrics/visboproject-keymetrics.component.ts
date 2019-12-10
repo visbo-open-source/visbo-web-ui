@@ -27,6 +27,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   vpActive: VisboProject;
   deleted: boolean = false;
   vpvActive: VisboProjectVersion;
+  vpvKeyMetricActive: VPVKeyMetricsCalc;
   qualityCost: number;
   qualityTotalCost: number;
   qualityDeadlines: number;
@@ -39,6 +40,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   chartButton: string = "Show List";
   chart: boolean = true;
+  history: boolean = false;
+  historyButton: string = "View Trend"
   parentThis: any;
 
   typeMetricList: any[] = [
@@ -49,15 +52,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   typeMetric: string = this.typeMetricList[0].name;
   typeMetricChart: string = this.typeMetricList[0].metric;
 
-  // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#3399cc'];
-  colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB', '#FA8258', '#FA8258'];
+  // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#FA8258'];
+  colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB', '#996600', '#996600'];
   series: any =  {
     '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] },
     '1': { lineWidth: 4, pointShape: 'star' },
     '2': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8] },
     '3': { lineWidth: 4, pointShape: 'triangle' },
-    '4': { lineWidth: 1, pointShape: 'star' },
-    '5': { lineWidth: 1, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8] }
+    '4': { lineWidth: 1, pointShape: 'circle', pointSize: 4 },
+    '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4  }
   };
 
   graphDataLineChart: any[] = [];
@@ -205,6 +208,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         } else {
           elementKeyMetric.deliveryCompletionActual = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) * 100
         }
+        
+        // Calculate the Deadline Completion
+        if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal) {
+          elementKeyMetric.timeCompletionTotal = 100;
+        } else {
+          elementKeyMetric.timeCompletionTotal = ((elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal) * 100
+        }
+        if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastActual) {
+          elementKeyMetric.timeCompletionActual = 100;
+        } else {
+          elementKeyMetric.timeCompletionActual = ((elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastActual) * 100
+        }
 
         this.visbokeymetrics.push(elementKeyMetric)
       }
@@ -225,27 +240,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart = {
-        // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '100%',
-        'title':'Actual & Total Cost: Plan vs. Base Line',
-        'animation': {'startup': true, 'duration': 200},
+        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+        width: '100%',
+        title:'Actual & Total Cost: Plan vs. Base Line',
+        animation: {startup: true, duration: 200},
         legend: {position: 'top'},
-        'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'vAxis': {
-          'title': 'Cost in k\u20AC',
-          'minorGridlines': {'count': 0, 'color': 'none'}
+        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+        vAxis: {
+          title: 'Cost in k\u20AC',
+          minorGridlines: {count: 0, color: 'none'}
         },
-        'hAxis': {
-          'format': 'MMM YY',
-          'gridlines': {
-            'count': -1
+        hAxis: {
+          format: 'MMM YY',
+          gridlines: {
+            count: -1
           },
-          'minorGridlines': {'count': 0, 'color': 'none'}
+          minorGridlines: {count: 0, color: 'none'}
         },
-        'pointSize': 14,
-        'curveType': 'function',
-        'series': this.series,
-        'colors': this.colors
+        pointSize: 14,
+        curveType: 'function',
+        series: this.series,
+        colors: this.colors
       };
     var keyMetricsCost: any = [];
     if (!this.visboprojectversions) return;
@@ -295,38 +310,38 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   visboKeyMetricsDeliveriesOverTime(): void {
     this.graphOptionsLineChart = {
-        // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '100%',
-        'title':'Completion of Deliveries: Plan vs. Base Line',
-        'animation': {'startup': true, 'duration': 200},
+        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+        width: '100%',
+        title:'Completion of Deliveries: Plan vs. Base Line',
+        animation: {startup: true, duration: 200},
 
-        'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
+        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         legend: {position: 'top'},
         vAxes: [
           {
-            'title': 'Weighted Number of Deliveries completed',
-            'minorGridlines': {'count': 0, 'color': 'none'}
+            title: 'Weighted Number of Deliveries completed',
+            minorGridlines: {count: 0, color: 'none'}
           },
           {
-            'title': 'Ahead/Delay in Days',
-            'minorGridlines': {'count': 0, 'color': 'none'}
+            title: 'Ahead/Delay in Days',
+            minorGridlines: {count: 0, color: 'none'}
           }
         ],
-        // 'vAxis': {
-        //   'title': 'Weighted Number of Deliveries completed',
-        //   'minorGridlines': {'count': 0, 'color': 'none'}
+        // vAxis: {
+        //   title: 'Weighted Number of Deliveries completed',
+        //   minorGridlines: {count: 0, color: 'none'}
         // },
-        'hAxis': {
-          'format': 'MMM YY',
-          'gridlines': {
-            'count': -1
+        hAxis: {
+          format: 'MMM YY',
+          gridlines: {
+            count: -1
           },
-          'minorGridlines': {'count': 0, 'color': 'none'}
+          minorGridlines: {count: 0, color: 'none'}
         },
-        'curveType': 'function',
-        'pointSize': 14,
-        'series': this.series,
-        'colors': this.colors
+        curveType: 'function',
+        pointSize: 14,
+        series: this.series,
+        colors: this.colors
       };
     // assign to second yAxis
     this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
@@ -357,7 +372,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
     if (keyMetrics.length == 0) {
       this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0])
+      keyMetrics.push([new Date(), 0, 0, 0, 0, 0, 0])
     }
     keyMetrics.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -378,53 +393,47 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart.vAxes[0].minValue = -this.graphOptionsLineChart.vAxes[0].maxValue
     this.graphOptionsLineChart.vAxes[1].maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
     this.graphOptionsLineChart.vAxes[1].minValue  = - this.graphOptionsLineChart.vAxes[1].maxValue
-    keyMetrics.push(['Timestamp', 'Total (Base Line)', 'Actual (Base Line)', 'Total', 'Actual Completion' , 'Ahead/Delay Actual', 'Ahead/Delay Total']);
+    keyMetrics.push(['Timestamp', 'Total (Base Line)', 'Actual (Base Line)', 'Total', 'Actual Completion', 'Ahead/Delay Actual', 'Ahead/Delay Total']);
     keyMetrics.reverse();
-    // this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(keyMetrics)}`);
+    this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(this.graphOptionsLineChart)}`);
     this.graphDataLineChart = keyMetrics;
   }
 
   visboKeyMetricsDeadlinesOverTime(): void {
     this.graphOptionsLineChart = {
-        // 'chartArea':{'left':20,'top':0,'width':'800','height':'100%'},
-        'width': '100%',
-        'title':'Achievement of Deadlines current & plan',
-        'animation': {'startup': true, 'duration': 200},
+        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+        width: '100%',
+        title:'Achievement of Deadlines current & plan',
+        animation: {startup: true, duration: 200},
 
-        'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        // 'vAxis': {'title': 'Number of weighted completed Deadlines'},
-        // 'hAxis': {format: 'dd.MM.yy'},
+        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         legend: {position: 'top'},
-        'vAxis': {
-          'title': 'Number of weighted completed Deadlines',
-          'minorGridlines': {'count': 0, 'color': 'none'}
-        },
-        'hAxis': {
-          'format': 'MMM YY',
-          'gridlines': {
-            'count': -1
+        vAxes: [
+          {
+            title: 'Number of weighted completed Deadlines',
+            minorGridlines: {count: 0, color: 'none'}
           },
-          'minorGridlines': {'count': 0, 'color': 'none'}
+          {
+            title: 'Ahead/Delay in Days',
+            minorGridlines: {count: 0, color: 'none'}
+          }
+        ],
+        hAxis: {
+          format: 'MMM YY',
+          gridlines: {
+            count: -1
+          },
+          minorGridlines: {count: 0, color: 'none'}
         },
-        'pointSize': 12,
-        'curveType': 'function',
-        'series': this.series,
-        'colors': this.colors
-        // 'series': {
-        //   '0': { lineWidth: 3, pointShape: 'triangle', lineDashStyle: [6, 6] },
-        //   '1': { lineWidth: 4, pointShape: 'triangle' }
-        // },
-        // 'colors': ['#458CCB', '#458CCB']
+        pointSize: 14,
+        curveType: 'function',
+        series: this.series,
+        colors: this.colors
       };
-      //
-      // colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB'];
-      // series: any =  {
-      //   '0': { lineWidth: 3, pointShape: 'diamond', lineDashStyle: [6, 6] },
-      //   '1': { lineWidth: 4, pointShape: 'diamond' },
-      //   '2': { lineWidth: 3, pointShape: 'circle', lineDashStyle: [6, 6] },
-      //   '3': { lineWidth: 4, pointShape: 'circle' }
-      // };
-      //
+    // assign to second yAxis
+    this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
+    this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
+
     var keyMetrics: any = [];
     if (!this.visboprojectversions) return;
 
@@ -442,18 +451,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100)/100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100)/100
-        // Math.round(
-        //   ((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0)
-        //   - (this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0))),
-        // Math.round(
-        //   ((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0)
-        //   - (this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0)))
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100)/100,
+        this.visboprojectversions[i].keyMetrics.timeDelayCurrentActual || 0,
+        this.visboprojectversions[i].keyMetrics.timeDelayCurrentTotal || 0
       ])
     }
     if (keyMetrics.length == 0) {
       this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0])
+      keyMetrics.push([new Date(), 0, 0, 0, 0, 0, 0])
     }
     keyMetrics.sort(function(a, b) { return a[0] - b[0] });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -465,11 +470,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         keyMetrics[len-1][1],
         keyMetrics[len-1][2],
         keyMetrics[len-1][3],
-        keyMetrics[len-1][4]
+        keyMetrics[len-1][4],
+        keyMetrics[len-1][5],
+        keyMetrics[len-1][6]
       ])
     }
+    this.graphOptionsLineChart.vAxes[0].maxValue = this.calcRangeAxis(keyMetrics, 'Deadline')
+    this.graphOptionsLineChart.vAxes[0].minValue = -this.graphOptionsLineChart.vAxes[0].maxValue
+    this.graphOptionsLineChart.vAxes[1].maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
+    this.graphOptionsLineChart.vAxes[1].minValue  = - this.graphOptionsLineChart.vAxes[1].maxValue
 
-    keyMetrics.push(['Timestamp', 'Total (Base Line)', 'Actual (Base Line)', 'Total Date Completion', 'Actual Date Completion']);
+    keyMetrics.push(['Timestamp', 'Total (Base Line)', 'Actual (Base Line)', 'Total Date Completion', 'Actual Date Completion', 'Ahead/Delay Actual', 'Ahead/Delay Total']);
     // keyMetrics.push(['Timestamp', 'All Deadlines', 'Past Deadlines']);
     keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
@@ -479,14 +490,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   calcRangeAxis(keyMetrics: [], type: string): number {
     var rangeAxis: number = 0;
     var minSize: number = Infinity, maxSize: number = 0;
+    var minDelayRange = 50;
 
     rangeAxis = 0;
     for (var i=0; i < keyMetrics.length; i++) {
       switch (type) {
         case 'Delay':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][5]), Math.abs(keyMetrics[i][6]));
+          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][5]), Math.abs(keyMetrics[i][6]), minDelayRange);
           break;
         case 'Delivery':
+          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
+          break;
+        case 'Deadline':
           rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
           break;
       }
@@ -524,6 +539,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     let level2 = 0.15;
     let delay1 = 7;
     this.vpvActive = vpv;
+    this.vpvKeyMetricActive = this.visbokeymetrics.find(x => x._id.toString() == vpv._id.toString());
     index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1)
     if (index < 1 + level1) this.qualityCost = 1
     else if (index < 1 + level2) this.qualityCost = 2
@@ -566,7 +582,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
     index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
     this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
-    this.log(`Quality Cost ${this.qualityCost} Del. ${this.qualityDelivery} Dead. ${this.qualityDeadlines} EndDate ${this.delayEndDate}, Delay Deadlines ${this.delayActualDeadlines} / ${this.delayTotalDeadlines} Delay Deliveries ${this.delayActualDelivery} / ${this.delayTotalDelivery} `);
+    this.log(`Quality End Date ${keyMetrics.endDateCurrent} Cost ${this.qualityCost} Del. ${this.qualityDelivery} Dead. ${this.qualityDeadlines} EndDate ${this.delayEndDate}, Delay Deadlines ${this.delayActualDeadlines} / ${this.delayTotalDeadlines} Delay Deliveries ${this.delayActualDelivery} / ${this.delayTotalDelivery} `);
   }
 
   gotoVPDetail(visboproject: VisboProject):void {
@@ -595,18 +611,33 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   switchTo(metric: string) {
     this.log(`Switch Chart to ${metric} `);
-    this.typeMetricChart = metric;
-    this.typeMetric = this.typeMetricList.find(x => x.metric == metric).name;
-    switch (metric) {
-      case 'Costs':
-        this.visboKeyMetricsCostOverTime();
-        break;
-      case 'Deadlines':
-        this.visboKeyMetricsDeadlinesOverTime();
-        break;
-      case 'Deliveries':
-        this.visboKeyMetricsDeliveriesOverTime();
-        break;
+    var newTypeMetric = this.typeMetricList.find(x => x.metric == metric).name;
+    // toggle between drop down views
+    if (newTypeMetric) {
+      this.typeMetricChart = metric;
+      this.typeMetric = newTypeMetric;
+      this.showHistory(true);
+      switch (metric) {
+        case 'Costs':
+          this.visboKeyMetricsCostOverTime();
+          break;
+        case 'Deadlines':
+          this.visboKeyMetricsDeadlinesOverTime();
+          break;
+        case 'Deliveries':
+          this.visboKeyMetricsDeliveriesOverTime();
+          break;
+      }
+    } else {
+      // toggle to vpv Detail View
+      switch (metric) {
+        case 'DetailCosts':
+          break;
+        case 'DetailDeadlines':
+          break;
+        case 'DetailDeliveries':
+          break;
+      }
     }
   }
 
@@ -614,6 +645,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.chart = !this.chart
     this.chartButton = this.chart ? "View List" : "View Chart";
     // this.log(`Toggle Chart to ${this.chart} Graph ${JSON.stringify(this.graphDataLineChart)}`);
+  }
+
+  showHistory(newValue: boolean = undefined) {
+    if (newValue != undefined) {
+      this.history = newValue;
+    } else {
+      this.history = !this.history
+    }
+    this.historyButton = this.history ? "Hide Trend" : "View Trend";
   }
 
   helperDateDiff(from: string, to: string, unit: string) {
@@ -628,6 +668,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       dateDiff = dateDiff / 1000;
     }
     return dateDiff
+  }
+
+  getShortText(text: string, len: number) : string {
+    if (!text) return "";
+    if (text.length < len) return text;
+    if (len < 3) return '...'
+    return text.substring(0, len - 3).concat('...')
   }
 
   sortVPVTable(n) {
