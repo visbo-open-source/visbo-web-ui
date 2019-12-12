@@ -8,7 +8,7 @@ import { AlertService } from './_services/alert.service';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  title = 'Your Projects served with Visbo ';
+  // title = 'Your Projects served with Visbo ';
   version = '1.3';
   restVersionString = 'V undefined';
   restUIVersionString = 'V undefined';

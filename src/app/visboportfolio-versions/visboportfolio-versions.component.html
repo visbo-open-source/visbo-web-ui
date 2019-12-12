@@ -17,7 +17,7 @@
     <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='col-2'>
         <button type="button" class="btn btn-primary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
     </div>
-    <label class="col-2 my-2">Portfolio Verion:</label>
+    <label class="col-2 my-2">Portfolio Version:</label>
     <select class="col-4 form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected" (change)="changePFVersion();">
       <option *ngFor="let item of dropDown">{{item.name}}</option>
     </select>
