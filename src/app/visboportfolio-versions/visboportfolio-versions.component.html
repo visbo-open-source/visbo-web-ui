@@ -26,38 +26,39 @@
   <hr>
 
   <div class='container-fluid'>
-    <div class="row">
-      <!-- <h3 class="m-0" title="Previous Period" (click)='getRefDateVersions(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3> -->
-      <div style="font-size: 2em" class="col-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></div>
-      <!-- <h3 class=" d-flex justify-content-center col-9 d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</h3>
-      <h3 class="col-9 d-block d-lg-none d-flex justify-content-center">Metrics: {{vpvRefDate | date: 'dd.MM'}}</h3> -->
-      <h3 class="d-flex justify-content-center col-9">
+    <div class="d-flex flex-row justify-content-center">
+      <h3 class="col-4">
         <div class="d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">Metrics: {{vpvRefDate | date: 'dd.MM'}}</div>
       </h3>
-      <div style="font-size: 2em" class="col-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></div>
-      <select class="col-1 align-right form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
-        <option>day</option>
-        <option>week</option>
-        <option>month</option>
-        <option>quarter</option>
-      </select>
+      <div class="col-4">
+        <div class="row">
+          <span style="font-size: 2em" class="mx-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></span>
+          <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+            <option>day</option>
+            <option>week</option>
+            <option>month</option>
+            <option>quarter</option>
+          </select>
+          <span style="font-size: 2em" class="mx-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></span>
+        </div>
+      </div>
     </div>
-    <div class="row d-flex justify-content-center">
-      <!-- <div class='col-10'> -->
-        <span class="my-1">
-          <span>Performance of: </span>
+    <div class="d-flex flex-row justify-content-center">
+      <div class="row">
+        <div class="my-1">
           <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
           <span> against </span>
           <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
-        </span>
-        <span class="mx-2">
+          <span *ngIf="vpFilter">, filtered by {{vpFilter}} </span>
+        </div>
+        <div class="mx-2">
           <button *ngIf= "showChart" type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
           <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-primary ml-2" (click)= "drawChart(true)">Show Chart</button>
-        </span>
-      <!-- </div> -->
-      <div *ngIf="hasVPPerm(permVP.ViewAudit)">
-          <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
+        </div>
+        <div *ngIf="hasVPPerm(permVP.ViewAudit)">
+            <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -138,7 +139,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="newUserInvite" #f="ngForm" novalidate>
+        <form #f="ngForm" novalidate>
           <div class="form-group">
             <label for="typeMetricX" class="col-form-label">X-Axis:</label>
             <select class="form-control" id="typeMetricX" name="typeMetricX" [(ngModel)]="typeMetricX">
@@ -150,6 +151,10 @@
             <select class="form-control" id="typeMetricY" name="typeMetricY" [(ngModel)]="typeMetricY">
               <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label for="Filter" class="col-form-label">Filter:</label>
+            <input class="form-control" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">Change</button>

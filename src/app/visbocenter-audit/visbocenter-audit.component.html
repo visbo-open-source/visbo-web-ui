@@ -107,7 +107,7 @@
         </div>
         <form>
           <label class="py-0 m-0 col-4 form-control-static">Created:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss' }} </label>
+          <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
           <label class="py-0 m-0 col-4 form-control-static">User:</label>
           <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
           <label class="py-0 m-0 col-4 form-control-static">Action:</label>

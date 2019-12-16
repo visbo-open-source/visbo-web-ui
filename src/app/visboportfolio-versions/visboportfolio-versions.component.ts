@@ -44,6 +44,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     typeMetricChartY: string = this.typeMetricList[1].metric;
 
     vpSelected: string;
+    vpFilter: string = "";
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
     vpvRefDate: Date = new Date();
@@ -160,7 +161,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
-          this.sortKeyMetricsTable(undefined);
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.showChartOption(chart);
           } else {
@@ -219,37 +219,49 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     if (!this.visboprojectversions) return;
     // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
+    var vpFilter = (this.vpFilter || '').toLowerCase();
     for (var i = 0; i < this.visboprojectversions.length; i++) {
-      if (this.visboprojectversions[i].keyMetrics) {
-        var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
-        elementKeyMetric.name = this.visboprojectversions[i].name;
-        elementKeyMetric._id = this.visboprojectversions[i]._id;
-        elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
-        elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
-        elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
-        // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
-        elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1) || 0;
-        // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
-        elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1) || 0;
-        // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
+      if (!vpFilter
+        || this.visboprojectversions[i].name.toLowerCase().indexOf(vpFilter) >= 0
+        || this.visboprojectversions[i].VorlagenName.toLowerCase().indexOf(vpFilter) >= 0
+        || this.visboprojectversions[i].businessUnit.toLowerCase().indexOf(vpFilter) >= 0
+        || this.visboprojectversions[i].leadPerson.toLowerCase().indexOf(vpFilter) >= 0
+        || this.visboprojectversions[i].description.toLowerCase().indexOf(vpFilter) >= 0
+      ) {
+        if (this.visboprojectversions[i].keyMetrics) {
+          var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
+          elementKeyMetric.name = this.visboprojectversions[i].name;
+          elementKeyMetric._id = this.visboprojectversions[i]._id;
+          elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
+          elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
+          elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
+          // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
+          elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1) || 0;
+          // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
+          elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0) / (elementKeyMetric.keyMetrics.costBaseLastActual || 1) || 0;
+          // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
 
-        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
-        elementKeyMetric.savingEndDate = this.helperDateDiff(
-          (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
-          (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'w') || 0;
-          elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+          // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
+          elementKeyMetric.savingEndDate = this.helperDateDiff(
+            (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
+            (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'w') || 0;
+            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
 
-        // Calculate the Deadlines Completion
-        elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal || 1) || 0;
-        elementKeyMetric.timeCompletionActual = (elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || 1) || 0;
+          // Calculate the Deadlines Completion
+          elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal || 1) || 0;
+          elementKeyMetric.timeCompletionActual = (elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || 1) || 0;
 
-        // Calculate the Delivery Completion
-        elementKeyMetric.deliveryCompletionTotal = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal || 1) || 0;
-        elementKeyMetric.deliveryCompletionActual = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual || 1) || 0;
+          // Calculate the Delivery Completion
+          elementKeyMetric.deliveryCompletionTotal = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal || 1) || 0;
+          elementKeyMetric.deliveryCompletionActual = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual || 1) || 0;
 
-        this.visbokeymetrics.push(elementKeyMetric)
+          this.visbokeymetrics.push(elementKeyMetric)
+        }
+      } else {
+        this.log(`Remove ${this.visboprojectversions[i].name} Vorlage ${this.visboprojectversions[i].VorlagenName} BU ${this.visboprojectversions[i].businessUnit} Lead ${this.visboprojectversions[i].leadPerson} Desc ${this.visboprojectversions[i].description} vs  by Filter  ${this.vpFilter}`);
       }
     }
+    this.sortKeyMetricsTable(undefined);
     this.visboKeyMetricsCalcBubble();
   }
 
@@ -257,7 +269,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
     this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
-    this.visboKeyMetricsCalcBubble();
+    if (this.vpFilter) {
+      this.visboKeyMetricsCalc();
+    } else {
+      this.visboKeyMetricsCalcBubble();
+    }
     this.showChart = true;
   }
 

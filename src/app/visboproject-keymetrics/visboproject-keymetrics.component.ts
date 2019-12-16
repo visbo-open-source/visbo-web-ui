@@ -532,6 +532,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
   }
 
+  listSelectRow(vpv: VPVKeyMetricsCalc): void {
+    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
+    this.setVpvActive(vpv);
+  }
+
   chartSelectRow(row: number, col: number, label: string) {
     this.log(`Line Chart: User selected ${row} ${col} ${label} Len ${this.visbokeymetrics.length}`);
     if (row < 0 || row >= this.visbokeymetrics.length) row = 0;
@@ -776,7 +781,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
 
     if (this.sortColumn == 1) {
-      // sort by VPV name
+      // sort by Timestamp
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
         if (a.timestamp > b.timestamp)
@@ -786,7 +791,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result
       })
     } else if (this.sortColumn == 2) {
-      // sort by keyMetrics Diff Cost
+      // sort by keyMetrics Saving Cost Actual
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.savingCostActual > b.savingCostActual)
+          result = 1;
+        else if (a.savingCostActual < b.savingCostActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 3) {
+      // sort by keyMetrics Saving Cost Total
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
         if (a.savingCostTotal > b.savingCostTotal)
@@ -795,18 +810,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 3) {
-      // sort by keyMetrics saving EndDate
+    } else if (this.sortColumn == 4) {
+      // sort by keyMetrics Base Line Cost Actual
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
-        if (a.savingEndDate > b.savingEndDate)
+        if (a.keyMetrics.costBaseLastActual > b.keyMetrics.costBaseLastActual)
           result = 1;
-        else if (a.savingEndDate < b.savingEndDate)
+        else if (a.keyMetrics.costBaseLastActual < b.keyMetrics.costBaseLastActual)
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 4) {
-      // sort by keyMetrics TotalCost
+    } else if (this.sortColumn == 5) {
+      // sort by keyMetrics Base Line Cost Total
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
         if (a.keyMetrics.costBaseLastTotal > b.keyMetrics.costBaseLastTotal)
@@ -815,7 +830,117 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 5) {
+    } else if (this.sortColumn == 6) {
+      // sort by keyMetrics Traffic Light
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.ampelStatus > b.ampelStatus)
+          result = 1;
+        else if (a.ampelStatus < b.ampelStatus)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 10) {
+      // sort by keyMetrics Status
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.timeCompletionActual > b.timeCompletionActual)
+          result = 1;
+        else if (a.timeCompletionActual < b.timeCompletionActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 11) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.timeCompletionBaseLastActual > b.keyMetrics.timeCompletionBaseLastActual)
+          result = 1;
+        else if (a.keyMetrics.timeCompletionBaseLastActual < b.keyMetrics.timeCompletionBaseLastActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 12) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.timeCompletionBaseLastTotal > b.keyMetrics.timeCompletionBaseLastTotal)
+          result = 1;
+        else if (a.keyMetrics.timeCompletionBaseLastTotal < b.keyMetrics.timeCompletionBaseLastTotal)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 13) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.timeDelayCurrentActual > b.keyMetrics.timeDelayCurrentActual)
+          result = 1;
+        else if (a.keyMetrics.timeDelayCurrentActual < b.keyMetrics.timeDelayCurrentActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 14) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.timeDelayCurrentTotal > b.keyMetrics.timeDelayCurrentTotal)
+          result = 1;
+        else if (a.keyMetrics.timeDelayCurrentTotal < b.keyMetrics.timeDelayCurrentTotal)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 20) {
+      // sort by keyMetrics Status
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.deliveryCompletionActual > b.deliveryCompletionActual)
+          result = 1;
+        else if (a.deliveryCompletionActual < b.deliveryCompletionActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 21) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.deliverableCompletionCurrentActual > b.keyMetrics.deliverableCompletionCurrentActual)
+          result = 1;
+        else if (a.keyMetrics.deliverableCompletionCurrentActual < b.keyMetrics.deliverableCompletionCurrentActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 22) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.deliverableCompletionCurrentTotal > b.keyMetrics.deliverableCompletionCurrentTotal)
+          result = 1;
+        else if (a.keyMetrics.deliverableCompletionCurrentTotal < b.keyMetrics.deliverableCompletionCurrentTotal)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 23) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.deliverableDelayCurrentActual > b.keyMetrics.deliverableDelayCurrentActual)
+          result = 1;
+        else if (a.keyMetrics.deliverableDelayCurrentActual < b.keyMetrics.deliverableDelayCurrentActual)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 24) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        var result = 0
+        if (a.keyMetrics.deliverableDelayCurrentTotal > b.keyMetrics.deliverableDelayCurrentTotal)
+          result = 1;
+        else if (a.keyMetrics.deliverableDelayCurrentTotal < b.keyMetrics.deliverableDelayCurrentTotal)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumn == 32) {
       // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
@@ -825,13 +950,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 6) {
-      // sort by keyMetrics Status
+    } else if (this.sortColumn == 33) {
+      // sort by keyMetrics saving EndDate
       this.visbokeymetrics.sort(function(a, b) {
         var result = 0
-        if (a.deliveryCompletionTotal > b.deliveryCompletionTotal)
+        if (a.savingEndDate > b.savingEndDate)
           result = 1;
-        else if (a.deliveryCompletionTotal < b.deliveryCompletionTotal)
+        else if (a.savingEndDate < b.savingEndDate)
           result = -1;
         return result
       })
