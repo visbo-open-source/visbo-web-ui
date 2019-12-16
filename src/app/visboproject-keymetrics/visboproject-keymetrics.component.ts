@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -11,8 +11,6 @@ import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_model
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-
-import { LoginComponent } from '../login/login.component';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -26,7 +24,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   vpSelected: string;
   vpActive: VisboProject;
   deleted: boolean = false;
-  vpvActive: VisboProjectVersion;
   vpvKeyMetricActive: VPVKeyMetricsCalc;
   qualityCost: number;
   qualityTotalCost: number;
@@ -38,7 +35,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayTotalDelivery: number;
   delayEndDate: number;
 
-  chartButton: string = "Show List";
+  chartButton: string = "View List";
   chart: boolean = true;
   history: boolean = false;
   historyButton: string = "View Trend"
@@ -79,7 +76,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
@@ -115,9 +111,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
-                  this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
+                  // this.sortVPVTable(undefined);
+                  this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
+
                   this.visboKeyMetricsCalc();
-                  this.sortKeyMetricsTable(undefined);
                   if (this.hasVPPerm(this.permVP.ViewAudit)) {
                     this.chart = chartFlag;
                   } else {
@@ -151,7 +148,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
             this.visboprojectversions = visboprojectversions;
             this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
             this.visboKeyMetricsCalc();
-            this.sortKeyMetricsTable(undefined);
             if (this.hasVPPerm(this.permVP.ViewAudit)) {
               this.chart = chartFlag;
             } else {
@@ -181,11 +177,23 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
         elementKeyMetric.name = this.visboprojectversions[i].name;
         elementKeyMetric._id = this.visboprojectversions[i]._id;
-        elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
+        elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
+        elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
+        elementKeyMetric.Risiko = this.visboprojectversions[i].Risiko;
+        elementKeyMetric.StrategicFit = this.visboprojectversions[i].StrategicFit;
+        elementKeyMetric.leadPerson = this.visboprojectversions[i].leadPerson;
+        elementKeyMetric.status = this.visboprojectversions[i].status;
+        elementKeyMetric.ampelStatus = this.visboprojectversions[i].ampelStatus;
+        elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[i].ampelErlaeuterung;
+        elementKeyMetric.VorlagenName = this.visboprojectversions[i].VorlagenName;
+        elementKeyMetric.complexity = this.visboprojectversions[i].complexity;
+        elementKeyMetric.description = this.visboprojectversions[i].description;
+        elementKeyMetric.businessUnit = this.visboprojectversions[i].businessUnit;
+
         elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
         // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
-        elementKeyMetric.savingCostTotal = ((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
+        elementKeyMetric.savingCostTotal = Math.round((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
         if (elementKeyMetric.savingCostTotal > 100) elementKeyMetric.savingCostTotal = 100;
         if (elementKeyMetric.savingCostTotal < -100) elementKeyMetric.savingCostTotal = -100;
         elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
@@ -201,31 +209,33 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {
           elementKeyMetric.deliveryCompletionTotal = 100;
         } else {
-          elementKeyMetric.deliveryCompletionTotal = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) * 100
+          elementKeyMetric.deliveryCompletionTotal = Math.round((elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal * 100)
         }
         if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) {
           elementKeyMetric.deliveryCompletionActual = 100;
         } else {
-          elementKeyMetric.deliveryCompletionActual = ((elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual) * 100
+          elementKeyMetric.deliveryCompletionActual = Math.round((elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual * 100)
         }
-        
+
         // Calculate the Deadline Completion
         if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal) {
           elementKeyMetric.timeCompletionTotal = 100;
         } else {
-          elementKeyMetric.timeCompletionTotal = ((elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal) * 100
+          elementKeyMetric.timeCompletionTotal = Math.round((elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal * 100)
         }
         if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastActual) {
           elementKeyMetric.timeCompletionActual = 100;
         } else {
-          elementKeyMetric.timeCompletionActual = ((elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastActual) * 100
+          elementKeyMetric.timeCompletionActual = Math.round((elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0) / elementKeyMetric.keyMetrics.timeCompletionBaseLastActual * 100)
         }
 
         this.visbokeymetrics.push(elementKeyMetric)
       }
     }
-    // first element is the latest
-    this.setVpvActive(this.visboprojectversions[0]);
+    this.log(`calc keyMetrics Result LEN ${this.visbokeymetrics.length}`);
+    this.sortKeyMetricsTable(undefined);
+    // select latest element
+    this.setVpvActive(this.visbokeymetrics[0]);
     this.visboKeyMetricsCostOverTime();
   }
 
@@ -511,13 +521,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     return rangeAxis;
   }
 
-  toggleVisboProjectVersions(): void {
-    this.deleted = !this.deleted
-    var url = this.route.snapshot.url.join('/')
-    this.log(`VP toggleVisboProjectVersions ${this.deleted} URL ${url}`);
-    this.getVisboProjectVersions();
-    // MS TODO: go to the current url and add delete flag
-    this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  gotoVisboProjectVersions(): void {
+    this.log(`goto VPV All Versions ${this.vpvKeyMetricActive.vpid} `);
+    this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion):void {
@@ -527,19 +533,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   chartSelectRow(row: number, col: number, label: string) {
-    this.log(`Line Chart: User selected ${row} ${col} ${label}`);
-    this.setVpvActive(this.visboprojectversions.find(x => (new Date(x.timestamp)).getTime() == (new Date(label)).getTime()));
-    this.log(`Line Chart: User selected ${row} ${col} ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.log(`Line Chart: User selected ${row} ${col} ${label} Len ${this.visbokeymetrics.length}`);
+    if (row < 0 || row >= this.visbokeymetrics.length) row = 0;
+    this.setVpvActive(this.visbokeymetrics[row]);
+    this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 
-  setVpvActive(vpv: VisboProjectVersion) : void {
+  setVpvActive(vpv: VPVKeyMetricsCalc) : void {
     var keyMetrics = vpv.keyMetrics;
     var index: number;
     let level1 = 0.05;
     let level2 = 0.15;
     let delay1 = 7;
-    this.vpvActive = vpv;
-    this.vpvKeyMetricActive = this.visbokeymetrics.find(x => x._id.toString() == vpv._id.toString());
+    this.vpvKeyMetricActive = vpv;
+    this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
+
     index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1)
     if (index < 1 + level1) this.qualityCost = 1
     else if (index < 1 + level2) this.qualityCost = 2
@@ -647,16 +655,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`Toggle Chart to ${this.chart} Graph ${JSON.stringify(this.graphDataLineChart)}`);
   }
 
-  showHistory(newValue: boolean = undefined) {
-    if (newValue != undefined) {
-      this.history = newValue;
-    } else {
-      this.history = !this.history
-    }
+  showHistory(newValue: boolean) {
+    this.history = newValue;
     this.historyButton = this.history ? "Hide Trend" : "View Trend";
   }
 
-  helperDateDiff(from: string, to: string, unit: string) {
+  helperDateDiff(from: string, to: string, unit: string): number {
     var fromDate: Date = new Date(from);
     var toDate: Date = new Date(to);
     var dateDiff: number = fromDate.getTime() - toDate.getTime();
@@ -691,7 +695,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       else this.sortAscending = !this.sortAscending;
     } else {
       this.sortColumn = 1;
-      this.sortAscending = true;
+      this.sortAscending = false;
     }
     if (this.sortColumn == 1) {
       // sort by VPV Timestamp
@@ -766,7 +770,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       else this.sortAscending = !this.sortAscending;
     } else {
       this.sortColumn = 1;
-      this.sortAscending = true;
+      this.sortAscending = false;
     }
 
     this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
@@ -837,9 +841,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
   }
 
-
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectKeyMetrics: ' + message);
   }
+
 }

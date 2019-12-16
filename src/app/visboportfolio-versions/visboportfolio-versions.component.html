@@ -8,15 +8,12 @@
       <h2 *ngIf="vpActive">
         Portfolio Project List for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
       </h2>
-      <h5>Visbo Center:
+      <h5 *ngIf="vpActive">Visbo Center:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
     </div>
   </div>
   <div  *ngIf="vpfActiveIndex" class='row'>
-    <div *ngIf="hasVPPerm(permVP.ViewAudit)" class='col-2'>
-        <button type="button" class="btn btn-primary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
-    </div>
     <label class="col-2 my-2">Portfolio Version:</label>
     <select class="col-4 form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected" (change)="changePFVersion();">
       <option *ngFor="let item of dropDown">{{item.name}}</option>
@@ -46,16 +43,21 @@
         <option>quarter</option>
       </select>
     </div>
-    <div class="row">
-      <div class="my-1">
-        <span>Performance of: </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
-        <span> against </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
-      </div>
-      <div class="mx-2">
-        <button *ngIf= "showChart" type="button" class="btn btn-sm btn-secondary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
-        <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-secondary ml-2" (click)= "drawChart(true)">Show Chart</button>
+    <div class="row d-flex justify-content-center">
+      <!-- <div class='col-10'> -->
+        <span class="my-1">
+          <span>Performance of: </span>
+          <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
+          <span> against </span>
+          <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
+        </span>
+        <span class="mx-2">
+          <button *ngIf= "showChart" type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
+          <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-primary ml-2" (click)= "drawChart(true)">Show Chart</button>
+        </span>
+      <!-- </div> -->
+      <div *ngIf="hasVPPerm(permVP.ViewAudit)">
+          <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
       </div>
     </div>
   </div>

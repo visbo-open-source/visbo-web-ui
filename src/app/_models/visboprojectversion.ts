@@ -24,6 +24,18 @@ export class VPVKeyMetricsCalc {
   name: string;
   vpid: string;
   timestamp: Date;
+  variantName: string;
+  Risiko: number;
+  StrategicFit: number;
+  leadPerson: string;
+  status: string;
+  ampelStatus: number;
+  ampelErlaeuterung: string;
+  VorlagenName: string;
+  complexity: number;
+  description: string;
+  businessUnit: string;
+
   savingCostTotal: number;
   savingCostActual: number;
   savingEndDate: number;

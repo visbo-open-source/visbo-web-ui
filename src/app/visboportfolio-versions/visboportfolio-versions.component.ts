@@ -512,7 +512,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     if (newStatus == undefined) this.chart = !this.chart
     else this.chart = newStatus
     this.chartButton = this.chart ? "Show List" : "Show Chart";
-    // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
+    this.log(`Switch Chart to ${this.chart}`);
   }
 
   helperVpIndex(vpIndex: number):void {

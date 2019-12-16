@@ -14,11 +14,8 @@
         </h2>
       </div>
       <div class='btn-group '>
-        <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='col-6'>
-        <!-- <div class='col-6'> -->
-            <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Deleted</button>
-            <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjectVersions()">Show Existing</button>
-        </div>
+        <button *ngIf="!deleted" class="btn btn-sm btn-secondary m-2" (click)="toggleVisboProjectVersions()">Show Deleted</button>
+        <button *ngIf="deleted" class="btn btn-sm btn-secondary m-2" (click)="toggleVisboProjectVersions()">Show Existing</button>
       </div>
     </div>
   </div>
