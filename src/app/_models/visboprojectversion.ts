@@ -1,3 +1,9 @@
+export class VPVCost {
+  currentDate: Date;
+  baseLineCost: number;
+  currentCost: number;
+};
+
 export class VPVKeyMetrics {
   costCurrentActual: number;
   costCurrentTotal: number;
@@ -76,7 +82,10 @@ export class VisboProjectVersion {
   complexity: number;
   description: string;
   businessUnit: string;
+
   keyMetrics: VPVKeyMetrics;
+  cost: [ VPVCost ];
+
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
   createdAt: Date;

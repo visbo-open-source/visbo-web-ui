@@ -21,6 +21,7 @@ import { VisboProjectVersionsComponent }      from './visboprojectversions/visbo
 import { VisboProjectVersionDetailComponent }      from './visboprojectversion-detail/visboprojectversion-detail.component';
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
 import { VisboProjectKeyMetricsComponent }  from './visboproject-keymetrics/visboproject-keymetrics.component';
+import { VisboProjectViewCostComponent }  from './visboproject-viewcost/visboproject-viewcost.component';
 // import { VisboPortfolioVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
 import { SettingsComponent }   from './settings/settings.component';
@@ -54,6 +55,7 @@ const routes: Routes = [
   { path: 'vpDetail/:id', component: VisboprojectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpAudit/:id', component: VisboprojectAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vpKeyMetrics/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewCost/:id', component: VisboProjectViewCostComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpvDetail/:id', component: VisboProjectVersionDetailComponent, canActivate: [AuthGuard]  },

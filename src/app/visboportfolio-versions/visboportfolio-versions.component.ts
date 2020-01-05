@@ -97,7 +97,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         .subscribe(
           visboproject => {
             this.vpActive = visboproject;
-            // this.combinedPerm = visboportfolio.perm;
+            this.combinedPerm = visboproject.perm;
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
             this.visboprojectversionService.getVisboPortfolioVersions(id, this.deleted)
               .subscribe(
@@ -107,11 +107,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
                   this.vpfActive = visboportfolioversions[0];
                   this.vpfActiveIndex = visboportfolioversions.length;
                   if (visboportfolioversions.length > 0) {
-                    this.combinedPerm = visboportfolioversions[0].perm;
+                    // this.combinedPerm = visboportfolioversions[0].perm;
                     this.dropDownInit();
                     this.getVisboPortfolioKeyMetrics();
                     this.log(`get VPF Index ${this.vpfActiveIndex}`);
-                    // this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} First ${visboportfolioversions[0].timestamp} Last ${visboportfolioversions[visboportfolioversions.length-1].timestamp} Perm ${JSON.stringify(this.combinedPerm)}`);
+                    this.log(`get VPF ${this.vpActive.name} Length ${visboportfolioversions.length} First ${visboportfolioversions[0].timestamp} Last ${visboportfolioversions[visboportfolioversions.length-1].timestamp} Perm ${JSON.stringify(this.combinedPerm)}`);
                   }
                 },
                 error => {

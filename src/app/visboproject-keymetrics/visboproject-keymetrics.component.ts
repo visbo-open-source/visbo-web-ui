@@ -526,6 +526,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
   }
 
+  gotoViewCost(): void {
+    this.log(`goto VPV View Cost ${this.vpvKeyMetricActive.vpid} `);
+    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], {});
+  }
+
   gotoClickedRow(visboprojectversion: VisboProjectVersion):void {
     this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});

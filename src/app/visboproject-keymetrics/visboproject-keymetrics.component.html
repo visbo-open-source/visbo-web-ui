@@ -157,6 +157,7 @@
         <button type="button" class="btn mx-1" (click)="showHistory(false)">{{historyButton}}</button>
         <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="btn mx-1" (click)="switchChart()">{{chartButton}}</button>
         <button type="button" class="btn mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
+        <button  *ngIf="typeMetricChart == 'Costs'" type="button" class="btn mx-1" (click)="gotoViewCost()">Show Cost Detail</button>
       </div>
       <div *ngIf="chart && graphDataLineChart.length > 0" >
         <div *ngIf="typeMetricChart == 'Costs'">
