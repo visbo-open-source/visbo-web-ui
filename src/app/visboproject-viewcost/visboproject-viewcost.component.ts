@@ -27,6 +27,9 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpvCost: [VPVCost];
   deleted: boolean = false;
 
+  vpvTotalCostBaseLine: number;
+  vpvTotalCostCurrent: number;
+
   refDateInterval: string = "month";
   vpvRefDate: Date;
   chartButton: string = "View List";
@@ -142,8 +145,19 @@ export class VisboProjectViewCostComponent implements OnInit {
     this.chart = false;
     this.vpvActive = this.visboprojectversions[index]
     this.vpvRefDate = this.vpvActive.timestamp;
-    // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
     if (!this.vpvActive) return;
+
+    // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
+    // if (this.vpvActive.cost) {
+    //   this.visboViewCostOverTime(this.vpvActive._id);
+    //   if (this.hasVPPerm(this.permVP.ViewAudit)) {
+    //     this.chart = chartFlag;
+    //   } else {
+    //     this.chart = false;
+    //   }
+    //   return;
+    // }
+
     this.log(`Cost Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     this.visboprojectversionService.getCost(this.vpvActive._id)
       .subscribe(
@@ -166,8 +180,6 @@ export class VisboProjectViewCostComponent implements OnInit {
           } else {
             this.chart = false;
           }
-          this.chart = true;;
-
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -217,12 +229,17 @@ export class VisboProjectViewCostComponent implements OnInit {
     if (!this.vpvCost) return;
 
     var cost = this.vpvCost;
+    this.vpvTotalCostBaseLine = 0;
+    this.vpvTotalCostCurrent = 0;
+
     for (var i = 0; i < cost.length; i++) {
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
       graphDataCost.push([
         new Date(cost[i].currentDate),
         Math.trunc(cost[i].baseLineCost || 0),
         Math.trunc(cost[i].currentCost || 0)      ])
+        this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
+        this.vpvTotalCostCurrent += cost[i].currentCost || 0;
     }
     if (graphDataCost.length == 0) {
       this.log(`ViewCostOverTime Result empty`);

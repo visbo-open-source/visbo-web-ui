@@ -629,7 +629,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   switchTo(metric: string) {
-    this.log(`Switch Chart to ${metric} `);
+    this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
+    if (this.typeMetricChart == metric) {
+      this.showHistory(!this.history);
+      return;
+    }
     var newTypeMetric = this.typeMetricList.find(x => x.metric == metric).name;
     // toggle between drop down views
     if (newTypeMetric) {

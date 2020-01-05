@@ -28,6 +28,7 @@
               <th>Actual</th>
               <th>Total</th>
               <th class="d-none d-md-table-cell">Ahead/Delay</th>
+              <th>Detail</th>
               <th class="d-none d-md-table-cell">Trend</th>
             </tr>
           </thead>
@@ -48,6 +49,10 @@
                 <span> {{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} % </span>
               </td>
               <td class="d-none d-md-table-cell"></td>
+              <td>
+                <button class="Detail" title="View Monthly Cost"
+                (click)="gotoViewCost()">View</button>
+              </td>
               <td>
                 <button class="Detail" title="Trend of Cost Metrics"
                 (click)="switchTo('Costs')">i</button>
@@ -75,6 +80,8 @@
                 <span *ngIf="delayTotalDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayTotalDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> Delay</span>
+              </td>
+              <td>
               </td>
               <td>
                 <button class="Detail" title="Trend of Cost Metrics"
@@ -106,6 +113,8 @@
                 <span> Delay</span>
               </td>
               <td>
+              </td>
+              <td>
                 <button class="Detail" title="Trend of Cost Metrics"
                 (click)="switchTo('Deadlines')">i</button>
               </td>
@@ -124,6 +133,7 @@
                 <span *ngIf="delayEndDate == 0"> in Time</span>
               </td>
               <td></td>
+              <td></td>
             </tr>
             <tr>
               <td>Traffic Light</td>
@@ -137,12 +147,14 @@
                 {{ getShortText(vpvKeyMetricActive.ampelErlaeuterung, 40) }}
               </td>
               <td></td>
+              <td></td>
             </tr>
             <tr *ngIf="vpvKeyMetricActive.leadPerson">
               <td>Lead Person</td>
               <td title="{{ vpvKeyMetricActive.leadPerson }}">
                 {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
               </td>
+              <td></td>
               <td></td>
               <td></td>
               <td></td>
@@ -154,10 +166,8 @@
     <div *ngIf="history">
       <hr>
       <div class="btn-group">
-        <button type="button" class="btn mx-1" (click)="showHistory(false)">{{historyButton}}</button>
         <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="btn mx-1" (click)="switchChart()">{{chartButton}}</button>
-        <button type="button" class="btn mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
-        <button  *ngIf="typeMetricChart == 'Costs'" type="button" class="btn mx-1" (click)="gotoViewCost()">Show Cost Detail</button>
+        <button *ngIf="!this.chart" type="button" class="btn mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
       </div>
       <div *ngIf="chart && graphDataLineChart.length > 0" >
         <div *ngIf="typeMetricChart == 'Costs'">
