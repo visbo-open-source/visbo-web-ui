@@ -528,7 +528,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   gotoViewCost(): void {
     this.log(`goto VPV View Cost ${this.vpvKeyMetricActive.vpid} `);
-    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], {});
+    var queryParams = { vpvid: this.vpvKeyMetricActive._id };
+    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion):void {

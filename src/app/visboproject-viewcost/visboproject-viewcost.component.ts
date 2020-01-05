@@ -23,24 +23,17 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpSelected: string;
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
+  initVPVID: string;
   vpvCost: [VPVCost];
   deleted: boolean = false;
 
   refDateInterval: string = "month";
-  vpvRefDate: Date = new Date();
+  vpvRefDate: Date;
   chartButton: string = "View List";
   chart: boolean = true;
   history: boolean = false;
   historyButton: string = "View Trend"
   parentThis: any;
-
-  typeMetricList: any[] = [
-    {name: "Total & Actual Cost", metric: "Costs"},
-    {name: "Delivery Completion", metric: "Deliveries"},
-    {name: "Reached Deadlines", metric: "Deadlines"}
-  ];
-  typeMetric: string = this.typeMetricList[0].name;
-  typeMetricChart: string = this.typeMetricList[0].metric;
 
   // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#FA8258'];
   colors: string[] = ['#F7941E', '#458CCB'];
@@ -69,6 +62,9 @@ export class VisboProjectViewCostComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (this.route.snapshot.queryParams.vpvid) {
+      this.initVPVID = this.route.snapshot.queryParams.vpvid
+    }
     this.getVisboProjectVersions();
   }
 
@@ -103,9 +99,17 @@ export class VisboProjectViewCostComponent implements OnInit {
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
                   if (visboprojectversions.length > 0) {
                     this.sortVPVTable();
-                    this.vpvActive = visboprojectversions[0];
                   }
-                  this.visboCostCalc(0);
+                  var initIndex = 0
+                  if (this.initVPVID) {
+                    for (var i=0; i < visboprojectversions.length; i++) {
+                      if (visboprojectversions[i]._id.toString() == this.initVPVID) {
+                        initIndex = i;
+                        break;
+                      }
+                    }
+                  }
+                  this.visboCostCalc(initIndex);
                   if (this.hasVPPerm(this.permVP.ViewAudit)) {
                     this.chart = chartFlag;
                   } else {
@@ -136,7 +140,8 @@ export class VisboProjectViewCostComponent implements OnInit {
   visboCostCalc(index: number): void {
     var chartFlag = this.chart;
     this.chart = false;
-
+    this.vpvActive = this.visboprojectversions[index]
+    this.vpvRefDate = this.vpvActive.timestamp;
     // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
     if (!this.vpvActive) return;
     this.log(`Cost Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
@@ -189,7 +194,7 @@ export class VisboProjectViewCostComponent implements OnInit {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
         title:'Monthly Cost: Plan vs. Base Line',
-        animation: {startup: true, duration: 200},
+        // animation: {startup: true, duration: 200},
         legend: {position: 'top'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         vAxis: {
@@ -266,8 +271,8 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions ${this.vpvRefDate.toISOString()} ${increment} ${this.refDateInterval}`);
-    var newRefDate = new Date(this.vpvRefDate.getTime());
+    this.log(`get getRefDateVersions ${this.vpvRefDate} ${increment} ${this.refDateInterval}`);
+    var newRefDate = new Date(this.vpvRefDate);
     switch(this.refDateInterval) {
       case 'day':
         newRefDate.setDate(newRefDate.getDate() + increment)
@@ -291,22 +296,27 @@ export class VisboProjectViewCostComponent implements OnInit {
         }
         break;
     }
-    this.log(`get getRefDateVersions ${newRefDate}`);
-    var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
-    if (newRefDate.toISOString() < refDate.toISOString()) {
-      newRefDate = refDate
+    this.log(`get getRefDateVersions ${(new Date(newRefDate)).toISOString()}`);
+    if (increment > 0) {
+      refDate = new Date(this.visboprojectversions[0].timestamp)
+      if (newRefDate.toISOString() > refDate.toISOString()) {
+        newRefDate = refDate
+        // newRefDate.setSeconds(newRefDate.getSeconds()+1)
+      }
     }
-    refDate = new Date(this.visboprojectversions[0].timestamp)
-    if (newRefDate.toISOString() > refDate.toISOString()) {
-      newRefDate = refDate
+    if (increment < 0) {
+      var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
+      if (newRefDate.toISOString() < refDate.toISOString()) {
+        newRefDate = refDate
+        // newRefDate.setSeconds(newRefDate.getSeconds()+1)
+      }
     }
-    this.log(`get getRefDateVersions normalised ${newRefDate}`);
-    this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
+    this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
+    this.vpvRefDate = newRefDate;
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       var cmpDate = new Date(this.visboprojectversions[i].timestamp);
       this.log(`Compare Date ${cmpDate.toISOString()} ${this.vpvRefDate.toISOString()}`);
-      if (cmpDate.toISOString() < this.vpvRefDate.toISOString()) {
-        this.vpvActive = this.visboprojectversions[i];
+      if (cmpDate.toISOString() <= this.vpvRefDate.toISOString()) {
         this.visboCostCalc(i);
         break;
       }
@@ -344,84 +354,11 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   gotoVP(visboproject: VisboProject):void {
-    this.router.navigate(['vp/'.concat(visboproject._id)]);
+    this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
   }
 
   gotoVC(visboproject: VisboProject):void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
-  }
-
-  changeChart() {
-    this.log(`Switch Chart to ${this.typeMetric} `);
-    // this.typeMetricChart = this.typeMetricList.find(x => x.name == this.typeMetric).metric;
-    // switch (this.typeMetricChart) {
-    //   case 'Costs':
-    //     this.visboViewCost();
-    //     break;
-    //   case 'Deadlines':
-    //     this.visboKeyMetricsDeadlinesOverTime();
-    //     break;
-    //   case 'Deliveries':
-    //     this.visboKeyMetricsDeliveriesOverTime();
-    //     break;
-    // }
-  }
-
-  switchTo(metric: string) {
-    this.log(`Switch Chart to ${metric} `);
-    // var newTypeMetric = this.typeMetricList.find(x => x.metric == metric).name;
-    // // toggle between drop down views
-    // if (newTypeMetric) {
-    //   this.typeMetricChart = metric;
-    //   this.typeMetric = newTypeMetric;
-    //   this.showHistory(true);
-    //   switch (metric) {
-    //     case 'Costs':
-    //       this.visboViewCost();
-    //       break;
-    //     case 'Deadlines':
-    //       this.visboKeyMetricsDeadlinesOverTime();
-    //       break;
-    //     case 'Deliveries':
-    //       this.visboKeyMetricsDeliveriesOverTime();
-    //       break;
-    //   }
-    // } else {
-    //   // toggle to vpv Detail View
-    //   switch (metric) {
-    //     case 'DetailCosts':
-    //       break;
-    //     case 'DetailDeadlines':
-    //       break;
-    //     case 'DetailDeliveries':
-    //       break;
-    //   }
-    // }
-  }
-
-  switchChart() {
-    this.chart = !this.chart
-    this.chartButton = this.chart ? "View List" : "View Chart";
-    // this.log(`Toggle Chart to ${this.chart} Graph ${JSON.stringify(this.graphDataLineChart)}`);
-  }
-
-  showHistory(newValue: boolean) {
-    this.history = newValue;
-    this.historyButton = this.history ? "Hide Trend" : "View Trend";
-  }
-
-  helperDateDiff(from: string, to: string, unit: string): number {
-    var fromDate: Date = new Date(from);
-    var toDate: Date = new Date(to);
-    var dateDiff: number = fromDate.getTime() - toDate.getTime();
-    if (unit == 'w') {
-      dateDiff = dateDiff / 1000 / 60 / 60 / 24 / 7;
-    } else if (unit == 'd') {
-      dateDiff = dateDiff / 1000 / 60 / 60 / 24;
-    } else {
-      dateDiff = dateDiff / 1000;
-    }
-    return dateDiff
   }
 
   getShortText(text: string, len: number) : string {
