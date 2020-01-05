@@ -317,24 +317,23 @@ export class VisboProjectViewCostComponent implements OnInit {
     if (increment > 0) {
       refDate = new Date(this.visboprojectversions[0].timestamp)
       if (newRefDate.toISOString() > refDate.toISOString()) {
-        newRefDate = refDate
-        // newRefDate.setSeconds(newRefDate.getSeconds()+1)
+        this.visboCostCalc(0);
+        return;
       }
     }
     if (increment < 0) {
       var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
       if (newRefDate.toISOString() < refDate.toISOString()) {
-        newRefDate = refDate
-        // newRefDate.setSeconds(newRefDate.getSeconds()+1)
+        this.visboCostCalc(this.visboprojectversions.length-1);
+        return;
       }
     }
     this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
-    this.vpvRefDate = newRefDate;
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       var cmpDate = new Date(this.visboprojectversions[i].timestamp);
-      this.log(`Compare Date ${cmpDate.toISOString()} ${this.vpvRefDate.toISOString()}`);
-      if (cmpDate.toISOString() <= this.vpvRefDate.toISOString()) {
-        this.visboCostCalc(i);
+      this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+      if (cmpDate.toISOString() <= newRefDate.toISOString()) {
+        this.visboCostCalc(increment > 0 ? i-1 : i);
         break;
       }
     }
