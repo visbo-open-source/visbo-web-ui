@@ -8,7 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { AuthenticationService } from './authentication.service'
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
 import { VisboProjectVersion, VisboProjectVersionResponse, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
@@ -23,13 +23,15 @@ const httpOptions = {
 @Injectable()
 export class VisboProjectVersionService {
 
-  private vpvUrl = environment.restUrl.concat('/vpv'); // URL to web api
-  private vpfUrl = environment.restUrl.concat('/vp'); // URL to web api
+  private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
+  private vpfUrl = this.env.restUrl.concat('/vp'); // URL to web api
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-    private authenticationService: AuthenticationService ) { }
+    private authenticationService: AuthenticationService,
+    private env: EnvService
+  ) { }
 
 
   /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/

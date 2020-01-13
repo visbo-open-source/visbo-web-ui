@@ -26,8 +26,8 @@
   <hr>
 
   <div class='container-fluid'>
-    <div class="d-flex flex-row justify-content-center">
-      <h3 class="col-4">
+    <div class="row">
+      <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">Metrics: {{vpvRefDate | date: 'dd.MM'}}</div>
       </h3>
@@ -44,21 +44,28 @@
         </div>
       </div>
     </div>
-    <div class="d-flex flex-row justify-content-center">
-      <div class="row">
-        <div class="my-1">
-          <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
-          <span> against </span>
-          <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
-          <span *ngIf="vpFilter">, filtered by {{vpFilter}} </span>
+    <div class="row">
+      <form name="form" (ngSubmit)="showTempList(false)">
+        <div class="form-group row">
+          <label for="Filter" class="col-6 col-form-label">Filter Projects:</label>
+          <div class="col-6">
+            <input class="form-control"  (keyup)="showTempList(true); visboKeyMetricsCalc()" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
+          </div>
         </div>
-        <div class="mx-2">
-          <button *ngIf= "showChart" type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
-          <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-primary ml-2" (click)= "drawChart(true)">Show Chart</button>
-        </div>
-        <div *ngIf="hasVPPerm(permVP.ViewAudit)">
-            <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
-        </div>
+      </form>
+    </div>
+    <div class="row">
+      <div class="my-1">
+        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
+        <span> against </span>
+        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
+      </div>
+      <div class="mx-2">
+        <button *ngIf= "showChart" type="button" class="btn btn-sm btn-primary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
+        <button *ngIf= "!showChart" type="button" class="btn btn-sm btn-primary ml-2" (click)= "drawChart(true)">Show Chart</button>
+      </div>
+      <div *ngIf="hasVPPerm(permVP.ViewAudit)">
+          <button type="button" class="btn btn-sm btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
       </div>
     </div>
   </div>
@@ -151,10 +158,6 @@
             <select class="form-control" id="typeMetricY" name="typeMetricY" [(ngModel)]="typeMetricY">
               <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label for="Filter" class="col-form-label">Filter:</label>
-            <input class="form-control" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">Change</button>

@@ -74,6 +74,8 @@ import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
+import { EnvServiceProvider } from './_helpers/env.service.provider';
+
 import { GoogleChartModule } from './google-chart/google-chart.module';
 
 @NgModule({
@@ -140,7 +142,8 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
       useClass: JwtInterceptor,
       multi: true
     },
-    MessageService
+    MessageService,
+    EnvServiceProvider
   ],
   bootstrap: [
     AppComponent

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -51,7 +51,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     refDateInterval: string = "month";
     vpfActiveIndex: number;
     deleted: boolean = false;
-    chart: boolean;
+    chart: boolean = true;
+    tempList: boolean = undefined;
+    tempChart: boolean;
+    tempDate: Date;
     chartButton: string;
     parentThis: any;
     showChart: boolean = true;
@@ -151,7 +154,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   getVisboPortfolioKeyMetrics(): void {
-    var chart = this.chart
+    var showChart = this.showChart
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
     this.showChart = false;
 
@@ -162,7 +165,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.showChartOption(chart);
+            this.showChartOption(showChart);
           } else {
             this.showChartOption(false);
           }
@@ -223,10 +226,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       if (!vpFilter
         || this.visboprojectversions[i].name.toLowerCase().indexOf(vpFilter) >= 0
-        || this.visboprojectversions[i].VorlagenName.toLowerCase().indexOf(vpFilter) >= 0
-        || this.visboprojectversions[i].businessUnit.toLowerCase().indexOf(vpFilter) >= 0
-        || this.visboprojectversions[i].leadPerson.toLowerCase().indexOf(vpFilter) >= 0
-        || this.visboprojectversions[i].description.toLowerCase().indexOf(vpFilter) >= 0
+        || (this.visboprojectversions[i].VorlagenName || '').toLowerCase().indexOf(vpFilter) >= 0
+        || (this.visboprojectversions[i].businessUnit || '').toLowerCase().indexOf(vpFilter) >= 0
+        || (this.visboprojectversions[i].leadPerson || '').toLowerCase().indexOf(vpFilter) >= 0
+        || (this.visboprojectversions[i].description || '').toLowerCase().indexOf(vpFilter) >= 0
       ) {
         if (this.visboprojectversions[i].keyMetrics) {
           var elementKeyMetric: VPVKeyMetricsCalc = new VPVKeyMetricsCalc();
@@ -258,7 +261,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visbokeymetrics.push(elementKeyMetric)
         }
       } else {
-        this.log(`Remove ${this.visboprojectversions[i].name} Vorlage ${this.visboprojectversions[i].VorlagenName} BU ${this.visboprojectversions[i].businessUnit} Lead ${this.visboprojectversions[i].leadPerson} Desc ${this.visboprojectversions[i].description} vs  by Filter  ${this.vpFilter}`);
+        // this.log(`Remove ${this.visboprojectversions[i].name} Vorlage ${this.visboprojectversions[i].VorlagenName} BU ${this.visboprojectversions[i].businessUnit} Lead ${this.visboprojectversions[i].leadPerson} Desc ${this.visboprojectversions[i].description} vs  by Filter  ${this.vpFilter}`);
       }
     }
     this.sortKeyMetricsTable(undefined);
@@ -269,11 +272,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
     this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
-    if (this.vpFilter) {
-      this.visboKeyMetricsCalc();
-    } else {
-      this.visboKeyMetricsCalcBubble();
-    }
+    this.visboKeyMetricsCalc();
     this.showChart = true;
   }
 
@@ -529,6 +528,24 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     else this.chart = newStatus
     this.chartButton = this.chart ? "Show List" : "Show Chart";
     this.log(`Switch Chart to ${this.chart}`);
+  }
+
+  showTempList(newStatus: boolean): void {
+    if (newStatus == undefined) return;
+    this.log(`Switch temp List from ${this.tempList} to ${newStatus} Date ${this.tempDate}`);
+    if (this.tempList == undefined && newStatus == true) {
+      if (this.tempDate) this.log(`Compare ${(new Date).getTime() - this.tempDate.getTime()} ${(new Date).toISOString()} ${this.tempDate.toISOString()}`);
+      if (this.tempDate  == undefined || (new Date).getTime() - this.tempDate.getTime() > 300 ) {
+        this.tempChart = this.chart;
+        this.chart = false
+        this.tempList = true;
+      }
+    }
+    if (newStatus == false) {
+      this.chart = this.tempChart;
+      this.tempList = undefined;
+      this.tempDate = new Date();
+    }
   }
 
   helperVpIndex(vpIndex: number):void {
