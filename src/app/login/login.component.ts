@@ -72,11 +72,11 @@ export class LoginComponent implements OnInit {
             .subscribe(
               vc => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl]);
+                this.router.navigate([this.returnUrl], {replaceUrl: true});
               },
               error => {
                 this.log(`No SysVC found: `);
-                this.router.navigate([this.returnUrl]);
+                this.router.navigate([this.returnUrl], {replaceUrl: true});
               }
             )
         },

@@ -233,10 +233,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       }
     }
     this.log(`calc keyMetrics Result LEN ${this.visbokeymetrics.length}`);
-    this.sortKeyMetricsTable(undefined);
-    // select latest element
-    this.setVpvActive(this.visbokeymetrics[0]);
-    this.visboKeyMetricsCostOverTime();
+    if (this.visbokeymetrics.length > 0) {
+      this.sortKeyMetricsTable(undefined);
+      // select latest element
+      this.setVpvActive(this.visbokeymetrics[0]);
+      this.visboKeyMetricsCostOverTime();
+    } else {
+      this.gotoVisboProjectVersions();
+    }
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -522,8 +526,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   gotoVisboProjectVersions(): void {
-    this.log(`goto VPV All Versions ${this.vpvKeyMetricActive.vpid} `);
-    this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
+    this.log(`goto VPV All Versions`);
+    var vpid
+    var params = {}
+    if (this.vpvKeyMetricActive) {
+      vpid = this.vpvKeyMetricActive.vpid;
+    }
+    if (!vpid && this.vpActive) {
+      vpid = this.vpActive._id;
+      // no keyMetrics redirect to vpv View and clear history
+      params = {replaceUrl: true}
+    }
+    if (vpid) {
+      this.router.navigate(['vpv/'.concat(vpid)], params);
+    }
   }
 
   gotoViewCost(): void {

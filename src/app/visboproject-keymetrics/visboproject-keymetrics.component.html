@@ -76,7 +76,7 @@
               </td>
               <td>
                 <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal}} Missing)</span>
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >(in Plan)</span>
               </td>
               <td class="d-none d-md-table-cell">
@@ -105,7 +105,7 @@
               </td>
               <td (click)="switchTo('Deadlines')">
                 <span>{{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}} </span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal}} Missing)</span>
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >(in Plan)</span>
               </td>
               <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell">
