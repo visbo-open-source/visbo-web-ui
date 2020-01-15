@@ -68,6 +68,7 @@ export class VisboProjectVersion {
   earliestStartDate: string;
   latestStart: number;
   latestStartDate: string;
+  actualDataUntil: string;
   status: string;
   ampelStatus: number;
   ampelErlaeuterung: string;

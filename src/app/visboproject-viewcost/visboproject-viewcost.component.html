@@ -39,8 +39,8 @@
     </div>
 
     <hr>
-    <div *ngIf="chart && graphDataLineChart.length > 0" >
-      <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+    <div *ngIf="chart && graphDataComboChart.length > 0" >
+      <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis"></app-combo-chart>
     </div>
   </div>
 </div>

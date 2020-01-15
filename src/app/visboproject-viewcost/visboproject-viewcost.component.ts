@@ -25,6 +25,7 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpvActive: VisboProjectVersion;
   initVPVID: string;
   vpvCost: [VPVCost];
+  vpvActualDataUntil: string;
   deleted: boolean = false;
 
   vpvTotalCostBaseLine: number;
@@ -39,14 +40,13 @@ export class VisboProjectViewCostComponent implements OnInit {
   parentThis: any;
 
   // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#FA8258'];
-  colors: string[] = ['#F7941E', '#458CCB'];
+  colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
   series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' },
-    '1': { lineWidth: 4, pointShape: 'triangle' }
+    '0': { lineWidth: 4, pointShape: 'star' }
   };
 
-  graphDataLineChart: any[] = [];
-  graphOptionsLineChart: any = undefined;
+  graphDataComboChart: any[] = [];
+  graphOptionsComboChart: any = undefined;
 
   sortAscending: boolean = false;
   sortColumn: number = 1;
@@ -168,10 +168,11 @@ export class VisboProjectViewCostComponent implements OnInit {
             // this.vpvCost[visboprojectversions[0]._id] = [];
             this.vpvCost = [new VPVCost];
           } else {
-            this.log(`Store Cost for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].cost.length} `);
-            // this.vpvCost[visboprojectversions[0]._id] = visboprojectversions[0].cost;
+            this.log(`Store Cost for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].cost.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.vpvCost = visboprojectversions[0].cost;
+            this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
             this.visboprojectversions[index].cost = this.vpvCost;
+            this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
           this.visboViewCostOverTime(visboprojectversions[0]._id);
@@ -202,13 +203,19 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   visboViewCostOverTime(id: string): void {
-    this.graphOptionsLineChart = {
+    this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
         title:'Monthly Cost: Plan vs. Base Line',
-        // animation: {startup: true, duration: 200},
+        animation: {startup: true, duration: 200},
         legend: {position: 'top'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+        curveType: 'function',
+        // series: this.series,
+        colors: this.colors,
+        seriesType: 'bars',
+        // series: {0: {type: 'line', lineWidth: 4, pointShape: 'star'}},
+        series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         vAxis: {
           title: 'Monthly Cost in k\u20AC',
           minorGridlines: {count: 0, color: 'none'}
@@ -216,14 +223,10 @@ export class VisboProjectViewCostComponent implements OnInit {
         hAxis: {
           format: 'MMM YY',
           gridlines: {
-            count: -1
+            count: 0
           },
           minorGridlines: {count: 0, color: 'none'}
-        },
-        pointSize: 14,
-        curveType: 'function',
-        series: this.series,
-        colors: this.colors
+        }
       };
     var graphDataCost: any = [];
     if (!this.vpvCost) return;
@@ -231,36 +234,51 @@ export class VisboProjectViewCostComponent implements OnInit {
     var cost = this.vpvCost;
     this.vpvTotalCostBaseLine = 0;
     this.vpvTotalCostCurrent = 0;
+    var actualDataUntil = new Date(this.vpvActualDataUntil)
+
+    this.log(`ViewCostOverTime Actual Until  ${actualDataUntil}`);
 
     for (var i = 0; i < cost.length; i++) {
+      var currentDate = new Date(cost[i].currentDate);
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
-      graphDataCost.push([
-        new Date(cost[i].currentDate),
-        Math.trunc(cost[i].baseLineCost || 0),
-        Math.trunc(cost[i].currentCost || 0)      ])
-        this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
-        this.vpvTotalCostCurrent += cost[i].currentCost || 0;
+      if (currentDate < actualDataUntil) {
+        graphDataCost.push([
+          new Date(cost[i].currentDate),
+          Math.trunc(cost[i].baseLineCost || 0),
+          Math.trunc(cost[i].currentCost || 0),
+          0]);
+      } else {
+        graphDataCost.push([
+          new Date(cost[i].currentDate),
+          Math.trunc(cost[i].baseLineCost || 0),
+          0,
+          Math.trunc(cost[i].currentCost || 0)]);
+      }
+      this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
+      this.vpvTotalCostCurrent += cost[i].currentCost || 0;
+
     }
     if (graphDataCost.length == 0) {
       this.log(`ViewCostOverTime Result empty`);
-      graphDataCost.push([new Date(), 0, 0, 0, 0])
+      graphDataCost.push([new Date(), 0, 0, 0])
     }
     graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime() });
     // we need at least 2 items for Line Chart and show the current status for today
     var len = graphDataCost.length;
-    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len-1])}`);
+    this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len-1])}`);
     if (len == 1) {
       graphDataCost.push([
         new Date(),
         graphDataCost[len-1][1],
-        graphDataCost[len-1][2]
+        graphDataCost[len-1][2],
+        graphDataCost[len-1][3]
       ])
     }
 
-    graphDataCost.push(['Timestamp', 'Cost Base Line', 'Cost Plan']);
+    graphDataCost.push(['Timestamp', 'Cost Base Line', 'Cost Effective', 'Cost Plan']);
     graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
-    this.graphDataLineChart = graphDataCost;
+    this.graphDataComboChart = graphDataCost;
   }
 
   calcRangeAxis(keyMetrics: [], type: string): number {
@@ -331,7 +349,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
     for (var i = 0; i < this.visboprojectversions.length; i++) {
       var cmpDate = new Date(this.visboprojectversions[i].timestamp);
-      this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+      // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
       if (cmpDate.toISOString() <= newRefDate.toISOString()) {
         this.visboCostCalc(increment > 0 ? i-1 : i);
         break;

@@ -200,7 +200,7 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(visboprojectversions => this.log(`fetched ${visboprojectversions.length} VisboProjectVersions `)),
+        tap(visboprojectversions => this.log(`fetched CostCalc for ${id}`)),
         catchError(this.handleError('getVisboProjectVersions', []))
       );
   }
