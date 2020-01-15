@@ -288,7 +288,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
         // 'vAxis': {'title': 'Delayed \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 End date (weeks) \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 Ahead', 'baselineColor': 'blue'},
         'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
-        'hAxis': {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'baselineColor': 'blue'},
+        'hAxis': {'baseline': 1, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost', 'baselineColor': 'blue'},
         // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
@@ -310,38 +310,38 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       var valueY: number;
       switch (this.typeMetricChartX) {
         case 'Costs':
-          valueX = this.visbokeymetrics[i].savingCostTotal;
-          colorValue += valueX <= 1 ? 1 : 0;
+          valueX = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
+          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueX = this.visbokeymetrics[i].savingEndDate;
           colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Deadlines':
-          valueX = this.visbokeymetrics[i].timeCompletionActual;
-          colorValue += valueX >= 1 ? 1 : 0;
+          valueX = Math.round(this.visbokeymetrics[i].timeCompletionActual * 100);
+          colorValue += valueX >= 100 ? 1 : 0;
           break;
         case 'Deliveries':
-          valueX = this.visbokeymetrics[i].deliveryCompletionActual;
-          colorValue += valueX >= 1 ? 1 : 0;
+          valueX = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
+          colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
       switch (this.typeMetricChartY) {
         case 'Costs':
-          valueY = this.visbokeymetrics[i].savingCostTotal;
-          colorValue += valueY <= 1 ? 1 : 0;
+          valueY = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
+          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueY = this.visbokeymetrics[i].savingEndDate;
           colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Deadlines':
-          valueY = this.visbokeymetrics[i].timeCompletionActual;
+          valueY = Math.round(this.visbokeymetrics[i].timeCompletionActual * 100);
           colorValue += valueY >= 1 ? 1 : 0;
           break;
         case 'Deliveries':
-          valueY = this.visbokeymetrics[i].deliveryCompletionActual;
-          colorValue += valueY >= 1 ? 1 : 0;
+          valueY = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
+          colorValue += valueY >= 100 ? 1 : 0;
           break;
       }
 
@@ -366,16 +366,16 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       maxSize = Math.max(maxSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
       switch (this.typeMetricChartX) {
         case 'Costs':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingCostTotal-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].savingCostTotal-1) * 100));
           break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingEndDate));
           break;
         case 'Deadlines':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].timeCompletionActual-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].timeCompletionActual-1) * 100));
           break;
         case 'Deliveries':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].deliveryCompletionActual-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].deliveryCompletionActual-1) * 100));
           break;
       }
     }
@@ -394,24 +394,24 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
     } else {
       rangeAxis *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = 1-rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = 1+rangeAxis;
+      this.graphBubbleOptions.hAxis.minValue = 100 - rangeAxis;
+      this.graphBubbleOptions.hAxis.maxValue = 100 + rangeAxis;
     }
 
     rangeAxis = 0;
     for (var i=0; i < this.visbokeymetrics.length; i++) {
       switch (this.typeMetricChartY) {
         case 'Costs':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingCostTotal-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].savingCostTotal-1) * 100));
           break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].savingEndDate));
           break;
         case 'Deadlines':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].timeCompletionActual-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].timeCompletionActual-1) * 100));
           break;
         case 'Deliveries':
-          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].deliveryCompletionActual-1));
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].deliveryCompletionActual-1) * 100));
           break;
       }
     }
@@ -421,15 +421,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
     } else {
       rangeAxis *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = 1-rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = 1+rangeAxis;
+      this.graphBubbleOptions.vAxis.minValue = 100 - rangeAxis;
+      this.graphBubbleOptions.vAxis.maxValue = 100 + rangeAxis;
     }
   }
 
   graphBubbleAxis(): void {
     switch (this.typeMetricChartX) {
       case 'Costs':
-        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelX = 'Planned Total Cost in %';
         break;
       case 'EndDate':
@@ -437,17 +437,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         this.graphBubbleLabelX = 'Change in End Date (Weeks)';
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deadlines', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deadlines vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelX = 'Achieved Deadlines in %';
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.hAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deliveries', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deliveries vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelX = 'Achieved Deliveries in %';
         break;
     }
     switch (this.typeMetricChartY) {
       case 'Costs':
-        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': -1, 'format': 'percent', 'title': 'Total Cost', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelY = 'Planned Total Cost in %';
         break;
       case 'EndDate':
@@ -455,11 +455,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         this.graphBubbleLabelY = 'Change in End Date (Weeks)';
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deadlines', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deadlines vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelY = 'Achieved Deadlines in %';
       break;
       case 'Deliveries':
-        this.graphBubbleOptions.vAxis = {'baseline': 1, 'direction': 1, 'format': 'percent', 'title': 'Achieved Deliveries', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deliveries vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         this.graphBubbleLabelY = 'Achieved Deliveries in %';
         break;
     }

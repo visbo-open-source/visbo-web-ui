@@ -7,6 +7,14 @@
       </h2>
       <h2 *ngIf="vpActive">
         Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        <span>
+          <small class="fas fa-info-circle mx-2 text-secondary" data-toggle="modal" data-target="#VpvDetails"></small>
+        </span>
+        <span *ngIf="vpvKeyMetricActive" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
+          <small *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></small>
+          <small *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></small>
+          <small *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></small>
+        </span>
       </h2>
       <h5 *ngIf="vpActive">Visbo Center:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
@@ -58,8 +66,8 @@
                 (click)="switchTo('Costs')">i</button>
               </td>
             </tr>
-            <tr (click)="switchTo('Deliveries')">
-              <td>Delivery Achievement</td>
+            <tr>
+              <td (click)="switchTo('Deliveries')">Delivery Achievement</td>
               <td title="Actual Delivery Achievement">
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -71,20 +79,19 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >(in Plan)</span>
               </td>
-              <td class="d-none d-md-table-cell" title="Status Actual Deliveries in Time">
-                <span *ngIf="delayActualDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayActualDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayActualDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+              <td class="d-none d-md-table-cell">
+                <span *ngIf="delayActualDelivery == 1" title="Status Actual Deliveries" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="delayActualDelivery == 2" title="Status Actual Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="delayActualDelivery == 3" title="Status Actual Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> / </span>
-                <span *ngIf="delayTotalDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayTotalDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayTotalDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-                <span> Delay</span>
+                <span *ngIf="delayTotalDelivery == 1" title="Status Total Deliveries" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="delayTotalDelivery == 2" title="Status Total Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
               </td>
               <td>
               </td>
               <td>
-                <button class="Detail" title="Trend of Cost Metrics"
+                <button class="Detail" title="Trend of Delivery Completion"
                 (click)="switchTo('Deliveries')">i</button>
               </td>
             </tr>
@@ -101,63 +108,21 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >(in Plan)</span>
               </td>
-              <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell" title="Status Actual Deliveries in Time">
-                <span *ngIf="delayActualDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayActualDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayActualDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+              <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell">
+                <span *ngIf="delayActualDeadlines == 1" title="Status Actual Deadline" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="delayActualDeadlines == 2" title="Status Actual Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="delayActualDeadlines == 3" title="Status Actual Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> / </span>
-                <span *ngIf="delayTotalDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayTotalDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayTotalDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-                <!-- <span *ngIf="delayActualDelivery > 1 || delayTotalDelivery > 1"> Delay</span> -->
-                <span> Delay</span>
+                <span *ngIf="delayTotalDeadlines == 1" title="Status Total Deadline" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="delayTotalDeadlines == 2" title="Status Total Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="delayTotalDeadlines == 3" title="Status Total Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
               </td>
               <td>
               </td>
               <td>
-                <button class="Detail" title="Trend of Cost Metrics"
+                <button class="Detail" title="Trend of Deadline Completion"
                 (click)="switchTo('Deadlines')">i</button>
               </td>
-            </tr>
-            <tr>
-              <td>Project End Date</td>
-              <td>
-                <span *ngIf="delayEndDate > 0" class="fas fa-exclamation-circle" style="color:red"></span>
-                <span *ngIf="delayEndDate <= 0" class="fas fa-check-circle" style="color:green"></span>
-                <span> {{ vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
-              </td>
-              <td></td>
-              <td class="d-none d-md-table-cell">
-                <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
-                <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
-                <span *ngIf="delayEndDate == 0"> in Time</span>
-              </td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Traffic Light</td>
-              <td title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-                <span *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                <span *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                <span *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
-              </td>
-              <td></td>
-              <td class="d-none d-md-table-cell" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-                {{ getShortText(vpvKeyMetricActive.ampelErlaeuterung, 40) }}
-              </td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr *ngIf="vpvKeyMetricActive.leadPerson">
-              <td>Lead Person</td>
-              <td title="{{ vpvKeyMetricActive.leadPerson }}">
-                {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
-              </td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
             </tr>
           </tbody>
         </table>
@@ -165,11 +130,11 @@
     </form>
     <div *ngIf="history">
       <hr>
-      <div class="btn-group">
-        <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="btn mx-1" (click)="switchChart()">{{chartButton}}</button>
-        <button *ngIf="!this.chart" type="button" class="btn mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
+      <div class="btn-group row">
+        <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="mx-1" (click)="switchChart()">{{chartButton}}</button>
+        <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
       </div>
-      <div *ngIf="chart && graphDataLineChart.length > 0" >
+      <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
         <div *ngIf="typeMetricChart == 'Costs'">
           <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
         </div>
@@ -310,6 +275,86 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Show Project Version Info -->
+<div class="modal fade" id="VpvDetails" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VpvDetailsTitle">Details about Version: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy hh:mm'}} </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="VpvDetailsForm">
+          <table *ngIf="vpvKeyMetricActive" class='table table-hover'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody>
+              <tr>
+                <td>Project End Date</td>
+                <td>
+                  <span *ngIf="delayEndDate > 0" class="fas fa-exclamation-circle" style="color:red"></span>
+                  <span *ngIf="delayEndDate <= 0" class="fas fa-check-circle" style="color:green"></span>
+                  <span> {{ vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
+                </td>
+                <td class="d-none d-md-table-cell">
+                  <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
+                  <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
+                  <span *ngIf="delayEndDate == 0"> in Time</span>
+                </td>
+              </tr>
+              <tr>
+                <td>Traffic Light</td>
+                <td title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
+                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
+                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
+                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                </td>
+                <td class="d-none d-md-table-cell" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
+                  {{ getShortText(vpvKeyMetricActive.ampelErlaeuterung, 40) }}
+                </td>
+              </tr>
+              <tr *ngIf="vpvKeyMetricActive.leadPerson">
+                <td>Lead Person</td>
+                <td title="{{ vpvKeyMetricActive.leadPerson }}">
+                  {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
+                </td>
+                <td></td>
+              </tr>
+              <tr *ngIf="vpvKeyMetricActive.VorlagenName">
+                <td>Project Template</td>
+                <td title="{{ vpvKeyMetricActive.VorlagenName }}">
+                  {{ getShortText(vpvKeyMetricActive.VorlagenName, 20) }}
+                </td>
+                <td></td>
+              </tr>
+              <tr *ngIf="vpvKeyMetricActive.businessUnit">
+                <td>Business Unit</td>
+                <td title="{{ vpvKeyMetricActive.businessUnit }}">
+                  {{ getShortText(vpvKeyMetricActive.businessUnit, 20) }}
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="form-group">
+            <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
