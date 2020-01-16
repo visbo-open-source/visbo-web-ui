@@ -39,7 +39,6 @@ export class VisboProjectViewCostComponent implements OnInit {
   historyButton: string = "View Trend"
   parentThis: any;
 
-  // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#FA8258'];
   colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
   series: any =  {
     '0': { lineWidth: 4, pointShape: 'star' }
@@ -211,10 +210,8 @@ export class VisboProjectViewCostComponent implements OnInit {
         legend: {position: 'top'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         curveType: 'function',
-        // series: this.series,
         colors: this.colors,
         seriesType: 'bars',
-        // series: {0: {type: 'line', lineWidth: 4, pointShape: 'star'}},
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         vAxis: {
           title: 'Monthly Cost in k\u20AC',
@@ -223,7 +220,7 @@ export class VisboProjectViewCostComponent implements OnInit {
         hAxis: {
           format: 'MMM YY',
           gridlines: {
-            count: 0
+            count: -1
           },
           minorGridlines: {count: 0, color: 'none'}
         }
