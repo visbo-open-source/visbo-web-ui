@@ -205,21 +205,22 @@ export class VisboProjectViewCostComponent implements OnInit {
     this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
-        title:'Monthly Cost: Plan vs. Base Line',
+        title:'Monthly Cost comparison: plan-to-date vs. baseline',
         animation: {startup: true, duration: 200},
         legend: {position: 'top'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-        curveType: 'function',
+        // curveType: 'function',
         colors: this.colors,
         seriesType: 'bars',
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         vAxis: {
-          title: 'Monthly Cost in k\u20AC',
+          title: 'Monthly Cost in T\u20AC',
           minorGridlines: {count: 0, color: 'none'}
         },
         hAxis: {
           format: 'MMM YY',
           gridlines: {
+            color: '#FFF', 
             count: -1
           },
           minorGridlines: {count: 0, color: 'none'}
@@ -272,7 +273,7 @@ export class VisboProjectViewCostComponent implements OnInit {
       ])
     }
 
-    graphDataCost.push(['Timestamp', 'Cost Base Line', 'Cost Effective', 'Cost Plan']);
+    graphDataCost.push(['Timestamp', 'PV, baseline', 'AC, plan-to-date', 'ETC, plan-to-date']);
     graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;

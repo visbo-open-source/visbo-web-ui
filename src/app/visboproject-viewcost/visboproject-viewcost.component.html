@@ -14,11 +14,11 @@
     </div>
   </div>
   <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvCost">
-    <div class='container-fluid'>
-      <div class="d-flex flex-row justify-content-center">
-        <h3 class="col-4">
+    <div class='container'>
+      <div class="row">
+        <h3 class="col-4 pl-0">
           <div class="d-none d-lg-block">Version of: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
-          <div class="d-block d-lg-none">Version of: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
+          <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
         </h3>
         <div class="col-4">
           <div class="row">
@@ -33,14 +33,50 @@
           </div>
         </div>
       </div>
-      <div class="d-flex flex-row justify-content-center">
-        Total Cost {{vpvTotalCostBaseLine | number : '1.0-0'}} k€ Base Line vs {{vpvTotalCostCurrent | number : '1.0-0'}} k€ Plan
+      <div class="row">
+         EAC (Estimate at Completion) {{vpvTotalCostCurrent | number : '1.0-0'}} T€ vs. BAC (Budget at Completion) {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
       </div>
     </div>
 
     <hr>
+    <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i>
     <div *ngIf="chart && graphDataComboChart.length > 0" >
       <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis"></app-combo-chart>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Show Shortcut explnation -->
+<div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <table class='table table-hover'>
+          <thead>
+            <tr>
+              <th>Shortcut</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PV</td>
+              <td>Planned monthly cost Value, baseline</td>
+            </tr>
+            <tr>
+              <td>AC</td>
+              <td>Actual monthly Cost value, plan-to-date</td>
+            </tr>
+            <tr>
+              <td>ETC</td>
+              <td>Estimate To Complete, plan-to-date</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-group">
+          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

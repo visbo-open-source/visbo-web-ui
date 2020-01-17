@@ -32,16 +32,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     colorMetric: any[] = [{name: "Critical", color: 'red'}, {name: "Warning", color: 'yellow'}, {name: "Good", color: 'green'} ];
 
     typeMetricList: any[] = [
-      {name: "Total Cost", metric: "Costs"},
-      {name: "Change in End Date (weeks)", metric: "EndDate"},
-      {name: "Achieved Deadlines", metric: "Deadlines"},
-      {name: "Achieved Deliveries", metric: "Deliveries"}
+      {name: "Total Cost", metric: "Costs", axis: "Cost: change in Total Cost at completion (%)", bubble: "Total Cost at completion (%)", table: 'Total Cost at completion'},
+      {name: "Time (End Date)", metric: "EndDate", axis: "Time: change in End Date (weeks)", bubble: "Change of End Date in weeks", table: 'Change of End Date'},
+      {name: "Time (Deadlines)", metric: "Deadlines", axis: "Time: change in achieved Deadlines (%)", bubble: "Achieved Deadlines in %", table: 'Achieved Deadlines'},
+      {name: "Quality (Deliveries)", metric: "Deliveries", axis: "Quality: change in achieved Deliveries (%)", bubble: "Achieved Deliveries in %", table: 'Achieved Deliveries'}
     ];
-    typeMetricX: string = this.typeMetricList[0].name;
-    typeMetricY: string = this.typeMetricList[1].name;
-
-    typeMetricChartX: string = this.typeMetricList[0].metric;
-    typeMetricChartY: string = this.typeMetricList[1].metric;
+    typeMetricIndexX = 0;
+    typeMetricIndexY = 1;
+    typeMetricX: string = this.typeMetricList[this.typeMetricIndexX].name;
+    typeMetricY: string = this.typeMetricList[this.typeMetricIndexY].name;
 
     vpSelected: string;
     vpFilter: string = "";
@@ -269,9 +268,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   changeChart() {
-    this.log(`Switch Chart from ${this.typeMetricChartX} vs  ${this.typeMetricChartY} to ${this.typeMetricX} vs  ${this.typeMetricY}`);
-    this.typeMetricChartX = this.typeMetricList.find(x => x.name == this.typeMetricX).metric;
-    this.typeMetricChartY = this.typeMetricList.find(x => x.name == this.typeMetricY).metric;
+    this.log(`Switch Chart from ${this.typeMetricList[this.typeMetricIndexX].metric} vs  ${this.typeMetricList[this.typeMetricIndexY].metric}  to ${this.typeMetricX} vs  ${this.typeMetricY}`);
+    this.typeMetricIndexX = this.typeMetricList.findIndex(x => x.name == this.typeMetricX);
+    this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name == this.typeMetricY);
     this.visboKeyMetricsCalc();
     this.showChart = true;
   }
@@ -286,7 +285,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         'width': '100%',
         // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
         // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
-        // 'vAxis': {'title': 'Delayed \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 End date (weeks) \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 Ahead', 'baselineColor': 'blue'},
         'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
         'hAxis': {'baseline': 1, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost', 'baselineColor': 'blue'},
         // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
@@ -308,7 +306,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       var colorValue = 0;
       var valueX: number;
       var valueY: number;
-      switch (this.typeMetricChartX) {
+      switch (this.typeMetricList[this.typeMetricIndexX].metric) {
         case 'Costs':
           valueX = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
           colorValue += valueX <= 100 ? 1 : 0;
@@ -326,7 +324,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
-      switch (this.typeMetricChartY) {
+      switch (this.typeMetricList[this.typeMetricIndexY].metric) {
         case 'Costs':
           valueY = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
           colorValue += valueY <= 100 ? 1 : 0;
@@ -364,7 +362,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     for (var i=0; i < this.visbokeymetrics.length; i++) {
       minSize = Math.min(minSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
       maxSize = Math.max(maxSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal)
-      switch (this.typeMetricChartX) {
+      switch (this.typeMetricList[this.typeMetricIndexX].metric) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].savingCostTotal-1) * 100));
           break;
@@ -388,7 +386,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.graphBubbleOptions.sizeAxis.minValue = minSize;
     this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
 
-    if (this.typeMetricChartX == 'EndDate') {
+    if (this.typeMetricList[this.typeMetricIndexX].metric == 'EndDate') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
@@ -400,7 +398,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     rangeAxis = 0;
     for (var i=0; i < this.visbokeymetrics.length; i++) {
-      switch (this.typeMetricChartY) {
+      switch (this.typeMetricList[this.typeMetricIndexY].metric) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].savingCostTotal-1) * 100));
           break;
@@ -415,7 +413,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           break;
       }
     }
-    if (this.typeMetricChartY == 'EndDate') {
+    if (this.typeMetricList[this.typeMetricIndexY].metric == 'EndDate') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
@@ -427,42 +425,40 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   graphBubbleAxis(): void {
-    switch (this.typeMetricChartX) {
+    var typeMetric = this.typeMetricList[this.typeMetricIndexX]
+    switch (typeMetric.metric) {
       case 'Costs':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelX = 'Planned Total Cost in %';
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'title': 'Change in End Date (weeks)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelX = 'Change in End Date (Weeks)';
+        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deadlines vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelX = 'Achieved Deadlines in %';
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deliveries vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelX = 'Achieved Deliveries in %';
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
     }
-    switch (this.typeMetricChartY) {
+    this.graphBubbleLabelX = typeMetric.bubble;
+
+    typeMetric = this.typeMetricList[this.typeMetricIndexY]
+    switch (this.typeMetricList[this.typeMetricIndexY].metric) {
       case 'Costs':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelY = 'Planned Total Cost in %';
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'title': 'Change in End Date (weeks)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelY = 'Change in End Date (Weeks)';
+        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deadlines vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelY = 'Achieved Deadlines in %';
-      break;
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        break;
       case 'Deliveries':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': 'Achieved Deliveries vs Base Line (%)', 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
-        this.graphBubbleLabelY = 'Achieved Deliveries in %';
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
     }
+    this.graphBubbleLabelY = typeMetric.bubble;
+
     this.graphBubbleOptions.series = {};
     this.graphBubbleOptions.series.Critical = {color: this.colorMetric[0].color};
     this.graphBubbleOptions.series.Warning = {color: this.colorMetric[1].color};
@@ -516,11 +512,20 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   selectedMetric(metric: string): boolean {
-    if (this.typeMetricChartX == metric || this.typeMetricChartY == metric) {
+    if (this.typeMetricList[this.typeMetricIndexX].metric == metric || this.typeMetricList[this.typeMetricIndexY].metric == metric) {
       return true;
     } else {
       return false;
     }
+  }
+
+  metricLabel(metric: string, label: string): boolean {
+    var typeMetric = this.typeMetricList.find(x => x.metric == metric);
+    var result;
+    if (typeMetric) {
+      result = typeMetric[label]
+    }
+    return result || 'UNKNOWN'
   }
 
   showChartOption(newStatus: boolean = undefined): void {

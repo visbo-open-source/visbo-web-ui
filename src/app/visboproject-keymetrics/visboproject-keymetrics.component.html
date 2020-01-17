@@ -8,7 +8,7 @@
       <h2 *ngIf="vpActive">
         Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
         <span>
-          <small class="fas fa-info-circle mx-2 text-secondary" data-toggle="modal" data-target="#VpvDetails"></small>
+          <small class="fas fa-info-circle mx-2 text-info" data-toggle="modal" data-target="#VpvDetails"></small>
         </span>
         <span *ngIf="vpvKeyMetricActive" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
           <small *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></small>
@@ -33,7 +33,7 @@
           <thead>
             <tr>
               <th>Key Metric</th>
-              <th>Actual</th>
+              <th>Plan-to-date</th>
               <th>Total</th>
               <th class="d-none d-md-table-cell">Ahead/Delay</th>
               <th>Detail</th>
@@ -43,7 +43,7 @@
           <!--Table body-->
           <tbody>
             <tr>
-              <td (click)="switchTo('Costs')">Cost Achievement</td>
+              <td (click)="switchTo('Costs')">Cost comparison</td>
               <td title="Actual Cost Achievement" (click)="switchTo('Costs')">
                 <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -67,7 +67,7 @@
               </td>
             </tr>
             <tr>
-              <td (click)="switchTo('Deliveries')">Delivery Achievement</td>
+              <td (click)="switchTo('Deliveries')">Quality comparison</td>
               <td title="Actual Delivery Achievement">
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -96,7 +96,7 @@
               </td>
             </tr>
             <tr>
-              <td (click)="switchTo('Deadlines')">Deadline Achievement</td>
+              <td (click)="switchTo('Deadlines')">Time comparison</td>
               <td (click)="switchTo('Deadlines')" title="Actual Deadline Achievement">
                 <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -133,6 +133,7 @@
       <div class="btn-group row">
         <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="mx-1" (click)="switchChart()">{{chartButton}}</button>
         <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
+        <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></h3>
       </div>
       <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
         <div *ngIf="typeMetricChart == 'Costs'">
@@ -354,6 +355,81 @@
             <button class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Show Shortcut explnation -->
+<div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <table class='table table-hover'>
+          <thead>
+            <tr>
+              <th>Shortcut</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="typeMetricChart == 'Costs'">
+            <tr>
+              <td>BAC</td>
+              <td>Budget at Completion, according baseline</td>
+            </tr>
+            <tr>
+              <td>EAC</td>
+              <td>Estimata at Completion, according plan-to-date</td>
+            </tr>
+            <tr>
+              <td>PV</td>
+              <td>Planned cumulated Cost value, according baseline</td>
+            </tr>
+            <tr>
+              <td>AC</td>
+              <td>Actual cumulated Cost value, according plan to-date</td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="typeMetricChart == 'Deadlines'">
+            <tr>
+              <td>DAC</td>
+              <td>Sum of Deadlines at Completion, according baseline</td>
+            </tr>
+            <tr>
+              <td>EDC</td>
+              <td>Estimate sum of weighted Deadlines at Completion, according plan-to-date</td>
+            </tr>
+            <tr>
+              <td>PD</td>
+              <td>Planned sum of Deadlines, according baseline</td>
+            </tr>
+            <tr>
+              <td>AD</td>
+              <td>Actual sum of weigthed Deadlines, according plan to-date</td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="typeMetricChart == 'Deliveries'">
+            <tr>
+              <td>DVAC</td>
+              <td>Sum of Deliveries(DV) at Completion, according baseline</td>
+            </tr>
+            <tr>
+              <td>EDVC</td>
+              <td>Estimate sum of weighted Deliveries(DV) at Completion, according plan-to-date</td>
+            </tr>
+            <tr>
+              <td>PDV</td>
+              <td>Planned sum of Deliveries(DV), according baseline</td>
+            </tr>
+            <tr>
+              <td>ADV</td>
+              <td>Actual sum of weigthed Deliveries(DV), according plan-to-date</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-group">
+          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
