@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -18,12 +18,13 @@ const httpOptions = {
 @Injectable()
 export class UserService {
 
-  private profileUrl = environment.restUrl.concat('/user/profile');  // URL to api
-  private pwchangeUrl = environment.restUrl.concat('/user/passwordchange');  // URL to api
+  private profileUrl = this.env.restUrl.concat('/user/profile');  // URL to api
+  private pwchangeUrl = this.env.restUrl.concat('/user/passwordchange');  // URL to api
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
   // MS TODO Check correct Observable Type VisboUser instead of any

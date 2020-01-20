@@ -1,0 +1,82 @@
+<visbo-navbar></visbo-navbar>
+<div class='well'>
+  <div class='row'>
+    <div class='col'>
+      <h2 *ngIf="!vpActive">
+        Project Key Metrics
+      </h2>
+      <h2 *ngIf="vpActive">
+        Monthly Costs for: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
+      </h2>
+      <h5 *ngIf="vpActive">Visbo Center:
+        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+      </h5>
+    </div>
+  </div>
+  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvCost">
+    <div class='container'>
+      <div class="row">
+        <h3 class="col-4 pl-0">
+          <div class="d-none d-lg-block">Version of: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+          <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
+        </h3>
+        <div class="col-4">
+          <div class="row">
+            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></span>
+            <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+              <option>day</option>
+              <option>week</option>
+              <option>month</option>
+              <option>quarter</option>
+            </select>
+            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+         EAC (Estimate at Completion) {{vpvTotalCostCurrent | number : '1.0-0'}} T€ vs. BAC (Budget at Completion) {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
+      </div>
+    </div>
+
+    <hr>
+    <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i>
+    <div *ngIf="chart && graphDataComboChart.length > 0" >
+      <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis"></app-combo-chart>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Show Shortcut explnation -->
+<div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <table class='table table-hover'>
+          <thead>
+            <tr>
+              <th>Shortcut</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PV</td>
+              <td>Planned monthly cost Value, baseline</td>
+            </tr>
+            <tr>
+              <td>AC</td>
+              <td>Actual monthly Cost value, plan-to-date</td>
+            </tr>
+            <tr>
+              <td>ETC</td>
+              <td>Estimate To Complete, plan-to-date</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-group">
+          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

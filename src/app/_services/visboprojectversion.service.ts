@@ -8,7 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { AuthenticationService } from './authentication.service'
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
 import { VisboProjectVersion, VisboProjectVersionResponse, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
@@ -23,14 +23,15 @@ const httpOptions = {
 @Injectable()
 export class VisboProjectVersionService {
 
-  //   private vpvUrl = 'projects';  // URL to web api on same server
-  private vpvUrl = environment.restUrl.concat('/vpv'); // URL to web api
-  private vpfUrl = environment.restUrl.concat('/vp'); // URL to web api
+  private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
+  private vpfUrl = this.env.restUrl.concat('/vp'); // URL to web api
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-    private authenticationService: AuthenticationService ) { }
+    private authenticationService: AuthenticationService,
+    private env: EnvService
+  ) { }
 
 
   /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
@@ -182,6 +183,25 @@ export class VisboProjectVersionService {
                 }),
         tap(visboportfolioversion => this.log(`fetched Specific Portfolio Version `)),
         catchError(this.handleError<VisboPortfolioVersion>(`getVisboPortfolioVersion id=${id}`))
+      );
+  }
+
+  /** GET CostCalculation from the server for the specified vpv id */
+  getCost(id: string): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/calc`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    // if (id) params = params.append('vpid', id);
+    // if (deleted) params = params.append('deleted', '1');
+    // if (variantName != undefined) params = params.append('variantName', variantName);
+    // if (keyMetrics) params = params.append('keyMetrics', '1');
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(visboprojectversions => this.log(`fetched CostCalc for ${id}`)),
+        catchError(this.handleError('getVisboProjectVersions', []))
       );
   }
 

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { VisboAudit, VisboAuditResponse, QueryAuditType } from '../_models/visboaudit';
 
@@ -17,11 +17,12 @@ const httpOptions = {
 
 @Injectable()
 export class VisboAuditService {
-  private serviceBaseUrl = environment.restUrl;  // URL to api on same server
+  private serviceBaseUrl = this.env.restUrl;  // URL to api on same server
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 

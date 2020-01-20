@@ -11,11 +11,11 @@
     </div>
     <div class='btn-group'>
       <div *ngIf="hasVPPerm(permVP.DeleteVP)">
-          <button *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
-          <button *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
+          <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
+          <button *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
       </div>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">New Project</button>
+        <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">New Project</button>
       </div>
     </div>
   </div>

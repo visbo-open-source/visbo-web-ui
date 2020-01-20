@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { VisboSetting, VisboSettingResponse, VisboSettingListResponse } from '../_models/visbosetting';
 
@@ -17,11 +17,12 @@ const httpOptions = {
 
 @Injectable()
 export class VisboSettingService  {
-  private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
+  private vcUrl = this.env.restUrl.concat('/vc');  // URL to web api
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 

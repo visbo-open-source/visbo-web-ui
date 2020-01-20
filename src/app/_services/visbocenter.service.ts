@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
@@ -19,13 +19,14 @@ const httpOptions = {
 @Injectable()
 export class VisboCenterService  {
   //   private vcUrl = 'vc';  // URL to api on same server
-  private vcUrl = environment.restUrl.concat('/vc');  // URL to web api
+  private vcUrl = this.env.restUrl.concat('/vc');  // URL to web api
   private combinedPerm: VGPermission = undefined;
   private systemVC: number = undefined;
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 
