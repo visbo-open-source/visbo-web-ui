@@ -46,6 +46,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpFilter: string = "";
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
+    estimateAtCompletion: number = 0;
+    budgetAtCompletion: number = 0;
     vpvRefDate: Date = new Date();
     refDateInterval: string = "month";
     vpfActiveIndex: number;
@@ -218,6 +220,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   visboKeyMetricsCalc(): void {
     // Calculate the keyMetrics Values to show in Chart and List
     this.visbokeymetrics = [];
+    this.budgetAtCompletion = 0;
+    this.estimateAtCompletion = 0;
 
     if (!this.visboprojectversions) return;
     // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
@@ -237,6 +241,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
           elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
           elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
+
+          this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
+          this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
+
           // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
           elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1) || 0;
           // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
