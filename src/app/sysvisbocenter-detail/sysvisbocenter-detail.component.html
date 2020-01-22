@@ -95,7 +95,7 @@
           <tbody>
             <tr *ngFor="let member of vgGroups; let memberIndex=index">
               <td>{{memberIndex+1}}</td>
-              <td (click)='groupIndex = index; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">{{member.name}}</td>
+              <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">{{member.name}}</td>
               <td>{{member.users.length}}</td>
               <td *ngIf="member.global">Global</td>
               <td *ngIf="!member.global"></td>
