@@ -51,11 +51,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   typeMetricChart: string = this.typeMetricList[0].metric;
 
   // colors: string[] = ['#FF9900', '#FF9900', '#3399cc', '#FA8258'];
-  colors: string[] = ['#F7941E', '#F7941E', '#458CCB', '#458CCB', '#996600', '#996600'];
+  colors: string[] = ['#F7941E', '#458CCB', '#F7941E', '#458CCB', '#996600', '#996600'];
   series: any =  {
     '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] },
-    '1': { lineWidth: 4, pointShape: 'star' },
-    '2': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8] },
+    '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8] },
+    '2': { lineWidth: 4, pointShape: 'star' },
     '3': { lineWidth: 4, pointShape: 'triangle' },
     '4': { lineWidth: 1, pointShape: 'circle', pointSize: 4 },
     '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4  }
@@ -294,8 +294,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
         Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0)
       ])
     }
@@ -356,8 +356,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         colors: this.colors
       };
     // assign to second yAxis
-    this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
-    this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
+    // this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
+    // this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
 
     var keyMetrics: any = [];
     if (!this.visboprojectversions) return;
@@ -374,8 +374,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100)/100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentTotal || 0) * 100)/100,
+        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100)/100
         // ,
         // this.visboprojectversions[i].keyMetrics.deliverableDelayCurrentActual || 0,
@@ -468,8 +468,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100)/100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100)/100,
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100)/100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100)/100
         // ,
         // this.visboprojectversions[i].keyMetrics.timeDelayCurrentActual || 0,
@@ -596,12 +596,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     else if (index < 1 + level2) this.qualityTotalCost = 2
     else this.qualityTotalCost = 3
 
-    index = keyMetrics.timeCompletionCurrentActual / (keyMetrics.timeCompletionBaseLastActual || 1)
+    index = keyMetrics.timeCompletionBaseLastActual ? keyMetrics.timeCompletionCurrentActual / keyMetrics.timeCompletionBaseLastActual : 1
     if (index > 1 - level1) this.qualityDeadlines = 1
     else if (index > 1 - level2) this.qualityDeadlines = 2
     else this.qualityDeadlines = 3
 
-    index = keyMetrics.deliverableCompletionCurrentActual / (keyMetrics.deliverableCompletionBaseLastActual || 1)
+    index = keyMetrics.deliverableCompletionBaseLastActual ? keyMetrics.deliverableCompletionCurrentActual / keyMetrics.deliverableCompletionBaseLastActual : 1;
     if (index > 1 - level1) this.qualityDelivery = 1
     else if (index > 1 - level2) this.qualityDelivery = 2
     else this.qualityDelivery = 3
