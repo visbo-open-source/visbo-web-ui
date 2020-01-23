@@ -72,12 +72,8 @@ export class VisboProjectVersionsComponent implements OnInit {
                 visboprojectversions => this.visboprojectversions = visboprojectversions,
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  // redirect to login and come back to current URL
                   if (error.status == 403) {
                     this.alertService.error(`Permission Denied for Visbo Project Versions`);
-                  } else if (error.status == 401) {
-                    this.alertService.error(`Session expired, please login again`, true);
-                    this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -88,9 +84,6 @@ export class VisboProjectVersionsComponent implements OnInit {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.alertService.error(error.error.message);
             }
@@ -103,12 +96,8 @@ export class VisboProjectVersionsComponent implements OnInit {
           visboprojectversions => this.visboprojectversions = visboprojectversions,
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-            // redirect to login and come back to current URL
             if (error.status == 403) {
               this.alertService.error(`Permission Denied for Visbo Project Versions`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.alertService.error(error.error.message);
             }

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
 import { LoginComponent } from '../login/login.component';
@@ -18,11 +18,12 @@ const httpOptions = {
 @Injectable()
 export class SysUserService {
   //   private serviceUrl = 'vc';  // URL to api on same server
-  private serviceUrl = environment.restUrl.concat('/sysuser');  // URL to web api
+  private serviceUrl = this.env.restUrl.concat('/sysuser');  // URL to web api
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 

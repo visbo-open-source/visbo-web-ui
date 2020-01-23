@@ -66,11 +66,6 @@ export class SysLogComponent implements OnInit {
         error => {
           this.log(`get Logs failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -94,11 +89,6 @@ export class SysLogComponent implements OnInit {
         error => {
           this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -114,11 +104,6 @@ export class SysLogComponent implements OnInit {
         error => {
           this.log(`get Log Level failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -135,11 +120,6 @@ export class SysLogComponent implements OnInit {
         error => {
           this.log(`set Log Level failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -59,6 +60,7 @@ export class VisboprojectAuditComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
+    private location: Location,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -70,10 +72,7 @@ export class VisboprojectAuditComponent implements OnInit {
     this.auditCount = 50;
     this.auditType = this.auditTypeList[0].name;
     this.today = new Date();
-    this.today.setHours(0);
-    this.today.setMinutes(0);
-    this.today.setSeconds(0);
-    this.today.setMilliseconds(0);
+    this.today.setHours(0, 0, 0, 0);
 
     this.getVisboProjectAudits();
     this.sortTable(undefined);
@@ -92,13 +91,7 @@ export class VisboprojectAuditComponent implements OnInit {
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            // redirect to login and come back to current URL
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
-            this.alertService.error(error.error.message);
-          }
+          this.alertService.error(error.error.message);
         }
       );
   }
@@ -119,10 +112,7 @@ export class VisboprojectAuditComponent implements OnInit {
     } else {
       // queryAudit.from = new Date(queryAudit.to);
       // queryAudit.from.setDate(queryAudit.from.getDate()-7);
-      // queryAudit.from.setHours(0);
-      // queryAudit.from.setMinutes(0);
-      // queryAudit.from.setSeconds(0);
-      // queryAudit.from.setMilliseconds(0);
+      // queryAudit.from.setHours(0, 0, 0, 0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
@@ -144,11 +134,6 @@ export class VisboprojectAuditComponent implements OnInit {
         error => {
           this.log(`get Audit failed: error: ${error.status} message: ${JSON.stringify(error)}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -220,6 +205,10 @@ export class VisboprojectAuditComponent implements OnInit {
     this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   helperAuditIndex(auditIndex: number):void {

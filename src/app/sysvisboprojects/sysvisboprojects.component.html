@@ -1,18 +1,13 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 *ngIf="!vcActive">
-          Projects
-        </h2>
-        <h2 *ngIf="vcActive">
-          Projects in:
-          <button class='panel-heading bg-white btn-white' (click)="gotoVCDetail(vcActive)">
-            {{vcActive.name}}
-          </button>
-        </h2>
-      </div>
+  <div class='row'>
+    <div class='col'>
+      <h2 *ngIf="!vcActive">
+        Projects
+      </h2>
+      <h2 *ngIf="vcActive">
+        Projects in: <a (click)="gotoVCDetail(vcActive)">{{vcActive.name}}</a>
+      </h2>
     </div>
   </div>
 

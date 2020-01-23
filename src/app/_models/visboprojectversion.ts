@@ -1,3 +1,57 @@
+export class VPVCost {
+  currentDate: Date;
+  baseLineCost: number;
+  currentCost: number;
+};
+
+export class VPVKeyMetrics {
+  costCurrentActual: number;
+  costCurrentTotal: number;
+  costBaseLastActual: number;
+  costBaseLastTotal: number;
+  timeCompletionCurrentActual: number;
+  timeCompletionCurrentTotal: number;
+  timeCompletionBaseLastActual: number;
+  timeCompletionBaseLastTotal: number;
+  timeDelayCurrentActual: number;
+  timeDelayCurrentTotal: number;
+  endDateCurrent: Date;
+  endDateBaseLast: Date;
+  deliverableCompletionCurrentActual: number;
+  deliverableCompletionCurrentTotal: number;
+  deliverableCompletionBaseLastActual: number;
+  deliverableCompletionBaseLastTotal: number;
+  deliverableDelayCurrentActual: number;
+  deliverableDelayCurrentTotal: number;
+};
+
+export class VPVKeyMetricsCalc {
+  _id: string;
+  name: string;
+  vpid: string;
+  timestamp: Date;
+  variantName: string;
+  Risiko: number;
+  StrategicFit: number;
+  leadPerson: string;
+  status: string;
+  ampelStatus: number;
+  ampelErlaeuterung: string;
+  VorlagenName: string;
+  complexity: number;
+  description: string;
+  businessUnit: string;
+
+  savingCostTotal: number;
+  savingCostActual: number;
+  savingEndDate: number;
+  timeCompletionTotal: number;
+  timeCompletionActual: number;
+  deliveryCompletionTotal: number;
+  deliveryCompletionActual: number;
+  keyMetrics: VPVKeyMetrics;
+};
+
 export class VisboProjectVersion {
   _id: string;
   name: string;
@@ -14,6 +68,7 @@ export class VisboProjectVersion {
   earliestStartDate: string;
   latestStart: number;
   latestStartDate: string;
+  actualDataUntil: string;
   status: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -28,6 +83,10 @@ export class VisboProjectVersion {
   complexity: number;
   description: string;
   businessUnit: string;
+
+  keyMetrics: VPVKeyMetrics;
+  cost: [ VPVCost ];
+
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
   createdAt: Date;

@@ -46,11 +46,16 @@ import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboprojectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
+import { VisboProjectKeyMetricsComponent }  from './visboproject-keymetrics/visboproject-keymetrics.component';
+import { VisboProjectViewCostComponent }  from './visboproject-viewcost/visboproject-viewcost.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
 import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
+
+// Visbo Portfolio Versions
+import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -69,6 +74,8 @@ import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
+import { EnvServiceProvider } from './_helpers/env.service.provider';
+
 import { GoogleChartModule } from './google-chart/google-chart.module';
 
 @NgModule({
@@ -81,8 +88,11 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboProjectsComponent,
     VisboprojectDetailComponent,
     VisboprojectAuditComponent,
+    VisboProjectKeyMetricsComponent,
+    VisboProjectViewCostComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
+    VisboPortfolioVersionsComponent,
     MessagesComponent,
     LogoutTimerComponent,
     SettingsComponent,
@@ -132,7 +142,8 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
       useClass: JwtInterceptor,
       multi: true
     },
-    MessageService
+    MessageService,
+    EnvServiceProvider
   ],
   bootstrap: [
     AppComponent

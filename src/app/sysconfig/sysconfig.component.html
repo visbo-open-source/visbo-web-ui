@@ -1,13 +1,9 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Config System View
-        </h2>
-      </div>
-    </div>
+  <div class='row'>
+      <h2 class='panel-heading'>
+        Visbo Config System View
+      </h2>
   </div>
 
   <div>
@@ -20,18 +16,14 @@
               <th (click)="sortTable(1)">Name</th>
               <th class="d-none d-md-table-cell" (click)="sortTable(2)">Info</th>
               <th (click)="sortTable(3)">Updated</th>
-              <th>Detail</th>
             </tr>
           </thead>
           <!-- Table body -->
           <tbody>
-            <tr *ngFor="let setting of vcsetting; let settingIndex=index" data-toggle="modal" data-target="#ConfigValue">
+            <tr *ngFor="let setting of vcsetting; let settingIndex=index" (click)="editConfigName(setting.name)" data-toggle="modal" data-target="#ConfigValue">
               <td>{{setting.name}}</td>
               <td>{{getMainInfo(setting)}}</td>
               <td>{{setting.updatedAt | date :'dd.MM HH:mm:ss' }}</td>
-              <td>
-                <button (click)="editConfigName(setting.name)" class="Detail" title="Detail">i</button>
-              </td>
             </tr>
           </tbody>
         </table>
