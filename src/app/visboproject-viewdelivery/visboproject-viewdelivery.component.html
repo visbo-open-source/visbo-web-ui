@@ -54,7 +54,7 @@
         </thead>
         <!--Table body-->
         <tbody>
-          <tr *ngFor="let delivery of vpvDelivery" (click)="gotoClickedRow(vp)">
+          <tr *ngFor="let delivery of vpvDelivery">
             <td class="d-none d-md-table-cell text-right">{{delivery.id}}</td>
             <td class="d-none d-md-table-cell">{{delivery.name}}</td>
             <td>{{delivery.description}}</td>
