@@ -44,7 +44,7 @@
           <tbody>
             <tr>
               <td *ngIf="typeMetricChart == 'Costs' && history" (click)="switchTo('Costs')" class="font-weight-bold">Cost comparison</td>
-              <td *ngIf="typeMetricChart != 'Costs' || !history" (click)="switchTo('Costs')">Cost comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="switchTo('Costs')">Cost comparison</td>
               <td title="Actual Cost Achievement" (click)="switchTo('Costs')">
                 <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -69,7 +69,7 @@
             </tr>
             <tr>
               <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="switchTo('Deliveries')" class="font-weight-bold">Quality comparison</td>
-              <td *ngIf="typeMetricChart != 'Deliveries' || !history" (click)="switchTo('Deliveries')">Quality comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="switchTo('Deliveries')">Quality comparison</td>
               <td title="Actual Delivery Achievement">
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -91,6 +91,8 @@
                 <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
               </td> -->
               <td>
+                <button class="Detail" title="View Deliveries"
+                (click)="gotoViewDelivery()">View</button>
               </td>
               <td>
                 <button class="Detail" title="Trend of Delivery Completion"
@@ -98,8 +100,8 @@
               </td>
             </tr>
             <tr>
-‚              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchTo('Deadlines')" class="font-weight-bold">Time comparison</td>
-              <td *ngIf="typeMetricChart != 'Deadlines' || !history" (click)="switchTo('Deadlines')">Time comparison</td>
+              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchTo('Deadlines')" class="font-weight-bold">Time comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="switchTo('Deadlines')">Time comparison</td>
               <td (click)="switchTo('Deadlines')" title="Actual Deadline Achievement">
                 <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>

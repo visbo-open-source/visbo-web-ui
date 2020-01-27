@@ -6,14 +6,14 @@
         Project Key Metrics
       </h2>
       <h2 *ngIf="vpActive">
-        Monthly Costs for: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
+        Deliveries for: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
       </h2>
       <h5 *ngIf="vpActive">Visbo Center:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
     </div>
   </div>
-  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvCost">
+  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDelivery">
     <div class='container'>
       <div class="row">
         <h3 class="col-4 pl-0">
@@ -33,16 +33,45 @@
           </div>
         </div>
       </div>
-      <div class="row">
-         EAC (Estimate at Completion) {{vpvTotalCostCurrent | number : '1.0-0'}} T€ vs. BAC (Budget at Completion) {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
-      </div>
     </div>
 
     <hr>
-    <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i>
-    <div *ngIf="chart && graphDataComboChart.length > 0" >
-      <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis"></app-combo-chart>
+    <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i> -->
+
+    <div class='panel-body'>
+      <table class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(1)">Nr.</th>
+            <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">Phase</th>
+            <th (click)="sortDeliveryTable(3)">Description</th>
+            <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(4)">End Date (planned)</th>
+            <th class=" text-right" (click)="sortDeliveryTable(5)">Change (in weeks)</th>
+            <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(6)">Done</th>
+            <!-- <th>Info</th> -->
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody>
+          <tr *ngFor="let delivery of vpvDelivery" (click)="gotoClickedRow(vp)">
+            <td class="d-none d-md-table-cell text-right">{{delivery.id}}</td>
+            <td class="d-none d-md-table-cell">{{delivery.name}}</td>
+            <td>{{delivery.description}}</td>
+            <td class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
+            <td class="text-right" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+            <td class="d-none d-md-table-cell text-right">{{delivery.done * 100 | number : '1.0-0'}} %</td>
+            <!-- <td>
+              <button class="Detail" title="Detail of Visbo Project"
+              (click)="gotoDetail(vp)">i</button>
+            </td> -->
+          </tr>
+        </tbody>
+        <!--Table body-->
+      </table>
     </div>
+
+
   </div>
 </div>
 

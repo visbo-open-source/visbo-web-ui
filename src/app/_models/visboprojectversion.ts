@@ -4,6 +4,16 @@ export class VPVCost {
   currentCost: number;
 };
 
+export class VPVDelivery {
+  id: number;
+  name: string;
+  description: string;
+  datePFV: Date;
+  dateVPV: Date;
+  changeDays: number;
+  percentDone: number;
+};
+
 export class VPVKeyMetrics {
   costCurrentActual: number;
   costCurrentTotal: number;
@@ -86,6 +96,7 @@ export class VisboProjectVersion {
 
   keyMetrics: VPVKeyMetrics;
   cost: [ VPVCost ];
+  deliveries: [ VPVDelivery ]
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
