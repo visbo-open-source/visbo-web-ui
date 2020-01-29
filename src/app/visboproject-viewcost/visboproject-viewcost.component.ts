@@ -318,41 +318,47 @@ export class VisboProjectViewCostComponent implements OnInit {
         newRefDate.setMonth(newRefDate.getMonth() + increment)
         break;
       case 'quarter':
-        // newRefDate.setMinutes(newRefDate.getMinutes() + increment) // to force quarter skip
-        var quarter = Math.trunc((newRefDate.getMonth() + 1) / 3);
-        if (increment > 0) quarter += increment;
+        var quarter = Math.trunc(newRefDate.getMonth() / 3);
+        quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        var diff = newRefDate.getTime() - this.vpvRefDate.getTime()
-        if (diff == 0) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
-        }
         break;
     }
+
     this.log(`get getRefDateVersions ${(new Date(newRefDate)).toISOString()}`);
+    var newVersionIndex = undefined;
     if (increment > 0) {
       refDate = new Date(this.visboprojectversions[0].timestamp)
-      if (newRefDate.toISOString() > refDate.toISOString()) {
-        this.visboCostCalc(0);
-        return;
+      if (newRefDate.toISOString() >= refDate.toISOString()) {
+        newVersionIndex = 0;
       }
-    }
-    if (increment < 0) {
+    } else {
       var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
-      if (newRefDate.toISOString() < refDate.toISOString()) {
-        this.visboCostCalc(this.visboprojectversions.length-1);
-        return;
+      if (newRefDate.toISOString() <= refDate.toISOString()) {
+        newVersionIndex = this.visboprojectversions.length-1;
       }
     }
-    this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
-    for (var i = 0; i < this.visboprojectversions.length; i++) {
-      var cmpDate = new Date(this.visboprojectversions[i].timestamp);
-      // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
-      if (cmpDate.toISOString() <= newRefDate.toISOString()) {
-        this.visboCostCalc(increment > 0 ? i-1 : i);
-        break;
+    if (newVersionIndex == undefined) {
+      this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
+      for (var i = 0; i < this.visboprojectversions.length; i++) {
+        var cmpDate = new Date(this.visboprojectversions[i].timestamp);
+        // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+        if (cmpDate.toISOString() <= newRefDate.toISOString()) {
+          break;
+        }
       }
+      // deliver the nearest version, we know the index i must be greater 0 and less than length -1
+      var prevVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
+      var nextVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i-1].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
+      if ( prevVersionTimeDiff < nextVersionTimeDiff) {
+        newVersionIndex = i;
+      } else {
+        newVersionIndex = i - 1;
+      }
+    }
+    if (newVersionIndex >= 0) {
+      this.visboCostCalc(newVersionIndex);
     }
   }
 

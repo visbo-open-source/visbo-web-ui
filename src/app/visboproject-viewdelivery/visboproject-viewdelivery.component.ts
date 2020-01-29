@@ -28,9 +28,6 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   vpvActualDataUntil: string;
   deleted: boolean = false;
 
-  vpvTotalCostBaseLine: number;
-  vpvTotalCostCurrent: number;
-
   refDateInterval: string = "month";
   vpvRefDate: Date;
   chartButton: string = "View List";
@@ -49,6 +46,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   sortAscending: boolean = false;
   sortColumn: number = 1;
+  sortAscendingDelivery: boolean = false;
+  sortColumnDelivery: number = 1;
+
+  today: Date = new Date();
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -157,6 +158,9 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
           } else {
             this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deliveries.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.vpvDelivery = visboprojectversions[0].deliveries;
+            for (var i = 0; i < this.vpvDelivery.length; i++) {
+              this.vpvDelivery[i].fullName = this.getFullName(this.vpvDelivery[i]);
+            }
             this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
             this.visboprojectversions[index].deliveries = this.vpvDelivery;
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
@@ -196,6 +200,15 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   }
 
+  getFullName(delivery: VPVDelivery): string {
+    var result = ''
+    if (delivery.phasePFV) {
+      result = result.concat(delivery.phasePFV, ' / ')
+    }
+    result = result.concat(delivery.name)
+    return result;
+  }
+
   getRefDateVersions(increment: number): void {
     this.log(`get getRefDateVersions ${this.vpvRefDate} ${increment} ${this.refDateInterval}`);
     var newRefDate = new Date(this.vpvRefDate);
@@ -210,41 +223,46 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
         newRefDate.setMonth(newRefDate.getMonth() + increment)
         break;
       case 'quarter':
-        // newRefDate.setMinutes(newRefDate.getMinutes() + increment) // to force quarter skip
-        var quarter = Math.trunc((newRefDate.getMonth() + 1) / 3);
-        if (increment > 0) quarter += increment;
+        var quarter = Math.trunc(newRefDate.getMonth() / 3);
+        quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        var diff = newRefDate.getTime() - this.vpvRefDate.getTime()
-        if (diff == 0) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
-        }
         break;
     }
     this.log(`get getRefDateVersions ${(new Date(newRefDate)).toISOString()}`);
+    var newVersionIndex = undefined;
     if (increment > 0) {
       refDate = new Date(this.visboprojectversions[0].timestamp)
-      if (newRefDate.toISOString() > refDate.toISOString()) {
-        this.visboDeliveryCalc(0);
-        return;
+      if (newRefDate.toISOString() >= refDate.toISOString()) {
+        newVersionIndex = 0;
       }
-    }
-    if (increment < 0) {
+    } else {
       var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
-      if (newRefDate.toISOString() < refDate.toISOString()) {
-        this.visboDeliveryCalc(this.visboprojectversions.length-1);
-        return;
+      if (newRefDate.toISOString() <= refDate.toISOString()) {
+        newVersionIndex = this.visboprojectversions.length-1;
       }
     }
-    this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
-    for (var i = 0; i < this.visboprojectversions.length; i++) {
-      var cmpDate = new Date(this.visboprojectversions[i].timestamp);
-      // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
-      if (cmpDate.toISOString() <= newRefDate.toISOString()) {
-        this.visboDeliveryCalc(increment > 0 ? i-1 : i);
-        break;
+    if (newVersionIndex == undefined) {
+      this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
+      for (var i = 0; i < this.visboprojectversions.length; i++) {
+        var cmpDate = new Date(this.visboprojectversions[i].timestamp);
+        // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+        if (cmpDate.toISOString() <= newRefDate.toISOString()) {
+          break;
+        }
       }
+      // deliver the nearest version, we know the index i must be greater 0 and less than length -1
+      var prevVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
+      var nextVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i-1].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
+      if ( prevVersionTimeDiff < nextVersionTimeDiff) {
+        newVersionIndex = i;
+      } else {
+        newVersionIndex = i - 1;
+      }
+    }
+    if (newVersionIndex >= 0) {
+      this.visboDeliveryCalc(newVersionIndex);
     }
   }
 
@@ -284,6 +302,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   gotoVC(visboproject: VisboProject):void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+  }
+
+  inFuture(ref: string) : boolean {
+    return ((new Date(ref)).getTime() > this.today.getTime());
   }
 
   getShortText(text: string, len: number) : string {
@@ -371,35 +393,35 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   sortDeliveryTable(n: number = undefined) {
     if (!this.vpvDelivery) return
     if (n != undefined) {
-      if (n != this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
+      if (n != this.sortColumnDelivery) {
+        this.sortColumnDelivery = n;
+        this.sortAscendingDelivery = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscendingDelivery == undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 2 || n == 3 ) ? true : false;
+        this.sortAscendingDelivery = ( n == 2 || n == 3 ) ? true : false;
       }
-      else this.sortAscending = !this.sortAscending;
+      else this.sortAscendingDelivery = !this.sortAscendingDelivery;
     } else {
-      this.sortColumn = 1;
-      this.sortAscending = false;
+      this.sortColumnDelivery = 1;
+      this.sortAscendingDelivery = false;
     }
-    if (this.sortColumn == 1) {
+    if (this.sortColumnDelivery == 1) {
       // sort by Delivery Index
       this.vpvDelivery.sort(function(a, b) {
         return a.id - b.id
       })
-    } else if (this.sortColumn == 2) {
+    } else if (this.sortColumnDelivery == 2) {
       // sort by Delivery  Phase
       this.vpvDelivery.sort(function(a, b) {
         var result = 0
-        if (a.name > b.name)
+        if (a.fullName > b.fullName)
           result = 1;
-        else if (a.name < b.name)
+        else if (a.fullName < b.fullName)
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 3) {
+    } else if (this.sortColumnDelivery == 3) {
       // sort by Delivery Description
       this.vpvDelivery.sort(function(a, b) {
         var result = 0
@@ -409,23 +431,23 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
           result = -1;
         return result
       })
-    } else if (this.sortColumn == 4) {
+    } else if (this.sortColumnDelivery == 4) {
       // sort by Delivery End Date planned
       this.vpvDelivery.sort(function(a, b) {
         return (new Date(a.dateVPV)).getTime() - (new Date(b.dateVPV)).getTime()
       })
-    } else if (this.sortColumn == 5) {
+    } else if (this.sortColumnDelivery == 5) {
       // sort by Delivery Change in Date planned
       this.vpvDelivery.sort(function(a, b) {
         return a.changeDays - b.changeDays
       })
-    } else if (this.sortColumn == 6) {
+    } else if (this.sortColumnDelivery == 6) {
       // sort by Delivery Change in % Done
       this.vpvDelivery.sort(function(a, b) {
         return a.percentDone - b.percentDone
       })
     }
-    if (!this.sortAscending) {
+    if (!this.sortAscendingDelivery) {
       this.vpvDelivery.reverse();
     }
   }

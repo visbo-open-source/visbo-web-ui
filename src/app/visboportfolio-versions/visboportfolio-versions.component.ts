@@ -197,16 +197,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         newRefDate.setMonth(newRefDate.getMonth() + increment)
         break;
       case 'quarter':
-        // newRefDate.setMinutes(newRefDate.getMinutes() + increment) // to force quarter skip
-        var quarter = Math.trunc((newRefDate.getMonth() + 1) / 3);
-        if (increment > 0) quarter += increment;
+        var quarter = Math.trunc(newRefDate.getMonth() / 3);
+        quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        var diff = newRefDate.getTime() - this.vpvRefDate.getTime()
-        if (diff == 0) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
-        }
         break;
     }
     this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);

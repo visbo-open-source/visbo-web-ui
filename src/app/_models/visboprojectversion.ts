@@ -7,11 +7,15 @@ export class VPVCost {
 export class VPVDelivery {
   id: number;
   name: string;
+  phasePFV: string;
+  phaseVPV: string;
   description: string;
   datePFV: Date;
   dateVPV: Date;
   changeDays: number;
   percentDone: number;
+
+  fullName: string;
 };
 
 export class VPVKeyMetrics {
