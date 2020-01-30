@@ -31,7 +31,7 @@
           <tr *ngFor="let userentry of user; let userIndex=index" (click)='helperUserIndex(userIndex)'
           data-toggle="modal" data-target="#UserDetail">
             <td class="d-none d-md-table-cell">{{userIndex+1}}</td>
-            <td >{{userentry.email }}</td>
+            <td ><a>{{userentry.email}}</a></td>
             <td class="d-none d-md-table-cell">{{userentry.updatedAt | date :'dd.MM.yy'}}</td>
             <td *ngIf="userentry.status && userentry.status.lastLoginAt" class="d-none d-md-table-cell">{{userentry.status.lastLoginAt | date :'dd.MM.yy'}}</td>
             <td *ngIf="!(userentry.status && userentry.status.lastLoginAt)" class="d-none d-md-table-cell">Never</td>

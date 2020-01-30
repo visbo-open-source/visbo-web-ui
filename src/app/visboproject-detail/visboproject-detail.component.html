@@ -61,8 +61,8 @@
             <tbody>
               <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
-                <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail">{{member.email}}</td>
-                <td>{{member.groupName}}</td>
+                <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail"><a>{{member.email}}</a></td>
+                <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
                 <td class="d-none d-md-table-cell">{{member.groupType == 'VP' ? '' : 'Global'}}</td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
                   <button class="btn btn-sm" title="Remove User" (click)='helperRemoveUser(memberIndex)'
@@ -110,8 +110,8 @@
             <tbody>
               <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
-                <td (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate">{{member.name}}</td>
-                <td>{{member.users.length}}</td>
+                <td (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate"><a>{{member.name}}</a></td>
+                <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
                 <td *ngIf="member.global" class="d-none d-md-table-cell">Global</td>
                 <td *ngIf="!member.global" class="d-none d-md-table-cell"></td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP' && member.internal == false">
@@ -169,7 +169,7 @@
       </div>
     </div>
   </div>
-  <div>
+  <div class="mb-3">
     <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">save</button>
     <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">Restore</button>
     <button (click)="goBack()">go back</button>

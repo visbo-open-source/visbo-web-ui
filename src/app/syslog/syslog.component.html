@@ -49,7 +49,7 @@
           <tbody>
             <tr *ngFor="let fileentry of files; let fileIndex=index" (click)='helperFileIndex(fileIndex)'
               (click)='getVisboLogFile(fileentry)'>
-              <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
+              <td class="d-none d-md-table-cell"><a>{{fileentry.name }}</a></td>
               <td class="d-none d-md-table-cell">{{fileentry.folder }}</td>
               <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
               <td>{{formatBytes(fileentry.size, undefined) }}</td>
