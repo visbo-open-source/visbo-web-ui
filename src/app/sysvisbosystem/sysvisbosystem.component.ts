@@ -22,8 +22,8 @@ import { VisboProjectService }  from '../_services/visboproject.service';
 export class SysvisbosystemComponent implements OnInit {
 
   visbocenter: VisboCenter;
-  vcUsers: VGUserGroup[];
-  vcGroups: VGGroup[];
+  vgUsers: VGUserGroup[];
+  vgGroups: VGGroup[];
   newUserInvite: any = {};
   actGroup: any = {};
   userIndex: number;
@@ -31,6 +31,8 @@ export class SysvisbosystemComponent implements OnInit {
   showGroups: boolean;
 
   combinedPerm: VGPermission = undefined;
+  combinedUserPerm: VGPermission = undefined;
+
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -88,6 +90,22 @@ export class SysvisbosystemComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0
   }
 
+  hasUserSystemPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    return (this.combinedUserPerm.system & perm) > 0
+  }
+
+  hasUserVCPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    return (this.combinedUserPerm.vc & perm) > 0
+  }
+
+  hasUserVPPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    return (this.combinedUserPerm.vp & perm) > 0
+  }
+
+
   getVisboCenterUsers(): void {
     const id = this.visbocenter._id
     var currentUser = this.authenticationService.getActiveUser();
@@ -96,9 +114,9 @@ export class SysvisbosystemComponent implements OnInit {
     this.visbocenterService.getVCUsers(id, true)
       .subscribe(
         mix => {
-          this.vcUsers = mix.users;
-          this.vcGroups = mix.groups;
-          this.log(`fetched Users ${this.vcUsers.length}, Groups ${this.vcGroups.length}`)
+          this.vgUsers = mix.users;
+          this.vgGroups = mix.groups;
+          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`)
           this.sortUserTable();
           this.sortGroupTable();
         },
@@ -149,7 +167,7 @@ export class SysvisbosystemComponent implements OnInit {
   addNewVCUser(): void {
     var email = this.newUserInvite.email.trim();
     var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vcGroups.filter(group => group.name == groupName)[0]._id;
+    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
     var inviteMessage = '';
     if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
     var vcid = this.visbocenter._id;
@@ -165,11 +183,11 @@ export class SysvisbosystemComponent implements OnInit {
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
-          this.vcUsers.push(newUserGroup);
+          this.vgUsers.push(newUserGroup);
           this.sortUserTable();
-          for (var i=0; i< this.vcGroups.length; i++) {
-            if (this.vcGroups[i]._id == group._id) {
-              this.vcGroups[i] = group;
+          for (var i=0; i< this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id == group._id) {
+              this.vgGroups[i] = group;
               break;
             }
           }
@@ -187,12 +205,45 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  helperRemoveUser(memberIndex: number):void {
+  helperUserIndex(memberIndex: number):void {
     this.userIndex = memberIndex
+  }
+
+  calcCombinedPerm(memberIndex: number): void {
+    this.userIndex = memberIndex
+    this.combinedUserPerm = {system: 0, vc: 0, vp: 0}
+    this.vgUsers.forEach(this.addUserPerm, this)
+    this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`)
+  }
+
+  addUserPerm(listUser): void {
+    if (listUser.email !== this.vgUsers[this.userIndex].email) return;
+    this.log(`Add User Permission for ${listUser.groupName}`)
+
+    var indexGroup = this.vgGroups.findIndex(x => x.name == listUser.groupName);
+    if (indexGroup >= 0) {
+      if (this.vgGroups[indexGroup].permission) {
+        this.combinedUserPerm.system = this.combinedUserPerm.system | (this.vgGroups[indexGroup].permission.system || 0)
+        this.combinedUserPerm.vc = this.combinedUserPerm.vc | (this.vgGroups[indexGroup].permission.vc || 0)
+        this.combinedUserPerm.vp = this.combinedUserPerm.vp | (this.vgGroups[indexGroup].permission.vp || 0)
+      } else {
+        this.log(`Permission for Group not set ${listUser.groupName}`)
+      }
+    } else {
+      this.log(`Group not found ${listUser.groupName}`)
+    }
   }
 
   helperRemoveGroup(memberIndex: number):void {
     this.groupIndex = memberIndex
+  }
+
+  helperUsersPerGroup(groupName: string):number {
+    var group = this.vgGroups && this.vgGroups.find(x => x.name == groupName)
+    if (group) {
+      return group.users.length;
+    }
+    return 0;
   }
 
   removeVCUser(user: VGUserGroup, vcid: string): void {
@@ -202,14 +253,14 @@ export class SysvisbosystemComponent implements OnInit {
         users => {
           // this.log(`Remove VisboCenter User result: ${JSON.stringify(result)}`);
           // this.visbocenter.users = users;
-          // filter user from vcUsers
-          this.vcUsers = this.vcUsers.filter(vcUser => vcUser !== user);
-          // filter user from vcGroups
-          for (var i=0; i<this.vcGroups.length; i++) {
-            if (this.vcGroups[i]._id == user.groupId) {
-              for (var j=0; j<this.vcGroups[i].users.length; j++) {
-                if (this.vcGroups[i].users[j].userId == user.userId) {
-                  this.vcGroups[i].users.splice(j, 1); // remove item from array
+          // filter user from vgUsers
+          this.vgUsers = this.vgUsers.filter(vcUser => vcUser !== user);
+          // filter user from vgGroups
+          for (var i=0; i<this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id == user.groupId) {
+              for (var j=0; j<this.vgGroups[i].users.length; j++) {
+                if (this.vgGroups[i].users[j].userId == user.userId) {
+                  this.vgGroups[i].users.splice(j, 1); // remove item from array
                   break;
                 }
               }
@@ -330,12 +381,12 @@ export class SysvisbosystemComponent implements OnInit {
           group => {
             // Add Group to Group list
             // this.log(`Modify VisboCenter Group Push: ${JSON.stringify(group)}`);
-            this.vcGroups = this.vcGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
-            this.vcGroups.push(group);
+            this.vgGroups = this.vgGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
+            this.vgGroups.push(group);
             // update User List to reflect new Group Name & ID
-            for (var i=0; i < this.vcUsers.length; i++) {
-              if (this.vcUsers[i].groupId == newGroup._id) {
-                this.vcUsers[i].groupName = group.name
+            for (var i=0; i < this.vgUsers.length; i++) {
+              if (this.vgUsers[i].groupId == newGroup._id) {
+                this.vgUsers[i].groupName = group.name
               }
             }
             this.sortUserTable();
@@ -360,7 +411,7 @@ export class SysvisbosystemComponent implements OnInit {
           group => {
             // Add Group to Group list
             // this.log(`Add VisboCenter Group Push: ${JSON.stringify(group)}`);
-            this.vcGroups.push(group);
+            this.vgGroups.push(group);
             this.alertService.success(`Group ${group.name} added successfully`);
           },
           error => {
@@ -382,9 +433,9 @@ export class SysvisbosystemComponent implements OnInit {
       .subscribe(
         response => {
           this.log(`Remove VisboCenter Group result: ${JSON.stringify(response)}`);
-          // filter user from vcUsers
-          this.vcGroups = this.vcGroups.filter(vcGroup => vcGroup !== group);
-          this.vcUsers = this.vcUsers.filter(vcUser => vcUser.groupId !== group._id);
+          // filter user from vgUsers
+          this.vgGroups = this.vgGroups.filter(vcGroup => vcGroup !== group);
+          this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
           this.alertService.success(`Group ${group.name} removed successfully`);
         },
         error => {
@@ -401,7 +452,7 @@ export class SysvisbosystemComponent implements OnInit {
 
   sortUserTable(n: number = undefined) {
 
-    if (!this.vcUsers) return
+    if (!this.vgUsers) return
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortUserColumn == undefined ) {
       if (n != this.sortUserColumn) {
@@ -416,7 +467,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
     if (this.sortUserColumn == 1) {
       // sort user email
-      this.vcUsers.sort(function(a, b) {
+      this.vgUsers.sort(function(a, b) {
         var result = 0
         if (a.email > b.email)
           result = 1;
@@ -426,7 +477,7 @@ export class SysvisbosystemComponent implements OnInit {
       })
     } else if (this.sortUserColumn == 2) {
       // sort user group name
-      this.vcUsers.sort(function(a, b) {
+      this.vgUsers.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)
         if (a.groupName.toLowerCase() > b.groupName.toLowerCase())
@@ -438,14 +489,14 @@ export class SysvisbosystemComponent implements OnInit {
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortUserColumn, this.sortUserAscending)
     if (!this.sortUserAscending) {
-      this.vcUsers.reverse();
+      this.vgUsers.reverse();
       // console.log("Sort VC Column %d %s Reverse", this.sortUserColumn, this.sortUserAscending)
     }
   }
 
   sortGroupTable(n: number = undefined) {
 
-    if (!this.vcGroups) return
+    if (!this.vgGroups) return
     // change sort order otherwise sort same column same direction
     if (n != undefined || this.sortGroupColumn == undefined) {
       if (n != this.sortGroupColumn) {
@@ -462,7 +513,7 @@ export class SysvisbosystemComponent implements OnInit {
     // this.log(`Sort Groups Column ${this.sortGroupColumn}`); // log to console instead
     if (this.sortGroupColumn == 1) {
       // sort user email
-      this.vcGroups.sort(function(a, b) {
+      this.vgGroups.sort(function(a, b) {
         var result = 0
         if (a.name.toLowerCase() > b.name.toLowerCase())
           result = 1;
@@ -472,7 +523,7 @@ export class SysvisbosystemComponent implements OnInit {
       })
     } else if (this.sortGroupColumn == 2) {
       // sort user group name
-      this.vcGroups.sort(function(a, b) {
+      this.vgGroups.sort(function(a, b) {
         var result = 0
         // console.log("Sort VC Date %s", a.updatedAt)
         return b.users.length - a.users.length
@@ -480,7 +531,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
     // console.log("Sort VC Column %d %s Reverse?", this.sortGroupColumn, this.sortGroupAscending)
     if (!this.sortGroupAscending) {
-      this.vcGroups.reverse();
+      this.vgGroups.reverse();
       // console.log("Sort VC Column %d %s Reverse", this.sortGroupColumn, this.sortGroupAscending)
     }
   }
