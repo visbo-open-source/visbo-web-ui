@@ -1,6 +1,6 @@
 <visbo-navbar></visbo-navbar>
 <div *ngIf="visboproject">
-  <h3>Project: <a (click)="gotoVPList(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
+  <h3>Project: <a (click)="gotoVP(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
   <h5>Visbo Center:
     <a (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
   </h5>

@@ -163,6 +163,11 @@ export class VisboprojectDetailComponent implements OnInit {
     this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  gotoVP(visboproject: VisboProject):void {
+    this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
+    this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(

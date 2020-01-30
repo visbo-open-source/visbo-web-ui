@@ -16,20 +16,20 @@
   <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDelivery">
     <div class='container'>
       <div class="row">
-        <h3 class="col-4 pl-0">
+        <h3 class="col-6 pl-0">
           <div class="d-none d-lg-block">Version of: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
           <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
         </h3>
         <div class="col-4">
           <div class="row">
-            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></span>
+            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
             <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
               <option>day</option>
               <option>week</option>
               <option>month</option>
               <option>quarter</option>
             </select>
-            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></span>
+            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
           </div>
         </div>
       </div>

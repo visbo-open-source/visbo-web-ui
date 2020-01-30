@@ -33,6 +33,7 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   refDateInterval: string = "month";
   vpvRefDate: Date;
+  scrollRefDate: Date;
   chartButton: string = "View List";
   chart: boolean = true;
   history: boolean = false;
@@ -144,6 +145,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     this.chart = false;
     this.vpvActive = this.visboprojectversions[index]
     this.vpvRefDate = this.vpvActive.timestamp;
+    if (this.scrollRefDate == undefined) this.scrollRefDate = new Date(this.vpvRefDate);
     if (!this.vpvActive) return;
 
     // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
@@ -305,38 +307,45 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions ${this.vpvRefDate} ${increment} ${this.refDateInterval}`);
-    var newRefDate = new Date(this.vpvRefDate);
+    this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    var newRefDate = new Date(this.scrollRefDate);
     switch(this.refDateInterval) {
       case 'day':
-        newRefDate.setDate(newRefDate.getDate() + increment)
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
+        if (increment > 0 || newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setDate(newRefDate.getDate() + increment)
         break;
       case 'week':
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
         newRefDate.setDate(newRefDate.getDate() + increment * 7)
         break;
       case 'month':
-        newRefDate.setMonth(newRefDate.getMonth() + increment)
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
+        newRefDate.setDate(1);
+        if (increment > 0 || newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment)
         break;
       case 'quarter':
         var quarter = Math.trunc(newRefDate.getMonth() / 3);
-        quarter += increment;
+        if (increment > 0) quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
+        if (newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
         break;
     }
-
-    this.log(`get getRefDateVersions ${(new Date(newRefDate)).toISOString()}`);
+    this.log(`get getRefDateVersions ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
+    this.scrollRefDate = newRefDate;
     var newVersionIndex = undefined;
     if (increment > 0) {
       refDate = new Date(this.visboprojectversions[0].timestamp)
-      if (newRefDate.toISOString() >= refDate.toISOString()) {
+      if (newRefDate.getTime() >= refDate.getTime()) {
         newVersionIndex = 0;
+        this.scrollRefDate.setTime(refDate.getTime());
       }
     } else {
       var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
-      if (newRefDate.toISOString() <= refDate.toISOString()) {
+      if (newRefDate.getTime() <= refDate.getTime()) {
         newVersionIndex = this.visboprojectversions.length-1;
+        this.scrollRefDate.setTime(refDate.getTime());
       }
     }
     if (newVersionIndex == undefined) {
@@ -344,18 +353,11 @@ export class VisboProjectViewCostComponent implements OnInit {
       for (var i = 0; i < this.visboprojectversions.length; i++) {
         var cmpDate = new Date(this.visboprojectversions[i].timestamp);
         // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
-        if (cmpDate.toISOString() <= newRefDate.toISOString()) {
+        if (cmpDate.getTime() <= newRefDate.getTime()) {
           break;
         }
       }
-      // deliver the nearest version, we know the index i must be greater 0 and less than length -1
-      var prevVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
-      var nextVersionTimeDiff = Math.abs((new Date(this.visboprojectversions[i-1].timestamp)).getTime() - newRefDate.getTime()) / 1000 / 3600 / 24;
-      if ( prevVersionTimeDiff < nextVersionTimeDiff) {
-        newVersionIndex = i;
-      } else {
-        newVersionIndex = i - 1;
-      }
+      newVersionIndex = i;
     }
     if (newVersionIndex >= 0) {
       this.visboCostCalc(newVersionIndex);

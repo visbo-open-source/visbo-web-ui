@@ -59,11 +59,11 @@
               </td>
               <!-- <td class="d-none d-md-table-cell"></td> -->
               <td>
-                <button class="Detail" title="View Monthly Cost"
+                <button type="button" class="btn" title="View Monthly Cost"
                 (click)="gotoViewCost()">View</button>
               </td>
               <td>
-                <button class="Detail" title="Trend of Cost Metrics"
+                <button type="button" class="btn" title="Trend of Cost Metrics"
                 (click)="switchTo('Costs')">i</button>
               </td>
             </tr>
@@ -91,11 +91,11 @@
                 <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
               </td> -->
               <td>
-                <button class="Detail" title="View Deliveries"
+                <button type="button" class="btn" title="View Deliveries"
                 (click)="gotoViewDelivery()">View</button>
               </td>
               <td>
-                <button class="Detail" title="Trend of Delivery Completion"
+                <button type="button" class="btn" title="Trend of Delivery Completion"
                 (click)="switchTo('Deliveries')">i</button>
               </td>
             </tr>
@@ -125,7 +125,7 @@
               <td>
               </td>
               <td>
-                <button class="Detail" title="Trend of Deadline Completion"
+                <button type="button" class="btn" title="Trend of Deadline Completion"
                 (click)="switchTo('Deadlines')">i</button>
               </td>
             </tr>
@@ -180,7 +180,7 @@
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -216,7 +216,7 @@
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -252,7 +252,7 @@
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
