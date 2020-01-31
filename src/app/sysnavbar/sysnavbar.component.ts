@@ -10,7 +10,8 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
   selector: 'sysvisbo-navbar',
-  templateUrl: './sysnavbar.component.html'
+  templateUrl: './sysnavbar.component.html',
+  styleUrls: ['./sysnavbar.component.css']
 })
 export class SysNavbarComponent implements OnInit {
   combinedPerm: VGPermission = undefined;

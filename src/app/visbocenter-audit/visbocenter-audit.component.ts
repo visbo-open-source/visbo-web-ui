@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -65,6 +66,7 @@ export class VisbocenterAuditComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private location: Location,
     private router: Router
   ) { }
 
@@ -83,9 +85,6 @@ export class VisbocenterAuditComponent implements OnInit {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -96,10 +95,7 @@ export class VisbocenterAuditComponent implements OnInit {
     this.auditType = this.auditTypeList[0].name;
     this.auditArea = this.auditAreaList[0].name;
     this.today = new Date();
-    this.today.setHours(0);
-    this.today.setMinutes(0);
-    this.today.setSeconds(0);
-    this.today.setMilliseconds(0);
+    this.today.setHours(0, 0, 0, 0);
 
     this.getVisboCenterAudits();
     this.sortTable(undefined);
@@ -122,10 +118,7 @@ export class VisbocenterAuditComponent implements OnInit {
     } else {
       // queryAudit.from = new Date(queryAudit.to);
       // queryAudit.from.setDate(queryAudit.from.getDate()-7);
-      // queryAudit.from.setHours(0);
-      // queryAudit.from.setMinutes(0);
-      // queryAudit.from.setSeconds(0);
-      // queryAudit.from.setMilliseconds(0);
+      // queryAudit.from.setHours(0, 0, 0, 0);
     }
     if (this.auditText) queryAudit.text = this.auditText.trim();
     for (var i = 0; i < this.auditTypeList.length; i++) {
@@ -153,11 +146,6 @@ export class VisbocenterAuditComponent implements OnInit {
         error => {
           this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -272,6 +260,11 @@ export class VisbocenterAuditComponent implements OnInit {
     if (!text || !len || len < 5 || text.length <= len)
       return (text);
     return text.substring(0,20).concat('...', text.substring(text.length-7, text.length));
+  }
+
+  goBack(): void {
+    // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
+    this.location.back();
   }
 
   toggleDetail() {

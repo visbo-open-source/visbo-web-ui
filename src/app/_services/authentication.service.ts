@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse, VisboStatusPWPolicyResponse } from '../_models/login';
 import { MessageService } from './message.service';
@@ -24,10 +24,11 @@ export class AuthenticationService {
   constructor(
       private http: HttpClient,
       // private store: Store<AuthState>,
-      private messageService: MessageService
+      private messageService: MessageService,
+      private env: EnvService
     ) { }
 
-    private authUrl = environment.restUrl.concat('/token/user');  // URL to web api
+    private authUrl = this.env.restUrl.concat('/token/user');  // URL to web api
 
     logoutCheck() {
 
@@ -178,7 +179,7 @@ export class AuthenticationService {
     }
 
     restVersion(): Observable<any> {
-      const url = environment.restUrl.concat('/status');
+      const url = this.env.restUrl.concat('/status');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboStatusResponse>(url, httpOptions)
         .pipe(
@@ -189,7 +190,7 @@ export class AuthenticationService {
     }
 
     initPWPolicy(): Observable<any> {
-      const url = environment.restUrl.concat('/status/pwpolicy');
+      const url = this.env.restUrl.concat('/status/pwpolicy');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
         .pipe(

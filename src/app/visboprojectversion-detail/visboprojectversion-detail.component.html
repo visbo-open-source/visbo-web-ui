@@ -1,42 +1,40 @@
 <visbo-navbar></visbo-navbar>
 <div *ngIf="visboprojectversion">
-  <div class='container'>
-    <h4>Version Details: <a (click)="gotoVPVList(visboprojectversion)">{{ visboprojectversion.name | uppercase }}</a></h4>
-    <form>
-      <div class="form-group row">
-        <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
-        <label class="col-8 form-control-static">{{ visboprojectversion.name }} </label>
-      </div>
-      <div class="form-group row">
-        <label for="vpvDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-        <label class="col-8 form-control-static">{{ visboprojectversion.description }} </label>
-      </div>
-
-      <div class="form-group row">
-        <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
-        <label class="col form-control-static col-form-label">{{ visboprojectversion.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-        <label class="col form-control-static col-form-label">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      </div>
-      <div class="form-group row">
-        <label for="Timestamp" class="col-4 col-md-3 col-form-label">Timestamp at:</label>
-        <label class="col form-control-static col-form-label">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      </div>
-      <div *ngIf="visboprojectversion.variantName" class="form-group row">
-        <label for="Variant" class="col-4 col-md-3 col-form-label">Variant:</label>
-        <label class="col form-control-static col-form-label">{{ visboprojectversion.variantName}} </label>
-      </div>
-    </form>
-
-    <div>
-      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">Restore</button>
-      <button (click)="goBack()">go back</button>
-      <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="bg-warning" style="float: right" title="Delete Visbo Project Version" data-toggle="modal" data-target="#VpvDelete">
-        Delete!
-      </button>
-      <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="bg-danger text-white" style="float: right" title="Destroy Visbo Project Version" data-toggle="modal" data-target="#VpvDelete">
-        Destroy!
-      </button>
+  <h4>Version Details: <a (click)="gotoVPVList(visboprojectversion)">{{ visboprojectversion.name | uppercase }}</a></h4>
+  <form>
+    <div class="form-group row">
+      <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
+      <label class="col-8 form-control-static">{{ visboprojectversion.name }} </label>
     </div>
+    <div class="form-group row">
+      <label for="vpvDescription" class="col-4 col-md-3 col-form-label">Description:</label>
+      <label class="col-8 form-control-static">{{ visboprojectversion.description }} </label>
+    </div>
+
+    <div class="form-group row">
+      <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
+      <label class="col form-control-static col-form-label">{{ visboprojectversion.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label class="col form-control-static col-form-label">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+    <div class="form-group row">
+      <label for="Timestamp" class="col-4 col-md-3 col-form-label">Timestamp at:</label>
+      <label class="col form-control-static col-form-label">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+    <div *ngIf="visboprojectversion.variantName" class="form-group row">
+      <label for="Variant" class="col-4 col-md-3 col-form-label">Variant:</label>
+      <label class="col form-control-static col-form-label">{{ visboprojectversion.variantName}} </label>
+    </div>
+  </form>
+
+  <div>
+    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">Restore</button>
+    <button (click)="goBack()">go back</button>
+    <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="bg-warning" style="float: right" title="Delete Visbo Project Version" data-toggle="modal" data-target="#VpvDelete">
+      Delete!
+    </button>
+    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="bg-danger text-white" style="float: right" title="Destroy Visbo Project Version" data-toggle="modal" data-target="#VpvDelete">
+      Destroy!
+    </button>
   </div>
 
   <!-- Modal Delete VPV  -->

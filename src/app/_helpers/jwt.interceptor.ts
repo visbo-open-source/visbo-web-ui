@@ -1,9 +1,18 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { throwError } from 'rxjs';
+import { catchError } from "rxjs/operators";
+
+import { AuthenticationService } from '../_services/authentication.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
+
+    constructor(
+      private authenticationService: AuthenticationService,
+    ) { }
+
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // add authorization header with jwt token if available
         let currentToken = JSON.parse(sessionStorage.getItem('currentToken'));
@@ -15,18 +24,18 @@ export class JwtInterceptor implements HttpInterceptor {
             });
         }
 
-        return next.handle(request);
+        return next.handle(request)
+        .pipe(
+            catchError((error: HttpErrorResponse) => {
+                  //401 UNAUTHORIZED - SECTION 2
+                  if (error && error.status === 401) {
+                      console.log("Interceptor: Session Expired, redirect to login");
+                      this.authenticationService.logout();
+                      location.reload(true)
+                  }
+                  const err = error.error.message || error.statusText;
+                  return throwError(error);
+             })
+          );
     }
-
-   //  intercept(observable: Observable<Response>): Observable<Response> {
-   //     return observable.catch((err, source) => {
-   //       //if (err.status  == 401 && !_.endsWith(err.url, 'api/auth/login')) {
-   //       if (err.status  == 401 ) { 
-   //             this._router.navigate(['/login']);
-   //             return Observable.empty();
-   //         } else {
-   //             return Observable.throw(err);
-   //        }
-   //     });
-   // }
 }

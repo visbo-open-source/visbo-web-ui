@@ -1,22 +1,15 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Centers
-        </h2>
-      </div>
-      <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='col-6 col-md-2'>
-          <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
-          <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
-      </div>
-      <div *ngIf="hasSystemPerm(permSystem.CreateVC)" class='col-6 col-md-2'>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#VcModalCreate">
-          New Visbo Center
-        </button>
-      </div>
+  <div class='row'>
+    <div class='col'>
+      <h2 class='panel-heading ml-0'>
+        Visbo Centers
+      </h2>
+    </div>
+    <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='btn-group'>
+        <button *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
+        <button *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
+        <button *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
     </div>
   </div>
 
@@ -37,7 +30,7 @@
 
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" >
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
-          <td>{{vc.name}}</td>
+          <td><a>{{vc.name}}</a></td>
           <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vc.vpCount}}</td>

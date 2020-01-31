@@ -54,7 +54,7 @@ export class RegisterComponent {
           if (this.hash) {
             this.alertService.success(`Congratulation, your e-mail address ${data.email} is now confirmed. Please login.`, true);
           } else {
-            this.alertService.success(`Congratulation, you registered successfully your e-mail address ${data.email}. Please check your e-Mail for conirmation.`, true);
+            this.alertService.success(`Congratulation, you registered successfully your e-mail address ${data.email}. Please check your e-Mail for confirmation.`, true);
           }
           this.router.navigate(['login']);
         },

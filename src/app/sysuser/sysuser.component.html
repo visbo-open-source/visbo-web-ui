@@ -1,20 +1,17 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Users
-        </h2>
-      </div>
+  <div class='row'>
+    <h2 class='panel-heading'>
+      Visbo Users
+    </h2>
+  </div>
+  <form name="form" (ngSubmit)="getSysUsers()" #f="ngForm" novalidate>
+    <div class="form-group row">
+      <label for="userMatch" class="col-2 col-form-label">Filter:</label>
+      <input id="userMatch" type="text" class="col-2 col-sm-4 form-control mx-1" name="userMatch" [(ngModel)]="userMatch" >
+      <button type="button" class="btn btn-primary mx-1" (click)="getSysUsers()">Filter</button>
     </div>
-  </div>
-  <div class="form-group row">
-    <label for="userMatch" class="col-2 col-form-label">Filter:</label>
-    <input id="userMatch" type="text" class="col-2 col-sm-4 form-control" name="userMatch" [(ngModel)]="userMatch" >
-    <button type="button" class="btn btn-primary" (click)="getSysUsers()">Filter</button>
-  </div>
-
+  </form>
   <div class='container-fluid'>
     <div class='panel-body'>
       <table class='table table-hover table-sortable'>
@@ -34,7 +31,7 @@
           <tr *ngFor="let userentry of user; let userIndex=index" (click)='helperUserIndex(userIndex)'
           data-toggle="modal" data-target="#UserDetail">
             <td class="d-none d-md-table-cell">{{userIndex+1}}</td>
-            <td >{{userentry.email }}</td>
+            <td ><a>{{userentry.email}}</a></td>
             <td class="d-none d-md-table-cell">{{userentry.updatedAt | date :'dd.MM.yy'}}</td>
             <td *ngIf="userentry.status && userentry.status.lastLoginAt" class="d-none d-md-table-cell">{{userentry.status.lastLoginAt | date :'dd.MM.yy'}}</td>
             <td *ngIf="!(userentry.status && userentry.status.lastLoginAt)" class="d-none d-md-table-cell">Never</td>

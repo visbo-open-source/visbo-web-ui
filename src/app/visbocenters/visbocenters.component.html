@@ -1,14 +1,8 @@
 <visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Centers
-        </h2>
-      </div>
-    </div>
-  </div>
+  <h2 class='panel-heading'>
+    Visbo Centers
+  </h2>
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
@@ -26,7 +20,7 @@
       <tbody>
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" > <!-- class="danger"> -->
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
-          <td>{{vc.name}}</td>
+          <td><a>{{vc.name}}</a></td>
           <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vc.vpCount}}</td>

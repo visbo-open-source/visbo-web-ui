@@ -7,25 +7,25 @@
           Visbo Log Files
         </h2>
       </div>
-      <div class='col-6 col-md-2 align-self-end'>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-sm btn-primary align-self-end" (click)="getLogLevel()" data-toggle="modal" data-target="#ChangeLogLevel">
-          Change Log Level
-        </button>
-      </div>
+      <!-- <div class='col-6 col-md-2 align-self-end'>
+        <button type="button" class="mx-1 btn btn-sm btn-primary align-self-end" (click)="getLogLevel()" data-toggle="modal" data-target="#ChangeLogLevel">Change Log Level</button>
+      </div> -->
     </div>
     <div class='col'>
       <form name="form" (ngSubmit)="getVisboLogs()" #f="ngForm" novalidate>
         <div class="form-group row">
           <label for="auditCount" class="col-form-label">Max age in days:</label>
-          <select class="col-1 form-control" name="ageDays" [(ngModel)]="ageDays">
+          <select class="col-1 form-control mx-1" name="ageDays" [(ngModel)]="ageDays">
             <option>0</option>
             <option>3</option>
             <option>7</option>
             <option>30</option>
             <option>365</option>
           </select>
-          <button type="button" class="btn btn-primary" (click)="getVisboLogs()">Refresh</button>
+          <button type="button" class="btn btn-primary mx-1" (click)="getVisboLogs()">Refresh</button>
+          <div class="col">
+            <button type="button" class="btn btn-sm btn-primary float-right" (click)="getLogLevel()" data-toggle="modal" data-target="#ChangeLogLevel">Change Log Level</button>
+          </div>
         </div>
       </form>
     </div>
@@ -49,7 +49,7 @@
           <tbody>
             <tr *ngFor="let fileentry of files; let fileIndex=index" (click)='helperFileIndex(fileIndex)'
               (click)='getVisboLogFile(fileentry)'>
-              <td class="d-none d-md-table-cell">{{fileentry.name }}</td>
+              <td class="d-none d-md-table-cell"><a>{{fileentry.name }}</a></td>
               <td class="d-none d-md-table-cell">{{fileentry.folder }}</td>
               <td>{{fileentry.updatedAt | date :'dd.MM HH:mm' }}</td>
               <td>{{formatBytes(fileentry.size, undefined) }}</td>

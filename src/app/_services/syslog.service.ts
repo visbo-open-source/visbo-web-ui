@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 
@@ -18,11 +18,12 @@ const httpOptions = {
 @Injectable()
 export class SysLogService {
 
-  private serviceUrl = environment.restUrl.concat('/syslog');  // URL to ReST api
+  private serviceUrl = this.env.restUrl.concat('/syslog');  // URL to ReST api
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 
@@ -34,7 +35,7 @@ export class SysLogService {
 
     params = params.append('ageDays', ageDays.toString());
 
-    this.log(`Calling HTTP Request: ${url} `);
+    this.log(`Calling HTTP Request: ${url}`);
     return this.http.get<VisboFilesResponse>(url, { headers , params })
       .pipe(
         map(response => response.files),

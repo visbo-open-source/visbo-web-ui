@@ -10,13 +10,13 @@
   		<div class="card-group col-sm-8 col-md-6 col-lg-4 mb-2" *ngFor="let vc of visbocenters">
         <div class="card" style="width: 18rem;">
           <div class="card-body d-flex flex-column">
-            <h3 class="card-title">{{vc.name}}</h3>
+            <h3 class="card-title" (click)="gotoClickedVc(vc)"><a>{{vc.name}}</a></h3>
             <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
             <p class="card-text">{{vc.description}}</p>
             <!-- <p class="card-subtitle">{{vc.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
-              <button type="button" class="btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</button>
-              <button type="button" class="btn btn-secondary" (click)="gotoClickedVcDetail(vc)">Detail</button>
+              <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} Projects</button>
+              <button type="button" class="mx-1 btn btn-secondary" (click)="gotoClickedVcDetail(vc)">Detail</button>
             </div>
           </div> <!-- end of card-body -->
         </div> <!-- end of card -->
@@ -35,13 +35,13 @@
   		<div class="card-group col-sm-8 col-md-6 col-lg-4 mb-2" *ngFor="let vp of visboprojects">
         <div class="card" style="width: 18rem;">
           <div class="card-body d-flex flex-column">
-            <h3 class="card-title">{{vp.name}}</h3>
+            <h3 class="card-title" (click)="gotoClickedVp(vp)"><a>{{vp.name}}</a></h3>
             <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
             <p class="card-text">{{vp.description}}</p>
             <!-- <p class="card-subtitle">{{vp.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
-              <button type="button" class="btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpvCount}} Versions</button>
-              <button type="button" class="btn btn-secondary" (click)="gotoClickedVpDetail(vp)">Detail</button>
+              <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpvCount}} Versions</button>
+              <button type="button" class="mx-1 btn btn-secondary" (click)="gotoClickedVpDetail(vp)">Detail</button>
             </div>
           </div> <!-- end of card-body -->
         </div> <!-- end of card -->

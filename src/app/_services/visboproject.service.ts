@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 
 import { VisboProject, VisboProjectResponse, VisboProjectLockResponse } from '../_models/visboproject';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
@@ -19,11 +19,12 @@ const httpOptions = {
 export class VisboProjectService {
 
   //   private vpUrl = 'projects';  // URL to web api on same server
-  private vpUrl = environment.restUrl.concat('/vp'); // URL to web api
+  private vpUrl = this.env.restUrl.concat('/vp'); // URL to web api
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private env: EnvService
   ) { }
 
 

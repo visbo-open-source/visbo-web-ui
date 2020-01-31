@@ -54,13 +54,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         },
         error => {
           this.log(`get VPV failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            // redirect to login and come back to current URL
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          } else {
-            this.alertService.error(error.error.message);
-          }
+          this.alertService.error(error.error.message);
         }
       );
   }
@@ -88,9 +82,6 @@ export class VisboProjectVersionDetailComponent implements OnInit {
           this.log(`delete VPV failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Project Version ${visboprojectversion._id}`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -104,7 +95,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
 
   gotoVPVList(visboprojectversion: VisboProjectVersion):void {
     this.log(`goto VPV List: ${visboprojectversion.vpid} Deleted ${this.deleted}`);
-    this.router.navigate(['vpv/'.concat(visboprojectversion.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    this.router.navigate(['vpKeyMetrics/'.concat(visboprojectversion.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
   save(): void {
@@ -117,14 +108,10 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         },
         error => {
           this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
-          // redirect to login and come back to current URL
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${this.visboprojectversion._id}`);
           } else if (error.status == 409) {
             this.alertService.error(`Visbo Project ${this.visboprojectversion._id} exists already`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }

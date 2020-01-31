@@ -5,7 +5,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService }  from '../_services/visboproject.service';
 
 @Component({
@@ -23,7 +23,6 @@ export class DashboardComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
@@ -42,11 +41,6 @@ export class DashboardComponent implements OnInit {
         error => {
           console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -61,11 +55,6 @@ export class DashboardComponent implements OnInit {
         error => {
           console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -73,24 +62,24 @@ export class DashboardComponent implements OnInit {
   gotoClickedVc(visbocenter: VisboCenter):void {
     // console.log("clicked row %s", visbocenter.name);
     this.router.navigate(['vp/'+visbocenter._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 
   gotoClickedVcDetail(visbocenter: VisboCenter):void {
     console.log("clicked row %s", visbocenter.name);
     this.router.navigate(['vcDetail/'+visbocenter._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 
   gotoClickedVp(visboproject: VisboProject):void {
     console.log("clicked row %s", visboproject.name);
-    this.router.navigate(['vpv/'+visboproject._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
+    if (visboproject.vpType == VPTYPE["Portfolio"]) {
+      this.router.navigate(['vpf/'+visboproject._id]);
+    } else {
+      this.router.navigate(['vpKeyMetrics/'+visboproject._id]);
+    }
   }
 
   gotoClickedVpDetail(visboproject: VisboProject):void {
     console.log("clicked row %s", visboproject.name);
     this.router.navigate(['vpDetail/'+visboproject._id]);
-    //this.router.navigate(['vp'], { queryParams: { vc: visbocenter.name } });
   }
 }

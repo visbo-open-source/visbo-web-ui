@@ -1,17 +1,13 @@
 <sysvisbo-navbar></sysvisbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 class='panel-heading'>
-          Visbo Task System View
-        </h2>
-      </div>
-      <div>
-        <button type="button" class="btn btn-sm btn-primary" (click)="getVisboTasks()">
-          Refresh
-        </button>
-      </div>
+  <div class='row'>
+    <div class='col'>
+      <h2 class='panel-heading'>
+        Visbo Task System View
+      </h2>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-primary float-right" (click)="getVisboTasks()">Refresh</button>
     </div>
   </div>
 
@@ -32,7 +28,7 @@
           <!-- Table body -->
           <tbody>
             <tr *ngFor="let entry of vcsetting; let settingIndex=index" (click)='helperTaskIndex(settingIndex)' data-toggle="modal" data-target="#TaskDetail">
-              <td>{{entry.name }}</td>
+              <td><a>{{entry.name }}</a></td>
               <td class="d-none d-md-table-cell">{{entry.value.lastRun | date :'dd.MM HH:mm:ss' }}</td>
               <td class="d-none d-md-table-cell">{{entry.value.nextRun | date :'dd.MM HH:mm:ss' }}</td>
               <td>{{entry.value.taskSpecific && entry.value.taskSpecific.result }}</td>

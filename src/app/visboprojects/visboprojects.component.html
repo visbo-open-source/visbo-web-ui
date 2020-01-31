@@ -1,29 +1,21 @@
 <visbo-navbar></visbo-navbar>
 <div class='well'>
-  <div class="container">
-    <div class='row'>
-      <div class='col'>
-        <h2 *ngIf="!vcActive">
-          Projects
-        </h2>
-        <h2 *ngIf="vcActive">
-          Projects in:
-          <button class='panel-heading bg-white btn-white' (click)="gotoVCDetail(vcActive)">
-            {{vcActive.name}}
-          </button>
-        </h2>
+  <div class='row'>
+    <div class='col'>
+      <h2 *ngIf="!vcActive" class='panel-heading ml-0'>
+        Projects
+      </h2>
+      <h2 *ngIf="vcActive" class='panel-heading ml-0'>
+        Projects in: <a (click)="gotoVCDetail(vcActive)">{{vcActive.name}}</a>
+      </h2>
+    </div>
+    <div class='btn-group'>
+      <div *ngIf="hasVPPerm(permVP.DeleteVP)">
+          <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
+          <button *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
       </div>
-      <div class='btn-group col-3'>
-        <div *ngIf="hasVPPerm(permVP.DeleteVP)">
-            <button *ngIf="!deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
-            <button *ngIf="deleted" type="button" class="btn btn-sm btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
-        </div>
-        <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#VpModalCreate">
-            New Project
-          </button>
-        </div>
+      <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
+        <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">New Project</button>
       </div>
     </div>
   </div>
@@ -46,7 +38,7 @@
       <tbody>
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
-          <td>{{vp.name}}</td>
+          <td><a>{{vp.name}}</a></td>
           <td class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
           <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>

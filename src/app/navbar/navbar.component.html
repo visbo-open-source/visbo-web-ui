@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-md navbar-white bg-white sticky-top">
-  <a class="navbar-brand bg-white" (click)="gotoClickedItem('dashboard')">Visbo</a>
+<nav class="navbar navbar-expand-md navbar-white bg-light sticky-top">
+  <a class="navbar-brand bg-light " (click)="gotoClickedItem('dashboard')">Visbo</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMainNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
     <i class="fas fa-bars"></i>
   </button>
@@ -9,26 +9,26 @@
         <a class="nav-link" (click)="gotoClickedItem('dashboard')">Home <span class="sr-only">(current)</span></a>
       </li> -->
       <li class="nav-item">
-        <a class="nav-link bg-white" (click)="gotoClickedItem('vc')">Visbo Center</a>
+        <a class="nav-link bg-light " (click)="gotoClickedItem('vc')">Visbo Center</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-white" (click)="gotoClickedItem('vp')">Visbo Projects</a>
+        <a class="nav-link bg-light " (click)="gotoClickedItem('vp')">Visbo Projects</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-white"  (click)="gotoClickedItem('profile')">Profile</a>
+        <a class="nav-link bg-light "  (click)="gotoClickedItem('profile')">Profile</a>
       </li>
       <li *ngIf="hasSystemPerm(permSystem.View)" class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle bg-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle bg-light " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Others
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item bg-white"  (click)="gotoClickedItem('settings')">Settings</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item bg-white" (click)="gotoClickedItem('sysadmins')">App Admin</a>
+          <a class="dropdown-item"  (click)="gotoClickedItem('settings')">Settings</a>
+          <!-- <div class="dropdown-divider"></div> -->
+          <a class="dropdown-item" (click)="gotoClickedItem('sysadmins')">App Admin</a>
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-white align-right"  (click)="gotoClickedItem('login')">Logout</a>
+        <a class="nav-link bg-light  align-right"  (click)="gotoClickedItem('login')">Logout</a>
       </li>
     </ul>
   </div>

@@ -67,11 +67,6 @@ export class UserProfileComponent implements OnInit {
         error => {
           this.log(`get User profile failed: error: ${error.status} message: ${error.error.message}`);
           this.alertService.error(error.error.message);
-          // redirect to login and come back to current URL
-          if (error.status == 401) {
-            this.alertService.error("Session expired, please log in again", true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
-          }
         }
       );
   }
@@ -107,9 +102,6 @@ export class UserProfileComponent implements OnInit {
           this.log(`update User profile failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status == 403) {
             this.alertService.error('Permission Denied');
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -149,9 +141,6 @@ export class UserProfileComponent implements OnInit {
           this.log(`change password failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status == 403) {
             this.alertService.error('Permission Denied');
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }

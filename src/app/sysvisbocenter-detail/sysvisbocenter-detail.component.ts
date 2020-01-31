@@ -29,6 +29,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
   groupIndex: number;
   showGroups: boolean;
   combinedPerm: VGPermission = undefined;
+  combinedUserPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -75,9 +76,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -95,6 +93,16 @@ export class SysvisbocenterDetailComponent implements OnInit {
 
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm.vp & perm) > 0
+  }
+
+  hasUserVCPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    return (this.combinedUserPerm.vc & perm) > 0
+  }
+
+  hasUserVPPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    return (this.combinedUserPerm.vp & perm) > 0
   }
 
   getVisboCenterUsers(): void {
@@ -115,9 +123,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -157,9 +162,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Visbo Center ${this.visbocenter.name}`);
           } else if (error.status == 409) {
             this.alertService.error(`Visbo Center ${this.visbocenter.name} exists already`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -179,9 +181,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Visbo Center ${visbocenter.name}`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.alertService.error(error.error.message);
           }
@@ -226,9 +225,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`Add VisboCenter User error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Add User to Visbo Center`);
-          } else if (error.status == 401) {
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -237,12 +233,45 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
-  helperRemoveUser(memberIndex: number):void {
+  helperUserIndex(memberIndex: number):void {
     this.userIndex = memberIndex
+  }
+
+  calcCombinedPerm(memberIndex: number): void {
+    this.userIndex = memberIndex
+    this.combinedUserPerm = {system: 0, vc: 0, vp: 0}
+    this.vgUsers.forEach(this.addUserPerm, this)
+    this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`)
+  }
+
+  addUserPerm(listUser): void {
+    if (listUser.email !== this.vgUsers[this.userIndex].email) return;
+    this.log(`Add User Permission for ${listUser.groupName}`)
+
+    var indexGroup = this.vgGroups.findIndex(x => x.name == listUser.groupName);
+    if (indexGroup >= 0) {
+      if (this.vgGroups[indexGroup].permission) {
+        this.combinedUserPerm.system = this.combinedUserPerm.system | (this.vgGroups[indexGroup].permission.system || 0)
+        this.combinedUserPerm.vc = this.combinedUserPerm.vc | (this.vgGroups[indexGroup].permission.vc || 0)
+        this.combinedUserPerm.vp = this.combinedUserPerm.vp | (this.vgGroups[indexGroup].permission.vp || 0)
+      } else {
+        this.log(`Permission for Group not set ${listUser.groupName}`)
+      }
+    } else {
+      this.log(`Group not found ${listUser.groupName}`)
+    }
   }
 
   helperRemoveGroup(memberIndex: number):void {
     this.groupIndex = memberIndex
+  }
+
+  helperUsersPerGroup(groupName: string):number {
+    var group = this.vgGroups && this.vgGroups.find(x => x.name == groupName)
+    if (group) {
+      return group.users.length;
+    }
+    return 0;
   }
 
   removeVCUser(user: VGUserGroup, vcid: string): void {
@@ -272,10 +301,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`Remove VisboCenter User error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Remove User from Visbo Center`);
-          } else if (error.status == 401) {
-            this.log('Re-login add VC user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -375,9 +400,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.log(`Modify VisboCenter Group error: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied: Modify Group to Visbo Center`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
               this.alertService.error(error.error.message);
@@ -399,9 +421,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.log(`Add VisboCenter Group error: ${error.error.message}`);
             if (error.status == 403) {
               this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
-            } else if (error.status == 401) {
-              this.alertService.error(`Session expired, please login again`, true);
-              this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
               this.alertService.error(error.error.message);
@@ -426,10 +445,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
           this.log(`Remove VisboCenter Group error: ${error.error.message}`);
           if (error.status == 403) {
             this.alertService.error(`Permission Denied: Remove Group from Visbo Center`);
-          } else if (error.status == 401) {
-            this.log('Re-login add VC user'); // log to console instead
-            this.alertService.error(`Session expired, please login again`, true);
-            this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
