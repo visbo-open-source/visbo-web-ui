@@ -64,7 +64,10 @@
       <label for="Filter" class="col-1 col-form-label">Filter Projects:</label>
       <input class="form-control col-3"  (keyup)="showTempList(true); visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
       <button type="button" class="btn btn-sm btn-secondary ml-2" (click)= "showTempList(false)">Filter</button>
-      <div class="mx-3">EAC (Estimate at Completion) {{estimateAtCompletion | number:'1.0-0'}} T€ vs. BAC (Budget at Completion) {{budgetAtCompletion | number:'1.0-0'}} T€</div>
+      <div class="mx-3 text-dark">EAC (Estimate at Completion) {{estimateAtCompletion | number:'1.0-0'}} T€ vs. BAC (Budget at Completion) {{budgetAtCompletion | number:'1.0-0'}} T€</div>
+      <span *ngIf="estimateAtCompletion <= budgetAtCompletion"><strong class="fas fa-check-circle" style="color:green"></strong></span>
+      <span *ngIf="estimateAtCompletion > budgetAtCompletion && estimateAtCompletion <= budgetAtCompletion * 1.05"><strong class="fas fa-exclamation-triangle" style="color:orange"></strong></span>
+      <span *ngIf="estimateAtCompletion > budgetAtCompletion * 1.05"><strong class="fas fa-exclamation-circle" style="color:red"></strong></span>
     </form>
   </div>
   <div *ngIf="visbokeymetrics.length > 0">

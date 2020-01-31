@@ -28,7 +28,7 @@
       <tbody>
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
-          <td>{{vp.name}}</td>
+          <td><a>{{vp.name}}</a></td>
           <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vp.vpvCount}}</td>

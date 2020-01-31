@@ -55,8 +55,8 @@
               <tbody>
                 <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                   <td>{{memberIndex+1}}</td>
-                  <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail">{{member.email}}</td>
-                  <td>{{member.groupName}}</td>
+                  <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
+                  <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
                     <button class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
                     data-toggle="modal" data-target="#VcUserRemove">&times;</button>
@@ -101,8 +101,8 @@
               <tbody>
                 <tr *ngFor="let member of vgGroups; let memberIndex=index">
                   <td>{{memberIndex+1}}</td>
-                  <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">{{member.name}}</td>
-                  <td>{{member.users.length}}</td>
+                  <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate"><a>{{member.name}}</a></td>
+                  <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
                   <td *ngIf="member.global">Global</td>
                   <td *ngIf="!member.global"></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
@@ -156,10 +156,10 @@
         </div>
       </div>
     </div>
-
-    <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
-    <button class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
-  <!-- </div> -->
+    <div class="mb-3">
+      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
+      <button class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
+    </div>
 
   <!-- Modal Add VC User -->
   <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
@@ -326,8 +326,8 @@
               <label class="form-control-static">No Group Members</label>
             </div>
             <div class="form-group mt-2">
-              <button *ngIf="!(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
-              <button *ngIf="(f.form.valid && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+              <button *ngIf="!(f.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
+              <button *ngIf="(f.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
             </div>
           </form>
@@ -439,8 +439,8 @@
             <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
           </div>
           <div class="custom-control custom-checkbox">
-            <input *ngIf="hasUserVPPerm(permVP.Delete)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
-            <input *ngIf="!hasUserVPPerm(permVP.Delete)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
+            <input *ngIf="hasUserVPPerm(permVP.DeleteVP)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
+            <input *ngIf="!hasUserVPPerm(permVP.DeleteVP)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
             <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
           </div>
           <label class="form-control-static mt-2">Group Memeber Ship</label>

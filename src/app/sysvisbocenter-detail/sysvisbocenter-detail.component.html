@@ -120,7 +120,7 @@
   <button *ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
   <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
 
-  <!-- Modal Add System User -->
+  <!-- Modal Add User -->
   <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -436,8 +436,8 @@
             <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
           </div>
           <div class="custom-control custom-checkbox">
-            <input *ngIf="hasUserVPPerm(permVP.Delete)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
-            <input *ngIf="!hasUserVPPerm(permVP.Delete)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
+            <input *ngIf="hasUserVPPerm(permVP.DeleteVP)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
+            <input *ngIf="!hasUserVPPerm(permVP.DeleteVP)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
             <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
           </div>
           <label class="form-control-static mt-2">Group Memeber Ship</label>

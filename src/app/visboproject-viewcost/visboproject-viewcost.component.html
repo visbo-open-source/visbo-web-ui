@@ -22,19 +22,24 @@
         </h3>
         <div class="col-4">
           <div class="row">
-            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></span>
+            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
             <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
               <option>day</option>
               <option>week</option>
               <option>month</option>
               <option>quarter</option>
             </select>
-            <span style="font-size: 2em" class="mx-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></span>
+            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
           </div>
         </div>
       </div>
-      <div class="row">
-         EAC (Estimate at Completion) {{vpvTotalCostCurrent | number : '1.0-0'}} T€ vs. BAC (Budget at Completion) {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
+      <div class="row text-dark">
+        <span class="mr-2">
+          EAC (Estimate at Completion) {{vpvTotalCostCurrent | number : '1.0-0'}} T€ vs. BAC (Budget at Completion) {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
+        </span>
+        <span *ngIf="vpvTotalCostCurrent <= vpvTotalCostBaseLine"><strong class="fas fa-check-circle" style="color:green"></strong></span>
+        <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine && vpvTotalCostCurrent <= vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-triangle" style="color:orange"></strong></span>
+        <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-circle" style="color:red"></strong></span>
       </div>
     </div>
 
@@ -46,7 +51,7 @@
   </div>
 </div>
 
-<!-- Modal Show Shortcut explnation -->
+<!-- Modal Show Shortcut explanation -->
 <div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
