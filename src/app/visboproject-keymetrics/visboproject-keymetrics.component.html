@@ -308,6 +308,11 @@
             </thead>
             <!--Table body-->
             <tbody>
+              <tr *ngIf="vpvKeyMetricActive.startDate">
+                <td>Project Start Date</td>
+                <td>{{ vpvKeyMetricActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td class="d-none d-md-table-cell"></td>
+              </tr>
               <tr>
                 <td>Project End Date</td>
                 <td>

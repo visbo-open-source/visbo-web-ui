@@ -267,7 +267,6 @@ export class SysauditComponent implements OnInit {
         }
       }
       var graphElement: any;
-      var i = 0;
       // this.graphData = [];
       for (graphElement in graphSum) {
         // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);

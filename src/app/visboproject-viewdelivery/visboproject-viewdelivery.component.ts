@@ -24,8 +24,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
-  vpvDelivery: [VPVDelivery];
-  vpvActualDataUntil: string;
+  vpvDelivery: VPVDelivery[];
+  filterStatus: string;
+  vpvDeliveryDate: any = [];
+  vpvActualDataUntil: Date;
   deleted: boolean = false;
 
   refDateInterval: string = "month";
@@ -37,13 +39,22 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   historyButton: string = "View Trend"
   parentThis: any;
 
-  colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
+  colors: string[] = ['darkgreen', 'green', 'orange', 'red'];
   series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' }
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] }
   };
 
-  graphDataComboChart: any[] = [];
-  graphOptionsComboChart: any = undefined;
+  graphPastDataPieChart: any[] = [];
+  graphBeforePastDataPieChart: any[] = [];
+  graphPastPieLegend: any;
+  graphPastOptionsPieChart: any = undefined;
+  divPastPieChart: string = "divPastPieChart";
+
+  graphFutureDataPieChart: any[] = [];
+  graphBeforeFutureDataPieChart: any[] = [];
+  graphFuturePieLegend: any;
+  graphFutureOptionsPieChart: any = undefined;
+  divFuturePieChart: string = "divFuturePieChart";
 
   sortAscending: boolean = false;
   sortColumn: number = 1;
@@ -156,19 +167,17 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
           this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deliveries.length} Delivery entries`);
           if (visboprojectversions.length != 1 || !visboprojectversions[0].deliveries) {
             this.log(`get VPV Calc: Reset Delivery to empty `);
-            this.vpvDelivery = [new VPVDelivery];
+            this.initDeliveries(undefined);
           } else {
             this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deliveries.length} Actual ${visboprojectversions[0].actualDataUntil}`);
-            this.vpvDelivery = visboprojectversions[0].deliveries;
-            for (var i = 0; i < this.vpvDelivery.length; i++) {
-              this.vpvDelivery[i].fullName = this.getFullName(this.vpvDelivery[i]);
-            }
+            this.initDeliveries(visboprojectversions[0].deliveries);
             this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
             this.visboprojectversions[index].deliveries = this.vpvDelivery;
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
-          this.visboViewDelivery(visboprojectversions[0]._id);
+          this.visboViewPastDeliveryPie();
+          this.visboViewFutureDeliveryPie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -186,6 +195,44 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
       );
   }
 
+  initDeliveries(deliveries: VPVDelivery[]): void {
+    var filterDeliveries: VPVDelivery[] = [];
+    if (deliveries == undefined) {
+      this.vpvDelivery = deliveries;
+      return;
+    }
+    // generate long Names
+    for (var i = 0; i < deliveries.length; i++) {
+      deliveries[i].fullName = this.getFullName(deliveries[i]);
+      deliveries[i].status = this.statusList[this.getStatus(deliveries[i])];
+      if (!this.filterStatus  || this.filterStatus ==  deliveries[i].status) {
+        filterDeliveries.push(deliveries[i]);
+      }
+    }
+    this.vpvDelivery = filterDeliveries;
+    // this.vpvDeliveryDate = [];
+    // if (this.vpvDelivery.length > 0) {
+    //   var newDelivery = new VPVDelivery();
+    //   newDelivery.phasePFV = this.vpvDelivery[0].phasePFV;
+    //   newDelivery.fullName = this.vpvDelivery[0].fullName;
+    //   newDelivery.name = this.vpvDelivery[0].name;
+    //   newDelivery.datePFV = this.vpvDelivery[0].datePFV;
+    //   newDelivery.dateVPV = this.vpvDelivery[0].dateVPV;
+    //   this.vpvDeliveryDate.push(newDelivery);
+    // }
+    // for (var i = 1; i < this.vpvDelivery.length; i++) {
+    //   if (this.vpvDelivery[i-1].phasePFV != this.vpvDelivery[i].phasePFV) {
+    //     var newDelivery = new VPVDelivery();
+    //     newDelivery.phasePFV = this.vpvDelivery[i].phasePFV;
+    //     newDelivery.fullName = this.vpvDelivery[i].fullName;
+    //     newDelivery.name = this.vpvDelivery[i].name;
+    //     newDelivery.datePFV = this.vpvDelivery[i].datePFV;
+    //     newDelivery.dateVPV = this.vpvDelivery[i].dateVPV;
+    //     this.vpvDeliveryDate.push(newDelivery);
+    //   }
+    // }
+  }
+
   sameDay(dateA: Date, dateB: Date): boolean {
     var localA = new Date(dateA);
     var localB = new Date(dateB);
@@ -195,12 +242,111 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     return localA.getTime() == localB.getTime();
   }
 
-  visboViewDelivery(id: string): void {
+  statusList: string[] = ["Ahead", "In Time", "Delay", "Not Completed", "Unknown"]
 
-    if (!this.vpvDelivery) return;
+  getStatus(element: VPVDelivery): number {
 
+    var today = new Date();
+    var isPast = (new Date(element.datePFV)).getTime() <= today.getTime()
+
+    var status: number = 0;
+    if (isPast && element.done < 1) status = 3;
+    else if (element.changeDays < 0) status = 0;
+    else if (element.changeDays == 0) status = 1;
+    else status = 2;
+    return status
+  }
+
+  visboViewPastDeliveryPie(): void {
+    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+    this.graphPastOptionsPieChart = {
+        title:'Past Delivery Status',
+        // sliceVisibilityThreshold: .025
+        colors: this.colors
+      };
+
+    this.graphPastPieLegend = [["string", "Action Type"],
+                        ["number", "Count"]
+      ];
+
+    var pastDeliveryStatus: any = [];
+    var graphData = [];
+    var status;
+    var today = new Date();
+    for (var i = 0; i < this.statusList.length; i++) {
+      pastDeliveryStatus[i] = 0;
+    }
+    var nonEmpty: boolean = false;
+    for (var i = 0; i < this.vpvDelivery.length; i++) {
+      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() <= today.getTime()) {
+        // entry from the past
+        status = this.getStatus(this.vpvDelivery[i]);
+        pastDeliveryStatus[status] += 1
+        nonEmpty = true;
+      }
+    }
+    for (var i = 0; i < pastDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], pastDeliveryStatus[i]])
+    }
+
+    this.graphBeforePastDataPieChart = this.graphPastDataPieChart;
+    if (nonEmpty) {
+      this.graphPastDataPieChart = graphData;
+    } else {
+      this.graphPastDataPieChart = [];
+    }
+  }
+
+  visboViewFutureDeliveryPie(): void {
+    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+    this.graphFutureOptionsPieChart = {
+        title:'Future Delivery Status',
+        // sliceVisibilityThreshold: .025
+        colors: this.colors
+      };
+
+    this.graphFuturePieLegend = [["string", "Action Type"],
+                        ["number", "Count"]
+      ];
+
+    var futureDeliveryStatus: any = [];
+    var graphData = [];
+    var status;
+    var today = new Date();
+    for (var i = 0; i < this.statusList.length; i++) {
+      futureDeliveryStatus[i] = 0;
+    }
+    var nonEmpty: boolean = false;
+    for (var i = 0; i < this.vpvDelivery.length; i++) {
+      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() > today.getTime()) {
+        // entry from the future
+        status = this.getStatus(this.vpvDelivery[i]);
+        futureDeliveryStatus[status] += 1
+        nonEmpty = true;
+      }
+    }
+    for (var i = 0; i < futureDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], futureDeliveryStatus[i]])
+    }
+    this.graphBeforeFutureDataPieChart = this.graphFutureDataPieChart;
+    if (nonEmpty) {
+      this.graphFutureDataPieChart = graphData;
+    } else {
+      this.graphFutureDataPieChart = [];
+    }
 
   }
+
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
+    if (this.filterStatus != label) {
+      this.filterStatus = label;
+    } else {
+      this.filterStatus = undefined;
+    }
+    this.initDeliveries(this.vpvActive.deliveries)
+  }
+
 
   getFullName(delivery: VPVDelivery): string {
     var result = ''
@@ -213,6 +359,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   getRefDateVersions(increment: number): void {
     this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    this.filterStatus = undefined;
     var newRefDate = new Date(this.scrollRefDate);
     switch(this.refDateInterval) {
       case 'day':
@@ -282,13 +429,6 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   listSelectRow(vpv: any): void {
     this.log(`List: User selected ${vpv._id} ${vpv.name}`);
     // this.setVpvActive(vpv);
-  }
-
-  chartSelectRow(row: number, col: number, label: string) {
-    this.log(`Line Chart: User selected ${row} ${col} ${label} Len`);
-    // if (row < 0 || row >= this.visbokeymetrics.length) row = 0;
-    // this.setVpvActive(this.visbokeymetrics[row]);
-    // this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 
   setVpvActive(vpv: any) : void {
@@ -447,7 +587,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     } else if (this.sortColumnDelivery == 6) {
       // sort by Delivery Change in % Done
       this.vpvDelivery.sort(function(a, b) {
-        return a.percentDone - b.percentDone
+        return a.done - b.done
       })
     }
     if (!this.sortAscendingDelivery) {

@@ -24,8 +24,8 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
-  vpvCost: [VPVCost];
-  vpvActualDataUntil: string;
+  vpvCost: VPVCost[];
+  vpvActualDataUntil: Date;
   deleted: boolean = false;
 
   vpvTotalCostBaseLine: number;
@@ -167,7 +167,7 @@ export class VisboProjectViewCostComponent implements OnInit {
           if (visboprojectversions.length != 1 || !visboprojectversions[0].cost) {
             this.log(`get VPV Calc: Reset Cost to empty `);
             // this.vpvCost[visboprojectversions[0]._id] = [];
-            this.vpvCost = [new VPVCost];
+            this.vpvCost = [];
           } else {
             this.log(`Store Cost for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].cost.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.vpvCost = visboprojectversions[0].cost;
@@ -235,9 +235,13 @@ export class VisboProjectViewCostComponent implements OnInit {
     var cost = this.vpvCost;
     this.vpvTotalCostBaseLine = 0;
     this.vpvTotalCostCurrent = 0;
-    var actualDataUntil = new Date(this.vpvActualDataUntil)
+    var actualDataUntil = this.vpvActualDataUntil;
 
     this.log(`ViewCostOverTime Actual Until  ${actualDataUntil}`);
+
+    if (cost.length == 0) {
+      return;
+    }
 
     for (var i = 0; i < cost.length; i++) {
       var currentDate = new Date(cost[i].currentDate);

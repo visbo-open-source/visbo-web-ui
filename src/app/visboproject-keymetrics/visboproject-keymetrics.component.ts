@@ -181,6 +181,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
         elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
         elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
+        elementKeyMetric.startDate = this.visboprojectversions[i].startDate;
         elementKeyMetric.Risiko = this.visboprojectversions[i].Risiko;
         elementKeyMetric.StrategicFit = this.visboprojectversions[i].StrategicFit;
         elementKeyMetric.leadPerson = this.visboprojectversions[i].leadPerson;

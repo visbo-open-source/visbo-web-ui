@@ -13,9 +13,10 @@ export class VPVDelivery {
   datePFV: Date;
   dateVPV: Date;
   changeDays: number;
-  percentDone: number;
+  done: number;
 
   fullName: string;
+  status: string;
 };
 
 export class VPVKeyMetrics {
@@ -45,6 +46,7 @@ export class VPVKeyMetricsCalc {
   vpid: string;
   timestamp: Date;
   variantName: string;
+  startDate: Date;
   Risiko: number;
   StrategicFit: number;
   leadPerson: string;
@@ -76,13 +78,13 @@ export class VisboProjectVersion {
   StrategicFit: number;
   Erloes: number;
   leadPerson: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   earliestStart: number;
-  earliestStartDate: string;
+  earliestStartDate: Date;
   latestStart: number;
-  latestStartDate: string;
-  actualDataUntil: string;
+  latestStartDate: Date;
+  actualDataUntil: Date;
   status: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -99,8 +101,8 @@ export class VisboProjectVersion {
   businessUnit: string;
 
   keyMetrics: VPVKeyMetrics;
-  cost: [ VPVCost ];
-  deliveries: [ VPVDelivery ]
+  cost: VPVCost[];
+  deliveries: VPVDelivery[]
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
