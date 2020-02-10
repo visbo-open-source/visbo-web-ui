@@ -58,19 +58,16 @@
         <!--Table head-->
         <thead>
           <tr>
-            <!-- <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(1)">Nr.</th> -->
             <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">Phase</th>
             <th (click)="sortDeliveryTable(3)">Description</th>
             <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">End Date (planned)</th>
             <th class=" text-right" (click)="sortDeliveryTable(5)">Change (in weeks)</th>
             <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(6)">Done</th>
-            <!-- <th>Info</th> -->
           </tr>
         </thead>
         <!--Table body-->
         <tbody>
           <tr *ngFor="let delivery of vpvDelivery">
-            <!-- <td class="d-none d-lg-table-cell text-right">{{delivery.id}}</td> -->
             <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
             <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <td *ngIf="inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right font-weight-bold">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
@@ -82,10 +79,6 @@
 
             <td *ngIf="(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
             <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right bg-danger">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
-            <!-- <td>
-              <button class="Detail" title="Detail of Visbo Project"
-              (click)="gotoDetail(vp)">i</button>
-            </td> -->
           </tr>
         </tbody>
         <!--Table body-->
