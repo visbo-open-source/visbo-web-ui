@@ -42,7 +42,7 @@
           </thead>
           <!--Table body-->
           <tbody>
-            <tr>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Costs' && history" (click)="switchTo('Costs')" class="font-weight-bold">Cost comparison</td>
               <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="switchTo('Costs')">Cost comparison</td>
               <td title="Actual Cost Achievement" (click)="switchTo('Costs')">
@@ -67,7 +67,7 @@
                 (click)="switchTo('Costs')">i</button>
               </td>
             </tr>
-            <tr>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="switchTo('Deliveries')" class="font-weight-bold">Quality comparison</td>
               <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="switchTo('Deliveries')">Quality comparison</td>
               <td title="Actual Delivery Achievement">
@@ -99,7 +99,7 @@
                 (click)="switchTo('Deliveries')">i</button>
               </td>
             </tr>
-            <tr>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchTo('Deadlines')" class="font-weight-bold">Time comparison</td>
               <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="switchTo('Deadlines')">Time comparison</td>
               <td (click)="switchTo('Deadlines')" title="Actual Deadline Achievement">

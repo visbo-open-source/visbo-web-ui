@@ -250,7 +250,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     var isPast = (new Date(element.datePFV)).getTime() <= today.getTime()
 
     var status: number = 0;
-    if (isPast && element.done < 1) status = 3;
+    if (isPast && element.percentDone < 1) status = 3;
     else if (element.changeDays < 0) status = 0;
     else if (element.changeDays == 0) status = 1;
     else status = 2;
@@ -587,7 +587,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     } else if (this.sortColumnDelivery == 6) {
       // sort by Delivery Change in % Done
       this.vpvDelivery.sort(function(a, b) {
-        return a.done - b.done
+        return a.percentDone - b.percentDone
       })
     }
     if (!this.sortAscendingDelivery) {

@@ -13,7 +13,7 @@ export class VPVDelivery {
   datePFV: Date;
   dateVPV: Date;
   changeDays: number;
-  done: number;
+  percentDone: number;
 
   fullName: string;
   status: string;

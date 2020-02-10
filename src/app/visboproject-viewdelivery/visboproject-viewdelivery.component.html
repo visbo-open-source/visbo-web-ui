@@ -38,18 +38,18 @@
     <hr>
     <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i> -->
     <div class="row">
-      <div class="col-2"></div>
-      <div *ngIf="chart && graphPastDataPieChart.length > 1" class="col-4" >
+      <!-- <div class="col-2"></div> -->
+      <div *ngIf="chart && graphPastDataPieChart.length > 1" class="col align-center" >
         <div>
           <app-pie-chart [elementID]="divPastPieChart" [graphData]="graphPastDataPieChart" [graphDataBefore]="graphBeforePastDataPieChart" [graphLegend]="graphPastPieLegend" [graphOptions]="graphPastOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
         </div>
       </div>
-      <div *ngIf="chart && graphFutureDataPieChart.length > 1" class="col-4" >
+      <div *ngIf="chart && graphFutureDataPieChart.length > 1" class="col align-center" >
         <div>
           <app-pie-chart [elementID]="divFuturePieChart" [graphData]="graphFutureDataPieChart" [graphDataBefore]="graphBeforeFutureDataPieChart" [graphLegend]="graphFuturePieLegend" [graphOptions]="graphFutureOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
         </div>
       </div>
-      <div class="col-2"></div>
+      <!-- <div class="col-2"></div> -->
     </div>
 
 
@@ -58,7 +58,7 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(1)">Nr.</th>
+            <!-- <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(1)">Nr.</th> -->
             <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">Phase</th>
             <th (click)="sortDeliveryTable(3)">Description</th>
             <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">End Date (planned)</th>
@@ -70,7 +70,7 @@
         <!--Table body-->
         <tbody>
           <tr *ngFor="let delivery of vpvDelivery">
-            <td class="d-none d-lg-table-cell text-right">{{delivery.id}}</td>
+            <!-- <td class="d-none d-lg-table-cell text-right">{{delivery.id}}</td> -->
             <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
             <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <td *ngIf="inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right font-weight-bold">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
@@ -80,8 +80,8 @@
             <td *ngIf="delivery.changeDays > 0 && delivery.changeDays <= 31" class="text-right text-warning" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
             <td *ngIf="delivery.changeDays > 31" class="text-right text-danger" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
 
-            <td *ngIf="(inFuture(delivery.dateVPV) || delivery.done == 1)" class="d-none d-md-table-cell text-right">{{delivery.done * 100 | number : '1.0-0'}} %</td>
-            <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.done == 1)" class="d-none d-md-table-cell text-right bg-danger">{{delivery.done * 100 | number : '1.0-0'}} %</td>
+            <td *ngIf="(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+            <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right bg-danger">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
             <!-- <td>
               <button class="Detail" title="Detail of Visbo Project"
               (click)="gotoDetail(vp)">i</button>

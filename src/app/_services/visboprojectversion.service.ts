@@ -191,6 +191,7 @@ export class VisboProjectVersionService {
     const url = `${this.vpvUrl}/${id}/calc`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
+    params = params.append('type', 'Costs');
     // if (id) params = params.append('vpid', id);
     // if (deleted) params = params.append('deleted', '1');
     // if (variantName != undefined) params = params.append('variantName', variantName);
