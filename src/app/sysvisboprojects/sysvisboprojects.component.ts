@@ -68,17 +68,21 @@ export class SysVisboProjectsComponent implements OnInit {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
             this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`)
-            this.visboprojectService.getVisboProjects(id, true)
-              .subscribe(
-                visboprojects => {
-                  this.visboprojects = visboprojects;
-                  this.sortVPTable(1);
-                },
-                error => {
-                  this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
-                  this.alertService.error(error.error.message);
-                }
-              );
+            if (this.combinedPerm.vp & this.permVP.View) {
+              this.visboprojectService.getVisboProjects(id, true)
+                .subscribe(
+                  visboprojects => {
+                    this.visboprojects = visboprojects;
+                    this.sortVPTable(1);
+                  },
+                  error => {
+                    this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
+                    this.alertService.error(error.error.message);
+                  }
+                );
+            } else {
+              this.visboprojects = [];
+            }
           },
           error => {
             this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);

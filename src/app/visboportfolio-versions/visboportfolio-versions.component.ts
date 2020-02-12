@@ -46,6 +46,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpFilter: string = "";
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
+    estimateAtCompletion: number = 0;
+    budgetAtCompletion: number = 0;
     vpvRefDate: Date = new Date();
     refDateInterval: string = "month";
     vpfActiveIndex: number;
@@ -186,25 +188,25 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     var newRefDate = new Date(this.vpvRefDate.getTime());
     switch(this.refDateInterval) {
       case 'day':
-        newRefDate.setDate(newRefDate.getDate() + increment)
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
+        if (increment > 0 || newRefDate.getTime() == this.vpvRefDate.getTime()) newRefDate.setDate(newRefDate.getDate() + increment)
         break;
       case 'week':
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
         newRefDate.setDate(newRefDate.getDate() + increment * 7)
         break;
       case 'month':
-        newRefDate.setMonth(newRefDate.getMonth() + increment)
+        newRefDate.setHours(0, 0, 0, 0); //beginning of day
+        newRefDate.setDate(1);
+        if (increment > 0 || newRefDate.getTime() == this.vpvRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment)
         break;
       case 'quarter':
-        // newRefDate.setMinutes(newRefDate.getMinutes() + increment) // to force quarter skip
-        var quarter = Math.trunc((newRefDate.getMonth() + 1) / 3);
+        var quarter = Math.trunc(newRefDate.getMonth() / 3);
         if (increment > 0) quarter += increment;
         newRefDate.setMonth(quarter * 3)
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        var diff = newRefDate.getTime() - this.vpvRefDate.getTime()
-        if (diff == 0) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
-        }
+        if (newRefDate.getTime() == this.vpvRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
         break;
     }
     this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
@@ -218,6 +220,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   visboKeyMetricsCalc(): void {
     // Calculate the keyMetrics Values to show in Chart and List
     this.visbokeymetrics = [];
+    this.budgetAtCompletion = 0;
+    this.estimateAtCompletion = 0;
 
     if (!this.visboprojectversions) return;
     // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
@@ -237,6 +241,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
           elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
           elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
+
+          this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
+          this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
+
           // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
           elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0) / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1) || 0;
           // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;

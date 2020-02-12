@@ -7,16 +7,16 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { VisboProjectVersion, VPVCost } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVDelivery } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
-  selector: 'app-visboproject-viewcost',
-  templateUrl: './visboproject-viewcost.component.html'
+  selector: 'app-visboproject-viewdelivery',
+  templateUrl: './visboproject-viewdelivery.component.html'
 })
-export class VisboProjectViewCostComponent implements OnInit {
+export class VisboProjectViewDeliveryComponent implements OnInit {
 
   visboprojectversions: VisboProjectVersion[];
 
@@ -24,12 +24,11 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
-  vpvCost: VPVCost[];
+  vpvDelivery: VPVDelivery[];
+  filterStatus: string;
+  vpvDeliveryDate: any = [];
   vpvActualDataUntil: Date;
   deleted: boolean = false;
-
-  vpvTotalCostBaseLine: number;
-  vpvTotalCostCurrent: number;
 
   refDateInterval: string = "month";
   vpvRefDate: Date;
@@ -40,16 +39,29 @@ export class VisboProjectViewCostComponent implements OnInit {
   historyButton: string = "View Trend"
   parentThis: any;
 
-  colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
+  colors: string[] = ['darkgreen', 'green', 'orange', 'red'];
   series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' }
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] }
   };
 
-  graphDataComboChart: any[] = [];
-  graphOptionsComboChart: any = undefined;
+  graphPastDataPieChart: any[] = [];
+  graphBeforePastDataPieChart: any[] = [];
+  graphPastPieLegend: any;
+  graphPastOptionsPieChart: any = undefined;
+  divPastPieChart: string = "divPastPieChart";
+
+  graphFutureDataPieChart: any[] = [];
+  graphBeforeFutureDataPieChart: any[] = [];
+  graphFuturePieLegend: any;
+  graphFutureOptionsPieChart: any = undefined;
+  divFuturePieChart: string = "divFuturePieChart";
 
   sortAscending: boolean = false;
   sortColumn: number = 1;
+  sortAscendingDelivery: boolean = false;
+  sortColumnDelivery: number = 1;
+
+  today: Date = new Date();
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -112,7 +124,7 @@ export class VisboProjectViewCostComponent implements OnInit {
                       }
                     }
                   }
-                  this.visboCostCalc(initIndex);
+                  this.visboDeliveryCalc(initIndex);
                   if (this.hasVPPerm(this.permVP.ViewAudit)) {
                     this.chart = chartFlag;
                   } else {
@@ -140,7 +152,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     }
   }
 
-  visboCostCalc(index: number): void {
+  visboDeliveryCalc(index: number): void {
     var chartFlag = this.chart;
     this.chart = false;
     this.vpvActive = this.visboprojectversions[index]
@@ -148,35 +160,24 @@ export class VisboProjectViewCostComponent implements OnInit {
     if (this.scrollRefDate == undefined) this.scrollRefDate = new Date(this.vpvRefDate);
     if (!this.vpvActive) return;
 
-    // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
-    // if (this.vpvActive.cost) {
-    //   this.visboViewCostOverTime(this.vpvActive._id);
-    //   if (this.hasVPPerm(this.permVP.ViewAudit)) {
-    //     this.chart = chartFlag;
-    //   } else {
-    //     this.chart = false;
-    //   }
-    //   return;
-    // }
-
-    this.log(`Cost Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.visboprojectversionService.getCost(this.vpvActive._id)
+    this.log(`Delivery Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.visboprojectversionService.getDelivery(this.vpvActive._id)
       .subscribe(
         visboprojectversions => {
-          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].cost.length} cost entries`);
-          if (visboprojectversions.length != 1 || !visboprojectversions[0].cost) {
-            this.log(`get VPV Calc: Reset Cost to empty `);
-            // this.vpvCost[visboprojectversions[0]._id] = [];
-            this.vpvCost = [];
+          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deliveries.length} Delivery entries`);
+          if (visboprojectversions.length != 1 || !visboprojectversions[0].deliveries) {
+            this.log(`get VPV Calc: Reset Delivery to empty `);
+            this.initDeliveries(undefined);
           } else {
-            this.log(`Store Cost for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].cost.length} Actual ${visboprojectversions[0].actualDataUntil}`);
-            this.vpvCost = visboprojectversions[0].cost;
+            this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deliveries.length} Actual ${visboprojectversions[0].actualDataUntil}`);
+            this.initDeliveries(visboprojectversions[0].deliveries);
             this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
-            this.visboprojectversions[index].cost = this.vpvCost;
+            this.visboprojectversions[index].deliveries = this.vpvDelivery;
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
-          this.visboViewCostOverTime(visboprojectversions[0]._id);
+          this.visboViewPastDeliveryPie();
+          this.visboViewFutureDeliveryPie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -194,6 +195,44 @@ export class VisboProjectViewCostComponent implements OnInit {
       );
   }
 
+  initDeliveries(deliveries: VPVDelivery[]): void {
+    var filterDeliveries: VPVDelivery[] = [];
+    if (deliveries == undefined) {
+      this.vpvDelivery = deliveries;
+      return;
+    }
+    // generate long Names
+    for (var i = 0; i < deliveries.length; i++) {
+      deliveries[i].fullName = this.getFullName(deliveries[i]);
+      deliveries[i].status = this.statusList[this.getStatus(deliveries[i])];
+      if (!this.filterStatus  || this.filterStatus ==  deliveries[i].status) {
+        filterDeliveries.push(deliveries[i]);
+      }
+    }
+    this.vpvDelivery = filterDeliveries;
+    // this.vpvDeliveryDate = [];
+    // if (this.vpvDelivery.length > 0) {
+    //   var newDelivery = new VPVDelivery();
+    //   newDelivery.phasePFV = this.vpvDelivery[0].phasePFV;
+    //   newDelivery.fullName = this.vpvDelivery[0].fullName;
+    //   newDelivery.name = this.vpvDelivery[0].name;
+    //   newDelivery.datePFV = this.vpvDelivery[0].datePFV;
+    //   newDelivery.dateVPV = this.vpvDelivery[0].dateVPV;
+    //   this.vpvDeliveryDate.push(newDelivery);
+    // }
+    // for (var i = 1; i < this.vpvDelivery.length; i++) {
+    //   if (this.vpvDelivery[i-1].phasePFV != this.vpvDelivery[i].phasePFV) {
+    //     var newDelivery = new VPVDelivery();
+    //     newDelivery.phasePFV = this.vpvDelivery[i].phasePFV;
+    //     newDelivery.fullName = this.vpvDelivery[i].fullName;
+    //     newDelivery.name = this.vpvDelivery[i].name;
+    //     newDelivery.datePFV = this.vpvDelivery[i].datePFV;
+    //     newDelivery.dateVPV = this.vpvDelivery[i].dateVPV;
+    //     this.vpvDeliveryDate.push(newDelivery);
+    //   }
+    // }
+  }
+
   sameDay(dateA: Date, dateB: Date): boolean {
     var localA = new Date(dateA);
     var localB = new Date(dateB);
@@ -203,115 +242,124 @@ export class VisboProjectViewCostComponent implements OnInit {
     return localA.getTime() == localB.getTime();
   }
 
-  visboViewCostOverTime(id: string): void {
-    this.graphOptionsComboChart = {
-        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-        width: '100%',
-        title:'Monthly Cost comparison: plan-to-date vs. baseline',
-        animation: {startup: true, duration: 200},
-        legend: {position: 'top'},
-        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-        // curveType: 'function',
-        colors: this.colors,
-        seriesType: 'bars',
-        series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
-        isStacked: true,
-        vAxis: {
-          title: 'Monthly Cost in T\u20AC',
-          minorGridlines: {count: 0, color: 'none'}
-        },
-        hAxis: {
-          format: 'MMM YY',
-          gridlines: {
-            color: '#FFF',
-            count: -1
-          },
-          minorGridlines: {count: 0, color: 'none'}
-        }
-      };
-    var graphDataCost: any = [];
-    if (!this.vpvCost) return;
+  statusList: string[] = ["Ahead", "In Time", "Delay", "Not Completed", "Unknown"]
 
-    var cost = this.vpvCost;
-    this.vpvTotalCostBaseLine = 0;
-    this.vpvTotalCostCurrent = 0;
-    var actualDataUntil = this.vpvActualDataUntil;
+  getStatus(element: VPVDelivery): number {
 
-    this.log(`ViewCostOverTime Actual Until  ${actualDataUntil}`);
+    var today = new Date();
+    var isPast = (new Date(element.datePFV)).getTime() <= today.getTime()
 
-    if (cost.length == 0) {
-      return;
-    }
-
-    for (var i = 0; i < cost.length; i++) {
-      var currentDate = new Date(cost[i].currentDate);
-      // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
-      if (currentDate < actualDataUntil) {
-        graphDataCost.push([
-          new Date(cost[i].currentDate),
-          Math.trunc(cost[i].baseLineCost || 0),
-          Math.trunc(cost[i].currentCost || 0),
-          0]);
-      } else {
-        graphDataCost.push([
-          new Date(cost[i].currentDate),
-          Math.trunc(cost[i].baseLineCost || 0),
-          0,
-          Math.trunc(cost[i].currentCost || 0)]);
-      }
-      this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
-      this.vpvTotalCostCurrent += cost[i].currentCost || 0;
-
-    }
-    if (graphDataCost.length == 0) {
-      this.log(`ViewCostOverTime Result empty`);
-      graphDataCost.push([new Date(), 0, 0, 0])
-    }
-    graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime() });
-    // we need at least 2 items for Line Chart and show the current status for today
-    var len = graphDataCost.length;
-    this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len-1])}`);
-    if (len == 1) {
-      graphDataCost.push([
-        new Date(),
-        graphDataCost[len-1][1],
-        graphDataCost[len-1][2],
-        graphDataCost[len-1][3]
-      ])
-    }
-
-    graphDataCost.push(['Timestamp', 'PV, baseline', 'AC, plan-to-date', 'ETC, plan-to-date']);
-    graphDataCost.reverse();
-    // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
-    this.graphDataComboChart = graphDataCost;
+    var status: number = 0;
+    if (isPast && element.percentDone < 1) status = 3;
+    else if (element.changeDays < 0) status = 0;
+    else if (element.changeDays == 0) status = 1;
+    else status = 2;
+    return status
   }
 
-  calcRangeAxis(keyMetrics: [], type: string): number {
-    var rangeAxis: number = 0;
-    var minSize: number = Infinity, maxSize: number = 0;
-    var minDelayRange = 50;
+  visboViewPastDeliveryPie(): void {
+    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+    this.graphPastOptionsPieChart = {
+        title:'Past Delivery Status',
+        // sliceVisibilityThreshold: .025
+        colors: this.colors
+      };
 
-    rangeAxis = 0;
-    for (var i=0; i < keyMetrics.length; i++) {
-      switch (type) {
-        case 'Delay':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][5]), Math.abs(keyMetrics[i][6]), minDelayRange);
-          break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
-          break;
+    this.graphPastPieLegend = [["string", "Action Type"],
+                        ["number", "Count"]
+      ];
+
+    var pastDeliveryStatus: any = [];
+    var graphData = [];
+    var status;
+    var today = new Date();
+    for (var i = 0; i < this.statusList.length; i++) {
+      pastDeliveryStatus[i] = 0;
+    }
+    var nonEmpty: boolean = false;
+    for (var i = 0; i < this.vpvDelivery.length; i++) {
+      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() <= today.getTime()) {
+        // entry from the past
+        status = this.getStatus(this.vpvDelivery[i]);
+        pastDeliveryStatus[status] += 1
+        nonEmpty = true;
       }
     }
-    rangeAxis *= 1.1;
-    this.log(`RangeAxis for ${type}: ${rangeAxis}`);
-    return rangeAxis;
+    for (var i = 0; i < pastDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], pastDeliveryStatus[i]])
+    }
+
+    this.graphBeforePastDataPieChart = this.graphPastDataPieChart;
+    if (nonEmpty) {
+      this.graphPastDataPieChart = graphData;
+    } else {
+      this.graphPastDataPieChart = [];
+    }
+  }
+
+  visboViewFutureDeliveryPie(): void {
+    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+    this.graphFutureOptionsPieChart = {
+        title:'Future Delivery Status',
+        // sliceVisibilityThreshold: .025
+        colors: this.colors
+      };
+
+    this.graphFuturePieLegend = [["string", "Action Type"],
+                        ["number", "Count"]
+      ];
+
+    var futureDeliveryStatus: any = [];
+    var graphData = [];
+    var status;
+    var today = new Date();
+    for (var i = 0; i < this.statusList.length; i++) {
+      futureDeliveryStatus[i] = 0;
+    }
+    var nonEmpty: boolean = false;
+    for (var i = 0; i < this.vpvDelivery.length; i++) {
+      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() > today.getTime()) {
+        // entry from the future
+        status = this.getStatus(this.vpvDelivery[i]);
+        futureDeliveryStatus[status] += 1
+        nonEmpty = true;
+      }
+    }
+    for (var i = 0; i < futureDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], futureDeliveryStatus[i]])
+    }
+    this.graphBeforeFutureDataPieChart = this.graphFutureDataPieChart;
+    if (nonEmpty) {
+      this.graphFutureDataPieChart = graphData;
+    } else {
+      this.graphFutureDataPieChart = [];
+    }
+
+  }
+
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
+    if (this.filterStatus != label) {
+      this.filterStatus = label;
+    } else {
+      this.filterStatus = undefined;
+    }
+    this.initDeliveries(this.vpvActive.deliveries)
+  }
+
+
+  getFullName(delivery: VPVDelivery): string {
+    var result = ''
+    if (delivery.phasePFV) {
+      result = result.concat(delivery.phasePFV, ' / ')
+    }
+    result = result.concat(delivery.name)
+    return result;
   }
 
   getRefDateVersions(increment: number): void {
     this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    this.filterStatus = undefined;
     var newRefDate = new Date(this.scrollRefDate);
     switch(this.refDateInterval) {
       case 'day':
@@ -364,7 +412,7 @@ export class VisboProjectViewCostComponent implements OnInit {
       newVersionIndex = i;
     }
     if (newVersionIndex >= 0) {
-      this.visboCostCalc(newVersionIndex);
+      this.visboDeliveryCalc(newVersionIndex);
     }
   }
 
@@ -383,13 +431,6 @@ export class VisboProjectViewCostComponent implements OnInit {
     // this.setVpvActive(vpv);
   }
 
-  chartSelectRow(row: number, col: number, label: string) {
-    this.log(`Line Chart: User selected ${row} ${col} ${label} Len`);
-    // if (row < 0 || row >= this.visbokeymetrics.length) row = 0;
-    // this.setVpvActive(this.visbokeymetrics[row]);
-    // this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-  }
-
   setVpvActive(vpv: any) : void {
     this.log(`setVpvActive Not Implemented`);
   }
@@ -404,6 +445,10 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   gotoVC(visboproject: VisboProject):void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
+  }
+
+  inFuture(ref: string) : boolean {
+    return ((new Date(ref)).getTime() > this.today.getTime());
   }
 
   getShortText(text: string, len: number) : string {
@@ -488,9 +533,72 @@ export class VisboProjectViewCostComponent implements OnInit {
     }
   }
 
+  sortDeliveryTable(n: number = undefined) {
+    if (!this.vpvDelivery) return
+    if (n != undefined) {
+      if (n != this.sortColumnDelivery) {
+        this.sortColumnDelivery = n;
+        this.sortAscendingDelivery = undefined;
+      }
+      if (this.sortAscendingDelivery == undefined) {
+        // sort name column ascending, number values desc first
+        this.sortAscendingDelivery = ( n == 2 || n == 3 ) ? true : false;
+      }
+      else this.sortAscendingDelivery = !this.sortAscendingDelivery;
+    } else {
+      this.sortColumnDelivery = 1;
+      this.sortAscendingDelivery = false;
+    }
+    if (this.sortColumnDelivery == 1) {
+      // sort by Delivery Index
+      this.vpvDelivery.sort(function(a, b) {
+        return a.id - b.id
+      })
+    } else if (this.sortColumnDelivery == 2) {
+      // sort by Delivery  Phase
+      this.vpvDelivery.sort(function(a, b) {
+        var result = 0
+        if (a.fullName > b.fullName)
+          result = 1;
+        else if (a.fullName < b.fullName)
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumnDelivery == 3) {
+      // sort by Delivery Description
+      this.vpvDelivery.sort(function(a, b) {
+        var result = 0
+        if (a.description.toLowerCase() > b.description.toLowerCase())
+          result = 1;
+        else if (a.description.toLowerCase() < b.description.toLowerCase())
+          result = -1;
+        return result
+      })
+    } else if (this.sortColumnDelivery == 4) {
+      // sort by Delivery End Date planned
+      this.vpvDelivery.sort(function(a, b) {
+        return (new Date(a.dateVPV)).getTime() - (new Date(b.dateVPV)).getTime()
+      })
+    } else if (this.sortColumnDelivery == 5) {
+      // sort by Delivery Change in Date planned
+      this.vpvDelivery.sort(function(a, b) {
+        return a.changeDays - b.changeDays
+      })
+    } else if (this.sortColumnDelivery == 6) {
+      // sort by Delivery Change in % Done
+      this.vpvDelivery.sort(function(a, b) {
+        return a.percentDone - b.percentDone
+      })
+    }
+    if (!this.sortAscendingDelivery) {
+      this.vpvDelivery.reverse();
+    }
+  }
+
+
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewCost: ' + message);
+    this.messageService.add('VisboViewDelivery: ' + message);
   }
 
 }

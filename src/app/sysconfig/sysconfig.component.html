@@ -21,7 +21,7 @@
           <!-- Table body -->
           <tbody>
             <tr *ngFor="let setting of vcsetting; let settingIndex=index" (click)="editConfigName(setting.name)" data-toggle="modal" data-target="#ConfigValue">
-              <td>{{setting.name}}</td>
+              <td><a>{{setting.name}}</a></td>
               <td>{{getMainInfo(setting)}}</td>
               <td>{{setting.updatedAt | date :'dd.MM HH:mm:ss' }}</td>
             </tr>

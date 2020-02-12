@@ -36,12 +36,12 @@
           </thead>
           <!--Table body-->
           <tbody>
-            <tr *ngFor="let member of vcUsers; let memberIndex=index"> <!-- class="danger"> -->
+            <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
               <td>{{memberIndex+1}}</td>
-              <td>{{member.email}}</td>
-              <td>{{member.groupName}}</td>
+              <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#SystemUserDetail"><a>{{member.email}}</a></td>
+              <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
               <td *ngIf="hasSystemPerm(permSystem.ManagePerm)">
-                <button class="Detail" title="Remove User" (click)='helperRemoveUser(memberIndex)'
+                <button class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
                 data-toggle="modal" data-target="#VcUserRemove">&times;</button>
               </td>
             </tr>
@@ -61,7 +61,7 @@
         </div>
         <div *ngIf="hasSystemPerm(permSystem.ManagePerm)" class='col'>
           <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">Add Group</button>
+          <button type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#SystemGroupModalCreate">Add Group</button>
         </div>
       </div>
       <div class='panel-body'>
@@ -79,10 +79,10 @@
           </thead>
           <!--Table body-->
           <tbody>
-            <tr *ngFor="let member of vcGroups; let memberIndex=index">
+            <tr *ngFor="let member of vgGroups; let memberIndex=index">
               <td>{{memberIndex+1}}</td>
-              <td>{{member.name}}</td>
-              <td>{{member.users.length}}</td>
+              <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#SystemGroupModalCreate"><a>{{member.name}}</a></td>
+              <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
               <td *ngIf="member.global">Global</td>
               <td *ngIf="!member.global"></td>
               <td *ngIf="hasSystemPerm(permSystem.ManagePerm)">
@@ -91,7 +91,7 @@
               </td>
               <td>
                 <button class="Detail" title="Detail of Group"
-                 (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
+                 (click)='initGroup(member)' data-toggle="modal" data-target="#SystemGroupModalCreate">i</button>
               </td>
             </tr>
           </tbody>
@@ -122,7 +122,7 @@
             <label for="group" class="col-form-label">Group:</label>
             <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
               <option></option>
-              <option *ngFor="let groupItem of vcGroups">{{groupItem.name}}</option>
+              <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
             </select>
             <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
           </div>
@@ -144,7 +144,7 @@
 
 <!-- Modal Delete User -->
 <div class="modal fade" id="VcUserRemove" tabindex="-1" role="dialog" aria-labelledby="VcUserModalRemoveTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vcUsers.length">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vgUsers.length">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo System</h5>
@@ -163,24 +163,24 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">User:</label>
-            <label class="col-8 form-control-static">{{ vcUsers[userIndex].email }}</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].email }}</label>
           </div>
           <div class="form-group">
             <label class="col-form-label">Group:</label>
-            <label class="col-8 form-control-static">{{ vcUsers[userIndex].groupName }}</label>
+            <label class="col-8 form-control-static">{{ vgUsers[userIndex].groupName }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCUser(vcUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal Add/Change VC Group -->
-<div class="modal fade" id="VcGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
+<div class="modal fade" id="SystemGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document" >
     <div class="modal-content">
       <div class="modal-header">
@@ -283,9 +283,21 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <button *ngIf="!(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="submit" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
-            <button *ngIf="(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="submit" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+          <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <label class="form-control-static">Group Members</label>
+            <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
+              <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
+                <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
+              </div>
+            </ng-container>
+          </div>
+          <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <label class="form-control-static">No Group Members</label>
+          </div>
+
+          <div class="modal-footer align-items-end mt-3">
+            <button *ngIf="!(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
+            <button *ngIf="(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>
@@ -296,7 +308,7 @@
 
 <!-- Modal Delete Group -->
 <div class="modal fade" id="VcGroupRemove" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalRemoveTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vcGroups.length">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vgGroups.length">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="VcUserRemoveTitle">Remove Group from Visbo System</h5>
@@ -315,17 +327,140 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">Group:</label>
-            <label class="col-8 form-control-static">{{ vcGroups[groupIndex].name }}</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].name }}</label>
           </div>
           <div class="form-group">
             <label class="col-form-label">Members:</label>
-            <label class="col-8 form-control-static">{{ vcGroups[groupIndex].users.length }}</label>
+            <label class="col-8 form-control-static">{{ vgGroups[groupIndex].users.length }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vcGroups[groupIndex])" data-dismiss="modal">Remove</button>
+        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Show User Permission -->
+<div *ngIf="vgUsers && userIndex >= 0" class="modal fade" id="SystemUserDetail" tabindex="-1" role="dialog" aria-labelledby="SystemUserDetailTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="SystemUserDetailTitle">Permission for {{vgUsers[userIndex].email}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- System Permissions -->
+        <div>Define System Permission</div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.View)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.View)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">View Visbo Center</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.ViewAudit)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.ViewAudit)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">View Audit</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.ViewLog)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.ViewLog)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">View Log Files</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.Modify)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.Modify)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">Modify System</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.CreateVC)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.CreateVC)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">Create Visbo Center</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.DeleteVC)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.DeleteVC)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">Delete Visbo Center</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserSystemPerm(permSystem.ManagePerm)" type="checkbox" checked disabled class="custom-control-input">
+            <input *ngIf="!hasUserSystemPerm(permSystem.ManagePerm)" type="checkbox" disabled class="custom-control-input">
+            <label class="custom-control-label">Manage Permissions, Users and Groups</label>
+        </div>
+        <br>
+        <div class="mt-2">Visbo Center Permission for User</div>
+        <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserVCPerm(permVC.View)" type="checkbox" checked disabled class="custom-control-input" id="perm1" name="checkedView" >
+            <input *ngIf="!hasUserVCPerm(permVC.View)" type="checkbox" disabled class="custom-control-input" id="perm1" name="checkedView" >
+            <label class="custom-control-label" for="perm1">View Visbo Center</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVCPerm(permVC.ViewAudit)" type="checkbox" checked disabled class="custom-control-input" id="perm2" name="checkedView" >
+          <input *ngIf="!hasUserVCPerm(permVC.ViewAudit)" type="checkbox" disabled class="custom-control-input" id="perm2" name="checkedView" >
+          <label class="custom-control-label" for="perm2">View Audit</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVCPerm(permVC.Modify)" type="checkbox" checked disabled class="custom-control-input" id="perm3" name="checkedView" >
+          <input *ngIf="!hasUserVCPerm(permVC.Modify)" type="checkbox" disabled class="custom-control-input" id="perm3" name="checkedView" >
+          <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVCPerm(permVC.CreateVP)" type="checkbox" checked disabled class="custom-control-input" id="perm4" name="checkedView" >
+          <input *ngIf="!hasUserVCPerm(permVC.CreateVP)" type="checkbox" disabled class="custom-control-input" id="perm4" name="checkedView" >
+          <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVCPerm(permVC.ManagePerm)" type="checkbox" checked disabled class="custom-control-input" id="perm5" name="checkedView" >
+          <input *ngIf="!hasUserVCPerm(permVC.ManagePerm)" type="checkbox" disabled class="custom-control-input" id="perm5" name="checkedView" >
+          <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+        </div>
+        <br>
+        <!-- VP Permissions -->
+        <div>Visbo Project Permission for User</div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.View)" type="checkbox" checked disabled class="custom-control-input" id="permVP1" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.View)" type="checkbox" disabled class="custom-control-input" id="permVP1" name="checkedView" >
+          <label class="custom-control-label" for="permVP1">View Visbo Project</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.ViewAudit)" type="checkbox" checked disabled class="custom-control-input" id="permVP2" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.ViewAudit)" type="checkbox" disabled class="custom-control-input" id="permVP2" name="checkedView" >
+          <label class="custom-control-label" for="permVP2">View Project Audit</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.Modify)" type="checkbox" checked disabled class="custom-control-input" id="permVP3" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.Modify)" type="checkbox" disabled class="custom-control-input" id="permVP3" name="checkedView" >
+          <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.CreateVariant)" type="checkbox" checked disabled class="custom-control-input" id="permVP4" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.CreateVariant)" type="checkbox" disabled class="custom-control-input" id="permVP4" name="checkedView" >
+          <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.ManagePerm)" type="checkbox" checked disabled class="custom-control-input" id="permVP5" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.ManagePerm)" type="checkbox" disabled class="custom-control-input" id="permVP5" name="checkedView" >
+          <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input *ngIf="hasUserVPPerm(permVP.DeleteVP)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
+          <input *ngIf="!hasUserVPPerm(permVP.DeleteVP)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
+          <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
+        </div>
+        <label class="form-control-static mt-2">Group Memeber Ship</label>
+        <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
+          <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
+            <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.groupName }}</a>
+          </div>
+        </ng-container>
+
+        <div class="form-group mt-2">
+          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>

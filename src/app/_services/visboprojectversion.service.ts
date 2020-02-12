@@ -191,6 +191,7 @@ export class VisboProjectVersionService {
     const url = `${this.vpvUrl}/${id}/calc`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
+    params = params.append('type', 'Costs');
     // if (id) params = params.append('vpid', id);
     // if (deleted) params = params.append('deleted', '1');
     // if (variantName != undefined) params = params.append('variantName', variantName);
@@ -201,6 +202,22 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(visboprojectversions => this.log(`fetched CostCalc for ${id}`)),
+        catchError(this.handleError('getVisboProjectVersions', []))
+      );
+  }
+
+  /** GET CostCalculation from the server for the specified vpv id */
+  getDelivery(id: string): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/calc`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    params = params.append('type', 'Deliveries');
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(visboprojectversions => this.log(`fetched DeliveryCalc for ${id}`)),
         catchError(this.handleError('getVisboProjectVersions', []))
       );
   }

@@ -26,6 +26,39 @@
     </div>
   </form>
 
+  <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
+    <!--Table head-->
+    <thead>
+      <tr>
+        <th>Key Metric</th>
+        <th>Detail</th>
+      </tr>
+    </thead>
+    <!--Table body-->
+    <tbody>
+      <tr>
+        <td>Cost comparison</td>
+        <td>
+          <button type="button" class="btn" title="View Monthly Cost"
+          (click)="gotoViewCost()">View Monthly Cost</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Quality comparison</td>
+        <td>
+          <button type="button" class="btn" title="View Deliveries"
+          (click)="gotoViewDelivery()">View Deliveries</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Time comparison</td>
+        <td>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
   <div>
     <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">Restore</button>
     <button (click)="goBack()">go back</button>

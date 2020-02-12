@@ -89,6 +89,18 @@ export class VisboProjectVersionDetailComponent implements OnInit {
       );
   }
 
+  gotoViewCost(): void {
+    this.log(`goto VPV View Cost VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
+    var queryParams = { vpvid: this.visboprojectversion._id };
+    this.router.navigate(['vpViewCost/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
+  }
+
+  gotoViewDelivery(): void {
+    this.log(`goto VPV View Cost VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
+    var queryParams = { vpvid: this.visboprojectversion._id };
+    this.router.navigate(['vpViewDelivery/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
+  }
+
   gotoVCDetail(visboproject: VisboProject):void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }

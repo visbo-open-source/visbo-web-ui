@@ -136,7 +136,7 @@ export class SysVisboCentersComponent implements OnInit {
   gotoClickedRow(visbocenter: VisboCenter):void {
     this.log(`clicked row ${visbocenter.name}`);
     // check that the user has Permission to see VPs
-    if (this.hasVPPerm(this.permVC.View))
+    if (this.hasSystemPerm(this.permVC.View))
       this.router.navigate(['sysvp/'+visbocenter._id]);
   }
 

@@ -30,6 +30,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
   newUserInvite: any = {};
 
   combinedPerm: VGPermission = undefined;
+  combinedUserPerm: VGPermission = undefined;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -92,6 +93,12 @@ export class SysvisboprojectDetailComponent implements OnInit {
 
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm.vp & perm) > 0
+  }
+
+  hasUserVPPerm(perm: number): boolean {
+    if (this.combinedUserPerm == undefined) return false
+    this.log(`Has User VP Permission ${perm}? ${(this.combinedUserPerm.vp & perm) > 0} `)
+    return (this.combinedUserPerm.vp & perm) > 0
   }
 
   toggleUserGroup(): void {
@@ -217,6 +224,29 @@ export class SysvisboprojectDetailComponent implements OnInit {
       );
   }
 
+  calcCombinedPerm(memberIndex: number): void {
+    this.userIndex = memberIndex
+    this.combinedUserPerm = {system: 0, vc: 0, vp: 0}
+    this.vgUsers.forEach(this.addUserPerm, this)
+    this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`)
+  }
+
+  addUserPerm(listUser): void {
+    if (listUser.email !== this.vgUsers[this.userIndex].email) return;
+    this.log(`Add User Permission for ${listUser.groupName}`)
+
+    var indexGroup = this.vgGroups.findIndex(x => x.name == listUser.groupName);
+    if (indexGroup >= 0) {
+      if (this.vgGroups[indexGroup].permission) {
+        this.combinedUserPerm.vp = this.combinedUserPerm.vp | (this.vgGroups[indexGroup].permission.vp || 0)
+      } else {
+        this.log(`Permission for Group not set ${listUser.groupName}`)
+      }
+    } else {
+      this.log(`Group not found ${listUser.groupName}`)
+    }
+  }
+
   helperRemoveUser(memberIndex: number):void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.userIndex = memberIndex
@@ -224,6 +254,14 @@ export class SysvisboprojectDetailComponent implements OnInit {
 
   helperRemoveGroup(memberIndex: number):void {
     this.groupIndex = memberIndex
+  }
+
+  helperUsersPerGroup(groupName: string):number {
+    var group = this.vgGroups && this.vgGroups.find(x => x.name == groupName)
+    if (group) {
+      return group.users.length;
+    }
+    return 0;
   }
 
   removeVPUser(user: VGUserGroup, vpid: string): void {

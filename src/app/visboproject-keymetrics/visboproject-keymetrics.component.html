@@ -35,15 +35,16 @@
               <th>Key Metric</th>
               <th>Plan-to-date</th>
               <th>Total</th>
-              <th class="d-none d-md-table-cell">Ahead/Delay</th>
+              <!-- <th class="d-none d-md-table-cell">Ahead/Delay</th> -->
               <th>Detail</th>
               <th class="d-none d-md-table-cell">Trend</th>
             </tr>
           </thead>
           <!--Table body-->
           <tbody>
-            <tr>
-              <td (click)="switchTo('Costs')">Cost comparison</td>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="switchTo('Costs')" class="font-weight-bold">Cost comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="switchTo('Costs')">Cost comparison</td>
               <td title="Actual Cost Achievement" (click)="switchTo('Costs')">
                 <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -56,18 +57,19 @@
                 <span *ngIf="qualityTotalCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} % </span>
               </td>
-              <td class="d-none d-md-table-cell"></td>
+              <!-- <td class="d-none d-md-table-cell"></td> -->
               <td>
-                <button class="Detail" title="View Monthly Cost"
+                <button type="button" class="btn" title="View Monthly Cost"
                 (click)="gotoViewCost()">View</button>
               </td>
               <td>
-                <button class="Detail" title="Trend of Cost Metrics"
+                <button type="button" class="btn" title="Trend of Cost Metrics"
                 (click)="switchTo('Costs')">i</button>
               </td>
             </tr>
-            <tr>
-              <td (click)="switchTo('Deliveries')">Quality comparison</td>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="switchTo('Deliveries')" class="font-weight-bold">Quality comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="switchTo('Deliveries')">Quality comparison</td>
               <td title="Actual Delivery Achievement">
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -79,7 +81,7 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >(in Plan)</span>
               </td>
-              <td class="d-none d-md-table-cell">
+              <!-- <td class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDelivery == 1" title="Status Actual Deliveries" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDelivery == 2" title="Status Actual Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayActualDelivery == 3" title="Status Actual Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
@@ -87,16 +89,19 @@
                 <span *ngIf="delayTotalDelivery == 1" title="Status Total Deliveries" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayTotalDelivery == 2" title="Status Total Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
+              </td> -->
+              <td>
+                <button type="button" class="btn" title="View Deliveries"
+                (click)="gotoViewDelivery()">View</button>
               </td>
               <td>
-              </td>
-              <td>
-                <button class="Detail" title="Trend of Delivery Completion"
+                <button type="button" class="btn" title="Trend of Delivery Completion"
                 (click)="switchTo('Deliveries')">i</button>
               </td>
             </tr>
-            <tr>
-              <td (click)="switchTo('Deadlines')">Time comparison</td>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchTo('Deadlines')" class="font-weight-bold">Time comparison</td>
+              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="switchTo('Deadlines')">Time comparison</td>
               <td (click)="switchTo('Deadlines')" title="Actual Deadline Achievement">
                 <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -108,7 +113,7 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >(in Plan)</span>
               </td>
-              <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell">
+              <!-- <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDeadlines == 1" title="Status Actual Deadline" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDeadlines == 2" title="Status Actual Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayActualDeadlines == 3" title="Status Actual Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
@@ -116,11 +121,11 @@
                 <span *ngIf="delayTotalDeadlines == 1" title="Status Total Deadline" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayTotalDeadlines == 2" title="Status Total Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayTotalDeadlines == 3" title="Status Total Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
-              </td>
+              </td> -->
               <td>
               </td>
               <td>
-                <button class="Detail" title="Trend of Deadline Completion"
+                <button type="button" class="btn" title="Trend of Deadline Completion"
                 (click)="switchTo('Deadlines')">i</button>
               </td>
             </tr>
@@ -152,10 +157,10 @@
           <thead>
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(2)">Actual Saving Cost</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)">Total Saving Cost</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)">Actual Cost (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">Total Cost (Base Line)</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(2)" title="Actual Cost, plan-to-date">AC</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="Estimated Cost at Completion, plan-to-date">EAC</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="Planned cumulated Cost, baseline">PV, baseline</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="Budget at Completion, baseline">BAC</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
               <th class="text-right d-none d-lg-table-cell">Info</th>
             </tr>
@@ -166,8 +171,8 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.savingCostActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.savingCostTotal | number:'1.0-0'}} %</td>
+              <td class="text-right">{{100 + vp.savingCostActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{100 + vp.savingCostTotal | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€</td>
               <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
               <td class="text-right">
@@ -175,7 +180,7 @@
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -186,11 +191,11 @@
           <thead>
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(10)">Actual Completion</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(11)">Actual Deadlines (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)">Total Deadlines (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">Actual Delay</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">Total Delay</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(10)" title="Actual weighted Deadlines, plan-to-date">AD</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(11)" title="Planned Deadlines, baseline">PD</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="Deadlines at Completion, baseline">DAC</th>
+              <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">Actual Delay</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">Total Delay</th> -->
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
           <th class="text-right d-none d-lg-table-cell">Info</th>
             </tr>
@@ -204,14 +209,14 @@
               <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.timeDelayCurrentActual | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}}</td>
+              <!-- <td class="text-right">{{vp.keyMetrics.timeDelayCurrentActual | number:'1.0-0'}}</td>
+              <td class="text-right">{{vp.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}}</td> -->
               <td class="text-right">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -222,11 +227,11 @@
           <thead>
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(20)">Actual Completion</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(21)">Actual Deliveries (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)">Total Deliveries (Base Line)</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(23)">Actual Delay</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(24)">Total Delay</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(20)" title="Actual weighted Deliveries, plan-to-date">ADV</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(21)" title="Planned Deliveries, baseline">PDV</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="Deliveries at Completion, baseline">DVAC</th>
+              <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(23)">Actual Delay</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(24)">Total Delay</th> -->
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
           <th class="text-right d-none d-lg-table-cell">Info</th>
             </tr>
@@ -240,14 +245,14 @@
               <td class="text-right">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentActual | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentTotal | number:'1.0-0'}}</td>
+              <!-- <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentActual | number:'1.0-0'}}</td>
+              <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentTotal | number:'1.0-0'}}</td> -->
               <td class="text-right">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td><button class="Detail" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -303,6 +308,11 @@
             </thead>
             <!--Table body-->
             <tbody>
+              <tr *ngIf="vpvKeyMetricActive.startDate">
+                <td>Project Start Date</td>
+                <td>{{ vpvKeyMetricActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td class="d-none d-md-table-cell"></td>
+              </tr>
               <tr>
                 <td>Project End Date</td>
                 <td>
@@ -360,7 +370,7 @@
   </div>
 </div>
 
-<!-- Modal Show Shortcut explnation -->
+<!-- Modal Show Shortcut explanation -->
 <div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">

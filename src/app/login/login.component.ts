@@ -20,6 +20,7 @@ export class LoginComponent implements OnInit {
   restVersionString: string = undefined;
   loading = false;
   returnUrl: string;
+  returnParams: any = undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,8 +38,13 @@ export class LoginComponent implements OnInit {
 
     if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    console.log(`return url ${this.returnUrl}`)
+
+    var returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    var parts = returnUrl.split('?');
+    this.returnUrl = parts[0];
+    this.returnParams = this.queryStringToJSON(parts[1]);
+
+    console.log(`return url ${this.returnUrl} params ${this.returnParams}`)
     if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
@@ -72,11 +78,11 @@ export class LoginComponent implements OnInit {
             .subscribe(
               vc => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true});
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
               },
               error => {
                 this.log(`No SysVC found: `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true});
+                this.router.navigate(["/"], {replaceUrl: true});
               }
             )
         },
@@ -107,6 +113,18 @@ export class LoginComponent implements OnInit {
     // get return url from route parameters or default to '/'
     this.log(`reLogin after error 401 to URL ${this.route.snapshot.queryParams["returnUrl"]}`);
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
+
+  queryStringToJSON(querystring: string) {
+    var pairs = (querystring || '').split('&');
+    var result = {};
+
+    pairs.forEach(function(text) {
+      var pair = text.split('=');
+      // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
+      if (pair[0]) result[pair[0]] = pair[1] || '';
+    });
+    return JSON.parse(JSON.stringify(result));
   }
 
   /** Log a message with the MessageService */

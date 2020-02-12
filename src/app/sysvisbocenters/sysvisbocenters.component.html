@@ -30,7 +30,7 @@
 
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" >
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
-          <td>{{vc.name}}</td>
+          <td><a>{{vc.name}}</a></td>
           <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vc.vpCount}}</td>
