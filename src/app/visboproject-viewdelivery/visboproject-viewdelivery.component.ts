@@ -12,6 +12,8 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper'
+
 @Component({
   selector: 'app-visboproject-viewdelivery',
   templateUrl: './visboproject-viewdelivery.component.html'
@@ -230,8 +232,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   getStatus(element: VPVDelivery): number {
 
-    const today = new Date();
-    const isPast = (new Date(element.datePFV)).getTime() <= today.getTime();
+    const refDate = this.vpvActive.timestamp;
+    const isPast = element.datePFV <= refDate;
 
     let status = 0;
     if (isPast && element.percentDone < 1) {
@@ -261,13 +263,13 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     const pastDeliveryStatus: any = [];
     const graphData = [];
     let status;
-    const today = new Date();
+    const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
       pastDeliveryStatus[i] = 0;
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() <= today.getTime()) {
+      if (this.vpvDelivery[i].datePFV <= refDate) {
         // entry from the past
         status = this.getStatus(this.vpvDelivery[i]);
         pastDeliveryStatus[status] += 1;
@@ -301,13 +303,13 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     const futureDeliveryStatus: any = [];
     const graphData = [];
     let status;
-    const today = new Date();
+    const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
       futureDeliveryStatus[i] = 0;
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if ((new Date(this.vpvDelivery[i].datePFV)).getTime() > today.getTime()) {
+      if (this.vpvDelivery[i].datePFV > refDate) {
         // entry from the future
         status = this.getStatus(this.vpvDelivery[i]);
         futureDeliveryStatus[status] += 1;
@@ -339,8 +341,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   getFullName(delivery: VPVDelivery): string {
     let result = '';
-    if (delivery.phasePFV) {
-      result = result.concat(delivery.phasePFV, ' / ');
+    if (delivery.phaseVPV || delivery.phasePFV) {
+      result = result.concat(delivery.phaseVPV || delivery.phasePFV, ' / ');
     }
     result = result.concat(delivery.name);
     return result;
@@ -446,20 +448,11 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   }
 
   inFuture(ref: string): boolean {
-    return ((new Date(ref)).getTime() > this.today.getTime());
+    return (ref > this.vpvActive.timestamp.toString());
   }
 
   getShortText(text: string, len: number): string {
-    if (!text) {
-      return '';
-    }
-    if (text.length < len) {
-      return text;
-    }
-    if (len < 3) {
-      return '...';
-    }
-    return text.substring(0, len - 3).concat('...');
+    return visboGetShortText(text, len);
   }
 
   sortVPVTable(n?: number) {
@@ -482,59 +475,15 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
       this.sortAscending = false;
     }
     if (this.sortColumn === 1) {
-      // sort by VPV Timestamp
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.timestamp > b.timestamp) {
-          result = 1;
-        } else if (a.timestamp < b.timestamp) {
-          result = -1;
-        } return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortColumn === 2) {
-      // sort by VPV endDate
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.endDate > b.endDate) {
-          result = 1;
-        } else if (a.endDate < b.endDate) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.endDate, b.endDate); });
     } else if (this.sortColumn === 3) {
-      // sort by VPV ampelStatus
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.ampelStatus > b.ampelStatus) {
-          result = 1;
-        } else if (a.ampelStatus < b.ampelStatus) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
     } else if (this.sortColumn === 4) {
-      // sort by VPV Erloes
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.Erloes > b.Erloes) {
-          result = 1;
-        } else if (a.Erloes < b.Erloes) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return a.Erloes - b.Erloes; });
     } else if (this.sortColumn === 5) {
-      // sort by VC vpvCount
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.variantName.toLowerCase() > b.variantName.toLowerCase()) {
-          result = 1;
-        } else if (a.variantName.toLowerCase() < b.variantName.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase()); });
     }
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
@@ -566,42 +515,17 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
         return a.id - b.id;
       });
     } else if (this.sortColumnDelivery === 2) {
-      // sort by Delivery  Phase
-      this.vpvDelivery.sort(function(a, b) {
-        let result = 0;
-        if (a.fullName > b.fullName) {
-          result = 1;
-        } else if (a.fullName < b.fullName) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vpvDelivery.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
     } else if (this.sortColumnDelivery === 3) {
-      // sort by Delivery Description
       this.vpvDelivery.sort(function(a, b) {
-        let result = 0;
-        if (a.description.toLowerCase() > b.description.toLowerCase()) {
-          result = 1;
-        } else if (a.description.toLowerCase() < b.description.toLowerCase()) {
-          result = -1;
-        }
-        return result;
+        return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
       });
     } else if (this.sortColumnDelivery === 4) {
-      // sort by Delivery End Date planned
-      this.vpvDelivery.sort(function(a, b) {
-        return (new Date(a.dateVPV)).getTime() - (new Date(b.dateVPV)).getTime();
-      });
+      this.vpvDelivery.sort(function(a, b) { return visboCmpDate(a.dateVPV, b.dateVPV); });
     } else if (this.sortColumnDelivery === 5) {
-      // sort by Delivery Change in Date planned
-      this.vpvDelivery.sort(function(a, b) {
-        return a.changeDays - b.changeDays;
-      });
+      this.vpvDelivery.sort(function(a, b) { return a.changeDays - b.changeDays; });
     } else if (this.sortColumnDelivery === 6) {
-      // sort by Delivery Change in % Done
-      this.vpvDelivery.sort(function(a, b) {
-        return a.percentDone - b.percentDone;
-      });
+      this.vpvDelivery.sort(function(a, b) { return a.percentDone - b.percentDone; });
     }
     if (!this.sortAscendingDelivery) {
       this.vpvDelivery.reverse();

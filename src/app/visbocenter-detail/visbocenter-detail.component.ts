@@ -12,6 +12,8 @@ import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+
 @Component({
   selector: 'app-visbocenter-detail',
   templateUrl: './visbocenter-detail.component.html',
@@ -479,10 +481,7 @@ export class VisbocenterDetailComponent implements OnInit {
   }
 
   sortUserTable(n?: number) {
-
-    if (!this.vgUsers) {
-      return;
-    }
+    if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortUserColumn === undefined) {
       if (n !== this.sortUserColumn) {
@@ -497,26 +496,9 @@ export class VisbocenterDetailComponent implements OnInit {
       }
     }
     if (this.sortUserColumn === 1) {
-      // sort user email
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.email > b.email) {
-          result = 1;
-        } else if (a.email < b.email) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.email, b.email); });
     } else if (this.sortUserColumn === 2) {
-      // sort user group name
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.groupName.toLowerCase() > b.groupName.toLowerCase()) {
-          result = 1;
-        } else if (a.groupName.toLowerCase() < b.groupName.toLowerCase()) {
-          result = -1;
-        } return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.groupName.toLowerCase(), b.groupName.toLowerCase()); });
     }
     if (!this.sortUserAscending) {
       this.vgUsers.reverse();
@@ -541,27 +523,9 @@ export class VisbocenterDetailComponent implements OnInit {
       }
     }
     if (this.sortVPUserColumn === 1) {
-      // sort user email
-      this.vgVPUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.users.email > b.users.email) {
-          result = 1;
-        } else if (a.users.email < b.users.email) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.users.email, b.users.email); });
     } else if (this.sortVPUserColumn === 2) {
-      // sort project name
-      this.vgVPUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.vp.name.toLowerCase() > b.vp.name.toLowerCase()) {
-          result = 1;
-        } else if (a.vp.name.toLowerCase() < b.vp.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.vp.name.toLowerCase(), b.vp.name.toLowerCase()); });
     }
     this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`); // log to console instead
     if (!this.sortVPUserAscending) {
@@ -570,9 +534,7 @@ export class VisbocenterDetailComponent implements OnInit {
   }
 
   sortGroupTable(n?: number) {
-    if (!this.vgGroups) {
-      return;
-    }
+    if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortGroupColumn === undefined) {
       if (n !== this.sortGroupColumn) {
@@ -587,18 +549,8 @@ export class VisbocenterDetailComponent implements OnInit {
       }
     }
     if (this.sortGroupColumn === 1) {
-      // sort user email
-      this.vgGroups.sort(function(a, b) {
-        let result = 0;
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          result = 1;
-        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgGroups.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     } else if (this.sortGroupColumn === 2) {
-      // sort user group name
       this.vgGroups.sort(function(a, b) { return b.users.length - a.users.length; });
     }
     if (!this.sortGroupAscending) {

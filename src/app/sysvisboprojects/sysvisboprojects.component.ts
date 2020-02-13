@@ -14,7 +14,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { LoginComponent } from '../login/login.component';
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
 
 @Component({
   selector: 'app-sysvisboprojects',
@@ -117,10 +117,8 @@ export class SysVisboProjectsComponent implements OnInit {
   }
 
   sortVPTable(n) {
+    if (!this.visboprojects) { return; }
     if (n !== undefined) {
-      if (!this.visboprojects) {
-        return;
-      }
       if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
@@ -132,51 +130,14 @@ export class SysVisboProjectsComponent implements OnInit {
         this.sortAscending = !this.sortAscending;
       }
     }
-    // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn === 1) {
-      // sort by VP Name
-      this.visboprojects.sort(function(a, b) {
-        let result = 0;
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          result = 1;
-        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojects.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     } else if (this.sortColumn === 2) {
-      // sort by VP updatedAt
-      this.visboprojects.sort(function(a, b) {
-        let result = 0;
-        if (a.updatedAt > b.updatedAt) {
-          result = 1;
-        } else if (a.updatedAt < b.updatedAt) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojects.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
     } else if (this.sortColumn === 3) {
-      // sort by VC Name
-      this.visboprojects.sort(function(a, b) {
-        let result = 0;
-        if (a.vc.name.toLowerCase() > b.vc.name.toLowerCase()) {
-          result = 1;
-        } else if (a.vc.name.toLowerCase() < b.vc.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojects.sort(function(a, b) { return visboCmpString(a.vc.name.toLowerCase(), b.vc.name.toLowerCase()); });
     } else if (this.sortColumn === 4) {
-      // sort by VC vpvCount
-      this.visboprojects.sort(function(a, b) {
-        let result = 0;
-        if (a.vpvCount > b.vpvCount) {
-          result = 1;
-        } else if (a.vpvCount < b.vpvCount) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojects.sort(function(a, b) { return a.vpvCount - b.vpvCount; });
     }
     if (!this.sortAscending) {
       this.visboprojects.reverse();

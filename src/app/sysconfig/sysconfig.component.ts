@@ -5,13 +5,14 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { LoginComponent } from '../login/login.component';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
 import { VGPermission, VGPSystem } from '../_models/visbogroup';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
 
 @Component({
   selector: 'app-sysconfig',
@@ -129,9 +130,7 @@ export class SysconfigComponent implements OnInit {
   }
 
   sortTable(n) {
-    if (!this.vcsetting) {
-      return;
-    }
+    if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {
       if (n !== this.sortColumn) {
@@ -146,25 +145,9 @@ export class SysconfigComponent implements OnInit {
       }
     }
     if (this.sortColumn === 1) {
-      this.vcsetting.sort(function(a, b) {
-        let result = 0;
-        if (a.name > b.name) {
-          result = 1;
-        } else if (a.name < b.name) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vcsetting.sort(function(a, b) { return visboCmpString(a.name, b.name); });
     } else if (this.sortColumn === 3) {
-      this.vcsetting.sort(function(a, b) {
-        let result = 0;
-        if (a.updatedAt > b.updatedAt) {
-          result = 1;
-        } else if (a.updatedAt < b.updatedAt) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vcsetting.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
     }
 
     if (!this.sortAscending) {

@@ -10,6 +10,7 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -508,40 +509,17 @@ export class VisboprojectDetailComponent implements OnInit {
       if (this.sortUserAscending === undefined) {
         // sort name column ascending, number values desc first
         this.sortUserAscending = (n === 1 || n === 2) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
       } else {
         this.sortUserAscending = !this.sortUserAscending;
       }
     }
-    // this.log(`Sort Users Column ${this.sortUserColumn}`); // log to console instead
     if (this.sortUserColumn === 1) {
-      // sort user email
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.email > b.email) {
-          result = 1;
-        } else if (a.email < b.email) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.email, b.email); });
     } else if (this.sortUserColumn === 2) {
-      // sort user group name
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.groupName.toLowerCase() > b.groupName.toLowerCase()) {
-          result = 1;
-        } else if (a.groupName.toLowerCase() < b.groupName.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.groupName.toLowerCase(), b.groupName.toLowerCase()); });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortUserColumn, this.sortUserAscending)
     if (!this.sortUserAscending) {
       this.vgUsers.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortUserColumn, this.sortUserAscending)
     }
   }
 
@@ -559,33 +537,17 @@ export class VisboprojectDetailComponent implements OnInit {
       if (this.sortGroupAscending === undefined) {
         // sort name column ascending, number values desc first
         this.sortGroupAscending = (n === 1) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortGroupColumn, this.sortGroupAscending)
       } else {
         this.sortGroupAscending = !this.sortGroupAscending;
       }
     }
-    // this.log(`Sort Groups Column ${this.sortGroupColumn}`); // log to console instead
     if (this.sortGroupColumn === 1) {
-      // sort user email
-      this.vgGroups.sort(function(a, b) {
-        let result = 0;
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          result = 1;
-        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgGroups.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     } else if (this.sortGroupColumn === 2) {
-      // sort user count per group
-      this.vgGroups.sort(function(a, b) {
-        return b.users.length - a.users.length;
-      });
+      this.vgGroups.sort(function(a, b) { return b.users.length - a.users.length; });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortGroupColumn, this.sortGroupAscending)
     if (!this.sortGroupAscending) {
       this.vgGroups.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortGroupColumn, this.sortGroupAscending)
     }
   }
 

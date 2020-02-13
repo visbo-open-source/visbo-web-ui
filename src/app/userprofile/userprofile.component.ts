@@ -9,8 +9,6 @@ import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { environment } from '../../environments/environment';
-
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html'

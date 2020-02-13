@@ -15,6 +15,8 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+
 @Component({
   selector: 'app-visboportfolio-versions',
   templateUrl: './visboportfolio-versions.component.html'
@@ -641,7 +643,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     if (!this.visbokeymetrics) {
       return;
     }
-
     if (n !== undefined) {
       if (n !== this.sortColumn) {
         this.sortColumn = n;
@@ -654,80 +655,33 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         this.sortAscending = !this.sortAscending;
       }
     }
-    // this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
-
     if (this.sortColumn === 1) {
-      // sort by VPV name
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.name > b.name) {
-          result = 1;
-        } else if (a.name < b.name) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
     } else if (this.sortColumn === 2) {
-      // sort by keyMetrics Diff Cost
       this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.savingCostTotal > b.savingCostTotal) {
-          result = 1;
-        } else if (a.savingCostTotal < b.savingCostTotal) {
-          result = -1;
-        }
-        return result;
+        return a.savingCostTotal - b.savingCostTotal;
       });
     } else if (this.sortColumn === 3) {
-      // sort by keyMetrics TotalCost
       this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.costBaseLastTotal > b.keyMetrics.costBaseLastTotal) {
-          result = 1;
-        } else if (a.keyMetrics.costBaseLastTotal < b.keyMetrics.costBaseLastTotal) {
-          result = -1;
-        }
-        return result;
+        return a.keyMetrics.costBaseLastTotal - b.keyMetrics.costBaseLastTotal;
       });
     } else if (this.sortColumn === 4) {
-      // sort by keyMetrics saving EndDate
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.savingEndDate > b.savingEndDate) {
-          result = 1;
-        } else if (a.savingEndDate < b.savingEndDate) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
     } else if (this.sortColumn === 5) {
-      // sort by keyMetrics endDate
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.endDateBaseLast > b.keyMetrics.endDateBaseLast) {
-          result = 1;
-        } else if (a.keyMetrics.endDateBaseLast < b.keyMetrics.endDateBaseLast) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics.endDateBaseLast, b.keyMetrics.endDateBaseLast); });
     } else if (this.sortColumn === 6) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         return a.timeCompletionActual - b.timeCompletionActual;
       });
     } else if (this.sortColumn === 7) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         return a.keyMetrics.timeCompletionBaseLastActual - b.keyMetrics.timeCompletionBaseLastActual;
       });
     } else if (this.sortColumn === 8) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         return a.deliveryCompletionActual - b.deliveryCompletionActual;
       });
     } else if (this.sortColumn === 9) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         return a.keyMetrics.deliverableCompletionBaseLastActual - b.keyMetrics.deliverableCompletionBaseLastActual;
       });

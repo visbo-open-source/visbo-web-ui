@@ -7,9 +7,10 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { LoginComponent } from '../login/login.component';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
 
 @Component({
   selector: 'app-sysvisbocenters',
@@ -166,27 +167,10 @@ export class SysVisboCentersComponent implements OnInit {
       }
     }
     if (this.sortColumn === 1) {
-      this.visbocenters.sort(function(a, b) {
-        let result = 0;
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          result = 1;
-        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visbocenters.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     } else if (this.sortColumn === 2) {
-      this.visbocenters.sort(function(a, b) {
-        let result = 0;
-        if (a.updatedAt > b.updatedAt) {
-          result = 1;
-        } else if (a.updatedAt < b.updatedAt) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visbocenters.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
     } else if (this.sortColumn === 3) {
-      // sort VP Count
       this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount; });
     }
     if (!this.sortAscending) {

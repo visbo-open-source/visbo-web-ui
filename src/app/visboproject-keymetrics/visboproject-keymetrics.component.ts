@@ -12,6 +12,8 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper'
+
 @Component({
   selector: 'app-visboproject-keymetrics',
   templateUrl: './visboproject-keymetrics.component.html'
@@ -790,16 +792,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   getShortText(text: string, len: number): string {
-    if (!text) {
-      return '';
-    }
-    if (text.length < len) {
-      return text;
-    }
-    if (len < 3) {
-      return '...';
-    }
-    return text.substring(0, len - 3).concat('...');
+    return visboGetShortText(text, len);
   }
 
   sortVPVTable(n) {
@@ -822,59 +815,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.sortAscending = false;
     }
     if (this.sortColumn === 1) {
-      // sort by VPV Timestamp
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.timestamp > b.timestamp) {
-          result = 1;
-        } else if (a.timestamp < b.timestamp) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortColumn === 2) {
-      // sort by VPV endDate
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.endDate > b.endDate) {
-          result = 1;
-        } else if (a.endDate < b.endDate) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.endDate, b.endDate); });
     } else if (this.sortColumn === 3) {
-      // sort by VPV ampelStatus
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.ampelStatus > b.ampelStatus) {
-          result = 1;
-        } else if (a.ampelStatus < b.ampelStatus) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
     } else if (this.sortColumn === 4) {
-      // sort by VPV Erloes
-      this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.Erloes > b.Erloes) {
-          result = 1;
-        } else if (a.Erloes < b.Erloes) {
-          result = -1;
-        }
-        return result;
-      });
+      this.visboprojectversions.sort(function(a, b) { return a.Erloes - b.Erloes; });
     } else if (this.sortColumn === 5) {
-      // sort by VC vpvCount
       this.visboprojectversions.sort(function(a, b) {
-        let result = 0;
-        if (a.variantName.toLowerCase() > b.variantName.toLowerCase()) {
-          result = 1;
-        } else if (a.variantName.toLowerCase() < b.variantName.toLowerCase()) {
-          result = -1;
-        }
-        return result;
+        return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
       });
     }
     if (!this.sortAscending) {

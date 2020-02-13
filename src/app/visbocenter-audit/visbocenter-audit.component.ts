@@ -9,7 +9,8 @@ import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/vis
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
-import { LoginComponent } from '../login/login.component';
+
+import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper'
 
 function encodeCSV(source: string): string {
   let result: string;
@@ -260,10 +261,7 @@ export class VisbocenterAuditComponent implements OnInit {
   }
 
   helperShortenText(text: string, len: number): string {
-    if (!text || !len || len < 5 || text.length <= len) {
-      return (text);
-    }
-    return text.substring(0, 20).concat('...', text.substring(text.length - 7, text.length));
+    return visboGetShortText(text, len);
   }
 
   goBack(): void {
@@ -303,64 +301,19 @@ export class VisbocenterAuditComponent implements OnInit {
       this.sortAscending = (n === 2 || n === 3 || n === 4) ? true : false;
     }
     if (this.sortColumn === 1) {
-      this.audit.sort(function(a, b) {
-        let result = 0;
-        if (a.createdAt > b.createdAt) {
-          result = 1;
-        } else if (a.createdAt < b.createdAt) {
-          result = -1;
-        }
-        return result;
-      });
+      this.audit.sort(function(a, b) { return visboCmpDate(a.createdAt, b.createdAt); });
     } else if (this.sortColumn === 2) {
-      this.audit.sort(function(a, b) {
-        let result = 0;
-        if (a.user.email.toLowerCase() > b.user.email.toLowerCase()) {
-          result = 1;
-        } else if (a.user.email.toLowerCase() < b.user.email.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.audit.sort(function(a, b) { return visboCmpString(a.user.email.toLowerCase(), b.user.email.toLowerCase()); });
     } else if (this.sortColumn === 3) {
-      this.audit.sort(function(a, b) {
-        let result = 0;
-        if (a.action > b.action) {
-          result = 1;
-        } else if (a.action < b.action) {
-          result = -1;
-        }
-        return result;
-      });
+      this.audit.sort(function(a, b) { return visboCmpString(a.action, b.action); });
     } else if (this.sortColumn === 4) {
-      this.audit.sort(function(a, b) {
-        let result = 0;
-        if (a.url > b.url) {
-          result = 1;
-        } else if (a.url < b.url) {
-          result = -1;
-        }
-        return result;
-      });
+      this.audit.sort(function(a, b) { return visboCmpString(a.url, b.url); });
     } else if (this.sortColumn === 5) {
-      // sort Result
-      this.audit.sort(function(a, b) {
-        let result = 0;
-        if (a.result.status > b.result.status) {
-          result = 1;
-        } else if (a.result.status < b.result.status) {
-          result = -1;
-        }
-        return result;
-      });
+      this.audit.sort(function(a, b) { return visboCmpString(a.result.status, b.result.status); });
     } else if (this.sortColumn === 6) {
-      this.audit.sort(function(a, b) {
-        return a.result.time - b.result.time;
-      });
+      this.audit.sort(function(a, b) { return a.result.time - b.result.time; });
     } else if (this.sortColumn === 7) {
-      this.audit.sort(function(a, b) {
-        return (a.result.size || 0) - (b.result.size || 0);
-      });
+      this.audit.sort(function(a, b) { return (a.result.size || 0) - (b.result.size || 0); });
     }
     if (!this.sortAscending) {
       this.audit.reverse();

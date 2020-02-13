@@ -29,8 +29,8 @@ export class VisboUserStatus {
 
 export class VisboUser {
   _id: string;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: Date;
+  createdAt: Date;
   email: string;
   password: string;
   name: string;

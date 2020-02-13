@@ -13,6 +13,8 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+
 @Component({
   selector: 'app-sysvisbosystem',
   templateUrl: './sysvisbosystem.component.html',
@@ -463,10 +465,7 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   sortUserTable(n?: number) {
-
-    if (!this.vgUsers) {
-      return;
-    }
+    if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortUserColumn === undefined ) {
       if (n !== this.sortUserColumn) {
@@ -481,27 +480,9 @@ export class SysvisbosystemComponent implements OnInit {
       }
     }
     if (this.sortUserColumn === 1) {
-      // sort user email
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.email > b.email) {
-          result = 1;
-        } else if (a.email < b.email) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.email, b.email); });
     } else if (this.sortUserColumn === 2) {
-      // sort user group name
-      this.vgUsers.sort(function(a, b) {
-        let result = 0;
-        if (a.groupName.toLowerCase() > b.groupName.toLowerCase()) {
-          result = 1;
-        } else if (a.groupName.toLowerCase() < b.groupName.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgUsers.sort(function(a, b) { return visboCmpString(a.groupName.toLowerCase(), b.groupName.toLowerCase()); });
     }
     if (!this.sortUserAscending) {
       this.vgUsers.reverse();
@@ -509,9 +490,7 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   sortGroupTable(n?: number) {
-    if (!this.vgGroups) {
-      return;
-    }
+    if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortGroupColumn === undefined) {
       if (n !== this.sortGroupColumn) {
@@ -525,20 +504,9 @@ export class SysvisbosystemComponent implements OnInit {
         this.sortGroupAscending = !this.sortGroupAscending;
       }
     }
-    // this.log(`Sort Groups Column ${this.sortGroupColumn}`); // log to console instead
     if (this.sortGroupColumn === 1) {
-      // sort user email
-      this.vgGroups.sort(function(a, b) {
-        let result = 0;
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          result = 1;
-        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          result = -1;
-        }
-        return result;
-      });
+      this.vgGroups.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     } else if (this.sortGroupColumn === 2) {
-      // sort user group name
       this.vgGroups.sort(function(a, b) { return b.users.length - a.users.length; });
     }
     if (!this.sortGroupAscending) {

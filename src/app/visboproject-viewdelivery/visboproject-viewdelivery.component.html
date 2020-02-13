@@ -70,8 +70,7 @@
           <tr *ngFor="let delivery of vpvDelivery">
             <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
             <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-            <td *ngIf="inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right font-weight-bold">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
-            <td *ngIf="!inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
+            <td class="text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
 
             <td *ngIf="delivery.changeDays <= 0" class="text-right text-success" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
             <td *ngIf="delivery.changeDays > 0 && delivery.changeDays <= 31" class="text-right text-warning" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>

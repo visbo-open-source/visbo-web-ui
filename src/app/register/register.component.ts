@@ -6,8 +6,6 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
-import { environment } from '../../environments/environment';
-
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',

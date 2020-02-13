@@ -5,13 +5,13 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { SysLogService } from '../_services/syslog.service';
-import { AuthenticationService } from '../_services/authentication.service';
-import { LoginComponent } from '../login/login.component';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
 
 @Component({
   selector: 'app-syslog',
@@ -148,10 +148,7 @@ export class SysLogComponent implements OnInit {
   }
 
   sortTable(n) {
-    if (!this.files) {
-      return;
-    }
-    this.log(`Sort Table Column ${n}`);
+    if (!this.files) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {
       if (n !== this.sortColumn) {
@@ -166,25 +163,9 @@ export class SysLogComponent implements OnInit {
       }
     }
     if (this.sortColumn === 1) {
-      this.files.sort(function(a, b) {
-        let result = 0;
-        if (a.name > b.name) {
-          result = 1;
-        } else if (a.name < b.name) {
-          result = -1;
-        }
-        return result;
-      });
+      this.files.sort(function(a, b) { return visboCmpString(a.name, b.name); });
     } else if (this.sortColumn === 2) {
-      this.files.sort(function(a, b) {
-        let result = 0;
-        if (a.updatedAt > b.updatedAt) {
-          result = 1;
-        } else if (a.updatedAt < b.updatedAt) {
-          result = -1;
-        }
-        return result;
-      });
+      this.files.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
     } else if (this.sortColumn === 3) {
       this.files.sort(function(a, b) { return a.size - b.size; });
     }
