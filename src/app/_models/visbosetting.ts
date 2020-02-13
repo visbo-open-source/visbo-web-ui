@@ -9,7 +9,7 @@ export class VisboSetting {
   userId: string;
   value: any;
   timestamp: Date;
-};
+}
 
 export class VisboSettingResponse {
   state: string;

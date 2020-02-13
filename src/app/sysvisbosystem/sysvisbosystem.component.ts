@@ -1,18 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
-import { FormsModule }   from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP  } from '../_models/visbogroup';
-import { VisboCenterService }  from '../_services/visbocenter.service';
+import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
-import { VisboProjectService }  from '../_services/visboproject.service';
+import { VisboProjectService } from '../_services/visboproject.service';
 
 @Component({
   selector: 'app-sysvisbosystem',
@@ -37,10 +36,10 @@ export class SysvisbosystemComponent implements OnInit {
   permVC: any = VGPVC;
   permVP: any = VGPVP;
 
-  sortUserColumn: number = 1;
-  sortUserAscending: boolean = true;
-  sortGroupColumn: number = 1;
-  sortGroupAscending: boolean = true;
+  sortUserColumn = 1;
+  sortUserAscending = true;
+  sortGroupColumn = 1;
+  sortGroupAscending = true;
 
   constructor(
     private messageService: MessageService,
@@ -54,9 +53,9 @@ export class SysvisbosystemComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.log(`Init SysAdmin`)
+    // this.log(`Init SysAdmin`);
     this.getSysVisboCenter();
-    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }
 
   getSysVisboCenter(): void {
@@ -65,11 +64,11 @@ export class SysvisbosystemComponent implements OnInit {
         vc => {
           this.visbocenter = vc[0];
           this.getVisboCenterUsers();
-          this.log(`System VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `)
+          this.log(`System VisboCenter initialised ${this.visbocenter._id} Perm Sys ${JSON.stringify(this.combinedPerm)} `);
         },
         error => {
           this.log(`get VC failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Center ${this.visbocenter.name}`);
           } else {
             this.alertService.error(error.error.message);
@@ -79,36 +78,41 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.combinedPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0;
   }
 
   hasVCPerm(perm: number): boolean {
-    return (this.combinedPerm.vc & perm) > 0
+    return (this.combinedPerm.vc & perm) > 0;
   }
 
   hasVPPerm(perm: number): boolean {
-    return (this.combinedPerm.vp & perm) > 0
+    return (this.combinedPerm.vp & perm) > 0;
   }
 
   hasUserSystemPerm(perm: number): boolean {
-    if (this.combinedUserPerm == undefined) return false
-    return (this.combinedUserPerm.system & perm) > 0
+    if (this.combinedUserPerm === undefined) {
+      return false;
+    }
+    return (this.combinedUserPerm.system & perm) > 0;
   }
 
   hasUserVCPerm(perm: number): boolean {
-    if (this.combinedUserPerm == undefined) return false
-    return (this.combinedUserPerm.vc & perm) > 0
+    if (this.combinedUserPerm === undefined) {
+      return false;
+    }
+    return (this.combinedUserPerm.vc & perm) > 0;
   }
 
   hasUserVPPerm(perm: number): boolean {
-    if (this.combinedUserPerm == undefined) return false
-    return (this.combinedUserPerm.vp & perm) > 0
+    if (this.combinedUserPerm === undefined) {
+      return false;
+    }
+    return (this.combinedUserPerm.vp & perm) > 0;
   }
 
 
   getVisboCenterUsers(): void {
-    const id = this.visbocenter._id
-    var currentUser = this.authenticationService.getActiveUser();
+    const id = this.visbocenter._id;
 
     this.log('VisboCenter UserList of: ' + id);
     this.visbocenterService.getVCUsers(id, true)
@@ -116,13 +120,13 @@ export class SysvisbosystemComponent implements OnInit {
         mix => {
           this.vgUsers = mix.users;
           this.vgGroups = mix.groups;
-          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`)
+          this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}`);
           this.sortUserTable();
           this.sortGroupTable();
         },
         error => {
           this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied`);
           } else {
             this.alertService.error(error.error.message);
@@ -131,7 +135,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  gotoVPList(visbocenter: VisboCenter):void {
+  gotoVPList(visbocenter: VisboCenter): void {
     this.router.navigate(['sysvp/'.concat(visbocenter._id)]);
   }
 
@@ -149,9 +153,9 @@ export class SysvisbosystemComponent implements OnInit {
         },
         error => {
           this.log(`save VC failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Center ${this.visbocenter.name}`);
-          } else if (error.status == 409) {
+          } else if (error.status === 409) {
             this.alertService.error(`Visbo Center ${this.visbocenter.name} exists already`);
           } else {
             this.alertService.error(error.error.message);
@@ -165,28 +169,33 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   addNewVCUser(): void {
-    var email = this.newUserInvite.email.trim();
-    var groupName = this.newUserInvite.groupName.trim();
-    var groupId = this.vgGroups.filter(group => group.name == groupName)[0]._id;
-    var inviteMessage = '';
-    if (this.newUserInvite.inviteMessage) inviteMessage = this.newUserInvite.inviteMessage.trim();
-    var vcid = this.visbocenter._id;
+    const email = this.newUserInvite.email.trim();
+    const groupName = this.newUserInvite.groupName.trim();
+    const groupId = this.vgGroups.filter(group => group.name === groupName)[0]._id;
+    const vcid = this.visbocenter._id;
+    let inviteMessage = '';
+    if (this.newUserInvite.inviteMessage) {
+      inviteMessage = this.newUserInvite.inviteMessage.trim();
+    }
     this.log(`Add VisboCenter User: ${email} Group: ${groupName}/${groupId} VC: ${vcid}`);
-    if (!email || !groupId) { return; }
+    if (!email || !groupId) {
+      return;
+    }
     this.visbocenterService.addVCUser(email, groupId, inviteMessage, vcid, true )
       .subscribe(
         group => {
           // Add User to User & Group list
-          var newUserGroup = new VGUserGroup();
-          newUserGroup.userId = group.users.filter(user => user.email == email)[0].userId;
+          let newUserGroup: VGUserGroup;
+          newUserGroup = new VGUserGroup();
+          newUserGroup.userId = group.users.filter(user => user.email === email)[0].userId;
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
           newUserGroup.groupName = group.name;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
           this.sortUserTable();
-          for (var i=0; i< this.vgGroups.length; i++) {
-            if (this.vgGroups[i]._id == group._id) {
+          for (let i = 0; i < this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id === group._id) {
               this.vgGroups[i] = group;
               break;
             }
@@ -195,7 +204,7 @@ export class SysvisbosystemComponent implements OnInit {
         },
         error => {
           this.log(`Add VisboCenter User error: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Add User to Visbo Center`);
           } else {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
@@ -205,41 +214,43 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  helperUserIndex(memberIndex: number):void {
-    this.userIndex = memberIndex
+  helperUserIndex(memberIndex: number): void {
+    this.userIndex = memberIndex;
   }
 
   calcCombinedPerm(memberIndex: number): void {
-    this.userIndex = memberIndex
-    this.combinedUserPerm = {system: 0, vc: 0, vp: 0}
-    this.vgUsers.forEach(this.addUserPerm, this)
-    this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`)
+    this.userIndex = memberIndex;
+    this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
+    this.vgUsers.forEach(this.addUserPerm, this);
+    this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
   addUserPerm(listUser): void {
-    if (listUser.email !== this.vgUsers[this.userIndex].email) return;
-    this.log(`Add User Permission for ${listUser.groupName}`)
+    if (listUser.email !== this.vgUsers[this.userIndex].email) {
+      return;
+    }
+    this.log(`Add User Permission for ${listUser.groupName}`);
 
-    var indexGroup = this.vgGroups.findIndex(x => x.name == listUser.groupName);
+    const indexGroup = this.vgGroups.findIndex(x => x.name === listUser.groupName);
     if (indexGroup >= 0) {
       if (this.vgGroups[indexGroup].permission) {
-        this.combinedUserPerm.system = this.combinedUserPerm.system | (this.vgGroups[indexGroup].permission.system || 0)
-        this.combinedUserPerm.vc = this.combinedUserPerm.vc | (this.vgGroups[indexGroup].permission.vc || 0)
-        this.combinedUserPerm.vp = this.combinedUserPerm.vp | (this.vgGroups[indexGroup].permission.vp || 0)
+        this.combinedUserPerm.system = this.combinedUserPerm.system | (this.vgGroups[indexGroup].permission.system || 0);
+        this.combinedUserPerm.vc = this.combinedUserPerm.vc | (this.vgGroups[indexGroup].permission.vc || 0);
+        this.combinedUserPerm.vp = this.combinedUserPerm.vp | (this.vgGroups[indexGroup].permission.vp || 0);
       } else {
-        this.log(`Permission for Group not set ${listUser.groupName}`)
+        this.log(`Permission for Group not set ${listUser.groupName}`);
       }
     } else {
-      this.log(`Group not found ${listUser.groupName}`)
+      this.log(`Group not found ${listUser.groupName}`);
     }
   }
 
-  helperRemoveGroup(memberIndex: number):void {
-    this.groupIndex = memberIndex
+  helperRemoveGroup(memberIndex: number): void {
+    this.groupIndex = memberIndex;
   }
 
-  helperUsersPerGroup(groupName: string):number {
-    var group = this.vgGroups && this.vgGroups.find(x => x.name == groupName)
+  helperUsersPerGroup(groupName: string): number {
+    const group = this.vgGroups && this.vgGroups.find(x => x.name === groupName);
     if (group) {
       return group.users.length;
     }
@@ -256,10 +267,10 @@ export class SysvisbosystemComponent implements OnInit {
           // filter user from vgUsers
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser !== user);
           // filter user from vgGroups
-          for (var i=0; i<this.vgGroups.length; i++) {
-            if (this.vgGroups[i]._id == user.groupId) {
-              for (var j=0; j<this.vgGroups[i].users.length; j++) {
-                if (this.vgGroups[i].users[j].userId == user.userId) {
+          for (let i = 0; i < this.vgGroups.length; i++) {
+            if (this.vgGroups[i]._id === user.groupId) {
+              for (let j = 0; j < this.vgGroups[i].users.length; j++) {
+                if (this.vgGroups[i].users[j].userId === user.userId) {
                   this.vgGroups[i].users.splice(j, 1); // remove item from array
                   break;
                 }
@@ -271,7 +282,7 @@ export class SysvisbosystemComponent implements OnInit {
         },
         error => {
           this.log(`Remove VisboCenter User error: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Remove User from Visbo Center`);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
@@ -282,39 +293,39 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   helperSystemPerm(newGroup: any): number {
-    var perm: number = 0;
-    if (newGroup.checkedSystemView) perm += this.permSystem.View;
-    if (newGroup.checkedSystemViewAudit) perm += this.permSystem.ViewAudit;
-    if (newGroup.checkedSystemViewLog) perm += this.permSystem.ViewLog;
-    if (newGroup.checkedSystemModify) perm += this.permSystem.Modify;
-    if (newGroup.checkedSystemCreateVC) perm += this.permSystem.CreateVC;
-    if (newGroup.checkedSystemDeleteVC) perm += this.permSystem.DeleteVC;
-    if (newGroup.checkedSystemManagePerm) perm += this.permSystem.ManagePerm;
+    let perm = 0;
+    if (newGroup.checkedSystemView) { perm += this.permSystem.View; }
+    if (newGroup.checkedSystemViewAudit) { perm += this.permSystem.ViewAudit; }
+    if (newGroup.checkedSystemViewLog) { perm += this.permSystem.ViewLog; }
+    if (newGroup.checkedSystemModify) { perm += this.permSystem.Modify; }
+    if (newGroup.checkedSystemCreateVC) { perm += this.permSystem.CreateVC; }
+    if (newGroup.checkedSystemDeleteVC) { perm += this.permSystem.DeleteVC; }
+    if (newGroup.checkedSystemManagePerm) { perm += this.permSystem.ManagePerm; }
 
-    return perm
+    return perm;
   }
 
   helperVCPerm(newGroup: any): number {
-    var perm: number = 0;
-    if (newGroup.checkedView) perm += this.permVC.View;
-    if (newGroup.checkedViewAudit) perm += this.permVC.ViewAudit;
-    if (newGroup.checkedModify) perm += this.permVC.Modify;
-    if (newGroup.checkedCreateVP) perm += this.permVC.CreateVP;
-    if (newGroup.checkedManagePerm) perm += this.permVC.ManagePerm;
+    let perm = 0;
+    if (newGroup.checkedView) { perm += this.permVC.View; }
+    if (newGroup.checkedViewAudit) { perm += this.permVC.ViewAudit; }
+    if (newGroup.checkedModify) { perm += this.permVC.Modify; }
+    if (newGroup.checkedCreateVP) { perm += this.permVC.CreateVP; }
+    if (newGroup.checkedManagePerm) { perm += this.permVC.ManagePerm; }
 
-    return perm
+    return perm;
   }
 
   helperVPPerm(newGroup: any): number {
-    var perm: number = 0;
-    if (newGroup.checkedVPView) perm += this.permVP.View;
-    if (newGroup.checkedVPViewAudit) perm += this.permVP.ViewAudit;
-    if (newGroup.checkedVPModify) perm += this.permVP.Modify;
-    if (newGroup.checkedCreateVariant) perm += this.permVP.CreateVariant;
-    if (newGroup.checkedVPManagePerm) perm += this.permVP.ManagePerm;
-    if (newGroup.checkedVPDelete) perm += this.permVP.DeleteVP;
+    let perm = 0;
+    if (newGroup.checkedVPView) { perm += this.permVP.View; }
+    if (newGroup.checkedVPViewAudit) { perm += this.permVP.ViewAudit; }
+    if (newGroup.checkedVPModify) { perm += this.permVP.Modify; }
+    if (newGroup.checkedCreateVariant) { perm += this.permVP.CreateVariant; }
+    if (newGroup.checkedVPManagePerm) { perm += this.permVP.ManagePerm; }
+    if (newGroup.checkedVPDelete) { perm += this.permVP.DeleteVP; }
 
-    return perm
+    return perm;
   }
 
   initGroup(curGroup: VGGroup): void {
@@ -324,28 +335,28 @@ export class SysvisbosystemComponent implements OnInit {
       this.actGroup.gid = curGroup._id;
       this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
       this.actGroup.groupName = curGroup.name;
-      this.actGroup.checkedSystemView = (curGroup.permission.system & this.permSystem.View) > 0
-      this.actGroup.checkedSystemViewAudit = (curGroup.permission.system & this.permSystem.ViewAudit) > 0
-      this.actGroup.checkedSystemViewLog = (curGroup.permission.system & this.permSystem.ViewLog) > 0
-      this.actGroup.checkedSystemModify = (curGroup.permission.system & this.permSystem.Modify) > 0
-      this.actGroup.checkedSystemCreateVC = (curGroup.permission.system & this.permSystem.CreateVC) > 0
-      this.actGroup.checkedSystemDeleteVC = (curGroup.permission.system & this.permSystem.DeleteVC) > 0
-      this.actGroup.checkedSystemManagePerm = (curGroup.permission.system & this.permSystem.ManagePerm) > 0
+      this.actGroup.checkedSystemView = (curGroup.permission.system & this.permSystem.View) > 0;
+      this.actGroup.checkedSystemViewAudit = (curGroup.permission.system & this.permSystem.ViewAudit) > 0;
+      this.actGroup.checkedSystemViewLog = (curGroup.permission.system & this.permSystem.ViewLog) > 0;
+      this.actGroup.checkedSystemModify = (curGroup.permission.system & this.permSystem.Modify) > 0;
+      this.actGroup.checkedSystemCreateVC = (curGroup.permission.system & this.permSystem.CreateVC) > 0;
+      this.actGroup.checkedSystemDeleteVC = (curGroup.permission.system & this.permSystem.DeleteVC) > 0;
+      this.actGroup.checkedSystemManagePerm = (curGroup.permission.system & this.permSystem.ManagePerm) > 0;
 
       this.actGroup.checkGlobal = curGroup.global;
 
-      this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0
-      this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0
-      this.actGroup.checkedModify = (curGroup.permission.vc & this.permVC.Modify) > 0
-      this.actGroup.checkedCreateVP = (curGroup.permission.vc & this.permVC.CreateVP) > 0
-      this.actGroup.checkedManagePerm = (curGroup.permission.vc & this.permVC.ManagePerm) > 0
+      this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0;
+      this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0;
+      this.actGroup.checkedModify = (curGroup.permission.vc & this.permVC.Modify) > 0;
+      this.actGroup.checkedCreateVP = (curGroup.permission.vc & this.permVC.CreateVP) > 0;
+      this.actGroup.checkedManagePerm = (curGroup.permission.vc & this.permVC.ManagePerm) > 0;
 
-      this.actGroup.checkedVPView = (curGroup.permission.vp & this.permVP.View) > 0
-      this.actGroup.checkedVPViewAudit = (curGroup.permission.vp & this.permVP.ViewAudit) > 0
-      this.actGroup.checkedVPModify = (curGroup.permission.vp & this.permVP.Modify) > 0
-      this.actGroup.checkedCreateVariant = (curGroup.permission.vp & this.permVP.CreateVariant) > 0
-      this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0
-      this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0
+      this.actGroup.checkedVPView = (curGroup.permission.vp & this.permVP.View) > 0;
+      this.actGroup.checkedVPViewAudit = (curGroup.permission.vp & this.permVP.ViewAudit) > 0;
+      this.actGroup.checkedVPModify = (curGroup.permission.vp & this.permVP.Modify) > 0;
+      this.actGroup.checkedCreateVariant = (curGroup.permission.vp & this.permVP.CreateVariant) > 0;
+      this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0;
+      this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0;
     } else {
       this.actGroup.confirm = 'Add';
       this.actGroup.gid = undefined;
@@ -358,7 +369,8 @@ export class SysvisbosystemComponent implements OnInit {
   }
 
   addModifyVCGroup(): void {
-    var newGroup = new VGGroup;
+    let newGroup: VGGroup;
+    newGroup = new VGGroup;
 
     newGroup.name = this.actGroup.groupName.trim();
     newGroup.global = this.actGroup.checkGlobal;
@@ -384,9 +396,9 @@ export class SysvisbosystemComponent implements OnInit {
             this.vgGroups = this.vgGroups.filter(vcGroup => vcGroup._id !== newGroup._id);
             this.vgGroups.push(group);
             // update User List to reflect new Group Name & ID
-            for (var i=0; i < this.vgUsers.length; i++) {
-              if (this.vgUsers[i].groupId == newGroup._id) {
-                this.vgUsers[i].groupName = group.name
+            for (let i = 0; i < this.vgUsers.length; i++) {
+              if (this.vgUsers[i].groupId === newGroup._id) {
+                this.vgUsers[i].groupName = group.name;
               }
             }
             this.sortUserTable();
@@ -395,7 +407,7 @@ export class SysvisbosystemComponent implements OnInit {
           },
           error => {
             this.log(`Modify VisboCenter Group error: ${error.error.message}`);
-            if (error.status == 403) {
+            if (error.status === 403) {
               this.alertService.error(`Permission Denied: Modify Group to Visbo Center`);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
@@ -416,7 +428,7 @@ export class SysvisbosystemComponent implements OnInit {
           },
           error => {
             this.log(`Add VisboCenter Group error: ${error.error.message}`);
-            if (error.status == 403) {
+            if (error.status === 403) {
               this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
@@ -440,7 +452,7 @@ export class SysvisbosystemComponent implements OnInit {
         },
         error => {
           this.log(`Remove VisboCenter Group error: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Remove Group from Visbo Center`);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
@@ -450,89 +462,87 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  sortUserTable(n: number = undefined) {
+  sortUserTable(n?: number) {
 
-    if (!this.vgUsers) return
+    if (!this.vgUsers) {
+      return;
+    }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortUserColumn == undefined ) {
-      if (n != this.sortUserColumn) {
+    if (n !== undefined || this.sortUserColumn === undefined ) {
+      if (n !== this.sortUserColumn) {
         this.sortUserColumn = n;
         this.sortUserAscending = undefined;
       }
-      if (this.sortUserAscending == undefined) {
+      if (this.sortUserAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortUserAscending = (n == 1 || n == 2) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortUserColumn, this.sortUserAscending)
-      } else this.sortUserAscending = !this.sortUserAscending;
+        this.sortUserAscending = (n === 1 || n === 2) ? true : false;
+      } else {
+        this.sortUserAscending = !this.sortUserAscending;
+      }
     }
-    if (this.sortUserColumn == 1) {
+    if (this.sortUserColumn === 1) {
       // sort user email
       this.vgUsers.sort(function(a, b) {
-        var result = 0
-        if (a.email > b.email)
+        let result = 0;
+        if (a.email > b.email) {
           result = 1;
-        else if (a.email < b.email)
+        } else if (a.email < b.email) {
           result = -1;
-        return result
-      })
-    } else if (this.sortUserColumn == 2) {
+        }
+        return result;
+      });
+    } else if (this.sortUserColumn === 2) {
       // sort user group name
       this.vgUsers.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.groupName.toLowerCase() > b.groupName.toLowerCase())
+        let result = 0;
+        if (a.groupName.toLowerCase() > b.groupName.toLowerCase()) {
           result = 1;
-        else if (a.groupName.toLowerCase() < b.groupName.toLowerCase())
+        } else if (a.groupName.toLowerCase() < b.groupName.toLowerCase()) {
           result = -1;
-        return result
-      })
+        }
+        return result;
+      });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortUserColumn, this.sortUserAscending)
     if (!this.sortUserAscending) {
       this.vgUsers.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortUserColumn, this.sortUserAscending)
     }
   }
 
-  sortGroupTable(n: number = undefined) {
-
-    if (!this.vgGroups) return
+  sortGroupTable(n?: number) {
+    if (!this.vgGroups) {
+      return;
+    }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortGroupColumn == undefined) {
-      if (n != this.sortGroupColumn) {
+    if (n !== undefined || this.sortGroupColumn === undefined) {
+      if (n !== this.sortGroupColumn) {
         this.sortGroupColumn = n;
         this.sortGroupAscending = undefined;
       }
-      if (this.sortGroupAscending == undefined) {
+      if (this.sortGroupAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortGroupAscending = (n == 1) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortGroupColumn, this.sortGroupAscending)
+        this.sortGroupAscending = (n === 1) ? true : false;
+      } else {
+        this.sortGroupAscending = !this.sortGroupAscending;
       }
-      else this.sortGroupAscending = !this.sortGroupAscending;
     }
     // this.log(`Sort Groups Column ${this.sortGroupColumn}`); // log to console instead
-    if (this.sortGroupColumn == 1) {
+    if (this.sortGroupColumn === 1) {
       // sort user email
       this.vgGroups.sort(function(a, b) {
-        var result = 0
-        if (a.name.toLowerCase() > b.name.toLowerCase())
+        let result = 0;
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
           result = 1;
-        else if (a.name.toLowerCase() < b.name.toLowerCase())
+        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
           result = -1;
-        return result
-      })
-    } else if (this.sortGroupColumn == 2) {
+        }
+        return result;
+      });
+    } else if (this.sortGroupColumn === 2) {
       // sort user group name
-      this.vgGroups.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        return b.users.length - a.users.length
-      })
+      this.vgGroups.sort(function(a, b) { return b.users.length - a.users.length; });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortGroupColumn, this.sortGroupAscending)
     if (!this.sortGroupAscending) {
       this.vgGroups.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortGroupColumn, this.sortGroupAscending)
     }
   }
 

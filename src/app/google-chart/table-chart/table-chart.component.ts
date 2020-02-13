@@ -10,18 +10,19 @@ export class TableChartComponent implements OnInit {
 
   private gLib: any;
 
-  constructor(private gChartService : GoogleChartService) { 
+  constructor(private gChartService: GoogleChartService) {
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table']});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
   ngOnInit() {
 
   }
 
-  private drawChart(){
-    let chart = new this.gLib.visualization.Table(document.getElementById('divTableChart'));
-    let data = new this.gLib.visualization.DataTable();
+  private drawChart() {
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.Table(document.getElementById('divTableChart'));
+    data = new this.gLib.visualization.DataTable();
 
     data.addColumn('string', 'Year');
     data.addColumn('number', 'Sales');
@@ -34,7 +35,7 @@ export class TableChartComponent implements OnInit {
       ['2007', 1030, 540]
     ]);
 
-    let options = {'title':'Sales Tabular Data',
+    const options = {'title': 'Sales Tabular Data',
                        'width': '100%',
                        'height': '100%'};
     chart.draw(data, options);

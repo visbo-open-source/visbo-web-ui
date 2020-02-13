@@ -29,9 +29,13 @@ export class AppComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Version Status check result ${JSON.stringify(data)}`);
-          if (data.version) this.restVersionString = data.version;
-          if (data.versionUI) this.restUIVersionString = data.versionUI;
-          this.log(`Version Status check success ${data.version}/${this.restVersionString} UI ${data.versionUI}/${this.restUIVersionString}`);
+          if (data.version) {
+            this.restVersionString = data.version;
+          }
+          if (data.versionUI) {
+            this.restUIVersionString = data.versionUI;
+          }
+          this.log(`Version check success ${data.version}/${this.restVersionString} UI ${data.versionUI}/${this.restUIVersionString}`);
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);

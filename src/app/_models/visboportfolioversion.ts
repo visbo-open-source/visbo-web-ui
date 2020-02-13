@@ -7,7 +7,7 @@ export class VPFItem {
   zeile: number;
   reasonToInclude: string;
   reasonToExclude: string;
-};
+}
 
 export class VisboPortfolioVersion {
   _id: string;
@@ -17,13 +17,13 @@ export class VisboPortfolioVersion {
   timestamp: Date;
   allItems: [VPFItem];
   sortType: number;
-  sortList:[string];
+  sortList: [string];
   updatedAt: Date;
   createdAt: Date;
   deleted: {
-		deletedAt: Date;
-		byParent: Boolean;
-	};
+    deletedAt: Date;
+    byParent: Boolean;
+  };
   perm: {system: number; vc: number; vp: number; };
 }
 

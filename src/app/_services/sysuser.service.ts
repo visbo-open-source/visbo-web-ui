@@ -11,9 +11,7 @@ import { LoginComponent } from '../login/login.component';
 
 import { VisboUser, VisboUsersResponse } from '../_models/login';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable()
 export class SysUserService {
@@ -29,11 +27,10 @@ export class SysUserService {
 
   /** GET Users from the server */
   getSysUsers(userMatch: string): Observable<VisboUser[]> {
-    var url = this.serviceUrl
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = this.serviceUrl;
     let params = new HttpParams();
 
-    if (userMatch) params = params.append('email', userMatch);
+    if (userMatch) { params = params.append('email', userMatch); }
     params = params.append('maxcount', '100');
 
     this.log(`Calling HTTP Request: ${url} `);

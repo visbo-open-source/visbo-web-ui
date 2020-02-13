@@ -9,7 +9,7 @@ import { MessageService } from '../_services/message.service';
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
 @Component({
-  selector: 'visbo-navbar',
+  selector: 'app-usernavbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -30,16 +30,16 @@ export class NavbarComponent implements OnInit {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
-    this.log(`Navbar Init Sys Role ${JSON.stringify(this.combinedPerm)} View ${this.permSystem.View}`)
+    this.log(`Navbar Init Sys Role ${JSON.stringify(this.combinedPerm)} View ${this.permSystem.View}`);
   }
 
-  gotoClickedItem(action: string):void {
+  gotoClickedItem(action: string): void {
     // console.log("clicked nav item %s", action);
     this.router.navigate([action]);
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.combinedPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0;
   }
 
   /** Log a message with the MessageService */

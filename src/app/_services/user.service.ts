@@ -43,7 +43,7 @@ export class UserService {
     return this.http.put<VisboUserResponse>(this.profileUrl, user, httpOptions)
       .pipe(
         map(response => response.user),
-        tap(user => this.log(`updated User Profile ${user.email} `)),
+        tap(resultUser => this.log(`updated User Profile ${resultUser.email} `)),
         catchError(this.handleError<any>('updateUserProfile'))
       );
   }

@@ -10,12 +10,28 @@ import { TableChartComponent } from './table-chart/table-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
 
 @NgModule({
-  declarations: [LineChartComponent, ComboChartComponent, BubbleChartComponent, ScatterChartComponent, PieChartComponent, TableChartComponent, ColumnChartComponent],
+  declarations: [
+    LineChartComponent,
+    ComboChartComponent,
+    BubbleChartComponent,
+    ScatterChartComponent,
+    PieChartComponent,
+    TableChartComponent,
+    ColumnChartComponent
+  ],
   imports: [
     CommonModule,
     ServiceModule
   ],
-  exports: [LineChartComponent, ComboChartComponent, BubbleChartComponent, ScatterChartComponent, PieChartComponent, TableChartComponent, ColumnChartComponent],
+  exports: [
+    LineChartComponent,
+    ComboChartComponent,
+    BubbleChartComponent,
+    ScatterChartComponent,
+    PieChartComponent,
+    TableChartComponent,
+    ColumnChartComponent
+  ],
   providers : []
 })
 export class GoogleChartModule { }

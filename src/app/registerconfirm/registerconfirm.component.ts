@@ -22,20 +22,20 @@ export class RegisterconfirmComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private alertService: AlertService) { }
 
-  ngOnInit(){
-    this.model.hash = this.route.snapshot.queryParams.hash
-    this.model._id = this.route.snapshot.queryParams.id
+  ngOnInit() {
+    this.model.hash = this.route.snapshot.queryParams.hash;
+    this.model._id = this.route.snapshot.queryParams.id;
     this.log(`Init Register Confirm userid ${this.model._id} Token ${this.model.hash}`);
 
     this.authenticationService.registerconfirm(this.model)
       .subscribe(
         data => {
-          this.log(`Register Confirm Success ${JSON.stringify(data)}`)
+          this.log(`Register Confirm Success ${JSON.stringify(data)}`);
           this.alertService.success(`Congratulation, your e-mail address is now confirmed. Please login.`, true);
           this.router.navigate(['login']);
         },
         error => {
-          this.log(`Error during Register Confirm ${error.error.message}`)
+          this.log(`Error during Register Confirm ${error.error.message}`);
           this.alertService.error(error.error.message);
           this.router.navigate(['login']);
         }

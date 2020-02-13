@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
@@ -27,7 +26,6 @@ export class VisboCentersComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
@@ -69,9 +67,9 @@ export class VisboCentersComponent implements OnInit {
       },
       error => {
         this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
+        if (error.status === 403) {
           this.alertService.error(`Permission Denied for Visbo Center ${name}`);
-        } else if (error.status == 409) {
+        } else if (error.status === 409) {
           this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
         } else {
           this.alertService.error(error.error.message);
@@ -88,7 +86,7 @@ export class VisboCentersComponent implements OnInit {
       error => {
         // this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
         this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
+        if (error.status === 403) {
           this.alertService.error(`Permission Denied: Visbo Center ${name}`);
         } else {
           this.alertService.error(error.error.message);
@@ -97,59 +95,59 @@ export class VisboCentersComponent implements OnInit {
     );
   }
 
-  gotoDetail(visbocenter: VisboCenter):void {
-    this.router.navigate(['vcDetail/'+visbocenter._id]);
+  gotoDetail(visbocenter: VisboCenter): void {
+    this.router.navigate(['vcDetail/' + visbocenter._id]);
   }
 
-  gotoClickedRow(visbocenter: VisboCenter):void {
+  gotoClickedRow(visbocenter: VisboCenter): void {
     // this.log(`clicked row ${visbocenter.name}`);
-    this.router.navigate(['vp/'+visbocenter._id]);
+    this.router.navigate(['vp/' + visbocenter._id]);
   }
 
   sortVCTable(n) {
 
-    if (!this.visbocenters) return
+    if (!this.visbocenters) {
+      return;
+    }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = n == 1 ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = n === 1 ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
-    if (this.sortColumn == 1) {
+    if (this.sortColumn === 1) {
       this.visbocenters.sort(function(a, b) {
-        var result = 0
-        if (a.name.toLowerCase() > b.name.toLowerCase())
+        let result = 0;
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
           result = 1;
-        else if (a.name.toLowerCase() < b.name.toLowerCase())
+        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 2) {
       this.visbocenters.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.updatedAt > b.updatedAt)
+        let result = 0;
+        if (a.updatedAt > b.updatedAt) {
           result = 1;
-        else if (a.updatedAt < b.updatedAt)
+        } else if (a.updatedAt < b.updatedAt) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 3) {
       // sort VP Count
-      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount })
+      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount; });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visbocenters.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

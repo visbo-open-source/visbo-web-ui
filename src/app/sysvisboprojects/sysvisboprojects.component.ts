@@ -10,7 +10,7 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboCenter } from '../_models/visbocenter';
-import { VisboCenterService }  from '../_services/visbocenter.service';
+import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -40,14 +40,13 @@ export class SysVisboProjectsComponent implements OnInit {
     private visboprojectService: VisboProjectService,
     private visbocenterService: VisboCenterService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
     // console.log("Init VisboProjects");
     this.getVisboProjects();
-    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }
 
   onSelect(visboproject: VisboProject): void {
@@ -57,8 +56,6 @@ export class SysVisboProjectsComponent implements OnInit {
   getVisboProjects(): void {
     this.log(`VP getSysVisboProjects SysAdminRole ${JSON.stringify(this.combinedPerm)}`);
     const id = this.route.snapshot.paramMap.get('id');
-    var i: number;
-    var currentUser = this.authenticationService.getActiveUser();
 
     this.vcSelected = id;
     if (id) {
@@ -67,7 +64,7 @@ export class SysVisboProjectsComponent implements OnInit {
           visbocenters => {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
-            this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`)
+            this.log(`Get VisboProject for VC ${id} Perm ${JSON.stringify(this.combinedPerm)}`);
             if (this.combinedPerm.vp & this.permVP.View) {
               this.visboprojectService.getVisboProjects(id, true)
                 .subscribe(
@@ -106,122 +103,83 @@ export class SysVisboProjectsComponent implements OnInit {
     }
   }
 
-  // addproject(name: string, vcid: string, desc: string, vpPublic: boolean): void {
-  //   name = name.trim();
-  //   this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} Public ${vpPublic}`);
-  //   if (!name) { return; }
-  //   this.visboprojectService.addVisboProject({ name: name, description: desc, vpPublic: vpPublic == true, vcid: vcid } as VisboProject).subscribe(
-  //     vp => {
-  //       // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
-  //       this.visboprojects.push(vp);
-  //       this.sortVPTable(undefined);
-  //       this.alertService.success(`Visbo Project ${vp.name} created successfully`);
-  //     },
-  //     error => {
-  //       this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
-  //       if (error.status == 403) {
-  //         this.alertService.error(`Permission Denied for Visbo Project ${name}`);
-  //       } else if (error.status == 409) {
-  //         // this.alertService.error(`Visbo Project ${name} already exists or not allowed`);
-  //         this.alertService.error('Visbo Project already exists or not allowed');
-  //       } else {
-  //         this.alertService.error(error.error.message);
-  //       }
-  //     }
-  //   );
-  // }
-  //
-  // delete(visboproject: VisboProject): void {
-  //   // remove item from list
-  //   this.visboprojects = this.visboprojects.filter(vp => vp !== visboproject);
-  //   this.visboprojectService.deleteVisboProject(visboproject)
-  //     .subscribe(
-  //       error => {
-  //         // this.log(`delete VP failed: error: ${error.status} messages: ${error.error.message}`);
-  //         if (error.status == 403) {
-  //           this.alertService.error(`Permission Denied: Visbo Project ${name}`, true);
-  //         } else {
-  //           this.alertService.error(error.error.message);
-  //         }
-  //       }
-  //     );
-  // }
-
-  gotoClickedRow(visboproject: VisboProject):void {
-    console.log("clicked row %s", visboproject.name);
+  gotoClickedRow(visboproject: VisboProject): void {
+    this.log(`clicked row ${visboproject.name}`);
     // this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
   }
 
-  gotoDetail(visboproject: VisboProject):void {
+  gotoDetail(visboproject: VisboProject): void {
     this.router.navigate(['sysvpDetail/'.concat(visboproject._id)]);
   }
 
-  gotoVCDetail(visbocenter: VisboCenter):void {
+  gotoVCDetail(visbocenter: VisboCenter): void {
     this.router.navigate(['sysvcDetail/'.concat(visbocenter._id)]);
   }
 
   sortVPTable(n) {
-    if (n != undefined) {
-      if (!this.visboprojects) return
-      if (n != this.sortColumn) {
+    if (n !== undefined) {
+      if (!this.visboprojects) {
+        return;
+      }
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = n == 1 || n == 3 ? true : false;
+        this.sortAscending = n === 1 || n === 3 ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
     // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
-    if (this.sortColumn == 1) {
+    if (this.sortColumn === 1) {
       // sort by VP Name
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        if (a.name.toLowerCase() > b.name.toLowerCase())
+        let result = 0;
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
           result = 1;
-        else if (a.name.toLowerCase() < b.name.toLowerCase())
+        } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 2) {
       // sort by VP updatedAt
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.updatedAt > b.updatedAt)
+        let result = 0;
+        if (a.updatedAt > b.updatedAt) {
           result = 1;
-        else if (a.updatedAt < b.updatedAt)
+        } else if (a.updatedAt < b.updatedAt) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 3) {
       // sort by VC Name
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.vc.name.toLowerCase() > b.vc.name.toLowerCase())
+        let result = 0;
+        if (a.vc.name.toLowerCase() > b.vc.name.toLowerCase()) {
           result = 1;
-        else if (a.vc.name.toLowerCase() < b.vc.name.toLowerCase())
+        } else if (a.vc.name.toLowerCase() < b.vc.name.toLowerCase()) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 4) {
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 4) {
       // sort by VC vpvCount
       this.visboprojects.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.vpvCount > b.vpvCount)
+        let result = 0;
+        if (a.vpvCount > b.vpvCount) {
           result = 1;
-        else if (a.vpvCount < b.vpvCount)
+        } else if (a.vpvCount < b.vpvCount) {
           result = -1;
-        return result
-      })
+        }
+        return result;
+      });
     }
-    // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visboprojects.reverse();
-      // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

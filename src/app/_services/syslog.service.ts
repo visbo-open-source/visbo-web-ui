@@ -29,8 +29,8 @@ export class SysLogService {
 
   /** GET List of Logs from the server */
   getSysLogs(ageDays: number): Observable<VisboFile[]> {
-    var url = this.serviceUrl
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = this.serviceUrl;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 
     params = params.append('ageDays', ageDays.toString());
@@ -46,9 +46,10 @@ export class SysLogService {
 
   // /** GET Log File by name. Return 403 when name not found */
   getSysLog(folder: string, name: string): Observable<any> {
-    var url = `${this.serviceUrl}/file/${folder}/${name}`;
+    const url = `${this.serviceUrl}/file/${folder}/${name}`;
     this.log(`Calling HTTP Request for a specific log file: ${url}`);
-    var options: any = {};
+    let options: any;
+    options = {};
     options.observe = 'body';
     options.responseType = 'text';
     // options.headers = 'XXX'

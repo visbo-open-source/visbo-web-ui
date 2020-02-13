@@ -34,7 +34,7 @@ import { MessageService } from './_services/message.service';
 // Visbo Centers
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
 import { VisbocenterDetailComponent } from './visbocenter-detail/visbocenter-detail.component';
-import { VisbocenterAuditComponent }  from './visbocenter-audit/visbocenter-audit.component';
+import { VisbocenterAuditComponent } from './visbocenter-audit/visbocenter-audit.component';
 
 import { VisboCenterService } from './_services/visbocenter.service';
 import { VisboAuditService } from './_services/visboaudit.service';
@@ -45,10 +45,10 @@ import { SysUserService } from './_services/sysuser.service';
 import { VisboProjectService } from './_services/visboproject.service';
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
-import { VisboprojectAuditComponent }  from './visboproject-audit/visboproject-audit.component';
-import { VisboProjectKeyMetricsComponent }  from './visboproject-keymetrics/visboproject-keymetrics.component';
-import { VisboProjectViewCostComponent }  from './visboproject-viewcost/visboproject-viewcost.component';
-import { VisboProjectViewDeliveryComponent }  from './visboproject-viewdelivery/visboproject-viewdelivery.component';
+import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-audit.component';
+import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
+import { VisboProjectViewCostComponent } from './visboproject-viewcost/visboproject-viewcost.component';
+import { VisboProjectViewDeliveryComponent } from './visboproject-viewdelivery/visboproject-viewdelivery.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -64,13 +64,13 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
 import { SysvisbosystemComponent } from './sysvisbosystem/sysvisbosystem.component';
 import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
-import { SysvisbocenterDetailComponent }  from './sysvisbocenter-detail/sysvisbocenter-detail.component';
-import { SysVisboProjectsComponent }  from './sysvisboprojects/sysvisboprojects.component';
-import { SysvisboprojectDetailComponent }  from './sysvisboproject-detail/sysvisboproject-detail.component';
+import { SysvisbocenterDetailComponent } from './sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysVisboProjectsComponent } from './sysvisboprojects/sysvisboprojects.component';
+import { SysvisboprojectDetailComponent } from './sysvisboproject-detail/sysvisboproject-detail.component';
 
-import { SysauditComponent }  from './sysaudit/sysaudit.component';
-import { SysuserComponent }  from './sysuser/sysuser.component';
-import { SysLogComponent }  from './syslog/syslog.component';
+import { SysauditComponent } from './sysaudit/sysaudit.component';
+import { SysuserComponent } from './sysuser/sysuser.component';
+import { SysLogComponent } from './syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';

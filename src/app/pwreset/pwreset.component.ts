@@ -30,9 +30,9 @@ export class PwresetComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private alertService: AlertService) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.getPWPolicy();
-    this.token = this.route.snapshot.queryParams.token
+    this.token = this.route.snapshot.queryParams.token;
     this.log(`Init PW Reset Token ${this.token}`);
   }
 
@@ -48,7 +48,7 @@ export class PwresetComponent implements OnInit {
         },
         error => {
           this.loading = false;
-          this.log(`Error during Reset Password ${error.error.message}`)
+          this.log(`Error during Reset Password ${error.error.message}`);
           this.alertService.error(`Password Reset: ${error.error.message}`);
         }
       );
@@ -59,8 +59,8 @@ export class PwresetComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Init PW Policy success ${JSON.stringify(data)}`);
-          this.PWPolicy = data.PWPolicy
-          this.PWPolicyDescription = data.Description
+          this.PWPolicy = data.PWPolicy;
+          this.PWPolicyDescription = data.Description;
 
         },
         error => {

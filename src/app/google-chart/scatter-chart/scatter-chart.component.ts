@@ -15,11 +15,11 @@ export class ScatterChartComponent implements OnInit {
   @Input() graphOptions: any;
 
   constructor(
-    private gChartService : GoogleChartService,
+    private gChartService: GoogleChartService,
     private messageService: MessageService
   ) {
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table']});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
@@ -27,12 +27,13 @@ export class ScatterChartComponent implements OnInit {
     // this.log(`Google Chart Scatter Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Scatter Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.ScatterChart(document.getElementById('divScatterChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.ScatterChart(document.getElementById('divScatterChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let options = {'title':'Scatter Chart'};
+    const options = {'title': 'Scatter Chart'};
 
     chart.draw(data, this.graphOptions || options);
   }

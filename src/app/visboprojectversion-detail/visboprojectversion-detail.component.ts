@@ -5,8 +5,8 @@ import { Location } from '@angular/common';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
-import { VisboProjectService }  from '../_services/visboproject.service';
-import { VisboProjectVersionService }  from '../_services/visboprojectversion.service';
+import { VisboProjectService } from '../_services/visboproject.service';
+import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProject } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -22,7 +22,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
-  deleted: boolean = false;
+  deleted = false;
 
   constructor(
     private messageService: MessageService,
@@ -42,15 +42,14 @@ export class VisboProjectVersionDetailComponent implements OnInit {
 
   getVisboProjectVersion(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    var currentUser = this.authenticationService.getActiveUser();
 
     this.log('VisboProjectVersion Detail of: ' + id);
     this.visboprojectversionService.getVisboProjectVersion(id, this.deleted)
       .subscribe(
         visboprojectversion => {
           this.combinedPerm = visboprojectversion.perm;
-          this.visboprojectversion = visboprojectversion
-          this.log(`Get VisboProjectVersion for VPV ${id} ${visboprojectversion.name} ${JSON.stringify(this.combinedPerm)}`)
+          this.visboprojectversion = visboprojectversion;
+          this.log(`Get VisboProjectVersion for VPV ${id} ${visboprojectversion.name} ${JSON.stringify(this.combinedPerm)}`);
         },
         error => {
           this.log(`get VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -64,8 +63,10 @@ export class VisboProjectVersionDetailComponent implements OnInit {
   }
 
   hasVPPerm(perm: number): boolean {
-    if (this.combinedPerm == undefined) return false
-    return (this.combinedPerm.vp & perm) > 0
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) > 0;
   }
 
   delete(visboprojectversion: VisboProjectVersion): void {
@@ -80,7 +81,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
           },
         error => {
           this.log(`delete VPV failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Project Version ${visboprojectversion._id}`);
           } else {
             this.alertService.error(error.error.message);
@@ -91,21 +92,21 @@ export class VisboProjectVersionDetailComponent implements OnInit {
 
   gotoViewCost(): void {
     this.log(`goto VPV View Cost VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
-    var queryParams = { vpvid: this.visboprojectversion._id };
+    const queryParams = { vpvid: this.visboprojectversion._id };
     this.router.navigate(['vpViewCost/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
   }
 
   gotoViewDelivery(): void {
     this.log(`goto VPV View Cost VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
-    var queryParams = { vpvid: this.visboprojectversion._id };
+    const queryParams = { vpvid: this.visboprojectversion._id };
     this.router.navigate(['vpViewDelivery/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
   }
 
-  gotoVCDetail(visboproject: VisboProject):void {
+  gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
-  gotoVPVList(visboprojectversion: VisboProjectVersion):void {
+  gotoVPVList(visboprojectversion: VisboProjectVersion): void {
     this.log(`goto VPV List: ${visboprojectversion.vpid} Deleted ${this.deleted}`);
     this.router.navigate(['vpKeyMetrics/'.concat(visboprojectversion.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
@@ -120,9 +121,9 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         },
         error => {
           this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${this.visboprojectversion._id}`);
-          } else if (error.status == 409) {
+          } else if (error.status === 409) {
             this.alertService.error(`Visbo Project ${this.visboprojectversion._id} exists already`);
           } else {
             this.alertService.error(error.error.message);

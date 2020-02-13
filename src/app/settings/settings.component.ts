@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Location } from '@angular/common';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { AlertService } from '../_services/alert.service';
@@ -28,11 +27,11 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
     this.activateMessage = this.messageService.getstatus();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
-    console.log('Sys Admin Role: ', JSON.stringify(this.combinedPerm))
+    // console.log('Sys Admin Role: ', JSON.stringify(this.combinedPerm));
   }
 
-  toggleMessages():void {
-    console.log('Toggle Messages')
+  toggleMessages(): void {
+    // console.log('Toggle Messages');
     this.activateMessage = this.messageService.toggle();
   }
 

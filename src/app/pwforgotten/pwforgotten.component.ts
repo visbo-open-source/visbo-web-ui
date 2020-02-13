@@ -23,9 +23,10 @@ export class PwforgottenComponent implements OnInit {
     private alertService: AlertService) { }
 
   ngOnInit() {
-    if (this.route.snapshot.queryParams.email)
-      this.model.username = this.route.snapshot.queryParams.email
-    this.log(`Password Forgotten for User ${this.model.username}`)
+    if (this.route.snapshot.queryParams.email) {
+      this.model.username = this.route.snapshot.queryParams.email;
+    }
+    this.log(`Password Forgotten for User ${this.model.username}`);
   }
 
   pwforgotten() {
@@ -37,7 +38,7 @@ export class PwforgottenComponent implements OnInit {
           this.router.navigate(['login']);
         },
         error => {
-          this.log(`Error during Password Forgotten ${error.error.message}`)
+          this.log(`Error during Password Forgotten ${error.error.message}`);
           this.alertService.error(error.error.message);
           this.loading = false;
         }
