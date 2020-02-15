@@ -48,17 +48,17 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] }
   };
 
-  graphPastDataPieChart: any[] = [];
-  graphBeforePastDataPieChart: any[] = [];
-  graphPastPieLegend: any;
-  graphPastOptionsPieChart: any = undefined;
-  divPastPieChart = 'divPastPieChart';
+  graphFinishedDataPieChart: any[] = [];
+  graphBeforeFinishedDataPieChart: any[] = [];
+  graphFinishedPieLegend: any;
+  graphFinishedOptionsPieChart: any = undefined;
+  divFinishedPieChart = 'divFinishedPieChart';
 
-  graphFutureDataPieChart: any[] = [];
-  graphBeforeFutureDataPieChart: any[] = [];
-  graphFuturePieLegend: any;
-  graphFutureOptionsPieChart: any = undefined;
-  divFuturePieChart = 'divFuturePieChart';
+  graphUnFinishedDataPieChart: any[] = [];
+  graphBeforeUnFinishedDataPieChart: any[] = [];
+  graphUnFinishedPieLegend: any;
+  graphUnFinishedOptionsPieChart: any = undefined;
+  divUnFinishedPieChart = 'divUnFinishedPieChart';
 
   sortAscending = false;
   sortColumn = 1;
@@ -185,8 +185,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
-          this.visboViewPastDeliveryPie();
-          this.visboViewFutureDeliveryPie();
+          this.visboViewFinishedDeliveryPie();
+          this.visboViewUnFinishedDeliveryPie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -233,10 +233,9 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   getStatus(element: VPVDelivery): number {
 
     const refDate = this.vpvActive.timestamp;
-    const isPast = element.datePFV <= refDate;
 
     let status = 0;
-    if (isPast && element.percentDone < 1) {
+    if (element.datePFV <= refDate && element.percentDone < 1) {
       status = 3;
     } else if (element.changeDays < 0) {
       status = 0;
@@ -248,82 +247,82 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     return status;
   }
 
-  visboViewPastDeliveryPie(): void {
+  visboViewFinishedDeliveryPie(): void {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
-    this.graphPastOptionsPieChart = {
-        title: 'Past Delivery Status',
+    this.graphFinishedOptionsPieChart = {
+        title: 'Finished Delivery Status',
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
 
-    this.graphPastPieLegend = [['string', 'Action Type'],
+    this.graphFinishedPieLegend = [['string', 'Action Type'],
                         ['number', 'Count']
       ];
 
-    const pastDeliveryStatus: any = [];
+    const finishedDeliveryStatus: any = [];
     const graphData = [];
     let status;
     const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
-      pastDeliveryStatus[i] = 0;
+      finishedDeliveryStatus[i] = 0;
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if (this.vpvDelivery[i].datePFV <= refDate) {
-        // entry from the past
+      if (this.vpvDelivery[i].percentDone === 1) {
+        // finished entries
         status = this.getStatus(this.vpvDelivery[i]);
-        pastDeliveryStatus[status] += 1;
+        finishedDeliveryStatus[status] += 1;
         nonEmpty = true;
       }
     }
-    for (let i = 0; i < pastDeliveryStatus.length; i++) {
-      graphData.push([this.statusList[i], pastDeliveryStatus[i]]);
+    for (let i = 0; i < finishedDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], finishedDeliveryStatus[i]]);
     }
 
-    this.graphBeforePastDataPieChart = this.graphPastDataPieChart;
+    this.graphBeforeFinishedDataPieChart = this.graphFinishedDataPieChart;
     if (nonEmpty) {
-      this.graphPastDataPieChart = graphData;
+      this.graphFinishedDataPieChart = graphData;
     } else {
-      this.graphPastDataPieChart = [];
+      this.graphFinishedDataPieChart = [];
     }
   }
 
-  visboViewFutureDeliveryPie(): void {
+  visboViewUnFinishedDeliveryPie(): void {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
-    this.graphFutureOptionsPieChart = {
-        title: 'Future Delivery Status',
+    this.graphUnFinishedOptionsPieChart = {
+        title: 'Unfinished Delivery Status',
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
 
-    this.graphFuturePieLegend = [['string', 'Action Type'],
+    this.graphUnFinishedPieLegend = [['string', 'Action Type'],
                         ['number', 'Count']
       ];
 
-    const futureDeliveryStatus: any = [];
+    const unFinishedDeliveryStatus: any = [];
     const graphData = [];
     let status;
     const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
-      futureDeliveryStatus[i] = 0;
+      unFinishedDeliveryStatus[i] = 0;
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if (this.vpvDelivery[i].datePFV > refDate) {
-        // entry from the future
+      if (this.vpvDelivery[i].percentDone < 1) {
+        // unfinished entries
         status = this.getStatus(this.vpvDelivery[i]);
-        futureDeliveryStatus[status] += 1;
+        unFinishedDeliveryStatus[status] += 1;
         nonEmpty = true;
       }
     }
-    for (let i = 0; i < futureDeliveryStatus.length; i++) {
-      graphData.push([this.statusList[i], futureDeliveryStatus[i]]);
+    for (let i = 0; i < unFinishedDeliveryStatus.length; i++) {
+      graphData.push([this.statusList[i], unFinishedDeliveryStatus[i]]);
     }
-    this.graphBeforeFutureDataPieChart = this.graphFutureDataPieChart;
+    this.graphBeforeUnFinishedDataPieChart = this.graphUnFinishedDataPieChart;
     if (nonEmpty) {
-      this.graphFutureDataPieChart = graphData;
+      this.graphUnFinishedDataPieChart = graphData;
     } else {
-      this.graphFutureDataPieChart = [];
+      this.graphUnFinishedDataPieChart = [];
     }
 
   }
