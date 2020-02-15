@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { LoginComponent } from '../login/login.component';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbocenters',
@@ -21,7 +20,7 @@ export class SysVisboCentersComponent implements OnInit {
   visbocenters: VisboCenter[];
   sysvisbocenter: VisboCenter;
   combinedPerm: VGPermission = undefined;
-  deleted: boolean = false;
+  deleted = false;
   permSystem: any = VGPSystem;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
@@ -30,20 +29,18 @@ export class SysVisboCentersComponent implements OnInit {
 
   constructor(
     private visbocenterService: VisboCenterService,
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.log(`Init SysVC Deleted: ${this.deleted}`)
+    this.log(`Init SysVC Deleted: ${this.deleted}`);
     this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboCenters(this.deleted);
-    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }
 
   onSelect(visbocenter: VisboCenter): void {
@@ -51,7 +48,7 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   toggleVisboCenters(): void {
-    this.deleted = !this.deleted
+    this.deleted = !this.deleted;
     this.log(`VC toggleVisboCenters ${this.deleted}`);
     this.getVisboCenters(this.deleted);
     this.router.navigate(['sysvc'], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
@@ -76,12 +73,9 @@ export class SysVisboCentersComponent implements OnInit {
   }
 
   getSysVisboCenter(): void {
-    var currentUser = this.authenticationService.getActiveUser();
-
-    // console.log("VC getSysVisboCenter for User %s", currentUser.email);
     this.visbocenterService.getSysVisboCenter()
       .subscribe(vc => {
-        if (vc.length >0) {
+        if (vc.length > 0) {
           this.sysvisbocenter = vc[0];
         }
       });
@@ -100,9 +94,9 @@ export class SysVisboCentersComponent implements OnInit {
       },
       error => {
         this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
+        if (error.status === 403) {
           this.alertService.error(`Permission Denied for Visbo Center ${name}`);
-        } else if (error.status == 409) {
+        } else if (error.status === 409) {
           this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
         } else {
           this.alertService.error(error.error.message);
@@ -118,7 +112,7 @@ export class SysVisboCentersComponent implements OnInit {
     this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
       error => {
         this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
+        if (error.status === 403) {
           this.alertService.error(`Permission Denied: Visbo Center ${name}`);
         } else {
           this.alertService.error(error.error.message);
@@ -127,75 +121,58 @@ export class SysVisboCentersComponent implements OnInit {
     );
   }
 
-  gotoDetail(visbocenter: VisboCenter):void {
-    var deleted = visbocenter.deletedAt ? true : false;
+  gotoDetail(visbocenter: VisboCenter): void {
+    const deleted = visbocenter.deletedAt ? true : false;
     this.log(`navigate to VC Detail ${visbocenter._id} Deleted ${deleted}`);
-    this.router.navigate(['sysvcDetail/'+visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
+    this.router.navigate(['sysvcDetail/' + visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
-  gotoClickedRow(visbocenter: VisboCenter):void {
+  gotoClickedRow(visbocenter: VisboCenter): void {
     this.log(`clicked row ${visbocenter.name}`);
     // check that the user has Permission to see VPs
-    if (this.hasSystemPerm(this.permVC.View))
-      this.router.navigate(['sysvp/'+visbocenter._id]);
+    if (this.hasSystemPerm(this.permVC.View)) {
+      this.router.navigate(['sysvp/' + visbocenter._id]);
+    }
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.combinedPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0;
   }
 
   hasVCPerm(perm: number): boolean {
-    return (this.combinedPerm.vc & perm) > 0
+    return (this.combinedPerm.vc & perm) > 0;
   }
 
   hasVPPerm(perm: number): boolean {
-    return (this.combinedPerm.vp & perm) > 0
+    return (this.combinedPerm.vp & perm) > 0;
   }
 
   sortVCTable(n) {
-
-    if (!this.visbocenters) return
+    if (!this.visbocenters) {
+      return;
+    }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = n == 1 ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = n === 1 ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
-    if (this.sortColumn == 1) {
-      this.visbocenters.sort(function(a, b) {
-        var result = 0
-        if (a.name.toLowerCase() > b.name.toLowerCase())
-          result = 1;
-        else if (a.name.toLowerCase() < b.name.toLowerCase())
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      this.visbocenters.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.updatedAt > b.updatedAt)
-          result = 1;
-        else if (a.updatedAt < b.updatedAt)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
-      // sort VP Count
-      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount })
+    if (this.sortColumn === 1) {
+      this.visbocenters.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
+    } else if (this.sortColumn === 2) {
+      this.visbocenters.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    } else if (this.sortColumn === 3) {
+      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount; });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visbocenters.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

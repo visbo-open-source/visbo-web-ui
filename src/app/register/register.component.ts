@@ -6,15 +6,13 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
-import { environment } from '../../environments/environment';
-
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
 
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   model: any = {};
   PWPolicy: string;
   PWPolicyDescription: string;
@@ -32,9 +30,9 @@ export class RegisterComponent {
   ngOnInit() {
     this.getPWPolicy();
     const id = this.route.snapshot.paramMap.get('id');
-    this.hash = this.route.snapshot.queryParams.hash
+    this.hash = this.route.snapshot.queryParams.hash;
     if (id) {
-      this.log(`Register for User ${id} hash ${this.hash}`)
+      this.log(`Register for User ${id} hash ${this.hash}`);
       this.userRegister = id;
     } else {
       this.userRegister = undefined;
@@ -44,7 +42,7 @@ export class RegisterComponent {
 
   register() {
     this.loading = true;
-    this.log(`Call register Service`)
+    this.log(`Call register Service`);
     if (this.userRegister) {
       this.model._id = this.userRegister;
     }
@@ -59,7 +57,7 @@ export class RegisterComponent {
           this.router.navigate(['login']);
         },
         error => {
-          this.log(`Error during Create User ${error.error.message}`)
+          this.log(`Error during Create User ${error.error.message}`);
           this.alertService.error(error.error.message);
           this.loading = false;
         }
@@ -71,8 +69,8 @@ export class RegisterComponent {
       .subscribe(
         data => {
           this.log(`Init PW Policy success ${JSON.stringify(data)}`);
-          this.PWPolicy = data.PWPolicy
-          this.PWPolicyDescription = data.Description
+          this.PWPolicy = data.PWPolicy;
+          this.PWPolicyDescription = data.Description;
 
         },
         error => {

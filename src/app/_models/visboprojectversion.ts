@@ -2,7 +2,7 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
-};
+}
 
 export class VPVDelivery {
   id: number;
@@ -17,7 +17,7 @@ export class VPVDelivery {
 
   fullName: string;
   status: string;
-};
+}
 
 export class VPVKeyMetrics {
   costCurrentActual: number;
@@ -38,7 +38,7 @@ export class VPVKeyMetrics {
   deliverableCompletionBaseLastTotal: number;
   deliverableDelayCurrentActual: number;
   deliverableDelayCurrentTotal: number;
-};
+}
 
 export class VPVKeyMetricsCalc {
   _id: string;
@@ -66,7 +66,7 @@ export class VPVKeyMetricsCalc {
   deliveryCompletionTotal: number;
   deliveryCompletionActual: number;
   keyMetrics: VPVKeyMetrics;
-};
+}
 
 export class VisboProjectVersion {
   _id: string;
@@ -102,7 +102,7 @@ export class VisboProjectVersion {
 
   keyMetrics: VPVKeyMetrics;
   cost: VPVCost[];
-  deliveries: VPVDelivery[]
+  deliveries: VPVDelivery[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

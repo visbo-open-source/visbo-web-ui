@@ -5,11 +5,12 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { LoginComponent } from '../login/login.component';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-systasks',
@@ -33,7 +34,7 @@ export class SystasksComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.systemVC = this.visbocenterService.getSysVCId()
+    this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboTasks();
   }
 
@@ -54,16 +55,20 @@ export class SystasksComponent implements OnInit {
       );
   }
 
-  helperTaskIndex(taskIndex: number):void {
-    this.taskIndex = taskIndex
+  helperTaskIndex(taskIndex: number): void {
+    this.taskIndex = taskIndex;
   }
 
   pageTaskIndex(increment: number): void {
-    var newtaskIndex: number;
+    let newtaskIndex: number;
     newtaskIndex = this.taskIndex + increment;
-    if (newtaskIndex < 0) newtaskIndex = 0
-    if (newtaskIndex >= this.vcsetting.length) newtaskIndex = this.vcsetting.length-1
-    this.taskIndex = newtaskIndex
+    if (newtaskIndex < 0) {
+      newtaskIndex = 0;
+    }
+    if (newtaskIndex >= this.vcsetting.length) {
+      newtaskIndex = this.vcsetting.length - 1;
+    }
+    this.taskIndex = newtaskIndex;
   }
 
   executeTask(): void {
@@ -84,62 +89,58 @@ export class SystasksComponent implements OnInit {
   }
 
   sortTable(n) {
-    if (!this.vcsetting) return
-    this.log(`Sort Table Column ${n} ${this.sortColumn}`)
+    if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (this.sortColumn == undefined) this.sortColumn = 1;
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (this.sortColumn === undefined) {
+        this.sortColumn = 1;
+      }
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 0 ) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = ( n === 0 ) ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
-      this.log(`Sort Order ${this.sortAscending}`)
     }
-    // this.log(`Sort VC Column ${this.sortColumn} Asc ${this.sortAscending} `)
-    if (this.sortColumn == 1) {
+    if (this.sortColumn === 1) {
+      this.vcsetting.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+    } else if (this.sortColumn === 2) {
       this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.name > b.name)
+        let result = 0;
+        if (a.value.lastRun > b.value.lastRun) {
           result = 1;
-        else if (a.name < b.name)
+        } else if (a.value.lastRun < b.value.lastRun) {
           result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.value.lastRun > b.value.lastRun)
-          result = 1;
-        else if (a.value.lastRun < b.value.lastRun)
-          result = -1;
+        }
         return result;
-      })
-    } else if (this.sortColumn == 3) {
+      });
+    } else if (this.sortColumn === 3) {
       this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.value.nextRun > b.value.nextRun)
+        let result = 0;
+        if (a.value.nextRun > b.value.nextRun) {
           result = 1;
-        else if (a.value.nextRun < b.value.nextRun)
+        } else if (a.value.nextRun < b.value.nextRun) {
           result = -1;
+        }
         return result;
-      })
-    } else if (this.sortColumn == 4) {
+      });
+    } else if (this.sortColumn === 4) {
       this.vcsetting.sort(function(a, b) {
-        var val1 = 0, val2 = 0;
-        if (a.value.taskSpecific && a.value.taskSpecific.result ) val1 = a.value.taskSpecific.result
-        if (b.value.taskSpecific && b.value.taskSpecific.result ) val2 = b.value.taskSpecific.result
-        return val1 - val2
-      })
+        let val1 = 0, val2 = 0;
+        if (a.value.taskSpecific && a.value.taskSpecific.result ) {
+          val1 = a.value.taskSpecific.result;
+        }
+        if (b.value.taskSpecific && b.value.taskSpecific.result ) {
+          val2 = b.value.taskSpecific.result;
+        }
+        return val1 - val2;
+      });
     }
-
     if (!this.sortAscending) {
-      this.log(`Sort VC Column Reverse `)
       this.vcsetting.reverse();
     }
   }

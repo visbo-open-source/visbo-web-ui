@@ -1,6 +1,6 @@
 export enum VPTYPE {
-    "Project" = 0, "Portfolio" = 1, "Template" = 2
-};
+    'Project' = 0, 'Portfolio' = 1, 'Template' = 2
+}
 
 export class VPVariant {
   _id: string;
@@ -32,7 +32,7 @@ export class VisboProject {
   vc: {
     name: string;
     deletedAt: Date;
-  }
+  };
   perm: {system: number, vc: number, vp: number};
   deletedAt: Date;
 }

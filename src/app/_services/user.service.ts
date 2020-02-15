@@ -7,7 +7,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 import { VisboUser, VisboUserResponse } from '../_models/login';
 
@@ -43,7 +42,7 @@ export class UserService {
     return this.http.put<VisboUserResponse>(this.profileUrl, user, httpOptions)
       .pipe(
         map(response => response.user),
-        tap(user => this.log(`updated User Profile ${user.email} `)),
+        tap(resultUser => this.log(`updated User Profile ${resultUser.email} `)),
         catchError(this.handleError<any>('updateUserProfile'))
       );
   }

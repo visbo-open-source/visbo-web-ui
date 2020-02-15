@@ -9,8 +9,6 @@ import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { environment } from '../../environments/environment';
-
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html'
@@ -31,19 +29,18 @@ export class UserProfileComponent implements OnInit {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    //private location: Location,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.getPWPolicy();
-    this.log(`Start init User Get Profile `);
-    this.modelPw = {}
+    this.log('Start init User Get Profile');
+    this.modelPw = {};
     this.getUserProfile();
   }
 
   getUserProfile(): void {
-    this.log("User Get Profile");
+    this.log('User Get Profile');
     this.userService.getUserProfile()
       .subscribe(
         user => {
@@ -74,7 +71,9 @@ export class UserProfileComponent implements OnInit {
   saveUserProfile(): void {
     this.loading = true;
     this.log(`Save profile info now ${this.model.email}`);
-    if (!this.user.profile) this.user.profile = new VisboUserProfile;
+    if (!this.user.profile) {
+      this.user.profile = new VisboUserProfile;
+    }
     this.user.profile.firstName = this.model.firstName;
     this.user.profile.lastName = this.model.lastName;
     this.user.profile.company = this.model.company;
@@ -100,7 +99,7 @@ export class UserProfileComponent implements OnInit {
         },
         error => {
           this.log(`update User profile failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error('Permission Denied');
           } else {
             this.alertService.error(error.error.message);
@@ -111,12 +110,13 @@ export class UserProfileComponent implements OnInit {
   }
 
   passwordInit(): void {
-    this.modelPw = {}
+    this.modelPw = {};
   }
 
   passwordChange(): void {
     this.log(`Password Change ${this.model.email} Len Old ${this.modelPw.oldpassword.length} New ${this.modelPw.newpassword.length}`);
-    var model: any = {};
+    let model: any;
+    model = {};
     model.oldpassword = this.modelPw.oldpassword;
     model.password = this.modelPw.newpassword;
 
@@ -139,7 +139,7 @@ export class UserProfileComponent implements OnInit {
         },
         error => {
           this.log(`change password failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
+          if (error.status === 403) {
             this.alertService.error('Permission Denied');
           } else {
             this.alertService.error(error.error.message);
@@ -157,8 +157,8 @@ export class UserProfileComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Init PW Policy success ${JSON.stringify(data)}`);
-          this.PWPolicy = data.PWPolicy
-          this.PWPolicyDescription = data.Description
+          this.PWPolicy = data.PWPolicy;
+          this.PWPolicyDescription = data.Description;
 
         },
         error => {

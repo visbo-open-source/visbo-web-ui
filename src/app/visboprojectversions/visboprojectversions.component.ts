@@ -12,7 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { LoginComponent } from '../login/login.component';
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboprojectversions',
@@ -23,7 +23,7 @@ export class VisboProjectVersionsComponent implements OnInit {
   visboprojectversions: VisboProjectVersion[];
   vpSelected: string;
   vpActive: VisboProject;
-  deleted: boolean = false;
+  deleted = false;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -37,7 +37,6 @@ export class VisboProjectVersionsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
@@ -51,13 +50,14 @@ export class VisboProjectVersionsComponent implements OnInit {
   }
 
   hasVPPerm(perm: number): boolean {
-    if (this.combinedPerm == undefined) return false
-    return (this.combinedPerm.vp & perm) > 0
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) !== 0;
   }
 
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    var i: number;
     this.vpSelected = id;
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -72,7 +72,7 @@ export class VisboProjectVersionsComponent implements OnInit {
                 visboprojectversions => this.visboprojectversions = visboprojectversions,
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  if (error.status == 403) {
+                  if (error.status === 403) {
                     this.alertService.error(`Permission Denied for Visbo Project Versions`);
                   } else {
                     this.alertService.error(error.error.message);
@@ -82,7 +82,7 @@ export class VisboProjectVersionsComponent implements OnInit {
           },
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status == 403) {
+            if (error.status === 403) {
               this.alertService.error(`Permission Denied for Visbo Project`);
             } else {
               this.alertService.error(error.error.message);
@@ -96,7 +96,7 @@ export class VisboProjectVersionsComponent implements OnInit {
           visboprojectversions => this.visboprojectversions = visboprojectversions,
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status == 403) {
+            if (error.status === 403) {
               this.alertService.error(`Permission Denied for Visbo Project Versions`);
             } else {
               this.alertService.error(error.error.message);
@@ -107,90 +107,52 @@ export class VisboProjectVersionsComponent implements OnInit {
   }
 
   toggleVisboProjectVersions(): void {
-    this.deleted = !this.deleted
-    var url = this.route.snapshot.url.join('/')
+    this.deleted = !this.deleted;
+    const url = this.route.snapshot.url.join('/');
     this.log(`VP toggleVisboProjectVersions ${this.deleted} URL ${url}`);
     this.getVisboProjectVersions();
     // MS TODO: go to the current url and add delete flag
     this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion):void {
+  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
     this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
-}
+  }
 
-  gotoVPDetail(visboproject: VisboProject):void {
+  gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
   sortVPVTable(n) {
-    if (!this.visboprojectversions) return
-    if (n != undefined) {
-      if (n != this.sortColumn) {
+    if (!this.visboprojectversions) {
+      return;
+    }
+    if (n !== undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 5 ) ? true : false;
+        this.sortAscending = ( n === 5 ) ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    if (this.sortColumn == 1) {
-      // sort by VPV Timestamp
+    if (this.sortColumn === 1) {
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+    } else if (this.sortColumn === 2) {
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.endDate, b.endDate); });
+    } else if (this.sortColumn === 3) {
+      this.visboprojectversions.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
+    } else if (this.sortColumn === 4) {
+      this.visboprojectversions.sort(function(a, b) { return a.Erloes - b.Erloes; });
+    } else if (this.sortColumn === 5) {
       this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        if (a.timestamp > b.timestamp)
-          result = 1;
-        else if (a.timestamp < b.timestamp)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      // sort by VPV endDate
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.endDate > b.endDate)
-          result = 1;
-        else if (a.endDate < b.endDate)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
-      // sort by VPV ampelStatus
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.ampelStatus > b.ampelStatus)
-          result = 1;
-        else if (a.ampelStatus < b.ampelStatus)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 4) {
-      // sort by VPV Erloes
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.Erloes > b.Erloes)
-          result = 1;
-        else if (a.Erloes < b.Erloes)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 5) {
-      // sort by VC vpvCount
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        if (a.variantName.toLowerCase() > b.variantName.toLowerCase())
-          result = 1;
-        else if (a.variantName.toLowerCase() < b.variantName.toLowerCase())
-          result = -1;
-        return result
-      })
+        return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
+      });
     }
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();

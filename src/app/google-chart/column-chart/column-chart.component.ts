@@ -15,11 +15,11 @@ export class ColumnChartComponent implements OnInit {
   @Input() graphOptions: any;
 
   constructor(
-    private gChartService : GoogleChartService,
+    private gChartService: GoogleChartService,
     private messageService: MessageService
   ) {
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table']});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
@@ -27,12 +27,13 @@ export class ColumnChartComponent implements OnInit {
     // this.log(`Google Chart Column Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Column Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let options = {'title':'Column Chart'};
+    const options = {'title': 'Column Chart'};
 
     chart.draw(data, this.graphOptions || options);
   }

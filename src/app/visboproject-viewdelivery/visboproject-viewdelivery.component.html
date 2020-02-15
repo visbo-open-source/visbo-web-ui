@@ -1,4 +1,4 @@
-<visbo-navbar></visbo-navbar>
+<app-usernavbar></app-usernavbar>
 <div class='well'>
   <div class='row'>
     <div class='col'>
@@ -38,18 +38,16 @@
     <hr>
     <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i> -->
     <div class="row">
-      <!-- <div class="col-2"></div> -->
-      <div *ngIf="chart && graphPastDataPieChart.length > 1" class="col align-center" >
+      <div *ngIf="chart && graphUnFinishedDataPieChart.length > 1" class="col align-center" >
         <div>
-          <app-pie-chart [elementID]="divPastPieChart" [graphData]="graphPastDataPieChart" [graphDataBefore]="graphBeforePastDataPieChart" [graphLegend]="graphPastPieLegend" [graphOptions]="graphPastOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
+          <app-pie-chart [elementID]="divUnFinishedPieChart" [graphData]="graphUnFinishedDataPieChart" [graphDataBefore]="graphBeforeUnFinishedDataPieChart" [graphLegend]="graphUnFinishedPieLegend" [graphOptions]="graphUnFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
         </div>
       </div>
-      <div *ngIf="chart && graphFutureDataPieChart.length > 1" class="col align-center" >
+      <div *ngIf="chart && graphFinishedDataPieChart.length > 1" class="col align-center" >
         <div>
-          <app-pie-chart [elementID]="divFuturePieChart" [graphData]="graphFutureDataPieChart" [graphDataBefore]="graphBeforeFutureDataPieChart" [graphLegend]="graphFuturePieLegend" [graphOptions]="graphFutureOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
+          <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
         </div>
       </div>
-      <!-- <div class="col-2"></div> -->
     </div>
 
 
@@ -69,9 +67,9 @@
         <tbody>
           <tr *ngFor="let delivery of vpvDelivery">
             <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
-            <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-            <td *ngIf="inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right font-weight-bold">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
-            <td *ngIf="!inFuture(delivery.dateVPV)" class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
+            <td *ngIf="delivery.percentDone == 1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <td *ngIf="delivery.percentDone != 1" class="font-weight-bold" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <td class="text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
 
             <td *ngIf="delivery.changeDays <= 0" class="text-right text-success" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
             <td *ngIf="delivery.changeDays > 0 && delivery.changeDays <= 31" class="text-right text-warning" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>

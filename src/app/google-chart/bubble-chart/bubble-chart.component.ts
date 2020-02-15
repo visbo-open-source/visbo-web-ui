@@ -15,10 +15,10 @@ export class BubbleChartComponent implements OnInit {
   @Input() parentThis: any;
 
   constructor(
-    private gChartService : GoogleChartService
+    private gChartService: GoogleChartService
   ) {
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table']});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
@@ -26,23 +26,25 @@ export class BubbleChartComponent implements OnInit {
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Bubble Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
-    let parentThis = this.parentThis;
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const parentThis = this.parentThis;
 
     // parentThis.log("Google Chart Bubble Draw/Refresh");
-    let options = {'title':'Bubble Chart'};
+    const options = {'title': 'Bubble Chart'};
 
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {
-      var selectedItem = chart.getSelection()[0];
-      if (parentThis == undefined) console.log(`Bubble: The user clicked and this is undefined`)
-      else if (selectedItem) {
-        var row = selectedItem.row;
-        var label = data.getValue(selectedItem.row, 0);
-        parentThis.log(`Bubble: The user selected Row ${row} ${label}`)
+      const selectedItem = chart.getSelection()[0];
+      if (parentThis === undefined) {
+        console.log(`Bubble: The user clicked and this is undefined`);
+      } else if (selectedItem) {
+        const row = selectedItem.row;
+        const label = data.getValue(selectedItem.row, 0);
+        parentThis.log(`Bubble: The user selected Row ${row} ${label}`);
         parentThis.chartSelectRow(row, label);
       }
     }

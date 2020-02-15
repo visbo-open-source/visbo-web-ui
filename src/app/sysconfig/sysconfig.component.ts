@@ -4,14 +4,14 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
-import { LoginComponent } from '../login/login.component';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
 import { VGPermission, VGPSystem } from '../_models/visbogroup';
+
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysconfig',
@@ -37,9 +37,9 @@ export class SysconfigComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.systemVC = this.visbocenterService.getSysVCId()
+    this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboConfig();
-    this.combinedPerm = this.visbocenterService.getSysAdminRole()
+    this.combinedPerm = this.visbocenterService.getSysAdminRole();
     // this.log(`getVisboConfig Perm ${JSON.stringify(this.combinedPerm)}`);
   }
 
@@ -61,7 +61,7 @@ export class SysconfigComponent implements OnInit {
 
   getMainInfo(entry: VisboSetting): string {
     // this.log('get Main Value ' + entry.name);
-    var result = "";
+    let result = '';
     if (entry.value) {
       switch (entry.name) {
         case 'UI URL':
@@ -71,10 +71,10 @@ export class SysconfigComponent implements OnInit {
           result = entry.value.auth && entry.value.auth.user;
           break;
         case 'PW Policy':
-          result = (entry.value.Description || "").substring(0,60).concat("...");
+          result = (entry.value.Description || '').substring(0, 60).concat('...');
           break;
         case 'DEBUG':
-          result = JSON.stringify(entry.value).substring(0,60).concat("...");
+          result = JSON.stringify(entry.value).substring(0, 60).concat('...');
           break;
         case 'Log Age':
           result = entry.value.duration;
@@ -84,22 +84,22 @@ export class SysconfigComponent implements OnInit {
           break;
       }
     }
-    return result || "";
+    return result || '';
   }
 
-  helperConfigName(config: string):number {
-    for (var i = 0; i < this.vcsetting.length; i++) {
-      if (this.vcsetting[i].name == config) {
+  helperConfigName(config: string): number {
+    for (let i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name === config) {
         return i;
       }
     }
     return undefined;
   }
 
-  editConfigName(config: string):number {
-    this.log(`Edit Config  ${config}`)
-    for (var i = 0; i < this.vcsetting.length; i++) {
-      if (this.vcsetting[i].name == config) {
+  editConfigName(config: string): number {
+    this.log(`Edit Config  ${config}`);
+    for (let i = 0; i < this.vcsetting.length; i++) {
+      if (this.vcsetting[i].name === config) {
         this.editIndex = i;
         return i;
       }
@@ -107,9 +107,9 @@ export class SysconfigComponent implements OnInit {
     return undefined;
   }
 
-  updateConfig(setting: VisboSetting):void {
+  updateConfig(setting: VisboSetting): void {
     // if (!setting) return;
-    this.log(`Update Config  ${JSON.stringify(setting)}`)
+    this.log(`Update Config  ${JSON.stringify(setting)}`);
     this.visbosettingService.updateVCSetting(this.systemVC, setting, true)
       .subscribe(
         data => {
@@ -125,50 +125,31 @@ export class SysconfigComponent implements OnInit {
 }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.combinedPerm.system & perm) > 0
+    return (this.combinedPerm.system & perm) > 0;
   }
 
   sortTable(n) {
-    if (!this.vcsetting) return
-    this.log(`Sort Table Column ${n} old ${this.sortColumn}`)
+    if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 1 ) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = ( n === 1 ) ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    // this.log(`Sort VC Column ${this.sortColumn} Asc ${this.sortAscending} `)
-    if (this.sortColumn == 1) {
-      this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.name > b.name)
-          result = 1;
-        else if (a.name < b.name)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      return 0; // No Sorting
-    } else if (this.sortColumn == 3) {
-      this.vcsetting.sort(function(a, b) {
-        var result = 0
-        if (a.updatedAt > b.updatedAt)
-          result = 1;
-        else if (a.updatedAt < b.updatedAt)
-          result = -1;
-        return result;
-      })
+    if (this.sortColumn === 1) {
+      this.vcsetting.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+    } else if (this.sortColumn === 3) {
+      this.vcsetting.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
     }
 
     if (!this.sortAscending) {
-      this.log(`Sort VC Column Reverse `)
       this.vcsetting.reverse();
     }
   }
