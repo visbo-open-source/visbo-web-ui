@@ -4,13 +4,12 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbocenters',
@@ -30,7 +29,6 @@ export class SysVisboCentersComponent implements OnInit {
 
   constructor(
     private visbocenterService: VisboCenterService,
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,

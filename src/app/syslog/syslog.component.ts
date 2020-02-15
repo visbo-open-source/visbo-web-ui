@@ -11,7 +11,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-syslog',

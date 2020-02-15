@@ -6,11 +6,10 @@ import { FormsModule } from '@angular/forms';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -42,7 +41,6 @@ export class VisboprojectDetailComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
     private location: Location,

@@ -5,7 +5,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -14,9 +13,7 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { LoginComponent } from '../login/login.component';
-
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboprojects',
@@ -36,7 +33,6 @@ export class VisboProjectsComponent implements OnInit {
   permVP: any = VGPVP;
 
   constructor(
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private visboprojectService: VisboProjectService,

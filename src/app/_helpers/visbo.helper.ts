@@ -3,7 +3,7 @@ export function visboCmpString(first: string, second: string): number {
   let result = 0;
   if (first < second) {
     result = -1;
-  } else if (first > second){
+  } else if (first > second) {
     result = 1;
   }
   return result;
@@ -13,7 +13,7 @@ export function visboCmpDate(first: Date, second: Date): number {
   let result = 0;
   if (first < second) {
     result = -1;
-  } else if (first > second){
+  } else if (first > second) {
     result = 1;
   }
   return result;

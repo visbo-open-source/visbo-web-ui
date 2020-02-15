@@ -4,13 +4,12 @@ import { Location } from '@angular/common';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 function encodeCSV(source: string): string {
   let result: string;
@@ -65,7 +64,6 @@ export class VisbocenterAuditComponent implements OnInit {
   constructor(
     private visboauditService: VisboAuditService,
     private visbocenterService: VisboCenterService,
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,

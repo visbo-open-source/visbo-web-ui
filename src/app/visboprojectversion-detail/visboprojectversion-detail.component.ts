@@ -3,7 +3,6 @@ import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStat
 import { Location } from '@angular/common';
 
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -26,7 +25,6 @@ export class VisboProjectVersionDetailComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
     private visboprojectversionService: VisboProjectVersionService,

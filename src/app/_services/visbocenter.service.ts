@@ -10,7 +10,6 @@ import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 

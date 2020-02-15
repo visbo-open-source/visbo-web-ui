@@ -7,7 +7,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboUser } from '../_models/login';
 import { SysUserService } from '../_services/sysuser.service';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysuser',

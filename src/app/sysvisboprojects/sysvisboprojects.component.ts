@@ -5,7 +5,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -14,7 +13,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisboprojects',
@@ -34,7 +33,6 @@ export class SysVisboProjectsComponent implements OnInit {
   sortColumn: number;
 
   constructor(
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private visboprojectService: VisboProjectService,

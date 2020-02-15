@@ -6,8 +6,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { AuthenticationService } from './authentication.service';
-
 import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
@@ -29,7 +27,6 @@ export class VisboProjectVersionService {
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-    private authenticationService: AuthenticationService,
     private env: EnvService
   ) { }
 

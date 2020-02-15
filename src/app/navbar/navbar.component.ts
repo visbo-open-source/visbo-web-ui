@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
@@ -22,7 +21,6 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private messageService: MessageService,
-    public authenticationService: AuthenticationService,
     public visbocenterService: VisboCenterService
   ) { }
 

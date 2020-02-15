@@ -6,13 +6,12 @@ import { FormsModule } from '@angular/forms';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -50,7 +49,6 @@ export class VisbocenterDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
-    private authenticationService: AuthenticationService,
     private alertService: AlertService
   ) { }
 

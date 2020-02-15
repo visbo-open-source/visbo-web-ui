@@ -9,7 +9,6 @@ import { EnvService } from './env.service';
 import { VisboAudit, VisboAuditResponse, QueryAuditType } from '../_models/visboaudit';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 

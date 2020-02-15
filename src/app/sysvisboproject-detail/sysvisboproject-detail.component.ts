@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStat
 import { FormsModule } from '@angular/forms';
 
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -13,7 +12,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper'
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisboproject-detail',
@@ -46,7 +45,6 @@ export class SysvisboprojectDetailComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
-    private authenticationService: AuthenticationService,
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
     private location: Location,

@@ -1,0 +1,17 @@
+{
+	"login": {
+		"btnLogin": "Login",
+		"btnPwForgotten": "Password forgotten!",
+		"btnRegister": "Register",
+		"lblEmail": "Your e-mail",
+		"lblPassword": "Password",
+		"msg": {
+			"loginSuccess": "You have authenticated successfully!"
+		},
+		"msgEmailRequired": "A correct e-mail address is required!",
+		"msgLoginSuccess": "You were authenticated successfully",
+		"msgPwRequired": "Password is required!",
+		"msgSuccess": "Successfully Authenticated",
+		"title": "Welcome to the Visbo Project Warehouse"
+	}
+}

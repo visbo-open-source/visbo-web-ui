@@ -9,7 +9,6 @@ import { EnvService } from './env.service';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
