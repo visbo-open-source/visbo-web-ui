@@ -158,8 +158,8 @@
             <tr>
               <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
               <th class="text-right" (click)="sortKeyMetricsTable(2)" title="Actual Cost, plan-to-date">AC</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="Estimated Cost at Completion, plan-to-date">EAC</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="Planned cumulated Cost, baseline">PV, baseline</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="Estimated Cost at Completion, plan-to-date">EAC</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="Budget at Completion, baseline">BAC</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
               <th class="text-right d-none d-lg-table-cell">Info</th>
@@ -171,10 +171,10 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{100 + vp.savingCostActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{100 + vp.savingCostTotal | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€</td>
-              <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}} k€</td>
+              <td class="text-right" title="BAC: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
+              <td class="text-right" title="BAC: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
               <td class="text-right">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
@@ -206,8 +206,10 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <!-- <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td> -->
+              <td class="text-right">{{vp.keyMetrics.timeCompletionActual | number:'1.0-0'}}</td>
+              <td class="text-right" title="DAC: {{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}</td>
               <!-- <td class="text-right">{{vp.keyMetrics.timeDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}}</td> -->
@@ -242,8 +244,8 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}</td>
+              <td class="text-right" title="DVAC: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}}</td>
               <!-- <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentTotal | number:'1.0-0'}}</td> -->
