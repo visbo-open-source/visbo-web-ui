@@ -49,6 +49,7 @@ import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-au
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
 import { VisboProjectViewCostComponent } from './visboproject-viewcost/visboproject-viewcost.component';
 import { VisboProjectViewDeliveryComponent } from './visboproject-viewdelivery/visboproject-viewdelivery.component';
+import { VisboProjectViewDeadlineComponent } from './visboproject-viewdeadline/visboproject-viewdeadline.component';
 
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
@@ -92,6 +93,7 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboProjectKeyMetricsComponent,
     VisboProjectViewCostComponent,
     VisboProjectViewDeliveryComponent,
+    VisboProjectViewDeadlineComponent,
     VisboProjectVersionsComponent,
     VisboProjectVersionDetailComponent,
     VisboPortfolioVersionsComponent,
