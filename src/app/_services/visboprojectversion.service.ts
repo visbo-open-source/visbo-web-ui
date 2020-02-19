@@ -233,6 +233,22 @@ export class VisboProjectVersionService {
       );
   }
 
+   /** GET Deadline Calculation from the server for the specified vpv id */
+   getDeadline(id: string): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/calc`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    params = params.append('type', 'Deadlines');
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(visboprojectversions => this.log(`fetched DeadlineCalc for ${id}`)),
+        catchError(this.handleError('getVisboProjectVersions', []))
+      );
+  }
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.

@@ -19,6 +19,22 @@ export class VPVDelivery {
   status: string;
 }
 
+
+export class VPVDeadline {
+  id: number;
+  name: string;
+  phasePFV: string;
+  phaseVPV: string;
+  type: string;
+  endDatePFV: Date;
+  endDateVPV: Date;
+  changeDays: number;
+  percentDone: number;
+
+  fullName: string;
+  status: string;
+}
+
 export class VPVKeyMetrics {
   costCurrentActual: number;
   costCurrentTotal: number;
@@ -103,6 +119,7 @@ export class VisboProjectVersion {
   keyMetrics: VPVKeyMetrics;
   cost: VPVCost[];
   deliveries: VPVDelivery[];
+  deadlines: VPVDeadline[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

@@ -587,9 +587,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   gotoViewDelivery(): void {
-    this.log(`goto VPV View Cost ${this.vpvKeyMetricActive.vpid} `);
+    this.log(`goto VPV View Delivery ${this.vpvKeyMetricActive.vpid} `);
     const queryParams = { vpvid: this.vpvKeyMetricActive._id };
     this.router.navigate(['vpViewDelivery/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
+  }
+  
+  gotoViewDeadline(): void {
+    this.log(`goto VPV View Deadline ${this.vpvKeyMetricActive.vpid} `);
+    const queryParams = { vpvid: this.vpvKeyMetricActive._id };
+    this.router.navigate(['vpViewDeadline/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {

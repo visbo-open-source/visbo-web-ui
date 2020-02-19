@@ -7,7 +7,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { VisboProjectVersion, VPVDelivery } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVDeadline} from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -26,9 +26,9 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
-  vpvDelivery: VPVDelivery[];
+  vpvDeadline: VPVDeadline[];
   filterStatus: string;
-  vpvDeliveryDate: any = [];
+  vpvDeadlineDate: any = [];
   vpvActualDataUntil: Date;
   deleted = false;
 
@@ -62,8 +62,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
 
   sortAscending = false;
   sortColumn = 1;
-  sortAscendingDelivery = false;
-  sortColumnDelivery = 1;
+  sortAscendingDeadline = false;
+  sortColumnDeadline = 1;
 
   today: Date = new Date();
 
@@ -129,7 +129,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
                       }
                     }
                   }
-                  this.visboDeliveryCalc(initIndex);
+                  this.visboDeadlineCalc(initIndex);
                   if (this.hasVPPerm(this.permVP.ViewAudit)) {
                     this.chart = chartFlag;
                   } else {
@@ -157,7 +157,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
   }
 
-  visboDeliveryCalc(index: number): void {
+  visboDeadlineCalc(index: number): void {
     const chartFlag = this.chart;
     this.chart = false;
     this.vpvActive = this.visboprojectversions[index];
@@ -169,24 +169,24 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       return;
     }
 
-    this.log(`Delivery Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.visboprojectversionService.getDelivery(this.vpvActive._id)
+    this.log(`Deadline Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.visboprojectversionService.getDeadline(this.vpvActive._id)
       .subscribe(
         visboprojectversions => {
-          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deliveries.length} Delivery entries`);
-          if (visboprojectversions.length !== 1 || !visboprojectversions[0].deliveries) {
-            this.log(`get VPV Calc: Reset Delivery to empty `);
-            this.initDeliveries(undefined);
+          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deadlines.length} Deadline entries`);
+          if (visboprojectversions.length !== 1 || !visboprojectversions[0].deadlines) {
+            this.log(`get VPV Calc: Reset Deadlines to empty `);
+            this.initDeadlines(undefined);
           } else {
-            this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deliveries.length} Actual ${visboprojectversions[0].actualDataUntil}`);
-            this.initDeliveries(visboprojectversions[0].deliveries);
+            this.log(`Store Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadlines.length} Actual ${visboprojectversions[0].actualDataUntil}`);
+            this.initDeadlines(visboprojectversions[0].deadlines);
             this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
-            this.visboprojectversions[index].deliveries = this.vpvDelivery;
+            this.visboprojectversions[index].deadlines = this.vpvDeadline;
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
-          this.visboViewFinishedDeliveryPie();
-          this.visboViewUnFinishedDeliveryPie();
+          this.visboViewFinishedDeadlinePie();
+          this.visboViewUnFinishedDeadlinePie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -204,21 +204,21 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       );
   }
 
-  initDeliveries(deliveries: VPVDelivery[]): void {
-    const filterDeliveries: VPVDelivery[] = [];
-    if (deliveries === undefined) {
-      this.vpvDelivery = deliveries;
+  initDeadlines(deadlines: VPVDeadline[]): void {
+    const filterDeadlines: VPVDeadline[] = [];
+    if (deadlines === undefined) {
+      this.vpvDeadline = deadlines;
       return;
     }
     // generate long Names
-    for (let i = 0; i < deliveries.length; i++) {
-      deliveries[i].fullName = this.getFullName(deliveries[i]);
-      deliveries[i].status = this.statusList[this.getStatus(deliveries[i])];
-      if (!this.filterStatus  || this.filterStatus ===  deliveries[i].status) {
-        filterDeliveries.push(deliveries[i]);
+    for (let i = 0; i < deadlines.length; i++) {
+      deadlines[i].fullName = this.getFullName(deadlines[i]);
+      deadlines[i].status = this.statusList[this.getStatus(deadlines[i])];
+      if (!this.filterStatus  || this.filterStatus ===  deadlines[i].status) {
+        filterDeadlines.push(deadlines[i]);
       }
     }
-    this.vpvDelivery = filterDeliveries;
+    this.vpvDeadline = filterDeadlines;
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -230,12 +230,12 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     return localA.getTime() === localB.getTime();
   }
 
-  getStatus(element: VPVDelivery): number {
+  getStatus(element: VPVDeadline): number {
 
     const refDate = this.vpvActive.timestamp;
 
     let status = 0;
-    if (element.datePFV <= refDate && element.percentDone < 1) {
+    if (element.endDatePFV <= refDate && element.percentDone < 1) {
       status = 3;
     } else if (element.changeDays < 0) {
       status = 0;
@@ -247,10 +247,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     return status;
   }
 
-  visboViewFinishedDeliveryPie(): void {
-    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+  visboViewFinishedDeadlinePie(): void {
+    // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
-        title: 'Finished Delivery Status',
+        title: 'Finished Deadline Status',
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -259,24 +259,24 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
                         ['number', 'Count']
       ];
 
-    const finishedDeliveryStatus: any = [];
+    const finishedDeadlineStatus: any = [];
     const graphData = [];
     let status;
     const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
-      finishedDeliveryStatus[i] = 0;
+      finishedDeadlineStatus[i] = 0;
     }
     let nonEmpty = false;
-    for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if (this.vpvDelivery[i].percentDone === 1) {
+    for (let i = 0; i < this.vpvDeadline.length; i++) {
+      if (this.vpvDeadline[i].percentDone === 1) {
         // finished entries
-        status = this.getStatus(this.vpvDelivery[i]);
-        finishedDeliveryStatus[status] += 1;
+        status = this.getStatus(this.vpvDeadline[i]);
+        finishedDeadlineStatus[status] += 1;
         nonEmpty = true;
       }
     }
-    for (let i = 0; i < finishedDeliveryStatus.length; i++) {
-      graphData.push([this.statusList[i], finishedDeliveryStatus[i]]);
+    for (let i = 0; i < finishedDeadlineStatus.length; i++) {
+      graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
     }
 
     this.graphBeforeFinishedDataPieChart = this.graphFinishedDataPieChart;
@@ -287,10 +287,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
   }
 
-  visboViewUnFinishedDeliveryPie(): void {
-    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+  visboViewUnFinishedDeadlinePie(): void {
+    // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphUnFinishedOptionsPieChart = {
-        title: 'Unfinished Delivery Status',
+        title: 'Unfinished Deadline Status',
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -299,24 +299,24 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
                         ['number', 'Count']
       ];
 
-    const unFinishedDeliveryStatus: any = [];
+    const unFinishedDeadlineStatus: any = [];
     const graphData = [];
     let status;
     const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
-      unFinishedDeliveryStatus[i] = 0;
+      unFinishedDeadlineStatus[i] = 0;
     }
     let nonEmpty = false;
-    for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if (this.vpvDelivery[i].percentDone < 1) {
+    for (let i = 0; i < this.vpvDeadline.length; i++) {
+      if (this.vpvDeadline[i].percentDone < 1) {
         // unfinished entries
-        status = this.getStatus(this.vpvDelivery[i]);
-        unFinishedDeliveryStatus[status] += 1;
+        status = this.getStatus(this.vpvDeadline[i]);
+        unFinishedDeadlineStatus[status] += 1;
         nonEmpty = true;
       }
     }
-    for (let i = 0; i < unFinishedDeliveryStatus.length; i++) {
-      graphData.push([this.statusList[i], unFinishedDeliveryStatus[i]]);
+    for (let i = 0; i < unFinishedDeadlineStatus.length; i++) {
+      graphData.push([this.statusList[i], unFinishedDeadlineStatus[i]]);
     }
     this.graphBeforeUnFinishedDataPieChart = this.graphUnFinishedDataPieChart;
     if (nonEmpty) {
@@ -334,16 +334,20 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     } else {
       this.filterStatus = undefined;
     }
-    this.initDeliveries(this.vpvActive.deliveries);
+    this.initDeadlines(this.vpvActive.deadlines);
   }
 
 
-  getFullName(delivery: VPVDelivery): string {
+  getFullName(deadline: VPVDeadline): string {
     let result = '';
-    if (delivery.phaseVPV || delivery.phasePFV) {
-      result = result.concat(delivery.phaseVPV || delivery.phasePFV, ' / ');
-    }
-    result = result.concat(delivery.name);
+    if (deadline.phaseVPV || deadline.phasePFV) {
+      if (deadline.type == "Milestone") {
+        result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
+        result = result.concat(deadline.name);
+      } else {
+        result = result.concat(deadline.name);
+      }
+    }  
     return result;
   }
 
@@ -411,7 +415,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       newVersionIndex = i;
     }
     if (newVersionIndex >= 0) {
-      this.visboDeliveryCalc(newVersionIndex);
+      this.visboDeadlineCalc(newVersionIndex);
     }
   }
 
@@ -489,52 +493,52 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
   }
 
-  sortDeliveryTable(n?: number) {
-    if (!this.vpvDelivery) {
+  sortDeadlineTable(n?: number) {
+    if (!this.vpvDeadline) {
       return;
     }
     if (n !== undefined) {
-      if (n !== this.sortColumnDelivery) {
-        this.sortColumnDelivery = n;
-        this.sortAscendingDelivery = undefined;
+      if (n !== this.sortColumnDeadline) {
+        this.sortColumnDeadline = n;
+        this.sortAscendingDeadline = undefined;
       }
-      if (this.sortAscendingDelivery === undefined) {
+      if (this.sortAscendingDeadline === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscendingDelivery = ( n === 2 || n === 3 ) ? true : false;
+        this.sortAscendingDeadline = ( n === 2 || n === 3 ) ? true : false;
       } else {
-        this.sortAscendingDelivery = !this.sortAscendingDelivery;
+        this.sortAscendingDeadline = !this.sortAscendingDeadline;
       }
     } else {
-      this.sortColumnDelivery = 1;
-      this.sortAscendingDelivery = false;
+      this.sortColumnDeadline = 1;
+      this.sortAscendingDeadline = false;
     }
-    if (this.sortColumnDelivery === 1) {
-      // sort by Delivery Index
-      this.vpvDelivery.sort(function(a, b) {
+    if (this.sortColumnDeadline === 1) {
+      // sort by Deadline Index
+      this.vpvDeadline.sort(function(a, b) {
         return a.id - b.id;
       });
-    } else if (this.sortColumnDelivery === 2) {
-      this.vpvDelivery.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
-    } else if (this.sortColumnDelivery === 3) {
-      this.vpvDelivery.sort(function(a, b) {
-        return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
+    } else if (this.sortColumnDeadline === 2) {
+      this.vpvDeadline.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
+    } else if (this.sortColumnDeadline === 3) {
+      this.vpvDeadline.sort(function(a, b) {
+        return visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());
       });
-    } else if (this.sortColumnDelivery === 4) {
-      this.vpvDelivery.sort(function(a, b) { return visboCmpDate(a.dateVPV, b.dateVPV); });
-    } else if (this.sortColumnDelivery === 5) {
-      this.vpvDelivery.sort(function(a, b) { return a.changeDays - b.changeDays; });
-    } else if (this.sortColumnDelivery === 6) {
-      this.vpvDelivery.sort(function(a, b) { return a.percentDone - b.percentDone; });
+    } else if (this.sortColumnDeadline === 4) {
+      this.vpvDeadline.sort(function(a, b) { return visboCmpDate(a.endDateVPV, b.endDateVPV); });
+    } else if (this.sortColumnDeadline === 5) {
+      this.vpvDeadline.sort(function(a, b) { return a.changeDays - b.changeDays; });
+    } else if (this.sortColumnDeadline === 6) {
+      this.vpvDeadline.sort(function(a, b) { return a.percentDone - b.percentDone; });
     }
-    if (!this.sortAscendingDelivery) {
-      this.vpvDelivery.reverse();
+    if (!this.sortAscendingDeadline) {
+      this.vpvDeadline.reverse();
     }
   }
 
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewDelivery: ' + message);
+    this.messageService.add('VisboViewDeadline: ' + message);
   }
 
 }
