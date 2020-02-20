@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import 'jasmine';
 
-import { VisboProjectViewDeliveryComponent } from './visboproject-viewdelivery.component';
+import { VisboProjectViewDeadlineComponent } from './visboproject-viewdeadline.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 
-describe('VisboProjectViewDeliveryComponent', () => {
-  let component: VisboProjectViewDeliveryComponent;
-  let fixture: ComponentFixture<VisboProjectViewDeliveryComponent>;
+describe('VisboProjectViewDeadlineComponent', () => {
+  let component: VisboProjectViewDeadlineComponent;
+  let fixture: ComponentFixture<VisboProjectViewDeadlineComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        VisboProjectViewDeliveryComponent,
+        VisboProjectViewDeadlineComponent,
         NavbarComponent
       ]
     })
@@ -19,7 +19,7 @@ describe('VisboProjectViewDeliveryComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboProjectViewDeliveryComponent);
+    fixture = TestBed.createComponent(VisboProjectViewDeadlineComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
