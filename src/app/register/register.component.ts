@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
@@ -25,7 +27,9 @@ export class RegisterComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {
     this.getPWPolicy();
@@ -50,9 +54,11 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         data => {
           if (this.hash) {
-            this.alertService.success(`Congratulation, your e-mail address ${data.email} is now confirmed. Please login.`, true);
+            let message = this.translate.instant('register.msg.registerSuccess', {email: data.email});
+            this.alertService.success(message, true);
           } else {
-            this.alertService.success(`Congratulation, you registered successfully your e-mail address ${data.email}. Please check your e-Mail for confirmation.`, true);
+            let message = this.translate.instant('register.msg.registerSuccessConfirm', {email: data.email});
+            this.alertService.success(message, true);
           }
           this.router.navigate(['login']);
         },

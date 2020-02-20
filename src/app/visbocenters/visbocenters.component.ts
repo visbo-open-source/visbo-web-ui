@@ -53,47 +53,6 @@ export class VisboCentersComponent implements OnInit {
       );
   }
 
-  add(name: string, description: string): void {
-    name = name.trim();
-    description = description.trim();
-    this.log(`VC: Add VC: ${name}`);
-    if (!name) { return; }
-    this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter).subscribe(
-      vc => {
-        this.visbocenters.push(vc);
-        this.sortVCTable(undefined);
-        this.alertService.success(`Visbo Center ${vc.name} created successfully`);
-      },
-      error => {
-        this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status === 403) {
-          this.alertService.error(`Permission Denied for Visbo Center ${name}`);
-        } else if (error.status === 409) {
-          this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
-        } else {
-          this.alertService.error(error.error.message);
-        }
-      }
-    );
-  }
-
-  delete(visbocenter: VisboCenter): void {
-    // remove item from list
-    this.messageService.add(`VC: Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
-    this.visbocenters = this.visbocenters.filter(vc => vc !== visbocenter);
-    this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
-      error => {
-        // this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
-        this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status === 403) {
-          this.alertService.error(`Permission Denied: Visbo Center ${name}`);
-        } else {
-          this.alertService.error(error.error.message);
-        }
-      }
-    );
-  }
-
   gotoDetail(visbocenter: VisboCenter): void {
     this.router.navigate(['vcDetail/' + visbocenter._id]);
   }

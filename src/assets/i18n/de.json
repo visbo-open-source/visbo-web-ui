@@ -1,17 +1,437 @@
 {
 	"login": {
-		"btnLogin": "Login",
-		"btnPwForgotten": "Passwort vergessen!",
-		"btnRegister": "Registrieren",
-		"lblEmail": "E-Mail Adresse",
-		"lblPassword": "Passwort",
-		"msg": {
-			"loginSuccess": "Sie haben sich erfolgreich angemeldet!"
+		"lbl": {
+			"email": "Ihre E-Mail Adresse",
+			"password": "Passwort"
 		},
-		"msgEmailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
-		"msgLoginSuccess": "",
-		"msgPwRequired": "Passwort wird benötigt!",
-		"msgSuccess": "",
+		"btn": {
+			"login": "Login",
+			"pwForgotten": "Passwort vergessen?",
+			"register": "Registrieren"
+		},
+		"msg": {
+			"loginSuccess": "Sie haben sich erfolgreich angemeldet. Letzte Anmeldung am {{lastLogin}}",
+			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
+			"pwRequired": "Passwort wird benötigt!"
+		},
 		"title": "Willkommen im Visbo Project Warehouse"
+	},
+	"dashboard": {
+		"topvc": "Top Visbo Centers",
+		"topvp": "Top Visbo Projekte",
+		"projects": "Projekte",
+		"versions": "Versionen",
+		"detail": "Details"
+	},
+	"autologout": {
+		"msg": {
+			"sessionExpired": "AutoLogout: Sitzung abgelaufen, bitte melden Sie sich erneut an.",
+			"sessionExpires": "AutoLogout: Sitzung läuft in {{remaining}} Sekunden ab.",
+			"pwExpires": "Ihr Passwort verfällt am {{expiresAt}}. Bitte ändern Sie ihr Passwort vorher."
+		}
+	},
+	"navbar": {
+		"visbo": "Visbo",
+		"vc": "Visbo Center",
+		"vp": "Visbo Projekte",
+		"profile": "Profil",
+		"others": "Sonstiges",
+		"settings": "Einstellungen",
+		"appAdmin": "App. Admin",
+		"logout": "Abmelden"
+	},
+	"app": {
+		"product": "Visbo Project Warehouse",
+		"support": "Support",
+		"impressum": "Impressum",
+		"terms": "Nutzungsbedingungen",
+		"dataProtection": "Datenschutz",
+		"versionInfo": "Information zur Version",
+		"serverVersion": "Server Version",
+		"uiVersion": "UI Version"
+	},
+	"pwForgotten": {
+		"title": "Passwort vergessen",
+		"lbl": {
+			"email": "Ihre E-Mail Adresse"
+		},
+		"btn": {
+			"resetPW": "Zurücksetzen",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich"
+		}
+	},
+	"pwReset": {
+		"title": "Passwort zurücksetzen",
+		"lbl": {
+			"newPassword": "Neues Passwort"
+		},
+		"btn": {
+			"resetPW": "Speichern",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"pwResetSuccess": "Ihr Passwort wurde geändert.",
+			"pwResetError": "fehler beim ändern des Passworts: {{message}}",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
+		}
+	},
+	"register": {
+		"title": "Neuen Benutzer registrieren",
+		"titleTC": "Benutzungsbedingungen & Datenschutz",
+		"lbl": {
+			"firstName": "Vornamen",
+			"lastName": "Nachnamen",
+			"company": "Firma",
+			"phone": "Telefon",
+			"email": "E-Mail Adresse",
+			"password": "Neues Passwort",
+			"acceptTC": "Akzeptieren der Nutzungsbedingungen",
+			"acceptDP": "Akzeptieren der Datenschutzbedingungen"
+		},
+		"btn": {
+			"register": "Registrieren",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"companyRequired": "Ein Firmenname ist erforderlich",
+			"lastNameRequired": "Nachname ist erforderlich",
+			"firstNameRequired": "Nachname ist erforderlich",
+			"registerSuccess": "Gratulation, Ihre E-Mail Adresse {{email}} ist nun bestätigt. Bitte melden Sie sich an.",
+			"registerSuccessConfirm": "Gratulation, Sie haben ihre E-Mail Adresse {{email}} erfolgreich registriert. Bitte prüfen Sie Ihre E-Mail und bestätigen Sie den Zugriff.",
+			"registerError": "Fehler beim Registrieren: {{message}}",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
+		}
+	},
+	"registerConfirm": {
+		"title": "e-mail Bestätigung",
+		"description": "Dies ist eine Zwisschenseite ohne spezifischen Inhalt. Sie sollten automatisch weitergeleitet werden, falls nicht bitte betätigen Sie den Schalter.",
+		"btn": {
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"registerSuccess": "Gratulation, ihre E-Mail Adresse ist nun bestätigt. Bitte melden Sie sich an."
+		}
+	},
+	"profile": {
+		"title": "Profil Information für:",
+		"titleChangePW": "Passwort ändern",
+		"lbl": {
+			"firstName": "Vornamen",
+			"lastName": "Nachnamen",
+			"company": "Firma",
+			"phone": "Telefon",
+			"email": "E-Mail Adresse",
+			"oldPassword": "Altes Passwort",
+			"newPassword": "Neues Passwort"
+		},
+		"btn": {
+			"save": "Speichern",
+			"change": "Ändern",
+			"cancel": "Abbrechen",
+			"changePW": "Passwort ändern"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"companyRequired": "Ein Firmenname ist erforderlich",
+			"lastNameRequired": "Nachname ist erforderlich",
+			"firstNameRequired": "Nachname ist erforderlich",
+			"oldPWRequired": "Altes Passwort wird benötigt!",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"lastLogin": "Ihr letzter Login war am",
+			"lastFailedLogin": "Ihr letzter fehlgeschlagener Login war am",
+			"updateSuccess": "Benutzer Profil wurde erfolgreich gespeichert",
+			"changePWSuccess": "Ihr Passwort wurde erfolgreich geändert"
+		}
+	},
+	"vc": {
+		"title": "Visbo Centers",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"modified": "Änderung",
+			"projects": "# Projekte",
+			"detail": "Detail"
+		},
+		"msg": {
+			"detail": "Details zum Visbo Center"
+		}
+	},
+	"vcDetail": {
+		"title": "Visbo Center",
+		"titleUsers": "Visbo Center Benutzer",
+		"titleAddUser": "Einladen eines Benutzers in das Visbo Center",
+		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
+		"titleGroups": "Visbo Center Gruppen",
+		"titleAddGroup": "Anlegen einer neuen Gruppe im Visbo Center",
+		"titleModifyGroup": "Ändern einer Gruppe im Visbo Center",
+		"titleDeleteGroup": "Löschen einer Gruppe im Visbo Center",
+		"titleProjectUsers": "Visbo Projekt Benutzer",
+		"titlePermUser": "Berechtigung für {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "Visbo Center",
+			"user": "Benutzer",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"detail": "Detail",
+			"email": "E-Mail",
+			"group": "Gruppe",
+			"members": "Mitglieder",
+			"project": "Projekt",
+			"type": "Typ",
+			"info": "Info",
+			"global": "Global",
+			"message": "Nachricht",
+			"delete": "Löschen",
+			"deleteUser": "Benutzer löschen"
+		},
+		"btn": {
+			"viewAudit": "Audit",
+			"viewGroups": "Gruppen",
+			"viewUsers": "Benutzer",
+			"viewProjectUsers": "Projekt Benutzer",
+			"addUser": "Benutzer einladen",
+			"addGroup": "Gruppe hinzufügen",
+			"invite": "Einladen",
+			"save": "Speichern",
+			"view": "Anzeigen",
+			"delete": "Löschen",
+			"back": "Zurück",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
+			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem Visbo Center löschen?",
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"groupNameRequired": "Gruppen Name erforderlich",
+			"invalidMessage": "Fehlerhafter Inhalt",
+			"removeGroup": "Gruppe löschen",
+			"detailGroup": "Details zur Gruppe",
+			"updateVCSuccess": "Visbo Center {{name}} wurde aktualisiert",
+			"addUserSuccess": "Benutzer {{name}} wurde zum Visbo Center hinzugefügt",
+			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
+			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
+			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
+			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"errorPerm": "Keine Berechtigung für dieses Visbo Center",
+			"errorPermVC": "Keine Berechtigung für Visbo Center {{name}}",
+			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für Visbo Center {{name}}",
+			"errorRemoveUserPerm": "Keine Berechtigung Benutzer {{name}} aus der Gruppe zu löschen",
+			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
+			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
+			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorVCConflict": "Ein Visbo Center mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vp": {
+		"title": "Projekte",
+		"titleVC": "Projekte in",
+		"titleCreate": "Ein neues Projekt anlegen",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"type": "Typ",
+			"modified": "Änderung",
+			"versions": "# Versionen",
+			"vc": "Visbo Center",
+			"detail": "Detail",
+			"description": "Beschreibung"
+		},
+		"btn": {
+			"showDeleted": "Gelöschte",
+			"showExisting": "Nicht gelöschte",
+			"create": "Neues Projekt",
+			"save": "Speichern",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"createSuccess": "Visbo Projekt {{name}} wurde erfolgreich angelegt",
+			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorConflict": "Visbo Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
+			"detail": "Details zum Visbo Projekt"
+		}
+	},
+	"vpDetail": {
+		"title": "Visbo Projekt",
+		"titleVC": "Visbo Center",
+		"titleUsers": "Visbo Projekt Benutzer",
+		"titleAddUser": "Einladen eines Benutzers in das Visbo Projekt",
+		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
+		"titleGroups": "Visbo Center Gruppen",
+		"titleViewGroup": "Anzeigen einer Gruppe im Visbo Projekt",
+		"titleAddGroup": "Anlegen einer neuen Gruppe im Visbo Projekt",
+		"titleModifyGroup": "Ändern einer Gruppe im Visbo Projekt",
+		"titleDeleteGroup": "Löschen einer Gruppe im Visbo Projekt",
+		"titleDeleteProject": "Visbo Projekt löschen",
+		"titleProjectLocks": "Visbo Projekt Locks",
+		"titlePermUser": "Berechtigung für {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "Visbo Center",
+			"vp": "Visbo Projekt",
+			"user": "Benutzer",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"detail": "Detail",
+			"email": "E-Mail",
+			"group": "Gruppe",
+			"members": "Mitglieder",
+			"project": "Projekt",
+			"type": "Typ",
+			"info": "Info",
+			"global": "Global",
+			"message": "Nachricht",
+			"expires": "Läuft ab",
+			"variant": "Variante",
+			"versions": "Versionen",
+			"unlock": "Entsperren",
+			"delete": "Löschen",
+			"deleteUser": "Benutzer löschen"
+		},
+		"btn": {
+			"viewAudit": "Audit",
+			"viewGroups": "Gruppen",
+			"viewUsers": "Benutzer",
+			"addUser": "Benutzer einladen",
+			"addGroup": "Gruppe hinzufügen",
+			"invite": "Einladen",
+			"save": "Speichern",
+			"restore": "Wiederherstellen",
+			"destroy": "Vernichten!",
+			"view": "Anzeigen",
+			"delete": "Löschen",
+			"back": "Zurück",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
+			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem Visbo Projekt löschen?",
+			"removeProjectConfirm": "Wollen Sie das Visbo Projekt wirklich löschen?",
+			"destroyProjectConfirm": "Wollen Sie das Visbo Projekt wirklich endgültig löschen?",
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"groupNameRequired": "Gruppen Name erforderlich",
+			"invalidMessage": "Fehlerhafter Inhalt",
+			"removeGroup": "Gruppe löschen",
+			"detailGroup": "Details zur Gruppe",
+			"addUserSuccess": "Benutzer {{name}} wurde zum Visbo Projekt hinzugefügt",
+			"updateProjectSuccess": "Visbo Projekt {{name}} wurde gespeichert",
+			"removeProjectSuccess": "Visbo Projekt {{name}} wurde gelöscht",
+			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
+			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
+			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
+			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"removeLockSuccess": "Sperre wurde erfolgreich aufgehoben",
+			"errorPerm": "Keine Berechtigung für dieses Visbo Projekt",
+			"errorPermVP": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für Visbo Projekt {{name}}",
+			"errorRemoveUserPerm": "Keine Berechtigung Benutzer {{name}} aus der Gruppe zu löschen",
+			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
+			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
+			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
+			"errorVPConflict": "Ein Visbo Projekt mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vpViewCost": {
+		"title": "Monatliche Kosten für",
+		"titleVersion": "Version von",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "Visbo Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
+		}
+	},
+	"vpViewDelivery": {
+		"title": "Lieferungen für",
+		"titleVersion": "Version von",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"phase": "Phase",
+			"description": "Beschreibung",
+			"endDate": "Ende (geplant)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"vc": "Visbo Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
+		}
+	},
+	"keyMetrics": {
+		"shortEAC": "EAC",
+		"longEAC": "Estimate at Completion",
+		"shortBAC": "BAC",
+		"longBAC": "Budget at Completion",
+		"shortPV": "PV",
+		"baselinePV": "PV, baseline",
+		"longPV": "Planned monthly Cost Value, baseline",
+		"shortAC": "AC",
+		"planAC": "AC, plan-to-date",
+		"longAC": "Actual monthly Cost value, plan-to-date",
+		"shortETC": "ETC",
+		"planETC": "ETC, plan-to-date",
+		"longETC": "Estimate To Complete, plan-to-date",
+		"lbl": {
+			"shortcut": "Abkürzung",
+			"explanation": "Bedeutung",
+			"showLegend": "Zeige Definition der Abkürzungen"
+		},
+		"chart": {
+			"statusDeliveryAhead": "Vorzeitig",
+			"statusDeliveryInTime": "Pünktlich",
+			"statusDeliveryDelay": "Verzögerung",
+			"statusDeliveryNotCompleted": "Noch nicht erledigt",
+			"titleFinishedDelivery": "Status erledigter Lieferungen",
+			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
+			"yAxisCostOverTime": "Monatliche Kosten in T€",
+			"titleCostOverTime": "Vergleich monatlicher Kosten: plan-to-date vs. baseline"
+		},
+		"versus": "vs."
+	},
+	"perm": {
+		"titleSystemPerm": "Visbo System Berechtigung",
+		"titleVCPerm": "Visbo Center Berechtigung",
+		"titleVPPerm": "Visbo Projekt Berechtigung",
+		"vcView": "Visbo Center anzeigen",
+		"vcViewAudit": "Audit anzeigen",
+		"vcModify": "Visbo Center ändern",
+		"vcCreateVP": "Visbo Projekt anlegen",
+		"vcManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
+		"vcGlobal": "Gruppe hat Zugriff auf alle Visbo Projekte",
+		"vpView": "Visbo Projekt",
+		"vpViewAudit": "View Projekt Audit",
+		"vpModify": "Modify Visbo Projekt",
+		"vpCreateVariant": "Visbo Projekt Variante anlegen",
+		"vpManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
+		"vpDelete": "Visbo Projekt löschen",
+		"lblGroupMembers": "Mitglieder der Gruppe",
+		"lblNoGroupMembers": "Keine Mitglieder in der Gruppe",
+		"lblGroupMembership": "Mitglied in den Gruppen"
 	}
 }

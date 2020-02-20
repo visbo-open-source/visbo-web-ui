@@ -214,10 +214,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                                             / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
 
         // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
-        elementKeyMetric.savingEndDate = this.helperDateDiff(
-          (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
-          (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
-          elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+        if (elementKeyMetric.keyMetrics.endDateBaseLast && elementKeyMetric.keyMetrics.endDateCurrent) {
+          elementKeyMetric.savingEndDate = this.helperDateDiff(
+            (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
+            (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
+            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+        }
 
         // Calculate the Delivery Completion
         if (!elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal) {

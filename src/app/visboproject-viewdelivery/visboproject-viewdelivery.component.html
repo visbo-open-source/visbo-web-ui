@@ -1,14 +1,11 @@
 <app-usernavbar></app-usernavbar>
-<div class='well'>
+<div  *ngIf="vpActive" class='well'>
   <div class='row'>
     <div class='col'>
-      <h2 *ngIf="!vpActive">
-        Project Key Metrics
+      <h2>
+        {{ 'vpViewDelivery.title' | translate }}: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
       </h2>
-      <h2 *ngIf="vpActive">
-        Deliveries for: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
-      </h2>
-      <h5 *ngIf="vpActive">Visbo Center:
+      <h5 *ngIf="vpActive">{{ 'vpViewDelivery.lbl.vc' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
     </div>
@@ -17,17 +14,17 @@
     <div class='container'>
       <div class="row">
         <h3 class="col-6 pl-0">
-          <div class="d-none d-lg-block">Version of: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+          <div class="d-none d-lg-block">{{ 'vpViewDelivery.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
           <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
         </h3>
         <div class="col-4">
           <div class="row">
             <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
             <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
-              <option>day</option>
-              <option>week</option>
-              <option>month</option>
-              <option>quarter</option>
+              <option value="day">{{ 'vpViewDelivery.lbl.day' | translate }}</option>
+              <option value="week">{{ 'vpViewDelivery.lbl.week' | translate }}</option>
+              <option value="month">{{ 'vpViewDelivery.lbl.month' | translate }}</option>
+              <option value="quarter">{{ 'vpViewDelivery.lbl.quarter' | translate }}</option>
             </select>
             <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
           </div>
@@ -56,11 +53,11 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">Phase</th>
-            <th (click)="sortDeliveryTable(3)">Description</th>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">End Date (planned)</th>
-            <th class=" text-right" (click)="sortDeliveryTable(5)">Change (in weeks)</th>
-            <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(6)">Done</th>
+            <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">{{ 'vpViewDelivery.lbl.phase' | translate }}</th>
+            <th (click)="sortDeliveryTable(3)">{{ 'vpViewDelivery.lbl.description' | translate }}</th>
+            <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">{{ 'vpViewDelivery.lbl.endDate' | translate }}</th>
+            <th class=" text-right" (click)="sortDeliveryTable(5)">{{ 'vpViewDelivery.lbl.change' | translate }}</th>
+            <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(6)">{{ 'vpViewDelivery.lbl.done' | translate }}</th>
           </tr>
         </thead>
         <!--Table body-->

@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
@@ -38,7 +40,8 @@ export class VisboProjectsComponent implements OnInit {
     private visboprojectService: VisboProjectService,
     private visbocenterService: VisboCenterService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -132,36 +135,23 @@ export class VisboProjectsComponent implements OnInit {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        this.alertService.success(`Visbo Project ${vp.name} created successfully`);
+        let message = this.translate.instant('vp.msg.createSuccess', {name: vp.name});
+        this.alertService.success(message);
       },
       error => {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
         if (error.status === 403) {
-          this.alertService.error(`Permission Denied for Visbo Project ${name}`);
+          let message = this.translate.instant('vp.msg.errorPerm', {name: name});
+          this.alertService.error(message);
         } else if (error.status === 409) {
           // this.alertService.error(`Visbo Project ${name} already exists or not allowed`);
-          this.alertService.error('Visbo Project already exists or not allowed');
+          let message = this.translate.instant('vp.msg.errorConflict', {name: name});
+          this.alertService.error(message);
         } else {
           this.alertService.error(error.error.message);
         }
       }
     );
-  }
-
-  delete(visboproject: VisboProject): void {
-    // remove item from list
-    this.visboprojects = this.visboprojects.filter(vp => vp !== visboproject);
-    this.visboprojectService.deleteVisboProject(visboproject)
-      .subscribe(
-        error => {
-          // this.log(`delete VP failed: error: ${error.status} messages: ${error.error.message}`);
-          if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Visbo Project ${name}`, true);
-          } else {
-            this.alertService.error(error.error.message);
-          }
-        }
-      );
   }
 
   // get the versions of the project

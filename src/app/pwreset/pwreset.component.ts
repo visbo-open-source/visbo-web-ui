@@ -3,6 +3,8 @@ import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
@@ -26,7 +28,9 @@ export class PwresetComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {
     this.getPWPolicy();
@@ -41,13 +45,15 @@ export class PwresetComponent implements OnInit {
     this.authenticationService.pwreset(this.model)
       .subscribe(
         data => {
-          this.alertService.success('Reset Password Request successful.', true);
+          let message = this.translate.instant('pwReset.msg.pwResetSuccess')
+          this.alertService.success(message, true);
           this.router.navigate(['login']);
         },
         error => {
           this.loading = false;
+          let message = this.translate.instant('pwReset.msg.pwResetError')
+          this.alertService.error(message, true);
           this.log(`Error during Reset Password ${error.error.message}`);
-          this.alertService.error(`Password Reset: ${error.error.message}`);
         }
       );
   }

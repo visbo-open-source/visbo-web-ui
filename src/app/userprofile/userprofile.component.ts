@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
@@ -29,7 +31,8 @@ export class UserProfileComponent implements OnInit {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -94,7 +97,8 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          this.alertService.success(`User Profile updated successfully`, true);
+          let message = this.translate.instant('profile.msg.updateSuccess');
+          this.alertService.success(message, true);
           this.loading = false;
         },
         error => {
@@ -135,7 +139,8 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          this.alertService.success(`Password changed successfully`, true);
+          let message = this.translate.instant('profile.msg.changePWSuccess');
+          this.alertService.success(message, true);
         },
         error => {
           this.log(`change password failed: error: ${error.status} message: ${error.error.message} `);

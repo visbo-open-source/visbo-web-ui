@@ -3,19 +3,19 @@
   <div class='row'>
     <div class='col'>
       <h2 *ngIf="!vcActive" class='panel-heading ml-0'>
-        Projects
+        {{ 'vp.title' | translate }}
       </h2>
       <h2 *ngIf="vcActive" class='panel-heading ml-0'>
-        Projects in: <a (click)="gotoVCDetail(vcActive)">{{vcActive.name}}</a>
+        {{ 'vp.titleVC' | translate }}: <a (click)="gotoVCDetail(vcActive)">{{vcActive.name}}</a>
       </h2>
     </div>
     <div class='btn-group'>
       <div *ngIf="hasVPPerm(permVP.DeleteVP)">
-          <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Deleted</button>
-          <button *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">Show Existing</button>
+          <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showDeleted' | translate }}</button>
+          <button *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showExisting' | translate }}</button>
       </div>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">New Project</button>
+        <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
   </div>
@@ -25,12 +25,12 @@
       <!--Table head-->
       <thead>
         <tr>
-          <th class="d-none d-md-table-cell">Nr.</th>
-          <th (click)="sortVPTable(1)">Name</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(5)">Type</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(2)">Modified</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(4)"># Versions</th>
-          <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">Visbo Center</th>
+          <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
+          <th (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
+          <th class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
+          <th class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
+          <th class="d-none d-md-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
+          <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
           <th>Info</th>
         </tr>
       </thead>
@@ -61,7 +61,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpModalCenterTitle">Create a new Visbo Project</h5>
+        <h5 class="modal-title" id="VpModalCenterTitle">{{ 'vp.titleCreate' | translate }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -69,18 +69,20 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="vpName" class="col-form-label">Name:</label>
+            <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
             <input type="text" class="form-control" #vpName>
           </div>
           <div class="form-group">
-            <label class="col-form-label">Description:</label>
+            <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
             <textarea class="form-control" #vpDescription></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
+          {{ 'vp.btn.save' | translate }}
+        </button>
       </div>
     </div>
   </div>

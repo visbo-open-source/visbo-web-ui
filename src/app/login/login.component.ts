@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, Resolve, ActivatedRoute } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
+
+import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -28,7 +30,8 @@ export class LoginComponent implements OnInit {
     private messageService: MessageService,
     private authenticationService: AuthenticationService,
     private visbocenterService: VisboCenterService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -77,7 +80,12 @@ export class LoginComponent implements OnInit {
           if (user.status && user.status.expiresAt) {
             const expiration = new Date(user.status.expiresAt);
             this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
-            this.alertService.error(`Your password expires at ${expiration.toLocaleString()}. Please change your password before`, true);
+            let message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
+            this.alertService.error(message, true);
+          } else {
+            const lastLogin = new Date(user.status.lastLoginAt);
+            let message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+            this.alertService.success(message, true);
           }
           this.visbocenterService.getSysVisboCenter()
             .subscribe(

@@ -4,6 +4,8 @@ import { Location } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -44,8 +46,9 @@ export class VisboprojectDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private visboprojectService: VisboProjectService,
     private location: Location,
+    private router: Router,
     private alertService: AlertService,
-    private router: Router
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -67,7 +70,12 @@ export class VisboprojectDetailComponent implements OnInit {
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          if (error.status === 403) {
+            let message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(error.error.message);
+          }
         }
       );
   }
@@ -120,7 +128,8 @@ export class VisboprojectDetailComponent implements OnInit {
         error => {
           this.log(`Get VP Users failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied`);
+            let message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -136,15 +145,17 @@ export class VisboprojectDetailComponent implements OnInit {
     this.visboprojectService.deleteVisboProject(visboproject, this.deleted)
       .subscribe(
         () => {
-            this.alertService.success(`Visbo Project ${visboproject.name} deleted successfully`, true);
-            this.log(`delete VP success`);
-            // could not use go back as it is used from different places and produces access denied if it returns to KeyMetrics View
-            this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-          },
+          let message = this.translate.instant('vpDetail.msg.removeProjectSuccess', {'name': this.visboproject.name});
+          this.alertService.success(message, true);
+          this.log(`delete VP success`);
+          // could not use go back as it is used from different places and produces access denied if it returns to KeyMetrics View
+          this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+        },
         error => {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Visbo Project ${visboproject.name}`);
+            let message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': visboproject.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -175,15 +186,18 @@ export class VisboprojectDetailComponent implements OnInit {
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
         (vp) => {
-          this.alertService.success(`Visbo Project ${vp.name} updated successfully`, true);
+          let message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.visboproject.name});
+          this.alertService.success(message, true);
           this.goBack();
         },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Visbo Project ${this.visboproject.name}`);
+            let message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.visboproject.name});
+            this.alertService.error(message);
           } else if (error.status === 409) {
-            this.alertService.error(`Visbo Project ${this.visboproject.name} exists already`);
+            let message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.visboproject.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -225,12 +239,14 @@ export class VisboprojectDetailComponent implements OnInit {
               break;
             }
           }
-          this.alertService.success(`User ${email} added successfully`);
+          let message = this.translate.instant('vpDetail.msg.addUserSuccess', {'name': email});
+          this.alertService.success(message);
         },
         error => {
           this.log(`Add VisboProject User error: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Add User to Visbo Project`);
+            let message = this.translate.instant('vpDetail.msg.errorAddUserPerm');
+            this.alertService.error(message);
           } else {
             this.log(`Error during add VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -299,12 +315,14 @@ export class VisboprojectDetailComponent implements OnInit {
               break;
             }
           }
-          this.alertService.success(`User ${user.email} removed successfully`);
+          let message = this.translate.instant('vpDetail.msg.removeUserSuccess', {'name': user.email});
+          this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboProject User error: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Remove User from Visbo Project`);
+            let message = this.translate.instant('vpDetail.msg.errorRemoveUserPerm');
+            this.alertService.error(message);
           } else {
             this.log(`Error during remove User from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -404,12 +422,14 @@ export class VisboprojectDetailComponent implements OnInit {
             }
             this.sortUserTable();
             this.sortGroupTable();
-            this.alertService.success(`Group ${group.name} changed successfully`);
+            let message = this.translate.instant('vpDetail.msg.changeGroupSuccess', {'name': group.name});
+            this.alertService.success(message);
           },
           error => {
             this.log(`Modify VisboProject Group error: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied: Modify Group to Visbo Project`);
+              let message = this.translate.instant('vpDetail.msg.errorChangeGroupPerm');
+              this.alertService.error(message);
             } else {
               this.log(`Error during modify VP Group ${error.error.message}`); // log to console instead
               this.alertService.error(error.error.message);
@@ -418,7 +438,7 @@ export class VisboprojectDetailComponent implements OnInit {
         );
     } else {
       // create new Group
-      this.log(`Add VisboCenter Group: Group: ${newGroup.name} VP: ${newGroup.vpids[0]} Perm: ${JSON.stringify(newGroup.permission)}`);
+      this.log(`Add VisboProject Group: Group: ${newGroup.name} VP: ${newGroup.vpids[0]} Perm: ${JSON.stringify(newGroup.permission)}`);
       this.visboprojectService.addVPGroup(newGroup)
         .subscribe(
           group => {
@@ -426,14 +446,16 @@ export class VisboprojectDetailComponent implements OnInit {
             // this.log(`Add VisboCenter Group Push: ${JSON.stringify(group)}`);
             this.vgGroups.push(group);
             this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType === 'VP');
-            this.alertService.success(`Group ${group.name} added successfully`);
+            let message = this.translate.instant('vpDetail.msg.createGroupSuccess', {'name': group.name});
+            this.alertService.success(message);
           },
           error => {
-            this.log(`Add VisboCenter Group error: ${error.error.message}`);
+            this.log(`Add VisboProject Group error: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
+              let message = this.translate.instant('vpDetail.msg.errorCreateGroupPerm');
+              this.alertService.error(message);
             } else {
-              this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
+              this.log(`Error during add VP Group ${error.error.message}`);
               this.alertService.error(error.error.message);
             }
           }
@@ -451,12 +473,14 @@ export class VisboprojectDetailComponent implements OnInit {
           this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup !== group);
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
           this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType === 'VP');
-          this.alertService.success(`Group ${group.name} removed successfully`);
+          let message = this.translate.instant('vpDetail.msg.removeGroupSuccess', {'name': group.name});
+          this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboProject Group error: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Remove Group from Visbo Project`);
+            let message = this.translate.instant('vpDetail.msg.errorRemoveGroupPerm');
+            this.alertService.error(message);
           } else {
             this.log(`Error during remove Group from VP user ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);
@@ -479,12 +503,14 @@ export class VisboprojectDetailComponent implements OnInit {
               break;
             }
           }
-          this.alertService.success(`Lock ${variantNameLock} removed successfully`);
+          let message = this.translate.instant('vpDetail.msg.removeLockSuccess');
+          this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboProject Lock error: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Remove Lock from Visbo Project`);
+            let message = this.translate.instant('vpDetail.msg.errorRemoveLockPerm');
+            this.alertService.error(message);
           } else {
             this.log(`Error during remove Lock from VP  ${error.error.message}`); // log to console instead
             this.alertService.error(error.error.message);

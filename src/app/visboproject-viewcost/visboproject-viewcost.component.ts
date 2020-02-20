@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
@@ -63,7 +65,8 @@ export class VisboProjectViewCostComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -125,7 +128,8 @@ export class VisboProjectViewCostComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    let message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -135,7 +139,8 @@ export class VisboProjectViewCostComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              let message = this.translate.instant('vpViewCost.msg.errorPerm', {'name': this.vpActive.name});
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -193,7 +198,8 @@ export class VisboProjectViewCostComponent implements OnInit {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied for Visbo Project Versions`);
+            let message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -236,6 +242,8 @@ export class VisboProjectViewCostComponent implements OnInit {
           minorGridlines: {count: 0, color: 'none'}
         }
       };
+    this.graphOptionsComboChart.title = this.translate.instant('keyMetrics.chart.titleCostOverTime');
+    this.graphOptionsComboChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostOverTime');
     const graphDataCost: any = [];
     if (!this.vpvCost) {
       return;
@@ -244,7 +252,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     const cost = this.vpvCost;
     this.vpvTotalCostBaseLine = 0;
     this.vpvTotalCostCurrent = 0;
-    const actualDataUntil = this.vpvActualDataUntil;
+    const actualDataUntil = new Date(this.vpvActualDataUntil);
 
     this.log(`ViewCostOverTime Actual Until  ${actualDataUntil}`);
 
@@ -255,7 +263,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     for (let i = 0; i < cost.length; i++) {
       const currentDate = new Date(cost[i].currentDate);
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
-      if (currentDate < actualDataUntil) {
+      if (currentDate.getTime() < actualDataUntil.getTime()) {
         graphDataCost.push([
           new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
@@ -289,7 +297,12 @@ export class VisboProjectViewCostComponent implements OnInit {
       ]);
     }
 
-    graphDataCost.push(['Timestamp', 'PV, baseline', 'AC, plan-to-date', 'ETC, plan-to-date']);
+    graphDataCost.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.baselinePV'),
+      this.translate.instant('keyMetrics.planAC'),
+      this.translate.instant('keyMetrics.planETC')
+    ]);
     graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;

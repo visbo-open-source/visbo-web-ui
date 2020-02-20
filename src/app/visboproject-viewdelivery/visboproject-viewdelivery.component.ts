@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
@@ -19,6 +21,16 @@ import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/vis
   templateUrl: './visboproject-viewdelivery.component.html'
 })
 export class VisboProjectViewDeliveryComponent implements OnInit {
+
+  constructor(
+    private visboprojectversionService: VisboProjectVersionService,
+    private visboprojectService: VisboProjectService,
+    private messageService: MessageService,
+    private alertService: AlertService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private translate: TranslateService
+  ) { }
 
   visboprojectversions: VisboProjectVersion[];
 
@@ -41,7 +53,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   historyButton = 'View Trend';
   parentThis: any;
 
-  statusList: string[] = ['Ahead', 'In Time', 'Delay', 'Not Completed', 'Unknown'];
+  statusList: string[];
 
   colors: string[] = ['darkgreen', 'green', 'orange', 'red'];
   series: any =  {
@@ -71,16 +83,14 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   permVC: any = VGPVC;
   permVP: any = VGPVP;
 
-  constructor(
-    private visboprojectversionService: VisboProjectVersionService,
-    private visboprojectService: VisboProjectService,
-    private messageService: MessageService,
-    private alertService: AlertService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
-
   ngOnInit() {
+    this.statusList = [
+      this.translate.instant('keyMetrics.chart.statusDeliveryAhead'),
+      this.translate.instant('keyMetrics.chart.statusDeliveryInTime'),
+      this.translate.instant('keyMetrics.chart.statusDeliveryDelay'),
+      this.translate.instant('keyMetrics.chart.statusDeliveryNotCompleted'),
+      'Unknown'
+    ];
     if (this.route.snapshot.queryParams.vpvid) {
       this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }
@@ -139,7 +149,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    let message = this.translate.instant('vpViewDelivery.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -149,7 +160,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              let message = this.translate.instant('vpViewDelivery.msg.errorPerm', {'name': this.vpActive.name});
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -196,7 +208,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied for Visbo Project Versions`);
+            let message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -250,14 +263,15 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   visboViewFinishedDeliveryPie(): void {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
     this.graphFinishedOptionsPieChart = {
-        title: 'Finished Delivery Status',
+        title: this.translate.instant('keyMetrics.chart.titleFinishedDelivery'),
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
 
-    this.graphFinishedPieLegend = [['string', 'Action Type'],
-                        ['number', 'Count']
-      ];
+    this.graphFinishedPieLegend = [
+      ['string', 'Action Type'],
+      ['number', 'Count']
+    ];
 
     const finishedDeliveryStatus: any = [];
     const graphData = [];
@@ -290,7 +304,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   visboViewUnFinishedDeliveryPie(): void {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
     this.graphUnFinishedOptionsPieChart = {
-        title: 'Unfinished Delivery Status',
+        title: this.translate.instant('keyMetrics.chart.titleUnFinishedDelivery'),
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };

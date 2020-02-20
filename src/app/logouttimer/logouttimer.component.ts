@@ -2,6 +2,8 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { interval } from 'rxjs';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { AuthenticationService } from '../_services/authentication.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
@@ -22,7 +24,8 @@ export class LogoutTimerComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     public authenticationService: AuthenticationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -46,11 +49,12 @@ export class LogoutTimerComponent implements OnInit {
           const diff = Math.round((logoutTime.getTime() - current.getTime()) / 1000);
           // this.log(`Check Logout Time ${logoutTime.toISOString()} diff ${diff}`)
           if (diff > 0 && diff <= 120) {
-            this.alertService.error(`AutoLogout: Session expires in ${diff} Seconds`, true);
+            let message = this.translate.instant('autologout.msg.sessionExpires', {remaining: diff});
+            this.alertService.error(message, true);
           }
           if (diff < 0) {
-            this.log('Logout Time passed');
-            this.alertService.error('AutoLogout: Session expired, please log in again', true);
+            let message = this.translate.instant('autologout.msg.sessionExpired');
+            this.alertService.error(message, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }
