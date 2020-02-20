@@ -95,9 +95,15 @@ export class VisboProjectVersionDetailComponent implements OnInit {
   }
 
   gotoViewDelivery(): void {
-    this.log(`goto VPV View Cost VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
+    this.log(`goto VPV View Delivery VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
     const queryParams = { vpvid: this.visboprojectversion._id };
     this.router.navigate(['vpViewDelivery/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
+  }
+
+  gotoViewDeadline(): void {
+    this.log(`goto VPV View Deadline VPID ${this.visboprojectversion.vpid} VPVID ${this.visboprojectversion._id}`);
+    const queryParams = { vpvid: this.visboprojectversion._id };
+    this.router.navigate(['vpViewDeadline/'.concat(this.visboprojectversion.vpid)], { queryParams: queryParams});
   }
 
   gotoVCDetail(visboproject: VisboProject): void {
