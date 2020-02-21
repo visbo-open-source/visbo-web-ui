@@ -255,7 +255,7 @@
 		},
 		"msg": {
 			"createSuccess": "Visbo Project {{name}} created successfully",
-			"errorPerm": "Permission denied for {{name}}",
+			"errorPerm": "Permission denied for this Visbo Project",
 			"errorConflict": "Visbo Project {{name}} already exists or not allowed",
 			"detail": "Detail of Visbo Project"
 		}
@@ -333,7 +333,7 @@
 			"createGroupSuccess": "Group {{name}} was created successfully",
 			"removeGroupSuccess": "Group {{name}} was deleted successfully",
 			"removeLockSuccess": "Lock was deleted successfully",
-			"errorPerm": "No Permission for this Visbo Center",
+			"errorPerm": "No Permission for this Visbo Project",
 			"errorAddUserPerm": "No Permission to add Users to this Visbo Project",
 			"errorRemoveUserPerm": "No Permission to remove Users {{name}} from Group",
 			"errorPermVP": "No Permission for Visbo Project {{name}}",
@@ -342,6 +342,57 @@
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveLockPerm": "No Permission to delete Lock",
 			"errorVPConflict": "A Visbo Project with {{name}} does already exist!"
+		}
+	},
+	"vpKeyMetric": {
+		"title": "Projekt Key Metrics for",
+		"titleVersion": "Version of",
+		"titleDetailVersion": "Details about Version",
+		"lbl": {
+			"project": "Project",
+			"name": "Name",
+			"value": "Value",
+			"info": "Info",
+			"startDate": "Start of Project",
+			"endDate": "End of Project",
+			"leadPerson": "Lead Person",
+			"template": "Project Template",
+			"bu": "Business Unit",
+			"weeksAhead": "Weeks Ahead",
+			"weeksDelay": "Weeks Delay",
+			"inTime": "in Time",
+			"status": "Status of",
+			"keyMetric": "Metric",
+			"planToDate": "Plan-to-Date",
+			"total": "Total",
+			"detail": "Detail",
+			"trend": "Trend",
+			"metricCost": "Cost",
+			"metricDelivery": "Quality",
+			"metricDeadline": "Time",
+			"actualCost": "actual achievement of costs",
+			"actualDelivery": "actual achievement of deliveries",
+			"actualDeadline": "actual achievement od deadlines",
+			"totalCost": "planned achievement of total cost",
+			"totalDelivery": "planned achievement of total deliveries",
+			"totalDeadline": "planned achievement of total deadlines",
+			"inPlan": "in Plan",
+			"view": "View",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"viewList": "View List",
+			"viewChart": "View Chart",
+			"showTrend": "Show Trend",
+			"hideTrend": "Hide Trend",
+			"vc": "Visbo Center"
+		},
+		"btn": {
+			"allVersions": "Show all Versions",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this Visbo Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
 	"vpViewCost": {
@@ -356,8 +407,11 @@
 			"nextPeriod": "Next Period after {{refDate}}",
 			"vc": "Visbo Center"
 		},
+		"btn": {
+			"back": "Back"
+		},
 		"msg": {
-			"errorPerm": "Permission denied for {{name}}",
+			"errorPerm": "Permission denied for this project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
@@ -379,7 +433,7 @@
 			"vc": "Visbo Center"
 		},
 		"msg": {
-			"errorPerm": "Permission denied for {{name}}",
+			"errorPerm": "Permission denied for this Visbo Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
@@ -397,9 +451,35 @@
 		"shortETC": "ETC",
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortDAC": "DAC",
+		"longDAC": "Number of Deadlines at Completion, according baseline",
+		"shortEDC": "EDC",
+		"longEDC": "Estimate number of weighted Deadlines at Completion, according plan-to-date",
+		"shortPD": "PD",
+		"baselinePD": "PD, baseline",
+		"longPD": "Planned number of Deadlines, according baseline",
+		"shortAD": "AD",
+		"planAD": "AD, plan-to-date",
+		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+
+		"shortDVAC": "DVAC",
+		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
+		"shortEDVC": "EDVC",
+		"longEDVC": "Estimate number of weighted Deliveries(DV) at Completion, according plan-to-date",
+		"shortPDV": "PDV",
+		"baselinePDV": "PDV, baseline",
+		"longPDV": "Planned number of Deliveries(DV), according baseline",
+		"shortADV": "ADV",
+		"planADV": "ADV, plan-to-date",
+		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+
 		"lbl": {
-			"shortcut": "Abkürzung",
-			"explanation": "Bedeutung",
+			"trafficLight": "Traffic Light",
+			"info": "Info",
+			"timeStamp": "Time Stamp",
+			"shortcut": "Shortcut",
+			"explanation": "Explanation",
 			"showLegend": "Show shortcut explanation"
 		},
 		"chart": {
@@ -410,7 +490,13 @@
 			"titleFinishedDelivery": "Finished Delivery Status",
 			"titleUnFinishedDelivery": "Unfinished Delivery Status",
 			"yAxisCostOverTime": "Monthly Cost in T$",
-			"titleCostOverTime": "Monthly Cost comparison: plan-to-date vs. baseline"
+			"titleCostOverTime": "Historical monthly Cost comparison: plan-to-date vs. baseline",
+			"yAxisDeliveryTrend": "weighted number of deliveries",
+			"titleDeliveryTrend": "Historical Delivery comparison: plan-to-date vs. baseline",
+			"yAxisDeadlineTrend": "weighted numbers of deliveries",
+			"titleDeadlineTrend": "Historical Deadline comparison: plan-to-date vs. baseline",
+			"yAxisCostTrend": "Cost in T€",
+			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
 	},

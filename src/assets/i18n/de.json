@@ -255,7 +255,7 @@
 		},
 		"msg": {
 			"createSuccess": "Visbo Projekt {{name}} wurde erfolgreich angelegt",
-			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorPerm": "Keine Berechtigung für  dieses Visbo Projekt",
 			"errorConflict": "Visbo Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum Visbo Projekt"
 		}
@@ -344,6 +344,57 @@
 			"errorVPConflict": "Ein Visbo Projekt mit dem Namen {{name}} existiert bereits!"
 		}
 	},
+	"vpKeyMetric": {
+		"title": "Projekt-Kennzahlen für",
+		"titleVersion": "Version von",
+		"titleDetailVersion": "Details zur Version",
+		"lbl": {
+			"project": "Projekt",
+			"name": "Name",
+			"value": "Wert",
+			"info": "Info",
+			"startDate": "Projekt Start",
+			"endDate": "Projekt Ende",
+			"leadPerson": "Projektverantwortlicher",
+			"template": "Projektvorlage",
+			"bu": "Geschäftseinheit",
+			"weeksAhead": "Wochen voraus",
+			"weeksDelay": "Wochen verzögert",
+			"inTime": "pünktlich",
+			"status": "Status vom:",
+			"keyMetric": "Kennzahl",
+			"planToDate": "Plan-to-Date",
+			"total": "Gesamt",
+			"detail": "Detail",
+			"trend": "Trend",
+			"metricCost": "Kosten",
+			"metricDelivery": "Qualität",
+			"metricDeadline": "Zeit",
+			"actualCost": "bisherige Erreichung der Kosten",
+			"actualDelivery": "bisherige Erreichung der Lieferungen",
+			"actualDeadline": "bisherige Erreichung der Termine",
+			"totalCost": "geplante Erreichung der Gesamtkosten",
+			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
+			"totalDeadline": "geplante Erreichung der Gesamttermine",
+			"inPlan": "im Plan",
+			"view": "Anzeigen",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"viewList": "Liste",
+			"viewChart": "Diagramm",
+			"showTrend": "Trend zeigen",
+			"hideTrend": "Trend ausblenden",
+			"vc": "Visbo Center"
+		},
+		"btn": {
+			"allVersions": "Alle Versionen",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für das Visbo Projekt",
+			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
+		}
+	},
 	"vpViewCost": {
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version von",
@@ -356,8 +407,11 @@
 			"nextPeriod": "Periode nach {{refDate}}",
 			"vc": "Visbo Center"
 		},
+		"btn": {
+			"back": "Zurück"
+		},
 		"msg": {
-			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorPerm": "Keine Berechtigung für dieses Visbo Projekt",
 			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
 		}
 	},
@@ -379,7 +433,7 @@
 			"vc": "Visbo Center"
 		},
 		"msg": {
-			"errorPerm": "Keine Berechtigung für Visbo Projekt {{name}}",
+			"errorPerm": "Keine Berechtigung für dieses Visbo Projekt",
 			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
 		}
 	},
@@ -397,7 +451,33 @@
 		"shortETC": "ETC",
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortDAC": "DAC",
+		"longDAC": "Number of Deadlines at Completion, according baseline",
+		"shortEDC": "EDC",
+		"longEDC": "Estimate number of weighted Deadlines at Completion, according plan-to-date",
+		"shortPD": "PD",
+		"baselinePD": "PD, baseline",
+		"longPD": "Planned number of Deadlines, according baseline",
+		"shortAD": "AD",
+		"planAD": "AD, plan-to-date",
+		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+
+		"shortDVAC": "DVAC",
+		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
+		"shortEDVC": "EDVC",
+		"longEDVC": "Estimate number of weighted Deliveries(DV) at Completion, according plan-to-date",
+		"shortPDV": "PDV",
+		"baselinePDV": "PDV, baseline",
+		"longPDV": "Planned number of Deliveries(DV), according baseline",
+		"shortADV": "ADV",
+		"planADV": "ADV, plan-to-date",
+		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+
 		"lbl": {
+			"trafficLight": "Ampel",
+			"info": "Info.",
+			"timeStamp": "Zeitstempel",
 			"shortcut": "Abkürzung",
 			"explanation": "Bedeutung",
 			"showLegend": "Zeige Definition der Abkürzungen"
@@ -410,7 +490,13 @@
 			"titleFinishedDelivery": "Status erledigter Lieferungen",
 			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
 			"yAxisCostOverTime": "Monatliche Kosten in T€",
-			"titleCostOverTime": "Vergleich monatlicher Kosten: plan-to-date vs. baseline"
+			"titleCostOverTime": "Historischer Vergleich monatlicher Kosten: plan-to-date vs. baseline",
+			"yAxisDeliveryTrend": "gewichtete Anzahl von Lieferungen (DV)",
+			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",
+			"yAxisDeadlineTrend": "gewichtete Anzahl von Terminen",
+			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
+			"yAxisCostTrend": "Kosten in T€",
+			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
 	},

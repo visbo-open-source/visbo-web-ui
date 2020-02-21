@@ -139,7 +139,7 @@ export class VisboProjectViewCostComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vpViewCost.msg.errorPerm', {'name': this.vpActive.name});
+              let message = this.translate.instant('vpViewCost.msg.errorPerm');
               this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
@@ -37,11 +39,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayTotalDelivery: number;
   delayEndDate: number;
 
-  chartButton = 'View List';
-  chartLegend = 'Tootltip for Legend';
+  chartButton: string;
   chart = true;
   history = false;
-  historyButton = 'View Trend';
+  historyButton: string;
   parentThis: any;
 
   typeMetricList: any[] = [
@@ -79,10 +80,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
+    this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
+    this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
+
     this.getVisboProjectVersions();
   }
 
@@ -128,7 +133,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    let message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -138,7 +144,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              let message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -161,7 +168,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project Versions`);
+              let message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -296,6 +304,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         series: this.series,
         colors: this.colors
       };
+    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
+    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
     let keyMetricsCost: any;
     keyMetricsCost = [];
     if (!this.visboprojectversions) {
@@ -340,7 +350,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       ]);
     }
 
-    keyMetricsCost.push(['Timestamp', 'BAC', 'EAC', 'PV', 'AC']);
+    keyMetricsCost.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.shortBAC'),
+      this.translate.instant('keyMetrics.shortEAC'),
+      this.translate.instant('keyMetrics.shortPV'),
+      this.translate.instant('keyMetrics.shortAC')
+    ]);
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;
@@ -378,6 +394,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         series: this.series,
         colors: this.colors
       };
+    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryTrend');
+    this.graphOptionsLineChart.vAxes[0].title = this.translate.instant('keyMetrics.chart.yAxisDeliveryTrend');
+
     // assign to second yAxis
     // this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
     // this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
@@ -435,9 +454,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart.vAxes[0].minValue = -this.graphOptionsLineChart.vAxes[0].maxValue;
     // this.graphOptionsLineChart.vAxes[1].maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
     // this.graphOptionsLineChart.vAxes[1].minValue  = - this.graphOptionsLineChart.vAxes[1].maxValue
-    keyMetrics.push(['Timestamp', 'DVAC', 'EDVC', 'PDV', 'ADV'
+    keyMetrics.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.shortDVAC'),
+      this.translate.instant('keyMetrics.shortEDVC'),
+      this.translate.instant('keyMetrics.shortPDV'),
+      this.translate.instant('keyMetrics.shortADV')
           // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
-        ]);
+    ]);
     keyMetrics.reverse();
     this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(this.graphOptionsLineChart)}`);
     this.graphDataLineChart = keyMetrics;
@@ -475,6 +499,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         series: this.series,
         colors: this.colors
       };
+    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
+    this.graphOptionsLineChart.vAxes[0].title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
     // assign to second yAxis
     this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
     this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
@@ -533,9 +559,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.graphOptionsLineChart.vAxes[1].maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
     // this.graphOptionsLineChart.vAxes[1].minValue  = - this.graphOptionsLineChart.vAxes[1].maxValue
 
-    keyMetrics.push(['Timestamp', 'DAC', 'EDC', 'PD', 'AD'
-        // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
-      ]);
+    keyMetrics.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.shortDAC'),
+      this.translate.instant('keyMetrics.shortEDC'),
+      this.translate.instant('keyMetrics.shortPD'),
+      this.translate.instant('keyMetrics.shortAD')
+      // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
+    ]);
     // keyMetrics.push(['Timestamp', 'All Deadlines', 'Past Deadlines']);
     keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
@@ -593,7 +624,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const queryParams = { vpvid: this.vpvKeyMetricActive._id };
     this.router.navigate(['vpViewDelivery/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
-  
+
   gotoViewDeadline(): void {
     this.log(`goto VPV View Deadline ${this.vpvKeyMetricActive.vpid} `);
     const queryParams = { vpvid: this.vpvKeyMetricActive._id };
@@ -776,13 +807,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   switchChart() {
     this.chart = !this.chart;
-    this.chartButton = this.chart ? 'View List' : 'View Chart';
-    // this.log(`Toggle Chart to ${this.chart} Graph ${JSON.stringify(this.graphDataLineChart)}`);
+    this.chartButton = this.chart ? this.translate.instant('vpKeyMetric.lbl.viewList') : this.translate.instant('vpKeyMetric.lbl.viewChart');
   }
 
   showHistory(newValue: boolean) {
     this.history = newValue;
-    this.historyButton = this.history ? 'Hide Trend' : 'View Trend';
+    this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
   }
 
   helperDateDiff(from: string, to: string, unit: string): number {
