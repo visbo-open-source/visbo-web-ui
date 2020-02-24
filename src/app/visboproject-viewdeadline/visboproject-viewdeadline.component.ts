@@ -186,7 +186,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
           }
 
           this.visboViewFinishedDeadlinePie();
-          this.visboViewUnFinishedDeadlinePie();
+          // ur:24.2.2020:nur noch ein Chart anzeigen 
+          // this.visboViewUnFinishedDeadlinePie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -230,6 +231,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     return localA.getTime() === localB.getTime();
   }
 
+  
   getStatus(element: VPVDeadline): number {
 
     const refDate = this.vpvActive.timestamp;
@@ -237,12 +239,18 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     let status = 0;
     if (element.endDatePFV <= refDate && element.percentDone < 1) {
       status = 3;
-    } else if (element.changeDays < 0) {
+    } else if (element.endDatePFV > refDate && element.percentDone == 1){
       status = 0;
-    } else if (element.changeDays === 0) {
-      status = 1;
+    } else if (element.endDatePFV <= refDate && element.percentDone == 1){
+      if (element.changeDays < 0) status = 0;
+      if (element.changeDays == 0) status = 1;
+      if (element.changeDays > 0) status = 2;    
+    } else if  (element.endDatePFV > refDate && element.percentDone < 1){
+      if (element.changeDays < 0) status = 0;
+      if (element.changeDays == 0) status = 1;
+      if (element.changeDays > 0) status = 2;    
     } else {
-      status = 2;
+      status = 4;
     }
     return status;
   }
@@ -250,7 +258,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   visboViewFinishedDeadlinePie(): void {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
-        title: 'Finished Deadline Status',
+        title: 'Deadline Status',
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -268,12 +276,13 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDeadline.length; i++) {
-      if (this.vpvDeadline[i].percentDone === 1) {
-        // finished entries
+      //ur:24.2.2020 
+      //if (this.vpvDeadline[i].percentDone === 1) {
+        // all  entries
         status = this.getStatus(this.vpvDeadline[i]);
         finishedDeadlineStatus[status] += 1;
         nonEmpty = true;
-      }
+      //}
     }
     for (let i = 0; i < finishedDeadlineStatus.length; i++) {
       graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
