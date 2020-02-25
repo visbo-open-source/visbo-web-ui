@@ -54,10 +54,10 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         data => {
           if (this.hash) {
-            let message = this.translate.instant('register.msg.registerSuccess', {email: data.email});
+            const message = this.translate.instant('register.msg.registerSuccess', {email: data.email});
             this.alertService.success(message, true);
           } else {
-            let message = this.translate.instant('register.msg.registerSuccessConfirm', {email: data.email});
+            const message = this.translate.instant('register.msg.registerSuccessConfirm', {email: data.email});
             this.alertService.success(message, true);
           }
           this.router.navigate(['login']);

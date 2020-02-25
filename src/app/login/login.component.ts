@@ -80,11 +80,11 @@ export class LoginComponent implements OnInit {
           if (user.status && user.status.expiresAt) {
             const expiration = new Date(user.status.expiresAt);
             this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
-            let message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
+            const message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
             this.alertService.error(message, true);
           } else {
             const lastLogin = new Date(user.status.lastLoginAt);
-            let message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+            const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
             this.alertService.success(message, true);
           }
           this.visbocenterService.getSysVisboCenter()

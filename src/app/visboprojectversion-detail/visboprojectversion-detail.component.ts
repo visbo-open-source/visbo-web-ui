@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Location } from '@angular/common';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -30,7 +32,8 @@ export class VisboProjectVersionDetailComponent implements OnInit {
     private visboprojectversionService: VisboProjectVersionService,
     private location: Location,
     private alertService: AlertService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -51,7 +54,12 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         },
         error => {
           this.log(`get VPV failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpvDetails.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(error.error.message);
+          }
         }
       );
   }
@@ -80,7 +88,8 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         error => {
           this.log(`delete VPV failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Visbo Project Version ${visboprojectversion._id}`);
+            const message = this.translate.instant('vpvDetails.msg.errorPermDelete', {'name': visboprojectversion.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }

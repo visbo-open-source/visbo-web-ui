@@ -135,17 +135,17 @@ export class VisboProjectsComponent implements OnInit {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        let message = this.translate.instant('vp.msg.createSuccess', {name: vp.name});
+        const message = this.translate.instant('vp.msg.createSuccess', {name: vp.name});
         this.alertService.success(message);
       },
       error => {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
         if (error.status === 403) {
-          let message = this.translate.instant('vp.msg.errorPerm', {name: name});
+          const message = this.translate.instant('vp.msg.errorPerm', {name: name});
           this.alertService.error(message);
         } else if (error.status === 409) {
           // this.alertService.error(`Visbo Project ${name} already exists or not allowed`);
-          let message = this.translate.instant('vp.msg.errorConflict', {name: name});
+          const message = this.translate.instant('vp.msg.errorConflict', {name: name});
           this.alertService.error(message);
         } else {
           this.alertService.error(error.error.message);

@@ -128,7 +128,7 @@ export class VisboProjectViewCostComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    let message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpActive.name});
+                    const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
@@ -139,7 +139,7 @@ export class VisboProjectViewCostComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vpViewCost.msg.errorPerm');
+              const message = this.translate.instant('vpViewCost.msg.errorPerm');
               this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
@@ -198,7 +198,7 @@ export class VisboProjectViewCostComponent implements OnInit {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);

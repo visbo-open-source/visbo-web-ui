@@ -49,11 +49,11 @@ export class LogoutTimerComponent implements OnInit {
           const diff = Math.round((logoutTime.getTime() - current.getTime()) / 1000);
           // this.log(`Check Logout Time ${logoutTime.toISOString()} diff ${diff}`)
           if (diff > 0 && diff <= 120) {
-            let message = this.translate.instant('autologout.msg.sessionExpires', {remaining: diff});
+            const message = this.translate.instant('autologout.msg.sessionExpires', {remaining: diff});
             this.alertService.error(message, true);
           }
           if (diff < 0) {
-            let message = this.translate.instant('autologout.msg.sessionExpired');
+            const message = this.translate.instant('autologout.msg.sessionExpired');
             this.alertService.error(message, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }

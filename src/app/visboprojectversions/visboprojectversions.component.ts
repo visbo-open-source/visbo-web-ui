@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
@@ -37,7 +39,8 @@ export class VisboProjectVersionsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -73,7 +76,8 @@ export class VisboProjectVersionsComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    const message = this.translate.instant('vpv.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
                   }
@@ -83,7 +87,8 @@ export class VisboProjectVersionsComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              const message = this.translate.instant('vpv.msg.errorPerm');
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -97,7 +102,8 @@ export class VisboProjectVersionsComponent implements OnInit {
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project Versions`);
+              const message = this.translate.instant('vpv.msg.errorPerm');
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }

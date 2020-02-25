@@ -35,7 +35,7 @@ export class RegisterconfirmComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Register Confirm Success ${JSON.stringify(data)}`);
-          let message = this.translate.instant('registerConfirm.msg.registerSuccess');
+          const message = this.translate.instant('registerConfirm.msg.registerSuccess');
           this.alertService.success(message, true);
           this.router.navigate(['login']);
         },

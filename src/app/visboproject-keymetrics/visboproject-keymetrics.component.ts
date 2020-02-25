@@ -133,7 +133,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    let message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+                    const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
                     this.alertService.error(error.error.message);
@@ -144,7 +144,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
               this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
@@ -168,7 +168,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
               this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
@@ -807,7 +807,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   switchChart() {
     this.chart = !this.chart;
-    this.chartButton = this.chart ? this.translate.instant('vpKeyMetric.lbl.viewList') : this.translate.instant('vpKeyMetric.lbl.viewChart');
+    this.chartButton = this.chart
+      ? this.translate.instant('vpKeyMetric.lbl.viewList')
+      : this.translate.instant('vpKeyMetric.lbl.viewChart');
   }
 
   showHistory(newValue: boolean) {

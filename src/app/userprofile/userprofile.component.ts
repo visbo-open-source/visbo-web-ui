@@ -97,7 +97,7 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          let message = this.translate.instant('profile.msg.updateSuccess');
+          const message = this.translate.instant('profile.msg.updateSuccess');
           this.alertService.success(message, true);
           this.loading = false;
         },
@@ -139,7 +139,7 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          let message = this.translate.instant('profile.msg.changePWSuccess');
+          const message = this.translate.instant('profile.msg.changePWSuccess');
           this.alertService.success(message, true);
         },
         error => {

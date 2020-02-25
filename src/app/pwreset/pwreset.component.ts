@@ -45,13 +45,13 @@ export class PwresetComponent implements OnInit {
     this.authenticationService.pwreset(this.model)
       .subscribe(
         data => {
-          let message = this.translate.instant('pwReset.msg.pwResetSuccess')
+          const message = this.translate.instant('pwReset.msg.pwResetSuccess');
           this.alertService.success(message, true);
           this.router.navigate(['login']);
         },
         error => {
           this.loading = false;
-          let message = this.translate.instant('pwReset.msg.pwResetError')
+          const message = this.translate.instant('pwReset.msg.pwResetError');
           this.alertService.error(message, true);
           this.log(`Error during Reset Password ${error.error.message}`);
         }

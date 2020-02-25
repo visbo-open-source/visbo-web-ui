@@ -173,7 +173,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     this.visboprojectversionService.getDeadline(this.vpvActive._id)
       .subscribe(
         visboprojectversions => {
-          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deadlines.length} Deadline entries`);
+          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deadlines.length} entries`);
           if (visboprojectversions.length !== 1 || !visboprojectversions[0].deadlines) {
             this.log(`get VPV Calc: Reset Deadlines to empty `);
             this.initDeadlines(undefined);
@@ -341,13 +341,13 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   getFullName(deadline: VPVDeadline): string {
     let result = '';
     if (deadline.phaseVPV || deadline.phasePFV) {
-      if (deadline.type == "Milestone") {
+      if (deadline.type === "Milestone") {
         result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
         result = result.concat(deadline.name);
       } else {
         result = result.concat(deadline.name);
       }
-    }  
+    }
     return result;
   }
 

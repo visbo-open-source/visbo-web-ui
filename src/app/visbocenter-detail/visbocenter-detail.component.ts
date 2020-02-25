@@ -75,7 +75,7 @@ export class VisbocenterDetailComponent implements OnInit {
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorPerm');
+            const message = this.translate.instant('vcDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
@@ -136,7 +136,7 @@ export class VisbocenterDetailComponent implements OnInit {
         error => {
           this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorPerm');
+            const message = this.translate.instant('vcDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
@@ -166,17 +166,17 @@ export class VisbocenterDetailComponent implements OnInit {
     this.visbocenterService.updateVisboCenter(this.visbocenter)
       .subscribe(
         vc => {
-          let message = this.translate.instant('vcDetail.msg.updateVCSuccess', {'name': vc.name});
+          const message = this.translate.instant('vcDetail.msg.updateVCSuccess', {'name': vc.name});
           this.alertService.success(message, true);
           this.goBack();
         },
         error => {
           this.log(`save VC failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorPermVC', {'name': this.visbocenter.name});
+            const message = this.translate.instant('vcDetail.msg.errorPermVC', {'name': this.visbocenter.name});
             this.alertService.error(message);
           } else if (error.status === 409) {
-            let message = this.translate.instant('vcDetail.msg.errorVCConflict', {'name': this.visbocenter.name});
+            const message = this.translate.instant('vcDetail.msg.errorVCConflict', {'name': this.visbocenter.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
@@ -227,13 +227,13 @@ export class VisbocenterDetailComponent implements OnInit {
               break;
             }
           }
-          let message = this.translate.instant('vcDetail.msg.addUserSuccess', {'name': email});
+          const message = this.translate.instant('vcDetail.msg.addUserSuccess', {'name': email});
           this.alertService.success(message);
         },
         error => {
           this.log(`Add VisboCenter User error: ${JSON.stringify(error)}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorAddUserPerm', {'name': this.visbocenter.name});
+            const message = this.translate.instant('vcDetail.msg.errorAddUserPerm', {'name': this.visbocenter.name});
             this.alertService.error(message);
           } else if (error.error) {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
@@ -307,13 +307,13 @@ export class VisbocenterDetailComponent implements OnInit {
               break;
             }
           }
-          let message = this.translate.instant('vcDetail.msg.removeUserSuccess', {'name': user.email});
+          const message = this.translate.instant('vcDetail.msg.removeUserSuccess', {'name': user.email});
           this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboCenter User error: ${error.error.message}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorRemoveUserPerm', {'name': user.email});
+            const message = this.translate.instant('vcDetail.msg.errorRemoveUserPerm', {'name': user.email});
             this.alertService.error(message);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
@@ -412,13 +412,13 @@ export class VisbocenterDetailComponent implements OnInit {
             }
             this.sortUserTable();
             this.sortGroupTable();
-            let message = this.translate.instant('vcDetail.msg.changeGroupSuccess', {'name': group.name});
+            const message = this.translate.instant('vcDetail.msg.changeGroupSuccess', {'name': group.name});
             this.alertService.success(message);
           },
           error => {
             this.log(`Modify VisboCenter Group error: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vcDetail.msg.errorChangeGroupPerm', {'name': newGroup.name});
+              const message = this.translate.instant('vcDetail.msg.errorChangeGroupPerm', {'name': newGroup.name});
               this.alertService.error(message);
             } else {
               this.log(`Error during modify VC Group ${error.error.message}`); // log to console instead
@@ -435,13 +435,13 @@ export class VisbocenterDetailComponent implements OnInit {
             // Add Group to Group list
             // this.log(`Add VisboCenter Group Push: ${JSON.stringify(group)}`);
             this.vgGroups.push(group);
-            let message = this.translate.instant('vcDetail.msg.createGroupSuccess', {'name': newGroup.name});
+            const message = this.translate.instant('vcDetail.msg.createGroupSuccess', {'name': newGroup.name});
             this.alertService.success(message);
           },
           error => {
             this.log(`Add VisboCenter Group error: ${error.error.message}`);
             if (error.status === 403) {
-              let message = this.translate.instant('vcDetail.msg.errorCreateGroupPerm', {'name': newGroup.name});
+              const message = this.translate.instant('vcDetail.msg.errorCreateGroupPerm', {'name': newGroup.name});
               this.alertService.error(message);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
@@ -461,13 +461,13 @@ export class VisbocenterDetailComponent implements OnInit {
           // filter user from vgUsers
           this.vgGroups = this.vgGroups.filter(vgGroup => vgGroup !== group);
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser.groupId !== group._id);
-          let message = this.translate.instant('vcDetail.msg.removeGroupSuccess', {'name': group.name});
+          const message = this.translate.instant('vcDetail.msg.removeGroupSuccess', {'name': group.name});
           this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboCenter Group error: ${error.error.message}`);
           if (error.status === 403) {
-            let message = this.translate.instant('vcDetail.msg.errorRemoveGroupPerm', {'name': group.name});
+            const message = this.translate.instant('vcDetail.msg.errorRemoveGroupPerm', {'name': group.name});
             this.alertService.error(message);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead

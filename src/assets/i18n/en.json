@@ -437,6 +437,65 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
+	"vpv": {
+		"title": "Project Versions",
+		"titleVP": "Project Versions in",
+		"lbl": {
+			"nr": "Nr.",
+			"timestamp": "Timestamp",
+			"status": "Status",
+			"endDate": "End Date",
+			"trafficlight": "Traffic Light",
+			"budget": "Budget",
+			"variant": "Variant",
+			"vc": "Visbo Center"
+		},
+		"btn": {
+			"deleted": "Show deleted",
+			"undeleted": "Show undeleted",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpvDetails": {
+		"title": "Project Version Details",
+		"titleDeleteVPV": "Delete this Project Version",
+		"lbl": {
+			"name": "Name",
+			"description": "Description",
+			"createdUpdated": "Created / Updated at",
+			"timestamp": "Timestamp at",
+			"variant": "Variant",
+			"keyMetric": "Key Metric",
+			"detail": "Detail",
+			"kmCost": "Cost Comparison",
+			"kmCostDetail": "View Monthly Costs",
+			"kmDelivery": "Delivery Comparison",
+			"kmDeliveryDetail": "View all Deliveries",
+			"kmDeadline": "Deadline Comparison",
+			"kmDeadlineDetail": "View all Deadlines"
+		},
+		"btn": {
+			"restore": "Restore",
+			"delete": "Delete",
+			"destroy": "Destroy",
+			"deleted": "Show deleted",
+			"undeleted": "Show undeleted",
+			"cancel": "Cancel",
+			"back": "Back"
+		},
+		"msg": {
+			"confirmDelete": "Do you really want to delete this Project Version?",
+			"confirmDestroy": "Do you really want to destroy this Project Version? ",
+			"errorPerm": "Permission denied for this project version",
+			"errorPermVP": "Permission denied for this project",
+			"errorPermVersion": "Permission denied for project versions {{name}}",
+			"errorPermDelete": "Permission denied to delete this project versions {{name}}"
+		}
+	},
 	"keyMetrics": {
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",

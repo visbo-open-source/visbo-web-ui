@@ -23,8 +23,8 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    let langToSet = this.translate.getBrowserLang();
-    this.log(`Browser Language: ${langToSet}`)
+    const langToSet = this.translate.getBrowserLang();
+    this.log(`Browser Language: ${langToSet}`);
     // MS TODO: Verify if this really waits
     // load the tranlation file and use later instant access
     this.translate.use(langToSet).subscribe(() => {
