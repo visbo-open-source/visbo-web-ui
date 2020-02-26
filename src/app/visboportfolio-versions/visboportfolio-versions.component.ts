@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import * as moment from 'moment';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -33,40 +35,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     colorMetric: any[] = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
-    typeMetricList: any[] = [
-      {
-        name: 'Total Cost',
-        metric: 'Costs',
-        axis: 'Cost: change in Total Cost at completion (%)',
-        bubble: 'Total Cost at completion (%)',
-        table: 'Total Cost at completion'
-      },
-      {
-        name: 'Time (End Date)',
-        metric: 'EndDate',
-        axis: 'Time: change in End Date (weeks)',
-        bubble: 'Change of End Date in weeks',
-        table: 'Change of End Date'
-      },
-      {
-        name: 'Time (Deadlines)',
-        metric: 'Deadlines',
-        axis: 'Time: change in achieved Deadlines (%)',
-        bubble: 'Achieved Deadlines in %',
-        table: 'Achieved Deadlines'
-      },
-      {
-        name: 'Quality (Deliveries)',
-        metric: 'Deliveries',
-        axis: 'Quality: change in achieved Deliveries (%)',
-        bubble: 'Achieved Deliveries in %',
-        table: 'Achieved Deliveries'
-      }
-    ];
-    typeMetricIndexX = 0;
-    typeMetricIndexY = 1;
-    typeMetricX: string = this.typeMetricList[this.typeMetricIndexX].name;
-    typeMetricY: string = this.typeMetricList[this.typeMetricIndexY].name;
+    typeMetricList: any[];
+    typeMetricIndexX: number;
+    typeMetricIndexY: number;
+    typeMetricX: string;
+    typeMetricY: string;
 
     vpSelected: string;
     vpFilter = '';
@@ -85,6 +58,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     chartButton: string;
     parentThis: any;
     showChart = true;
+    modalChart = true;
     graphBubbleData: any[] = [];
     graphBubbleOptions: any = undefined;
     graphBubbleLabelX: string;
@@ -103,10 +77,47 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
+    this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
+    this.typeMetricList = [
+      {
+        name: this.translate.instant('vpfVersion.metric.costName'),
+        metric: 'Costs',
+        axis: this.translate.instant('vpfVersion.metric.costAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.costBubble'),
+        table: this.translate.instant('vpfVersion.metric.costTable')
+      },
+      {
+        name: this.translate.instant('vpfVersion.metric.endDateName'),
+        metric: 'EndDate',
+        axis: this.translate.instant('vpfVersion.metric.endDateAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.endDateBubble'),
+        table: this.translate.instant('vpfVersion.metric.endDateTable')
+      },
+      {
+        name: this.translate.instant('vpfVersion.metric.deadlineName'),
+        metric: 'Deadlines',
+        axis: this.translate.instant('vpfVersion.metric.deadlineAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.deadlineBubble'),
+        table: this.translate.instant('vpfVersion.metric.deadlineTable')
+      },
+      {
+        name: this.translate.instant('vpfVersion.metric.deliveryName'),
+        metric: 'Deliveries',
+        axis: this.translate.instant('vpfVersion.metric.deliveryAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.deliveryBubble'),
+        table: this.translate.instant('vpfVersion.metric.deliveryTable')
+      }
+    ];
+    this.typeMetricIndexX = 0;
+    this.typeMetricIndexY = 1;
+    this.typeMetricX = this.typeMetricList[this.typeMetricIndexX].name;
+    this.typeMetricY = this.typeMetricList[this.typeMetricIndexY].name;
+
     this.showChartOption(true);
     this.getVisboPortfolioVersions();
   }
@@ -292,10 +303,14 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
 
           // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
-          elementKeyMetric.savingEndDate = this.helperDateDiff(
-            (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
-            (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'w') || 0;
-            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+          if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
+            elementKeyMetric.savingEndDate = this.helperDateDiff(
+              (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
+              (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'w') || 0;
+              elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+          } else {
+            elementKeyMetric.savingEndDate = 0;
+          }
 
           // Calculate the Deadlines Completion
           elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0)
@@ -322,10 +337,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.typeMetricIndexX = this.typeMetricList.findIndex(x => x.name === this.typeMetricX);
     this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name === this.typeMetricY);
     this.visboKeyMetricsCalc();
+    this.chart = this.modalChart;
     this.showChart = true;
   }
 
   drawChart(visible: boolean) {
+    this.modalChart = this.chart;
     this.showChart = visible;
   }
 
@@ -594,7 +611,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     } else {
       this.chart = newStatus;
     }
-    this.chartButton = this.chart ? 'Show List' : 'Show Chart';
+    this.chartButton = this.chart
+      ? this.translate.instant('vpfVersion.btn.showList')
+      : this.translate.instant('vpfVersion.btn.showChart');
     this.log(`Switch Chart to ${this.chart}`);
   }
 
