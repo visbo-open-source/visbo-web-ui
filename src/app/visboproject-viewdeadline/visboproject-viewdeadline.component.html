@@ -37,23 +37,16 @@
 
     <hr>
     <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i> -->
-    <div class="row">
-      <!-- <div *ngIf="chart && graphUnFinishedDataPieChart.length > 1" class="col align-center" >
-        <div>
-          <app-pie-chart [elementID]="divUnFinishedPieChart" [graphData]="graphUnFinishedDataPieChart" [graphDataBefore]="graphBeforeUnFinishedDataPieChart" [graphLegend]="graphUnFinishedPieLegend" [graphOptions]="graphUnFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
+    <div class="container-fluid">
+      <div class="row">     
+        <div class="col" ></div>
+        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
+            <div  class="col align-center font-weight-bold" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div>
         </div>
-      </div> -->
-      <div *ngIf="chart && graphFinishedDataPieChart.length > 1" class="col align-center" >
-        <!-- <div>
-          <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
-        </div> -->
-        <div>
-          <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart>
-        </div>
+        <div class="col"></div>
       </div>
     </div>
-
-
+       
     <div class='panel-body'>
       <table class='table table-hover table-sortable'>
         <!--Table head-->

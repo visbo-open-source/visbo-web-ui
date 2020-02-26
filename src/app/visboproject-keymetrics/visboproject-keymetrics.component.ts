@@ -621,8 +621,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   setVpvActive(vpv: VPVKeyMetricsCalc): void {
     const keyMetrics = vpv.keyMetrics;
     let index: number;
-    const level1 = 0.05;
-    const level2 = 0.15;
+    // ur:25.02.2020: ohne Relativierung
+    // const level1 = 0.05;
+    // const level2 = 0.15;
+    const level1 = 0.001;
+    const level2 = 0.01;
     const delay1 = 7;
     this.vpvKeyMetricActive = vpv;
     this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
