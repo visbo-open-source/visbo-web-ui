@@ -246,6 +246,11 @@
 			"detail": "Detail",
 			"description": "Description"
 		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
 		"btn": {
 			"showDeleted": "Show deleted",
 			"showExisting": "Show existing",
@@ -298,6 +303,11 @@
 			"unlock": "Unlock",
 			"delete": "Delete",
 			"deleteUser": "Remove User"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
 		},
 		"btn": {
 			"viewAudit": "View Audit",
@@ -497,10 +507,11 @@
 		}
 	},
 	"vpfVersion": {
-		"title": "Portfolio Project List for",
+		"title": "Projects from Portfolio",
 		"titleVC": "Visbo Center",
 		"titleVersion": "Portfolio Version",
-		"titleKM": "Project Key Metrics from",
+		"titleSelectVersion": "Select Portfolio Version",
+		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
 		"titleChange": "Change Key Metric",
 		"lbl": {
@@ -513,6 +524,7 @@
 			"nextPeriod": "Periode after {{refDate}}",
 			"show": "Show",
 			"and": "and",
+			"from": "from",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "filtered with",
 			"filter": "Filter Projects",

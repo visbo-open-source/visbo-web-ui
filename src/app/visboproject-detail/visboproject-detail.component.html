@@ -210,9 +210,9 @@
             </div>
             <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">{{ 'vpDetail.msg.invalidMessage' | translate }}</div>
             <div class="modal-footer align-items-end">
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
               <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.invite' | translate }}</button>
-              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPUser()" data-dismiss="modal">{{ 'vcDetail.btn.invite' | translate }}</button>
+              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPUser()" data-dismiss="modal">{{ 'vpDetail.btn.invite' | translate }}</button>
             </div>
           </form>
         </div>
@@ -316,7 +316,7 @@
               <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
             <div class="modal-footer align-items-end">
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
               <button *ngIf="!(f2.form.valid && !deleted && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
               <button *ngIf="(f2.form.valid && !deleted && hasVPPerm(permVP.ManagePerm))" type="submit" class="btn btn-primary mx-1" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
             </div>
@@ -357,8 +357,8 @@
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button type="button" class="btn btn-warning" (click)="removeVPGroup(vgGroups[groupIndex], visboproject._id)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
+          <button type="button" class="btn btn-warning" (click)="removeVPGroup(vgGroups[groupIndex], visboproject._id)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
@@ -395,9 +395,9 @@
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
-          <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vcDetail.btn.destroy' | translate }}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
+          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
+          <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.destroy' | translate }}</button>
         </div>
       </div>
     </div>

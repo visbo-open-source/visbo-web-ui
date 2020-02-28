@@ -70,7 +70,7 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   getVPType(vpType: number): string {
-    return VPTYPE[vpType];
+    return this.translate.instant('vp.type.vpType' + vpType);
   }
 
   toggleVisboProjects(): void {

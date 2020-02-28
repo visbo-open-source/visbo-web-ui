@@ -560,8 +560,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     for (let i = 0; i < len; i++) {
       const timestamp = new Date(this.visboportfolioversions[i].timestamp);
-      const text = 'Version '.concat((len - i).toString(), ' from ', moment(timestamp).format('DD.MM.YYYY HH:mm'));
-      this.dropDown.push({name: text, version: i });
+      const text = 'Version '.concat((len - i).toString(), ' from ', moment(timestamp).format('DD.MM.YY HH:mm'));
+      this.dropDown.push({name: text, version: i, timetsamp: moment(timestamp).format('DD.MM.YY') });
     }
     if (len > 0 ) {
       this.dropDownSelected = this.dropDown[0].name;

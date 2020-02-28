@@ -51,7 +51,6 @@ export class LoginComponent implements OnInit {
 
     this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
     // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
-    this.returnUrl = '/'; // login not in history anymore
   }
 
   restVersion() {

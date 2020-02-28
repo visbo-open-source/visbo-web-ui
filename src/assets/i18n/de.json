@@ -246,6 +246,11 @@
 			"detail": "Detail",
 			"description": "Beschreibung"
 		},
+		"type": {
+			"vpType0": "Projekt",
+			"vpType1": "Portfolio",
+			"vpType2": "Vorlage"
+		},
 		"btn": {
 			"showDeleted": "Gelöschte",
 			"showExisting": "Nicht gelöschte",
@@ -298,6 +303,11 @@
 			"unlock": "Entsperren",
 			"delete": "Löschen",
 			"deleteUser": "Benutzer löschen"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
 		},
 		"btn": {
 			"viewAudit": "Audit",
@@ -497,11 +507,12 @@
 		}
 	},
 	"vpfVersion": {
-		"title": "Portfolio Projekt Liste für",
+		"title": "Projekte aus Portfolio",
 		"titleVC": "Visbo Center",
 		"titleVersion": "Portfolio Version",
-		"titleKM": "Projekt Kennzahlen vom",
-		"titleKMShort": "Kennzahlen von",
+		"titleSelectVersion": "Auswahl Portfolio Version",
+		"titleKM": "Kennzahlen vom",
+		"titleKMShort": "Zahlen vom",
 		"titleChange": "Ändern der Kennzahlen",
 		"lbl": {
 			"variant": "Variante",
@@ -513,6 +524,7 @@
 			"nextPeriod": "Periode nach {{refDate}}",
 			"show": "Anzeige",
 			"and": "und",
+			"from": "vom",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "gefiltert mit",
 			"filter": "Filter Projekte",

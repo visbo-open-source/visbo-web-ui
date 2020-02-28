@@ -1,9 +1,11 @@
 <app-usernavbar></app-usernavbar>
-<div *ngIf="vpActive" class='well'>
+<div *ngIf="vpActive && vpfActive" class='well'>
   <div class='row'>
     <div class='col'>
       <h2>
         {{ 'vpfVersion.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        {{ 'vpfVersion.lbl.from' | translate }}
+        <a data-toggle="modal" data-target="#VPFVersionSelect"> {{ vpfActive.timestamp | date : 'dd.MM.yy' }}</a>
       </h2>
       <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
@@ -11,10 +13,6 @@
     </div>
   </div>
   <div  *ngIf="vpfActiveIndex" class='row'>
-    <label class="col-2 my-2">{{ 'vpfVersion.titleVersion' | translate }}:</label>
-    <select class="col-4 form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected" (change)="changePFVersion();">
-      <option *ngFor="let item of dropDown">{{item.name}}</option>
-    </select>
     <div  *ngIf="vpfActive.variantName" class='row'>
       <label class="col-3">{{ 'vpfVersion.lbl.variant' | translate }}:</label>
       <label class="col-3">{{vpfActive.variantName}}</label>
@@ -163,6 +161,29 @@
             <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.change' | translate }}</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="VPFVersionSelect" tabindex="-1" role="dialog" aria-labelledby="Version Select" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VPFVersionSelectTitle">{{ 'vpfVersion.titleSelectVersion' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="my-0">{{ 'vpfVersion.titleVersion' | translate }}:</label>
+        <select class="form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected">
+          <option *ngFor="let item of dropDown">{{item.name}}</option>
+        </select>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="changePFVersion()">{{ 'vpfVersion.btn.change' | translate }}</button>
       </div>
     </div>
   </div>

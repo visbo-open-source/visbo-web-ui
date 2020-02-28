@@ -103,7 +103,7 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   getVPType(vpType: number): string {
-    return VPTYPE[vpType];
+    return this.translate.instant('vp.type.vpType' + vpType);
   }
 
   toggleUserGroup(): void {
