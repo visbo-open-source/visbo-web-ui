@@ -37,13 +37,13 @@
 
     <hr>
     <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></i> -->
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">     
-        <div class="col" ></div>
+        <div class="col-3" ></div>
         <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
-            <div  class="col align-center font-weight-bold" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div>
+            <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div>
         </div>
-        <div class="col"></div>
+        <div class="col-3"></div>
       </div>
     </div>
        
@@ -52,25 +52,25 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th class="d-none d-md-table-cell" (click)="sortDeadlineTable(2)">Plan Element</th>
-            <th (click)="sortDeadlineTable(3)">Type</th>
+            <th class="d-none d-sm-table-cell" (click)="sortDeadlineTable(2)">Plan Element</th>
+            <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">Type</th>
             <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">End Date (planned)</th>
             <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">End Date (baseline)</th>
-            <th class=" text-right" (click)="sortDeadlineTable(5)">Change (in weeks)</th>
+            <th class="d-none d-sm-table-cell text-right" (click)="sortDeadlineTable(5)">Change (in weeks)</th>
             <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">Done</th>
           </tr>
         </thead>
         <!--Table body-->
         <tbody>
           <tr *ngFor="let deadlines of vpvDeadline">
-            <td *ngIf="deadlines.percentDone == 1" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td *ngIf="deadlines.percentDone != 1" class="font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td class="d-none d-md-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
-            <td class="text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
-            <td class="text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
-            <td *ngIf="deadlines.changeDays <= 0" class="text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+            <td *ngIf="deadlines.percentDone == 1" class="d-none d-sm-table-cell" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td *ngIf="deadlines.percentDone != 1" class="d-none d-sm-table-cell font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td class="d-none d-lg-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
+            <td class="d-none d-lg-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
+            <td class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
+            <td *ngIf="deadlines.changeDays <= 0" class="d-none d-sm-table-cell text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
             <!-- <td *ngIf="deadlines.changeDays > 0 && deadlines.changeDays <= 31" class="text-right text-warning" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td> -->
-            <td *ngIf="deadlines.changeDays > 0" class="text-right text-danger" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+            <td *ngIf="deadlines.changeDays > 0" class="d-none d-sm-table-cell text-right text-danger" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
 
             <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
             <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right bg-danger">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>

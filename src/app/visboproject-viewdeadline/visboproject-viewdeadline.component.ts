@@ -259,6 +259,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
         title: 'Deadline Status',
+        titleTextStyle: {color: 'black', fontSize: '16'} , 
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
