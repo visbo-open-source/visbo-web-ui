@@ -186,7 +186,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
           }
 
           this.visboViewFinishedDeadlinePie();
-          // ur:24.2.2020:nur noch ein Chart anzeigen 
+          // ur:24.2.2020:nur noch ein Chart anzeigen
           // this.visboViewUnFinishedDeadlinePie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
@@ -231,24 +231,21 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     return localA.getTime() === localB.getTime();
   }
 
-  
   getStatus(element: VPVDeadline): number {
-
     const refDate = this.vpvActive.timestamp;
-
     let status = 0;
     if (element.endDatePFV <= refDate && element.percentDone < 1) {
       status = 3;
-    } else if (element.endDatePFV > refDate && element.percentDone == 1){
+    } else if (element.endDatePFV > refDate && element.percentDone === 1) {
       status = 0;
-    } else if (element.endDatePFV <= refDate && element.percentDone == 1){
-      if (element.changeDays < 0) status = 0;
-      if (element.changeDays == 0) status = 1;
-      if (element.changeDays > 0) status = 2;    
-    } else if  (element.endDatePFV > refDate && element.percentDone < 1){
-      if (element.changeDays < 0) status = 0;
-      if (element.changeDays == 0) status = 1;
-      if (element.changeDays > 0) status = 2;    
+    } else if (element.endDatePFV <= refDate && element.percentDone === 1) {
+      if (element.changeDays < 0) { status = 0; }
+      if (element.changeDays === 0) { status = 1; }
+      if (element.changeDays > 0) { status = 2; }
+    } else if  (element.endDatePFV > refDate && element.percentDone < 1) {
+      if (element.changeDays < 0) { status = 0; }
+      if (element.changeDays === 0) { status = 1; }
+      if (element.changeDays > 0) { status = 2; }
     } else {
       status = 4;
     }
@@ -259,7 +256,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
         title: 'Deadline Status',
-        titleTextStyle: {color: 'black', fontSize: '16'} , 
+        titleTextStyle: {color: 'black', fontSize: '16'} ,
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -277,13 +274,13 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDeadline.length; i++) {
-      //ur:24.2.2020 
-      //if (this.vpvDeadline[i].percentDone === 1) {
+      // ur:24.2.2020
+      // if (this.vpvDeadline[i].percentDone === 1) {
         // all  entries
         status = this.getStatus(this.vpvDeadline[i]);
         finishedDeadlineStatus[status] += 1;
         nonEmpty = true;
-      //}
+      // }
     }
     for (let i = 0; i < finishedDeadlineStatus.length; i++) {
       graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
