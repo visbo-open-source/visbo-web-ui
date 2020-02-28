@@ -4,33 +4,30 @@
 <div *ngIf="sysadmin">
   <app-sysnavbar></app-sysnavbar>
 </div>
-<div class='well'>
+<div *ngIf="visboproject" class='well'>
   <div class='row'>
-    <h2 *ngIf="!visboproject" class='panel-heading ml-0'>
-      Visbo Project Audit
-    </h2>
-    <h2 *ngIf="visboproject" class='panel-heading ml-0'>
-      Visbo Project Audit for: <a (click)="goBack()">{{visboproject.name}}</a>
+    <h2 class='panel-heading ml-0'>
+      {{ 'vpAudit.title' | translate }}: <a (click)="goBack()">{{visboproject.name}}</a>
     </h2>
   </div>
   <form name="form" (ngSubmit)="getVisboProjectAudits()" #f="ngForm" novalidate>
     <div *ngIf="sysadmin" class="form-group row">
-      <label for="auditFrom" class="col-1 col-form-label">From:</label>
+      <label for="auditFrom" class="col-1 col-form-label">{{ 'vpAudit.lbl.from' | translate }}:</label>
       <input id="auditFrom" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom">
-      <label for="auditTo" class="col-1 col-form-label">To:</label>
+      <label for="auditTo" class="col-1 col-form-label">{{ 'vpAudit.lbl.to' | translate }}:</label>
       <input id="auditTo" type="datetime-local" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
     </div>
     <div *ngIf="!sysadmin" class="form-group row">
-      <label for="auditFrom" class="col-1 col-form-label">From:</label>
+      <label for="auditFrom" class="col-1 col-form-label">{{ 'vpAudit.lbl.from' | translate }}:</label>
       <input id="auditFrom" type="date" class="col-2 col-sm-4 form-control" name="auditFrom" [(ngModel)]="auditFrom">
-      <label for="auditTo" class="col-1 col-form-label">To:</label>
+      <label for="auditTo" class="col-1 col-form-label">{{ 'vpAudit.lbl.to' | translate }}:</label>
       <input id="auditTo" type="date" class="col-2 col-sm-4 form-control" name="auditTo" [(ngModel)]="auditTo" >
     </div>
     <div class="form-group row">
-      <label for="auditText" class="col-1 col-form-label">Filter:</label>
+      <label for="auditText" class="col-1 col-form-label">{{ 'vpAudit.lbl.filter' | translate }}:</label>
       <input id="auditText" type="text" class="col-2 col-sm-3 form-control" name="auditText" [(ngModel)]="auditText" >
 
-      <label for="auditCount" class="col-1 col-form-label">Max:</label>
+      <label for="auditCount" class="col-1 col-form-label">{{ 'vpAudit.lbl.max' | translate }}:</label>
       <select class="col-1 form-control mx-1" name="auditCount" [(ngModel)]="auditCount">
         <option>50</option>
         <option>100</option>
@@ -41,8 +38,8 @@
         <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
       </select>
       <div class='btn-group '>
-        <button type="button" class="btn btn-sm btn-primary ml-auto mx-1" (click)="getVisboProjectAudits()">Filter</button>
-        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="downloadVisboAudit()">Download</button>
+        <button type="button" class="btn btn-sm btn-primary ml-auto mx-1" (click)="getVisboProjectAudits()">{{ 'vpAudit.btn.filter' | translate }}</button>
+        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="downloadVisboAudit()">{{ 'vpAudit.btn.download' | translate }}</button>
       </div>
     </div>
   </form>
@@ -52,11 +49,11 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
-            <th (click)="sortTable(2)">User</th>
-            <th (click)="sortTable(3)"> Action</th>
-            <th class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(1)">{{ 'vpAudit.lbl.created' | translate }}</th>
+            <th (click)="sortTable(2)">{{ 'vpAudit.lbl.user' | translate }}</th>
+            <th (click)="sortTable(3)">{{ 'vpAudit.lbl.action' | translate }}</th>
+            <th class="d-none d-md-table-cell" (click)="sortTable(4)">{{ 'vpAudit.lbl.info' | translate }}</th>
+            <th class="d-none d-lg-table-cell" (click)="sortTable(5)">{{ 'vpAudit.lbl.result' | translate }}</th>
             <th>Detail</th>
           </tr>
         </thead>
@@ -72,7 +69,7 @@
             <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
             <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry) }}</td>
             <td>
-              <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
+              <button class="Detail" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>
             </td>
           </tr>
@@ -86,7 +83,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="auditIndex >= 0 && auditIndex < audit.length">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="AuditDetailTitle">Detail of Audit Entry</h5>
+        <h5 class="modal-title" id="AuditDetailTitle">{{ 'vpAudit.titleDetail' | translate }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -94,73 +91,73 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-11">
-            <h3 title="Previous Entry" (click)='pageAuditIndex(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
+            <h3 (click)='pageAuditIndex(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
           </div>
           <div class="col-1">
-            <h3 title="Next Entry" (click)='pageAuditIndex(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
+            <h3 (click)='pageAuditIndex(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
           </div>
         </div>
         <form>
-          <label class="py-0 m-0 col-4 form-control-static">Created:</label>
+          <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.created' | translate }}:</label>
           <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
-          <label class="py-0 m-0 col-4 form-control-static">User:</label>
+          <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.user' | translate }}:</label>
           <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
-          <label class="py-0 m-0 col-4 form-control-static">Action:</label>
+          <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.action' | translate }}:</label>
           <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
           <div *ngIf="audit[auditIndex].actionInfo">
-            <label class="py-0 m-0 col-4 form-control-static">Info:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.info' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].actionInfo }} </label>
           </div>
           <div *ngIf="audit[auditIndex].vc">
-            <label class="py-0 m-0 col-4 form-control-static">Visbo Center:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.vc' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
           </div>
           <div *ngIf="audit[auditIndex].vp">
-            <label class="py-0 m-0 col-4 form-control-static">Visbo Project:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.vp' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
           </div>
           <div *ngIf="audit[auditIndex].vpv">
-            <label class="py-0 m-0 col-4 form-control-static">Project Version:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.vpv' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
           </div>
           <div>
-            <label class="py-0 m-0 col-4 form-control-static">Result:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.result' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{helperResponseText(audit[auditIndex]) }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">tech. Action:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.techAction' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].action }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">URL:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.url' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static" style="overflow-wrap: break-word;">{{ audit[auditIndex].url }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">Response Time:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.responseTime' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].result.time }} ms </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">Response Size:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.responseSize' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">User Agent:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.userAgent' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].userAgent }}</label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">IP:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.ip' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ip }}</label>
           </div>
           <div *ngIf="showMore && audit[auditIndex].ttl">
-            <label class="py-0 m-0 col-4 form-control-static">TTL:</label>
+            <label class="py-0 m-0 col-4 form-control-static">{{ 'vpAudit.lbl.ttl' | translate }}:</label>
             <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM HH:mm' }}</label>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">More</button>
-        <button *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">Less</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">{{ 'vpAudit.btn.more' | translate }}</button>
+        <button *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">{{ 'vpAudit.btn.less' | translate }}</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">{{ 'vpAudit.btn.back' | translate }}</button>
       </div>
     </div>
   </div>

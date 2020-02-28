@@ -583,12 +583,91 @@
 			"ip": "IP",
 			"ttl": "TTL"
 		},
+		"dropDown": {
+			"All": "Alle",
+			"VC": "Visbo Center",
+			"VP": "Visbo Projekt",
+			"Read": "Lesen",
+			"Create": "Erstellen",
+			"Update": "Ändern",
+			"Delete": "Löschen"
+		},
+		"result": {
+			"HTTP200": "Erfolg",
+			"HTTP304": "Erfolg",
+			"HTTP400": "Fehlerhafter Anforderung",
+			"HTTP401": "Keine Authentisierung",
+			"HTTP403": "Keine Berechtigung",
+			"HTTP404": "Seite nicht gefunden",
+			"HTTP409": "Konflikt",
+			"HTTP423": "Gesperrt",
+			"HTTP500": "Server Fehler"
+		},
 		"btn": {
 			"filter": "Filter",
 			"download": "Download",
 			"more": "Mehr",
 			"less": "Weniger",
 			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Audit für dieses Visbo Center"
+		}
+	},
+	"vpAudit": {
+		"title": "Visbo Projekt Audit für",
+		"titleDetail": "Details zum Audit Eintrag",
+		"lbl": {
+			"from": "Von",
+			"to": "Bis",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Erstellt",
+			"user": "Benutzer",
+			"action": "Aktion",
+			"info": "Info",
+			"result": "Ergebnis",
+			"detail": "Detail",
+			"vc": "Visbo Center",
+			"vp": "Visbo Projekt",
+			"vpv": "Projekt Version",
+			"techAction": "Tech. Aktion",
+			"url": "URL",
+			"responseTime": "Antwortzeit",
+			"responseSize": "Größe",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "Alle",
+			"VC": "Visbo Center",
+			"VP": "Visbo Projekt",
+			"Read": "Lesen",
+			"Create": "Erstellen",
+			"Update": "Ändern",
+			"Delete": "Löschen"
+		},
+		"result": {
+			"HTTP200": "Erfolg",
+			"HTTP304": "Erfolg",
+			"HTTP400": "Fehlerhafter Anforderung",
+			"HTTP401": "Keine Authentisierung",
+			"HTTP403": "Keine Berechtigung",
+			"HTTP404": "Seite nicht gefunden",
+			"HTTP409": "Konflikt",
+			"HTTP423": "Gesperrt",
+			"HTTP500": "Server Fehler"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "Mehr",
+			"less": "Weniger",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Audit für dieses Visbo Projekt"
 		}
 	},
 	"keyMetrics": {

@@ -583,12 +583,91 @@
 			"ip": "IP",
 			"ttl": "TTL"
 		},
+		"dropDown": {
+			"All": "All",
+			"VC": "Visbo Center",
+			"VP": "Visbo Project",
+			"Read": "Read",
+			"Create": "Create",
+			"Update": "Update",
+			"Delete": "Delete"
+		},
+		"result": {
+			"HTTP200": "Success",
+			"HTTP304": "Success",
+			"HTTP400": "Bad Request",
+			"HTTP401": "Not Authenticated",
+			"HTTP403": "Permission Denied",
+			"HTTP404": "URL not found",
+			"HTTP409": "Conflict",
+			"HTTP423": "Locked",
+			"HTTP500": "Server Error"
+		},
 		"btn": {
 			"filter": "Filter",
 			"download": "Download",
 			"more": "More",
 			"less": "Less",
 			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "No Permission for Audit for this Visbo Center"
+		}
+	},
+	"vpAudit": {
+		"title": "Visbo Project Audit for",
+		"titleDetail": "Detail of Audit Entry",
+		"lbl": {
+			"from": "From",
+			"to": "To",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Created",
+			"user": "User",
+			"action": "Action",
+			"info": "Info",
+			"result": "Result",
+			"detail": "Detail",
+			"vc": "Visbo Center",
+			"vp": "Visbo Project",
+			"vpv": "Project Version",
+			"techAction": "Tech. Action",
+			"url": "URL",
+			"responseTime": "Response Time",
+			"responseSize": "Response Size",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "All",
+			"VC": "Visbo Center",
+			"VP": "Visbo Project",
+			"Read": "Read",
+			"Create": "Create",
+			"Update": "Update",
+			"Delete": "Delete"
+		},
+		"result": {
+			"HTTP200": "Success",
+			"HTTP304": "Success",
+			"HTTP400": "Bad Request",
+			"HTTP401": "Not Authenticated",
+			"HTTP403": "Permission Denied",
+			"HTTP404": "URL not found",
+			"HTTP409": "Conflict",
+			"HTTP423": "Locked",
+			"HTTP500": "Server Error"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "More",
+			"less": "Less",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "No Permission for Audit for this Visbo Project"
 		}
 	},
 	"keyMetrics": {

@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
@@ -55,8 +57,8 @@ export class VisbocenterAuditComponent implements OnInit {
   auditAreaAction: string;
   auditAreaList: any[] = [
     {name: 'All', action: ''},
-    {name: 'Visbo Center', action: 'vc'},
-    {name: 'Visbo Project', action: 'vp'}
+    {name: 'VC', action: 'vc'},
+    {name: 'VP', action: 'vp'}
   ];
   sysadmin: boolean;
   deleted = false;
@@ -68,7 +70,8 @@ export class VisbocenterAuditComponent implements OnInit {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private location: Location,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -86,6 +89,8 @@ export class VisbocenterAuditComponent implements OnInit {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
             this.alertService.error(`Permission Denied`);
+            const message = this.translate.instant('vcAudit.msg.errorPerm');
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }
@@ -242,20 +247,22 @@ export class VisbocenterAuditComponent implements OnInit {
   }
 
   helperResponseText(visboaudit: VisboAudit): string {
-    if (visboaudit.result.statusText) {
-      return visboaudit.result.statusText;
-    }
     const status = visboaudit.result.status;
-    if (status === '200') { return 'Success'; }
-    if (status === '304') { return 'Success'; }
-    if (status === '400') { return 'Bad Request'; }
-    if (status === '401') { return 'Not Authenticated'; }
-    if (status === '403') { return 'Permission Denied'; }
-    if (status === '404') { return 'URL not found'; }
-    if (status === '409') { return 'Conflict'; }
-    if (status === '423') { return 'Locked'; }
-    if (status === '500') { return 'Server Error'; }
-    return status.toString();
+    switch (status) {
+      case '200':
+      case '304':
+      case '400':
+      case '401':
+      case '403':
+      case '404':
+      case '409':
+      case '423':
+      case '500':
+        return this.translate.instant('vcAudit.result.HTTP' + status);
+        break;
+      default:
+        return visboaudit.result.statusText ? visboaudit.result.statusText : status.toString();
+    }
   }
 
   helperShortenText(text: string, len: number): string {
