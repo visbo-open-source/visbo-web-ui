@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   version = '2.0';
   restVersionString = new Date();
   restUIVersionString = new Date();
+  localsAvailable = false;
 
   constructor(
     private messageService: MessageService,
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
     // load the tranlation file and use later instant access
     this.translate.use(langToSet).subscribe(() => {
         this.log(`Successfully initialized '${langToSet}' language.'`);
+        this.localsAvailable = true;
       }, error => {
         this.log(`Problem with '${langToSet}' language initialization.'`);
       });

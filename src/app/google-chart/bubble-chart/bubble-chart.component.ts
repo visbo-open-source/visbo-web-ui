@@ -48,10 +48,21 @@ export class BubbleChartComponent implements OnInit {
         parentThis.chartSelectRow(row, label);
       }
     }
+    // The select handler. Call the chart's getSelection() method
+    function clickHandler(targetID: any) {
+      if (parentThis === undefined) {
+        console.log(`Bubble: The user clicked and this is undefined`);
+      } else if (targetID) {
+        parentThis.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
+      } else {
+        parentThis.log(`Bubble: The user clicked somewhere`);
+      }
+    }
 
     // Listen for the 'select' event, and call my function selectHandler() when
     // the user selects something on the chart.
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
+    this.gLib.visualization.events.addListener(chart, 'click', clickHandler);
 
     chart.draw(data, this.graphOptions || options);
   }

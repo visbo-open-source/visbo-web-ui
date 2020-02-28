@@ -52,13 +52,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpfActiveIndex: number;
     deleted = false;
     chart = true;
-    tempList: boolean = undefined;
-    tempChart: boolean;
-    tempDate: Date;
-    chartButton: string;
-    parentThis: any;
-    showChart = true;
     modalChart = true;
+    parentThis: any;
     graphBubbleData: any[] = [];
     graphBubbleOptions: any = undefined;
     graphBubbleLabelX: string;
@@ -191,9 +186,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   getVisboPortfolioKeyMetrics(): void {
-    const showChart = this.showChart;
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
-    this.showChart = false;
+    const chart = this.chart;
+    this.showChartOption(false);
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
       .subscribe(
@@ -201,12 +196,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
-          if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.showChartOption(showChart);
-          } else {
-            this.showChartOption(false);
-          }
-          this.showChart = true;
+          this.showChartOption(chart);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -338,12 +328,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name === this.typeMetricY);
     this.visboKeyMetricsCalc();
     this.chart = this.modalChart;
-    this.showChart = true;
   }
 
   drawChart(visible: boolean) {
     this.modalChart = this.chart;
-    this.showChart = visible;
+    this.chart = false;
   }
 
   visboKeyMetricsCalcBubble(): void {
@@ -611,32 +600,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     } else {
       this.chart = newStatus;
     }
-    this.chartButton = this.chart
-      ? this.translate.instant('vpfVersion.btn.showList')
-      : this.translate.instant('vpfVersion.btn.showChart');
     this.log(`Switch Chart to ${this.chart}`);
-  }
-
-  showTempList(newStatus: boolean): void {
-    if (newStatus === undefined) {
-      return;
-    }
-    this.log(`Switch temp List from ${this.tempList} to ${newStatus} Date ${this.tempDate}`);
-    if (this.tempList === undefined && newStatus === true) {
-      if (this.tempDate) {
-        this.log(`Compare ${(new Date).getTime() - this.tempDate.getTime()} ${(new Date).toISOString()} ${this.tempDate.toISOString()}`);
-      }
-      if (this.tempDate === undefined || (new Date).getTime() - this.tempDate.getTime() > 300 ) {
-        this.tempChart = this.chart;
-        this.chart = false;
-        this.tempList = true;
-      }
-    }
-    if (newStatus === false) {
-      this.chart = this.tempChart;
-      this.tempList = undefined;
-      this.tempDate = new Date();
-    }
   }
 
   helperVpIndex(vpIndex: number): void {

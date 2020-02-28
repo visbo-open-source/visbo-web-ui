@@ -496,6 +496,68 @@
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese Visbo Projekt Versionen {{name}}"
 		}
 	},
+	"vpfVersion": {
+		"title": "Portfolio Projekt Liste für",
+		"titleVC": "Visbo Center",
+		"titleVersion": "Portfolio Version",
+		"titleKM": "Projekt Kennzahlen vom",
+		"titleKMShort": "Kennzahlen von",
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"variant": "Variante",
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"show": "Anzeige",
+			"and": "und",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "gefiltert mit",
+			"filter": "Filter Projekte",
+			"xAxis": "X-Achse",
+			"yAxis": "Y-Achse",
+			"project": "Projekt",
+			"timestamp": "Zeitstempel",
+			"name": "Name",
+			"bac": "Gesamtkosten (Baseline)",
+			"endDate": "Projektende (Baseline)",
+			"deadlines": "Termine (Baseline)",
+			"deliveries": "Lieferungen (Baseline)"
+		},
+		"btn": {
+			"showChart": "Zeige Chart",
+			"showList": "Zeige Liste",
+			"filter": "Filter",
+			"change": "Ändern",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"metric": {
+			"costName": "Gesamtkosten",
+			"costAxis": "Abweichung bei den Gesamtkosten (%)",
+			"costBubble": "Erwartete Gesmatkosten (%)",
+			"costTable": "Erwartete Gesamtkosten",
+			"endDateName": "Termin (Projektende)",
+			"endDateAxis": "Abweichung beim Projektende (Wochen)",
+			"endDateBubble": "Abweichung beim Projektende (Wochen)",
+			"endDateTable": "Änderung Projektende",
+			"deadlineName": "Termin (Deadlines)",
+			"deadlineAxis": "Abweichung bei den Terminen (%)",
+			"deadlineBubble": "Erreichte Termine in %",
+			"deadlineTable": "Erreichte Termine",
+			"deliveryName": "Qualität (Lieferungen)",
+			"deliveryAxis": "Abweichungen bei erreichten Lieferungen (%)",
+			"deliveryBubble": "Erreichte Lieferungen in %",
+			"deliveryTable": "Erreichte Lieferungen"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorPermVP": "Keine Berechtigung für dieses Visbo Projekt",
+			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
+		}
+	},
 	"keyMetrics": {
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",

@@ -1,6 +1,6 @@
 <div class="jumbotron pt-0 mt-0" style="background-color: #ffffff;">
   <!-- <h2>{{title}}</h2> -->
-  <div class="wrapper">
+  <div *ngIf="localsAvailable" class="wrapper">
     <div class="container-fluid">
         <app-alert></app-alert>
         <div class="ml-3 mt-0" style="float: right">

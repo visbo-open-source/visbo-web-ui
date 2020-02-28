@@ -47,7 +47,8 @@
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
         <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
-        <span> {{ 'vpfVersion.lbl.planVsBase' | translate }} </span>
+        <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
+        <span *ngIf="vpFilter">, {{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}.</span>
       </div>
     </div>
     <div class="row">
@@ -71,13 +72,13 @@
             <tr>
               <th (click)="sortKeyMetricsTable(1)">{{ 'vpfVersion.lbl.project' | translate }}</th>
               <th *ngIf="selectedMetric('Costs')" class="text-right" (click)="sortKeyMetricsTable(2)">{{metricLabel('Costs', 'table')}}</th>
-              <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">Total Cost (Base Line)</th>
+              <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'vpfVersion.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{metricLabel('EndDate', 'table')}}</th>
-              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'vpfVersion.lbl.endDate' | translate }}</th>
               <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">{{metricLabel('Deadlines', 'table')}}</th>
-              <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Deadlines (Base Line)</th>
+              <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'vpfVersion.lbl.deadlines' | translate }}</th>
               <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">{{metricLabel('Deliveries', 'table')}}</th>
-              <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">Deliveries (Base Line)</th>
+              <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'vpfVersion.lbl.deliveries' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -149,7 +150,7 @@
           </div>
           <div class="form-group">
             <label for="Filter" class="col-form-label">{{ 'vpfVersion.lbl.filter' | translate }}:</label>
-            <input class="form-control"  (keyup)="showTempList(true); visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
+            <input class="form-control"  (keyup)="visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
           </div>
           <div *ngIf="hasVPPerm(permVP.ViewAudit)">
             <div class="custom-control custom-checkbox">
