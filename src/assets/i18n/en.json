@@ -764,5 +764,9 @@
 		"lblGroupMembers": "Group Members",
 		"lblNoGroupMembers": "No Group Members",
 		"lblGroupMembership": "Members of Groups"
+	},
+	"language": {
+		"de": "German",
+		"en": "English"
 	}
 }

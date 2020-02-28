@@ -356,7 +356,7 @@
 	},
 	"vpKeyMetric": {
 		"title": "Projekt-Kennzahlen für",
-		"titleVersion": "Version von",
+		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
 		"lbl": {
 			"project": "Projekt",
@@ -407,7 +407,7 @@
 	},
 	"vpViewCost": {
 		"title": "Monatliche Kosten für",
-		"titleVersion": "Version von",
+		"titleVersion": "Version vom",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -427,7 +427,7 @@
 	},
 	"vpViewDelivery": {
 		"title": "Lieferungen für",
-		"titleVersion": "Version von",
+		"titleVersion": "Version vom",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -764,5 +764,9 @@
 		"lblGroupMembers": "Mitglieder der Gruppe",
 		"lblNoGroupMembers": "Keine Mitglieder in der Gruppe",
 		"lblGroupMembership": "Mitglied in den Gruppen"
+	},
+	"language": {
+		"de": "Deutsch",
+		"en": "Englisch"
 	}
 }

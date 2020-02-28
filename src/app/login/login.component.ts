@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   returnUrl: string;
   returnParams: any = undefined;
+  userLang = 'en';
 
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +50,8 @@ export class LoginComponent implements OnInit {
     this.returnUrl = parts[0];
     this.returnParams = this.queryStringToJSON(parts[1]);
 
+    this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
+    this.userLang = this.translate.currentLang;
     this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
     // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
@@ -126,6 +129,10 @@ export class LoginComponent implements OnInit {
     this.log(`reLogin after error 401 to URL ${this.route.snapshot.queryParams['returnUrl']}`);
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
+
+  useLanguage(language: string) {
+    this.translate.use(language);
+}
 
   queryStringToJSON(querystring: string) {
     const pairs = (querystring || '').split('&');
