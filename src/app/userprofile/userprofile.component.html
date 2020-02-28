@@ -66,10 +66,10 @@
             <div *ngIf="!newpassword.valid" class="help-block">{{ 'profile.msg.followPolicy' | translate }}</div>
             <div *ngIf="!newpassword.valid" class="help-block">{{PWPolicyDescription}}</div>
           </div>
-          <div class="form-group">
+          <div class="modal-footer align-items-end">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'profile.btn.cancel' | translate }}</button>
             <button *ngIf="!fpw.form.valid" type="submit" class="btn btn-primary" >{{ 'profile.btn.change' | translate }}</button>
             <button *ngIf="fpw.form.valid" type="submit" class="btn btn-primary" (click)="passwordChange()" data-dismiss="modal">{{ 'profile.btn.change' | translate }}</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'profile.btn.cancel' | translate }}</button>
           </div>
         </form>
       </div>

@@ -558,6 +558,39 @@
 			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
 		}
 	},
+	"vcAudit": {
+		"title": "Visbo Center Audit für",
+		"titleDetail": "Details zum Audit Eintrag",
+		"lbl": {
+			"from": "Von",
+			"to": "Bis",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Erstellt",
+			"user": "Benutzer",
+			"action": "Aktion",
+			"info": "Info",
+			"result": "Ergebnis",
+			"detail": "Detail",
+			"vc": "Visbo Center",
+			"vp": "Visbo Projekt",
+			"vpv": "Projekt Version",
+			"techAction": "Tech. Aktion",
+			"url": "URL",
+			"responseTime": "Antwortzeit",
+			"responseSize": "Größe",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "Mehr",
+			"less": "Weniger",
+			"back": "Zurück"
+		}
+	},
 	"keyMetrics": {
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",
