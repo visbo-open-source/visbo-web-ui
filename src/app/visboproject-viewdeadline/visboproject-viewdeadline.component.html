@@ -1,44 +1,39 @@
 <app-usernavbar></app-usernavbar>
-<div class='well'>
+<div *ngIf="vpActive" class='well'>
   <div class='row'>
     <div class='col'>
-      <h2 *ngIf="!vpActive">
-        Project Key Metrics
+      <h2>
+        {{ 'vpViewDeadline.title' | translate }}: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
       </h2>
-      <h2 *ngIf="vpActive">
-        Deadlines for: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
-      </h2>
-      <h5 *ngIf="vpActive">Visbo Center:
+      <h5 *ngIf="vpActive">{{ 'vpViewDeadline.lbl.vc' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
-    </div>
-  </div>
+      </div>
+  </div>  
   <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDeadline">
-    <div class='container'>
-      <div class="row">
-        <h3 class="col-6 pl-0">
-          <div class="d-none d-lg-block">Version of: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
-          <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
-        </h3>
-        <div class="col-4">
-          <div class="row">
-            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
-            <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
-              <option>day</option>
-              <option>week</option>
-              <option>month</option>
-              <option>quarter</option>
-            </select>
-            <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
-          </div>
+    <div class="row">
+      <h4 class="col-6 text-dark">
+        <div class="d-none d-lg-block">{{ 'vpViewDeadline.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
+      </h4>
+      <div class="col-6">
+        <div class="row">
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
+          <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+            <option>value="day">{{ 'vpViewDeadline.lbl.day' | translate }}</option>
+            <option>value="week">{{ 'vpViewDeadline.lbl.week' | translate }}</option>
+            <option>value="month">{{ 'vpViewDeadline.lbl.month' | translate }}</option>
+            <option>value="quarter">{{ 'vpViewDeadline.lbl.quarter' | translate }}</option>
+          </select>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
         </div>
       </div>
     </div>
-
     <hr>
 
+
     <div class="container">
-      <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center">
         <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
             <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div>
         </div>
@@ -50,12 +45,12 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th class="d-none d-sm-table-cell" (click)="sortDeadlineTable(2)">Plan Element</th>
-            <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">Type</th>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">End Date (planned)</th>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">End Date (baseline)</th>
-            <th class="d-none d-sm-table-cell text-right" (click)="sortDeadlineTable(5)">Change (in weeks)</th>
-            <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">Done</th>
+            <th class="d-none d-sm-table-cell" (click)="sortDeadlineTable(2)">{{ 'vpViewDeadline.lbl.planElement' | translate }}</th>
+            <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'vpViewDeadline.lbl.type' | translate }}</th>
+            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'vpViewDeadline.lbl.endDateVPV' | translate }}</th>
+            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'vpViewDeadline.lbl.endDatePFV' | translate }}</th>
+            <th class="d-none d-sm-table-cell text-right" (click)="sortDeadlineTable(5)">{{ 'vpViewDeadline.lbl.change' | translate }}</th>
+            <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'vpViewDeadline.lbl.done' | translate }}</th>
           </tr>
         </thead>
         <!--Table body-->
@@ -77,7 +72,5 @@
         <!--Table body-->
       </table>
     </div>
-
-
   </div>
 </div>
