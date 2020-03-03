@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
@@ -77,16 +79,23 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
+    this.statusList = [
+      this.translate.instant('keyMetrics.chart.statusDeadlineAhead'),
+      this.translate.instant('keyMetrics.chart.statusDeadlineInTime'),
+      this.translate.instant('keyMetrics.chart.statusDeadlineDelay'),
+      this.translate.instant('keyMetrics.chart.statusDeadlineNotCompleted'),
+      'Unknown'
+    ];
     if (this.route.snapshot.queryParams.vpvid) {
       this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }
     this.getVisboProjectVersions();
   }
-
   onSelect(visboprojectversion: VisboProjectVersion): void {
     this.getVisboProjectVersions();
   }
@@ -149,7 +158,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              const message = this.translate.instant('vpViewDeadline.msg.errorPerm', {'name': this.vpActive.name});
+              this.alertService.error(message);
             } else {
               this.alertService.error(error.error.message);
             }
@@ -220,6 +230,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       }
     }
     this.vpvDeadline = filterDeadlines;
+    this.sortDeadlineTable();
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -255,7 +266,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   visboViewFinishedDeadlinePie(): void {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
-        title: 'Deadline Status',
+        title: this.translate.instant('keyMetrics.chart.titleFinishedDeadlines'),
         titleTextStyle: {color: 'black', fontSize: '16'} ,
         // sliceVisibilityThreshold: .025
         colors: this.colors
@@ -297,7 +308,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   visboViewUnFinishedDeadlinePie(): void {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphUnFinishedOptionsPieChart = {
-        title: 'Unfinished Deadline Status',
+        title: this.translate.instant('keyMetrics.chart.titleUnFinishedDeadlines'),
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -511,13 +522,13 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       }
       if (this.sortAscendingDeadline === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscendingDeadline = ( n === 2 || n === 3 ) ? true : false;
+        this.sortAscendingDeadline = ( n === 2 || n === 3 || n === 4 || n === 7 ) ? true : false;
       } else {
         this.sortAscendingDeadline = !this.sortAscendingDeadline;
       }
     } else {
-      this.sortColumnDeadline = 1;
-      this.sortAscendingDeadline = false;
+      this.sortColumnDeadline = 2;
+      this.sortAscendingDeadline = true;
     }
     if (this.sortColumnDeadline === 1) {
       // sort by Deadline Index
@@ -536,6 +547,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       this.vpvDeadline.sort(function(a, b) { return a.changeDays - b.changeDays; });
     } else if (this.sortColumnDeadline === 6) {
       this.vpvDeadline.sort(function(a, b) { return a.percentDone - b.percentDone; });
+    } else if (this.sortColumnDeadline === 7) {
+      this.vpvDeadline.sort(function(a, b) { return visboCmpDate(a.endDatePFV, b.endDatePFV); });
     }
     if (!this.sortAscendingDeadline) {
       this.vpvDeadline.reverse();

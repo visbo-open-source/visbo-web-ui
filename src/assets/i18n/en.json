@@ -447,6 +447,29 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
+	"vpViewDeadline": {
+		"title": "Deadlines for",
+		"titleVersion": "Version of",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"planElement": "Plan Element",
+			"type": "Type",
+			"endDateVPV": "End Date (planned)",
+			"endDatePFV": "End Date (baseline)",
+			"change": "Change (in weeks)",
+			"done": "Done",
+			"vc": "Visbo Center"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this Visbo Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
 	"vpv": {
 		"title": "Project Versions",
 		"titleVP": "Project Versions in",
@@ -728,12 +751,18 @@
 			"showLegend": "Show shortcut explanation"
 		},
 		"chart": {
-			"statusDeliveryAhead": "Vorzeitig",
+			"statusDeliveryAhead": "Ahead",
 			"statusDeliveryInTime": "In Time",
 			"statusDeliveryDelay": "Delay",
 			"statusDeliveryNotCompleted": "Not Completed",
+			"statusDeeadlineAhead": "Ahead",
+			"statusDeadlineInTime": "In Time",
+			"statusDeadlineDelay": "Delay",
+			"statusDeadlineNotCompleted": "Not Completed",
 			"titleFinishedDelivery": "Finished Delivery Status",
-			"titleUnFinishedDelivery": "Unfinished Delivery Status",
+			"titleUnFinishedDelivery": "Unfinished Delivery Status",			
+			"titleFinishedDeadline": "Finished Deadline Status",
+			"titleUnFinishedDeadline": "Unfinished Deadline Status",
 			"yAxisCostOverTime": "Monthly Cost in T$",
 			"titleCostOverTime": "Historical monthly Cost comparison: plan-to-date vs. baseline",
 			"yAxisDeliveryTrend": "weighted number of deliveries",

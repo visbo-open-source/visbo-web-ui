@@ -447,6 +447,29 @@
 			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
 		}
 	},
+	"vpViewDeadline": {
+		"title": "Fälligkeiten für",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"planElement": "Planelement",
+			"type": "Typ",
+			"endDateVPV": "Ende (geplant)",
+			"endDatePFV": "Ende (vorgegeben)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"vc": "Visbo Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses Visbo Projekt",
+			"errorPermVersion": "Keine Berechtigung für Visbo Projekt Versionen {{name}}"
+		}
+	},
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
@@ -732,8 +755,14 @@
 			"statusDeliveryInTime": "Pünktlich",
 			"statusDeliveryDelay": "Verzögerung",
 			"statusDeliveryNotCompleted": "Noch nicht erledigt",
-			"titleFinishedDelivery": "Status erledigter Lieferungen",
+			"statusDeadlineAhead": "Vorzeitig",
+			"statusDeadlineInTime": "Pünktlich",
+			"statusDeadlineDelay": "Verzögert",
+			"statusDeadlineNotCompleted": "Noch nicht erledigt",
+			"titleFinishedDelivery": "Status Lieferungen",
 			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
+			"titleFinishedDeadlines": "Status Fälligkeiten",
+			"titleUnFinishedDeadlines": "Status unerledigter Fälligkeiten",
 			"yAxisCostOverTime": "Monatliche Kosten in T€",
 			"titleCostOverTime": "Historischer Vergleich monatlicher Kosten: plan-to-date vs. baseline",
 			"yAxisDeliveryTrend": "gewichtete Anzahl von Lieferungen (DV)",

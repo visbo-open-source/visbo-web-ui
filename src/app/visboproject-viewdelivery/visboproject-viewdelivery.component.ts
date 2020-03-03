@@ -198,7 +198,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
           }
 
           this.visboViewFinishedDeliveryPie();
-          this.visboViewUnFinishedDeliveryPie();
+          // ur: 29.02.2020: nur noch ein Chart - wie bei Deadlines
+          // this.visboViewUnFinishedDeliveryPie();
           if (this.hasVPPerm(this.permVP.ViewAudit)) {
             this.chart = chartFlag;
           } else {
@@ -232,6 +233,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
       }
     }
     this.vpvDelivery = filterDeliveries;
+    this.sortDeliveryTable(2);
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -264,6 +266,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
     this.graphFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleFinishedDelivery'),
+        titleTextStyle: {color: 'black', fontSize: '16'} ,
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -282,12 +285,13 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     }
     let nonEmpty = false;
     for (let i = 0; i < this.vpvDelivery.length; i++) {
-      if (this.vpvDelivery[i].percentDone === 1) {
-        // finished entries
+      // ur: 29.02.2020: es werden nun alle Deliveries in einem PieChart dargestellt, also alle Deliveries in einem Status-Array aufgesammelt
+      // if (this.vpvDelivery[i].percentDone === 1) {
+      //   // finished entries
         status = this.getStatus(this.vpvDelivery[i]);
         finishedDeliveryStatus[status] += 1;
         nonEmpty = true;
-      }
+      // }
     }
     for (let i = 0; i < finishedDeliveryStatus.length; i++) {
       graphData.push([this.statusList[i], finishedDeliveryStatus[i]]);
@@ -519,8 +523,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
         this.sortAscendingDelivery = !this.sortAscendingDelivery;
       }
     } else {
-      this.sortColumnDelivery = 1;
-      this.sortAscendingDelivery = false;
+      this.sortColumnDelivery = 2;
+      this.sortAscendingDelivery = true;
     }
     if (this.sortColumnDelivery === 1) {
       // sort by Delivery Index
