@@ -61,9 +61,11 @@
             <td class="d-none d-lg-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
             <td class="d-none d-lg-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
             <td class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
-            <td *ngIf="deadlines.changeDays <= 0" class="d-none d-sm-table-cell text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
-            <!-- <td *ngIf="deadlines.changeDays > 0 && deadlines.changeDays <= 31" class="text-right text-warning" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td> -->
-            <td *ngIf="deadlines.changeDays > 0" class="d-none d-sm-table-cell text-right text-danger" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+            <!-- ur: 03.03.2020: no difference in display for the different values for changeDays -->
+            <!-- <td *ngIf="deadlines.changeDays <= 0" class="d-none d-sm-table-cell text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+            <td *ngIf="deadlines.changeDays > 0 && deadlines.changeDays <= 31" class="text-right text-warning" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+            <td *ngIf="deadlines.changeDays > 0" class="d-none d-sm-table-cell text-right text-danger" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td> -->
+            <td class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
 
             <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
             <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right bg-danger">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
