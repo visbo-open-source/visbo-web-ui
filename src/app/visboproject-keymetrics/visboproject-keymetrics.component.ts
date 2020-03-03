@@ -647,8 +647,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
     const refDate = new Date(label);
     // find version with timestamp
-    const indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp === refDate.toISOString()) || 0;
-
+    var indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() == refDate.toISOString());
+    if (indexVPV < 0) { indexVPV = 0; }
     this.setVpvActive(this.visbokeymetrics[indexVPV]);
     this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
