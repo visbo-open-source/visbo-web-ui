@@ -88,7 +88,7 @@ export class VisbocenterAuditComponent implements OnInit {
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied`);
+            this.alertService.error('Permission Denied');
             const message = this.translate.instant('vcAudit.msg.errorPerm');
             this.alertService.error(message);
           } else {
