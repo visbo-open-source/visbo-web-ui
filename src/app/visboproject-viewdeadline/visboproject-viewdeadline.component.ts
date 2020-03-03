@@ -230,7 +230,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       }
     }
     this.vpvDeadline = filterDeadlines;
-    this.sortDeadlineTable(2);
+    this.sortDeadlineTable();
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -528,7 +528,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       }
     } else {
       this.sortColumnDeadline = 2;
-      this.sortAscendingDeadline = false;
+      this.sortAscendingDeadline = true;
     }
     if (this.sortColumnDeadline === 1) {
       // sort by Deadline Index
