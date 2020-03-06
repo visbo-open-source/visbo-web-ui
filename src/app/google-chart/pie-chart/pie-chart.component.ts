@@ -57,8 +57,11 @@ export class PieChartComponent implements OnInit {
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {
       const selectedItem = chart.getSelection()[0];
-      // if (parentThis) console.log(`The user clicked and this is defined`);
-      // else if (parentThis == undefined) console.log(`The user clicked and this is undefined`)
+      if (!parentThis) {
+        console.log(`The user clicked and this is undefined`);
+        return;
+      }
+      parentThis.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`)
       if (selectedItem) {
         const label = data.getValue(selectedItem.row, 0);
         const value = data.getValue(selectedItem.row, 1);
@@ -66,6 +69,8 @@ export class PieChartComponent implements OnInit {
         if (parentThis.chartSelectRow) {
           parentThis.chartSelectRow(selectedItem.row, label, value);
         }
+      } else {
+        parentThis.chartSelectRow(undefined, undefined, undefined);
       }
     }
 

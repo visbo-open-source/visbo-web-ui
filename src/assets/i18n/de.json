@@ -128,7 +128,8 @@
 			"phone": "Telefon",
 			"email": "E-Mail Adresse",
 			"oldPassword": "Altes Passwort",
-			"newPassword": "Neues Passwort"
+			"newPassword": "Neues Passwort",
+			"PWRule": "Password Rule"
 		},
 		"btn": {
 			"save": "Speichern",
@@ -784,7 +785,7 @@
 		"vcCreateVP": "Visbo Projekt anlegen",
 		"vcManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
 		"vcGlobal": "Gruppe hat Zugriff auf alle Visbo Projekte",
-		"vpView": "Visbo Projekt",
+		"vpView": "View Visbo Projekt",
 		"vpViewAudit": "View Projekt Audit",
 		"vpModify": "Modify Visbo Projekt",
 		"vpCreateVariant": "Visbo Projekt Variante anlegen",

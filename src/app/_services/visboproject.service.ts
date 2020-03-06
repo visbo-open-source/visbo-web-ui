@@ -29,20 +29,20 @@ export class VisboProjectService {
 
 
   /** GET VisboProjects from the server if id is specified get only projects of this vcid*/
-  getVisboProjects(id: string, sysAdmin: boolean = false, deleted: boolean = false): Observable<VisboProject[]> {
+  getVisboProjects(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject[]> {
     const url = `${this.vpUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (id) {
       params = params.append('vcid', id);
     }
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     if (deleted) {
       params = params.append('deleted', '1');
     }
-    this.log(`VP getVisboProjects Sysadmin ${sysAdmin} Deleted ${deleted}`);
+    this.log(`VP getVisboProjects Sysadmin ${sysadmin} Deleted ${deleted}`);
 
     // this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectResponse>(url, { headers , params })
@@ -70,12 +70,12 @@ export class VisboProjectService {
   }
 
   /** GET VisboProject by id. Will 404 if id not found */
-  getVisboProject(id: string, sysAdmin: boolean = false, deleted: boolean = false): Observable<VisboProject> {
+  getVisboProject(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     if (deleted) {
       params = params.append('deleted', '1');

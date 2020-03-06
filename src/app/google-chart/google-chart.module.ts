@@ -6,6 +6,7 @@ import { BubbleChartComponent } from './bubble-chart/bubble-chart.component';
 import { ScatterChartComponent } from './scatter-chart/scatter-chart.component';
 import { ServiceModule } from './service/service.module';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
+import { GanttChartComponent } from './gantt-chart/gantt-chart.component';
 import { TableChartComponent } from './table-chart/table-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
 
@@ -16,6 +17,7 @@ import { ColumnChartComponent } from './column-chart/column-chart.component';
     BubbleChartComponent,
     ScatterChartComponent,
     PieChartComponent,
+    GanttChartComponent,
     TableChartComponent,
     ColumnChartComponent
   ],
@@ -29,6 +31,7 @@ import { ColumnChartComponent } from './column-chart/column-chart.component';
     BubbleChartComponent,
     ScatterChartComponent,
     PieChartComponent,
+    GanttChartComponent,
     TableChartComponent,
     ColumnChartComponent
   ],
