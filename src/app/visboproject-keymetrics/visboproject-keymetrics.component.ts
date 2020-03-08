@@ -967,9 +967,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       // sort by keyMetrics Status
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
-        if (a.timeCompletionActual > b.timeCompletionActual) {
+        if (a.keyMetrics.timeCompletionCurrentActual > b.keyMetrics.timeCompletionCurrentActual) {
           result = 1;
-        } else if (a.timeCompletionActual < b.timeCompletionActual) {
+        } else if (a.keyMetrics.timeCompletionCurrentActual < b.keyMetrics.timeCompletionCurrentActual) {
           result = -1;
         }
         return result;
@@ -978,9 +978,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
-        if (a.keyMetrics.timeCompletionBaseLastActual > b.keyMetrics.timeCompletionBaseLastActual) {
+        if (a.timeCompletionActual > b.timeCompletionActual) {
           result = 1;
-        } else if (a.keyMetrics.timeCompletionBaseLastActual < b.keyMetrics.timeCompletionBaseLastActual) {
+        } else if (a.timeCompletionActual < b.timeCompletionActual) {
           result = -1;
         }
         return result;
@@ -1069,6 +1069,28 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         if (a.keyMetrics.deliverableDelayCurrentTotal > b.keyMetrics.deliverableDelayCurrentTotal) {
           result = 1;
         } else if (a.keyMetrics.deliverableDelayCurrentTotal < b.keyMetrics.deliverableDelayCurrentTotal) {
+          result = -1;
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 25) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        let result = 0;
+        if (a.keyMetrics.deliverableCompletionBaseLastTotal > b.keyMetrics.deliverableCompletionBaseLastTotal) {
+          result = 1;
+        } else if (a.keyMetrics.deliverableCompletionBaseLastTotal < b.keyMetrics.deliverableCompletionBaseLastTotal) {
+          result = -1;
+        }
+        return result;
+      });
+    } else if (this.sortColumn === 26) {
+      // sort by keyMetrics endDate
+      this.visbokeymetrics.sort(function(a, b) {
+        let result = 0;
+        if (a.keyMetrics.deliverableCompletionBaseLastActual> b.keyMetrics.deliverableCompletionBaseLastActual) {
+          result = 1;
+        } else if (a.keyMetrics.deliverableCompletionBaseLastActual < b.keyMetrics.deliverableCompletionBaseLastActual) {
           result = -1;
         }
         return result;
