@@ -29,6 +29,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     visboprojectversions: VisboProjectVersion[];
     visbokeymetrics: VPVKeyMetricsCalc[] = [];
 
+    testValue: boolean;
     dropDown: any[] = [];
     dropDownSelected: string;
     dropDownValue: number;
@@ -78,6 +79,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   ngOnInit() {
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
+    if (this.testValue == undefined) { this.testValue = true; }
     this.typeMetricList = [
       {
         name: this.translate.instant('vpfVersion.metric.costName'),
@@ -303,23 +305,24 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           }
 
           // Calculate the Deadlines Completion
-          elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0)
-                                                  / (elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal || 1) || 0;
-          elementKeyMetric.timeCompletionActual = (elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0)
-                                                  / (elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || 1) || 0;
+          elementKeyMetric.timeCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
+          elementKeyMetric.timeCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
 
           // Calculate the Delivery Completion
-          elementKeyMetric.deliveryCompletionTotal = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0)
-                                                      / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal || 1) || 0;
-          elementKeyMetric.deliveryCompletionActual = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0)
-                                                      / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual || 1) || 0;
-
+          elementKeyMetric.deliveryCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal);
+          elementKeyMetric.deliveryCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual);
           this.visbokeymetrics.push(elementKeyMetric);
         }
       }
     }
     this.sortKeyMetricsTable(undefined);
     this.visboKeyMetricsCalcBubble();
+  }
+
+  calcPercent(current, baseline) {
+    if (baseline == undefined) { return undefined; }
+    else if (baseline == 0 && current == 0) { return 1; }
+    else { return (current || 0) / baseline; }
   }
 
   changeChart() {
