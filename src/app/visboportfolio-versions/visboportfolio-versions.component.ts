@@ -29,7 +29,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     visboprojectversions: VisboProjectVersion[];
     visbokeymetrics: VPVKeyMetricsCalc[] = [];
 
-    testValue: boolean;
     dropDown: any[] = [];
     dropDownSelected: string;
     dropDownValue: number;
@@ -79,7 +78,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   ngOnInit() {
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
-    if (this.testValue == undefined) { this.testValue = true; }
     this.typeMetricList = [
       {
         name: this.translate.instant('vpfVersion.metric.costName'),

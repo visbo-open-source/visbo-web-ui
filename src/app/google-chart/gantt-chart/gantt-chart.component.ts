@@ -19,7 +19,7 @@ export class GanttChartComponent implements OnInit {
     private gChartService: GoogleChartService
   ) {
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages': ['corechart', 'table', 'gantt']});
+    this.gLib.charts.load('current', {'packages': ['gantt']});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 
@@ -29,12 +29,34 @@ export class GanttChartComponent implements OnInit {
 
   private drawChart() {
     // this.log(`Google Chart Gantt Chart Draw ${this.graphData.length}`);
-    let chart: any, data: any;
+    let chart: any;
+    // let data: any;
     chart = new this.gLib.visualization.Gantt(document.getElementById('divGanttChart'));
-    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    // data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+
+    let data = new google.visualization.DataTable();
+    data.addColumn('string', this.graphData[0][0]);
+    data.addColumn('string', this.graphData[0][1]);
+    data.addColumn('date', this.graphData[0][2]);
+    data.addColumn('date', this.graphData[0][3]);
+    data.addColumn('number', this.graphData[0][4]);
+    data.addColumn('number', this.graphData[0][5]);
+    data.addColumn('string', this.graphData[0][6]);
+
+    for (let i = 1; i < this.graphData.length; i++) {
+      if (this.graphData[i][2] > 0 && this.graphData[i][3] > this.graphData[i][2]) {
+        data.addRows([
+          [this.graphData[i][0], this.graphData[i][1],
+           new Date(this.graphData[i][2]), new Date(this.graphData[i][3]), null,  this.graphData[i][5] || 0,  null]
+        ]);
+      }
+    }
+
     const parentThis = this.parentThis;
 
-    const options = {'title': 'Gantt Chart'};
+    const options = {
+      height: 400
+    };
 
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {

@@ -225,6 +225,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     const allDeadlines: VPVDeadline[] = [];
     if (deadlines === undefined) {
       this.vpvDeadline = deadlines;
+      this.graphDataDeadlinesGantt = [];
       return;
     }
     // generate long Names
@@ -371,16 +372,19 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
         // colors: this.colors
       };
 
-    const graphData = [];
+    let graphData = [];
     for (let i = 0; i < this.vpvAllDeadline.length; i++) {
       const deadline = this.vpvAllDeadline[i];
       if (deadline.type === "Phase") {
+        // const start = new Date(deadline.startDateVPV);
+        // const end = new Date(deadline.endDatePFV);
+        const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
+        const endDate = new Date(deadline.endDatePFV);
         graphData.push([
           deadline.phasePFV,
           deadline.phasePFV,
-          // deadline.type,
-          new Date(deadline.startDateVPV),
-          new Date(deadline.endDateVPV),
+          startDate.getTime(),
+          endDate.getTime(),
           0,
           deadline.percentDone * 100,
           null
