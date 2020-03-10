@@ -34,7 +34,7 @@ export class GanttChartComponent implements OnInit {
     chart = new this.gLib.visualization.Gantt(document.getElementById('divGanttChart'));
     // data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let data = new google.visualization.DataTable();
+    let data = new this.gLib.visualization.DataTable();
     data.addColumn('string', this.graphData[0][0]);
     data.addColumn('string', this.graphData[0][1]);
     data.addColumn('date', this.graphData[0][2]);
