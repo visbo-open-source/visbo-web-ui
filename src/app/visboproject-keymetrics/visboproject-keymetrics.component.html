@@ -40,43 +40,43 @@
           <!--Table body-->
           <tbody>
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotal > 0">
-              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="gotoViewCost()" class="font-weight-bold">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</td>
-              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="gotoViewCost()">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</td>
-              <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="gotoViewCost()">
+              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="gotoViewCost()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="gotoViewCost()"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
+              <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="gotoViewCost()"><a>
                 <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} % </span>
-              </td>
-              <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="gotoViewCost()">
+              </a></td>
+              <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="gotoViewCost()"><a>
                 <span *ngIf="qualityTotalCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityTotalCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityTotalCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} % </span>
-              </td>
+              </a></td>
               <!-- <td class="d-none d-md-table-cell"></td> -->
               <!-- <td>
                 <button type="button" class="btn fa fa-eye"
                 (click)="gotoViewCost()"></button>
               </td> -->
-              <td>
+              <td><a>
                 <button type="button" class="btn" (click)="switchTo('Costs')" title="{{historyButton}}">i</button>
-              </td>
+              </a></td>
             </tr>
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
-              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</td>
-              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</td>
-              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}">
+              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}"><a>
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} % </span>
-              </td>
-              <td (click)="gotoViewDelivery()">
+              </a></td>
+              <td (click)="gotoViewDelivery()"><a>
                 <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
-              </td>
+              </a></td>
               <!-- <td class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDelivery == 1" title="Status Actual Deliveries" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDelivery == 2" title="Status Actual Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -95,19 +95,19 @@
               </td>
             </tr>
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
-              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</td>
-              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</td>
-              <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}">
+              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
+              <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}"><a>
                 <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{vpvKeyMetricActive.timeCompletionActual | number:'1.0-0'}} % </span>
-              </td>
-              <td (click)="gotoViewDeadline()">
+              </a></td>
+              <td (click)="gotoViewDeadline()"><a>
                 <span>{{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}} </span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
-              </td>
+              </a></td>
               <!-- <td (click)="gotoViewDeadline()" class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDeadlines == 1" title="Status Actual Deadline" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDeadlines == 2" title="Status Actual Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
