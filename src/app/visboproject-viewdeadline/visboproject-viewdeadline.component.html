@@ -1,4 +1,5 @@
 <app-usernavbar></app-usernavbar>
+
 <div *ngIf="vpActive" class='well'>
   <div class='row'>
     <div class='col'>
@@ -58,10 +59,10 @@
         <tbody>
           <tr *ngFor="let deadlines of vpvDeadline">
             <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
-            <td  *ngIf="getStatus(deadlines) === 0" class="d-none d-sm-table-cell font-weight-bold darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td  *ngIf="getStatus(deadlines) === 1" class="d-none d-sm-table-cell font-weight-bold text-success" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td  *ngIf="getStatus(deadlines) === 2" class="d-none d-sm-table-cell font-weight-bold text-warning" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td  *ngIf="getStatus(deadlines) === 3" class="d-none d-sm-table-cell font-weight-bold text-danger" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 0" class="d-none d-sm-table-cell font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 1" class="d-none d-sm-table-cell font-weight-bold my_green" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 2" class="d-none d-sm-table-cell font-weight-bold my_orange" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 3" class="d-none d-sm-table-cell font-weight-bold my_red" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
             <!-- <td  class="d-none d-sm-table-cell text-danger" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
             <!-- <td *ngIf="deadlines.percentDone == 1" class="d-none d-sm-table-cell" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
             <td *ngIf="deadlines.percentDone != 1" class="d-none d-sm-table-cell font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->

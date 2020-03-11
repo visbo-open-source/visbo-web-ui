@@ -154,7 +154,7 @@
             <tr>
               <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(2)" title="{{ 'keyMetrics.longAC' | translate }}">{{ 'keyMetrics.shortAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="{{ 'keyMetrics.longPV' | translate }}">{{ 'keyMetrics.baselinePV' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="{{ 'keyMetrics.longPV' | translate }}">{{ 'keyMetrics.relativPV' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(3)" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="{{ 'keyMetrics.longBAC' | translate }}">{{ 'keyMetrics.baselineBAC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
@@ -171,7 +171,7 @@
               <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
               <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
-              <td class="text-right">
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
@@ -211,7 +211,7 @@
               <td class="text-right" title="{{ 'keyMetrics.shortDAC' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.timeCompletionTotal | number:'1.0-0'}} %</td>
               <!-- <td class="text-right">{{vp.keyMetrics.timeDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}}</td> -->
-              <td class="text-right">
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
@@ -229,8 +229,8 @@
               <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(21)" title="{{ 'keyMetrics.longADV' | translate }}">{{ 'keyMetrics.shortADV' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(20)" title="{{ 'keyMetrics.longPDV' | translate }}">{{ 'keyMetrics.shortPDV' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(26)" title="{{ 'keyMetrics.longEDVC' | translate }}">{{ 'keyMetrics.shortEDVC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
               <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(23)">Actual Delay</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(24)">Total Delay</th> -->
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
@@ -243,13 +243,13 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual | number :'1.0-1'}}</td>
+              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual |number :'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortPDV' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortDVAC' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionTotal | number:'1.0-0'}} %</td>
               <!-- <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentTotal | number:'1.0-0'}}</td> -->
-              <td class="text-right">
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
@@ -343,6 +343,13 @@
                 <td>{{ 'vpKeyMetric.lbl.leadPerson' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.leadPerson }}">
                   {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
+                </td>
+                <td></td>
+              </tr>
+              <tr *ngIf="vpvKeyMetricActive.description">
+                <td>{{ 'vpKeyMetric.lbl.description' | translate }}</td>
+                <td title="{{ vpvKeyMetricActive.description }}">
+                  {{ getShortText(vpvKeyMetricActive.description, 20) }}
                 </td>
                 <td></td>
               </tr>
