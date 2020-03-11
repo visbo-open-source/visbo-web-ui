@@ -18,7 +18,8 @@ import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/vis
 
 @Component({
   selector: 'app-visboproject-viewdeadline',
-  templateUrl: './visboproject-viewdeadline.component.html'
+  templateUrl: './visboproject-viewdeadline.component.html',
+  styleUrls: ['./visboproject-viewdeadline.component.css']
 })
 export class VisboProjectViewDeadlineComponent implements OnInit {
 
