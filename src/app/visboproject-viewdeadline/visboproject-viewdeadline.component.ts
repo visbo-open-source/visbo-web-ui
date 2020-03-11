@@ -30,8 +30,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   vpvActive: VisboProjectVersion;
   initVPVID: string;
   vpvDeadline: VPVDeadline[];
+  vpvAllDeadline: VPVDeadline[];
+
   filterStatus: string;
-  vpvDeadlineDate: any = [];
+  filterPhase: string;
   vpvActualDataUntil: Date;
   deleted = false;
 
@@ -62,6 +64,9 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   graphUnFinishedPieLegend: any;
   graphUnFinishedOptionsPieChart: any = undefined;
   divUnFinishedPieChart = 'divUnFinishedPieChart';
+
+  graphOptionsDeadlinesGantt: any = undefined;
+  graphDataDeadlinesGantt: any[] = [];
 
   sortAscending = false;
   sortColumn = 1;
@@ -218,8 +223,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
 
   initDeadlines(deadlines: VPVDeadline[]): void {
     const filterDeadlines: VPVDeadline[] = [];
+    const allDeadlines: VPVDeadline[] = [];
     if (deadlines === undefined) {
       this.vpvDeadline = deadlines;
+      this.graphDataDeadlinesGantt = [];
       return;
     }
     // generate long Names
@@ -227,11 +234,16 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       deadlines[i].fullName = this.getFullName(deadlines[i]);
       deadlines[i].status = this.statusList[this.getStatus(deadlines[i])];
       if (!this.filterStatus  || this.filterStatus ===  deadlines[i].status) {
-        filterDeadlines.push(deadlines[i]);
+        if (!this.filterPhase  || this.filterPhase ===  deadlines[i].phasePFV) {
+          filterDeadlines.push(deadlines[i]);
+        }
       }
+      allDeadlines.push(deadlines[i]);
     }
     this.vpvDeadline = filterDeadlines;
+    this.vpvAllDeadline = allDeadlines;
     this.sortDeadlineTable();
+    this.visboViewDeadlineGantt();
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -346,6 +358,57 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
 
   }
 
+  visboViewDeadlineGantt(): void {
+    this.graphOptionsDeadlinesGantt = {
+        title: this.translate.instant('keyMetrics.chart.titleDeadlinesGantt'),
+        // titleTextStyle: {color: 'black', fontSize: '16'},
+        gantt: {
+          labelStyle: {
+            fontName: 'arial',
+            fontSize: 18,
+            color: 'black'
+          },
+          trackHeight: 40
+        }
+        // colors: this.colors
+      };
+
+    let graphData = [];
+    for (let i = 0; i < this.vpvAllDeadline.length; i++) {
+      const deadline = this.vpvAllDeadline[i];
+      if (deadline.type === "Phase") {
+        // const start = new Date(deadline.startDateVPV);
+        // const end = new Date(deadline.endDatePFV);
+        const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
+        const endDate = new Date(deadline.endDatePFV);
+        graphData.push([
+          deadline.phasePFV,
+          deadline.phasePFV,
+          startDate.getTime(),
+          endDate.getTime(),
+          0,
+          deadline.percentDone * 100,
+          null
+        ]);
+      }
+    }
+    graphData.reverse();
+    graphData.push([
+      'Task ID',
+      'Task Name',
+      'Start Date',
+      'End Date',
+      'Duration',
+      'Percent Complete',
+      'Dependencies'
+    ]);
+    graphData.reverse();
+    // calculate the necessary height as it has to be defined fixed
+    this.graphOptionsDeadlinesGantt.height = graphData.length * (this.graphOptionsDeadlinesGantt.gantt.trackHeight || 40);
+    this.graphDataDeadlinesGantt = graphData;
+  }
+
+
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
     if (this.filterStatus !== label) {
@@ -356,6 +419,15 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     this.initDeadlines(this.vpvActive.deadlines);
   }
 
+  ganttSelectRow(row: number, label: string): void {
+    this.log(`gantt Select Row ${row} for Filter ${label}`);
+    if (row === undefined || label === '.') {
+      this.filterPhase = undefined;
+    } else {
+      this.filterPhase = label;
+    }
+    this.initDeadlines(this.vpvActive.deadlines);
+  }
 
   getFullName(deadline: VPVDeadline): string {
     let result = '';

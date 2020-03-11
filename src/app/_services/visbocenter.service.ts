@@ -70,7 +70,7 @@ export class VisboCenterService  {
       );
   }
 
-  /* Role of User in sysAdmin */
+  /* Role of User in sysadmin */
   getSysAdminRole() {
     let result: any;
     if (this.combinedPerm === undefined) {
@@ -229,11 +229,11 @@ export class VisboCenterService  {
   }
 
   /** POST: add a new User to the Visbo Center */
-  addVCUser (email: string, groupId: string, message: string, vcid: string, sysAdmin?: boolean): Observable<VGGroup> {
+  addVCUser (email: string, groupId: string, message: string, vcid: string, sysadmin?: boolean): Observable<VGGroup> {
     const url = `${this.vcUrl}/${vcid}/group/${groupId}/user`;
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     let reqBody: any;
     reqBody = {};
@@ -249,11 +249,11 @@ export class VisboCenterService  {
   }
 
   /** DELETE: remove a User from the Visbo Center */
-  deleteVCUser (user: VGUserGroup, vcid: string, sysAdmin?: boolean): Observable<any> {
+  deleteVCUser (user: VGUserGroup, vcid: string, sysadmin?: boolean): Observable<any> {
     const url = `${this.vcUrl}/${vcid}/group/${user.groupId}/user/${user.userId}`;
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} `);
     return this.http.delete<VGResponse>(url, { headers , params })
@@ -265,11 +265,11 @@ export class VisboCenterService  {
   }
 
   /** POST: add a new Group to the Visbo Center */
-  addVCGroup (newGroup: VGGroup, sysAdmin?: boolean): Observable<VGGroup> {
+  addVCGroup (newGroup: VGGroup, sysadmin?: boolean): Observable<VGGroup> {
     const url = `${this.vcUrl}/${newGroup.vcid}/group`;
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     this.log(`Calling HTTP Request: ${url} for ${newGroup.name} `);
     return this.http.post<VGResponse>(url, newGroup, { headers , params })
@@ -281,11 +281,11 @@ export class VisboCenterService  {
   }
 
   /** PUT: modify a VC Group in the Visbo Center (Change: Name, Global, Permission)*/
-  modifyVCGroup (actGroup: VGGroup, sysAdmin?: boolean): Observable<VGGroup> {
+  modifyVCGroup (actGroup: VGGroup, sysadmin?: boolean): Observable<VGGroup> {
     const url = `${this.vcUrl}/${actGroup.vcid}/group/${actGroup._id}`;
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     this.log(`Calling HTTP Request: ${url} for ${actGroup.name} Perm: ${JSON.stringify(actGroup.permission)} `);
     return this.http.put<VGResponse>(url, actGroup, { headers , params })
@@ -298,11 +298,11 @@ export class VisboCenterService  {
 
 
   /** DELETE: remove a Group from the Visbo Center */
-  deleteVCGroup (group: VGGroup, sysAdmin?: boolean): Observable<any> {
+  deleteVCGroup (group: VGGroup, sysadmin?: boolean): Observable<any> {
     const url = `${this.vcUrl}/${group.vcid}/group/${group._id}`;
     let params = new HttpParams();
-    if (sysAdmin) {
-      params = params.append('sysAdmin', '1');
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
     }
     this.log(`Calling HTTP Request: ${url} for Group ${group.name} `);
     return this.http.delete<VGResponse>(url, { headers , params })

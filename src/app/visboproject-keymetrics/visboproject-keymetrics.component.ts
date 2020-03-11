@@ -652,11 +652,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   chartSelectRow(row: number, col: number, label: string) {
-    this.log(`Line Chart: User selected ${row} ${col} ${label} Len ${this.visbokeymetrics.length}`);
-    if (row < 0 || row >= this.visbokeymetrics.length) {
-      row = 0;
-    }
-    this.setVpvActive(this.visbokeymetrics[row]);
+    const len = this.graphDataLineChart.length;
+    this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
+    const refDate = new Date(label);
+    // find version with timestamp
+    var indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() == refDate.toISOString());
+    if (indexVPV < 0) { indexVPV = 0; }
+    this.setVpvActive(this.visbokeymetrics[indexVPV]);
     this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 

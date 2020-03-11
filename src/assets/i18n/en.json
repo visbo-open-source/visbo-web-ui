@@ -56,7 +56,7 @@
 			"email": "Your e-mail"
 		},
 		"btn": {
-			"resetPW": "reset Password",
+			"resetPW": "Reset Password",
 			"cancel": "Cancel"
 		},
 		"msg": {
@@ -128,7 +128,8 @@
 			"phone": "Phone",
 			"email": "e-Mail address",
 			"oldPassword": "Old password",
-			"newPassword": "New password"
+			"newPassword": "New password",
+			"PWRule": "Password Rule"
 		},
 		"btn": {
 			"save": "Save",

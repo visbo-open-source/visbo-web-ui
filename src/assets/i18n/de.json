@@ -128,7 +128,8 @@
 			"phone": "Telefon",
 			"email": "E-Mail Adresse",
 			"oldPassword": "Altes Passwort",
-			"newPassword": "Neues Passwort"
+			"newPassword": "Neues Passwort",
+			"PWRule": "Password Rule"
 		},
 		"btn": {
 			"save": "Speichern",

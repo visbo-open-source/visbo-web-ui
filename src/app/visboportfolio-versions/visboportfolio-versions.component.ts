@@ -108,8 +108,20 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         table: this.translate.instant('vpfVersion.metric.deliveryTable')
       }
     ];
-    this.typeMetricIndexX = 0;
-    this.typeMetricIndexY = 1;
+
+    // const view = {'xAxis': this.typeMetricIndexX, 'yAxis': this.typeMetricIndexY, 'vpFilter': this.vpFilter};
+    const view = JSON.parse(sessionStorage.getItem('vpf-view'));
+    const id = this.route.snapshot.paramMap.get('id');
+    if (view) {
+      this.typeMetricIndexX = view.xAxis || 0;
+      this.typeMetricIndexY = view.yAxis || 1;
+      if (view.vpID && view.vpID == id) {
+        this.vpFilter = view.vpFilter || undefined;
+      }
+    } else {
+      this.typeMetricIndexX = 0;
+      this.typeMetricIndexY = 1;
+    }
     this.typeMetricX = this.typeMetricList[this.typeMetricIndexX].name;
     this.typeMetricY = this.typeMetricList[this.typeMetricIndexY].name;
 
@@ -303,17 +315,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           }
 
           // Calculate the Deadlines Completion
-          elementKeyMetric.timeCompletionTotal = (elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0)
-                                                  / (elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal || 1) || 0;
-          elementKeyMetric.timeCompletionActual = (elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0)
-                                                  / (elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || 1) || 0;
+          elementKeyMetric.timeCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
+          elementKeyMetric.timeCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
 
           // Calculate the Delivery Completion
-          elementKeyMetric.deliveryCompletionTotal = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal || 0)
-                                                      / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal || 1) || 0;
-          elementKeyMetric.deliveryCompletionActual = (elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual || 0)
-                                                      / (elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual || 1) || 0;
-
+          elementKeyMetric.deliveryCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal);
+          elementKeyMetric.deliveryCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual);
           this.visbokeymetrics.push(elementKeyMetric);
         }
       }
@@ -322,10 +329,19 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.visboKeyMetricsCalcBubble();
   }
 
+  calcPercent(current, baseline) {
+    if (baseline == undefined) { return undefined; }
+    else if (baseline == 0 && current == 0) { return 1; }
+    else { return (current || 0) / baseline; }
+  }
+
   changeChart() {
     this.log(`Switch Chart from ${this.typeMetricList[this.typeMetricIndexX].metric} vs  ${this.typeMetricList[this.typeMetricIndexY].metric}  to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricIndexX = this.typeMetricList.findIndex(x => x.name === this.typeMetricX);
     this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name === this.typeMetricY);
+    const view = {'vpID': this.vpActive._id.toString(), 'xAxis': this.typeMetricIndexX, 'yAxis': this.typeMetricIndexY, 'vpFilter': this.vpFilter};
+    sessionStorage.setItem('vpf-view', JSON.stringify(view));
+
     this.visboKeyMetricsCalc();
     this.chart = this.modalChart;
   }

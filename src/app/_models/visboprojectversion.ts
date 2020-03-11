@@ -26,6 +26,8 @@ export class VPVDeadline {
   phasePFV: string;
   phaseVPV: string;
   type: string;
+  startDatePFV: Date;
+  startDateVPV: Date;
   endDatePFV: Date;
   endDateVPV: Date;
   changeDays: number;
