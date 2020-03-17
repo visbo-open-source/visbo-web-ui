@@ -12,7 +12,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbocenter-detail',
@@ -76,7 +76,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
           if (error.status === 403) {
             this.alertService.error(`Permission Denied`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -126,7 +126,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
           if (error.status === 403) {
             this.alertService.error(`Permission Denied`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -166,7 +166,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
           } else if (error.status === 409) {
             this.alertService.error(`Visbo Center ${this.visbocenter.name} exists already`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -185,7 +185,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
           if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Center ${visbocenter.name}`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -235,7 +235,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Add User to Visbo Center`);
           } else {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -313,7 +313,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Remove User from Visbo Center`);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -413,7 +413,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
               this.alertService.error(`Permission Denied: Modify Group to Visbo Center`);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -434,7 +434,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
               this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -458,7 +458,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Remove Group from Visbo Center`);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );

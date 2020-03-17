@@ -17,7 +17,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboportfolio-versions',
@@ -165,9 +165,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    const message = this.translate.instant('vpfVersion.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -175,9 +176,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     } else {
@@ -189,9 +191,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              this.alertService.error(`Permission Denied for Visbo Project Versions`);
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -214,9 +217,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied for Visbo Portfolio KeyMetrics`);
+            const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -383,7 +387,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
         // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
         'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
-        'hAxis': {'baseline': 1, 'direction': -1, 'format': 'decimal', 'title': 'Total Cost', 'baselineColor': 'blue'},
+        'hAxis': {'baseline': 1, 'direction': -1, 'format': "# '%'", 'title': 'Total Cost', 'baselineColor': 'blue'},
         // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
         // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
@@ -530,18 +534,20 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   graphBubbleAxis(): void {
     let typeMetric = this.typeMetricList[this.typeMetricIndexX];
+    const weekFormat = '# ' + this.translate.instant('vpfVersion.lbl.weeks');
+
     switch (typeMetric.metric) {
       case 'Costs':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
     }
     this.graphBubbleLabelX = typeMetric.bubble;
@@ -549,16 +555,16 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     typeMetric = this.typeMetricList[this.typeMetricIndexY];
     switch (this.typeMetricList[this.typeMetricIndexY].metric) {
       case 'Costs':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': 'decimal', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
     }
     this.graphBubbleLabelY = typeMetric.bubble;

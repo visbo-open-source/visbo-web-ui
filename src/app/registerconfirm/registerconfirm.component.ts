@@ -9,6 +9,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-registerconfirm',
   templateUrl: './registerconfirm.component.html',
@@ -41,7 +43,7 @@ export class RegisterconfirmComponent implements OnInit {
         },
         error => {
           this.log(`Error during Register Confirm ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
           this.router.navigate(['login']);
         }
       );

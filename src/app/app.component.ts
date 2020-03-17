@@ -4,6 +4,7 @@ import { AuthenticationService } from './_services/authentication.service';
 import { AlertService } from './_services/alert.service';
 
 import {TranslateService} from '@ngx-translate/core';
+import { getErrorMessage } from './_helpers/visbo.helper';
 
 @Component({
   selector: 'app-root',
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit {
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit {
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

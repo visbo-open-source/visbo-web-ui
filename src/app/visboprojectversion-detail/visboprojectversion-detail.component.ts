@@ -12,6 +12,8 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProject } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-visboprojectversion-detail',
   templateUrl: './visboprojectversion-detail.component.html'
@@ -58,7 +60,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
             const message = this.translate.instant('vpvDetails.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -91,7 +93,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
             const message = this.translate.instant('vpvDetails.msg.errorPermDelete', {'name': visboprojectversion.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -135,9 +137,11 @@ export class VisboProjectVersionDetailComponent implements OnInit {
         error => {
           this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied: Visbo Project ${this.visboprojectversion._id}`);
+            const message = this.translate.instant('vpvDetails.msg.errorPermVersion', {'name': this.visboprojectversion.name});
+            this.alertService.error(message);
           } else if (error.status === 409) {
-            this.alertService.error(`Visbo Project ${this.visboprojectversion._id} exists already`);
+            const message = this.translate.instant('vpvDetails.msg.errorConflict', {'name': this.visboprojectversion._id});
+            this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);
           }

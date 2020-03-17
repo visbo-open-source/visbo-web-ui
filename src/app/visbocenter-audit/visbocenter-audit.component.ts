@@ -11,7 +11,7 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 function encodeCSV(source: string): string {
   let result: string;
@@ -88,11 +88,10 @@ export class VisbocenterAuditComponent implements OnInit {
         error => {
           this.log(`Get VC failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error('Permission Denied');
             const message = this.translate.instant('vcAudit.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -149,7 +148,7 @@ export class VisbocenterAuditComponent implements OnInit {
         },
         error => {
           this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

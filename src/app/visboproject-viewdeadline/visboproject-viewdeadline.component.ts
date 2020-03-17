@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewdeadline',
@@ -154,9 +154,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                    const message = this.translate.instant('vpViewDeadline.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -164,10 +165,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              const message = this.translate.instant('vpViewDeadline.msg.errorPerm', {'name': this.vpActive.name});
+              const message = this.translate.instant('vpViewDeadline.msg.errorPerm');
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     }
@@ -213,9 +214,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            this.alertService.error(`Permission Denied for Visbo Project Versions`);
+            const message = this.translate.instant('vpViewDeadline.msg.errorPerm', {'name': this.vpActive.name});
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -280,7 +282,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleFinishedDeadlines'),
-        titleTextStyle: {color: 'black', fontSize: '16'} ,
+        titleTextStyle: {color: 'black', fontSize: '16'},
+        tooltip : {
+          trigger: 'none'
+        },
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -322,6 +327,9 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     // if (!this.vpvDeadline || this.vpvDeadline.length == 0) return;
     this.graphUnFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleUnFinishedDeadlines'),
+        tooltip : {
+          trigger: 'none'
+        },
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -362,13 +370,17 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     this.graphOptionsDeadlinesGantt = {
         title: this.translate.instant('keyMetrics.chart.titleDeadlinesGantt'),
         // titleTextStyle: {color: 'black', fontSize: '16'},
+        tooltip : {
+          trigger: 'none'
+        },
         gantt: {
           labelStyle: {
             fontName: 'arial',
             fontSize: 18,
             color: 'black'
           },
-          trackHeight: 40
+          trackHeight: 30,
+          barHeight: 15
         }
         // colors: this.colors
       };
@@ -402,8 +414,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       'Dependencies'
     ]);
     graphData.reverse();
-    // calculate the necessary height as it has to be defined fixed
-    this.graphOptionsDeadlinesGantt.height = graphData.length * (this.graphOptionsDeadlinesGantt.gantt.trackHeight || 40);
+    // calculate the necessary height as it has to be defined fixed, legend + number of lines * height
+    this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * (this.graphOptionsDeadlinesGantt.gantt.trackHeight || 40);
     this.graphDataDeadlinesGantt = graphData;
   }
 

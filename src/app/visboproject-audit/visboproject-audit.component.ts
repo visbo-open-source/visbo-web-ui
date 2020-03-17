@@ -10,7 +10,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 function encodeCSV(source: string): string {
   let result: string;
@@ -92,7 +92,7 @@ export class VisboprojectAuditComponent implements OnInit {
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -136,7 +136,7 @@ export class VisboprojectAuditComponent implements OnInit {
         },
         error => {
           this.log(`get Audit failed: error: ${error.status} message: ${JSON.stringify(error)}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

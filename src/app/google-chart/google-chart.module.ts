@@ -7,8 +7,8 @@ import { ScatterChartComponent } from './scatter-chart/scatter-chart.component';
 import { ServiceModule } from './service/service.module';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { GanttChartComponent } from './gantt-chart/gantt-chart.component';
-import { TableChartComponent } from './table-chart/table-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 @NgModule({
   declarations: [
@@ -18,8 +18,8 @@ import { ColumnChartComponent } from './column-chart/column-chart.component';
     ScatterChartComponent,
     PieChartComponent,
     GanttChartComponent,
-    TableChartComponent,
-    ColumnChartComponent
+    ColumnChartComponent,
+    BarChartComponent
   ],
   imports: [
     CommonModule,
@@ -32,8 +32,8 @@ import { ColumnChartComponent } from './column-chart/column-chart.component';
     ScatterChartComponent,
     PieChartComponent,
     GanttChartComponent,
-    TableChartComponent,
-    ColumnChartComponent
+    ColumnChartComponent,
+    BarChartComponent
   ],
   providers : []
 })

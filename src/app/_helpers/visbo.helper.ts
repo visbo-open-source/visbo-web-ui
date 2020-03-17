@@ -31,3 +31,22 @@ export function visboGetShortText(text: string, len: number): string {
   }
   return text.substring(0, len - 3).concat('...');
 }
+
+export function getErrorMessage(error: any): string {
+  var result = 'Unknown Error';
+  if (error) {
+    if (error.status === 0) {
+      result = 'Server not reachable with '
+      result = result.concat(error.url || '');
+      console.log(`Rest Server not reachable: ${error.status} ${error.statusText}, Message ${error.message}`);
+    } else {
+      console.log(`Rest Error Status: ${error.status} ${error.statusText}, Message ${error.message}, Name: ${error.error.name || ''}`);
+      if (error.statusText) {
+        result = error.statusText;
+      } else if (error.message) {
+        result = error.message;
+      }
+    }
+  }
+  return result;
+}

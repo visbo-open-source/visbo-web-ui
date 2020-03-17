@@ -10,6 +10,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-pwreset',
   templateUrl: './pwreset.component.html',
@@ -52,7 +54,7 @@ export class PwresetComponent implements OnInit {
         error => {
           this.loading = false;
           const message = this.translate.instant('pwReset.msg.pwResetError');
-          this.alertService.error(message, true);
+          this.alertService.error(getErrorMessage(error), true);
           this.log(`Error during Reset Password ${error.error.message}`);
         }
       );
@@ -69,7 +71,7 @@ export class PwresetComponent implements OnInit {
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

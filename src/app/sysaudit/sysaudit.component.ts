@@ -8,7 +8,7 @@ import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/vis
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 import * as moment from 'moment';
 
@@ -167,7 +167,7 @@ export class SysauditComponent implements OnInit {
           },
           error => {
             this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         );
     }

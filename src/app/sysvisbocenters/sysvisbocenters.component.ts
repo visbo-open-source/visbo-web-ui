@@ -9,7 +9,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbocenters',
@@ -67,7 +67,7 @@ export class SysVisboCentersComponent implements OnInit {
         },
         error => {
           this.log(`get VCs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -99,7 +99,7 @@ export class SysVisboCentersComponent implements OnInit {
         } else if (error.status === 409) {
           this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
         } else {
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       }
     );
@@ -115,7 +115,7 @@ export class SysVisboCentersComponent implements OnInit {
         if (error.status === 403) {
           this.alertService.error(`Permission Denied: Visbo Center ${name}`);
         } else {
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       }
     );

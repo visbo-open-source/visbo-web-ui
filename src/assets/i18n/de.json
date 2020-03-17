@@ -146,6 +146,7 @@
 			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
 			"lastLogin": "Ihr letzter Login war am",
 			"lastFailedLogin": "Ihr letzter fehlgeschlagener Login war am",
+			"errorPerm": "Keine Berechtigung für das Benutzer Profil",
 			"updateSuccess": "Benutzer Profil wurde erfolgreich gespeichert",
 			"changePWSuccess": "Ihr Passwort wurde erfolgreich geändert"
 		}
@@ -262,6 +263,7 @@
 		"msg": {
 			"createSuccess": "VISBO Projekt {{name}} wurde erfolgreich angelegt",
 			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
+			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum VISBO Projekt"
 		}
@@ -529,6 +531,7 @@
 			"errorPerm": "Keine Berechtigung für diese VISBO Projekt Version",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}
 	},
@@ -544,6 +547,7 @@
 			"variant": "Variante",
 			"day": "Tag",
 			"week": "Woche",
+			"weeks": "Wochen",
 			"month": "Monat",
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
@@ -768,7 +772,7 @@
 			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
 			"titleFinishedDeadlines": "Status Fälligkeiten",
 			"titleUnFinishedDeadlines": "Status unerledigter Fälligkeiten",
-			"yAxisCostOverTime": "Monatliche Kosten in T€",
+			"yAxisCostOverTime": "Monatliche Kosten",
 			"titleCostOverTime": "Historischer Vergleich monatlicher Kosten: plan-to-date vs. baseline",
 			"yAxisDeliveryTrend": "gewichtete Anzahl von Lieferungen (DV)",
 			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",

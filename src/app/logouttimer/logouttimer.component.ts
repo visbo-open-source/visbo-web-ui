@@ -8,6 +8,8 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-logouttimer',
   templateUrl: './logouttimer.component.html',
@@ -50,7 +52,7 @@ export class LogoutTimerComponent implements OnInit {
           // this.log(`Check Logout Time ${logoutTime.toISOString()} diff ${diff}`)
           if (diff > 0 && diff <= 120) {
             const message = this.translate.instant('autologout.msg.sessionExpires', {remaining: diff});
-            this.alertService.error(message, true);
+            this.alertService.error(message);
           }
           if (diff < 0) {
             const message = this.translate.instant('autologout.msg.sessionExpired');
