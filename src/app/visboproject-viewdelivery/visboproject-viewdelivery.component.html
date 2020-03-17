@@ -56,10 +56,13 @@
         </thead>
         <!--Table body-->
         <tbody>
-          <tr *ngFor="let delivery of vpvDelivery">
-            
-            <!-- ur: 05.03.2020: all deliveries the same look  -->
-            <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <tr *ngFor="let delivery of vpvDelivery">            
+            <!-- ur: 05.03.2020: all deliveries the same look  -->            
+            <td   *ngIf="getStatus(delivery) === 0" class="font-weight-bold my_darkgreen" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <td   *ngIf="getStatus(delivery) === 1" class="font-weight-bold my_green" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <td   *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <td   *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+            <!-- <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td> -->
             <!-- <td *ngIf="delivery.percentDone == 1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <td *ngIf="delivery.percentDone != 1" class="font-weight-bold" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td> -->
             <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
@@ -72,7 +75,7 @@
             <td class="text-right" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
 
             <td *ngIf="(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
-            <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right bg-danger">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+            <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
           </tr>
         </tbody>
         <!--Table body-->
