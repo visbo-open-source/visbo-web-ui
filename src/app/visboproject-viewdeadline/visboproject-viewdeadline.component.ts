@@ -18,7 +18,8 @@ import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/vis
 
 @Component({
   selector: 'app-visboproject-viewdeadline',
-  templateUrl: './visboproject-viewdeadline.component.html'
+  templateUrl: './visboproject-viewdeadline.component.html',
+  styleUrls: ['./visboproject-viewdeadline.component.css']
 })
 export class VisboProjectViewDeadlineComponent implements OnInit {
 
@@ -230,7 +231,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
     // generate long Names
     for (let i = 0; i < deadlines.length; i++) {
-      deadlines[i].fullName = this.getFullName(deadlines[i]);
+      deadlines[i].fullName = this.getFullName(deadlines[i], false);
       deadlines[i].status = this.statusList[this.getStatus(deadlines[i])];
       if (!this.filterStatus  || this.filterStatus ===  deadlines[i].status) {
         if (!this.filterPhase  || this.filterPhase ===  deadlines[i].phasePFV) {
@@ -376,13 +377,12 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     for (let i = 0; i < this.vpvAllDeadline.length; i++) {
       const deadline = this.vpvAllDeadline[i];
       if (deadline.type === "Phase") {
-        // const start = new Date(deadline.startDateVPV);
-        // const end = new Date(deadline.endDatePFV);
         const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
         const endDate = new Date(deadline.endDatePFV);
+        const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
         graphData.push([
-          deadline.phasePFV,
-          deadline.phasePFV,
+          phase,
+          phase,
           startDate.getTime(),
           endDate.getTime(),
           0,
@@ -428,12 +428,14 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     this.initDeadlines(this.vpvActive.deadlines);
   }
 
-  getFullName(deadline: VPVDeadline): string {
+  getFullName(deadline: VPVDeadline, replaceRoot: boolean): string {
     let result = '';
     if (deadline.phaseVPV || deadline.phasePFV) {
       if (deadline.type === "Milestone") {
         result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
         result = result.concat(deadline.name);
+      } else if ( deadline.name === '.' && replaceRoot ){
+        result = result.concat(this.vpvActive.name);
       } else {
         result = result.concat(deadline.name);
       }

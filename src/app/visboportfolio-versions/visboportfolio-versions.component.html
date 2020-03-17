@@ -46,7 +46,7 @@
         <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
         <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
-        <span *ngIf="vpFilter">, {{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}.</span>
+        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
       </div>
     </div>
     <div class="row">

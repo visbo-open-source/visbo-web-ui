@@ -117,6 +117,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       this.typeMetricIndexY = view.yAxis || 1;
       if (view.vpID && view.vpID == id) {
         this.vpFilter = view.vpFilter || undefined;
+        this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
       }
     } else {
       this.typeMetricIndexX = 0;
@@ -335,13 +336,37 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     else { return (current || 0) / baseline; }
   }
 
+  isSameDay(dateA: Date, dateB: Date): boolean {
+    if (!dateA || !dateB) { return false; }
+    dateA.setHours(0, 0, 0, 0);
+    dateB.setHours(0, 0, 0, 0);
+    return dateA.toISOString() === dateB.toISOString();
+  }
+
+  storeSetting() {
+    let vpvRefDate = new Date();
+    // store refDate only if it is different from today
+    if (this.isSameDay(vpvRefDate, this.vpvRefDate)) {
+      vpvRefDate = undefined;
+    } else {
+      vpvRefDate = this.vpvRefDate;
+    }
+    const view = {
+      'updatedAt': (new Date()).toISOString(),
+      'vpID': this.vpActive._id.toString(),
+      'xAxis': this.typeMetricIndexX,
+      'yAxis': this.typeMetricIndexY,
+      'vpFilter': this.vpFilter,
+      'vpvRefDate': vpvRefDate ? vpvRefDate.toISOString() : undefined
+    };
+    sessionStorage.setItem('vpf-view', JSON.stringify(view));
+  }
+
   changeChart() {
     this.log(`Switch Chart from ${this.typeMetricList[this.typeMetricIndexX].metric} vs  ${this.typeMetricList[this.typeMetricIndexY].metric}  to ${this.typeMetricX} vs  ${this.typeMetricY}`);
     this.typeMetricIndexX = this.typeMetricList.findIndex(x => x.name === this.typeMetricX);
     this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name === this.typeMetricY);
-    const view = {'vpID': this.vpActive._id.toString(), 'xAxis': this.typeMetricIndexX, 'yAxis': this.typeMetricIndexY, 'vpFilter': this.vpFilter};
-    sessionStorage.setItem('vpf-view', JSON.stringify(view));
-
+    this.storeSetting();
     this.visboKeyMetricsCalc();
     this.chart = this.modalChart;
   }
@@ -549,15 +574,18 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   gotoVPDetail(visboproject: VisboProject): void {
     const deleted = visboproject.deletedAt ? true : false;
     this.log(`goto Detail for VP ${visboproject._id}`);
+    this.storeSetting();
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
     this.log(`goto VP ${vpv.name} (${vpv.vpid}) Deleted? ${this.deleted}`);
+    this.storeSetting();
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
   gotoVC(visboproject: VisboProject): void {
+    this.storeSetting();
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
 
@@ -566,7 +594,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const vpv = this.visbokeymetrics.find(x => x.name === label);
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
-    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    this.storeSetting();
+    let queryParams: any = {};
+    if (this.deleted) { queryParams.deleted = this.deleted; }
+    if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams.refDate = this.vpvRefDate.toISOString(); }
+    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
   }
 
   dropDownInit() {
