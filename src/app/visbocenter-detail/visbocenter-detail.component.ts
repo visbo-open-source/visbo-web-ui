@@ -13,7 +13,7 @@ import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -78,7 +78,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -139,7 +139,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -179,7 +179,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorVCConflict', {'name': this.visbocenter.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -237,7 +237,7 @@ export class VisbocenterDetailComponent implements OnInit {
             this.alertService.error(message);
           } else if (error.error) {
             this.log(`Error during add VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -317,7 +317,7 @@ export class VisbocenterDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -422,7 +422,7 @@ export class VisbocenterDetailComponent implements OnInit {
               this.alertService.error(message);
             } else {
               this.log(`Error during modify VC Group ${error.error.message}`); // log to console instead
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -445,7 +445,7 @@ export class VisbocenterDetailComponent implements OnInit {
               this.alertService.error(message);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -471,7 +471,7 @@ export class VisbocenterDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );

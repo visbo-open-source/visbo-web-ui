@@ -11,7 +11,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-syslog',
@@ -65,7 +65,7 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`get Logs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -88,7 +88,7 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -103,7 +103,7 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`get Log Level failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -119,7 +119,7 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`set Log Level failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

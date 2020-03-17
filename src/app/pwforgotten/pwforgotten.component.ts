@@ -8,6 +8,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-pwforgotten',
   templateUrl: './pwforgotten.component.html',
@@ -43,7 +45,7 @@ export class PwforgottenComponent implements OnInit {
         },
         error => {
           this.log(`Error during Password Forgotten ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error), true);
           this.loading = false;
         }
       );

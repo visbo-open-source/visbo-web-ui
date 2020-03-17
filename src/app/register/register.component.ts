@@ -8,6 +8,8 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -64,7 +66,7 @@ export class RegisterComponent implements OnInit {
         },
         error => {
           this.log(`Error during Create User ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
           this.loading = false;
         }
       );
@@ -81,7 +83,7 @@ export class RegisterComponent implements OnInit {
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

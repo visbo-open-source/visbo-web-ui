@@ -180,6 +180,28 @@ export class VisboProjectVersionService {
       );
   }
 
+  /** GET getVisboCenterProjectVersions for all projects of a specific VC */
+  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted: boolean = false): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    params = params.append('vcid', id);
+    params = params.append('refDate', refDate.toISOString());
+    params = params.append('keyMetrics', '1');
+    params = params.append('variantName', '');
+
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(vpv => this.log(`fetched ${vpv.length} VisboCenter Project Versions `)),
+        catchError(this.handleError('getVisboCenterProjectkeyMetrics', []))
+      );
+  }
+
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboPortfolioVersion(id: string, deleted: boolean = false): Observable<VisboPortfolioVersion> {
     const url = `${this.vpfUrl}/${id}/portfolio`;

@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewdelivery',
@@ -153,7 +153,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
                     const message = this.translate.instant('vpViewDelivery.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -164,7 +164,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
               const message = this.translate.instant('vpViewDelivery.msg.errorPerm', {'name': this.vpActive.name});
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     }
@@ -213,7 +213,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
             const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -267,7 +267,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
     this.graphFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleFinishedDelivery'),
-        titleTextStyle: {color: 'black', fontSize: '16'} ,
+        titleTextStyle: {color: 'black', fontSize: '16'},
+        tooltip : {
+          trigger: 'none'
+        },
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };
@@ -310,6 +313,9 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
     this.graphUnFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleUnFinishedDelivery'),
+        tooltip : {
+          trigger: 'none'
+        },
         // sliceVisibilityThreshold: .025
         colors: this.colors
       };

@@ -12,7 +12,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisboproject-detail',
@@ -72,7 +72,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
         },
         error => {
           this.log(`get VPs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -124,7 +124,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
           if (error.status === 403) {
             this.alertService.error(`Permission Denied`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -146,7 +146,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
           if (error.status === 403) {
             this.alertService.error(`Permission Denied: Visbo Project ${visboproject.name}`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -174,7 +174,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
           } else if (error.status === 409) {
             this.alertService.error(`Visbo Project ${this.visboproject.name} exists already`);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -221,7 +221,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Add User to Visbo Project`);
           } else {
             this.log(`Error during add VP user ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -295,7 +295,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
             this.alertService.error(`Permission Denied: Remove User from Visbo Project`);
           } else {
             this.log(`Error during remove User from VP user ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -388,7 +388,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
               this.alertService.error(`Permission Denied: Modify Group to Visbo Project`);
             } else {
               this.log(`Error during modify VP Group ${error.error.message}`);
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -409,7 +409,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
               this.alertService.error(`Permission Denied: Add Group to Visbo Center`);
             } else {
               this.log(`Error during add VC Group ${error.error.message}`);
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );

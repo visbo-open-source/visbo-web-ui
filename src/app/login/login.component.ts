@@ -12,6 +12,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-login',
@@ -68,7 +69,7 @@ export class LoginComponent implements OnInit {
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -103,7 +104,7 @@ export class LoginComponent implements OnInit {
         },
         error => {
           this.log(`Login Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
           this.loading = false;
         }
       );
