@@ -138,13 +138,13 @@
       </div>
       <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
         <div *ngIf="typeMetricChart == 'Costs'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deadlines'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deliveries'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
       </div>
       <div *ngIf="!chart && graphDataLineChart.length > 0" >
@@ -189,7 +189,7 @@
               <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(10)" title="{{ 'keyMetrics.longAD' | translate }}">{{ 'keyMetrics.shortAD' | translate }}</th>
               <th class="text-right" (click)="sortKeyMetricsTable(11)" title="{{ 'keyMetrics.longPD' | translate }}">{{ 'keyMetrics.shortPD' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>              
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longDAC' | translate }}">{{ 'keyMetrics.shortDAC' | translate }}</th>
               <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">Actual Delay</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">Total Delay</th> -->
@@ -395,7 +395,7 @@
             <tr>
               <td>{{ 'keyMetrics.shortAC' | translate }}</td>
               <td>{{ 'keyMetrics.longAC' | translate }}</td>
-            </tr> 
+            </tr>
             <tr>
               <td>{{ 'keyMetrics.shortPV' | translate }}</td>
               <td>{{ 'keyMetrics.longPV' | translate }}</td>
@@ -407,7 +407,7 @@
             <tr>
               <td>{{ 'keyMetrics.shortBAC' | translate }}</td>
               <td>{{ 'keyMetrics.longBAC' | translate }}</td>
-            </tr>     
+            </tr>
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deadlines'">
             <tr>
@@ -417,7 +417,7 @@
             <tr>
               <td>{{ 'keyMetrics.shortPD' | translate }}</td>
               <td>{{ 'keyMetrics.longPD' | translate }}</td>
-            </tr>           
+            </tr>
             <tr>
               <td>{{ 'keyMetrics.shortEDC' | translate }}</td>
               <td>{{ 'keyMetrics.longEDC' | translate }}</td>
@@ -426,7 +426,7 @@
               <td>{{ 'keyMetrics.shortDAC' | translate }}</td>
               <td>{{ 'keyMetrics.longDAC' | translate }}</td>
             </tr>
-          
+
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deliveries'">
             <tr>
@@ -440,11 +440,11 @@
             <tr>
               <td>{{ 'keyMetrics.shortEDVC' | translate }}</td>
               <td>{{ 'keyMetrics.longEDVC' | translate }}</td>
-            </tr>          
+            </tr>
             <tr>
               <td>{{ 'keyMetrics.shortDVAC' | translate }}</td>
               <td>{{ 'keyMetrics.longDVAC' | translate }}</td>
-            </tr>       
+            </tr>
           </tbody>
         </table>
         <div class="modal-footer align-items-end">

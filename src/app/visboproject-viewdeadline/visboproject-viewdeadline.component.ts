@@ -67,6 +67,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
 
   graphOptionsDeadlinesGantt: any = undefined;
   graphDataDeadlinesGantt: any[] = [];
+  currentLang: string;
 
   sortAscending = false;
   sortColumn = 1;
@@ -90,6 +91,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     this.statusList = [
       this.translate.instant('keyMetrics.chart.statusDeadlineAhead'),
       this.translate.instant('keyMetrics.chart.statusDeadlineInTime'),
@@ -385,7 +387,8 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
         // colors: this.colors
       };
 
-    let graphData = [];
+    let graphData: any;
+    graphData = [];
     for (let i = 0; i < this.vpvAllDeadline.length; i++) {
       const deadline = this.vpvAllDeadline[i];
       if (deadline.type === "Phase") {
@@ -446,7 +449,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       if (deadline.type === "Milestone") {
         result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
         result = result.concat(deadline.name);
-      } else if ( deadline.name === '.' && replaceRoot ){
+      } else if ( deadline.name === '.' && replaceRoot ) {
         result = result.concat(this.vpvActive.name);
       } else {
         result = result.concat(deadline.name);

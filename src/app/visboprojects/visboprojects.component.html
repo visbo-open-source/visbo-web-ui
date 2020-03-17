@@ -73,10 +73,10 @@
       </div>
     </div>
     <!-- <div *ngIf="chart && graphBarData.length > 0" >
-      <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis"></app-bar-chart>
+      <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
     </div> -->
     <div *ngIf="graphBubbleData && graphBubbleData.length">
-      <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis"></app-bubble-chart>
+      <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
     </div>
   </div>
 </div>
