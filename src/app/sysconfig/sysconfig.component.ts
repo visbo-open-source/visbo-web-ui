@@ -11,7 +11,7 @@ import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
 
 import { VGPermission, VGPSystem } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysconfig',
@@ -54,7 +54,7 @@ export class SysconfigComponent implements OnInit {
         },
         error => {
           this.log(`get Settings failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -119,7 +119,7 @@ export class SysconfigComponent implements OnInit {
         },
         error => {
           this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
 }

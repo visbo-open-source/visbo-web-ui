@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboprojectversions',
@@ -79,7 +79,7 @@ export class VisboProjectVersionsComponent implements OnInit {
                     const message = this.translate.instant('vpv.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -90,7 +90,7 @@ export class VisboProjectVersionsComponent implements OnInit {
               const message = this.translate.instant('vpv.msg.errorPerm');
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     } else {
@@ -105,7 +105,7 @@ export class VisboProjectVersionsComponent implements OnInit {
               const message = this.translate.instant('vpv.msg.errorPerm');
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );

@@ -146,6 +146,7 @@
 			"followPolicy": "New password has to follow the Policy.",
 			"lastLogin": "Your last Login was at",
 			"lastFailedLogin": "Your last failed Login was at",
+			"errorPerm": "Permission denied for User profile",
 			"updateSuccess": "User Profile updated successfully",
 			"changePWSuccess": "Password changed successfully"
 		}
@@ -262,6 +263,7 @@
 		"msg": {
 			"createSuccess": "VISBO Project {{name}} created successfully",
 			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVC": "Permission denied for this VISBO Center",
 			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project"
 		}
@@ -529,6 +531,7 @@
 			"errorPerm": "Permission denied for this project version",
 			"errorPermVP": "Permission denied for this project",
 			"errorPermVersion": "Permission denied for project versions {{name}}",
+			"errorConflict": "A conflict has happened during save of the version {{name}}",
 			"errorPermDelete": "Permission denied to delete this project versions {{name}}"
 		}
 	},
@@ -544,6 +547,7 @@
 			"variant": "Variant",
 			"day": "day",
 			"week": "week",
+			"weeks": "weeks",
 			"month": "month",
 			"quarter": "quarter",
 			"previousPeriod": "Periode before {{refDate}}",
@@ -715,7 +719,7 @@
 		"baselineBAC": "in % of BAC",
 		"longBAC": "Budget at Completion",
 		"shortPV": "PV",
-		"baselinePV": "PV, baseline",				
+		"baselinePV": "PV, baseline",
 		"relativPV": "in % of PV",
 		"longPV": "Planned monthly Cost Value, baseline",
 		"shortAC": "AC",
@@ -765,10 +769,10 @@
 			"statusDeadlineDelay": "Delay",
 			"statusDeadlineNotCompleted": "Not Completed",
 			"titleFinishedDelivery": "Delivery Status",
-			"titleUnFinishedDelivery": "Unfinished Delivery Status",			
+			"titleUnFinishedDelivery": "Unfinished Delivery Status",
 			"titleFinishedDeadlines": "Deadline Status",
 			"titleUnFinishedDeadlines": "Unfinished Deadline Status",
-			"yAxisCostOverTime": "Monthly Cost in T$",
+			"yAxisCostOverTime": "Monthly Cost",
 			"titleCostOverTime": "Historical monthly Cost comparison: plan-to-date vs. baseline",
 			"yAxisDeliveryTrend": "weighted number of deliveries",
 			"titleDeliveryTrend": "Historical Delivery comparison: plan-to-date vs. baseline",

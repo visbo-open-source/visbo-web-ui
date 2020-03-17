@@ -13,7 +13,7 @@
           </button>
         </h2>
       </div>
-      <div class='btn-group '>
+      <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='btn-group '>
         <button *ngIf="!deleted" class="btn btn-sm btn-secondary m-2" (click)="toggleVisboProjectVersions()">{{ 'vpv.btn.deleted' | translate }}</button>
         <button *ngIf="deleted" class="btn btn-sm btn-secondary m-2" (click)="toggleVisboProjectVersions()">{{ 'vpv.btn.undeleted' | translate }}</button>
       </div>
@@ -30,8 +30,7 @@
           <th (click)="sortVPVTable(1)">{{ 'vpv.lbl.timestamp' | translate }}</th>
           <th class="d-none d-md-table-cell">{{ 'vpv.lbl.status' | translate }}</th>
           <th (click)="sortVPVTable(2)" class="d-none d-md-table-cell">{{ 'vpv.lbl.endDate' | translate }}</th>
-          <th (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>
-          <th (click)="sortVPVTable(4)">{{ 'vpv.lbl.budget' | translate }}</th>
+          <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>
           <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>
           <!-- <th>Info</th> -->
         </tr>
@@ -44,8 +43,7 @@
           <td class="d-none d-sm-table-cell d-md-none">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vpv.status}}</td>
           <td class="d-none d-md-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
-          <td>{{vpv.ampelStatus}}</td>
-          <td>{{vpv.Erloes | number : '1.2-2'}}</td>
+          <td *ngIf="hasVPPerm(permVP.ViewAudit)">{{vpv.ampelStatus}}</td>
           <td class="d-none d-md-table-cell">{{vpv.variantName}}</td>
           <!-- <td>
             <button class="Detail" title="Detail of Visbo Project Version"

@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewcost',
@@ -131,7 +131,7 @@ export class VisboProjectViewCostComponent implements OnInit {
                     const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -142,7 +142,7 @@ export class VisboProjectViewCostComponent implements OnInit {
               const message = this.translate.instant('vpViewCost.msg.errorPerm');
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     }
@@ -201,7 +201,7 @@ export class VisboProjectViewCostComponent implements OnInit {
             const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -230,7 +230,8 @@ export class VisboProjectViewCostComponent implements OnInit {
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         isStacked: true,
         vAxis: {
-          title: 'Monthly Cost in T\u20AC',
+          title: 'Monthly Cost',
+          format: "# T€",
           minorGridlines: {count: 0, color: 'none'}
         },
         hAxis: {

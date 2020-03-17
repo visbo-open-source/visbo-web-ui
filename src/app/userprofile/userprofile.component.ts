@@ -11,6 +11,8 @@ import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
 import { AuthenticationService } from '../_services/authentication.service';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html'
@@ -66,7 +68,7 @@ export class UserProfileComponent implements OnInit {
         },
         error => {
           this.log(`get User profile failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -104,9 +106,10 @@ export class UserProfileComponent implements OnInit {
         error => {
           this.log(`update User profile failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status === 403) {
-            this.alertService.error('Permission Denied');
+            const message = this.translate.instant('profile.msg.errorPerm');
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
           this.loading = false;
         }
@@ -145,9 +148,10 @@ export class UserProfileComponent implements OnInit {
         error => {
           this.log(`change password failed: error: ${error.status} message: ${error.error.message} `);
           if (error.status === 403) {
-            this.alertService.error('Permission Denied');
+            const message = this.translate.instant('profile.msg.errorPerm');
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -168,7 +172,7 @@ export class UserProfileComponent implements OnInit {
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

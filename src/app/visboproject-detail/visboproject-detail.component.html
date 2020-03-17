@@ -10,7 +10,7 @@
       <input *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
       <label *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.name }} </label>
     </div>
-    <div class="form-group row">
+    <div *ngIf="hasVPPerm(permVP.Modify) || visboproject.description" class="form-group row">
       <label for="vpDescription" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
       <textarea *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
       <label *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.description }} </label>

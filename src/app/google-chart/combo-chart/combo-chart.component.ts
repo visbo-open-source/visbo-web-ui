@@ -14,13 +14,15 @@ export class ComboChartComponent implements OnInit {
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
+  @Input() language: string;
 
   constructor(
     private gChartService: GoogleChartService,
     private messageService: MessageService
   ) {
+    if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages': ['corechart', 'table']});
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
   }
 

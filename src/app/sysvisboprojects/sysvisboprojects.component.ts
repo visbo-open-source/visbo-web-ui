@@ -13,7 +13,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisboprojects',
@@ -72,7 +72,7 @@ export class SysVisboProjectsComponent implements OnInit {
                   },
                   error => {
                     this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 );
             } else {
@@ -81,7 +81,7 @@ export class SysVisboProjectsComponent implements OnInit {
           },
           error => {
             this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         );
     } else {
@@ -95,7 +95,7 @@ export class SysVisboProjectsComponent implements OnInit {
           },
           error => {
             this.log(`get VPs all failed: error:  ${error.status} message: ${error.error.message}`);
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         );
     }

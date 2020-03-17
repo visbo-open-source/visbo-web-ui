@@ -8,6 +8,8 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
+import { getErrorMessage } from '../_helpers/visbo.helper';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -40,7 +42,7 @@ export class DashboardComponent implements OnInit {
         },
         error => {
           console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -54,7 +56,7 @@ export class DashboardComponent implements OnInit {
         },
         error => {
           console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

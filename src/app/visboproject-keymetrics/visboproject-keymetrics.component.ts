@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -140,7 +140,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                     const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
                     this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
@@ -151,7 +151,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
               const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
               this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     } else {

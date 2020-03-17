@@ -7,7 +7,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenters',
@@ -48,7 +48,7 @@ export class VisboCentersComponent implements OnInit {
         },
         error => {
           this.log(`get VCs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

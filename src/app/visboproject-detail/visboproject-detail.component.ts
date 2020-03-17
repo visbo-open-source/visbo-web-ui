@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -74,7 +74,7 @@ export class VisboprojectDetailComponent implements OnInit {
             const message = this.translate.instant('vpDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -131,7 +131,7 @@ export class VisboprojectDetailComponent implements OnInit {
             const message = this.translate.instant('vpDetail.msg.errorPerm');
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -157,7 +157,7 @@ export class VisboprojectDetailComponent implements OnInit {
             const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': visboproject.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -199,7 +199,7 @@ export class VisboprojectDetailComponent implements OnInit {
             const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.visboproject.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -249,7 +249,7 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during add VP user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -325,7 +325,7 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove User from VP user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -432,7 +432,7 @@ export class VisboprojectDetailComponent implements OnInit {
               this.alertService.error(message);
             } else {
               this.log(`Error during modify VP Group ${error.error.message}`); // log to console instead
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -456,7 +456,7 @@ export class VisboprojectDetailComponent implements OnInit {
               this.alertService.error(message);
             } else {
               this.log(`Error during add VP Group ${error.error.message}`);
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
           }
         );
@@ -483,7 +483,7 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove Group from VP user ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -513,7 +513,7 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove Lock from VP  ${error.error.message}`); // log to console instead
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
