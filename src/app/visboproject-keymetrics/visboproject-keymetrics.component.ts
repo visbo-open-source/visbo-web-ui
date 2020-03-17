@@ -39,6 +39,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayTotalDelivery: number;
   delayEndDate: number;
 
+  vpvRefDate: Date;
   chartButton: string;
   chart = true;
   history = false;
@@ -88,6 +89,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
     this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
 
+    if (this.route.snapshot.queryParams.refDate) {
+      this.vpvRefDate = new Date(this.route.snapshot.queryParams.refDate);
+    }
     this.getVisboProjectVersions();
   }
 
@@ -151,30 +155,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
             }
         });
     } else {
-      this.vpSelected = null;
-      this.vpActive = null;
-      this.visboprojectversionService.getVisboProjectVersions(id, false, '', true)
-        .subscribe(
-          visboprojectversions => {
-            this.visboprojectversions = visboprojectversions;
-            this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
-            this.visboKeyMetricsCalc();
-            if (this.hasVPPerm(this.permVP.ViewAudit)) {
-              this.chart = chartFlag;
-            } else {
-              this.chart = false;
-            }
-          },
-          error => {
-            this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(error.error.message);
-            }
-          }
-        );
+      this.gotoRoot();
     }
   }
 
@@ -263,8 +244,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`calc keyMetrics Result LEN ${this.visbokeymetrics.length}`);
     if (this.visbokeymetrics.length > 0) {
       this.sortKeyMetricsTable(undefined);
-      // select latest element
-      this.setVpvActive(this.visbokeymetrics[0]);
+      let i = 0;
+      // search the coresponding version for refDate
+      if (this.vpvRefDate) {
+        for (; i < this.visbokeymetrics.length; i++) {
+          if (this.vpvRefDate.toISOString() >= (new Date(this.visbokeymetrics[i].timestamp)).toISOString() ) {
+            break;
+          }
+        }
+        if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
+      }
+      this.setVpvActive(this.visbokeymetrics[i]);
       this.visboKeyMetricsCostOverTime();
     } else {
       this.gotoVisboProjectVersions();
@@ -644,6 +634,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
+  }
+
+  gotoRoot(): void {
+    this.log(`goto Root as no id is specified`);
+    this.router.navigate(['/'], {});
   }
 
   listSelectRow(vpv: VPVKeyMetricsCalc): void {

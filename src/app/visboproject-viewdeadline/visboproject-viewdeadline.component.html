@@ -57,7 +57,7 @@
           <tr>
             <th class="d-none d-sm-table-cell" (click)="sortDeadlineTable(2)">{{ 'vpViewDeadline.lbl.planElement' | translate }}</th>
             <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'vpViewDeadline.lbl.type' | translate }}</th>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'vpViewDeadline.lbl.endDatePFV' | translate }}</th>            
+            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'vpViewDeadline.lbl.endDatePFV' | translate }}</th>
             <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'vpViewDeadline.lbl.endDateVPV' | translate }}</th>
             <th class="d-none d-sm-table-cell text-right" (click)="sortDeadlineTable(5)">{{ 'vpViewDeadline.lbl.change' | translate }}</th>
             <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'vpViewDeadline.lbl.done' | translate }}</th>
@@ -67,10 +67,10 @@
         <tbody>
           <tr *ngFor="let deadlines of vpvDeadline">
             <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
-            <td   *ngIf="getStatus(deadlines) === 0" class="d-none d-sm-table-cell font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 1" class="d-none d-sm-table-cell font-weight-bold my_green" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 2" class="d-none d-sm-table-cell font-weight-bold my_orange" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 3" class="d-none d-sm-table-cell font-weight-bold my_red" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 0" class="d-none d-sm-table-cell font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 1" class="d-none d-sm-table-cell font-weight-bold my_green" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 2" class="d-none d-sm-table-cell font-weight-bold my_orange" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
+            <td   *ngIf="getStatus(deadlines) === 3" class="d-none d-sm-table-cell font-weight-bold my_red" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
             <!-- <td  class="d-none d-sm-table-cell text-danger" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
             <!-- <td *ngIf="deadlines.percentDone == 1" class="d-none d-sm-table-cell" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
             <td *ngIf="deadlines.percentDone != 1" class="d-none d-sm-table-cell font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
