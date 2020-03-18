@@ -72,6 +72,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   graphUnFinishedPieLegend: any;
   graphUnFinishedOptionsPieChart: any = undefined;
   divUnFinishedPieChart = 'divUnFinishedPieChart';
+  currentLang: string;
 
   sortAscending = false;
   sortColumn = 1;
@@ -85,6 +86,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   permVP: any = VGPVP;
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     this.statusList = [
       this.translate.instant('keyMetrics.chart.statusDeliveryAhead'),
       this.translate.instant('keyMetrics.chart.statusDeliveryInTime'),

@@ -44,6 +44,7 @@ export class VisboProjectsComponent implements OnInit {
   graphBarOptions: any = undefined;
   graphBarLabelX: string;
   graphBarLabelY: string;
+  currentLang: string;
 
   colorMetric: any[] = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
@@ -74,6 +75,7 @@ export class VisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.log(`Init VP Deleted: ${this.deleted}`);
@@ -115,7 +117,7 @@ export class VisboProjectsComponent implements OnInit {
       this.typeMetricIndexX = view.xAxis || 0;
       this.typeMetricIndexY = view.yAxis || 1;
       this.chart = view.chart || false;
-      if (view && view.vcID == id) {
+      if (view && view.vcID === id) {
         this.vpFilter = view.vpFilter || undefined;
       }
     } else {
@@ -134,7 +136,8 @@ export class VisboProjectsComponent implements OnInit {
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
-    let queryParams: any = {};
+    let queryParams: any;
+    queryParams = {};
     if (this.deleted) { queryParams.deleted = this.deleted; }
     if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams.refDate = this.vpvRefDate.toISOString(); }
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
@@ -333,12 +336,17 @@ export class VisboProjectsComponent implements OnInit {
           }
 
           // Calculate the Deadlines Completion
-          elementKeyMetric.timeCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
-          elementKeyMetric.timeCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
+          const km = elementKeyMetric.keyMetrics;
+          elementKeyMetric.timeCompletionTotal =
+            this.calcPercent(km.timeCompletionCurrentTotal, km.timeCompletionBaseLastTotal);
+          elementKeyMetric.timeCompletionActual =
+            this.calcPercent(km.timeCompletionCurrentActual, km.timeCompletionBaseLastActual);
 
           // Calculate the Delivery Completion
-          elementKeyMetric.deliveryCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal);
-          elementKeyMetric.deliveryCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual);
+          elementKeyMetric.deliveryCompletionTotal =
+            this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
+          elementKeyMetric.deliveryCompletionActual =
+            this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
           this.visbokeymetrics.push(elementKeyMetric);
         }
       }
@@ -354,7 +362,7 @@ export class VisboProjectsComponent implements OnInit {
         'width': '100%',
         // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
         // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
-        'chartArea': {'height':'100%'},
+        'chartArea': { 'height': '100%' },
         // 'bars': 'horizontal',
         'bar': { 'groupWidth': '80%'},
         'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
@@ -372,7 +380,7 @@ export class VisboProjectsComponent implements OnInit {
     for (let i = 0; i < this.visbokeymetrics.length; i++) {
       // var colorValue = (this.visbokeymetrics[i].savingCostTotal <= 1 ? 1 : 0) +
       //                   (this.visbokeymetrics[i].savingEndDate <= 0 ? 1 : 0);
-      let colorValue = 0;
+      // let colorValue = 0;
       let valueX: number;
       let valueY: number;
       let valueZ: number;
@@ -389,7 +397,7 @@ export class VisboProjectsComponent implements OnInit {
       ]);
     }
     // this.calcRangeAxis();
-    this.graphBarOptions.chartArea.height = 40 * keyMetrics.length
+    this.graphBarOptions.chartArea.height = 40 * keyMetrics.length;
     this.graphBarData = keyMetrics;
   }
 
@@ -476,12 +484,13 @@ export class VisboProjectsComponent implements OnInit {
 
   graphBubbleAxis(): void {
     let typeMetric = this.typeMetricList[this.typeMetricIndexX];
+    const weekFormat = '# ' + this.translate.instant('vpfVersion.lbl.weeks');
     switch (typeMetric.metric) {
       case 'Costs':
         this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'format': '# W', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
         this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
@@ -498,7 +507,7 @@ export class VisboProjectsComponent implements OnInit {
         this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'EndDate':
-        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'format': '# W', 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
         break;
       case 'Deadlines':
         this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': typeMetric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
@@ -588,9 +597,13 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   calcPercent(current, baseline) {
-    if (baseline == undefined) { return undefined; }
-    else if (baseline == 0 && current == 0) { return 1; }
-    else { return (current || 0) / baseline; }
+    if (baseline === undefined) {
+      return undefined;
+    } else if (baseline === 0 && current === 0) {
+      return 1;
+    } else {
+      return (current || 0) / baseline;
+    }
   }
 
   helperDateDiff(from: string, to: string, unit: string) {
@@ -608,7 +621,7 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   storeSetting() {
-    let vcID = undefined;
+    let vcID: string;
     if (this.vcActive && this.vcActive._id) { vcID = this.vcActive._id.toString(); }
     const view = {
       'updatedAt': (new Date()).toISOString(),

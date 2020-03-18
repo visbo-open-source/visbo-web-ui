@@ -51,6 +51,7 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   graphDataComboChart: any[] = [];
   graphOptionsComboChart: any = undefined;
+  currentLang: string;
 
   sortAscending = false;
   sortColumn = 1;
@@ -70,6 +71,7 @@ export class VisboProjectViewCostComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     if (this.route.snapshot.queryParams.vpvid) {
       this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }
@@ -231,7 +233,7 @@ export class VisboProjectViewCostComponent implements OnInit {
         isStacked: true,
         vAxis: {
           title: 'Monthly Cost',
-          format: "# T€",
+          format: "# T\u20AC",
           minorGridlines: {count: 0, color: 'none'}
         },
         hAxis: {

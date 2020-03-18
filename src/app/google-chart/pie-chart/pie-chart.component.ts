@@ -20,15 +20,15 @@ export class PieChartComponent implements OnInit {
 
   constructor(
     private gChartService: GoogleChartService
-  ) {
+  ) {}
+
+  ngOnInit() {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
 
-  ngOnInit() {
-    this.parentThis.log(`Google Chart Pie Chart Init elementID ${JSON.stringify(this.elementID)}`);
+    // this.parentThis.log(`Google Chart Pie Chart Init elementID ${JSON.stringify(this.elementID)}`);
     if (!this.elementID || this.elementID === '') {
       this.elementID = 'divPieChart';
     }
@@ -63,7 +63,7 @@ export class PieChartComponent implements OnInit {
         console.log(`The user clicked and this is undefined`);
         return;
       }
-      parentThis.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`)
+      // parentThis.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`);
       if (selectedItem) {
         const label = data.getValue(selectedItem.row, 0);
         const value = data.getValue(selectedItem.row, 1);
