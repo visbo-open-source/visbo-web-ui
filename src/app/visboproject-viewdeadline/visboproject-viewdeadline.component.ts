@@ -447,7 +447,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
       if (deadline.type === "Milestone") {
         result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
         result = result.concat(deadline.name);
-      } else if ( deadline.name === '.' && replaceRoot ){
+      } else if ( deadline.name === '.' && replaceRoot ) {
         result = result.concat(this.vpvActive.name);
       } else {
         result = result.concat(deadline.name);
