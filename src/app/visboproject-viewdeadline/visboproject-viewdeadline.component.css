@@ -1,6 +1,6 @@
 
   .my_darkgreen {
-   color: #006400;
+   color: #005600;
   }
 
 
@@ -16,4 +16,8 @@
 
   .my_red {
     color: #ff0000;
+  }
+
+  .my_bg_red {
+    background-color: #ff0000;
   }

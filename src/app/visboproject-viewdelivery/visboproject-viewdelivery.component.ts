@@ -56,7 +56,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   statusList: string[];
 
-  colors: string[] = ['darkgreen', 'green', 'orange', 'red'];
+  colors: string[] = ['#005600', 'green', 'orange', 'red'];
   series: any =  {
     '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4] }
   };
