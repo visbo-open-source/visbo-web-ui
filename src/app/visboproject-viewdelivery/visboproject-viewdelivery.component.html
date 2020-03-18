@@ -31,12 +31,12 @@
     </div>
     <hr>
 
-   
+
     <div class="container">
       <div class="d-flex justify-content-center">
-        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >          
-          <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div>
-          <!-- <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis"></app-pie-chart></div> -->
+        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
+          <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div>
+          <!-- <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div> -->
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
         <!--Table body-->
         <tbody>
           <tr *ngFor="let delivery of vpvDelivery">
-            
+
             <!-- ur: 05.03.2020: all deliveries the same look  -->
             <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <!-- <td *ngIf="delivery.percentDone == 1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>

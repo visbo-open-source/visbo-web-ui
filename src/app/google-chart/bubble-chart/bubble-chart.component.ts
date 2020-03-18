@@ -17,14 +17,14 @@ export class BubbleChartComponent implements OnInit {
 
   constructor(
     private gChartService: GoogleChartService
-  ) {
+  ) {}
+
+  ngOnInit() {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
 
-  ngOnInit() {
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
   }
 

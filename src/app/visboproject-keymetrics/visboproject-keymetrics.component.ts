@@ -67,6 +67,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   graphDataLineChart: any[] = [];
   graphOptionsLineChart: any = undefined;
+  currentLang: string;
 
   sortAscending = false;
   sortColumn = 1;
@@ -86,6 +87,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
     this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
 
@@ -651,7 +653,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
     const refDate = new Date(label);
     // find version with timestamp
-    var indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() == refDate.toISOString());
+    let indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() === refDate.toISOString());
     if (indexVPV < 0) { indexVPV = 0; }
     this.setVpvActive(this.visbokeymetrics[indexVPV]);
     this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);

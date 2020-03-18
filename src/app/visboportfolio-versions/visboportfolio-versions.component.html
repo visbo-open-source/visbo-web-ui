@@ -59,7 +59,7 @@
   <div *ngIf="visbokeymetrics.length > 0">
     <div *ngIf="hasVPPerm(permVP.ViewAudit) && chart" class='container-fluid'>
       <div *ngIf="graphBubbleData && graphBubbleData.length">
-        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis"></app-bubble-chart>
+        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
       </div>
     </div>
 

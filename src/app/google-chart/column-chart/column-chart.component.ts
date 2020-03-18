@@ -18,15 +18,15 @@ export class ColumnChartComponent implements OnInit {
   constructor(
     private gChartService: GoogleChartService,
     private messageService: MessageService
-  ) {
+  ) {}
+
+  ngOnInit() {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
 
-  ngOnInit() {
-    this.log(`Google Chart Column Chart Init ${this.language} ${JSON.stringify(this.graphData)}`);
+    // this.log(`Google Chart Column Chart Init ${this.language} ${JSON.stringify(this.graphData)}`);
   }
 
   private drawChart() {

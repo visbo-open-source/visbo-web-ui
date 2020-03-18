@@ -33,10 +33,10 @@ export function visboGetShortText(text: string, len: number): string {
 }
 
 export function getErrorMessage(error: any): string {
-  var result = 'Unknown Error';
+  let result = 'Unknown Error';
   if (error) {
     if (error.status === 0) {
-      result = 'Server not reachable with '
+      result = 'Server not reachable with ';
       result = result.concat(error.url || '');
       console.log(`Rest Server not reachable: ${error.status} ${error.statusText}, Message ${error.message}`);
     } else {

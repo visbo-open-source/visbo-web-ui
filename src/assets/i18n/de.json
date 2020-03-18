@@ -582,7 +582,7 @@
 			"costBubble": "Erwartete Gesmatkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
 			"endDateName": "Termin (Projektende)",
-			"endDateAxis": "Abweichung beim Projektende (Wochen)",
+			"endDateAxis": "Abweichung beim Projektende",
 			"endDateBubble": "Abweichung beim Projektende (Wochen)",
 			"endDateTable": "Änderung Projektende",
 			"deadlineName": "Termin (Deadlines)",

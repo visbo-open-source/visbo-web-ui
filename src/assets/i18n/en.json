@@ -582,7 +582,7 @@
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
 			"endDateName": "Time (End Date)",
-			"endDateAxis": "Deviation in End Date (weeks)",
+			"endDateAxis": "Deviation in End Date",
 			"endDateBubble": "Change of End Date in weeks",
 			"endDateTable": "Change of End Date",
 			"deadlineName": "Time (Deadlines)",

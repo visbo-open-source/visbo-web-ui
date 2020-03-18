@@ -18,14 +18,14 @@ export class GanttChartComponent implements OnInit {
 
   constructor(
     private gChartService: GoogleChartService
-  ) {
+  ) {}
+
+  ngOnInit() {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['gantt'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
 
-  ngOnInit() {
     // this.log(`Google Chart Gantt Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
@@ -36,7 +36,8 @@ export class GanttChartComponent implements OnInit {
     chart = new this.gLib.visualization.Gantt(document.getElementById('divGanttChart'));
     // data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let data = new this.gLib.visualization.DataTable();
+    let data: any;
+    data = new this.gLib.visualization.DataTable();
     data.addColumn('string', this.graphData[0][0]);
     data.addColumn('string', this.graphData[0][1]);
     data.addColumn('date', this.graphData[0][2]);
@@ -53,9 +54,7 @@ export class GanttChartComponent implements OnInit {
         ]);
       }
     }
-
     const parentThis = this.parentThis;
-
     const options = {
       height: 400
     };

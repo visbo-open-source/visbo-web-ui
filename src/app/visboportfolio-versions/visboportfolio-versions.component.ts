@@ -58,6 +58,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     graphBubbleOptions: any = undefined;
     graphBubbleLabelX: string;
     graphBubbleLabelY: string;
+    currentLang: string;
 
     sortAscending: boolean;
     sortColumn = 6;
@@ -77,6 +78,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
     this.typeMetricList = [
       {
@@ -115,7 +117,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     if (view) {
       this.typeMetricIndexX = view.xAxis || 0;
       this.typeMetricIndexY = view.yAxis || 1;
-      if (view.vpID && view.vpID == id) {
+      if (view.vpID && view.vpID === id) {
         this.vpFilter = view.vpFilter || undefined;
         this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
       }
@@ -320,12 +322,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           }
 
           // Calculate the Deadlines Completion
-          elementKeyMetric.timeCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
-          elementKeyMetric.timeCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
+          const km = elementKeyMetric.keyMetrics;
+          elementKeyMetric.timeCompletionTotal =
+            this.calcPercent(km.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
+          elementKeyMetric.timeCompletionActual =
+            this.calcPercent(km.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
 
           // Calculate the Delivery Completion
-          elementKeyMetric.deliveryCompletionTotal = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentTotal, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal);
-          elementKeyMetric.deliveryCompletionActual = this.calcPercent(elementKeyMetric.keyMetrics.deliverableCompletionCurrentActual, elementKeyMetric.keyMetrics.deliverableCompletionBaseLastActual);
+          elementKeyMetric.deliveryCompletionTotal =
+            this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
+          elementKeyMetric.deliveryCompletionActual =
+            this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
           this.visbokeymetrics.push(elementKeyMetric);
         }
       }
@@ -335,9 +342,13 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   calcPercent(current, baseline) {
-    if (baseline == undefined) { return undefined; }
-    else if (baseline == 0 && current == 0) { return 1; }
-    else { return (current || 0) / baseline; }
+    if (baseline === undefined) {
+      return undefined;
+    } else if (baseline === 0 && current === 0) {
+      return 1;
+    } else {
+      return (current || 0) / baseline;
+    }
   }
 
   isSameDay(dateA: Date, dateB: Date): boolean {
@@ -601,7 +612,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
-    let queryParams: any = {};
+    let queryParams: any;
+    queryParams = {};
     if (this.deleted) { queryParams.deleted = this.deleted; }
     if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams.refDate = this.vpvRefDate.toISOString(); }
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
