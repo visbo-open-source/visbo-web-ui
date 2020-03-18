@@ -578,7 +578,7 @@
 		},
 		"metric": {
 			"costName": "Gesamtkosten",
-			"costAxis": "Abweichung bei den Gesamtkosten (%)",
+			"costAxis": "Abweichung bei den Gesamtkosten",
 			"costBubble": "Erwartete Gesmatkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
 			"endDateName": "Termin (Projektende)",
@@ -586,11 +586,11 @@
 			"endDateBubble": "Abweichung beim Projektende (Wochen)",
 			"endDateTable": "Änderung Projektende",
 			"deadlineName": "Termin (Deadlines)",
-			"deadlineAxis": "Abweichung bei den Terminen (%)",
+			"deadlineAxis": "Abweichung bei den Terminen",
 			"deadlineBubble": "Erreichte Termine in %",
 			"deadlineTable": "Erreichte Termine",
 			"deliveryName": "Qualität (Lieferungen)",
-			"deliveryAxis": "Abweichungen bei erreichten Lieferungen (%)",
+			"deliveryAxis": "Abweichungen bei erreichten Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
 			"deliveryTable": "Erreichte Lieferungen"
 		},

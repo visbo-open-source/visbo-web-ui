@@ -183,6 +183,7 @@ export class VisboProjectsComponent implements OnInit {
 
   toggleVisboChart(): void {
     this.chart = !this.chart;
+    this.storeSetting();
     if (this.chart && this.visbokeymetrics.length === 0) {
       this.getVisboProjectKeyMetrics();
     }
@@ -654,6 +655,7 @@ export class VisboProjectsComponent implements OnInit {
     } else {
       this.chart = newStatus;
     }
+    this.storeSetting();
     this.log(`Switch Chart to ${this.chart}`);
   }
 

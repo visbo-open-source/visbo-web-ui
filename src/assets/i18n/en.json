@@ -578,7 +578,7 @@
 		},
 		"metric": {
 			"costName": "Total Cost",
-			"costAxis": "Deviation in Total Cost at completion (%)",
+			"costAxis": "Deviation in Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
 			"endDateName": "Time (End Date)",
@@ -586,11 +586,11 @@
 			"endDateBubble": "Change of End Date in weeks",
 			"endDateTable": "Change of End Date",
 			"deadlineName": "Time (Deadlines)",
-			"deadlineAxis": "Deviation in achieved Deadlines (%)",
+			"deadlineAxis": "Deviation in achieved Deadlines",
 			"deadlineBubble": "Achieved Deadlines in %",
 			"deadlineTable": "Achieved Deadlines",
 			"deliveryName": "Quality (Deliveries)",
-			"deliveryAxis": "Deviation in achieved Deliveries (%)",
+			"deliveryAxis": "Deviation in achieved Deliveries",
 			"deliveryBubble": "Achieved Deliveries in %",
 			"deliveryTable": "Achieved Deliveries"
 		},
