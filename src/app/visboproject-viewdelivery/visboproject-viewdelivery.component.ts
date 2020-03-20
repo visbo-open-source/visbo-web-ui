@@ -270,6 +270,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     this.graphFinishedOptionsPieChart = {
         title: this.translate.instant('keyMetrics.chart.titleFinishedDelivery'),
         titleTextStyle: {color: 'black', fontSize: '16'},
+        // pieSliceText: 'value',
+        pieSliceText: 'percentage',
         tooltip : {
           trigger: 'none'
         },

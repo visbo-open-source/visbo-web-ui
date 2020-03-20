@@ -18,10 +18,14 @@
 	},
 	"dashboard": {
 		"topvc": "Top VISBO Centers",
+		"noVC": "Kein Zugriff auf ein VISBO Center",
 		"topvp": "Top VISBO Projekte",
 		"projects": "Projekte",
 		"versions": "Versionen",
-		"detail": "Details"
+		"detail": "Details",
+		"msg": {
+			"noVC": "Sie haben keinen Zugriff auf ein VISBO Center oder ein VISBO Projekt. Bitte kontaktieren Sie ihren Administrator für weitere Hilfe."
+		}
 	},
 	"autologout": {
 		"msg": {
@@ -153,6 +157,7 @@
 	},
 	"vc": {
 		"title": "VISBO Centers",
+		"noVC": "Kein VISBO Center",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -161,7 +166,8 @@
 			"detail": "Detail"
 		},
 		"msg": {
-			"detail": "Details zum VISBO Center"
+			"detail": "Details zum VISBO Center",
+			"noVC": "Sie haben keinen Zugriff auf ein VISBO Center."
 		}
 	},
 	"vcDetail": {
@@ -237,6 +243,7 @@
 	"vp": {
 		"title": "Projekte",
 		"titleVC": "Projekte in",
+		"noVP": "Kein VISBO Projekt",
 		"titleCreate": "Ein neues Projekt anlegen",
 		"lbl": {
 			"nr": "Nr.",
@@ -265,7 +272,8 @@
 			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
-			"detail": "Details zum VISBO Projekt"
+			"detail": "Details zum VISBO Projekt",
+			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt."
 		}
 	},
 	"vpDetail": {
@@ -579,7 +587,7 @@
 		"metric": {
 			"costName": "Gesamtkosten",
 			"costAxis": "Abweichung bei den Gesamtkosten",
-			"costBubble": "Erwartete Gesmatkosten (%)",
+			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
 			"endDateName": "Termin (Projektende)",
 			"endDateAxis": "Abweichung beim Projektende",

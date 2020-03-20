@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div class='well'>
+<div *ngIf="visboprojects && visboprojects.length > 0" class='well'>
   <div class='row'>
     <div class='col'>
       <h2 *ngIf="!vcActive" class='panel-heading ml-0'>
@@ -80,6 +80,13 @@
     </div>
   </div>
 </div>
+<div *ngIf="visboprojects && visboprojects.length == 0" class='panel-body'>
+  <div class='panel-heading'>
+    <h2>{{ 'vp.noVP' | translate }}</h2>
+    <div> {{ 'vp.msg.noVP' | translate }} </div>
+  </div>
+</div>
+
 
 <!-- Modal VP Create-->
 <div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">

@@ -18,10 +18,14 @@
 	},
 	"dashboard": {
 		"topvc": "Top VISBO Centers",
+		"noVC": "No access to a VISBO Center",
 		"topvp": "Top VISBO Projects",
 		"projects": "Projects",
 		"versions": "Versions",
-		"detail": "Detail"
+		"detail": "Detail",
+		"msg": {
+			"noVC": "You do not have access to a VISBO Center or a VISBO Project. Please contact your administrator for further help."
+		}
 	},
 	"autologout": {
 		"msg": {
@@ -153,6 +157,7 @@
 	},
 	"vc": {
 		"title": "VISBO Centers",
+		"noVC": "No VISBO Center",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -161,7 +166,8 @@
 			"detail": "Detail"
 		},
 		"msg": {
-			"detail": "Detail of VISBO Center"
+			"detail": "Detail of VISBO Center",
+			"noVC": "You do not have access to a VISBO Center."
 		}
 	},
 	"vcDetail": {
@@ -237,6 +243,7 @@
 	"vp": {
 		"title": "Projects",
 		"titleVC": "Projects in",
+		"noVP": "No VISBO Project",
 		"titleCreate": "Create a new VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
@@ -265,7 +272,8 @@
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVC": "Permission denied for this VISBO Center",
 			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
-			"detail": "Detail of VISBO Project"
+			"detail": "Detail of VISBO Project",
+			"noVP": "You do not have access to a VISBO Projekt."
 		}
 	},
 	"vpDetail": {

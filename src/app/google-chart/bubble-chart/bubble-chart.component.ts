@@ -50,7 +50,8 @@ export class BubbleChartComponent implements OnInit {
         parentThis.chartSelectRow(row, label);
       }
     }
-    // The select handler. Call the chart's getSelection() method
+
+    // The click handler. Call the chart's getSelection() method
     function clickHandler(targetID: any) {
       if (parentThis === undefined) {
         console.log(`Bubble: The user clicked and this is undefined`);
