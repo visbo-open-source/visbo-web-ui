@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, Resolve, ActivatedRoute } from '@angular/router';
 
-import { FormsModule }   from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+
+import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -10,6 +12,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { Login } from '../_models/login';
 
 import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +23,8 @@ export class LoginComponent implements OnInit {
   restVersionString: string = undefined;
   loading = false;
   returnUrl: string;
+  returnParams: any = undefined;
+  userLang = 'en';
 
   constructor(
     private route: ActivatedRoute,
@@ -27,7 +32,8 @@ export class LoginComponent implements OnInit {
     private messageService: MessageService,
     private authenticationService: AuthenticationService,
     private visbocenterService: VisboCenterService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -35,15 +41,26 @@ export class LoginComponent implements OnInit {
     this.authenticationService.logout();
     // this.restVersion();
 
-    if (this.route.snapshot.queryParams.email) this.model.username = this.route.snapshot.queryParams.email
+    if (this.route.snapshot.queryParams.email) {
+      this.model.username = this.route.snapshot.queryParams.email;
+    }
+
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    console.log(`return url ${this.returnUrl}`)
-    if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    const parts = returnUrl.split('?');
+    this.returnUrl = parts[0];
+    this.returnParams = this.queryStringToJSON(parts[1]);
+
+    this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
+    this.userLang = this.translate.currentLang;
+    this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
+    // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
   restVersion() {
-    if (this.restVersionString) return;
+    if (this.restVersionString) {
+      return;
+    }
     this.authenticationService.restVersion()
       .subscribe(
         data => {
@@ -52,7 +69,7 @@ export class LoginComponent implements OnInit {
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -64,49 +81,73 @@ export class LoginComponent implements OnInit {
         user => {
           // this.log(`Login Success Result ${JSON.stringify(user)}`);
           if (user.status && user.status.expiresAt) {
-            var expiration = new Date(user.status.expiresAt)
+            const expiration = new Date(user.status.expiresAt);
             this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
-            this.alertService.error(`Your password expires at ${expiration.toLocaleString()}. Please change your password before`, true);
+            const message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
+            this.alertService.error(message, true);
+          } else {
+            const lastLogin = new Date(user.status.lastLoginAt);
+            const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+            this.alertService.success(message, true);
           }
           this.visbocenterService.getSysVisboCenter()
             .subscribe(
               vc => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true});
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
               },
               error => {
                 this.log(`No SysVC found: `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true});
+                this.router.navigate(['/'], {replaceUrl: true});
               }
-            )
+            );
         },
         error => {
           this.log(`Login Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
           this.loading = false;
         }
       );
   }
 
   pwforgotten() {
-    var email = (this.model.username || '').trim();
+    const email = (this.model.username || '').trim();
     this.log(`Forward to password forgotten ${email} `);
     // MS TODO: Check if user name is an e-Mail Address
     this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
   }
 
   register() {
-    this.log(`Forward to Register `);
+    this.log('Forward to Register');
     this.router.navigate(['register']);
   }
 
   relogin() {
-    // called after server respons with 401 "not authenticated"
+    // called after server respons with 401 'not authenticated'
     this.authenticationService.logout();
 
     // get return url from route parameters or default to '/'
-    this.log(`reLogin after error 401 to URL ${this.route.snapshot.queryParams["returnUrl"]}`);
+    this.log(`reLogin after error 401 to URL ${this.route.snapshot.queryParams['returnUrl']}`);
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
+
+  useLanguage(language: string) {
+    this.translate.use(language);
+}
+
+  queryStringToJSON(querystring: string) {
+    const pairs = (querystring || '').split('&');
+    let result: any;
+    result = {};
+
+    pairs.forEach(function(text) {
+      const pair = text.split('=');
+      // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
+      if (pair[0]) {
+        result[pair[0]] = pair[1] || '';
+      }
+    });
+    return JSON.parse(JSON.stringify(result));
   }
 
   /** Log a message with the MessageService */

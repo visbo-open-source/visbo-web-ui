@@ -33,7 +33,9 @@ export class AlertService {
     }
 
     error(message: string, keepAfterNavigationChange = false) {
-        if (!message) message = "Unknown Error reaching the Server"
+        if (!message) {
+          message = 'Unknown Error reaching the Server';
+        }
         this.keepAfterNavigationChange = keepAfterNavigationChange;
         this.subject.next({ type: 'error', text: message });
     }

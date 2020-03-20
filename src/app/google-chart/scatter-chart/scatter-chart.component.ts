@@ -13,26 +13,29 @@ export class ScatterChartComponent implements OnInit {
   private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
+  @Input() parentThis: any;
+  @Input() language: string;
 
   constructor(
-    private gChartService : GoogleChartService,
+    private gChartService: GoogleChartService,
     private messageService: MessageService
-  ) {
-    this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
-    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
+  ) {}
 
   ngOnInit() {
+    if (!this.language) { this.language = 'de'; }
+    this.gLib = this.gChartService.getGoogle();
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
+    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
     // this.log(`Google Chart Scatter Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Scatter Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.ScatterChart(document.getElementById('divScatterChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.ScatterChart(document.getElementById('divScatterChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let options = {'title':'Scatter Chart'};
+    const options = {'title': 'Scatter Chart'};
 
     chart.draw(data, this.graphOptions || options);
   }

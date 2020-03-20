@@ -3,12 +3,14 @@ import { Event, Router, RoutesRecognized } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
 
-import { environment } from '../../environments/environment';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-pwreset',
@@ -28,11 +30,13 @@ export class PwresetComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private translate: TranslateService
+  ) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.getPWPolicy();
-    this.token = this.route.snapshot.queryParams.token
+    this.token = this.route.snapshot.queryParams.token;
     this.log(`Init PW Reset Token ${this.token}`);
   }
 
@@ -43,13 +47,15 @@ export class PwresetComponent implements OnInit {
     this.authenticationService.pwreset(this.model)
       .subscribe(
         data => {
-          this.alertService.success('Reset Password Request successful.', true);
+          const message = this.translate.instant('pwReset.msg.pwResetSuccess');
+          this.alertService.success(message, true);
           this.router.navigate(['login']);
         },
         error => {
           this.loading = false;
-          this.log(`Error during Reset Password ${error.error.message}`)
-          this.alertService.error(`Password Reset: ${error.error.message}`);
+          const message = this.translate.instant('pwReset.msg.pwResetError');
+          this.alertService.error(getErrorMessage(error), true);
+          this.log(`Error during Reset Password ${error.error.message}`);
         }
       );
   }
@@ -59,13 +65,13 @@ export class PwresetComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Init PW Policy success ${JSON.stringify(data)}`);
-          this.PWPolicy = data.PWPolicy
-          this.PWPolicyDescription = data.Description
+          this.PWPolicy = data.PWPolicy;
+          this.PWPolicyDescription = data.Description;
 
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

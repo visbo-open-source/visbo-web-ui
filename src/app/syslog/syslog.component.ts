@@ -5,13 +5,13 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { SysLogService } from '../_services/syslog.service';
-import { AuthenticationService } from '../_services/authentication.service';
-import { LoginComponent } from '../login/login.component';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-syslog',
@@ -21,7 +21,7 @@ export class SysLogComponent implements OnInit {
 
   files: VisboFile[];
   fileIndex: number;
-  ageDays: number
+  ageDays: number;
   logDataShow: boolean;
   logData: string;
   logLevelSetting: VisboSetting;
@@ -65,16 +65,16 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`get Logs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
 
-  helperFileIndex(fileIndex: number):void {
-    this.fileIndex = fileIndex
+  helperFileIndex(fileIndex: number): void {
+    this.fileIndex = fileIndex;
   }
 
-  switchView():void {
+  switchView(): void {
     this.logDataShow = !this.logDataShow;
   }
 
@@ -83,12 +83,12 @@ export class SysLogComponent implements OnInit {
     this.syslogService.getSysLog(file.folder, file.name)
       .subscribe(
         data => {
-          this.log(`get Log Content success Start:${data.substring(0,30)}`);
-          this.downloadFile(data, file.name)
+          this.log(`get Log Content success Start: ${data.substring(0, 30)}`);
+          this.downloadFile(data, file.name);
         },
         error => {
           this.log(`get Log Content failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -103,7 +103,7 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`get Log Level failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -119,17 +119,18 @@ export class SysLogComponent implements OnInit {
         },
         error => {
           this.log(`set Log Level failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
 
-  downloadFile(data: string, fileName: string):void {
+  downloadFile(data: string, fileName: string): void {
     this.log(`download File succeeded Len: ${data.length}`);
-    var blob = new Blob([data], { type: 'text/plain' });
-    var url= window.URL.createObjectURL(blob);
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    var a = document.createElement("a");
+    let a: any;
+    a = document.createElement('a');
     document.body.appendChild(a);
     a.href = url;
     a.download = fileName + '.log';
@@ -137,52 +138,36 @@ export class SysLogComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  formatBytes(size,precision) {
-    if(0==size) return"0 Bytes";
-    var c=1024, d=precision||2, units=["Bytes","KB","MB","GB"]
-    var f=Math.floor(Math.log(size)/Math.log(c));
-    return parseFloat((size/Math.pow(c,f)).toFixed(d))+" "+units[f]
+  formatBytes(size, precision) {
+    if (0 === size) {
+      return '0 Bytes';
+    }
+    const c = 1024, d = precision || 2, units = ['Bytes', 'KB', 'MB', 'GB'];
+    const f = Math.floor(Math.log(size) / Math.log(c));
+    return parseFloat((size / Math.pow(c, f)).toFixed(d)) + ' ' + units[f];
   }
 
   sortTable(n) {
-    if (!this.files) return
-    this.log(`Sort Table Column ${n}`)
+    if (!this.files) { return; }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 1 ) ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = ( n === 1 ) ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
-    if (this.sortColumn == 1) {
-      this.files.sort(function(a, b) {
-        var result = 0
-        if (a.name > b.name)
-          result = 1;
-        else if (a.name < b.name)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      this.files.sort(function(a, b) {
-        var result = 0
-        if (a.updatedAt > b.updatedAt)
-          result = 1;
-        else if (a.updatedAt < b.updatedAt)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
-      this.files.sort(function(a, b) {
-        return a.size - b.size
-      })
+    if (this.sortColumn === 1) {
+      this.files.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+    } else if (this.sortColumn === 2) {
+      this.files.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    } else if (this.sortColumn === 3) {
+      this.files.sort(function(a, b) { return a.size - b.size; });
     }
 
     if (!this.sortAscending) {

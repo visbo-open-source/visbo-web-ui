@@ -2,9 +2,13 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { interval } from 'rxjs';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { AuthenticationService } from '../_services/authentication.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
+
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-logouttimer',
@@ -13,7 +17,7 @@ import { MessageService } from '../_services/message.service';
 })
 export class LogoutTimerComponent implements OnInit {
 
-  logoutTimer: boolean = true;
+  logoutTimer = true;
   logoutTime: Date = new Date();
   timerID: number;
 
@@ -22,34 +26,37 @@ export class LogoutTimerComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     public authenticationService: AuthenticationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
     // Get Logout Time from authentication Service
     this.logoutTime = new Date();
-    this.logoutTime.setSeconds(this.logoutTime.getSeconds()+100)
-    this.log(`Logout Time Init ${this.logoutTime.toISOString()} `)
+    this.logoutTime.setSeconds(this.logoutTime.getSeconds() + 100);
+    this.log(`Logout Time Init ${this.logoutTime.toISOString()} `);
     this.checkLogout();
   }
 
-  checkLogout(){
-    //emit value in sequence every 10 second
+  checkLogout() {
+    // emit value in sequence every 10 second
     const source = interval(10000);
     const subscribe = source.subscribe(
         val => {
-          var current = new Date();
-          var logoutTime: Date;
-          logoutTime = this.authenticationService.logoutCheck()
-          if (!logoutTime) logoutTime = current
-          var diff = Math.round((logoutTime.getTime() - current.getTime())/1000)
+          const current = new Date();
+          let logoutTime = this.authenticationService.logoutCheck();
+          if (!logoutTime) {
+            logoutTime = current;
+          }
+          const diff = Math.round((logoutTime.getTime() - current.getTime()) / 1000);
           // this.log(`Check Logout Time ${logoutTime.toISOString()} diff ${diff}`)
           if (diff > 0 && diff <= 120) {
-            this.alertService.error(`AutoLogout: Session expires in ${diff} Seconds`, true);
+            const message = this.translate.instant('autologout.msg.sessionExpires', {remaining: diff});
+            this.alertService.error(message);
           }
           if (diff < 0) {
-            this.log(`Logout Time passed`);
-            this.alertService.error("AutoLogout: Session expired, please log in again", true);
+            const message = this.translate.instant('autologout.msg.sessionExpired');
+            this.alertService.error(message, true);
             this.router.navigate(['login'], { queryParams: { returnUrl: this.router.url }});
           }
         }

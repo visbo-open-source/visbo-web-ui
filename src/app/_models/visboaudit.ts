@@ -34,25 +34,25 @@ export class VisboAudit {
     status: string;
     statusText: string;
     size: number;
-  }
+  };
 }
 
 export class VisboAuditResponse {
   state: string;
   message: string;
-  audit: [ VisboAudit ]
+  audit: [ VisboAudit ];
 }
 
 export class VisboAuditActionType {
-  "name": string;
-  "action": string
+  name: string;
+  action: string;
 }
 
 export class QueryAuditType {
-  "from": Date;
-  "to": Date;
-  "text": string;
-  "actionType": string;
-  "area": string;
-  "maxcount": number;
+  from: Date;
+  to: Date;
+  text: string;
+  actionType: string;
+  area: string;
+  maxcount: number;
 }

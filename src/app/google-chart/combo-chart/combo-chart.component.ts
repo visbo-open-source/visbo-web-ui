@@ -14,42 +14,45 @@ export class ComboChartComponent implements OnInit {
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
+  @Input() language: string;
 
   constructor(
-    private gChartService : GoogleChartService,
+    private gChartService: GoogleChartService,
     private messageService: MessageService
-  ) {
-    this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
-    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
+  ) {}
 
   ngOnInit() {
+    if (!this.language) { this.language = 'de'; }
+    this.gLib = this.gChartService.getGoogle();
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
+    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
     // this.log(`Google Chart Combo Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Combo Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.ComboChart(document.getElementById('divComboChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
-    let parentThis = this.parentThis;
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.ComboChart(document.getElementById('divComboChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const parentThis = this.parentThis;
 
-    let options = {'title':'Combo Chart'};
+    const options = {'title': 'Combo Chart'};
 
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {
-      var list = chart.getSelection();
-      if (!list || list.length == 0 ) {
-         console.log(`Chart Combo: chartGetSelection is undefined`, list || list.length)
+      const list = chart.getSelection();
+      if (!list || list.length === 0 ) {
+         console.log(`Chart Combo: chartGetSelection is undefined`, list || list.length);
       } else {
-        var selectedItem = list[0];
-        parentThis.log(`Chart Combo: The user selected ${JSON.stringify(selectedItem)}`)
-        if (parentThis == undefined) console.log(`Chart Combo: The user clicked and this is undefined`)
-        else if (selectedItem) {
-          var row = selectedItem.row;
-          var col = selectedItem.column;
+        const selectedItem = list[0];
+        parentThis.log(`Chart Combo: The user selected ${JSON.stringify(selectedItem)}`);
+        if (parentThis === undefined) {
+          console.log(`Chart Combo: The user clicked and this is undefined`);
+        } else if (selectedItem) {
+          const row = selectedItem.row;
+          const col = selectedItem.column;
           if (row != null && row >= 0) {
-            var label = data.getValue(row, 0);
+            const label = data.getValue(row, 0);
             parentThis.chartSelectRow(row, col, label);
           }
         }

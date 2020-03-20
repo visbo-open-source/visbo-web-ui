@@ -2,7 +2,7 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
-};
+}
 
 export class VPVDelivery {
   id: number;
@@ -16,7 +16,26 @@ export class VPVDelivery {
   percentDone: number;
 
   fullName: string;
-};
+  status: string;
+}
+
+
+export class VPVDeadline {
+  id: number;
+  name: string;
+  phasePFV: string;
+  phaseVPV: string;
+  type: string;
+  startDatePFV: Date;
+  startDateVPV: Date;
+  endDatePFV: Date;
+  endDateVPV: Date;
+  changeDays: number;
+  percentDone: number;
+
+  fullName: string;
+  status: string;
+}
 
 export class VPVKeyMetrics {
   costCurrentActual: number;
@@ -37,7 +56,7 @@ export class VPVKeyMetrics {
   deliverableCompletionBaseLastTotal: number;
   deliverableDelayCurrentActual: number;
   deliverableDelayCurrentTotal: number;
-};
+}
 
 export class VPVKeyMetricsCalc {
   _id: string;
@@ -45,6 +64,7 @@ export class VPVKeyMetricsCalc {
   vpid: string;
   timestamp: Date;
   variantName: string;
+  startDate: Date;
   Risiko: number;
   StrategicFit: number;
   leadPerson: string;
@@ -64,7 +84,7 @@ export class VPVKeyMetricsCalc {
   deliveryCompletionTotal: number;
   deliveryCompletionActual: number;
   keyMetrics: VPVKeyMetrics;
-};
+}
 
 export class VisboProjectVersion {
   _id: string;
@@ -76,13 +96,13 @@ export class VisboProjectVersion {
   StrategicFit: number;
   Erloes: number;
   leadPerson: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   earliestStart: number;
-  earliestStartDate: string;
+  earliestStartDate: Date;
   latestStart: number;
-  latestStartDate: string;
-  actualDataUntil: string;
+  latestStartDate: Date;
+  actualDataUntil: Date;
   status: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -99,8 +119,9 @@ export class VisboProjectVersion {
   businessUnit: string;
 
   keyMetrics: VPVKeyMetrics;
-  cost: [ VPVCost ];
-  deliveries: [ VPVDelivery ]
+  cost: VPVCost[];
+  deliveries: VPVDelivery[];
+  deadlines: VPVDeadline[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

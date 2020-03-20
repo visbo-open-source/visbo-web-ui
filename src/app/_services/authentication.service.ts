@@ -1,5 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -17,13 +17,12 @@ const httpOptions = {
 @Injectable()
 export class AuthenticationService {
 
-  isLoggedIn: boolean = false;
+  isLoggedIn = false;
   logoutTime: Date = undefined;
   pwPolicy: any = undefined;
 
   constructor(
       private http: HttpClient,
-      // private store: Store<AuthState>,
       private messageService: MessageService,
       private env: EnvService
     ) { }
@@ -31,10 +30,9 @@ export class AuthenticationService {
     private authUrl = this.env.restUrl.concat('/token/user');  // URL to web api
 
     logoutCheck() {
-
-      if (!this.isLoggedIn) return undefined;
-      // this.log(`Logout Check ${this.logoutTime}`);
-
+      if (!this.isLoggedIn) {
+        return undefined;
+      }
       return this.logoutTime;
     }
 
@@ -42,7 +40,8 @@ export class AuthenticationService {
     login(username: string, password: string) {
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
-      var newLogin = new Login;
+      let newLogin: Login;
+      newLogin = new Login;
       newLogin.email = username;
       newLogin.password = password;
 
@@ -56,14 +55,14 @@ export class AuthenticationService {
                     sessionStorage.setItem('currentUser', JSON.stringify(result.user));
                     sessionStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
-                    var decoded: any;
-                    decoded = JWT(result.token)
+                    let decoded: any;
+                    decoded = JWT(result.token);
                     // this.log(`Login token expiration:  ${decoded.exp}`);
                     this.logoutTime = new Date(decoded.exp * 1000);
                     this.log(`Login Request logoutTime:  ${this.logoutTime}`);
 
                     return result.user;
-                };
+                }
                 return null;
               }),
               catchError(this.handleError<any>('LoginError'))
@@ -79,14 +78,14 @@ export class AuthenticationService {
 
     }
 
-    getActiveUser(){
-      var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-      return currentUser;
+    getActiveUser() {
+      return JSON.parse(sessionStorage.getItem('currentUser'));
     }
 
-    pwforgotten(model: any){
+    pwforgotten(model: any) {
       const url = `${this.authUrl}/pwforgotten`;
-      var newUser = new VisboUser;
+      let newUser: VisboUser;
+      newUser = new VisboUser;
       newUser.email = model.username;
 
       this.log(`Calling HTTP Request: ${url} for: ${model.username} `);
@@ -105,7 +104,7 @@ export class AuthenticationService {
           );
     }
 
-    pwreset(model: any){
+    pwreset(model: any) {
       const url = `${this.authUrl}/pwreset`;
 
       this.log(`Calling HTTP Request: ${url} with: ${model.token} `);
@@ -126,7 +125,7 @@ export class AuthenticationService {
           );
     }
 
-    registerconfirm(model: any){
+    registerconfirm(model: any) {
       const url = `${this.authUrl}/confirm`;
 
       this.log(`Calling HTTP Request: ${url} for: ${model._id} `);
@@ -145,12 +144,13 @@ export class AuthenticationService {
           );
     }
 
-    createUser(model: any, hash: string){
-      var url = `${this.authUrl}/signup`;
-      var newUser = new VisboUser;
-      var newUserProfile = new VisboUserProfile;
-      if (model.username) newUser.email = model.username;
-      if (model._id) newUser._id = model._id;
+    createUser(model: any, hash: string) {
+      const url = `${this.authUrl}/signup`;
+      let newUser: VisboUser, newUserProfile: VisboUserProfile;
+      newUser = new VisboUser;
+      newUserProfile = new VisboUserProfile;
+      if (model.username) { newUser.email = model.username; }
+      if (model._id) { newUser._id = model._id; }
       // do not set password before the log statement
       newUserProfile.firstName = model.firstName;
       newUserProfile.lastName = model.lastName;
@@ -158,11 +158,15 @@ export class AuthenticationService {
       newUserProfile.company = model.company;
       newUser.profile = newUserProfile;
 
-      if (hash) url = url.concat('?hash=', hash)
-      this.log(`Calling HTTP Request: ${url} for: ${newUser.email||newUser._id} hash ${hash} Profile: ${JSON.stringify(newUser)}`);
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      let params = new HttpParams();
+      if (hash) {
+        params = params.append('hash', hash);
+      }
+      this.log(`Calling HTTP Request: ${url} for: ${newUser.email || newUser._id} hash ${hash} Profile: ${JSON.stringify(newUser)}`);
 
       newUser.password = model.password;
-      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
+      return this.http.post<LoginResponse>(url, newUser, { headers , params })
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
@@ -196,14 +200,14 @@ export class AuthenticationService {
         .pipe(
           map(response => {
               this.pwPolicy = response.value;
-              return response.value
+              return response.value;
             }),
           tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
           catchError(this.handleError('initPWPolicy', []))
         );
     }
 
-    getPWPolicy(){
+    getPWPolicy() {
       return this.pwPolicy;
     }
 
@@ -222,7 +226,7 @@ export class AuthenticationService {
         // Let the app keep running by returning an empty result.
         return throwError(error);
         // return new ErrorObservable(error);
-        //return of(result as T);
+        // return of(result as T);
       };
     }
 

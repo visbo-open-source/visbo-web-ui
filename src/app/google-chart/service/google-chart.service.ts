@@ -7,12 +7,12 @@ declare var google: any;
   providedIn: ServiceModule
 })
 export class GoogleChartService {
-  private google : any;
-  constructor() { 
+  private google: any;
+  constructor() {
     this.google = google;
   }
 
-  getGoogle(){
+  getGoogle() {
     return this.google;
   }
 }

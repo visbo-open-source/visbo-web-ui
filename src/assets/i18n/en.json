@@ -1,0 +1,810 @@
+{
+	"login": {
+		"lbl": {
+			"email": "Your e-mail",
+			"password": "Your Password"
+		},
+		"btn": {
+			"login": "Login",
+			"pwForgotten": "Password forgotten?",
+			"register": "Register"
+		},
+		"msg": {
+			"loginSuccess": "You were authenticated successfully. Last Login at {{lastLogin}}",
+			"emailRequired": "A correct e-mail address is required!",
+			"pwRequired": "Password is required!"
+		},
+		"title": "Welcome to the VISBO - the project warehouse"
+	},
+	"dashboard": {
+		"topvc": "Top VISBO Centers",
+		"topvp": "Top VISBO Projects",
+		"projects": "Projects",
+		"versions": "Versions",
+		"detail": "Detail"
+	},
+	"autologout": {
+		"msg": {
+			"sessionExpired": "AutoLogout: Session expired, Please log in again.",
+			"sessionExpires": "AutoLogout: Session expires in {{remaining}} seconds.",
+			"pwExpires": "Your password expires at {{expiresAt}}. Please change your password before."
+		}
+	},
+	"navbar": {
+		"visbo": "VISBO",
+		"vc": "VISBO Center",
+		"vp": "VISBO Projects",
+		"profile": "Profile",
+		"others": "Others",
+		"settings": "Settings",
+		"appAdmin": "App. Admin",
+		"logout": "Logout"
+	},
+	"app": {
+		"product": "VISBO - the project warehouse",
+		"support": "Support",
+		"impressum": "Legal Notics",
+		"terms": "Terms of Use",
+		"dataProtection": "Data Protection",
+		"versionInfo": "Version information",
+		"serverVersion": "Server Version",
+		"uiVersion": "UI Version"
+	},
+	"pwForgotten": {
+		"title": "Forgotten Password",
+		"lbl": {
+			"email": "Your e-mail"
+		},
+		"btn": {
+			"resetPW": "Reset Password",
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"emailRequired": "A correct e-mail address is required!"
+		}
+	},
+	"pwReset": {
+		"title": "Reset Password",
+		"lbl": {
+			"newPassword": "New Password"
+		},
+		"btn": {
+			"resetPW": "Save",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"pwResetSuccess": "Your password has been changed.",
+			"pwResetError": "Error during Reset Password: {{message}}",
+			"followPolicy": "New password has to follow the Policy.",
+			"followRule": "Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8."
+		}
+	},
+	"register": {
+		"title": "Register new User",
+		"titleTC": "Terms and Condition & Data Protection",
+		"lbl": {
+			"firstName": "First Name",
+			"lastName": "Last Name",
+			"company": "Company",
+			"phone": "Phone",
+			"email": "e-Mail address",
+			"password": "New password",
+			"acceptTC": "Accept Terms & Conditions",
+			"acceptDP": "Accept Data Protection"
+		},
+		"btn": {
+			"register": "Register",
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"emailRequired": "A correct e-mail address is required!",
+			"companyRequired": "A company name is required!",
+			"lastNameRequired": "Last name is required!",
+			"firstNameRequired": "First name is required!",
+			"registerSuccess": "Congratulation, your e-mail address {{email}} is now confirmed. Please login. ",
+			"registerSuccessConfirm": "Congratulation, you registered successfully your e-mail address  {{email}}. Please check your e-Mail for confirmation.",
+			"registerError": "Error durin registration: {{message}}",
+			"followPolicy": "New password has to follow the Policy.",
+			"followRule": "Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8."
+		}
+	},
+	"registerConfirm": {
+		"title": "e-mail Confirmation",
+		"description": "This is an inbetween page without specific content, you should get redirected to login. If not please use the button below.",
+		"btn": {
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"registerSuccess": "Congratulation, your e-mail address is now confirmed. Please login."
+		}
+	},
+	"profile": {
+		"title": "Profile Information for:",
+		"titleChangePW": "Change Password",
+		"lbl": {
+			"firstName": "First Name",
+			"lastName": "Last Name",
+			"company": "Company",
+			"phone": "Phone",
+			"email": "e-Mail address",
+			"oldPassword": "Old password",
+			"newPassword": "New password",
+			"PWRule": "Password Rule"
+		},
+		"btn": {
+			"save": "Save",
+			"change": "Change",
+			"cancel": "Cancel",
+			"changePW": "Change Password"
+		},
+		"msg": {
+			"emailRequired": "A correct e-mail address is required!",
+			"companyRequired": "A company name is required!",
+			"lastNameRequired": "Last name is required!",
+			"firstNameRequired": "First name is required!",
+			"oldPWRequired": "Old password is required!",
+			"followPolicy": "New password has to follow the Policy.",
+			"lastLogin": "Your last Login was at",
+			"lastFailedLogin": "Your last failed Login was at",
+			"errorPerm": "Permission denied for User profile",
+			"updateSuccess": "User Profile updated successfully",
+			"changePWSuccess": "Password changed successfully"
+		}
+	},
+	"vc": {
+		"title": "VISBO Centers",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"modified": "Modified",
+			"projects": "# Projects",
+			"detail": "Detail"
+		},
+		"msg": {
+			"detail": "Detail of VISBO Center"
+		}
+	},
+	"vcDetail": {
+		"title": "VISBO Center",
+		"titleUsers": "VISBO Center Users",
+		"titleAddUser": "Add a new User to the VISBO Center",
+		"titleRemoveUser": "Remove a User from a Group",
+		"titleGroups": "VISBO Center Groups",
+		"titleAddGroup": "Add a new Group to the VISBO Center",
+		"titleModifyGroup": "Modify a Group in the VISBO Center",
+		"titleDeleteGroup": "Delete a Group in the VISBO Center",
+		"titleProjectUsers": "VISBO Project Users",
+		"titlePermUser": "Permission for {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "VISBO Center",
+			"user": "User",
+			"modified": "Änderung",
+			"createdUpdated": "Created / Updated at",
+			"description": "Description",
+			"detail": "Detail",
+			"email": "e-Mail",
+			"group": "Group",
+			"members": "Members",
+			"project": "Project",
+			"type": "Type",
+			"info": "Info",
+			"global": "Global",
+			"message": "Message",
+			"delete": "Delete",
+			"deleteUser": "Remove User"
+		},
+		"btn": {
+			"viewAudit": "View Audit",
+			"viewGroups": "Show Groups",
+			"viewUsers": "Show Users",
+			"viewProjectUsers": "Show Project Users",
+			"addUser": "Add User",
+			"addGroup": "Add Group",
+			"invite": "Invite",
+			"save": "Save",
+			"view": "View",
+			"delete": "Delete",
+			"back": "Go Back",
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"removeUserConfirm": "Do you really want to remove this User from the Group?",
+			"removeGroupConfirm": "Do you really want to remove this Group from VISBO Center?",
+			"emailRequired": "A correct e-mail address is required!",
+			"groupRequired": "Group must be defined",
+			"groupNameRequired": "Group Name required",
+			"invalidMessage": "Invalid Characters in Message",
+			"removeGroup": "Remove Group",
+			"detailGroup": "Details of Group",
+			"updateVCSuccess": "VISBO Center {{name}} was updated successfully",
+			"addUserSuccess": "User {{name}} was added to VISBO Center",
+			"removeUserSuccess": "User {{name}} was removed from Group",
+			"changeGroupSuccess": "Group {{name}} was updated successfully",
+			"createGroupSuccess": "Group {{name}} was created successfully",
+			"removeGroupSuccess": "Group {{name}} was deleted successfully",
+			"errorPerm": "No Permission for this VISBO Center",
+			"errorAddUserPerm": "No Permission to add Users to this VISBO Center",
+			"errorRemoveUserPerm": "No Permission to remove Users {{name}} from Group",
+			"errorPermVC": "No Permission for VISBO Center {{name}}",
+			"errorChangeGroupPerm": "No Permission to change Group {{name}}",
+			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
+			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
+			"errorVCConflict": "A VISBO Center with {{name}} does already exist!"
+		}
+	},
+	"vp": {
+		"title": "Projects",
+		"titleVC": "Projects in",
+		"titleCreate": "Create a new VISBO Project",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"type": "Type",
+			"modified": "Modified",
+			"versions": "# Versions",
+			"vc": "VISBO Center",
+			"detail": "Detail",
+			"description": "Description"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"showDeleted": "Show deleted",
+			"showExisting": "Show existing",
+			"create": "New project",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"createSuccess": "VISBO Project {{name}} created successfully",
+			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVC": "Permission denied for this VISBO Center",
+			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
+			"detail": "Detail of VISBO Project"
+		}
+	},
+	"vpDetail": {
+		"title": "VISBO Project",
+		"titleVC": "VISBO Center",
+		"titleUsers": "VISBO Project Users",
+		"titleAddUser": "Add a new User to the VISBO Project",
+		"titleRemoveUser": "Remove a User from a Group",
+		"titleGroups": "VISBO Center Groups",
+		"titleViewGroup": "View a Group from the VISBO Project",
+		"titleAddGroup": "Add a new Group to the VISBO Project",
+		"titleModifyGroup": "Modify a Group in the VISBO Project",
+		"titleDeleteGroup": "Delete a Group in the VISBO Project",
+		"titleDeleteProject": "Delete VISBO Project",
+		"titleProjectLocks": "VISBO Project Locks",
+		"titlePermUser": "Permission for {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "VISBO Center",
+			"vp": "VISBO Project",
+			"user": "User",
+			"modified": "Änderung",
+			"createdUpdated": "Created / Updated at",
+			"description": "Description",
+			"detail": "Detail",
+			"email": "e-Mail",
+			"group": "Group",
+			"members": "Members",
+			"project": "Project",
+			"type": "Type",
+			"info": "Info",
+			"global": "Global",
+			"message": "Message",
+			"expires": "Expires",
+			"variant": "Variant",
+			"versions": "Versions",
+			"unlock": "Unlock",
+			"delete": "Delete",
+			"deleteUser": "Remove User"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"viewAudit": "View Audit",
+			"viewGroups": "Show Groups",
+			"viewUsers": "Show Users",
+			"addUser": "Add User",
+			"addGroup": "Add Group",
+			"invite": "Invite",
+			"save": "Save",
+			"restore": "Restore",
+			"destroy": "Destroy!",
+			"view": "View",
+			"delete": "Delete",
+			"back": "Go Back",
+			"cancel": "Cancel"
+		},
+		"msg": {
+			"removeUserConfirm": "Do you really want to remove this User from the Group?",
+			"removeGroupConfirm": "Do you really want to remove this Group from VISBO Project?",
+			"removeProjectConfirm": "Do you really want to delete this VISBO Project?",
+			"destroyProjectConfirm": "Do you really want to destroy this VISBO Project?",
+			"emailRequired": "A correct e-mail address is required!",
+			"groupRequired": "Group must be defined",
+			"groupNameRequired": "Group Name required",
+			"invalidMessage": "Invalid Characters in Message",
+			"removeGroup": "Remove Group",
+			"detailGroup": "Details of Group",
+			"updateProjectSuccess": "VISBO Project {{name}} updated successfully",
+			"removeProjectSuccess": "VISBO Project {{name}} deleted successfully",
+			"addUserSuccess": "User {{name}} was added to VISBO Project",
+			"removeUserSuccess": "User {{name}} was removed from Group",
+			"changeGroupSuccess": "Group {{name}} was updated successfully",
+			"createGroupSuccess": "Group {{name}} was created successfully",
+			"removeGroupSuccess": "Group {{name}} was deleted successfully",
+			"removeLockSuccess": "Lock was deleted successfully",
+			"errorPerm": "No Permission for this VISBO Project",
+			"errorAddUserPerm": "No Permission to add Users to this VISBO Project",
+			"errorRemoveUserPerm": "No Permission to remove Users {{name}} from Group",
+			"errorPermVP": "No Permission for VISBO Project {{name}}",
+			"errorChangeGroupPerm": "No Permission to change Group {{name}}",
+			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
+			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
+			"errorRemoveLockPerm": "No Permission to delete Lock",
+			"errorVPConflict": "A VISBO Project with {{name}} does already exist!"
+		}
+	},
+	"vpKeyMetric": {
+		"title": "Projekt Key Metrics for",
+		"titleVersion": "Version of",
+		"titleDetailVersion": "Details about Version",
+		"lbl": {
+			"project": "Project",
+			"name": "Name",
+			"value": "Value",
+			"info": "Info",
+			"startDate": "Start of Project",
+			"endDate": "End of Project",
+			"leadPerson": "Lead Person",
+			"description": "Description/Goal",
+			"template": "Project Template",
+			"bu": "Business Unit",
+			"weeksAhead": "Weeks Ahead",
+			"weeksDelay": "Weeks Delay",
+			"inTime": "in Time",
+			"status": "Status of",
+			"keyMetric": "Metric",
+			"planToDate": "Plan-to-Date",
+			"total": "Total",
+			"detail": "Detail",
+			"trend": "Trend",
+			"metricCost": "Cost",
+			"metricDelivery": "Quality",
+			"metricDeadline": "Time",
+			"actualCost": "actual achievement of costs",
+			"actualDelivery": "actual achievement of deliveries",
+			"actualDeadline": "actual achievement od deadlines",
+			"totalCost": "planned achievement of total cost",
+			"totalDelivery": "planned achievement of total deliveries",
+			"totalDeadline": "planned achievement of total deadlines",
+			"inPlan": "in Plan",
+			"view": "View",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"viewList": "View List",
+			"viewChart": "View Chart",
+			"showTrend": "Show Trend",
+			"hideTrend": "Hide Trend",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"allVersions": "Show all Versions",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpViewCost": {
+		"title": "Monthly Cost for",
+		"titleVersion": "Version of",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpViewDelivery": {
+		"title": "Deliveries for",
+		"titleVersion": "Version of",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"phase": "Plan Element",
+			"description": "Delivery",
+			"endDateVPV": "End Date (planned)",
+			"endDatePFV": "End Date (baseline)",
+			"change": "Change (in weeks)",
+			"done": "Done",
+			"vc": "VISBO Center"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpViewDeadline": {
+		"title": "Deadlines for",
+		"titleVersion": "Version of",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"planElement": "Plan Element",
+			"type": "Type",
+			"endDateVPV": "End Date (planned)",
+			"endDatePFV": "End Date (baseline)",
+			"change": "Change (in weeks)",
+			"done": "Done",
+			"vc": "VISBO Center"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpv": {
+		"title": "Project Versions",
+		"titleVP": "Project Versions in",
+		"lbl": {
+			"nr": "Nr.",
+			"timestamp": "Timestamp",
+			"status": "Status",
+			"endDate": "End Date",
+			"trafficlight": "Traffic Light",
+			"budget": "Budget",
+			"variant": "Variant",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"deleted": "Show deleted",
+			"undeleted": "Show undeleted",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"vpvDetails": {
+		"title": "Project Version Details",
+		"titleDeleteVPV": "Delete this Project Version",
+		"lbl": {
+			"name": "Name",
+			"description": "Description",
+			"createdUpdated": "Created / Updated at",
+			"timestamp": "Timestamp at",
+			"variant": "Variant",
+			"keyMetric": "Key Metric",
+			"detail": "Detail",
+			"kmCost": "Cost Comparison",
+			"kmCostDetail": "View Monthly Costs",
+			"kmDelivery": "Delivery Comparison",
+			"kmDeliveryDetail": "View all Deliveries",
+			"kmDeadline": "Deadline Comparison",
+			"kmDeadlineDetail": "View all Deadlines"
+		},
+		"btn": {
+			"restore": "Restore",
+			"delete": "Delete",
+			"destroy": "Destroy",
+			"deleted": "Show deleted",
+			"undeleted": "Show undeleted",
+			"cancel": "Cancel",
+			"back": "Back"
+		},
+		"msg": {
+			"confirmDelete": "Do you really want to delete this Project Version?",
+			"confirmDestroy": "Do you really want to destroy this Project Version? ",
+			"errorPerm": "Permission denied for this project version",
+			"errorPermVP": "Permission denied for this project",
+			"errorPermVersion": "Permission denied for project versions {{name}}",
+			"errorConflict": "A conflict has happened during save of the version {{name}}",
+			"errorPermDelete": "Permission denied to delete this project versions {{name}}"
+		}
+	},
+	"vpfVersion": {
+		"title": "Projects from Portfolio",
+		"titleVC": "VISBO Center",
+		"titleVersion": "Portfolio Version",
+		"titleSelectVersion": "Select Portfolio Version",
+		"titleKM": "Key Metrics from",
+		"titleKMShort": "Metrics from",
+		"titleChange": "Change Key Metric",
+		"lbl": {
+			"variant": "Variant",
+			"day": "day",
+			"week": "week",
+			"weeks": "weeks",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Periode before {{refDate}}",
+			"nextPeriod": "Periode after {{refDate}}",
+			"show": "Show",
+			"and": "and",
+			"from": "from",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "filtered with",
+			"filter": "Filter Projects",
+			"xAxis": "X-Axis",
+			"yAxis": "Y-Axis",
+			"project": "Project",
+			"timestamp": "Timestamp",
+			"name": "Name",
+			"bac": "Total Cost (Baseline)",
+			"endDate": "End Date (Baseline)",
+			"deadlines": "Deadlines (Baseline)",
+			"deliveries": "Deliveries (Baseline)"
+		},
+		"btn": {
+			"showChart": "View Chart",
+			"showList": "View List",
+			"filter": "Filter",
+			"change": "Change",
+			"cancel": "Cancel",
+			"back": "Back"
+		},
+		"metric": {
+			"costName": "Total Cost",
+			"costAxis": "Deviation in Total Cost at completion",
+			"costBubble": "Total Cost at completion (%)",
+			"costTable": "Total Cost at completion",
+			"endDateName": "Time (End Date)",
+			"endDateAxis": "Deviation in End Date",
+			"endDateBubble": "Change of End Date in weeks",
+			"endDateTable": "Change of End Date",
+			"deadlineName": "Time (Deadlines)",
+			"deadlineAxis": "Deviation in achieved Deadlines",
+			"deadlineBubble": "Achieved Deadlines in %",
+			"deadlineTable": "Achieved Deadlines",
+			"deliveryName": "Quality (Deliveries)",
+			"deliveryAxis": "Deviation in achieved Deliveries",
+			"deliveryBubble": "Achieved Deliveries in %",
+			"deliveryTable": "Achieved Deliveries"
+		},
+		"msg": {
+			"noVersions": "No Project Versions related to this Date",
+			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vcAudit": {
+		"title": "VISBO Center Audit for",
+		"titleDetail": "Detail of Audit Entry",
+		"lbl": {
+			"from": "From",
+			"to": "To",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Created",
+			"user": "User",
+			"action": "Action",
+			"info": "Info",
+			"result": "Result",
+			"detail": "Detail",
+			"vc": "VISBO Center",
+			"vp": "VISBO Project",
+			"vpv": "Project Version",
+			"techAction": "Tech. Action",
+			"url": "URL",
+			"responseTime": "Response Time",
+			"responseSize": "Response Size",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "All",
+			"VC": "VISBO Center",
+			"VP": "VISBO Project",
+			"Read": "Read",
+			"Create": "Create",
+			"Update": "Update",
+			"Delete": "Delete"
+		},
+		"result": {
+			"HTTP200": "Success",
+			"HTTP304": "Success",
+			"HTTP400": "Bad Request",
+			"HTTP401": "Not Authenticated",
+			"HTTP403": "Permission Denied",
+			"HTTP404": "URL not found",
+			"HTTP409": "Conflict",
+			"HTTP423": "Locked",
+			"HTTP500": "Server Error"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "More",
+			"less": "Less",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "No Permission for Audit for this VISBO Center"
+		}
+	},
+	"vpAudit": {
+		"title": "VISBO Project Audit for",
+		"titleDetail": "Detail of Audit Entry",
+		"lbl": {
+			"from": "From",
+			"to": "To",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Created",
+			"user": "User",
+			"action": "Action",
+			"info": "Info",
+			"result": "Result",
+			"detail": "Detail",
+			"vc": "VISBO Center",
+			"vp": "VISBO Project",
+			"vpv": "Project Version",
+			"techAction": "Tech. Action",
+			"url": "URL",
+			"responseTime": "Response Time",
+			"responseSize": "Response Size",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "All",
+			"VC": "VISBO Center",
+			"VP": "VISBO Project",
+			"Read": "Read",
+			"Create": "Create",
+			"Update": "Update",
+			"Delete": "Delete"
+		},
+		"result": {
+			"HTTP200": "Success",
+			"HTTP304": "Success",
+			"HTTP400": "Bad Request",
+			"HTTP401": "Not Authenticated",
+			"HTTP403": "Permission Denied",
+			"HTTP404": "URL not found",
+			"HTTP409": "Conflict",
+			"HTTP423": "Locked",
+			"HTTP500": "Server Error"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "More",
+			"less": "Less",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPerm": "No Permission for Audit for this VISBO Project"
+		}
+	},
+	"keyMetrics": {
+		"shortEAC": "EAC",
+		"longEAC": "Estimate at Completion",
+		"shortBAC": "BAC",
+		"baselineBAC": "in % of BAC",
+		"longBAC": "Budget at Completion",
+		"shortPV": "PV",
+		"baselinePV": "PV, baseline",
+		"relativPV": "in % of PV",
+		"longPV": "Planned monthly Cost Value, baseline",
+		"shortAC": "AC",
+		"planAC": "AC, plan-to-date",
+		"longAC": "Actual monthly Cost value, plan-to-date",
+		"shortETC": "ETC",
+		"planETC": "ETC, plan-to-date",
+		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortDAC": "DAC",
+		"longDAC": "Number of Deadlines at Completion, according baseline",
+		"shortEDC": "EDC",
+		"longEDC": "Estimate number Deadlines at Completion, according plan-to-date",
+		"shortPD": "PD",
+		"baselinePD": "PD, baseline",
+		"longPD": "Planned number of Deadlines, according baseline",
+		"shortAD": "AD",
+		"planAD": "AD, plan-to-date",
+		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+
+		"shortDVAC": "DVAC",
+		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
+		"shortEDVC": "EDVC",
+		"longEDVC": "Estimate number Deliveries(DV) at Completion, according plan-to-date",
+		"shortPDV": "PDV",
+		"baselinePDV": "PDV, baseline",
+		"longPDV": "Planned number of Deliveries(DV), according baseline",
+		"shortADV": "ADV",
+		"planADV": "ADV, plan-to-date",
+		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+
+		"lbl": {
+			"trafficLight": "Traffic Light",
+			"info": "Info",
+			"timeStamp": "Time Stamp",
+			"shortcut": "Shortcut",
+			"explanation": "Explanation",
+			"showLegend": "Show shortcut explanation"
+		},
+		"chart": {
+			"statusDeliveryAhead": "Ahead",
+			"statusDeliveryInTime": "In Time",
+			"statusDeliveryDelay": "Delay",
+			"statusDeliveryNotCompleted": "Not Completed",
+			"statusDeadlineAhead": "Ahead",
+			"statusDeadlineInTime": "In Time",
+			"statusDeadlineDelay": "Delay",
+			"statusDeadlineNotCompleted": "Not Completed",
+			"titleFinishedDelivery": "Delivery Status",
+			"titleUnFinishedDelivery": "Unfinished Delivery Status",
+			"titleFinishedDeadlines": "Deadline Status",
+			"titleUnFinishedDeadlines": "Unfinished Deadline Status",
+			"yAxisCostOverTime": "Monthly Cost",
+			"titleCostOverTime": "Historical monthly Cost comparison: plan-to-date vs. baseline",
+			"yAxisDeliveryTrend": "weighted number of deliveries",
+			"titleDeliveryTrend": "Historical Delivery comparison: plan-to-date vs. baseline",
+			"yAxisDeadlineTrend": "weighted numbers of deliveries",
+			"titleDeadlineTrend": "Historical Deadline comparison: plan-to-date vs. baseline",
+			"yAxisCostTrend": "Cost in T€",
+			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
+		},
+		"versus": "vs."
+	},
+	"perm": {
+		"titleSystemPerm": "VISBO System Permission",
+		"titleVCPerm": "VISBO Center Permission",
+		"titleVPPerm": "VISBO Project Permission",
+		"vcView": "View VISBO Center",
+		"vcViewAudit": "View Audit",
+		"vcModify": "Modify VISBO Center",
+		"vcCreateVP": "Create VISBO Project",
+		"vcManagePerm": "Manage Permissions, Users and Groups",
+		"vcGlobal": "Group has Access to all VISBO Projects",
+		"vpView": "View VISBO Project",
+		"vpViewAudit": "View Project Audit",
+		"vpModify": "Modify VISBO Project",
+		"vpCreateVariant": "Create VISBO Project Variant",
+		"vpManagePerm": "Manage Permissions, Users and Groups",
+		"vpDelete": "Delete VISBO Project",
+		"lblGroupMembers": "Group Members",
+		"lblNoGroupMembers": "No Group Members",
+		"lblGroupMembership": "Members of Groups"
+	},
+	"language": {
+		"de": "German",
+		"en": "English"
+	}
+}

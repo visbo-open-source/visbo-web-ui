@@ -1,4 +1,4 @@
-<sysvisbo-navbar></sysvisbo-navbar>
+<app-sysnavbar></app-sysnavbar>
 <div *ngIf="visbocenter">
   <h3>System: {{ visbocenter.name | uppercase }}</h3>
   <!-- <form>
@@ -112,25 +112,25 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="newUserInvite" #f="ngForm" novalidate>
-          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+        <form name="newUserInvite" #f1="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !email.valid }">
             <label for="email" class="col-form-label">Name:</label>
             <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
-            <div *ngIf="f.submitted && !email.valid" class="help-block">E-mail address is required</div>
+            <div *ngIf="f1.submitted && !email.valid" class="help-block">E-mail address is required</div>
           </div>
-          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !group.valid }">
+          <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
             <label for="group" class="col-form-label">Group:</label>
             <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
               <option></option>
               <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
             </select>
-            <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
+            <div *ngIf="f1.submitted && !group.valid" class="help-block">Group must be defined</div>
           </div>
-          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
+          <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !inviteMessage.valid }">
             <label for="inviteMessage" class="col-form-label">Message:</label>
             <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
           </div>
-          <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
+          <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
           <div class="modal-footer align-items-end">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             <button *ngIf="!(email.valid && group.valid)" type="button" class="btn btn-primary">Invite</button>
@@ -191,11 +191,11 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="actGroup" #f="ngForm" novalidate>
-          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+        <form name="actGroup" #f2="ngForm" novalidate>
+          <div class="form-group" [ngClass]="{ 'has-error': f2.submitted && !email.valid }">
             <label for="groupName" class="col-form-label">Name:</label>
             <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
-            <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
+            <div *ngIf="f2.submitted && !groupName.valid" class="help-block">Group Name is required</div>
           </div>
           <!-- System Permissions -->
           <div>Define System Permission</div>
@@ -296,8 +296,8 @@
           </div>
 
           <div class="modal-footer align-items-end mt-3">
-            <button *ngIf="!(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
-            <button *ngIf="(f.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+            <button *ngIf="!(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
+            <button *ngIf="(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>

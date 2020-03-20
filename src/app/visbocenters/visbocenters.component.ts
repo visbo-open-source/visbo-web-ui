@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-//import { ActivatedRoute } from '@angular/router';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { LoginComponent } from '../login/login.component';
+
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenters',
@@ -23,11 +22,9 @@ export class VisboCentersComponent implements OnInit {
 
   constructor(
     private visbocenterService: VisboCenterService,
-    private authenticationService: AuthenticationService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    //private location: Location,
     private router: Router
   ) { }
 
@@ -51,105 +48,46 @@ export class VisboCentersComponent implements OnInit {
         },
         error => {
           this.log(`get VCs failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
 
-  add(name: string, description: string): void {
-    name = name.trim();
-    description = description.trim();
-    this.log(`VC: Add VC: ${name}`);
-    if (!name) { return; }
-    this.visbocenterService.addVisboCenter({ name: name, description: description } as VisboCenter).subscribe(
-      vc => {
-        this.visbocenters.push(vc);
-        this.sortVCTable(undefined);
-        this.alertService.success(`Visbo Center ${vc.name} created successfully`);
-      },
-      error => {
-        this.log(`add VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
-          this.alertService.error(`Permission Denied for Visbo Center ${name}`);
-        } else if (error.status == 409) {
-          this.alertService.error(`Visbo Center Name ${name} already exists or not allowed`);
-        } else {
-          this.alertService.error(error.error.message);
-        }
-      }
-    );
+  gotoDetail(visbocenter: VisboCenter): void {
+    this.router.navigate(['vcDetail/' + visbocenter._id]);
   }
 
-  delete(visbocenter: VisboCenter): void {
-    // remove item from list
-    this.messageService.add(`VC: Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
-    this.visbocenters = this.visbocenters.filter(vc => vc !== visbocenter);
-    this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
-      error => {
-        // this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
-        this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
-        if (error.status == 403) {
-          this.alertService.error(`Permission Denied: Visbo Center ${name}`);
-        } else {
-          this.alertService.error(error.error.message);
-        }
-      }
-    );
-  }
-
-  gotoDetail(visbocenter: VisboCenter):void {
-    this.router.navigate(['vcDetail/'+visbocenter._id]);
-  }
-
-  gotoClickedRow(visbocenter: VisboCenter):void {
+  gotoClickedRow(visbocenter: VisboCenter): void {
     // this.log(`clicked row ${visbocenter.name}`);
-    this.router.navigate(['vp/'+visbocenter._id]);
+    this.router.navigate(['vp/' + visbocenter._id]);
   }
 
   sortVCTable(n) {
-
-    if (!this.visbocenters) return
+    if (!this.visbocenters) { return; }
     // change sort order otherwise sort same column same direction
-    if (n != undefined || this.sortColumn == undefined) {
-      if (n != this.sortColumn) {
+    if (n !== undefined || this.sortColumn === undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = n == 1 ? true : false;
-        // console.log("Sort VC Column undefined", this.sortColumn, this.sortAscending)
+        this.sortAscending = n === 1 ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     }
-    // console.log("Sort VC Column %d Asc %s", this.sortColumn, this.sortAscending)
-    if (this.sortColumn == 1) {
+    if (this.sortColumn === 1) {
       this.visbocenters.sort(function(a, b) {
-        var result = 0
-        if (a.name.toLowerCase() > b.name.toLowerCase())
-          result = 1;
-        else if (a.name.toLowerCase() < b.name.toLowerCase())
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      this.visbocenters.sort(function(a, b) {
-        var result = 0
-        // console.log("Sort VC Date %s", a.updatedAt)
-        if (a.updatedAt > b.updatedAt)
-          result = 1;
-        else if (a.updatedAt < b.updatedAt)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
-      // sort VP Count
-      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount })
+        return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
+      });
+    } else if (this.sortColumn === 2) {
+      this.visbocenters.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    } else if (this.sortColumn === 3) {
+      this.visbocenters.sort(function(a, b) { return a.vpCount - b.vpCount; });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visbocenters.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

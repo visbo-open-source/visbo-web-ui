@@ -13,43 +13,58 @@ export class BubbleChartComponent implements OnInit {
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
+  @Input() language: string;
 
   constructor(
-    private gChartService : GoogleChartService
-  ) {
-    this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
-    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
+    private gChartService: GoogleChartService
+  ) {}
 
   ngOnInit() {
+    if (!this.language) { this.language = 'de'; }
+    this.gLib = this.gChartService.getGoogle();
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
+    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
+
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Bubble Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
-    let parentThis = this.parentThis;
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const parentThis = this.parentThis;
 
     // parentThis.log("Google Chart Bubble Draw/Refresh");
-    let options = {'title':'Bubble Chart'};
+    const options = {'title': 'Bubble Chart'};
 
     // The select handler. Call the chart's getSelection() method
     function selectHandler() {
-      var selectedItem = chart.getSelection()[0];
-      if (parentThis == undefined) console.log(`Bubble: The user clicked and this is undefined`)
-      else if (selectedItem) {
-        var row = selectedItem.row;
-        var label = data.getValue(selectedItem.row, 0);
-        parentThis.log(`Bubble: The user selected Row ${row} ${label}`)
+      const selectedItem = chart.getSelection()[0];
+      if (parentThis === undefined) {
+        console.log(`Bubble: The user clicked and this is undefined`);
+      } else if (selectedItem) {
+        const row = selectedItem.row;
+        const label = data.getValue(selectedItem.row, 0);
+        parentThis.log(`Bubble: The user selected Row ${row} ${label}`);
         parentThis.chartSelectRow(row, label);
+      }
+    }
+    // The select handler. Call the chart's getSelection() method
+    function clickHandler(targetID: any) {
+      if (parentThis === undefined) {
+        console.log(`Bubble: The user clicked and this is undefined`);
+      } else if (targetID) {
+        parentThis.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
+      } else {
+        parentThis.log(`Bubble: The user clicked somewhere`);
       }
     }
 
     // Listen for the 'select' event, and call my function selectHandler() when
     // the user selects something on the chart.
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
+    this.gLib.visualization.events.addListener(chart, 'click', clickHandler);
 
     chart.draw(data, this.graphOptions || options);
   }

@@ -6,8 +6,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { AuthenticationService } from './authentication.service'
-
 import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
@@ -29,20 +27,27 @@ export class VisboProjectVersionService {
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-    private authenticationService: AuthenticationService,
     private env: EnvService
   ) { }
 
 
   /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
-  getVisboProjectVersions(id: string, deleted: boolean = false, variantName: string = undefined, keyMetrics: boolean = false): Observable<VisboProjectVersion[]> {
+  getVisboProjectVersions(id: string, deleted?: boolean, variantName?: string, keyMetrics?: boolean): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (id) params = params.append('vpid', id);
-    if (deleted) params = params.append('deleted', '1');
-    if (variantName != undefined) params = params.append('variantName', variantName);
-    if (keyMetrics) params = params.append('keyMetrics', '1');
+    if (id) {
+      params = params.append('vpid', id);
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (variantName !== undefined) {
+      params = params.append('variantName', variantName);
+    }
+    if (keyMetrics) {
+      params = params.append('keyMetrics', '1');
+    }
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(this.vpvUrl, { headers , params })
@@ -56,16 +61,18 @@ export class VisboProjectVersionService {
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboProjectVersion(id: string, deleted: boolean = false): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${id}`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (deleted) params = params.append('deleted', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request for a specific entry: ${url} Params ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => {
                   // TODO: is there a better way to transfer the perm?
                   response.vpv[0].perm = response.perm;
-                  return response.vpv[0]
+                  return response.vpv[0];
                 }),
         tap(visboprojectversion => this.log(`fetched Specific Version `)),
         catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
@@ -88,24 +95,26 @@ export class VisboProjectVersionService {
 
   /** POST: add a new Visbo Project to the server */
   addVisboProjectVersion (visboprojectversion: VisboProjectVersion): Observable<VisboProjectVersion> {
-    var newVPV = new VisboProjectVersion();
+    let newVPV: VisboProjectVersion;
+    newVPV = new VisboProjectVersion();
     newVPV.name = visboprojectversion.name;
     return this.http.post<VisboProjectVersion>(this.vpvUrl, visboprojectversion, httpOptions)
       .pipe(
-        map(response => { return JSON.parse(JSON.stringify(response)).vpv }),
-        tap((visboprojectversion: VisboProjectVersion) => this.log(`added VisboProjectVersion w/ id=${visboprojectversion._id}`)),
+        map(response => JSON.parse(JSON.stringify(response)).vpv ),
+        tap((resultVersion: VisboProjectVersion) => this.log(`added VisboProjectVersion w/ id=${resultVersion._id}`)),
         catchError(this.handleError<VisboProjectVersion>('addVisboProjectVersion'))
       );
   }
 
   /** DELETE: delete the Visbo Project from the server */
   deleteVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<VisboProjectVersion> {
-    //const id = typeof visboprojectversion === 'number' ? visboprojectversion : visboprojectversion._id;
     const id = visboprojectversion._id;
     const url = `${this.vpvUrl}/${id}`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (deleted) params = params.append('deleted', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request Delete: ${url} Params ${params}`);
 
     return this.http.delete<VisboProjectVersion>(url, { headers , params }).pipe(
@@ -117,9 +126,11 @@ export class VisboProjectVersionService {
   /** PUT: update the Visbo Project on the server */
   updateVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<any> {
     const url = `${this.vpvUrl}/${visboprojectversion._id}`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (deleted) params = params.append('deleted', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request PUT: ${url} Params ${params}`);
     return this.http.put(url, visboprojectversion, { headers , params })
       .pipe(
@@ -131,17 +142,18 @@ export class VisboProjectVersionService {
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
   getVisboPortfolioVersions(id: string, deleted: boolean = false): Observable<VisboPortfolioVersion[]> {
     const url = `${this.vpfUrl}/${id}/portfolio`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (deleted) params = params.append('deleted', '1');
-
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboPortfolioVersionResponse>(url, { headers , params })
       .pipe(
         map(response => {
                   // TODO: is there a better way to transfer the perm?
                   response.vpf[0].perm = response.perm;
-                  return response.vpf
+                  return response.vpf;
                 }),
         tap(visboportfolioversion => this.log(`fetched ${visboportfolioversion.length} VisboPortfolioVersion `)),
         catchError(this.handleError('getVisboPortfolioVersions', []))
@@ -151,13 +163,14 @@ export class VisboProjectVersionService {
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
   getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted: boolean = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     params = params.append('vpfid', id);
     params = params.append('refDate', refDate.toISOString());
     params = params.append('keyMetrics', '1');
-    if (deleted) params = params.append('deleted', '1');
-
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
@@ -167,20 +180,40 @@ export class VisboProjectVersionService {
       );
   }
 
+  /** GET getVisboCenterProjectVersions for all projects of a specific VC */
+  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted: boolean = false): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    params = params.append('vcid', id);
+    params = params.append('refDate', refDate.toISOString());
+    params = params.append('keyMetrics', '1');
+    params = params.append('variantName', '');
+
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(vpv => this.log(`fetched ${vpv.length} VisboCenter Project Versions `)),
+        catchError(this.handleError('getVisboCenterProjectkeyMetrics', []))
+      );
+  }
+
   /** GET VisboProjectVersion by id. Will 404 if id not found */
   getVisboPortfolioVersion(id: string, deleted: boolean = false): Observable<VisboPortfolioVersion> {
     const url = `${this.vpfUrl}/${id}/portfolio`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (deleted) params = params.append('deleted', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     this.log(`Calling HTTP Request for a specific entry: ${url} Params ${params}`);
     return this.http.get<VisboPortfolioVersionResponse>(url, { headers , params })
       .pipe(
-        map(response => {
-                  // TODO: is there a better way to transfer the perm?
-                  // response.vpf[0].perm = response.perm;
-                  return response.vpf[0]
-                }),
+        map(response => response.vpf[0]),
         tap(visboportfolioversion => this.log(`fetched Specific Portfolio Version `)),
         catchError(this.handleError<VisboPortfolioVersion>(`getVisboPortfolioVersion id=${id}`))
       );
@@ -189,8 +222,9 @@ export class VisboProjectVersionService {
   /** GET CostCalculation from the server for the specified vpv id */
   getCost(id: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/calc`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
+    params = params.append('type', 'Costs');
     // if (id) params = params.append('vpid', id);
     // if (deleted) params = params.append('deleted', '1');
     // if (variantName != undefined) params = params.append('variantName', variantName);
@@ -208,7 +242,7 @@ export class VisboProjectVersionService {
   /** GET CostCalculation from the server for the specified vpv id */
   getDelivery(id: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/calc`;
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     params = params.append('type', 'Deliveries');
 
@@ -217,6 +251,22 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(visboprojectversions => this.log(`fetched DeliveryCalc for ${id}`)),
+        catchError(this.handleError('getVisboProjectVersions', []))
+      );
+  }
+
+   /** GET Deadline Calculation from the server for the specified vpv id */
+   getDeadline(id: string): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/calc`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    params = params.append('type', 'Deadlines');
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(visboprojectversions => this.log(`fetched DeadlineCalc for ${id}`)),
         catchError(this.handleError('getVisboProjectVersions', []))
       );
   }
