@@ -7,15 +7,15 @@ export class MessageService {
   activateMessageToggle = new EventEmitter(true);
 
   initstatus() {
-    if (this.activateMessages == undefined) {
-      this.activateMessages = sessionStorage.getItem('activateMessages') == 'On';
+    if (this.activateMessages === undefined) {
+      this.activateMessages = sessionStorage.getItem('activateMessages') === 'On';
     }
   }
 
   toggle() {
     this.initstatus();
-    this.activateMessages = !this.activateMessages
-    sessionStorage.setItem('activateMessages', this.activateMessages? 'On':'Off');
+    this.activateMessages = !this.activateMessages;
+    sessionStorage.setItem('activateMessages', this.activateMessages ? 'On' : 'Off');
     this.activateMessageToggle.emit(this.activateMessages);
     console.log('Messages Toggle to %s', this.activateMessages);
     return this.activateMessages;
@@ -23,12 +23,14 @@ export class MessageService {
 
   getstatus() {
     this.initstatus();
-    return this.activateMessages
+    return this.activateMessages;
   }
 
   add(message: string) {
     this.messages.push(message);
-    if (this.messages.length > 20) this.messages.shift();
+    if (this.messages.length > 20) {
+      this.messages.shift();
+    }
   }
 
   clear() {

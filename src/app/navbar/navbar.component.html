@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-white bg-light sticky-top">
-  <a class="navbar-brand bg-light " (click)="gotoClickedItem('dashboard')">Visbo</a>
+  <a class="navbar-brand bg-light " (click)="gotoClickedItem('dashboard')">{{ 'navbar.visbo' | translate }}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMainNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
     <i class="fas fa-bars"></i>
   </button>
@@ -9,26 +9,26 @@
         <a class="nav-link" (click)="gotoClickedItem('dashboard')">Home <span class="sr-only">(current)</span></a>
       </li> -->
       <li class="nav-item">
-        <a class="nav-link bg-light " (click)="gotoClickedItem('vc')">Visbo Center</a>
+        <a class="nav-link bg-light " (click)="gotoClickedItem('vc')">{{ 'navbar.vc' | translate }}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-light " (click)="gotoClickedItem('vp')">Visbo Projects</a>
+        <a class="nav-link bg-light " (click)="gotoClickedItem('vp')">{{ 'navbar.vp' | translate }}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-light "  (click)="gotoClickedItem('profile')">Profile</a>
+        <a class="nav-link bg-light "  (click)="gotoClickedItem('profile')">{{ 'navbar.profile' | translate }}</a>
       </li>
       <li *ngIf="hasSystemPerm(permSystem.View)" class="nav-item dropdown">
         <a class="nav-link dropdown-toggle bg-light " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Others
+          {{ 'navbar.others' | translate }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item"  (click)="gotoClickedItem('settings')">Settings</a>
+          <a class="dropdown-item"  (click)="gotoClickedItem('settings')">{{ 'navbar.settings' | translate }}</a>
           <!-- <div class="dropdown-divider"></div> -->
-          <a class="dropdown-item" (click)="gotoClickedItem('sysadmins')">App Admin</a>
+          <a class="dropdown-item" (click)="gotoClickedItem('sysadmins')">{{ 'navbar.appAdmin' | translate }}</a>
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link bg-light  align-right"  (click)="gotoClickedItem('login')">Logout</a>
+        <a class="nav-link bg-light  align-right"  (click)="gotoClickedItem('login')">{{ 'navbar.logout' | translate }}</a>
       </li>
     </ul>
   </div>

@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
@@ -9,7 +11,7 @@ import { UserService } from '../_services/user.service';
 import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { environment } from '../../environments/environment';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-userprofile',
@@ -31,19 +33,19 @@ export class UserProfileComponent implements OnInit {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    //private location: Location,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
     this.getPWPolicy();
-    this.log(`Start init User Get Profile `);
-    this.modelPw = {}
+    this.log('Start init User Get Profile');
+    this.modelPw = {};
     this.getUserProfile();
   }
 
   getUserProfile(): void {
-    this.log("User Get Profile");
+    this.log('User Get Profile');
     this.userService.getUserProfile()
       .subscribe(
         user => {
@@ -66,7 +68,7 @@ export class UserProfileComponent implements OnInit {
         },
         error => {
           this.log(`get User profile failed: error: ${error.status} message: ${error.error.message}`);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -74,7 +76,9 @@ export class UserProfileComponent implements OnInit {
   saveUserProfile(): void {
     this.loading = true;
     this.log(`Save profile info now ${this.model.email}`);
-    if (!this.user.profile) this.user.profile = new VisboUserProfile;
+    if (!this.user.profile) {
+      this.user.profile = new VisboUserProfile;
+    }
     this.user.profile.firstName = this.model.firstName;
     this.user.profile.lastName = this.model.lastName;
     this.user.profile.company = this.model.company;
@@ -95,15 +99,17 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          this.alertService.success(`User Profile updated successfully`, true);
+          const message = this.translate.instant('profile.msg.updateSuccess');
+          this.alertService.success(message, true);
           this.loading = false;
         },
         error => {
           this.log(`update User profile failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
-            this.alertService.error('Permission Denied');
+          if (error.status === 403) {
+            const message = this.translate.instant('profile.msg.errorPerm');
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
           this.loading = false;
         }
@@ -111,12 +117,13 @@ export class UserProfileComponent implements OnInit {
   }
 
   passwordInit(): void {
-    this.modelPw = {}
+    this.modelPw = {};
   }
 
   passwordChange(): void {
     this.log(`Password Change ${this.model.email} Len Old ${this.modelPw.oldpassword.length} New ${this.modelPw.newpassword.length}`);
-    var model: any = {};
+    let model: any;
+    model = {};
     model.oldpassword = this.modelPw.oldpassword;
     model.password = this.modelPw.newpassword;
 
@@ -135,14 +142,16 @@ export class UserProfileComponent implements OnInit {
           this.model.lastLoginAt = user.status.lastLoginAt;
           this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
-          this.alertService.success(`Password changed successfully`, true);
+          const message = this.translate.instant('profile.msg.changePWSuccess');
+          this.alertService.success(message, true);
         },
         error => {
           this.log(`change password failed: error: ${error.status} message: ${error.error.message} `);
-          if (error.status == 403) {
-            this.alertService.error('Permission Denied');
+          if (error.status === 403) {
+            const message = this.translate.instant('profile.msg.errorPerm');
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
@@ -157,13 +166,13 @@ export class UserProfileComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Init PW Policy success ${JSON.stringify(data)}`);
-          this.PWPolicy = data.PWPolicy
-          this.PWPolicyDescription = data.Description
+          this.PWPolicy = data.PWPolicy;
+          this.PWPolicyDescription = data.Description;
 
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

@@ -1,58 +1,58 @@
 <div class="col-md-6 col-md-offset-3">
-    <h2>Register</h2>
+    <h2>{{ 'register.title' | translate }}</h2>
     <form name="form" (ngSubmit)="f.form.valid && register()" #f="ngForm" novalidate>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
-            <label for="firstName">First Name</label>
+            <label for="firstName">{{ 'register.lbl.firstName' | translate }}</label>
             <input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" #firstName="ngModel" required autocomplete="on">
-            <div *ngIf="f.submitted && !firstName.valid" class="help-block">First Name is required</div>
+            <div *ngIf="f.submitted && !firstName.valid" class="help-block">{{ 'register.msg.firstNameRequired' | translate }}</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
-            <label for="lastName">Last Name</label>
+            <label for="lastName">{{ 'register.lbl.lastName' | translate }}</label>
             <input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" #lastName="ngModel" required autocomplete="on">
-            <div *ngIf="f.submitted && !lastName.valid" class="help-block">Last Name is required</div>
+            <div *ngIf="f.submitted && !lastName.valid" class="help-block">{{ 'register.msg.lastNameRequired' | translate }}</div>
         </div>
         <div class="form-group">
-            <label for="company">Company</label>
+            <label for="company">{{ 'register.lbl.company' | translate }}</label>
             <input type="text" class="form-control" name="company" [(ngModel)]="model.company" #company="ngModel" required autocomplete="on">
-            <div *ngIf="f.submitted && !company.valid" class="help-block">Company Name is required</div>
+            <div *ngIf="f.submitted && !company.valid" class="help-block">{{ 'register.msg.companyRequired' | translate }}</div>
         </div>
         <div class="form-group">
-            <label for="phone">Phone</label>
+            <label for="phone">{{ 'register.lbl.phone' | translate }}</label>
             <input type="text" class="form-control" name="phone" [(ngModel)]="model.phone" #phone="ngModel">
         </div>
         <div *ngIf="!userRegister">
           <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !username.valid }">
-            <label for="username">e-mail</label>
+            <label for="username">{{ 'register.lbl.email' | translate }}</label>
             <input type="email" class="form-control" name="username" [(ngModel)]="model.username" #username="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required autocomplete="on">
-            <div *ngIf="f.submitted && !username.valid" class="help-block">Correct e-mail address is required</div>
+            <div *ngIf="f.submitted && !username.valid" class="help-block">{{ 'register.msg.emailRequired' | translate }}</div>
           </div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
             <label for="password-new" data-toggle="tooltip" data-placement="top" data-delay='50'
               title="Password Rule: {{PWPolicyDescription}}">
-              Password (*)
+              {{ 'register.lbl.password' | translate }} (*)
             </label>
             <input type="password" class="form-control" name="password-new" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
-            <div *ngIf="!password.valid" class="help-block">New password has to follow the Policy.</div>
+            <div *ngIf="!password.valid" class="help-block">{{ 'register.msg.followPolicy' | translate }}</div>
             <div *ngIf="!password.valid && PWPolicyDescription" class="help-block">{{PWPolicyDescription}}</div>
         </div>
         <form name="legal" #fLegal="ngForm" novalidate>
-          <div>Terms of Use & Data Protection</div>
+          <div>{{ 'register.titleTC' | translate }}</div>
           <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="IDcheckTOU" name="checkTOU" [(ngModel)]="model.checkTOU" #checkTOU="ngModel" required>
-              <label class="custom-control-label" for="IDcheckTOU">Accept Terms of Use: </label>
-              <a href="https://visbo.de/visbo-terms-conditions" target="_blank">Terms of Use</a>
+              <label class="custom-control-label" for="IDcheckTOU"></label>
+              <a href="https://visbo.de/visbo-terms-conditions" target="_blank">{{ 'register.lbl.acceptTC' | translate }}</a>
           </div>
           <div class="custom-control custom-checkbox">
               <input type="checkbox" class="custom-control-input" id="IDcheckDP" name="checkDP" [(ngModel)]="model.checkDP" #checkDP="ngModel" required>
-              <label class="custom-control-label" for="IDcheckDP">Accept Data Protection: </label>
-              <a href="https://visbo.de/visbo-data-protection" target="_blank">Data Protection</a>
+              <label class="custom-control-label" for="IDcheckDP"></label>
+              <a href="https://visbo.de/visbo-data-protection" target="_blank">{{ 'register.lbl.acceptDP' | translate }}</a>
           </div>
         </form>
         <div class="form-group">
-          <button [disabled]=!fLegal.form.valid type="submit" class="btn btn-primary">Register</button>
+          <button type="submit" class="btn btn-primary">{{ 'register.btn.register' | translate }}</button>
           <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-          <a [routerLink]="['/login']" class="btn btn-link">Cancel</a>
+          <a [routerLink]="['/login']" class="btn btn-link">{{ 'register.btn.cancel' | translate }}</a>
         </div>
     </form>
 </div>

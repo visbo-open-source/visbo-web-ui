@@ -3,6 +3,9 @@ import { MessageService } from './_services/message.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { AlertService } from './_services/alert.service';
 
+import {TranslateService} from '@ngx-translate/core';
+import { getErrorMessage } from './_helpers/visbo.helper';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
@@ -10,16 +13,28 @@ import { AlertService } from './_services/alert.service';
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
   version = '2.0';
-  restVersionString = 'V undefined';
-  restUIVersionString = 'V undefined';
+  restVersionString = new Date();
+  restUIVersionString = new Date();
+  localsAvailable = false;
 
   constructor(
     private messageService: MessageService,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
+    const langToSet = this.translate.getBrowserLang();
+    this.log(`Browser Language: ${langToSet}`);
+    // MS TODO: Verify if this really waits
+    // load the tranlation file and use later instant access
+    this.translate.use(langToSet).subscribe(() => {
+        this.log(`Successfully initialized '${langToSet}' language.'`);
+        this.localsAvailable = true;
+      }, error => {
+        this.log(`Problem with '${langToSet}' language initialization.'`);
+      });
     this.restVersion();
     // this.pwPolicy();
   }
@@ -29,13 +44,17 @@ export class AppComponent implements OnInit {
       .subscribe(
         data => {
           this.log(`Version Status check result ${JSON.stringify(data)}`);
-          if (data.version) this.restVersionString = data.version;
-          if (data.versionUI) this.restUIVersionString = data.versionUI;
-          this.log(`Version Status check success ${data.version}/${this.restVersionString} UI ${data.versionUI}/${this.restUIVersionString}`);
+          if (data.version) {
+            this.restVersionString = new Date(data.version);
+          }
+          if (data.versionUI) {
+            this.restUIVersionString = new Date(data.versionUI);
+          }
+          this.log(`Version check success ${data.version}/${this.restVersionString} UI ${data.versionUI}/${this.restUIVersionString}`);
         },
         error => {
           this.log(`Version Status check Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -48,7 +67,7 @@ export class AppComponent implements OnInit {
         },
         error => {
           this.log(`Init PW Policy Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(error.error.message);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }

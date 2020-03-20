@@ -7,7 +7,6 @@ import { LoginComponent } from './login.component';
 import {FormsModule} from '@angular/forms';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

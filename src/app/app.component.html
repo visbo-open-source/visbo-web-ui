@@ -1,29 +1,29 @@
 <div class="jumbotron pt-0 mt-0" style="background-color: #ffffff;">
-  <div class="ml-3 mt-3" style="float: right">
-    <img src="assets/visbologo.svg">
-  </div>
   <!-- <h2>{{title}}</h2> -->
-  <div class="wrapper">
+  <div *ngIf="localsAvailable" class="wrapper">
     <div class="container-fluid">
-        <alert></alert>
+        <app-alert></app-alert>
+        <div class="ml-3 mt-0" style="float: right">
+          <img src="assets/visbologo.svg">
+        </div>
         <router-outlet></router-outlet>
     </div>
 </div>
-<div class="col-12 bg-light text-dark">
-  Copyright 2019 © <a href="https://visbo.de/" class="text-secondary">Visbo GmbH</a>,
-  <a data-toggle="modal" data-target="#versionModal" >Visbo Visual Board {{version}}</a>
+<div class="col-12 bg-light text-dark mt-3">
+  Copyright 2020 © <a href="https://visbo.de/" class="text-secondary">VISBO GmbH</a>,
+  <a data-toggle="modal" data-target="#versionModal" >{{ 'app.product' | translate }} {{version}}</a>
   <div class="row">
     <div class="col">
-      <a href="mailto:support@visbo.de" >Support</a>
+      <a href="mailto:support@visbo.de" >{{ 'app.support' | translate }}</a>
     </div>
     <div class="col">
-      <a href="https://visbo.de/impressum" target="_blank">Impressum</a>
+      <a href="https://visbo.de/impressum" target="_blank">{{ 'app.impressum' | translate }}</a>
     </div>
     <div class="col">
-      <a href="https://visbo.de/visbo-terms-conditions" target="_blank">Terms of Use</a>
+      <a href="https://visbo.de/visbo-terms-conditions" target="_blank">{{ 'app.terms' | translate }}</a>
     </div>
     <div class="col">
-      <a href="https://visbo.de/visbo-data-protection/" target="_blank">Data Protection</a>
+      <a href="https://visbo.de/visbo-data-protection/" target="_blank">{{ 'app.dataProtection' | translate }}</a>
     </div>
   </div>
 </div>
@@ -35,19 +35,19 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="versionModalTitle">Version Info</h5>
+        <h5 class="modal-title" id="versionModalTitle">{{ 'app.versionInfo' | translate }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-group row">
-          <label for="restServer" class="col-4 col-form-label">Server Version:</label>
-          <label class="col-8 form-control-static">{{ restVersionString }} </label>
+          <label for="restServer" class="col-4 col-form-label">{{ 'app.serverVersion' | translate }}:</label>
+          <label class="col-8 form-control-static" title="{{restVersionString.toLocaleString()}}">{{ restVersionString | date :'dd.MM.yyyy' }} </label>
         </div>
         <div class="form-group row">
-          <label for="restUIServer" class="col-4 col-form-label">UI Version:</label>
-          <label class="col-8 form-control-static">{{ restUIVersionString }} </label>
+          <label for="restUIServer" class="col-4 col-form-label">{{ 'app.uiVersion' | translate }}:</label>
+          <label class="col-8 form-control-static" title="{{restVersionString.toLocaleString()}}">{{ restUIVersionString | date :'dd.MM.yyyy' }} </label>
         </div>
       </div>
     </div>

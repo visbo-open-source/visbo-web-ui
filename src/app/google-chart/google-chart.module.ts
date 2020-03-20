@@ -6,16 +6,35 @@ import { BubbleChartComponent } from './bubble-chart/bubble-chart.component';
 import { ScatterChartComponent } from './scatter-chart/scatter-chart.component';
 import { ServiceModule } from './service/service.module';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
-import { TableChartComponent } from './table-chart/table-chart.component';
+import { GanttChartComponent } from './gantt-chart/gantt-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 @NgModule({
-  declarations: [LineChartComponent, ComboChartComponent, BubbleChartComponent, ScatterChartComponent, PieChartComponent, TableChartComponent, ColumnChartComponent],
+  declarations: [
+    LineChartComponent,
+    ComboChartComponent,
+    BubbleChartComponent,
+    ScatterChartComponent,
+    PieChartComponent,
+    GanttChartComponent,
+    ColumnChartComponent,
+    BarChartComponent
+  ],
   imports: [
     CommonModule,
     ServiceModule
   ],
-  exports: [LineChartComponent, ComboChartComponent, BubbleChartComponent, ScatterChartComponent, PieChartComponent, TableChartComponent, ColumnChartComponent],
+  exports: [
+    LineChartComponent,
+    ComboChartComponent,
+    BubbleChartComponent,
+    ScatterChartComponent,
+    PieChartComponent,
+    GanttChartComponent,
+    ColumnChartComponent,
+    BarChartComponent
+  ],
   providers : []
 })
 export class GoogleChartModule { }

@@ -1,12 +1,9 @@
-<visbo-navbar></visbo-navbar>
+<app-usernavbar></app-usernavbar>
 <div class='well'>
-  <div class='row'>
+  <div  *ngIf="vpActive" class='row'>
     <div class='col'>
-      <h2 *ngIf="!vpActive">
-        Project Key Metrics
-      </h2>
       <h2 *ngIf="vpActive">
-        Key Metrics for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
         <span>
           <small class="fas fa-info-circle mx-2 text-info" data-toggle="modal" data-target="#VpvDetails"></small>
         </span>
@@ -16,7 +13,7 @@
           <small *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></small>
         </span>
       </h2>
-      <h5 *ngIf="vpActive">Visbo Center:
+      <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
     </div>
@@ -25,62 +22,61 @@
     <form>
       <div class="container">
         <div class="row">
-          <label for="vpName" class="col-3 col-md-2">Status of:</label>
+          <label for="vpName" class="col-3 col-md-2">{{ 'vpKeyMetric.lbl.status' | translate }}:</label>
           <dt class="col-8">{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </dt>
         </div>
         <table *ngIf="hasVPPerm(permVP.ViewAudit) && vpvKeyMetricActive" class='table table-hover table-sortable'>
           <!--Table head-->
           <thead>
             <tr>
-              <th>Key Metric</th>
-              <th>Plan-to-date</th>
-              <th>Total</th>
+              <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
+              <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
+              <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
               <!-- <th class="d-none d-md-table-cell">Ahead/Delay</th> -->
-              <th>Detail</th>
-              <th class="d-none d-md-table-cell">Trend</th>
+              <!-- <th>{{ 'vpKeyMetric.lbl.detail' | translate }}</th> -->
+              <th class="d-none d-md-table-cell">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
           <tbody>
-            <tr>
-              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="switchTo('Costs')" class="font-weight-bold">Cost comparison</td>
-              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="switchTo('Costs')">Cost comparison</td>
-              <td title="Actual Cost Achievement" (click)="switchTo('Costs')">
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="gotoViewCost()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="gotoViewCost()"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
+              <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="gotoViewCost()"><a>
                 <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} % </span>
-              </td>
-              <td title="Total Cost Achievement" (click)="switchTo('Costs')">
+              </a></td>
+              <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="gotoViewCost()"><a>
                 <span *ngIf="qualityTotalCost == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityTotalCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityTotalCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} % </span>
-              </td>
+              </a></td>
               <!-- <td class="d-none d-md-table-cell"></td> -->
-              <td>
-                <button type="button" class="btn" title="View Monthly Cost"
-                (click)="gotoViewCost()">View</button>
-              </td>
-              <td>
-                <button type="button" class="btn" title="Trend of Cost Metrics"
-                (click)="switchTo('Costs')">i</button>
-              </td>
+              <!-- <td>
+                <button type="button" class="btn fa fa-eye"
+                (click)="gotoViewCost()"></button>
+              </td> -->
+              <td><a>
+                <button type="button" class="btn" (click)="switchTo('Costs')" title="{{historyButton}}">i</button>
+              </a></td>
             </tr>
-            <tr>
-              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="switchTo('Deliveries')" class="font-weight-bold">Quality comparison</td>
-              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="switchTo('Deliveries')">Quality comparison</td>
-              <td title="Actual Delivery Achievement">
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}"><a>
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} % </span>
-              </td>
-              <td>
+              </a></td>
+              <td (click)="gotoViewDelivery()"><a>
                 <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >(in Plan)</span>
-              </td>
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
+              </a></td>
               <!-- <td class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDelivery == 1" title="Status Actual Deliveries" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDelivery == 2" title="Status Actual Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -90,30 +86,29 @@
                 <span *ngIf="delayTotalDelivery == 2" title="Status Total Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
               </td> -->
+              <!-- <td>
+                <button type="button" class="btn fa fa-eye"
+                (click)="gotoViewDelivery()"></button>
+              </td> -->
               <td>
-                <button type="button" class="btn" title="View Deliveries"
-                (click)="gotoViewDelivery()">View</button>
-              </td>
-              <td>
-                <button type="button" class="btn" title="Trend of Delivery Completion"
-                (click)="switchTo('Deliveries')">i</button>
+                <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
               </td>
             </tr>
-            <tr>
-              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchTo('Deadlines')" class="font-weight-bold">Time comparison</td>
-              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="switchTo('Deadlines')">Time comparison</td>
-              <td (click)="switchTo('Deadlines')" title="Actual Deadline Achievement">
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
+              <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}"><a>
                 <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
                 <span> {{vpvKeyMetricActive.timeCompletionActual | number:'1.0-0'}} % </span>
-              </td>
-              <td (click)="switchTo('Deadlines')">
+              </a></td>
+              <td (click)="gotoViewDeadline()"><a>
                 <span>{{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}} </span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >(in Plan)</span>
-              </td>
-              <!-- <td (click)="switchTo('Deadlines')" class="d-none d-md-table-cell">
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
+              </a></td>
+              <!-- <td (click)="gotoViewDeadline()" class="d-none d-md-table-cell">
                 <span *ngIf="delayActualDeadlines == 1" title="Status Actual Deadline" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDeadlines == 2" title="Status Actual Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayActualDeadlines == 3" title="Status Actual Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
@@ -122,11 +117,12 @@
                 <span *ngIf="delayTotalDeadlines == 2" title="Status Total Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="delayTotalDeadlines == 3" title="Status Total Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
               </td> -->
+              <!-- <td>
+                <button type="button" class="btn fa fa-eye"
+                (click)="gotoViewDeadline()"></button>
+              </td> -->
               <td>
-              </td>
-              <td>
-                <button type="button" class="btn" title="Trend of Deadline Completion"
-                (click)="switchTo('Deadlines')">i</button>
+                <button type="button" class="btn" (click)="switchTo('Deadlines')" title="{{historyButton}}">i</button>
               </td>
             </tr>
           </tbody>
@@ -137,18 +133,18 @@
       <hr>
       <div class="btn-group row">
         <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="mx-1" (click)="switchChart()">{{chartButton}}</button>
-        <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">Show All Versions</button>
-        <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="Show Legend Sortcuts" data-toggle="modal" data-target="#VpvLegend"></h3>
+        <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
+        <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
       </div>
       <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
         <div *ngIf="typeMetricChart == 'Costs'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deadlines'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deliveries'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis"></app-line-chart>
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
       </div>
       <div *ngIf="!chart && graphDataLineChart.length > 0" >
@@ -156,13 +152,13 @@
           <!--Table head-->
           <thead>
             <tr>
-              <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(2)" title="Actual Cost, plan-to-date">AC</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="Estimated Cost at Completion, plan-to-date">EAC</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="Planned cumulated Cost, baseline">PV, baseline</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="Budget at Completion, baseline">BAC</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
-              <th class="text-right d-none d-lg-table-cell">Info</th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(2)" title="{{ 'keyMetrics.longAC' | translate }}">{{ 'keyMetrics.shortAC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="{{ 'keyMetrics.longPV' | translate }}">{{ 'keyMetrics.relativPV' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="{{ 'keyMetrics.longBAC' | translate }}">{{ 'keyMetrics.baselineBAC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+              <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -171,16 +167,16 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{100 + vp.savingCostActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{100 + vp.savingCostTotal | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€</td>
-              <td class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
-              <td class="text-right">
+              <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}} k€</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" title="{{ 'keyMetrics.lbl.detail' | translate }}" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -190,14 +186,15 @@
           <!--Table head-->
           <thead>
             <tr>
-              <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(10)" title="Actual weighted Deadlines, plan-to-date">AD</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(11)" title="Planned Deadlines, baseline">PD</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="Deadlines at Completion, baseline">DAC</th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(10)" title="{{ 'keyMetrics.longAD' | translate }}">{{ 'keyMetrics.shortAD' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(11)" title="{{ 'keyMetrics.longPD' | translate }}">{{ 'keyMetrics.shortPD' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longDAC' | translate }}">{{ 'keyMetrics.shortDAC' | translate }}</th>
               <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">Actual Delay</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">Total Delay</th> -->
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
-          <th class="text-right d-none d-lg-table-cell">Info</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -206,17 +203,20 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}</td>
+              <!-- <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td> -->
+              <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentActual | number :'1.0-1'}}</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortPD' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentTotal | number:'1.0-1'}}</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortDAC' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.timeCompletionTotal | number:'1.0-0'}} %</td>
               <!-- <td class="text-right">{{vp.keyMetrics.timeDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}}</td> -->
-              <td class="text-right">
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -226,14 +226,15 @@
           <!--Table head-->
           <thead>
             <tr>
-              <th (click)="sortKeyMetricsTable(1)">Time Stamp</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(20)" title="Actual weighted Deliveries, plan-to-date">ADV</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(21)" title="Planned Deliveries, baseline">PDV</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="Deliveries at Completion, baseline">DVAC</th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(21)" title="{{ 'keyMetrics.longADV' | translate }}">{{ 'keyMetrics.shortADV' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(20)" title="{{ 'keyMetrics.longPDV' | translate }}">{{ 'keyMetrics.shortPDV' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(26)" title="{{ 'keyMetrics.longEDVC' | translate }}">{{ 'keyMetrics.shortEDVC' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
               <!-- <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(23)">Actual Delay</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(24)">Total Delay</th> -->
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">Traffic Light</th>
-          <th class="text-right d-none d-lg-table-cell">Info</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -242,17 +243,18 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td class="text-right">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}}</td>
+              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual |number :'1.0-1'}}</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortPDV' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
+              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-1'}}</td>
+              <td class="text-right" title="{{ 'keyMetrics.shortDVAC' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionTotal | number:'1.0-0'}} %</td>
               <!-- <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentActual | number:'1.0-0'}}</td>
               <td class="text-right">{{vp.keyMetrics.deliverableDelayCurrentTotal | number:'1.0-0'}}</td> -->
-              <td class="text-right">
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
-              <td class="text-right"><button type="button" class="btn" title="Version Detail" (click)="gotoClickedRow(vp)">i</button>
+              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -268,8 +270,8 @@
         <!--Table head-->
         <thead>
           <tr>
-            <th (click)="sortKeyMetricsTable(1)">Project</th>
-            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Timestamp</th>
+            <th (click)="sortKeyMetricsTable(1)">{{ 'vpKeyMetric.lbl.project' | translate }}</th>
+            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
           </tr>
         </thead>
         <!--Table body-->
@@ -290,7 +292,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpvDetailsTitle">Details about Version: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy hh:mm'}} </h5>
+        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy hh:mm'}} </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -301,28 +303,33 @@
             <!--Table head-->
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Value</th>
-                <th>Info</th>
+                <th>{{ 'vpKeyMetric.lbl.name' | translate }}</th>
+                <th>{{ 'vpKeyMetric.lbl.value' | translate }}</th>
+                <th>{{ 'vpKeyMetric.lbl.info' | translate }}</th>
               </tr>
             </thead>
             <!--Table body-->
             <tbody>
+              <tr *ngIf="vpvKeyMetricActive.startDate">
+                <td>{{ 'vpKeyMetric.lbl.startDate' | translate }}</td>
+                <td>{{ vpvKeyMetricActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td class="d-none d-md-table-cell"></td>
+              </tr>
               <tr>
-                <td>Project End Date</td>
+                <td>{{ 'vpKeyMetric.lbl.endDate' | translate }}</td>
                 <td>
                   <span *ngIf="delayEndDate > 0" class="fas fa-exclamation-circle" style="color:red"></span>
                   <span *ngIf="delayEndDate <= 0" class="fas fa-check-circle" style="color:green"></span>
                   <span> {{ vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
                 </td>
                 <td class="d-none d-md-table-cell">
-                  <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} Weeks Delay</span>
-                  <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} Weeks Ahead</span>
-                  <span *ngIf="delayEndDate == 0"> in Time</span>
+                  <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} {{ 'vpKeyMetric.lbl.weeksDelay' | translate }}</span>
+                  <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} {{ 'vpKeyMetric.lbl.weeksAhead' | translate }}</span>
+                  <span *ngIf="delayEndDate == 0"> {{ 'vpKeyMetric.lbl.inTime' | translate }}</span>
                 </td>
               </tr>
               <tr>
-                <td>Traffic Light</td>
+                <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
                   <span *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                   <span *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
@@ -333,21 +340,28 @@
                 </td>
               </tr>
               <tr *ngIf="vpvKeyMetricActive.leadPerson">
-                <td>Lead Person</td>
+                <td>{{ 'vpKeyMetric.lbl.leadPerson' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.leadPerson }}">
                   {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
                 </td>
                 <td></td>
               </tr>
+              <tr *ngIf="vpvKeyMetricActive.description">
+                <td>{{ 'vpKeyMetric.lbl.description' | translate }}</td>
+                <td title="{{ vpvKeyMetricActive.description }}">
+                  {{ getShortText(vpvKeyMetricActive.description, 20) }}
+                </td>
+                <td></td>
+              </tr>
               <tr *ngIf="vpvKeyMetricActive.VorlagenName">
-                <td>Project Template</td>
+                <td>{{ 'vpKeyMetric.lbl.template' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.VorlagenName }}">
                   {{ getShortText(vpvKeyMetricActive.VorlagenName, 20) }}
                 </td>
                 <td></td>
               </tr>
               <tr *ngIf="vpvKeyMetricActive.businessUnit">
-                <td>Business Unit</td>
+                <td>{{ 'vpKeyMetric.lbl.bu' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.businessUnit }}">
                   {{ getShortText(vpvKeyMetricActive.businessUnit, 20) }}
                 </td>
@@ -356,8 +370,8 @@
             </tbody>
           </table>
 
-          <div class="form-group">
-            <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          <div class="modal-footer align-items-end">
+            <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
           </div>
         </form>
       </div>
@@ -370,70 +384,71 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <table class='table table-hover'>
+        <table class='table'>
           <thead>
             <tr>
-              <th>Shortcut</th>
-              <th>Explanation</th>
+              <th>{{ 'keyMetrics.lbl.shortcut' | translate }}</th>
+              <th>{{ 'keyMetrics.lbl.explanation' | translate }}</th>
             </tr>
           </thead>
           <tbody *ngIf="typeMetricChart == 'Costs'">
             <tr>
-              <td>BAC</td>
-              <td>Budget at Completion, according baseline</td>
+              <td>{{ 'keyMetrics.shortAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longAC' | translate }}</td>
             </tr>
             <tr>
-              <td>EAC</td>
-              <td>Estimata at Completion, according plan-to-date</td>
+              <td>{{ 'keyMetrics.shortPV' | translate }}</td>
+              <td>{{ 'keyMetrics.longPV' | translate }}</td>
             </tr>
             <tr>
-              <td>PV</td>
-              <td>Planned cumulated Cost value, according baseline</td>
+              <td>{{ 'keyMetrics.shortEAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longEAC' | translate }}</td>
             </tr>
             <tr>
-              <td>AC</td>
-              <td>Actual cumulated Cost value, according plan to-date</td>
+              <td>{{ 'keyMetrics.shortBAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longBAC' | translate }}</td>
             </tr>
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deadlines'">
             <tr>
-              <td>DAC</td>
-              <td>Sum of Deadlines at Completion, according baseline</td>
+              <td>{{ 'keyMetrics.shortAD' | translate }}</td>
+              <td>{{ 'keyMetrics.longAD' | translate }}</td>
             </tr>
             <tr>
-              <td>EDC</td>
-              <td>Estimate sum of weighted Deadlines at Completion, according plan-to-date</td>
+              <td>{{ 'keyMetrics.shortPD' | translate }}</td>
+              <td>{{ 'keyMetrics.longPD' | translate }}</td>
             </tr>
             <tr>
-              <td>PD</td>
-              <td>Planned sum of Deadlines, according baseline</td>
+              <td>{{ 'keyMetrics.shortEDC' | translate }}</td>
+              <td>{{ 'keyMetrics.longEDC' | translate }}</td>
             </tr>
             <tr>
-              <td>AD</td>
-              <td>Actual sum of weigthed Deadlines, according plan to-date</td>
+              <td>{{ 'keyMetrics.shortDAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longDAC' | translate }}</td>
             </tr>
+
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deliveries'">
             <tr>
-              <td>DVAC</td>
-              <td>Sum of Deliveries(DV) at Completion, according baseline</td>
+              <td>{{ 'keyMetrics.shortADV' | translate }}</td>
+              <td>{{ 'keyMetrics.longADV' | translate }}</td>
             </tr>
             <tr>
-              <td>EDVC</td>
-              <td>Estimate sum of weighted Deliveries(DV) at Completion, according plan-to-date</td>
+              <td>{{ 'keyMetrics.shortPDV' | translate }}</td>
+              <td>{{ 'keyMetrics.longPDV' | translate }}</td>
             </tr>
             <tr>
-              <td>PDV</td>
-              <td>Planned sum of Deliveries(DV), according baseline</td>
+              <td>{{ 'keyMetrics.shortEDVC' | translate }}</td>
+              <td>{{ 'keyMetrics.longEDVC' | translate }}</td>
             </tr>
             <tr>
-              <td>ADV</td>
-              <td>Actual sum of weigthed Deliveries(DV), according plan-to-date</td>
+              <td>{{ 'keyMetrics.shortDVAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longDVAC' | translate }}</td>
             </tr>
           </tbody>
         </table>
-        <div class="form-group">
-          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
         </div>
       </div>
     </div>

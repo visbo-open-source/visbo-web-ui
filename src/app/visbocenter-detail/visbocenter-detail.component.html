@@ -1,43 +1,45 @@
-<visbo-navbar></visbo-navbar>
+<app-usernavbar></app-usernavbar>
 <div *ngIf="visbocenter">
   <!-- <div class='container'> -->
-    <h3>Visbo Center: <a (click)="gotoVPList(visbocenter)">{{ visbocenter.name | uppercase }}</a></h3>
+    <h3>{{ 'vcDetail.title' | translate }}: <a (click)="gotoVPList(visbocenter)">{{ visbocenter.name | uppercase }}</a></h3>
     <form>
       <div class="form-group row">
-        <label for="vcName" class="col-3 col-md-2 col-form-label">Name:</label>
+        <label for="vcName" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
         <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
         <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
       </div>
       <div class="form-group row">
-        <label for="vcDescription" class="col-3 col-md-2 col-form-label">Description:</label>
+        <label for="vcDescription" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.description' | translate }}:</label>
         <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
         <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
       </div>
       <div class="form-group row d-none d-md-block">
-        <label for="Created" class="col-3 col-md-2 col-form-label">Created / Updated at:</label>
+        <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.createdUpdated' | translate }}:</label>
         <label class="col-4 form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
         <label class="col-4 form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
       </div>
     </form>
     <div *ngIf="getVCPerm() != permVC.View">
       <div class="btn-toolbar" style="">
-        <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
-        <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-        <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
-        <button *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="showProjectUser()">Show Project Users</button>
+        <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
+        <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
+        <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
+        <button *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="showProjectUser()">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
       </div>
 
       <div *ngIf="!showGroups && !showProjectUsers" >
         <div >
           <div class='row'>
             <div class='col'>
-              <h4 class='panel-heading'>
-                  Visbo Center Users
+              <h4 class='panel-heading mt-2'>
+                  {{ 'vcDetail.titleUsers' | translate }}
               </h4>
             </div>
             <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
               <!-- Button trigger modal -->
-              <button type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
+              <button type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
+                {{ 'vcDetail.btn.addUser' | translate }}
+              </button>
             </div>
           </div>
           <div class='panel-body'>
@@ -45,10 +47,10 @@
               <!--Table head-->
               <thead>
                 <tr>
-                  <th>Nr.</th>
-                  <th (click)="sortUserTable(1)">e-mail</th>
-                  <th (click)="sortUserTable(2)">Group</th>
-                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
+                  <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+                  <th (click)="sortUserTable(1)">{{ 'vcDetail.lbl.email' | translate }}</th>
+                  <th (click)="sortUserTable(2)">{{ 'vcDetail.lbl.group' | translate }}</th>
+                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
                 </tr>
               </thead>
               <!--Table body-->
@@ -58,7 +60,7 @@
                   <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
                   <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                    <button class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
+                    <button class="Detail" title="{{ 'vcDetail.lbl.deleteUser' | translate }}" (click)='helperUserIndex(memberIndex)'
                     data-toggle="modal" data-target="#VcUserRemove">&times;</button>
                   </td>
                 </tr>
@@ -73,14 +75,14 @@
         <div >
           <div class='row'>
             <div class='col'>
-              <h5 class='panel-heading'>
-                  Visbo Center Groups
+              <h5 class='panel-heading mt-3'>
+                  {{ 'vcDetail.titleGroups' | translate }}
               </h5>
             </div>
             <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
-                Add Group
+                {{ 'vcDetail.btn.addGroup' | translate }}
               </button>
             </div>
           </div>
@@ -89,12 +91,12 @@
               <!--Table head-->
               <thead>
                 <tr>
-                  <th>Nr.</th>
-                  <th (click)="sortGroupTable(1)">Group</th>
-                  <th (click)="sortGroupTable(2)">Members</th>
-                  <th >Flag</th>
-                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">Delete</th>
-                  <th>Info</th>
+                  <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+                  <th (click)="sortGroupTable(1)">{{ 'vcDetail.lbl.group' | translate }}</th>
+                  <th (click)="sortGroupTable(2)">{{ 'vcDetail.lbl.members' | translate }}</th>
+                  <th >{{ 'vcDetail.lbl.type' | translate }}</th>
+                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
+                  <th>{{ 'vcDetail.lbl.info' | translate }}</th>
                 </tr>
               </thead>
               <!--Table body-->
@@ -103,14 +105,14 @@
                   <td>{{memberIndex+1}}</td>
                   <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate"><a>{{member.name}}</a></td>
                   <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
-                  <td *ngIf="member.global">Global</td>
+                  <td *ngIf="member.global">{{ 'vcDetail.lbl.global' | translate }}</td>
                   <td *ngIf="!member.global"></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                    <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                    <button class="Detail" title="{{ 'vcDetail.msg.removeGroup' | translate }}" (click)='helperRemoveGroup(memberIndex)'
                     data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
                   </td>
                   <td>
-                    <button class="Detail" title="Detail of Group"
+                    <button class="Detail" title="{{ 'vcDetail.msg.detailGroup' | translate }}"
                      (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
                   </td>
                 </tr>
@@ -126,7 +128,7 @@
           <div class='row'>
             <div class='col'>
               <h5 class='panel-heading'>
-                  Visbo Project Users
+                  {{ 'vcDetail.lbl.titleProjectUsers' | translate }}
               </h5>
             </div>
           </div>
@@ -135,10 +137,10 @@
               <!--Table head-->
               <thead>
                 <tr>
-                  <th>Nr.</th>
-                  <th (click)="sortVPUserTable(1)">e-mail</th>
-                  <th (click)="sortVPUserTable(2)">Project</th>
-                  <th>Group</th>
+                  <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+                  <th (click)="sortVPUserTable(1)">{{ 'vcDetail.lbl.email' | translate }}</th>
+                  <th (click)="sortVPUserTable(2)">{{ 'vcDetail.lbl.project' | translate }}</th>
+                  <th>{{ 'vcDetail.lbl.group' | translate }}</th>
                 </tr>
               </thead>
               <!--Table body-->
@@ -157,8 +159,8 @@
       </div>
     </div>
     <div class="mb-3">
-      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
-      <button class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
+      <button *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">{{ 'vcDetail.btn.save' | translate }}</button>
+      <button class="btn btn-secondary mx-1" (click)="goBack()">{{ 'vcDetail.btn.back' | translate }}</button>
     </div>
 
   <!-- Modal Add VC User -->
@@ -166,36 +168,35 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcUserModalCenterTitle">Add a new User to the Visbo Center</h5>
+          <h5 class="modal-title" id="VcUserModalCenterTitle">{{ 'vcDetail.titleAddUser' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form name="newUserInvite" #f="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
-              <label for="email" class="col-form-label">Name:</label>
+          <form name="newUserInvite" #f1="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !email.valid }">
+              <label for="email" class="col-form-label">{{ 'vcDetail.lbl.email' | translate }}:</label>
               <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
-              <div *ngIf="f.submitted && !email.valid" class="help-block">E-mail address is required</div>
+              <div *ngIf="f1.submitted && !email.valid" class="help-block">{{ 'vcDetail.msg.emailRequired' | translate }}</div>
             </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !group.valid }">
-              <label for="group" class="col-form-label">Group:</label>
+            <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
+              <label for="group" class="col-form-label">{{ 'vcDetail.lbl.group' | translate }}:</label>
               <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
                 <option></option>
                 <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
               </select>
-              <div *ngIf="f.submitted && !group.valid" class="help-block">Group must be defined</div>
+              <div *ngIf="f1.submitted && !group.valid" class="help-block">{{ 'vcDetail.msg.groupRequired' | translate }}</div>
             </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
-              <label for="inviteMessage" class="col-form-label">Message:</label>
+            <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !inviteMessage.valid }">
+              <label for="inviteMessage" class="col-form-label">{{ 'vcDetail.lbl.message' | translate }}:</label>
               <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
             </div>
-            <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
-            <div class="form-group">
-              <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >Invite(insensitive)</button>
-              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
-              <!-- <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button> -->
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
+            <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">{{ 'vcDetail.msg.invalidMessage' | translate }}</div>
+            <div class="modal-footer align-items-end">
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+              <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vcDetail.btn.invite' | translate }}</button>
+              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">{{ 'vcDetail.btn.invite' | translate }}</button>
             </div>
           </form>
         </div>
@@ -208,33 +209,33 @@
     <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="userIndex >= 0 && userIndex < vgUsers.length">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcUserRemoveTitle">Remove User from Visbo Center Group</h5>
+          <h5 class="modal-title" id="VcUserRemoveTitle">{{ 'vcDetail.titleRemoveUser' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div>
-            <label class="bg-warning">Do you really want to remove this User from the Visbo Center Group? </label>
+            <label class="bg-warning">{{ 'vcDetail.msg.removeUserConfirm' | translate }}</label>
           </div>
           <form>
             <div class="form-group">
-              <label for="VcName" class="col-form-label">Visbo Center:</label>
+              <label for="VcName" class="col-form-label">{{ 'vcDetail.lbl.vc' | translate }}:</label>
               <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
             </div>
             <div class="form-group">
-              <label class="col-form-label">User:</label>
+              <label class="col-form-label">{{ 'vcDetail.lbl.user' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vgUsers[userIndex].email }}</label>
             </div>
             <div class="form-group">
-              <label class="col-form-label">Group:</label>
+              <label class="col-form-label">{{ 'vcDetail.lbl.group' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vgUsers[userIndex].groupName }}</label>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning mx-1" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button type="button" class="btn btn-warning mx-1" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
@@ -245,77 +246,77 @@
     <div class="modal-dialog modal-dialog-centered" role="document" >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 *ngIf="actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Modify a Group in the Visbo Center</h5>
-          <h5 *ngIf="!actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Add a new Group to the Visbo Center</h5>
+          <h5 *ngIf="actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleModifyGroup' | translate }}</h5>
+          <h5 *ngIf="!actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleAddGroup' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form name="actGroup" #f="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
-              <label for="groupName" class="col-form-label">Name:</label>
+          <form name="actGroup" #f2="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f2.submitted && !email.valid }">
+              <label for="groupName" class="col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
               <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
               <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
-              <div *ngIf="f.submitted && !actGroup.groupName.valid" class="help-block">Group Name is required</div>
+              <div *ngIf="f2.submitted && !actGroup.groupName.valid" class="help-block">{{ 'vcDetail.msg.groupNameRequired' | translate }}</div>
             </div>
             <!-- VC Permissions -->
-            <div>Define Visbo Center Permission</div>
+            <div>{{ 'perm.titleVCPerm' | translate }}</div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="perm1" name="checkedView" [(ngModel)]="actGroup.checkedView" #checkedView="ngModel">
-                <label class="custom-control-label" for="perm1">View Visbo Center</label>
+                <label class="custom-control-label" for="perm1">{{ 'perm.vcView' | translate }}</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="perm2" name="checkedViewAudit" [(ngModel)]="actGroup.checkedViewAudit" #checkedViewAudit="ngModel" >
-                <label class="custom-control-label" for="perm2">View Audit</label>
+                <label class="custom-control-label" for="perm2">{{ 'perm.vcViewAudit' | translate }}</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="perm3" name="checkedModify" [(ngModel)]="actGroup.checkedModify" #checkedModify="ngModel" >
-                <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+                <label class="custom-control-label" for="perm3">{{ 'perm.vcModify' | translate }}</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="perm4" name="checkedCreateVP" [(ngModel)]="actGroup.checkedCreateVP" #checkedCreateVP="ngModel" >
-                <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+                <label class="custom-control-label" for="perm4">{{ 'perm.vcCreateVP' | translate }}</label>
             </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="perm5" name="checkedManagePerm" [(ngModel)]="actGroup.checkedManagePerm" #checkedManagePerm="ngModel" >
-                <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+                <label class="custom-control-label" for="perm5">{{ 'perm.vcManagePerm' | translate }}</label>
             </div>
             <br>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="global" name="checkGlobal" [(ngModel)]="actGroup.checkGlobal" #checkGlobal="ngModel" >
-                <label class="custom-control-label" for="global">Group has Access to all Visbo Projects</label>
+                <label class="custom-control-label" for="global">{{ 'perm.vcGlobal' | translate }}</label>
             </div>
-            <div *ngIf="actGroup.checkGlobal" >
+            <div *ngIf="actGroup.checkGlobal" class="mt-2">
             <!-- VP Permissions -->
-              <div>Define Visbo Project Permission</div>
+              <div>{{ 'perm.titleVPPerm' | translate }}</div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP1" name="checkedVPView" [(ngModel)]="actGroup.checkedVPView" #checkedVPView="ngModel">
-                  <label class="custom-control-label" for="permVP1">View Visbo Project</label>
+                  <label class="custom-control-label" for="permVP1">{{ 'perm.vpView' | translate }}</label>
               </div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP2" name="checkedVPViewAudit" [(ngModel)]="actGroup.checkedVPViewAudit" #checkedVPViewAudit="ngModel" >
-                  <label class="custom-control-label" for="permVP2">View Project Audit</label>
+                  <label class="custom-control-label" for="permVP2">{{ 'perm.vpViewAudit' | translate }}</label>
               </div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP3" name="checkedVPModify" [(ngModel)]="actGroup.checkedVPModify" #checkedVPModify="ngModel" >
-                  <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
+                  <label class="custom-control-label" for="permVP3">{{ 'perm.vpModify' | translate }}</label>
               </div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP4" name="checkedCreateVariant" [(ngModel)]="actGroup.checkedCreateVariant" #checkedCreateVariant="ngModel" >
-                  <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
+                  <label class="custom-control-label" for="permVP4">{{ 'perm.vpCreateVariant' | translate }}</label>
               </div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP5" name="checkedVPManagePerm" [(ngModel)]="actGroup.checkedVPManagePerm" #checkedVPManagePerm="ngModel" >
-                  <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
+                  <label class="custom-control-label" for="permVP5">{{ 'perm.vpManagePerm' | translate }}</label>
               </div>
               <div class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" id="permVP6" name="checkedVPDelete" [(ngModel)]="actGroup.checkedVPDelete" #checkedVPDelete="ngModel" >
-                  <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
+                  <label class="custom-control-label" for="permVP6">{{ 'perm.vpDelete' | translate }}</label>
               </div>
             </div>
             <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
-              <label class="form-control-static">Group Members</label>
+              <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
                 <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
                   <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
@@ -323,12 +324,12 @@
               </ng-container>
             </div>
             <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
-              <label class="form-control-static">No Group Members</label>
+              <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
-            <div class="form-group mt-2">
-              <button *ngIf="!(f.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
-              <button *ngIf="(f.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
+            <div class="modal-footer align-items-end">
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+              <button *ngIf="!(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
+              <button *ngIf="(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
             </div>
           </form>
         </div>
@@ -341,33 +342,33 @@
     <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="groupIndex >= 0 && groupIndex < vgGroups.length">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcUserRemoveTitle">Remove Group from Visbo Center</h5>
+          <h5 class="modal-title" id="VcUserRemoveTitle">{{ 'vcDetail.titleDeleteGroup' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div>
-            <label class="bg-warning">Do you really want to remove this Group from Visbo Center? </label>
+            <label class="bg-warning">{{ 'vcDetail.msg.removeGroupConfirm' | translate }}</label>
           </div>
           <form>
             <div class="form-group">
-              <label for="VcName" class="col-form-label">Visbo Center:</label>
+              <label for="VcName" class="col-form-label">{{ 'vcDetail.lbl.vc' | translate }}:</label>
               <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
             </div>
             <div class="form-group">
-              <label class="col-form-label">Group:</label>
+              <label class="col-form-label">{{ 'vcDetail.lbl.group' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vgGroups[groupIndex].name }}</label>
             </div>
             <div class="form-group">
-              <label class="col-form-label">Members:</label>
+              <label class="col-form-label">{{ 'vcDetail.lbl.members' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vgGroups[groupIndex].users.length }}</label>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
+          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
@@ -378,80 +379,80 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VCUserDetailTitle">Permission for {{vgUsers[userIndex].email}}</h5>
+          <h5 class="modal-title" id="VCUserDetailTitle">{{ 'vcDetail.titlePermUser' | translate:{'name': vgUsers[userIndex].email} }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="mt-2">Visbo Center Permission for User</div>
+          <div class="mt-2">{{ 'perm.titleVCPerm' | translate }}</div>
           <div class="custom-control custom-checkbox">
               <input *ngIf="hasUserVCPerm(permVC.View)" type="checkbox" checked disabled class="custom-control-input" id="perm1" name="checkedView" >
               <input *ngIf="!hasUserVCPerm(permVC.View)" type="checkbox" disabled class="custom-control-input" id="perm1" name="checkedView" >
-              <label class="custom-control-label" for="perm1">View Visbo Center</label>
+              <label class="custom-control-label" for="perm1">{{ 'perm.vcView' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVCPerm(permVC.ViewAudit)" type="checkbox" checked disabled class="custom-control-input" id="perm2" name="checkedView" >
             <input *ngIf="!hasUserVCPerm(permVC.ViewAudit)" type="checkbox" disabled class="custom-control-input" id="perm2" name="checkedView" >
-            <label class="custom-control-label" for="perm2">View Audit</label>
+            <label class="custom-control-label" for="perm2">{{ 'perm.vcViewAudit' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVCPerm(permVC.Modify)" type="checkbox" checked disabled class="custom-control-input" id="perm3" name="checkedView" >
             <input *ngIf="!hasUserVCPerm(permVC.Modify)" type="checkbox" disabled class="custom-control-input" id="perm3" name="checkedView" >
-            <label class="custom-control-label" for="perm3">Modify Visbo Center</label>
+            <label class="custom-control-label" for="perm3">{{ 'perm.vcModify' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVCPerm(permVC.CreateVP)" type="checkbox" checked disabled class="custom-control-input" id="perm4" name="checkedView" >
             <input *ngIf="!hasUserVCPerm(permVC.CreateVP)" type="checkbox" disabled class="custom-control-input" id="perm4" name="checkedView" >
-            <label class="custom-control-label" for="perm4">Create Visbo Project</label>
+            <label class="custom-control-label" for="perm4">{{ 'perm.vcCreateVP' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVCPerm(permVC.ManagePerm)" type="checkbox" checked disabled class="custom-control-input" id="perm5" name="checkedView" >
             <input *ngIf="!hasUserVCPerm(permVC.ManagePerm)" type="checkbox" disabled class="custom-control-input" id="perm5" name="checkedView" >
-            <label class="custom-control-label" for="perm5">Manage Permissions, Users and Groups</label>
+            <label class="custom-control-label" for="perm5">{{ 'perm.vcManagePerm' | translate }}</label>
           </div>
           <br>
           <!-- VP Permissions -->
-          <div>Visbo Project Permission for User</div>
+          <div>{{ 'perm.titleVPPerm' | translate }}</div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.View)" type="checkbox" checked disabled class="custom-control-input" id="permVP1" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.View)" type="checkbox" disabled class="custom-control-input" id="permVP1" name="checkedView" >
-            <label class="custom-control-label" for="permVP1">View Visbo Project</label>
+            <label class="custom-control-label" for="permVP1">{{ 'perm.vpView' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.ViewAudit)" type="checkbox" checked disabled class="custom-control-input" id="permVP2" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.ViewAudit)" type="checkbox" disabled class="custom-control-input" id="permVP2" name="checkedView" >
-            <label class="custom-control-label" for="permVP2">View Project Audit</label>
+            <label class="custom-control-label" for="permVP2">{{ 'perm.vpViewAudit' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.Modify)" type="checkbox" checked disabled class="custom-control-input" id="permVP3" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.Modify)" type="checkbox" disabled class="custom-control-input" id="permVP3" name="checkedView" >
-            <label class="custom-control-label" for="permVP3">Modify Visbo Project</label>
+            <label class="custom-control-label" for="permVP3">{{ 'perm.vpModify' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.CreateVariant)" type="checkbox" checked disabled class="custom-control-input" id="permVP4" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.CreateVariant)" type="checkbox" disabled class="custom-control-input" id="permVP4" name="checkedView" >
-            <label class="custom-control-label" for="permVP4">Create Visbo Project Variant</label>
+            <label class="custom-control-label" for="permVP4">{{ 'perm.vpCreateVariant' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.ManagePerm)" type="checkbox" checked disabled class="custom-control-input" id="permVP5" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.ManagePerm)" type="checkbox" disabled class="custom-control-input" id="permVP5" name="checkedView" >
-            <label class="custom-control-label" for="permVP5">Manage Permissions, Users and Groups</label>
+            <label class="custom-control-label" for="permVP5">{{ 'perm.vpManagePerm' | translate }}</label>
           </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.DeleteVP)" type="checkbox" checked disabled class="custom-control-input" id="permVP6" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.DeleteVP)" type="checkbox" disabled class="custom-control-input" id="permVP6" name="checkedView" >
-            <label class="custom-control-label" for="permVP6">Delete Visbo Project</label>
+            <label class="custom-control-label" for="permVP6">{{ 'perm.vpDelete' | translate }}</label>
           </div>
-          <label class="form-control-static mt-2">Group Memeber Ship</label>
+          <label class="form-control-static mt-2">{{ 'perm.lblGroupMembership' | translate }}</label>
           <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
             <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
               <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.groupName }}</a>
             </div>
           </ng-container>
 
-          <div class="form-group mt-2">
-            <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          <div class="modal-footer align-items-end">
+            <button class="btn btn-primary" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
           </div>
         </div>
       </div>

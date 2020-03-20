@@ -1,0 +1,810 @@
+{
+	"login": {
+		"lbl": {
+			"email": "Ihre E-Mail Adresse",
+			"password": "Passwort"
+		},
+		"btn": {
+			"login": "Login",
+			"pwForgotten": "Passwort vergessen?",
+			"register": "Registrieren"
+		},
+		"msg": {
+			"loginSuccess": "Sie haben sich erfolgreich angemeldet. Letzte Anmeldung am {{lastLogin}}",
+			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
+			"pwRequired": "Passwort wird benötigt!"
+		},
+		"title": "Willkommen in VISBO - the Project Warehouse"
+	},
+	"dashboard": {
+		"topvc": "Top VISBO Centers",
+		"topvp": "Top VISBO Projekte",
+		"projects": "Projekte",
+		"versions": "Versionen",
+		"detail": "Details"
+	},
+	"autologout": {
+		"msg": {
+			"sessionExpired": "AutoLogout: Sitzung abgelaufen, bitte melden Sie sich erneut an.",
+			"sessionExpires": "AutoLogout: Sitzung läuft in {{remaining}} Sekunden ab.",
+			"pwExpires": "Ihr Passwort verfällt am {{expiresAt}}. Bitte ändern Sie ihr Passwort vorher."
+		}
+	},
+	"navbar": {
+		"visbo": "VISBO",
+		"vc": "VISBO Center",
+		"vp": "VISBO Projekte",
+		"profile": "Profil",
+		"others": "Sonstiges",
+		"settings": "Einstellungen",
+		"appAdmin": "App. Admin",
+		"logout": "Abmelden"
+	},
+	"app": {
+		"product": "VISBO - the project warehouse",
+		"support": "Support",
+		"impressum": "Impressum",
+		"terms": "Nutzungsbedingungen",
+		"dataProtection": "Datenschutz",
+		"versionInfo": "Information zur Version",
+		"serverVersion": "Server Version",
+		"uiVersion": "UI Version"
+	},
+	"pwForgotten": {
+		"title": "Passwort vergessen",
+		"lbl": {
+			"email": "Ihre E-Mail Adresse"
+		},
+		"btn": {
+			"resetPW": "Zurücksetzen",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich"
+		}
+	},
+	"pwReset": {
+		"title": "Passwort zurücksetzen",
+		"lbl": {
+			"newPassword": "Neues Passwort"
+		},
+		"btn": {
+			"resetPW": "Speichern",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"pwResetSuccess": "Ihr Passwort wurde geändert.",
+			"pwResetError": "fehler beim ändern des Passworts: {{message}}",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
+		}
+	},
+	"register": {
+		"title": "Neuen Benutzer registrieren",
+		"titleTC": "Benutzungsbedingungen & Datenschutz",
+		"lbl": {
+			"firstName": "Vornamen",
+			"lastName": "Nachnamen",
+			"company": "Firma",
+			"phone": "Telefon",
+			"email": "E-Mail Adresse",
+			"password": "Neues Passwort",
+			"acceptTC": "Akzeptieren der Nutzungsbedingungen",
+			"acceptDP": "Akzeptieren der Datenschutzbedingungen"
+		},
+		"btn": {
+			"register": "Registrieren",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"companyRequired": "Ein Firmenname ist erforderlich",
+			"lastNameRequired": "Nachname ist erforderlich",
+			"firstNameRequired": "Nachname ist erforderlich",
+			"registerSuccess": "Gratulation, Ihre E-Mail Adresse {{email}} ist nun bestätigt. Bitte melden Sie sich an.",
+			"registerSuccessConfirm": "Gratulation, Sie haben ihre E-Mail Adresse {{email}} erfolgreich registriert. Bitte prüfen Sie Ihre E-Mail und bestätigen Sie den Zugriff.",
+			"registerError": "Fehler beim Registrieren: {{message}}",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
+		}
+	},
+	"registerConfirm": {
+		"title": "e-mail Bestätigung",
+		"description": "Dies ist eine Zwisschenseite ohne spezifischen Inhalt. Sie sollten automatisch weitergeleitet werden, falls nicht bitte betätigen Sie den Schalter.",
+		"btn": {
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"registerSuccess": "Gratulation, ihre E-Mail Adresse ist nun bestätigt. Bitte melden Sie sich an."
+		}
+	},
+	"profile": {
+		"title": "Profil Information für:",
+		"titleChangePW": "Passwort ändern",
+		"lbl": {
+			"firstName": "Vornamen",
+			"lastName": "Nachnamen",
+			"company": "Firma",
+			"phone": "Telefon",
+			"email": "E-Mail Adresse",
+			"oldPassword": "Altes Passwort",
+			"newPassword": "Neues Passwort",
+			"PWRule": "Password Rule"
+		},
+		"btn": {
+			"save": "Speichern",
+			"change": "Ändern",
+			"cancel": "Abbrechen",
+			"changePW": "Passwort ändern"
+		},
+		"msg": {
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"companyRequired": "Ein Firmenname ist erforderlich",
+			"lastNameRequired": "Nachname ist erforderlich",
+			"firstNameRequired": "Nachname ist erforderlich",
+			"oldPWRequired": "Altes Passwort wird benötigt!",
+			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
+			"lastLogin": "Ihr letzter Login war am",
+			"lastFailedLogin": "Ihr letzter fehlgeschlagener Login war am",
+			"errorPerm": "Keine Berechtigung für das Benutzer Profil",
+			"updateSuccess": "Benutzer Profil wurde erfolgreich gespeichert",
+			"changePWSuccess": "Ihr Passwort wurde erfolgreich geändert"
+		}
+	},
+	"vc": {
+		"title": "VISBO Centers",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"modified": "Änderung",
+			"projects": "# Projekte",
+			"detail": "Detail"
+		},
+		"msg": {
+			"detail": "Details zum VISBO Center"
+		}
+	},
+	"vcDetail": {
+		"title": "VISBO Center",
+		"titleUsers": "VISBO Center Benutzer",
+		"titleAddUser": "Einladen eines Benutzers in das VISBO Center",
+		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
+		"titleGroups": "VISBO Center Gruppen",
+		"titleAddGroup": "Anlegen einer neuen Gruppe im VISBO Center",
+		"titleModifyGroup": "Ändern einer Gruppe im VISBO Center",
+		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Center",
+		"titleProjectUsers": "VISBO Projekt Benutzer",
+		"titlePermUser": "Berechtigung für {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "VISBO Center",
+			"user": "Benutzer",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"detail": "Detail",
+			"email": "E-Mail",
+			"group": "Gruppe",
+			"members": "Mitglieder",
+			"project": "Projekt",
+			"type": "Typ",
+			"info": "Info",
+			"global": "Global",
+			"message": "Nachricht",
+			"delete": "Löschen",
+			"deleteUser": "Benutzer löschen"
+		},
+		"btn": {
+			"viewAudit": "Audit",
+			"viewGroups": "Gruppen",
+			"viewUsers": "Benutzer",
+			"viewProjectUsers": "Projekt Benutzer",
+			"addUser": "Benutzer einladen",
+			"addGroup": "Gruppe hinzufügen",
+			"invite": "Einladen",
+			"save": "Speichern",
+			"view": "Anzeigen",
+			"delete": "Löschen",
+			"back": "Zurück",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
+			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Center löschen?",
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"groupNameRequired": "Gruppen Name erforderlich",
+			"invalidMessage": "Fehlerhafter Inhalt",
+			"removeGroup": "Gruppe löschen",
+			"detailGroup": "Details zur Gruppe",
+			"updateVCSuccess": "VISBO Center {{name}} wurde aktualisiert",
+			"addUserSuccess": "Benutzer {{name}} wurde zum VISBO Center hinzugefügt",
+			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
+			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
+			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
+			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
+			"errorPermVC": "Keine Berechtigung für VISBO Center {{name}}",
+			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Center {{name}}",
+			"errorRemoveUserPerm": "Keine Berechtigung Benutzer {{name}} aus der Gruppe zu löschen",
+			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
+			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
+			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vp": {
+		"title": "Projekte",
+		"titleVC": "Projekte in",
+		"titleCreate": "Ein neues Projekt anlegen",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"type": "Typ",
+			"modified": "Änderung",
+			"versions": "# Versionen",
+			"vc": "VISBO Center",
+			"detail": "Detail",
+			"description": "Beschreibung"
+		},
+		"type": {
+			"vpType0": "Projekt",
+			"vpType1": "Portfolio",
+			"vpType2": "Vorlage"
+		},
+		"btn": {
+			"showDeleted": "Gelöschte",
+			"showExisting": "Nicht gelöschte",
+			"create": "Neues Projekt",
+			"save": "Speichern",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"createSuccess": "VISBO Projekt {{name}} wurde erfolgreich angelegt",
+			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
+			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
+			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
+			"detail": "Details zum VISBO Projekt"
+		}
+	},
+	"vpDetail": {
+		"title": "VISBO Projekt",
+		"titleVC": "VISBO Center",
+		"titleUsers": "VISBO Projekt Benutzer",
+		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
+		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
+		"titleGroups": "VISBO Center Gruppen",
+		"titleViewGroup": "Anzeigen einer Gruppe im VISBO Projekt",
+		"titleAddGroup": "Anlegen einer neuen Gruppe im VISBO Projekt",
+		"titleModifyGroup": "Ändern einer Gruppe im VISBO Projekt",
+		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Projekt",
+		"titleDeleteProject": "VISBO Projekt löschen",
+		"titleProjectLocks": "VISBO Projekt Locks",
+		"titlePermUser": "Berechtigung für {{name}}",
+		"lbl": {
+			"nr": "Nr.",
+			"name": "Name",
+			"vc": "VISBO Center",
+			"vp": "VISBO Projekt",
+			"user": "Benutzer",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"detail": "Detail",
+			"email": "E-Mail",
+			"group": "Gruppe",
+			"members": "Mitglieder",
+			"project": "Projekt",
+			"type": "Typ",
+			"info": "Info",
+			"global": "Global",
+			"message": "Nachricht",
+			"expires": "Läuft ab",
+			"variant": "Variante",
+			"versions": "Versionen",
+			"unlock": "Entsperren",
+			"delete": "Löschen",
+			"deleteUser": "Benutzer löschen"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"viewAudit": "Audit",
+			"viewGroups": "Gruppen",
+			"viewUsers": "Benutzer",
+			"addUser": "Benutzer einladen",
+			"addGroup": "Gruppe hinzufügen",
+			"invite": "Einladen",
+			"save": "Speichern",
+			"restore": "Wiederherstellen",
+			"destroy": "Vernichten!",
+			"view": "Anzeigen",
+			"delete": "Löschen",
+			"back": "Zurück",
+			"cancel": "Abbrechen"
+		},
+		"msg": {
+			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
+			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Projekt löschen?",
+			"removeProjectConfirm": "Wollen Sie das VISBO Projekt wirklich löschen?",
+			"destroyProjectConfirm": "Wollen Sie das VISBO Projekt wirklich endgültig löschen?",
+			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"groupNameRequired": "Gruppen Name erforderlich",
+			"invalidMessage": "Fehlerhafter Inhalt",
+			"removeGroup": "Gruppe löschen",
+			"detailGroup": "Details zur Gruppe",
+			"addUserSuccess": "Benutzer {{name}} wurde zum VISBO Projekt hinzugefügt",
+			"updateProjectSuccess": "VISBO Projekt {{name}} wurde gespeichert",
+			"removeProjectSuccess": "VISBO Projekt {{name}} wurde gelöscht",
+			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
+			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
+			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
+			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"removeLockSuccess": "Sperre wurde erfolgreich aufgehoben",
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
+			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Projekt {{name}}",
+			"errorRemoveUserPerm": "Keine Berechtigung Benutzer {{name}} aus der Gruppe zu löschen",
+			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
+			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
+			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
+			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vpKeyMetric": {
+		"title": "Projekt-Kennzahlen für",
+		"titleVersion": "Version vom",
+		"titleDetailVersion": "Details zur Version",
+		"lbl": {
+			"project": "Projekt",
+			"name": "Name",
+			"value": "Wert",
+			"info": "Info",
+			"startDate": "Projekt Start",
+			"endDate": "Projekt Ende",
+			"leadPerson": "Projektverantwortlicher",
+			"description": "Beschreibung/Ziel",
+			"template": "Projektvorlage",
+			"bu": "Geschäftseinheit",
+			"weeksAhead": "Wochen voraus",
+			"weeksDelay": "Wochen verzögert",
+			"inTime": "pünktlich",
+			"status": "Status vom:",
+			"keyMetric": "Kennzahl",
+			"planToDate": "Plan-to-Date",
+			"total": "Gesamt",
+			"detail": "Detail",
+			"trend": "Trend",
+			"metricCost": "Kosten",
+			"metricDelivery": "Qualität",
+			"metricDeadline": "Zeit",
+			"actualCost": "bisherige Erreichung der Kosten",
+			"actualDelivery": "bisherige Erreichung der Lieferungen",
+			"actualDeadline": "bisherige Erreichung der Termine",
+			"totalCost": "geplante Erreichung der Gesamtkosten",
+			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
+			"totalDeadline": "geplante Erreichung der Gesamttermine",
+			"inPlan": "im Plan",
+			"view": "Anzeigen",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"viewList": "Liste",
+			"viewChart": "Diagramm",
+			"showTrend": "Trend zeigen",
+			"hideTrend": "Trend ausblenden",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"allVersions": "Alle Versionen",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpViewCost": {
+		"title": "Monatliche Kosten für",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpViewDelivery": {
+		"title": "Lieferungen für",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"phase": "Planelement",
+			"description": "Lieferung",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"vc": "VISBO Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpViewDeadline": {
+		"title": "Termine für",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"planElement": "Planelement",
+			"type": "Typ",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"vc": "VISBO Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpv": {
+		"title": "Projekt Versionen",
+		"titleVP": "Projekt Versionen in",
+		"lbl": {
+			"nr": "Nr.",
+			"timestamp": "Zeitstempel",
+			"status": "Status",
+			"endDate": "Projektende",
+			"trafficlight": "Ampel",
+			"budget": "Budget",
+			"variant": "Variante",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"deleted": "Gelöschte",
+			"undeleted": "Nicht gelöschte",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpvDetails": {
+		"title": "Details zur Projekt Version",
+		"titleDeleteVPV": "Löschen der Projekt Version",
+		"lbl": {
+			"name": "Name",
+			"description": "Beschreibung",
+			"createdUpdated": "Erstellt/Verändert am",
+			"timestamp": "Zeitstempel von",
+			"variant": "Variante",
+			"keyMetric": "Kennzahl",
+			"detail": "Detail",
+			"kmCost": "Vergleich der Kosten",
+			"kmCostDetail": "Zeige monatliche Kosten",
+			"kmDelivery": "Vergleich der Lieferungen",
+			"kmDeliveryDetail": "Zeige alle Lieferungen",
+			"kmDeadline": "Vergleich der Termine",
+			"kmDeadlineDetail": "Zeige alle Termine"
+		},
+		"btn": {
+			"restore": "Wiederherstellen",
+			"delete": "Löschen",
+			"destroy": "Vernichten",
+			"deleted": "Gelöschte",
+			"undeleted": "Nicht gelöschte",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"msg": {
+			"confirmDelete": "Wollen sie diese Projekt Version wirklich löschen?",
+			"confirmDestroy": "Wollen Sie diese Projekt Version wirklich endgültig vernichten?",
+			"errorPerm": "Keine Berechtigung für diese VISBO Projekt Version",
+			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
+			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpfVersion": {
+		"title": "Projekte aus Portfolio",
+		"titleVC": "VISBO Center",
+		"titleVersion": "Portfolio Version",
+		"titleSelectVersion": "Auswahl Portfolio Version",
+		"titleKM": "Kennzahlen vom",
+		"titleKMShort": "Zahlen vom",
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"variant": "Variante",
+			"day": "Tag",
+			"week": "Woche",
+			"weeks": "Wochen",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"show": "Anzeige",
+			"and": "und",
+			"from": "vom",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "gefiltert mit",
+			"filter": "Filter Projekte",
+			"xAxis": "X-Achse",
+			"yAxis": "Y-Achse",
+			"project": "Projekt",
+			"timestamp": "Zeitstempel",
+			"name": "Name",
+			"bac": "Gesamtkosten (Baseline)",
+			"endDate": "Projektende (Baseline)",
+			"deadlines": "Termine (Baseline)",
+			"deliveries": "Lieferungen (Baseline)"
+		},
+		"btn": {
+			"showChart": "Zeige Chart",
+			"showList": "Zeige Liste",
+			"filter": "Filter",
+			"change": "Ändern",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"metric": {
+			"costName": "Gesamtkosten",
+			"costAxis": "Abweichung bei den Gesamtkosten",
+			"costBubble": "Erwartete Gesmatkosten (%)",
+			"costTable": "Erwartete Gesamtkosten",
+			"endDateName": "Termin (Projektende)",
+			"endDateAxis": "Abweichung beim Projektende",
+			"endDateBubble": "Abweichung beim Projektende (Wochen)",
+			"endDateTable": "Änderung Projektende",
+			"deadlineName": "Termin (Deadlines)",
+			"deadlineAxis": "Abweichung bei den Terminen",
+			"deadlineBubble": "Erreichte Termine in %",
+			"deadlineTable": "Erreichte Termine",
+			"deliveryName": "Qualität (Lieferungen)",
+			"deliveryAxis": "Abweichungen bei erreichten Lieferungen",
+			"deliveryBubble": "Erreichte Lieferungen in %",
+			"deliveryTable": "Erreichte Lieferungen"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vcAudit": {
+		"title": "VISBO Center Audit für",
+		"titleDetail": "Details zum Audit Eintrag",
+		"lbl": {
+			"from": "Von",
+			"to": "Bis",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Erstellt",
+			"user": "Benutzer",
+			"action": "Aktion",
+			"info": "Info",
+			"result": "Ergebnis",
+			"detail": "Detail",
+			"vc": "VISBO Center",
+			"vp": "VISBO Projekt",
+			"vpv": "Projekt Version",
+			"techAction": "Tech. Aktion",
+			"url": "URL",
+			"responseTime": "Antwortzeit",
+			"responseSize": "Größe",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "Alle",
+			"VC": "VISBO Center",
+			"VP": "VISBO Projekt",
+			"Read": "Lesen",
+			"Create": "Erstellen",
+			"Update": "Ändern",
+			"Delete": "Löschen"
+		},
+		"result": {
+			"HTTP200": "Erfolg",
+			"HTTP304": "Erfolg",
+			"HTTP400": "Fehlerhafter Anforderung",
+			"HTTP401": "Keine Authentisierung",
+			"HTTP403": "Keine Berechtigung",
+			"HTTP404": "Seite nicht gefunden",
+			"HTTP409": "Konflikt",
+			"HTTP423": "Gesperrt",
+			"HTTP500": "Server Fehler"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "Mehr",
+			"less": "Weniger",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Center"
+		}
+	},
+	"vpAudit": {
+		"title": "VISBO Projekt Audit für",
+		"titleDetail": "Details zum Audit Eintrag",
+		"lbl": {
+			"from": "Von",
+			"to": "Bis",
+			"filter": "Filter",
+			"max": "Max",
+			"created": "Erstellt",
+			"user": "Benutzer",
+			"action": "Aktion",
+			"info": "Info",
+			"result": "Ergebnis",
+			"detail": "Detail",
+			"vc": "VISBO Center",
+			"vp": "VISBO Projekt",
+			"vpv": "Projekt Version",
+			"techAction": "Tech. Aktion",
+			"url": "URL",
+			"responseTime": "Antwortzeit",
+			"responseSize": "Größe",
+			"userAgent": "User Agent",
+			"ip": "IP",
+			"ttl": "TTL"
+		},
+		"dropDown": {
+			"All": "Alle",
+			"VC": "VISBO Center",
+			"VP": "VISBO Projekt",
+			"Read": "Lesen",
+			"Create": "Erstellen",
+			"Update": "Ändern",
+			"Delete": "Löschen"
+		},
+		"result": {
+			"HTTP200": "Erfolg",
+			"HTTP304": "Erfolg",
+			"HTTP400": "Fehlerhafter Anforderung",
+			"HTTP401": "Keine Authentisierung",
+			"HTTP403": "Keine Berechtigung",
+			"HTTP404": "Seite nicht gefunden",
+			"HTTP409": "Konflikt",
+			"HTTP423": "Gesperrt",
+			"HTTP500": "Server Fehler"
+		},
+		"btn": {
+			"filter": "Filter",
+			"download": "Download",
+			"more": "Mehr",
+			"less": "Weniger",
+			"back": "Zurück"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
+		}
+	},
+	"keyMetrics": {
+		"shortEAC": "EAC",
+		"longEAC": "Estimate at Completion",
+		"shortBAC": "BAC",
+		"baselineBAC": "in % von BAC",
+		"longBAC": "Budget at Completion",
+		"shortPV": "PV",
+		"baselinePV": "PV, baseline",
+		"relativPV": "in % of PV",
+		"longPV": "Planned monthly Cost Value, baseline",
+		"shortAC": "AC",
+		"planAC": "AC, plan-to-date",
+		"longAC": "Actual monthly Cost value, plan-to-date",
+		"shortETC": "ETC",
+		"planETC": "ETC, plan-to-date",
+		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortDAC": "DAC",
+		"longDAC": "Number of Deadlines at Completion, according baseline",
+		"shortEDC": "EDC",
+		"longEDC": "Estimate number Deadlines at Completion, according plan-to-date",
+		"shortPD": "PD",
+		"baselinePD": "PD, baseline",
+		"longPD": "Planned number of Deadlines, according baseline",
+		"shortAD": "AD",
+		"planAD": "AD, plan-to-date",
+		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+
+		"shortDVAC": "DVAC",
+		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
+		"shortEDVC": "EDVC",
+		"longEDVC": "Estimate number Deliveries(DV) at Completion, according plan-to-date",
+		"shortPDV": "PDV",
+		"baselinePDV": "PDV, baseline",
+		"longPDV": "Planned number of Deliveries(DV), according baseline",
+		"shortADV": "ADV",
+		"planADV": "ADV, plan-to-date",
+		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+
+		"lbl": {
+			"trafficLight": "Ampel",
+			"info": "Info.",
+			"timeStamp": "Zeitstempel",
+			"shortcut": "Abkürzung",
+			"explanation": "Bedeutung",
+			"showLegend": "Zeige Definition der Abkürzungen"
+		},
+		"chart": {
+			"statusDeliveryAhead": "Vorzeitig",
+			"statusDeliveryInTime": "Pünktlich",
+			"statusDeliveryDelay": "Verzögert",
+			"statusDeliveryNotCompleted": "Noch nicht erledigt",
+			"statusDeadlineAhead": "Vorzeitig",
+			"statusDeadlineInTime": "Pünktlich",
+			"statusDeadlineDelay": "Verzögert",
+			"statusDeadlineNotCompleted": "Noch nicht erledigt",
+			"titleFinishedDelivery": "Status Lieferungen",
+			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
+			"titleFinishedDeadlines": "Status Fälligkeiten",
+			"titleUnFinishedDeadlines": "Status unerledigter Fälligkeiten",
+			"yAxisCostOverTime": "Monatliche Kosten",
+			"titleCostOverTime": "Historischer Vergleich monatlicher Kosten: plan-to-date vs. baseline",
+			"yAxisDeliveryTrend": "gewichtete Anzahl von Lieferungen (DV)",
+			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",
+			"yAxisDeadlineTrend": "gewichtete Anzahl von Terminen",
+			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
+			"yAxisCostTrend": "Kosten in T€",
+			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
+		},
+		"versus": "vs."
+	},
+	"perm": {
+		"titleSystemPerm": "VISBO System Berechtigung",
+		"titleVCPerm": "VISBO Center Berechtigung",
+		"titleVPPerm": "VISBO Projekt Berechtigung",
+		"vcView": "VISBO Center anzeigen",
+		"vcViewAudit": "Audit anzeigen",
+		"vcModify": "VISBO Center ändern",
+		"vcCreateVP": "VISBO Projekt anlegen",
+		"vcManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
+		"vcGlobal": "Gruppe hat Zugriff auf alle VISBO Projekte",
+		"vpView": "VISBO Projekt",
+		"vpViewAudit": "View Projekt Audit",
+		"vpModify": "Modify VISBO Projekt",
+		"vpCreateVariant": "VISBO Projekt Variante anlegen",
+		"vpManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
+		"vpDelete": "VISBO Projekt löschen",
+		"lblGroupMembers": "Mitglieder der Gruppe",
+		"lblNoGroupMembers": "Keine Mitglieder in der Gruppe",
+		"lblGroupMembership": "Mitglied in den Gruppen"
+	},
+	"language": {
+		"de": "Deutsch",
+		"en": "Englisch"
+	}
+}

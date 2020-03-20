@@ -12,16 +12,16 @@ export class VGPermission {
 }
 
 export enum VGPSystem {
-    "View" = 1, "ViewAudit" = 2, "ViewLog" = 4, "Modify" = 16, "ManagePerm" = 32, "CreateVC" = 256, "DeleteVC" = 1024
-};
+    'View' = 1, 'ViewAudit' = 2, 'ViewLog' = 4, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVC' = 256, 'DeleteVC' = 1024
+}
 
 export enum VGPVC {
-    "View" = 1, "ViewAudit" = 2, "Modify" = 16, "ManagePerm" = 32, "CreateVP" = 256
-};
+    'View' = 1, 'ViewAudit' = 2, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVP' = 256
+}
 
 export enum VGPVP {
-    "View" = 1, "ViewAudit" = 2, "Modify" = 16, "ManagePerm" = 32, "CreateVariant" = 256, "DeleteVP" = 1024
-};
+    'View' = 1, 'ViewAudit' = 2, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVariant' = 256, 'DeleteVP' = 1024
+}
 
 export class VGGroup {
   _id: string;
@@ -32,7 +32,7 @@ export class VGGroup {
   internal: boolean;
   global: boolean;
   permission: VGPermission;
-  users: [VGUser]
+  users: [VGUser];
 }
 
 export class VGUserGroup {

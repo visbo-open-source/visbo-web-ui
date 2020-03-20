@@ -9,11 +9,8 @@ import { EnvService } from './env.service';
 import { VisboAudit, VisboAuditResponse, QueryAuditType } from '../_models/visboaudit';
 
 import { MessageService } from './message.service';
-import { LoginComponent } from '../login/login.component';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable()
 export class VisboAuditService {
@@ -27,22 +24,21 @@ export class VisboAuditService {
 
 
   /** GET Audits from the server */
-  getVisboAudits(sysadmin: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
-    var url = this.serviceBaseUrl.concat('/audit');
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  getVisboAudits(sysadmin?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+    const url = this.serviceBaseUrl.concat('/audit');
     let params = new HttpParams();
 
-    if (sysadmin) params = params.append('sysadmin', '1');
+    if (sysadmin) { params = params.append('sysadmin', '1'); }
     if (queryAudit) {
-      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
-      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
-      if (queryAudit.text) params = params.append('text', queryAudit.text);
-      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
-      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
-      if (queryAudit.area) params = params.append('area', queryAudit.area);
+      if (queryAudit.from) { params = params.append('from', queryAudit.from.toISOString()); }
+      if (queryAudit.to) { params = params.append('to', queryAudit.to.toISOString()); }
+      if (queryAudit.text) { params = params.append('text', queryAudit.text); }
+      if (queryAudit.maxcount) { params = params.append('maxcount', queryAudit.maxcount.toString()); }
+      if (queryAudit.actionType) { params = params.append('action', queryAudit.actionType); }
+      if (queryAudit.area) { params = params.append('area', queryAudit.area); }
     }
 
-    this.log(`Calling HTTP Request: ${url} ${sysadmin ? "as sysadmin" : ""}`);
+    this.log(`Calling HTTP Request: ${url} ${sysadmin ? 'as sysadmin' : ''}`);
     return this.http.get<VisboAuditResponse>(url, { headers , params })
       .pipe(
         map(response => response.audit),
@@ -52,20 +48,19 @@ export class VisboAuditService {
   }
 
   /** GET VC Audits from the server */
-  getVisboCenterAudits(vcid: string, sysadmin: boolean = false, deleted: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
-    var url = this.serviceBaseUrl.concat('/vc/', vcid,'/audit');
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  getVisboCenterAudits(vcid: string, sysadmin?: boolean, deleted?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+    const url = this.serviceBaseUrl.concat('/vc/', vcid, '/audit');
     let params = new HttpParams();
 
-    if (sysadmin) params = params.append('sysadmin', '1');
-    if (deleted) params = params.append('deleted', '1');
+    if (sysadmin) { params = params.append('sysadmin', '1'); }
+    if (deleted) { params = params.append('deleted', '1'); }
     if (queryAudit) {
-      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
-      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
-      if (queryAudit.text) params = params.append('text', queryAudit.text);
-      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
-      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
-      if (queryAudit.area) params = params.append('area', queryAudit.area);
+      if (queryAudit.from) { params = params.append('from', queryAudit.from.toISOString()); }
+      if (queryAudit.to) { params = params.append('to', queryAudit.to.toISOString()); }
+      if (queryAudit.text) { params = params.append('text', queryAudit.text); }
+      if (queryAudit.maxcount) { params = params.append('maxcount', queryAudit.maxcount.toString()); }
+      if (queryAudit.actionType) { params = params.append('action', queryAudit.actionType); }
+      if (queryAudit.area) { params = params.append('area', queryAudit.area); }
     }
 
     this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
@@ -78,20 +73,19 @@ export class VisboAuditService {
   }
 
   /** GET VP Audits from the server */
-  getVisboProjectAudits(vpid: string, sysadmin: boolean = false, deleted: boolean = false, queryAudit: QueryAuditType = undefined): Observable<VisboAudit[]> {
-    var url = this.serviceBaseUrl.concat('/vp/', vpid,'/audit');
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  getVisboProjectAudits(vpid: string, sysadmin?: boolean, deleted?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+    const url = this.serviceBaseUrl.concat('/vp/', vpid, '/audit');
     let params = new HttpParams();
 
-    if (sysadmin) params = params.append('sysadmin', '1');
-    if (deleted) params = params.append('deleted', '1');
+    if (sysadmin) { params = params.append('sysadmin', '1'); }
+    if (deleted) { params = params.append('deleted', '1'); }
     if (queryAudit) {
-      if (queryAudit.from) params = params.append('from', queryAudit.from.toISOString());
-      if (queryAudit.to) params = params.append('to', queryAudit.to.toISOString());
-      if (queryAudit.text) params = params.append('text', queryAudit.text);
-      if (queryAudit.maxcount) params = params.append('maxcount', queryAudit.maxcount.toString());
-      if (queryAudit.actionType) params = params.append('action', queryAudit.actionType);
-      if (queryAudit.area) params = params.append('area', queryAudit.area);
+      if (queryAudit.from) { params = params.append('from', queryAudit.from.toISOString()); }
+      if (queryAudit.to) { params = params.append('to', queryAudit.to.toISOString()); }
+      if (queryAudit.text) { params = params.append('text', queryAudit.text); }
+      if (queryAudit.maxcount) { params = params.append('maxcount', queryAudit.maxcount.toString()); }
+      if (queryAudit.actionType) { params = params.append('action', queryAudit.actionType); }
+      if (queryAudit.area) { params = params.append('area', queryAudit.area); }
   }
 
     this.log(`Calling HTTP Request: ${url} for VP ${vpid}`);

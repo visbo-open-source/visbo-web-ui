@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Login } from '../_models/login';
+
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-pwforgotten',
@@ -20,12 +24,15 @@ export class PwforgottenComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {
-    if (this.route.snapshot.queryParams.email)
-      this.model.username = this.route.snapshot.queryParams.email
-    this.log(`Password Forgotten for User ${this.model.username}`)
+    if (this.route.snapshot.queryParams.email) {
+      this.model.username = this.route.snapshot.queryParams.email;
+    }
+    this.log(`Password Forgotten for User ${this.model.username}`);
   }
 
   pwforgotten() {
@@ -37,8 +44,8 @@ export class PwforgottenComponent implements OnInit {
           this.router.navigate(['login']);
         },
         error => {
-          this.log(`Error during Password Forgotten ${error.error.message}`)
-          this.alertService.error(error.error.message);
+          this.log(`Error during Password Forgotten ${error.error.message}`);
+          this.alertService.error(getErrorMessage(error), true);
           this.loading = false;
         }
       );

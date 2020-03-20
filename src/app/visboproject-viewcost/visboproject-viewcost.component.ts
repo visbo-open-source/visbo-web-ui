@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProject } from '../_models/visboproject';
@@ -11,6 +13,8 @@ import { VisboProjectVersion, VPVCost } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewcost',
@@ -24,20 +28,20 @@ export class VisboProjectViewCostComponent implements OnInit {
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
-  vpvCost: [VPVCost];
-  vpvActualDataUntil: string;
-  deleted: boolean = false;
+  vpvCost: VPVCost[];
+  vpvActualDataUntil: Date;
+  deleted = false;
 
   vpvTotalCostBaseLine: number;
   vpvTotalCostCurrent: number;
 
-  refDateInterval: string = "month";
+  refDateInterval = 'month';
   vpvRefDate: Date;
   scrollRefDate: Date;
-  chartButton: string = "View List";
-  chart: boolean = true;
-  history: boolean = false;
-  historyButton: string = "View Trend"
+  chartButton = 'View List';
+  chart = true;
+  history = false;
+  historyButton = 'View Trend';
   parentThis: any;
 
   colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
@@ -47,9 +51,10 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   graphDataComboChart: any[] = [];
   graphOptionsComboChart: any = undefined;
+  currentLang: string;
 
-  sortAscending: boolean = false;
-  sortColumn: number = 1;
+  sortAscending = false;
+  sortColumn = 1;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -61,12 +66,14 @@ export class VisboProjectViewCostComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
+    this.currentLang = this.translate.currentLang;
     if (this.route.snapshot.queryParams.vpvid) {
-      this.initVPVID = this.route.snapshot.queryParams.vpvid
+      this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }
     this.getVisboProjectVersions();
   }
@@ -76,16 +83,17 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   hasVPPerm(perm: number): boolean {
-    if (this.combinedPerm == undefined) return false
-    return (this.combinedPerm.vp & perm) > 0
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) > 0;
   }
 
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    var i: number;
     this.vpSelected = id;
     this.parentThis = this;
-    var chartFlag = this.chart;
+    const chartFlag = this.chart;
 
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -95,7 +103,7 @@ export class VisboProjectViewCostComponent implements OnInit {
             this.vpActive = visboproject;
             this.combinedPerm = visboproject.perm;
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, "", false)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', false)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -103,10 +111,10 @@ export class VisboProjectViewCostComponent implements OnInit {
                   if (visboprojectversions.length > 0) {
                     this.sortVPVTable();
                   }
-                  var initIndex = 0
+                  let initIndex = 0;
                   if (this.initVPVID) {
-                    for (var i=0; i < visboprojectversions.length; i++) {
-                      if (visboprojectversions[i]._id.toString() == this.initVPVID) {
+                    for (let i = 0; i < visboprojectversions.length; i++) {
+                      if (visboprojectversions[i]._id.toString() === this.initVPVID) {
                         initIndex = i;
                         break;
                       }
@@ -121,32 +129,38 @@ export class VisboProjectViewCostComponent implements OnInit {
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  if (error.status == 403) {
-                    this.alertService.error(`Permission Denied for Visbo Project Versions`);
+                  if (error.status === 403) {
+                    const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
                   } else {
-                    this.alertService.error(error.error.message);
+                    this.alertService.error(getErrorMessage(error));
                   }
                 }
               );
           },
           error => {
             this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status == 403) {
-              this.alertService.error(`Permission Denied for Visbo Project`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpViewCost.msg.errorPerm');
+              this.alertService.error(message);
             } else {
-              this.alertService.error(error.error.message);
+              this.alertService.error(getErrorMessage(error));
             }
         });
     }
   }
 
   visboCostCalc(index: number): void {
-    var chartFlag = this.chart;
+    const chartFlag = this.chart;
     this.chart = false;
-    this.vpvActive = this.visboprojectversions[index]
+    this.vpvActive = this.visboprojectversions[index];
     this.vpvRefDate = this.vpvActive.timestamp;
-    if (this.scrollRefDate == undefined) this.scrollRefDate = new Date(this.vpvRefDate);
-    if (!this.vpvActive) return;
+    if (this.scrollRefDate === undefined) {
+      this.scrollRefDate = new Date(this.vpvRefDate);
+    }
+    if (!this.vpvActive) {
+      return;
+    }
 
     // MS TODO: check if we have the cost already for this timestamp and skip fetching it again
     // if (this.vpvActive.cost) {
@@ -164,10 +178,10 @@ export class VisboProjectViewCostComponent implements OnInit {
       .subscribe(
         visboprojectversions => {
           this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].cost.length} cost entries`);
-          if (visboprojectversions.length != 1 || !visboprojectversions[0].cost) {
+          if (visboprojectversions.length !== 1 || !visboprojectversions[0].cost) {
             this.log(`get VPV Calc: Reset Cost to empty `);
             // this.vpvCost[visboprojectversions[0]._id] = [];
-            this.vpvCost = [new VPVCost];
+            this.vpvCost = [];
           } else {
             this.log(`Store Cost for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].cost.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.vpvCost = visboprojectversions[0].cost;
@@ -185,29 +199,30 @@ export class VisboProjectViewCostComponent implements OnInit {
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status == 403) {
-            this.alertService.error(`Permission Denied for Visbo Project Versions`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            this.alertService.error(message);
           } else {
-            this.alertService.error(error.error.message);
+            this.alertService.error(getErrorMessage(error));
           }
         }
       );
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
-    var localA = new Date(dateA);
-    var localB = new Date(dateB);
-    localA.setHours(0,0,0,0);
-    localB.setHours(0,0,0,0);
+    const localA = new Date(dateA);
+    const localB = new Date(dateB);
+    localA.setHours(0, 0, 0, 0);
+    localB.setHours(0, 0, 0, 0);
     // return false;
-    return localA.getTime() == localB.getTime();
+    return localA.getTime() === localB.getTime();
   }
 
   visboViewCostOverTime(id: string): void {
     this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
-        title:'Monthly Cost comparison: plan-to-date vs. baseline',
+        title: 'Monthly Cost comparison: plan-to-date vs. baseline',
         animation: {startup: true, duration: 200},
         legend: {position: 'top'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
@@ -217,7 +232,8 @@ export class VisboProjectViewCostComponent implements OnInit {
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         isStacked: true,
         vAxis: {
-          title: 'Monthly Cost in T\u20AC',
+          title: 'Monthly Cost',
+          format: "# T\u20AC",
           minorGridlines: {count: 0, color: 'none'}
         },
         hAxis: {
@@ -229,20 +245,28 @@ export class VisboProjectViewCostComponent implements OnInit {
           minorGridlines: {count: 0, color: 'none'}
         }
       };
-    var graphDataCost: any = [];
-    if (!this.vpvCost) return;
+    this.graphOptionsComboChart.title = this.translate.instant('keyMetrics.chart.titleCostOverTime');
+    this.graphOptionsComboChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostOverTime');
+    const graphDataCost: any = [];
+    if (!this.vpvCost) {
+      return;
+    }
 
-    var cost = this.vpvCost;
+    const cost = this.vpvCost;
     this.vpvTotalCostBaseLine = 0;
     this.vpvTotalCostCurrent = 0;
-    var actualDataUntil = new Date(this.vpvActualDataUntil)
+    const actualDataUntil = new Date(this.vpvActualDataUntil);
 
     this.log(`ViewCostOverTime Actual Until  ${actualDataUntil}`);
 
-    for (var i = 0; i < cost.length; i++) {
-      var currentDate = new Date(cost[i].currentDate);
+    if (cost.length === 0) {
+      return;
+    }
+
+    for (let i = 0; i < cost.length; i++) {
+      const currentDate = new Date(cost[i].currentDate);
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
-      if (currentDate < actualDataUntil) {
+      if (currentDate.getTime() < actualDataUntil.getTime()) {
         graphDataCost.push([
           new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
@@ -259,36 +283,40 @@ export class VisboProjectViewCostComponent implements OnInit {
       this.vpvTotalCostCurrent += cost[i].currentCost || 0;
 
     }
-    if (graphDataCost.length == 0) {
+    if (graphDataCost.length === 0) {
       this.log(`ViewCostOverTime Result empty`);
-      graphDataCost.push([new Date(), 0, 0, 0])
+      graphDataCost.push([new Date(), 0, 0, 0]);
     }
-    graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime() });
+    graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
-    var len = graphDataCost.length;
-    this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len-1])}`);
-    if (len == 1) {
+    const len = graphDataCost.length;
+    this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
+    if (len === 1) {
       graphDataCost.push([
         new Date(),
-        graphDataCost[len-1][1],
-        graphDataCost[len-1][2],
-        graphDataCost[len-1][3]
-      ])
+        graphDataCost[len - 1][1],
+        graphDataCost[len - 1][2],
+        graphDataCost[len - 1][3]
+      ]);
     }
 
-    graphDataCost.push(['Timestamp', 'PV, baseline', 'AC, plan-to-date', 'ETC, plan-to-date']);
+    graphDataCost.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.baselinePV'),
+      this.translate.instant('keyMetrics.planAC'),
+      this.translate.instant('keyMetrics.planETC')
+    ]);
     graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
   }
 
   calcRangeAxis(keyMetrics: [], type: string): number {
-    var rangeAxis: number = 0;
-    var minSize: number = Infinity, maxSize: number = 0;
-    var minDelayRange = 50;
+    let rangeAxis = 0;
+    const minDelayRange = 50;
 
     rangeAxis = 0;
-    for (var i=0; i < keyMetrics.length; i++) {
+    for (let i = 0; i < keyMetrics.length; i++) {
       switch (type) {
         case 'Delay':
           rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][5]), Math.abs(keyMetrics[i][6]), minDelayRange);
@@ -308,56 +336,64 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   getRefDateVersions(increment: number): void {
     this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
-    var newRefDate = new Date(this.scrollRefDate);
-    switch(this.refDateInterval) {
+    const newRefDate = new Date(this.scrollRefDate);
+    switch (this.refDateInterval) {
       case 'day':
-        newRefDate.setHours(0, 0, 0, 0); //beginning of day
-        if (increment > 0 || newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setDate(newRefDate.getDate() + increment)
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setDate(newRefDate.getDate() + increment);
+        }
         break;
       case 'week':
-        newRefDate.setHours(0, 0, 0, 0); //beginning of day
-        newRefDate.setDate(newRefDate.getDate() + increment * 7)
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        newRefDate.setDate(newRefDate.getDate() + increment * 7);
         break;
       case 'month':
-        newRefDate.setHours(0, 0, 0, 0); //beginning of day
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
         newRefDate.setDate(1);
-        if (increment > 0 || newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment)
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment);
+        }
         break;
       case 'quarter':
-        var quarter = Math.trunc(newRefDate.getMonth() / 3);
-        if (increment > 0) quarter += increment;
-        newRefDate.setMonth(quarter * 3)
+        let quarter = Math.trunc(newRefDate.getMonth() / 3);
+        if (increment > 0) {
+          quarter += increment;
+        }
+        newRefDate.setMonth(quarter * 3);
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        if (newRefDate.getTime() == this.scrollRefDate.getTime()) newRefDate.setMonth(newRefDate.getMonth() + increment * 3)
+        if (newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment * 3);
+        }
         break;
     }
     this.log(`get getRefDateVersions ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
     this.scrollRefDate = newRefDate;
-    var newVersionIndex = undefined;
+    let newVersionIndex;
     if (increment > 0) {
-      refDate = new Date(this.visboprojectversions[0].timestamp)
+      const refDate = new Date(this.visboprojectversions[0].timestamp);
       if (newRefDate.getTime() >= refDate.getTime()) {
         newVersionIndex = 0;
         this.scrollRefDate.setTime(refDate.getTime());
       }
     } else {
-      var refDate = new Date(this.visboprojectversions[this.visboprojectversions.length-1].timestamp)
+      const refDate = new Date(this.visboprojectversions[this.visboprojectversions.length - 1].timestamp);
       if (newRefDate.getTime() <= refDate.getTime()) {
-        newVersionIndex = this.visboprojectversions.length-1;
+        newVersionIndex = this.visboprojectversions.length - 1;
         this.scrollRefDate.setTime(refDate.getTime());
       }
     }
-    if (newVersionIndex == undefined) {
+    if (newVersionIndex === undefined) {
       this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
-      for (var i = 0; i < this.visboprojectversions.length; i++) {
-        var cmpDate = new Date(this.visboprojectversions[i].timestamp);
+      for (let i = 0; i < this.visboprojectversions.length; i++) {
+        const cmpDate = new Date(this.visboprojectversions[i].timestamp);
         // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
         if (cmpDate.getTime() <= newRefDate.getTime()) {
+          newVersionIndex = i;
           break;
         }
       }
-      newVersionIndex = i;
     }
     if (newVersionIndex >= 0) {
       this.visboCostCalc(newVersionIndex);
@@ -369,7 +405,7 @@ export class VisboProjectViewCostComponent implements OnInit {
     // this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion):void {
+  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
     // this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
@@ -386,98 +422,57 @@ export class VisboProjectViewCostComponent implements OnInit {
     // this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 
-  setVpvActive(vpv: any) : void {
+  setVpvActive(vpv: any): void {
     this.log(`setVpvActive Not Implemented`);
   }
 
-  gotoVPDetail(visboproject: VisboProject):void {
+  gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
-  gotoVP(visboproject: VisboProject):void {
+  gotoVP(visboproject: VisboProject): void {
     this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
   }
 
-  gotoVC(visboproject: VisboProject):void {
+  gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
 
-  getShortText(text: string, len: number) : string {
-    if (!text) return "";
-    if (text.length < len) return text;
-    if (len < 3) return '...'
-    return text.substring(0, len - 3).concat('...')
+  getShortText(text: string, len: number): string {
+    return visboGetShortText(text, len);
   }
 
-  sortVPVTable(n: number = undefined) {
-    if (!this.visboprojectversions) return
-    if (n != undefined) {
-      if (n != this.sortColumn) {
+  sortVPVTable(n?: number) {
+    if (!this.visboprojectversions) {
+      return;
+    }
+    if (n !== undefined) {
+      if (n !== this.sortColumn) {
         this.sortColumn = n;
         this.sortAscending = undefined;
       }
-      if (this.sortAscending == undefined) {
+      if (this.sortAscending === undefined) {
         // sort name column ascending, number values desc first
-        this.sortAscending = ( n == 5 ) ? true : false;
+        this.sortAscending = ( n === 5 ) ? true : false;
+      } else {
+        this.sortAscending = !this.sortAscending;
       }
-      else this.sortAscending = !this.sortAscending;
     } else {
       this.sortColumn = 1;
       this.sortAscending = false;
     }
-    if (this.sortColumn == 1) {
-      // sort by VPV Timestamp
+    if (this.sortColumn === 1) {
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+    } else if (this.sortColumn === 2) {
+      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.endDate, b.endDate); });
+    } else if (this.sortColumn === 3) {
+      this.visboprojectversions.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
+    } else if (this.sortColumn === 4) {
+      this.visboprojectversions.sort(function(a, b) { return a.Erloes - b.Erloes; });
+    } else if (this.sortColumn === 5) {
       this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        if (a.timestamp > b.timestamp)
-          result = 1;
-        else if (a.timestamp < b.timestamp)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 2) {
-      // sort by VPV endDate
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.endDate > b.endDate)
-          result = 1;
-        else if (a.endDate < b.endDate)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 3) {
-      // sort by VPV ampelStatus
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.ampelStatus > b.ampelStatus)
-          result = 1;
-        else if (a.ampelStatus < b.ampelStatus)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 4) {
-      // sort by VPV Erloes
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        // this.log("Sort VC Date %s", a.updatedAt)
-        if (a.Erloes > b.Erloes)
-          result = 1;
-        else if (a.Erloes < b.Erloes)
-          result = -1;
-        return result
-      })
-    } else if (this.sortColumn == 5) {
-      // sort by VC vpvCount
-      this.visboprojectversions.sort(function(a, b) {
-        var result = 0
-        if (a.variantName.toLowerCase() > b.variantName.toLowerCase())
-          result = 1;
-        else if (a.variantName.toLowerCase() < b.variantName.toLowerCase())
-          result = -1;
-        return result
-      })
+        return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
+      });
     }
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();

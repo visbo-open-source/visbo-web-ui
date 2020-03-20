@@ -13,26 +13,29 @@ export class ColumnChartComponent implements OnInit {
   private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
+  @Input() language: string;
 
   constructor(
-    private gChartService : GoogleChartService,
+    private gChartService: GoogleChartService,
     private messageService: MessageService
-  ) {
-    this.gLib = this.gChartService.getGoogle();
-    this.gLib.charts.load('current', {'packages':['corechart','table']});
-    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-  }
+  ) {}
 
   ngOnInit() {
-    // this.log(`Google Chart Column Chart Init ${JSON.stringify(this.graphData)}`);
+    if (!this.language) { this.language = 'de'; }
+    this.gLib = this.gChartService.getGoogle();
+    this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
+    this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
+
+    // this.log(`Google Chart Column Chart Init ${this.language} ${JSON.stringify(this.graphData)}`);
   }
 
-  private drawChart(){
+  private drawChart() {
     // this.log(`Google Chart Column Chart Draw ${this.graphData.length}`);
-    let chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
-    let data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    let chart: any, data: any;
+    chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
+    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
-    let options = {'title':'Column Chart'};
+    const options = {'title': 'Column Chart'};
 
     chart.draw(data, this.graphOptions || options);
   }

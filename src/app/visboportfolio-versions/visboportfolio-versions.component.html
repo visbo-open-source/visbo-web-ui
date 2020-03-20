@@ -1,25 +1,20 @@
-<visbo-navbar></visbo-navbar>
-<div class='well'>
+<app-usernavbar></app-usernavbar>
+<div *ngIf="vpActive && vpfActive" class='well'>
   <div class='row'>
     <div class='col'>
-      <h2 *ngIf="!vpActive">
-        Portfolio Project List
+      <h2>
+        {{ 'vpfVersion.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        {{ 'vpfVersion.lbl.from' | translate }}
+        <a data-toggle="modal" data-target="#VPFVersionSelect"> {{ vpfActive.timestamp | date : 'dd.MM.yy' }}</a>
       </h2>
-      <h2 *ngIf="vpActive">
-        Portfolio Project List for: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-      </h2>
-      <h5 *ngIf="vpActive">Visbo Center:
+      <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
     </div>
   </div>
   <div  *ngIf="vpfActiveIndex" class='row'>
-    <label class="col-2 my-2">Portfolio Version:</label>
-    <select class="col-4 form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected" (change)="changePFVersion();">
-      <option *ngFor="let item of dropDown">{{item.name}}</option>
-    </select>
     <div  *ngIf="vpfActive.variantName" class='row'>
-      <label class="col-3">Variant:</label>
+      <label class="col-3">{{ 'vpfVersion.lbl.variant' | translate }}:</label>
       <label class="col-3">{{vpfActive.variantName}}</label>
     </div>
   </div>
@@ -28,52 +23,43 @@
   <div class='container-fluid'>
     <div class="row">
       <h3 class="col-6 px-0">
-        <div class="d-none d-lg-block">Project Key Metrics from {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">Metrics: {{vpvRefDate | date: 'dd.MM'}}</div>
+        <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
+        <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM'}}</div>
       </h3>
       <div class="col-4">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period" (click)='getRefDateVersions(-1)'></span>
-          <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
-            <option>day</option>
-            <option>week</option>
-            <option>month</option>
-            <option>quarter</option>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getRefDateVersions(-1)'></span>
+          <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
+            <option value="day">{{ 'vpfVersion.lbl.day' | translate }}</option>
+            <option value="week">{{ 'vpfVersion.lbl.week' | translate }}</option>
+            <option value="month">{{ 'vpfVersion.lbl.month' | translate }}</option>
+            <option value="quarter">{{ 'vpfVersion.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period" (click)='getRefDateVersions(1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getRefDateVersions(1)'></span>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row text-dark">
       <div class="my-1">
-        <span>Show </span>
+        <span>{{ 'vpfVersion.lbl.show' | translate }} </span>
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
-        <span> and </span>
+        <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
         <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
-        <span> plan-to-date vs. baseline </span>
-      </div>
-      <div class="mx-2">
-        <button *ngIf= "showChart" type="button" class="btn btn-primary ml-2" data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">Change</button>
-        <button *ngIf= "!showChart" type="button" class="btn btn-primary ml-2" (click)= "drawChart(true)">Show Chart</button>
-      </div>
-      <div *ngIf="hasVPPerm(permVP.ViewAudit)">
-          <button type="button" class="btn btn-secondary ml-auto" (click)="showChartOption(undefined)">{{chartButton}}</button>
+        <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
+        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
       </div>
     </div>
-    <form name="form" class="form-inline row my-2 ml-0" (ngSubmit)="showTempList(false)">
-      <label for="Filter" class="col-1 col-form-label">Filter Projects:</label>
-      <input class="form-control col-3"  (keyup)="showTempList(true); visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
-      <button type="button" class="btn btn-sm btn-secondary ml-2" (click)= "showTempList(false)">Filter</button>
-      <div class="mx-3 text-dark">EAC (Estimate at Completion) {{estimateAtCompletion | number:'1.0-0'}} T€ vs. BAC (Budget at Completion) {{budgetAtCompletion | number:'1.0-0'}} T€</div>
-      <span *ngIf="estimateAtCompletion <= budgetAtCompletion"><strong class="fas fa-check-circle" style="color:green"></strong></span>
-      <span *ngIf="estimateAtCompletion > budgetAtCompletion && estimateAtCompletion <= budgetAtCompletion * 1.05"><strong class="fas fa-exclamation-triangle" style="color:orange"></strong></span>
-      <span *ngIf="estimateAtCompletion > budgetAtCompletion * 1.05"><strong class="fas fa-exclamation-circle" style="color:red"></strong></span>
-    </form>
+    <div class="row">
+      <span class="text-dark">{{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }}) {{estimateAtCompletion | number:'1.0-0'}} T€ {{ 'keyMetrics.versus' | translate }} {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }}) {{budgetAtCompletion | number:'1.0-0'}} T€</span>
+      <span *ngIf="estimateAtCompletion <= budgetAtCompletion"><strong class="mx-2 fas fa-check-circle" style="color:green"></strong></span>
+      <span *ngIf="estimateAtCompletion > budgetAtCompletion && estimateAtCompletion <= budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-triangle" style="color:orange"></strong></span>
+      <span *ngIf="estimateAtCompletion > budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-circle" style="color:red"></strong></span>
+    </div>
   </div>
   <div *ngIf="visbokeymetrics.length > 0">
-    <div *ngIf="hasVPPerm(permVP.ViewAudit) && chart && showChart" class='container-fluid'>
+    <div *ngIf="hasVPPerm(permVP.ViewAudit) && chart" class='container-fluid'>
       <div *ngIf="graphBubbleData && graphBubbleData.length">
-        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis"></app-bubble-chart>
+        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
       </div>
     </div>
 
@@ -82,15 +68,15 @@
         <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
           <thead>
             <tr>
-              <th (click)="sortKeyMetricsTable(1)">Project</th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'vpfVersion.lbl.project' | translate }}</th>
               <th *ngIf="selectedMetric('Costs')" class="text-right" (click)="sortKeyMetricsTable(2)">{{metricLabel('Costs', 'table')}}</th>
-              <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">Total Cost (Base Line)</th>
+              <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'vpfVersion.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{metricLabel('EndDate', 'table')}}</th>
-              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">End Date (Base Line)</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'vpfVersion.lbl.endDate' | translate }}</th>
               <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">{{metricLabel('Deadlines', 'table')}}</th>
-              <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Deadlines (Base Line)</th>
+              <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'vpfVersion.lbl.deadlines' | translate }}</th>
               <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">{{metricLabel('Deliveries', 'table')}}</th>
-              <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">Deliveries (Base Line)</th>
+              <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'vpfVersion.lbl.deliveries' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -113,8 +99,8 @@
           <!--Table head-->
           <thead>
             <tr>
-              <th (click)="sortKeyMetricsTable(1)">Project</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">Timestamp</th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'vpfVersion.lbl.project' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'vpfVersion.lbl.timestamp' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -131,7 +117,7 @@
   </div>
   <div *ngIf="visbokeymetrics.length == 0">
     <h3 class="d-flex justify-content-center">
-      No Project Versions related to this Date
+      {{ 'vpfVersion.msg.noVersions' | translate }}
     </h3>
   </div>
 </div>
@@ -141,30 +127,63 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpfMetricSelectorTitle">Change Key Metrics</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="VpfMetricSelectorTitle">{{ 'vpfVersion.titleChange' | translate }}</h5>
+        <button type="button" class="close"  (click)="changeChart()" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form #f="ngForm" novalidate>
           <div class="form-group">
-            <label for="typeMetricXLabel" class="col-form-label">X-Axis:</label>
+            <label for="typeMetricXLabel" class="col-form-label">{{ 'vpfVersion.lbl.xAxis' | translate }}:</label>
             <select class="form-control" id="typeMetricXLabel" name="typeMetricX" [(ngModel)]="typeMetricX">
               <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="typeMetricYLabel" class="col-form-label">Y-Axis:</label>
+            <label for="typeMetricYLabel" class="col-form-label">{{ 'vpfVersion.lbl.yAxis' | translate }}:</label>
             <select class="form-control" id="typeMetricYLabel" name="typeMetricY" [(ngModel)]="typeMetricY">
               <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
             </select>
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">Change</button>
-            <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">Cancel</button>
+            <label for="Filter" class="col-form-label">{{ 'vpfVersion.lbl.filter' | translate }}:</label>
+            <input class="form-control"  (keyup)="visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
+          </div>
+          <div *ngIf="hasVPPerm(permVP.ViewAudit)">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="idList" name="modalChart" [(ngModel)]="modalChart">
+                <label class="custom-control-label" for="idList">{{ 'vpfVersion.btn.showChart' | translate }}</label>
+            </div>
+          </div>
+          <div class="modal-footer align-items-end">
+            <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.cancel' | translate }}</button>
+            <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.change' | translate }}</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="VPFVersionSelect" tabindex="-1" role="dialog" aria-labelledby="Version Select" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VPFVersionSelectTitle">{{ 'vpfVersion.titleSelectVersion' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="my-0">{{ 'vpfVersion.titleVersion' | translate }}:</label>
+        <select class="form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected">
+          <option *ngFor="let item of dropDown">{{item.name}}</option>
+        </select>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="changePFVersion()">{{ 'vpfVersion.btn.change' | translate }}</button>
       </div>
     </div>
   </div>
