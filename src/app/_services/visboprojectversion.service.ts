@@ -241,10 +241,9 @@ export class VisboProjectVersionService {
 
   /** GET CostCalculation from the server for the specified vpv id */
   getDelivery(id: string): Observable<VisboProjectVersion[]> {
-    const url = `${this.vpvUrl}/${id}/calc`;
+    const url = `${this.vpvUrl}/${id}/delivery`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    params = params.append('type', 'Deliveries');
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
@@ -257,10 +256,10 @@ export class VisboProjectVersionService {
 
    /** GET Deadline Calculation from the server for the specified vpv id */
    getDeadline(id: string): Observable<VisboProjectVersion[]> {
-    const url = `${this.vpvUrl}/${id}/calc`;
+    const url = `${this.vpvUrl}/${id}/deadline`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    params = params.append('type', 'Deadlines');
+    params = params.append('ref', 'pfv');
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })

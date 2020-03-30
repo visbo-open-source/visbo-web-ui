@@ -1,0 +1,19 @@
+<app-usernavbar></app-usernavbar>
+<div  *ngIf="vpActive" class='well'>
+  <div class='row'>
+    <div class='col'>
+      <div class='col'>
+        <h2>
+          {{ 'vpViewVPV.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        </h2>
+        <h5 *ngIf="vpActive">{{ 'vpViewVPV.lbl.vc' | translate }}:
+          <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        </h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="btn-toolbar" style="">
+  <button type="button" class="btn btn-md btn-light mr-1" (click)="gotoViewDelivery(vpvActive)">{{ 'vpViewVPV.btn.viewDelivery' | translate }}</button>
+  <button type="button" class="btn btn-md btn-light mr-1" (click)="gotoViewDeadline(vpvActive)">{{ 'vpViewVPV.btn.viewDeadline' | translate }}</button>
+</div>

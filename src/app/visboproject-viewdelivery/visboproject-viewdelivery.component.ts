@@ -188,15 +188,15 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     this.visboprojectversionService.getDelivery(this.vpvActive._id)
       .subscribe(
         visboprojectversions => {
-          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deliveries.length} Delivery entries`);
-          if (visboprojectversions.length !== 1 || !visboprojectversions[0].deliveries) {
+          this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].delivery.length} Delivery entries`);
+          if (visboprojectversions.length !== 1 || !visboprojectversions[0].delivery) {
             this.log(`get VPV Calc: Reset Delivery to empty `);
             this.initDeliveries(undefined);
           } else {
-            this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deliveries.length} Actual ${visboprojectversions[0].actualDataUntil}`);
-            this.initDeliveries(visboprojectversions[0].deliveries);
+            this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].delivery.length} Actual ${visboprojectversions[0].actualDataUntil}`);
+            this.initDeliveries(visboprojectversions[0].delivery);
             this.vpvActualDataUntil = visboprojectversions[0].actualDataUntil;
-            this.visboprojectversions[index].deliveries = this.vpvDelivery;
+            this.visboprojectversions[index].delivery = this.vpvDelivery;
             this.visboprojectversions[index].actualDataUntil = visboprojectversions[0].actualDataUntil;
           }
 
@@ -221,18 +221,18 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
       );
   }
 
-  initDeliveries(deliveries: VPVDelivery[]): void {
+  initDeliveries(delivery: VPVDelivery[]): void {
     const filterDeliveries: VPVDelivery[] = [];
-    if (deliveries === undefined) {
-      this.vpvDelivery = deliveries;
+    if (delivery === undefined) {
+      this.vpvDelivery = delivery;
       return;
     }
     // generate long Names
-    for (let i = 0; i < deliveries.length; i++) {
-      deliveries[i].fullName = this.getFullName(deliveries[i]);
-      deliveries[i].status = this.statusList[this.getStatus(deliveries[i])];
-      if (!this.filterStatus  || this.filterStatus ===  deliveries[i].status) {
-        filterDeliveries.push(deliveries[i]);
+    for (let i = 0; i < delivery.length; i++) {
+      delivery[i].fullName = this.getFullName(delivery[i]);
+      delivery[i].status = this.statusList[this.getStatus(delivery[i])];
+      if (!this.filterStatus  || this.filterStatus ===  delivery[i].status) {
+        filterDeliveries.push(delivery[i]);
       }
     }
     this.vpvDelivery = filterDeliveries;
@@ -363,7 +363,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     } else {
       this.filterStatus = undefined;
     }
-    this.initDeliveries(this.vpvActive.deliveries);
+    this.initDeliveries(this.vpvActive.delivery);
   }
 
 

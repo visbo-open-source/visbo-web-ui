@@ -610,7 +610,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       params = {replaceUrl: true};
     }
     if (vpid) {
-      this.router.navigate(['vpv/'.concat(vpid)], params);
+      this.router.navigate(['vpViewVPV/'.concat(vpid)], params);
     }
   }
 

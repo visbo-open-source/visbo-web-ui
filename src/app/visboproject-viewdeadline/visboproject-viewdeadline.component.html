@@ -11,7 +11,7 @@
       </h5>
     </div>
   </div>
-  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDeadline">
+  <div *ngIf="vpvActive && vpvDeadline">
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block">{{ 'vpViewDeadline.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
@@ -34,7 +34,7 @@
 
     <div class="container">
         <div class="d-flex justify-content-center">
-        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
+        <div *ngIf="graphFinishedDataPieChart.length > 1" >
           <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div>
           <!-- <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div> -->
         </div>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="container">
-      <div *ngIf="chart && graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
+      <div *ngIf="graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
         <div>
           <app-gantt-chart [graphData]="graphDataDeadlinesGantt" [graphOptions]="graphOptionsDeadlinesGantt" [parentThis]="parentThis" [language]="currentLang"></app-gantt-chart>
         </div>
@@ -75,8 +75,8 @@
             <!-- <td *ngIf="deadlines.percentDone == 1" class="d-none d-sm-table-cell" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
             <td *ngIf="deadlines.percentDone != 1" class="d-none d-sm-table-cell font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
             <td class="d-none d-lg-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
-            <td class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>            
-            <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>            
+            <td class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
+            <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
             <!-- ur: 03.03.2020: no difference in display for the different values for changeDays -->
             <!-- <td *ngIf="deadlines.changeDays <= 0" class="d-none d-sm-table-cell text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
             <td *ngIf="deadlines.changeDays > 0 && deadlines.changeDays <= 31" class="text-right text-warning" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>

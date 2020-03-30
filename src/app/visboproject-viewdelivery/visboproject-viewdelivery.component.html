@@ -10,7 +10,7 @@
       </h5>
     </div>
   </div>
-  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDelivery" class='well'>
+  <div *ngIf="vpvActive && vpvDelivery" class='well'>
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block">{{ 'vpViewDelivery.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
@@ -34,7 +34,7 @@
 
     <div class="container">
       <div class="d-flex justify-content-center">
-        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
+        <div *ngIf="graphFinishedDataPieChart.length > 1" >
           <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div>
           <!-- <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div> -->
         </div>
@@ -56,8 +56,8 @@
         </thead>
         <!--Table body-->
         <tbody>
-          <tr *ngFor="let delivery of vpvDelivery">            
-            <!-- ur: 05.03.2020: all deliveries the same look  -->            
+          <tr *ngFor="let delivery of vpvDelivery">
+            <!-- ur: 05.03.2020: all deliveries the same look  -->
             <td   *ngIf="getStatus(delivery) === 0" class="font-weight-bold my_darkgreen" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <td   *ngIf="getStatus(delivery) === 1" class="font-weight-bold my_green" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
             <td   *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
