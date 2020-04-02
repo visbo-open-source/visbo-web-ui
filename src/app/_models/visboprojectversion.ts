@@ -120,8 +120,8 @@ export class VisboProjectVersion {
 
   keyMetrics: VPVKeyMetrics;
   cost: VPVCost[];
-  deliveries: VPVDelivery[];
-  deadlines: VPVDeadline[];
+  delivery: VPVDelivery[];
+  deadline: VPVDeadline[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

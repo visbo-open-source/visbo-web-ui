@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -33,6 +33,8 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  @Input() reducedPage: boolean;
+
   visboprojectversions: VisboProjectVersion[];
 
   vpSelected: string;
@@ -41,6 +43,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   initVPVID: string;
   vpvDelivery: VPVDelivery[];
   filterStatus: string;
+  reducedList: boolean;
   vpvDeliveryDate: any = [];
   vpvActualDataUntil: Date;
   deleted = false;
@@ -223,12 +226,16 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   initDeliveries(delivery: VPVDelivery[]): void {
     const filterDeliveries: VPVDelivery[] = [];
+    this.reducedList = true;
     if (delivery === undefined) {
       this.vpvDelivery = delivery;
       return;
     }
     // generate long Names
     for (let i = 0; i < delivery.length; i++) {
+      if (delivery[i].phasePFV) {
+        this.reducedList = false;
+      }
       delivery[i].fullName = this.getFullName(delivery[i]);
       delivery[i].status = this.statusList[this.getStatus(delivery[i])];
       if (!this.filterStatus  || this.filterStatus ===  delivery[i].status) {
@@ -253,7 +260,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     const refDate = this.vpvActive.timestamp;
 
     let status = 0;
-    if (element.datePFV <= refDate && element.percentDone < 1) {
+    if (!element.datePFV) {
+      // no comparison with pfv
+      status = -1;
+    } else  if (element.datePFV <= refDate && element.percentDone < 1) {
       status = 3;
     } else if (element.changeDays < 0) {
       status = 0;

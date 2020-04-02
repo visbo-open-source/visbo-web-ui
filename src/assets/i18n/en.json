@@ -483,6 +483,27 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
+	"vpViewVPV": {
+		"title": "Information about",
+		"titleVersion": "Version of",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"deadline": "Show Deadline",
+			"delivery": "Show Delivery"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
 	"vpv": {
 		"title": "Project Versions",
 		"titleVP": "Project Versions in",

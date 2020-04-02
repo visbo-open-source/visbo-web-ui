@@ -604,13 +604,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
     }
+    let url = 'vpv/';
     if (!vpid && this.vpActive) {
       vpid = this.vpActive._id;
       // no keyMetrics redirect to vpv View and clear history
       params = {replaceUrl: true};
+      if ((this.vpActive.perm.vp & (this.permVP.View + this.permVP.ViewRestricted)) == this.permVP.ViewRestricted) {
+        url = 'vpViewVPV/';
+      }
     }
     if (vpid) {
-      this.router.navigate(['vpViewVPV/'.concat(vpid)], params);
+      this.router.navigate([url.concat(vpid)], params);
     }
   }
 

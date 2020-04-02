@@ -2,18 +2,67 @@
 <div  *ngIf="vpActive" class='well'>
   <div class='row'>
     <div class='col'>
-      <div class='col'>
-        <h2>
-          {{ 'vpViewVPV.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        </h2>
-        <h5 *ngIf="vpActive">{{ 'vpViewVPV.lbl.vc' | translate }}:
-          <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
-        </h5>
+      <h2>
+        {{ 'vpViewVPV.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+      </h2>
+      <h5 *ngIf="vpActive">{{ 'vpViewVPV.lbl.vc' | translate }}:
+        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+      </h5>
+    </div>
+  </div>
+
+  <div *ngIf="vpvActive">
+    <div class="row">
+      <h4 class="col-6 text-dark">
+        <div class="d-none d-lg-block">{{ 'vpViewVPV.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
+      </h4>
+      <div class="col-6">
+        <div class="row">
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
+          <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+            <option value="day">{{ 'vpViewVPV.lbl.day' | translate }}</option>
+            <option value="week">{{ 'vpViewVPV.lbl.week' | translate }}</option>
+            <option value="month">{{ 'vpViewVPV.lbl.month' | translate }}</option>
+            <option value="quarter">{{ 'vpViewVPV.lbl.quarter' | translate }}</option>
+          </select>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+</div>
+
+<div *ngIf="vpvActive" id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          {{ 'vpViewVPV.btn.deadline' | translate }}
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+      <div class="card-body">
+        <app-visboproject-viewdeadline [reducedPage]="true"></app-visboproject-viewdeadline>
       </div>
     </div>
   </div>
-</div>
-<div class="btn-toolbar" style="">
-  <button type="button" class="btn btn-md btn-light mr-1" (click)="gotoViewDelivery(vpvActive)">{{ 'vpViewVPV.btn.viewDelivery' | translate }}</button>
-  <button type="button" class="btn btn-md btn-light mr-1" (click)="gotoViewDeadline(vpvActive)">{{ 'vpViewVPV.btn.viewDeadline' | translate }}</button>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          {{ 'vpViewVPV.btn.delivery' | translate }}
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
+      <div class="card-body">
+        <app-visboproject-viewdelivery [reducedPage]="true"></app-visboproject-viewdelivery>
+      </div>
+    </div>
+  </div>
 </div>

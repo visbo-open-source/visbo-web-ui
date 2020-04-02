@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -23,6 +23,8 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
 })
 export class VisboProjectViewDeadlineComponent implements OnInit {
 
+  @Input() reducedPage: boolean;
+
   visboprojectversions: VisboProjectVersion[];
 
   vpSelected: string;
@@ -34,6 +36,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
 
   filterStatus: string;
   filterPhase: string;
+  reducedList: boolean;
   vpvActualDataUntil: Date;
   deleted = false;
 
@@ -220,13 +223,17 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   initDeadlines(deadline: VPVDeadline[]): void {
     const filterDeadlines: VPVDeadline[] = [];
     const allDeadlines: VPVDeadline[] = [];
+    this.reducedList = true;
     if (deadline === undefined) {
-      this.vpvDeadline = deadline;
+      this.vpvDeadline = undefined;
       this.graphDataDeadlinesGantt = [];
       return;
     }
     // generate long Names
     for (let i = 0; i < deadline.length; i++) {
+      if (deadline[i].phasePFV) {
+        this.reducedList = false;
+      }
       deadline[i].fullName = this.getFullName(deadline[i], false);
       deadline[i].status = this.statusList[this.getStatus(deadline[i])];
       if (!this.filterStatus  || this.filterStatus ===  deadline[i].status) {
@@ -255,7 +262,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   getStatus(element: VPVDeadline): number {
     const refDate = this.vpvActive.timestamp;
     let status = 0;
-    if (element.endDatePFV <= refDate && element.percentDone < 1) {
+    if (!element.endDatePFV) {
+      // no comparison with pfv
+      status = -1;
+    } else  if (element.endDatePFV <= refDate && element.percentDone < 1) {
       status = 3;
     } else if (element.endDatePFV > refDate && element.percentDone === 1) {
       status = 0;
@@ -519,23 +529,9 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     }
   }
 
-  gotoVisboProjectVersions(): void {
-    // this.log(`goto VPV All Versions ${this.vpvKeyMetricActive.vpid} `);
-    // this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
-  }
-
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
     // this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-  }
-
-  listSelectRow(vpv: any): void {
-    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    // this.setVpvActive(vpv);
-  }
-
-  setVpvActive(vpv: any): void {
-    this.log(`setVpvActive Not Implemented`);
   }
 
   gotoVPDetail(visboproject: VisboProject): void {

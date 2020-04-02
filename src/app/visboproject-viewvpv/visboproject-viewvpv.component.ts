@@ -31,7 +31,10 @@ export class VisboProjectViewVPVComponent implements OnInit {
 
   vpvActive: VisboProjectVersion;
   initVPVID: string;
+  refDateInterval = 'month';
   vpvRefDate: Date;
+  scrollRefDate: Date;
+  currentLang: string;
 
   sortAscending = false;
   sortColumn = 1;
@@ -62,10 +65,6 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.getVisboProjectVersions();
   }
 
-  onSelect(visboprojectversion: VisboProjectVersion): void {
-    this.getVisboProjectVersions();
-  }
-
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -76,8 +75,6 @@ export class VisboProjectViewVPVComponent implements OnInit {
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
-    this.parentThis = this;
-    const chartFlag = this.chart;
 
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -93,7 +90,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
                   this.visboprojectversions = visboprojectversions;
                   this.sortVPVTable(undefined);
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
-                  this.vpvActive = visboprojectversions[0];
+                  this.setVpvActive(visboprojectversions[0]);
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -129,15 +126,27 @@ export class VisboProjectViewVPVComponent implements OnInit {
     return localA.getTime() === localB.getTime();
   }
 
-  gotoViewCost(): void {
-    this.log(`goto VPV View Cost ${this.vpvKeyMetricActive.vpid} `);
-    const queryParams = { vpvid: this.vpvKeyMetricActive._id };
-    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
+  setVpvActive(vpv: any): void {
+    this.log(`setVpvActive ${vpv._id}`);
+    this.vpvActive = vpv;
+    this.vpvRefDate = this.vpvActive.timestamp;
+    if (this.scrollRefDate === undefined) {
+      this.scrollRefDate = new Date(this.vpvRefDate);
+    }
+  }
+
+  gotoViewCost(vpv: VisboProjectVersion): void {
+    if (!vpv) {
+      vpv = this.visboprojectversions[0];
+    }
+    this.log(`goto VPV View Cost ${vpv._id} `);
+    const queryParams = { vpvid: vpv._id };
+    this.router.navigate(['vpViewCost/'.concat(vpv._id)], { queryParams: queryParams});
   }
 
   gotoViewDelivery(vpv: VisboProjectVersion): void {
     if (!vpv) {
-      vpv = visboprojectversions[0];
+      vpv = this.visboprojectversions[0];
     }
     this.log(`goto VPV View Delivery ${vpv._id} `);
     const queryParams = { vpvid: vpv._id };
@@ -146,11 +155,75 @@ export class VisboProjectViewVPVComponent implements OnInit {
 
   gotoViewDeadline(vpv: VisboProjectVersion): void {
     if (!vpv) {
-      vpv = visboprojectversions[0];
+      vpv = this.visboprojectversions[0];
     }
     this.log(`goto VPV View Deadline ${vpv._id} `);
     const queryParams = { vpvid: vpv._id };
     this.router.navigate(['vpViewDeadline/'.concat(vpv.vpid)], { queryParams: queryParams});
+  }
+  getRefDateVersions(increment: number): void {
+    this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    const newRefDate = new Date(this.scrollRefDate);
+    let i = 0;
+    switch (this.refDateInterval) {
+      case 'day':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setDate(newRefDate.getDate() + increment);
+        }
+        break;
+      case 'week':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        newRefDate.setDate(newRefDate.getDate() + increment * 7);
+        break;
+      case 'month':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        newRefDate.setDate(1);
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment);
+        }
+        break;
+      case 'quarter':
+        let quarter = Math.trunc(newRefDate.getMonth() / 3);
+        if (increment > 0) {
+          quarter += increment;
+        }
+        newRefDate.setMonth(quarter * 3);
+        newRefDate.setDate(1);
+        newRefDate.setHours(0, 0, 0, 0);
+        if (newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment * 3);
+        }
+        break;
+    }
+    this.log(`get getRefDateVersions ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
+    this.scrollRefDate = newRefDate;
+    let newVersionIndex;
+    if (increment > 0) {
+      const refDate = new Date(this.visboprojectversions[0].timestamp);
+      if (newRefDate.getTime() >= refDate.getTime()) {
+        newVersionIndex = 0;
+        this.scrollRefDate.setTime(refDate.getTime());
+      }
+    } else {
+      const refDate = new Date(this.visboprojectversions[this.visboprojectversions.length - 1].timestamp);
+      if (newRefDate.getTime() <= refDate.getTime()) {
+        newVersionIndex = this.visboprojectversions.length - 1;
+        this.scrollRefDate.setTime(refDate.getTime());
+      }
+    }
+    if (newVersionIndex === undefined) {
+      this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
+      for (i = 0; i < this.visboprojectversions.length; i++) {
+        const cmpDate = new Date(this.visboprojectversions[i].timestamp);
+        // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+        if (cmpDate.getTime() <= newRefDate.getTime()) {
+          break;
+        }
+      }
+      newVersionIndex = i;
+    }
+    this.setVpvActive(this.visboprojectversions[newVersionIndex]);
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
@@ -164,22 +237,12 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.router.navigate(['/'], {});
   }
 
-  listSelectRow(vpv: VPVKeyMetricsCalc): void {
-    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    this.setVpvActive(vpv);
-  }
-
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
-  }
-
-  showHistory(newValue: boolean) {
-    this.history = newValue;
-    this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
   }
 
   helperDateDiff(from: string, to: string, unit: string): number {

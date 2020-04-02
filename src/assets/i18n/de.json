@@ -483,6 +483,27 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
+	"vpViewVPV": {
+		"title": "Information über",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"deadline": "Termine anzeigen",
+			"delivery": "Lieferungen anzeigen"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
