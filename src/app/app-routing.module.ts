@@ -58,10 +58,10 @@ const routes: Routes = [
   { path: 'vpDetail/:id', component: VisboprojectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpAudit/:id', component: VisboprojectAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vpKeyMetrics/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
-  { path: 'vpViewVPV/:id', component: VisboProjectViewVPVComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewVPV/:id', component: VisboProjectViewVPVComponent, canActivate: [AuthGuard] },
   { path: 'vpViewCost/:id', component: VisboProjectViewCostComponent, canActivate: [AuthGuard]  },
-  { path: 'vpViewDelivery/:id', component: VisboProjectViewDeliveryComponent, canActivate: [AuthGuard]  },
-  { path: 'vpViewDeadline/:id', component: VisboProjectViewDeadlineComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewDelivery/:id', component: VisboProjectViewDeliveryComponent, canActivate: [AuthGuard] },
+  { path: 'vpViewDeadline/:id', component: VisboProjectViewDeadlineComponent, canActivate: [AuthGuard] },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpvDetail/:id', component: VisboProjectVersionDetailComponent, canActivate: [AuthGuard]  },
@@ -82,7 +82,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes) ],
+  imports: [ RouterModule.forRoot(routes, {onSameUrlNavigation: 'reload'}) ],
   exports: [ RouterModule ]
 })
 export class AppRoutingModule { }

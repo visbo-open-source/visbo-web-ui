@@ -151,8 +151,6 @@ export class SysauditComponent implements OnInit {
       }
       queryAudit.maxcount = this.auditCount;
 
-      const chartFlag = this.chart;
-      this.chart = false;
       // this.log(`Audit getSystemAudits recalc Query ${JSON.stringify(queryAudit)}`);
       this.visboauditService.getVisboAudits(true, queryAudit)
         .subscribe(
@@ -163,7 +161,6 @@ export class SysauditComponent implements OnInit {
             this.groupGraphData();
             this.groupgraphDataLineChart();
             this.groupgraphDataColumnChart();
-            this.chart = chartFlag;
           },
           error => {
             this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);

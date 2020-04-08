@@ -42,11 +42,11 @@
     <div class="row text-dark">
       <div class="my-1">
         <span>{{ 'vpfVersion.lbl.show' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
+        <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
         <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
+        <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
         <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
-        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
+        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" data-target="#VpfMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
       </div>
     </div>
     <div class="row">
@@ -152,7 +152,7 @@
           </div>
           <div *ngIf="hasVPPerm(permVP.ViewAudit)">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="idList" name="modalChart" [(ngModel)]="modalChart">
+                <input type="checkbox" class="custom-control-input" id="idList" name="chart" [(ngModel)]="chart">
                 <label class="custom-control-label" for="idList">{{ 'vpfVersion.btn.showChart' | translate }}</label>
             </div>
           </div>

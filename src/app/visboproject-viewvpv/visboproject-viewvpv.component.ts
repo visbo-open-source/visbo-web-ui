@@ -42,6 +42,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
+  reducedPage: boolean;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -83,6 +84,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
           visboproject => {
             this.vpActive = visboproject;
             this.combinedPerm = visboproject.perm;
+            this.reducedPage = !this.hasVPPerm(this.permVP.View);
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
             this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', false)
               .subscribe(
@@ -90,7 +92,12 @@ export class VisboProjectViewVPVComponent implements OnInit {
                   this.visboprojectversions = visboprojectversions;
                   this.sortVPVTable(undefined);
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
-                  this.setVpvActive(visboprojectversions[0]);
+                  let index = 0;
+                  if (this.initVPVID) {
+                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID)
+                    index = index >= 0 ? index : 0;
+                  }
+                  this.setVpvActive(visboprojectversions[index]);
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -129,40 +136,18 @@ export class VisboProjectViewVPVComponent implements OnInit {
   setVpvActive(vpv: any): void {
     this.log(`setVpvActive ${vpv._id}`);
     this.vpvActive = vpv;
-    this.vpvRefDate = this.vpvActive.timestamp;
-    if (this.scrollRefDate === undefined) {
-      this.scrollRefDate = new Date(this.vpvRefDate);
+    if (this.vpvActive && this.vpvActive.timestamp) {
+      this.vpvRefDate = this.vpvActive.timestamp;
+      if (this.scrollRefDate === undefined) {
+        this.scrollRefDate = new Date(this.vpvRefDate);
+      }
+    } else {
+      this.scrollRefDate === undefined;
     }
   }
 
-  gotoViewCost(vpv: VisboProjectVersion): void {
-    if (!vpv) {
-      vpv = this.visboprojectversions[0];
-    }
-    this.log(`goto VPV View Cost ${vpv._id} `);
-    const queryParams = { vpvid: vpv._id };
-    this.router.navigate(['vpViewCost/'.concat(vpv._id)], { queryParams: queryParams});
-  }
-
-  gotoViewDelivery(vpv: VisboProjectVersion): void {
-    if (!vpv) {
-      vpv = this.visboprojectversions[0];
-    }
-    this.log(`goto VPV View Delivery ${vpv._id} `);
-    const queryParams = { vpvid: vpv._id };
-    this.router.navigate(['vpViewDelivery/'.concat(vpv.vpid)], { queryParams: queryParams});
-  }
-
-  gotoViewDeadline(vpv: VisboProjectVersion): void {
-    if (!vpv) {
-      vpv = this.visboprojectversions[0];
-    }
-    this.log(`goto VPV View Deadline ${vpv._id} `);
-    const queryParams = { vpvid: vpv._id };
-    this.router.navigate(['vpViewDeadline/'.concat(vpv.vpid)], { queryParams: queryParams});
-  }
   getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    this.log(`get getRefDateVersions current ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
     const newRefDate = new Date(this.scrollRefDate);
     let i = 0;
     switch (this.refDateInterval) {
@@ -196,7 +181,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
         }
         break;
     }
-    this.log(`get getRefDateVersions ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
+    this.log(`get getRefDateVersions new ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
     this.scrollRefDate = newRefDate;
     let newVersionIndex;
     if (increment > 0) {
@@ -223,6 +208,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
       }
       newVersionIndex = i;
     }
+    this.log(`get getRefDateVersions vpv timestamp ${this.visboprojectversions[newVersionIndex].timestamp}`);
     this.setVpvActive(this.visboprojectversions[newVersionIndex]);
   }
 
@@ -230,6 +216,20 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
     this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
     // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
+  }
+
+  getPrevVersion(): void {
+    this.getRefDateVersions(-1);
+    const queryParams = { vpvid: this.vpvActive._id };
+    this.log(`GoTo Prev Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.router.navigate(['vpViewVPV/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
+  }
+
+  getNextVersion(): void {
+    this.getRefDateVersions(+1);
+    const queryParams = { vpvid: this.vpvActive._id };
+    this.log(`GoTo Next Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.router.navigate(['vpViewVPV/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
   }
 
   gotoRoot(): void {

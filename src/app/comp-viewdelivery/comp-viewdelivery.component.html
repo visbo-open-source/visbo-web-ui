@@ -1,0 +1,52 @@
+<div *ngIf="vpvActive" class='well'>
+  <div *ngIf="!reducedPage" class="container">
+    <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
+      <div class="align-center" >
+        <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class='panel-body'>
+    <!-- <div> Timestamp {{vpvActive.timestamp}}</div> -->
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th (click)="sortDeliveryTable(3)">{{ 'vpViewDelivery.lbl.description' | translate }}</th>
+          <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">{{ 'vpViewDelivery.lbl.phase' | translate }}</th>
+          <th *ngIf="!reducedPage" class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">{{ 'vpViewDelivery.lbl.endDatePFV' | translate }}</th>
+          <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">{{ 'vpViewDelivery.lbl.endDateVPV' | translate }}</th>
+          <th *ngIf="!reducedPage" class=" text-right" (click)="sortDeliveryTable(5)">{{ 'vpViewDelivery.lbl.change' | translate }}</th>
+          <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(6)">{{ 'vpViewDelivery.lbl.done' | translate }}</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let delivery of vpvDelivery">
+          <!-- ur: 05.03.2020: all deliveries the same look  -->
+          <td   *ngIf="getStatus(delivery) === 0" class="font-weight-bold my_darkgreen" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td   *ngIf="getStatus(delivery) === 1" class="font-weight-bold my_green" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td   *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td   *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td   *ngIf="getStatus(delivery) === -1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <!-- <td title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td> -->
+          <!-- <td *ngIf="delivery.percentDone == 1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td *ngIf="delivery.percentDone != 1" class="font-weight-bold" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td> -->
+          <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
+          <td *ngIf="!reducedPage" class="d-none d-lg-table-cell text-right">{{delivery.datePFV | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
+          <!-- ur: 03.03.2020: no differenz in display the changeDays according to the value -->
+          <!-- <td *ngIf="delivery.changeDays <= 0" class="text-right text-success" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+          <td *ngIf="delivery.changeDays > 0 && delivery.changeDays <= 31" class="text-right text-warning" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+          <td *ngIf="delivery.changeDays > 31" class="text-right text-danger" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td> -->
+          <td *ngIf="!reducedPage" class="text-right" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+
+          <td *ngIf="(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+        </tr>
+      </tbody>
+      <!--Table body-->
+    </table>
+  </div>
+</div>

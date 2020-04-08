@@ -52,7 +52,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpfActiveIndex: number;
     deleted = false;
     chart = true;
-    modalChart = true;
     parentThis: any;
     graphBubbleData: any[] = [];
     graphBubbleOptions: any = undefined;
@@ -128,7 +127,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.typeMetricX = this.typeMetricList[this.typeMetricIndexX].name;
     this.typeMetricY = this.typeMetricList[this.typeMetricIndexY].name;
 
-    this.showChartOption(true);
     this.getVisboPortfolioVersions();
   }
 
@@ -205,8 +203,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   getVisboPortfolioKeyMetrics(): void {
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
-    const chart = this.chart;
-    this.showChartOption(false);
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
       .subscribe(
@@ -214,7 +210,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
-          this.showChartOption(chart);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -383,12 +378,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.typeMetricIndexY = this.typeMetricList.findIndex(x => x.name === this.typeMetricY);
     this.storeSetting();
     this.visboKeyMetricsCalc();
-    this.chart = this.modalChart;
-  }
-
-  drawChart(visible: boolean) {
-    this.modalChart = this.chart;
-    this.chart = false;
   }
 
   visboKeyMetricsCalcBubble(): void {
@@ -658,15 +647,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       result = typeMetric[label];
     }
     return result || 'UNKNOWN';
-  }
-
-  showChartOption(newStatus?: boolean): void {
-    if (newStatus === undefined) {
-      this.chart = !this.chart;
-    } else {
-      this.chart = newStatus;
-    }
-    this.log(`Switch Chart to ${this.chart}`);
   }
 
   helperVpIndex(vpIndex: number): void {
