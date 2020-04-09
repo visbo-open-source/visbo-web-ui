@@ -30,14 +30,14 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     private translate: TranslateService
   ) {}
 
-  @Input() reducedPage: boolean;
   @Input() vpvActive: VisboProjectVersion;
 
-  vpvDelivery: VPVDelivery[];
-  filterStatus: string;
+  currentVpvId: string;
+  allDelivery: VPVDelivery[];
+  filteredDelivery: VPVDelivery[];
+  filterStatus: number;
   reducedList: boolean;
   statusList: string[];
-  vpvDeliveryDate: any = [];
 
   parentThis: any;
   colors: string[] = ['#005600', 'green', 'orange', 'red'];
@@ -65,9 +65,11 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     this.visboDeliveryCalc();
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.visboDeliveryCalc();
+    if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
+      this.visboDeliveryCalc();
+    }
   }
 
   visboDeliveryCalc(): void {
@@ -75,7 +77,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     if (!this.vpvActive) {
       return;
     }
-
+    this.currentVpvId = this.vpvActive._id;
     this.log(`Delivery Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     this.visboprojectversionService.getDelivery(this.vpvActive._id)
       .subscribe(
@@ -83,18 +85,18 @@ export class VisboCompViewDeliveryComponent implements OnInit {
           this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].delivery.length} Delivery entries`);
           if (visboprojectversions.length !== 1 || !visboprojectversions[0].delivery) {
             this.log(`get VPV Calc: Reset Delivery to empty `);
-            this.initDeliveries(undefined);
+            this.allDelivery = undefined;
           } else {
             this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].delivery.length} Timestamp ${visboprojectversions[0].timestamp}`);
-            this.initDeliveries(visboprojectversions[0].delivery);
+            this.allDelivery = visboprojectversions[0].delivery;
           }
-
+          this.initDeliveries()
           this.visboViewAllDeliveryPie();
         },
         error => {
           this.log(`get VPV Deliveries failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            const message = this.translate.instant('compViewDelivery.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(getErrorMessage(error));
@@ -103,25 +105,34 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       );
   }
 
-  initDeliveries(delivery: VPVDelivery[]): void {
-    const filterDeliveries: VPVDelivery[] = [];
-    this.reducedList = true;
-    if (delivery === undefined) {
-      this.vpvDelivery = delivery;
+  initDeliveries(): void {
+    if (this.allDelivery === undefined) {
       return;
     }
     // generate long Names
-    for (let i = 0; i < delivery.length; i++) {
-      if (delivery[i].phasePFV) {
+    for (let i = 0; i < this.allDelivery.length; i++) {
+      this.allDelivery[i].fullName = this.getFullName(this.allDelivery[i]);
+      const statusID = this.getStatus(this.allDelivery[i]);
+      this.allDelivery[i].statusID = statusID;
+      this.allDelivery[i].status = this.statusList[statusID];
+    }
+    this.filterDeliveries();
+  }
+
+  filterDeliveries(): void {
+    this.filteredDelivery = [];
+    this.reducedList = true;
+    if (this.allDelivery === undefined) {
+      return;
+    }
+    for (let i = 0; i < this.allDelivery.length; i++) {
+      if (this.allDelivery[i].phasePFV) {
         this.reducedList = false;
       }
-      delivery[i].fullName = this.getFullName(delivery[i]);
-      delivery[i].status = this.statusList[this.getStatus(delivery[i])];
-      if (!this.filterStatus  || this.filterStatus ===  delivery[i].status) {
-        filterDeliveries.push(delivery[i]);
+      if (this.filterStatus == undefined  || this.filterStatus ===  this.allDelivery[i].statusID) {
+        this.filteredDelivery.push(this.allDelivery[i]);
       }
     }
-    this.vpvDelivery = filterDeliveries;
     this.sortDeliveryTable(undefined);
   }
 
@@ -146,9 +157,9 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   }
 
   visboViewAllDeliveryPie(): void {
-    // if (!this.vpvDelivery || this.vpvDelivery.length == 0) return;
+    // if (!this.filteredDelivery || this.filteredDelivery.length == 0) return;
     this.graphAllOptionsPieChart = {
-        title: this.translate.instant('keyMetrics.chart.titleAllDelivery'),
+        title: this.translate.instant('compViewDelivery.titleAllDelivery'),
         titleTextStyle: {color: 'black', fontSize: '16'},
         // pieSliceText: 'value',
         pieSliceText: 'percentage',
@@ -160,8 +171,8 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       };
 
     this.graphAllPieLegend = [
-      ['string', 'Action Type'],
-      ['number', 'Count']
+      ['string', this.translate.instant('compViewDelivery.lbl.status')],
+      ['number', this.translate.instant('compViewDelivery.lbl.count')]
     ];
 
     const finishedDeliveryStatus: any = [];
@@ -172,11 +183,11 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       finishedDeliveryStatus[i] = 0;
     }
     let nonEmpty = false;
-    for (let i = 0; i < this.vpvDelivery.length; i++) {
+    for (let i = 0; i < this.filteredDelivery.length; i++) {
       // ur: 29.02.2020: es werden nun alle Deliveries in einem PieChart dargestellt, also alle Deliveries in einem Status-Array aufgesammelt
-      // if (this.vpvDelivery[i].percentDone === 1) {
+      // if (this.filteredDelivery[i].percentDone === 1) {
       //   // finished entries
-        status = this.getStatus(this.vpvDelivery[i]);
+        status = this.getStatus(this.filteredDelivery[i]);
         finishedDeliveryStatus[status] += 1;
         nonEmpty = true;
       // }
@@ -195,12 +206,17 @@ export class VisboCompViewDeliveryComponent implements OnInit {
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
-    if (this.filterStatus !== label) {
-      this.filterStatus = label;
-    } else {
+    if (row == undefined) {
       this.filterStatus = undefined;
+    } else {
+      const index = this.statusList.findIndex(element => element == label);
+      if (index < 0 || this.filterStatus === index) {
+        this.filterStatus = undefined;
+      } else {
+        this.filterStatus = index;
+      }
     }
-    this.initDeliveries(this.vpvActive.delivery);
+    this.filterDeliveries();
   }
 
 
@@ -222,7 +238,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   }
 
   sortDeliveryTable(n?: number) {
-    if (!this.vpvDelivery) {
+    if (!this.filteredDelivery) {
       return;
     }
     if (n !== undefined) {
@@ -242,24 +258,24 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     }
     if (this.sortColumnDelivery === 1) {
       // sort by Delivery Index
-      this.vpvDelivery.sort(function(a, b) {
+      this.filteredDelivery.sort(function(a, b) {
         return a.id - b.id;
       });
     } else if (this.sortColumnDelivery === 2) {
-      this.vpvDelivery.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
+      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
     } else if (this.sortColumnDelivery === 3) {
-      this.vpvDelivery.sort(function(a, b) {
+      this.filteredDelivery.sort(function(a, b) {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
       });
     } else if (this.sortColumnDelivery === 4) {
-      this.vpvDelivery.sort(function(a, b) { return visboCmpDate(a.dateVPV, b.dateVPV); });
+      this.filteredDelivery.sort(function(a, b) { return visboCmpDate(a.dateVPV, b.dateVPV); });
     } else if (this.sortColumnDelivery === 5) {
-      this.vpvDelivery.sort(function(a, b) { return a.changeDays - b.changeDays; });
+      this.filteredDelivery.sort(function(a, b) { return a.changeDays - b.changeDays; });
     } else if (this.sortColumnDelivery === 6) {
-      this.vpvDelivery.sort(function(a, b) { return a.percentDone - b.percentDone; });
+      this.filteredDelivery.sort(function(a, b) { return a.percentDone - b.percentDone; });
     }
     if (!this.sortAscendingDelivery) {
-      this.vpvDelivery.reverse();
+      this.filteredDelivery.reverse();
     }
   }
 

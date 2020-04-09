@@ -42,7 +42,6 @@ export class VisboProjectViewVPVComponent implements OnInit {
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
-  reducedPage: boolean;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -84,7 +83,6 @@ export class VisboProjectViewVPVComponent implements OnInit {
           visboproject => {
             this.vpActive = visboproject;
             this.combinedPerm = visboproject.perm;
-            this.reducedPage = !this.hasVPPerm(this.permVP.View);
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
             this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', false)
               .subscribe(

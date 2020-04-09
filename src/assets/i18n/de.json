@@ -437,6 +437,22 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
+	"compViewDelivery": {
+		"titleAllDelivery": "Status der Lieferungen",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"phase": "Planelement",
+			"description": "Lieferung",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt"
+		},
+		"msg": {
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
 	"vpViewDelivery": {
 		"title": "Lieferungen für",
 		"titleVersion": "Version vom",
@@ -447,16 +463,26 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
-			"phase": "Planelement",
-			"description": "Lieferung",
-			"endDatePFV": "Termin (Baseline)",
-			"endDateVPV": "Termin (Plan)",
-			"change": "Änderung (Wochen)",
-			"done": "Erledigt",
 			"vc": "VISBO Center"
 		},
 		"msg": {
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"compViewDeadline": {
+		"titleAllDeadlines": "Status der Termine",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"planElement": "Planelement",
+			"type": "Typ",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt"
+		},
+		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
@@ -470,12 +496,6 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
-			"planElement": "Planelement",
-			"type": "Typ",
-			"endDatePFV": "Termin (Baseline)",
-			"endDateVPV": "Termin (Plan)",
-			"change": "Änderung (Wochen)",
-			"done": "Erledigt",
 			"vc": "VISBO Center"
 		},
 		"msg": {

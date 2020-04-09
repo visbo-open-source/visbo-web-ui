@@ -16,6 +16,7 @@ export class VPVDelivery {
   percentDone: number;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 
@@ -34,6 +35,7 @@ export class VPVDeadline {
   percentDone: number;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 

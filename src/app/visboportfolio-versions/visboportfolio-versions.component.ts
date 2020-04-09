@@ -42,7 +42,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     typeMetricY: string;
 
     vpSelected: string;
-    vpFilter = '';
+    vpFilter: string;
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
     estimateAtCompletion = 0;
@@ -370,6 +370,13 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       'vpvRefDate': vpvRefDate ? vpvRefDate.toISOString() : undefined
     };
     sessionStorage.setItem('vpf-view', JSON.stringify(view));
+  }
+
+  toggleVisboChart() {
+    this.chart = !this.chart;
+    if (!this.hasVPPerm(this.permVP.ViewAudit)) {
+      this.chart = false;
+    }
   }
 
   changeChart() {
