@@ -19,7 +19,7 @@ export function visboCmpDate(first: Date, second: Date): number {
   return result;
 }
 
-export function visboGetShortText(text: string, len: number): string {
+export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';
   }
@@ -29,7 +29,11 @@ export function visboGetShortText(text: string, len: number): string {
   if (len < 3) {
     return '...';
   }
-  return text.substring(0, len - 3).concat('...');
+  if (position) {
+    return '...'.concat(text.substr(text.length - len));
+  } else {
+    return text.substring(0, len - 3).concat('...');
+  }
 }
 
 export function getErrorMessage(error: any): string {

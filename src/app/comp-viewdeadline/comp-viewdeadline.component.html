@@ -8,7 +8,7 @@
   </div>
 
   <div class='panel-body'>
-    <div> Timestamp {{vpvActive.timestamp}}</div>
+    <!-- <div> Timestamp {{vpvActive.timestamp}}</div> -->
     <table class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
@@ -25,12 +25,12 @@
       <tbody>
         <tr *ngFor="let deadlines of filteredDeadline">
            <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
-          <td   *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-          <td   *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-          <td   *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-          <td   *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-          <td   *ngIf="getStatus(deadlines) === -1" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-          <td class="d-none d-lg-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
+          <td *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === -1" title="{{getFullName(deadlines)}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
           <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
           <td *ngIf="!reducedList" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>

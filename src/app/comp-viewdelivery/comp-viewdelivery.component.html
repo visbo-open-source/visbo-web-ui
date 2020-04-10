@@ -30,7 +30,7 @@
           <td *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
           <td *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
           <td *ngIf="getStatus(delivery) === -1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-          <td class="d-none d-md-table-cell">{{getFullName(delivery)}}</td>
+          <td class="d-none d-md-table-cell" title="{{getFullName(delivery)}}">{{getShortText(getFullName(delivery), 50, 'right')}}</td>
           <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.datePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
           <td *ngIf="!reducedList" class="text-right" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>

@@ -39,7 +39,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
   graphBeforeAllDataPieChart: any[] = [];
   graphAllPieLegend: any;
   graphAllOptionsPieChart: any = undefined;
-  divAllPieChart = 'divAllPieChart';
+  divAllPieChart = 'divAllDeadLinePieChart';
 
   graphOptionsDeadlinesGantt: any = undefined;
   graphDataDeadlinesGantt: any[] = [];
@@ -117,7 +117,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     }
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
-      this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i], false);
+      this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
       this.allDeadline[i].status = this.statusList[this.getStatus(this.allDeadline[i])];
       const statusID = this.getStatus(this.allDeadline[i]);
       this.allDeadline[i].statusID = statusID;
@@ -136,6 +136,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     }
     for (let i = 0; i < this.allDeadline.length; i++) {
       if (this.allDeadline[i].phasePFV) {
+        // we get PFV information
         this.reducedList = false;
       }
       if (this.filterStatus == undefined  || this.filterStatus ===  this.allDeadline[i].statusID) {
@@ -299,17 +300,14 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     this.filterDeadlines();
   }
 
-  getFullName(deadline: VPVDeadline, replaceRoot: boolean): string {
-    let result = '';
-    if (deadline.phaseVPV || deadline.phasePFV) {
-      if (deadline.type === "Milestone") {
-        result = result.concat(deadline.phaseVPV || deadline.phasePFV, ' / ');
-        result = result.concat(deadline.name);
-      } else if ( deadline.name === '.' && replaceRoot ) {
-        result = result.concat(this.vpvActive.name);
-      } else {
-        result = result.concat(deadline.name);
-      }
+  getFullName(deadline: VPVDeadline): string {
+    let result: string;
+    if (deadline.fullName) {
+      result = deadline.fullName;
+    } else if (deadline.fullPathVPV.length > 1) {
+      result = deadline.fullPathVPV.slice(1).join('/');
+    } else { // Root phase
+      result = this.vpvActive.name;
     }
     return result;
   }
@@ -318,8 +316,8 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     return (ref > this.vpvActive.timestamp.toString());
   }
 
-  getShortText(text: string, len: number): string {
-    return visboGetShortText(text, len);
+  getShortText(text: string, len: number, position?: string): string {
+    return visboGetShortText(text, len, position);
   }
 
   sortDeadlineTable(n?: number) {
@@ -347,7 +345,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
         return a.id - b.id;
       });
     } else if (this.sortColumnDeadline === 2) {
-      this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
+      this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join('/'), b.fullPathVPV.join('/')); });
     } else if (this.sortColumnDeadline === 3) {
       this.filteredDeadline.sort(function(a, b) {
         return visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());

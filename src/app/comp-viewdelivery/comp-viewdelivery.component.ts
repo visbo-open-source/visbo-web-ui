@@ -45,7 +45,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   graphAllDataPieChart: any[] = [];
   graphAllPieLegend: any;
   graphAllOptionsPieChart: any = undefined;
-  divAllPieChart = 'divAllPieChart';
+  divAllPieChart = 'divAllDeliveryPieChart';
 
   currentLang: string;
 
@@ -221,11 +221,14 @@ export class VisboCompViewDeliveryComponent implements OnInit {
 
 
   getFullName(delivery: VPVDelivery): string {
-    let result = '';
-    if (delivery.phaseVPV || delivery.phasePFV) {
-      result = result.concat(delivery.phaseVPV || delivery.phasePFV, ' / ');
+    let result: string;
+    if (delivery.fullName) {
+      result = delivery.fullName;
+    } else if (delivery.fullPathVPV.length > 1) {
+      result = delivery.fullPathVPV.slice(1).join('/');
+    } else { // Root phase
+      result = this.vpvActive.name;
     }
-    result = result.concat(delivery.name);
     return result;
   }
 
@@ -233,8 +236,8 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     return (ref > this.vpvActive.timestamp.toString());
   }
 
-  getShortText(text: string, len: number): string {
-    return visboGetShortText(text, len);
+  getShortText(text: string, len: number, position?: string): string {
+    return visboGetShortText(text, len, position);
   }
 
   sortDeliveryTable(n?: number) {
@@ -262,7 +265,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
         return a.id - b.id;
       });
     } else if (this.sortColumnDelivery === 2) {
-      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullName, b.fullName); });
+      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join('/'), b.fullPathVPV.join('/')); });
     } else if (this.sortColumnDelivery === 3) {
       this.filteredDelivery.sort(function(a, b) {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
