@@ -1,0 +1,45 @@
+<div *ngIf="vpvActive" class='well'>
+  <div *ngIf="!reducedList" class="container">
+    <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
+      <div class="align-center" >
+        <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphDataBefore]="graphBeforeAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class='panel-body'>
+    <!-- <div> Timestamp {{vpvActive.timestamp}}</div> -->
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th class="text-left" (click)="sortDeadlineTable(2)">{{ 'compViewDeadline.lbl.planElement' | translate }}</th>
+          <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'compViewDeadline.lbl.type' | translate }}</th>
+          <th *ngIf="!reducedList" class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}</th>
+          <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'compViewDeadline.lbl.endDateVPV' | translate }}</th>
+          <th *ngIf="!reducedList" class="text-right" (click)="sortDeadlineTable(5)">{{ 'compViewDeadline.lbl.change' | translate }}</th>
+          <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'compViewDeadline.lbl.done' | translate }}</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let deadlines of filteredDeadline">
+           <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
+          <td *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td *ngIf="getStatus(deadlines) === -1" title="{{getFullName(deadlines)}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
+          <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
+          <td *ngIf="!reducedList" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+
+          <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
+        </tr>
+      </tbody>
+      <!--Table body-->
+    </table>
+  </div>
+</div>

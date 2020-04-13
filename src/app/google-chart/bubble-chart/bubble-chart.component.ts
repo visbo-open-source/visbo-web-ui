@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -15,6 +15,8 @@ export class BubbleChartComponent implements OnInit {
   @Input() parentThis: any;
   @Input() language: string;
 
+  initialised: boolean;
+
   constructor(
     private gChartService: GoogleChartService
   ) {}
@@ -26,6 +28,13 @@ export class BubbleChartComponent implements OnInit {
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Bubble Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
@@ -68,5 +77,6 @@ export class BubbleChartComponent implements OnInit {
     this.gLib.visualization.events.addListener(chart, 'click', clickHandler);
 
     chart.draw(data, this.graphOptions || options);
+    this.initialised = true;
   }
 }

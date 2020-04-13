@@ -437,6 +437,22 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
+	"compViewDelivery": {
+		"titleAllDelivery": "Status of Deliveries",
+		"lbl": {
+			"status": "Status",
+			"count": "Count",
+			"phase": "Plan Element",
+			"description": "Delivery",
+			"endDateVPV": "End Date (planned)",
+			"endDatePFV": "End Date (baseline)",
+			"change": "Change (in weeks)",
+			"done": "Done"
+		},
+		"msg": {
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
 	"vpViewDelivery": {
 		"title": "Deliveries for",
 		"titleVersion": "Version of",
@@ -447,16 +463,26 @@
 			"quarter": "quarter",
 			"previousPeriod": "Previous Period before {{refDate}}",
 			"nextPeriod": "Next Period after {{refDate}}",
-			"phase": "Plan Element",
-			"description": "Delivery",
-			"endDateVPV": "End Date (planned)",
-			"endDatePFV": "End Date (baseline)",
-			"change": "Change (in weeks)",
-			"done": "Done",
 			"vc": "VISBO Center"
 		},
 		"msg": {
 			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermVersion": "Permission denied for project versions {{name}}"
+		}
+	},
+	"compViewDeadline": {
+		"titleAllDeadlines": "Status of Deadline",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"planElement": "Plan Element",
+			"type": "Type",
+			"endDateVPV": "End Date (planned)",
+			"endDatePFV": "End Date (baseline)",
+			"change": "Change (in weeks)",
+			"done": "Done"
+		},
+		"msg": {
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
@@ -797,8 +823,7 @@
 			"statusDeadlineInTime": "In Time",
 			"statusDeadlineDelay": "Delay",
 			"statusDeadlineNotCompleted": "Not Completed",
-			"titleFinishedDelivery": "Delivery Status",
-			"titleUnFinishedDelivery": "Unfinished Delivery Status",
+			"titleAllDelivery": "Delivery Status",
 			"titleFinishedDeadlines": "Deadline Status",
 			"titleUnFinishedDeadlines": "Unfinished Deadline Status",
 			"yAxisCostOverTime": "Monthly Cost",

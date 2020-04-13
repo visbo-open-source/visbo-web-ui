@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewcost',
@@ -38,10 +38,7 @@ export class VisboProjectViewCostComponent implements OnInit {
   refDateInterval = 'month';
   vpvRefDate: Date;
   scrollRefDate: Date;
-  chartButton = 'View List';
   chart = true;
-  history = false;
-  historyButton = 'View Trend';
   parentThis: any;
 
   colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
@@ -78,10 +75,6 @@ export class VisboProjectViewCostComponent implements OnInit {
     this.getVisboProjectVersions();
   }
 
-  onSelect(visboprojectversion: VisboProjectVersion): void {
-    this.getVisboProjectVersions();
-  }
-
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -93,7 +86,6 @@ export class VisboProjectViewCostComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
     this.parentThis = this;
-    const chartFlag = this.chart;
 
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -121,11 +113,7 @@ export class VisboProjectViewCostComponent implements OnInit {
                     }
                   }
                   this.visboCostCalc(initIndex);
-                  if (this.hasVPPerm(this.permVP.ViewAudit)) {
-                    this.chart = chartFlag;
-                  } else {
-                    this.chart = false;
-                  }
+                  this.chart = this.hasVPPerm(this.permVP.ViewAudit);
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -151,8 +139,6 @@ export class VisboProjectViewCostComponent implements OnInit {
   }
 
   visboCostCalc(index: number): void {
-    const chartFlag = this.chart;
-    this.chart = false;
     this.vpvActive = this.visboprojectversions[index];
     this.vpvRefDate = this.vpvActive.timestamp;
     if (this.scrollRefDate === undefined) {
@@ -191,11 +177,6 @@ export class VisboProjectViewCostComponent implements OnInit {
           }
 
           this.visboViewCostOverTime(visboprojectversions[0]._id);
-          if (this.hasVPPerm(this.permVP.ViewAudit)) {
-            this.chart = chartFlag;
-          } else {
-            this.chart = false;
-          }
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -400,28 +381,6 @@ export class VisboProjectViewCostComponent implements OnInit {
     }
   }
 
-  gotoVisboProjectVersions(): void {
-    // this.log(`goto VPV All Versions ${this.vpvKeyMetricActive.vpid} `);
-    // this.router.navigate(['vpv/'.concat(this.vpvKeyMetricActive.vpid)], {});
-  }
-
-  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
-    // this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
-    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-  }
-
-  listSelectRow(vpv: any): void {
-    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    // this.setVpvActive(vpv);
-  }
-
-  chartSelectRow(row: number, col: number, label: string) {
-    this.log(`Line Chart: User selected ${row} ${col} ${label} Len`);
-    // if (row < 0 || row >= this.visbokeymetrics.length) row = 0;
-    // this.setVpvActive(this.visbokeymetrics[row]);
-    // this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-  }
-
   setVpvActive(vpv: any): void {
     this.log(`setVpvActive Not Implemented`);
   }
@@ -436,10 +395,6 @@ export class VisboProjectViewCostComponent implements OnInit {
 
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
-  }
-
-  getShortText(text: string, len: number): string {
-    return visboGetShortText(text, len);
   }
 
   sortVPVTable(n?: number) {

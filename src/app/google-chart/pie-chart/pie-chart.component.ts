@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -9,7 +9,6 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class PieChartComponent implements OnInit {
 
-  private gLib: any;
   @Input() elementID: string;
   @Input() graphData: any;
   @Input() graphDataBefore: any;
@@ -17,6 +16,9 @@ export class PieChartComponent implements OnInit {
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
+
+  private gLib: any;
+  initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
@@ -34,8 +36,15 @@ export class PieChartComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`PIE Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
+  }
+
   private drawChart() {
-    // this.log(`Google Chart Pie Chart Draw ${this.graphData.length}`);
+    console.log(`Google Chart Pie Chart Draw ${this.graphData.length}`);
     const chart = new this.gLib.visualization.PieChart(document.getElementById(this.elementID));
     const data = new this.gLib.visualization.DataTable();
     const dataBefore = new this.gLib.visualization.DataTable();
@@ -86,5 +95,6 @@ export class PieChartComponent implements OnInit {
       this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
       chart.draw(diffData, this.graphOptions || options);
     }
+    this.initialised = true;
   }
 }

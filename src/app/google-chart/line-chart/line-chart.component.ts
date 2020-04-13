@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -10,15 +9,16 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class LineChartComponent implements OnInit {
 
-  private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
 
+  private gLib: any;
+  initialised: boolean;
+
   constructor(
-    private gChartService: GoogleChartService,
-    private messageService: MessageService
+    private gChartService: GoogleChartService
   ) {}
 
   ngOnInit() {
@@ -27,11 +27,18 @@ export class LineChartComponent implements OnInit {
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
-    // this.log(`Google Chart Line Chart Init ${JSON.stringify(this.graphData)}`);
+    // console.log(`Google Chart Line Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Line Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
-    // this.log(`Google Chart Line Chart Draw ${this.graphData.length}`);
+    // console.log(`Google Chart Line Chart Draw ${this.graphData.length}`);
     let chart: any, data: any;
     chart = new this.gLib.visualization.LineChart(document.getElementById('divLineChart'));
     data = new this.gLib.visualization.arrayToDataTable(this.graphData);
@@ -65,10 +72,6 @@ export class LineChartComponent implements OnInit {
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
 
     chart.draw(data, this.graphOptions || options);
-  }
-
-  /** Log a message with the MessageService */
-  private log(message: string) {
-    this.messageService.add('Line Chart: ' + message);
+    this.initialised = true;
   }
 }

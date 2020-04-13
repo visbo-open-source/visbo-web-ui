@@ -8,7 +8,9 @@ export class VPVDelivery {
   id: number;
   name: string;
   phasePFV: string;
+  fullPathPFV: [string];
   phaseVPV: string;
+  fullPathVPV: [string];
   description: string;
   datePFV: Date;
   dateVPV: Date;
@@ -16,6 +18,7 @@ export class VPVDelivery {
   percentDone: number;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 
@@ -24,7 +27,9 @@ export class VPVDeadline {
   id: number;
   name: string;
   phasePFV: string;
+  fullPathPFV: [string];
   phaseVPV: string;
+  fullPathVPV: [string];
   type: string;
   startDatePFV: Date;
   startDateVPV: Date;
@@ -34,6 +39,7 @@ export class VPVDeadline {
   percentDone: number;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 

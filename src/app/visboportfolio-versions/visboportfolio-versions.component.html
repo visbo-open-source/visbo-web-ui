@@ -42,11 +42,14 @@
     <div class="row text-dark">
       <div class="my-1">
         <span>{{ 'vpfVersion.lbl.show' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
+        <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{typeMetricX}}</a></span>
         <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
+        <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{typeMetricY}}</a></span>
         <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
-        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpfMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
+        <span *ngIf="vpFilter != undefined">, {{ 'vpfVersion.lbl.filtered' | translate }}</span>
+        <input *ngIf="vpFilter != undefined" class="ml-2" type="text" (keyup)="visboKeyMetricsCalc()" [(ngModel)]="vpFilter" placeholder="Filter">
+        <!-- <span *ngIf="vpFilter" class="font-weight-bold"> <a data-toggle="modal" data-target="#VpfMetricSelector"> {{vpFilter}}</a></span> -->
+        <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
       </div>
     </div>
     <div class="row">
@@ -55,6 +58,10 @@
       <span *ngIf="estimateAtCompletion > budgetAtCompletion && estimateAtCompletion <= budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-triangle" style="color:orange"></strong></span>
       <span *ngIf="estimateAtCompletion > budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-circle" style="color:red"></strong></span>
     </div>
+    <h5 *ngIf="hasVPPerm(permVP.ViewAudit)" class="text-right">
+      <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
+      <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
+    </h5>
   </div>
   <div *ngIf="visbokeymetrics.length > 0">
     <div *ngIf="hasVPPerm(permVP.ViewAudit) && chart" class='container-fluid'>
@@ -149,12 +156,6 @@
           <div class="form-group">
             <label for="Filter" class="col-form-label">{{ 'vpfVersion.lbl.filter' | translate }}:</label>
             <input class="form-control"  (keyup)="visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
-          </div>
-          <div *ngIf="hasVPPerm(permVP.ViewAudit)">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="idList" name="modalChart" [(ngModel)]="modalChart">
-                <label class="custom-control-label" for="idList">{{ 'vpfVersion.btn.showChart' | translate }}</label>
-            </div>
           </div>
           <div class="modal-footer align-items-end">
             <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.cancel' | translate }}</button>

@@ -19,14 +19,14 @@
       </h4>
       <div class="col-6">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getPrevVersion()'></span>
           <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpViewVPV.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpViewVPV.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpViewVPV.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpViewVPV.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getNextVersion()'></span>
         </div>
       </div>
     </div>
@@ -35,7 +35,7 @@
 
 </div>
 
-<div *ngIf="vpvActive" id="accordion">
+<div *ngIf="vpvActive">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
@@ -47,7 +47,7 @@
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
       <div class="card-body">
-        <app-visboproject-viewdeadline [reducedPage]="true"></app-visboproject-viewdeadline>
+        <app-comp-viewdeadline [vpvActive]="vpvActive"></app-comp-viewdeadline>
       </div>
     </div>
   </div>
@@ -59,9 +59,9 @@
         </button>
       </h5>
     </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
       <div class="card-body">
-        <app-visboproject-viewdelivery [reducedPage]="true"></app-visboproject-viewdelivery>
+        <app-comp-viewdelivery [vpvActive]="vpvActive"></app-comp-viewdelivery>
       </div>
     </div>
   </div>
