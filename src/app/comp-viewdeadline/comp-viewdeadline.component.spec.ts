@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import 'jasmine';
 
-import { VisboCompViewDeadlineComponent } from './visboproject-viewdeadline.component';
+import { VisboCompViewDeadlineComponent } from './comp-viewdeadline.component';
 
 describe('VisboProjectViewDeadlineComponent', () => {
   let component: VisboCompViewDeadlineComponent;
