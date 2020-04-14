@@ -258,7 +258,7 @@ export class VisboProjectVersionService {
     const url = `${this.vpvUrl}/${id}/deadline`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    params = params.append('ref', 'pfv');
+    // params = params.append('ref', 'pfv');
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })

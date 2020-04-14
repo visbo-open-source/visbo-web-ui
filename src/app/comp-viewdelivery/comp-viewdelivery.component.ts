@@ -225,7 +225,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     if (delivery.fullName) {
       result = delivery.fullName;
     } else if (delivery.fullPathVPV.length > 1) {
-      result = delivery.fullPathVPV.slice(1).join('/');
+      result = delivery.fullPathVPV.slice(1).join(' / ');
     } else { // Root phase
       result = this.vpvActive.name;
     }
@@ -265,7 +265,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
         return a.id - b.id;
       });
     } else if (this.sortColumnDelivery === 2) {
-      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join('/'), b.fullPathVPV.join('/')); });
+      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
     } else if (this.sortColumnDelivery === 3) {
       this.filteredDelivery.sort(function(a, b) {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());

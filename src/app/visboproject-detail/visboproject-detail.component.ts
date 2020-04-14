@@ -179,7 +179,11 @@ export class VisboprojectDetailComponent implements OnInit {
 
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
-    this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    let url = 'vpKeyMetrics/';
+    if (visboproject.vpType == VPTYPE['Portfolio']) {
+      url = 'vpf/';
+    }
+    this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
   save(): void {

@@ -305,7 +305,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     if (deadline.fullName) {
       result = deadline.fullName;
     } else if (deadline.fullPathVPV.length > 1) {
-      result = deadline.fullPathVPV.slice(1).join('/');
+      result = deadline.fullPathVPV.slice(1).join(' / ');
     } else { // Root phase
       result = this.vpvActive.name;
     }
@@ -345,7 +345,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
         return a.id - b.id;
       });
     } else if (this.sortColumnDeadline === 2) {
-      this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join('/'), b.fullPathVPV.join('/')); });
+      this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
     } else if (this.sortColumnDeadline === 3) {
       this.filteredDeadline.sort(function(a, b) {
         return visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());
