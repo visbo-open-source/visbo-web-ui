@@ -10,6 +10,8 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectVersion, VPVDeadline} from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
+import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
@@ -20,6 +22,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
 export class VisboCompViewDeadlineComponent implements OnInit {
 
   @Input() vpvActive: VisboProjectVersion;
+  @Input() combinedPerm: VGPermission;
 
   currentVpvId: string;
   allDeadline: VPVDeadline[];
@@ -28,6 +31,15 @@ export class VisboCompViewDeadlineComponent implements OnInit {
   filterStatus: number;
   filterPhase: string;
   reducedList: boolean;
+
+  listType: any[] = [
+    {name: 'PFV', ref: 'pfv', localName: ''},
+    {name: 'VPV', ref: 'vpv', localName: ''},
+    {name: 'All', ref: undefined, localName: ''}
+  ];
+  type = this.listType[0].name;
+  refType = this.listType[0].ref;
+  switchType = true;
 
   parentThis: any;
 
@@ -43,6 +55,10 @@ export class VisboCompViewDeadlineComponent implements OnInit {
 
   graphOptionsDeadlinesGantt: any = undefined;
   graphDataDeadlinesGantt: any[] = [];
+
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
+
   currentLang: string;
 
   sortAscending = false;
@@ -69,6 +85,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
       this.translate.instant('keyMetrics.chart.statusDeadlineNotCompleted'),
       'Unknown'
     ];
+    this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
     this.visboDeadlineCalc();
   }
 
@@ -84,8 +101,8 @@ export class VisboCompViewDeadlineComponent implements OnInit {
       return;
     }
     this.currentVpvId = this.vpvActive._id;
-    this.log(`Deadline Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.visboprojectversionService.getDeadline(this.vpvActive._id)
+    this.log(`Deadline Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp} Reference ${this.refType}`);
+    this.visboprojectversionService.getDeadline(this.vpvActive._id, this.refType)
       .subscribe(
         visboprojectversions => {
           this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].deadline.length} entries`);
@@ -115,12 +132,16 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     if (this.allDeadline === undefined) {
       return;
     }
+    this.switchType = (this.refType == 'vpv')
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
       this.allDeadline[i].status = this.statusList[this.getStatus(this.allDeadline[i])];
       const statusID = this.getStatus(this.allDeadline[i]);
       this.allDeadline[i].statusID = statusID;
+      if (this.switchType ||  this.allDeadline[i].endDatePFV) {
+        this.switchType = true;
+      }
     }
     this.filterDeadlines();
     this.sortDeadlineTable();
@@ -148,6 +169,13 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     this.sortDeadlineTable();
     // ur: 17.03.2020: Now without Gantt-Chart, later choosable with a toggle button 'GANTT'
     // this.visboViewDeadlineGantt();
+  }
+
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) > 0;
   }
 
   getStatus(element: VPVDeadline): number {
@@ -318,6 +346,30 @@ export class VisboCompViewDeadlineComponent implements OnInit {
 
   getShortText(text: string, len: number, position?: string): string {
     return visboGetShortText(text, len, position);
+  }
+
+  switchView(): void {
+    this.log(`Switchinig to ${this.type}`);
+    this.refType = this.listType.find( item => item.name === this.type ).ref;
+    this.visboDeadlineCalc();
+  }
+
+  displayDeadline(): boolean {
+    let result = false;
+    if (this.vpvActive
+    && this.allDeadline && this.allDeadline.length > 0) {
+      result = true;
+    }
+    return result;
+  }
+
+  displaySwitch(): boolean {
+    let result = false;
+    if (this.switchType
+    && this.hasVPPerm(this.permVP.View)) {
+      result = true;
+    }
+    return result;
   }
 
   sortDeadlineTable(n?: number) {

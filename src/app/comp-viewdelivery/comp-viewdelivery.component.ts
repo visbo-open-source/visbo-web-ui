@@ -31,6 +31,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   ) {}
 
   @Input() vpvActive: VisboProjectVersion;
+  @Input() combinedPerm: VGPermission;
 
   currentVpvId: string;
   allDelivery: VPVDelivery[];
@@ -39,6 +40,15 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   reducedList: boolean;
   statusList: string[];
 
+  listType: any[] = [
+    {name: 'PFV', ref: 'pfv', localName: ''},
+    {name: 'VPV', ref: 'vpv', localName: ''},
+    {name: 'All', ref: undefined, localName: ''}
+  ];
+  type = this.listType[0].name;
+  refType = this.listType[0].ref;
+  switchType = true;
+
   parentThis: any;
   colors: string[] = ['#005600', 'green', 'orange', 'red'];
 
@@ -46,6 +56,9 @@ export class VisboCompViewDeliveryComponent implements OnInit {
   graphAllPieLegend: any;
   graphAllOptionsPieChart: any = undefined;
   divAllPieChart = 'divAllDeliveryPieChart';
+
+  permVC: any = VGPVC;
+  permVP: any = VGPVP;
 
   currentLang: string;
 
@@ -62,6 +75,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       this.translate.instant('keyMetrics.chart.statusDeliveryNotCompleted'),
       'Unknown'
     ];
+    this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
     this.visboDeliveryCalc();
   }
 
@@ -78,8 +92,8 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       return;
     }
     this.currentVpvId = this.vpvActive._id;
-    this.log(`Delivery Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.visboprojectversionService.getDelivery(this.vpvActive._id)
+    this.log(`Delivery Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp} Reference ${this.refType}`);
+    this.visboprojectversionService.getDelivery(this.vpvActive._id, this.refType)
       .subscribe(
         visboprojectversions => {
           this.log(`get VPV Calc: Get ${visboprojectversions.length} vpvs with ${visboprojectversions[0].delivery.length} Delivery entries`);
@@ -109,12 +123,16 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     if (this.allDelivery === undefined) {
       return;
     }
+    this.switchType = (this.refType == 'vpv')
     // generate long Names
     for (let i = 0; i < this.allDelivery.length; i++) {
       this.allDelivery[i].fullName = this.getFullName(this.allDelivery[i]);
       const statusID = this.getStatus(this.allDelivery[i]);
       this.allDelivery[i].statusID = statusID;
       this.allDelivery[i].status = this.statusList[statusID];
+      if (this.switchType ||  this.allDelivery[i].endDatePFV) {
+        this.switchType = true;
+      }
     }
     this.filterDeliveries();
   }
@@ -136,15 +154,22 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     this.sortDeliveryTable(undefined);
   }
 
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) > 0;
+  }
+
   getStatus(element: VPVDelivery): number {
 
     const refDate = this.vpvActive.timestamp;
 
     let status = 0;
-    if (!element.datePFV) {
+    if (!element.endDatePFV) {
       // no comparison with pfv
       status = -1;
-    } else  if (element.datePFV <= refDate && element.percentDone < 1) {
+    } else  if (element.endDatePFV <= refDate && element.percentDone < 1) {
       status = 3;
     } else if (element.changeDays < 0) {
       status = 0;
@@ -240,6 +265,30 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     return visboGetShortText(text, len, position);
   }
 
+  switchView(): void {
+    this.log(`Switchinig to ${this.type}`);
+    this.refType = this.listType.find( item => item.name === this.type ).ref;
+    this.visboDeliveryCalc();
+  }
+
+  displayDelivery(): boolean {
+    let result = false;
+    if (this.vpvActive
+    && this.allDelivery && this.allDelivery.length > 0) {
+      result = true;
+    }
+    return result;
+  }
+
+  displaySwitch(): boolean {
+    let result = false;
+    if (this.switchType
+    && this.hasVPPerm(this.permVP.View)) {
+      result = true;
+    }
+    return result;
+  }
+
   sortDeliveryTable(n?: number) {
     if (!this.filteredDelivery) {
       return;
@@ -271,7 +320,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
       });
     } else if (this.sortColumnDelivery === 4) {
-      this.filteredDelivery.sort(function(a, b) { return visboCmpDate(a.dateVPV, b.dateVPV); });
+      this.filteredDelivery.sort(function(a, b) { return visboCmpDate(a.endDateVPV, b.endDateVPV); });
     } else if (this.sortColumnDelivery === 5) {
       this.filteredDelivery.sort(function(a, b) { return a.changeDays - b.changeDays; });
     } else if (this.sortColumnDelivery === 6) {
@@ -281,7 +330,6 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       this.filteredDelivery.reverse();
     }
   }
-
 
   /** Log a message with the MessageService */
   private log(message: string) {

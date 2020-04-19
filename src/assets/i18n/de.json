@@ -311,6 +311,7 @@
 			"expires": "Läuft ab",
 			"variant": "Variante",
 			"versions": "Versionen",
+			"ofTotal": "of total",
 			"unlock": "Entsperren",
 			"delete": "Löschen",
 			"deleteUser": "Benutzer löschen"
@@ -409,6 +410,7 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
+			"vpView": "Zeige Projekt Informationen",
 			"allVersions": "Alle Versionen",
 			"back": "Zurück"
 		},
@@ -447,7 +449,10 @@
 			"endDatePFV": "Termin (Baseline)",
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
-			"done": "Erledigt"
+			"done": "Erledigt",
+			"VPV": "Zeige alle vom Projekt",
+			"PFV": "Zeige alle vom Auftrag",
+			"All": "Zeige alle kombiniert"
 		},
 		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
@@ -480,7 +485,10 @@
 			"endDatePFV": "Termin (Baseline)",
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
-			"done": "Erledigt"
+			"done": "Erledigt",
+			"VPV": "Zeige alle vom Projekt",
+			"PFV": "Zeige alle vom Auftrag",
+			"All": "Zeige alle kombiniert"
 		},
 		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
@@ -503,7 +511,7 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewVPV": {
+	"vpView": {
 		"title": "Information über",
 		"titleVersion": "Version vom",
 		"lbl": {
@@ -516,6 +524,7 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
+			"cost": "Kosten anzeigen",
 			"deadline": "Termine anzeigen",
 			"delivery": "Lieferungen anzeigen"
 		},

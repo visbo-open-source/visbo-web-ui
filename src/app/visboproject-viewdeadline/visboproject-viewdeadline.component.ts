@@ -43,14 +43,12 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   refDateInterval = 'month';
   vpvRefDate: Date;
   scrollRefDate: Date;
-  currentLang: string;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
   permVP: any = VGPVP;
 
   ngOnInit() {
-    this.currentLang = this.translate.currentLang;
     if (this.route.snapshot.queryParams.vpvid) {
       this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }

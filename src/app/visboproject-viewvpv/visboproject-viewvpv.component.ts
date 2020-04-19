@@ -84,7 +84,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
             this.vpActive = visboproject;
             this.combinedPerm = visboproject.perm;
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', false)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', true)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -220,14 +220,14 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.getRefDateVersions(-1);
     const queryParams = { vpvid: this.vpvActive._id };
     this.log(`GoTo Prev Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.router.navigate(['vpViewVPV/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
+    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
   }
 
   getNextVersion(): void {
     this.getRefDateVersions(+1);
     const queryParams = { vpvid: this.vpvActive._id };
     this.log(`GoTo Next Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.router.navigate(['vpViewVPV/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
+    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
   }
 
   gotoRoot(): void {
@@ -300,7 +300,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboProjectViewVPV: ' + message);
+    this.messageService.add('VisboProjectView: ' + message);
   }
 
 }

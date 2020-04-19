@@ -12,8 +12,8 @@ export class VPVDelivery {
   phaseVPV: string;
   fullPathVPV: [string];
   description: string;
-  datePFV: Date;
-  dateVPV: Date;
+  endDatePFV: Date;
+  endDateVPV: Date;
   changeDays: number;
   percentDone: number;
 

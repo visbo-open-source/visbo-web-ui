@@ -239,11 +239,13 @@ export class VisboProjectVersionService {
   }
 
   /** GET CostCalculation from the server for the specified vpv id */
-  getDelivery(id: string): Observable<VisboProjectVersion[]> {
+  getDelivery(id: string, ref: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/delivery`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-
+    if (ref) {
+      params = params.append('ref', ref);
+    }
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
@@ -254,11 +256,13 @@ export class VisboProjectVersionService {
   }
 
    /** GET Deadline Calculation from the server for the specified vpv id */
-   getDeadline(id: string): Observable<VisboProjectVersion[]> {
+   getDeadline(id: string, ref: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/deadline`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    // params = params.append('ref', 'pfv');
+    if (ref) {
+      params = params.append('ref', ref);
+    }
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })

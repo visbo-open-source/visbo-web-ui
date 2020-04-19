@@ -58,7 +58,7 @@ const routes: Routes = [
   { path: 'vpDetail/:id', component: VisboprojectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpAudit/:id', component: VisboprojectAuditComponent, canActivate: [AuthGuard]  },
   { path: 'vpKeyMetrics/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
-  { path: 'vpViewVPV/:id', component: VisboProjectViewVPVComponent, canActivate: [AuthGuard] },
+  { path: 'vpView/:id', component: VisboProjectViewVPVComponent, canActivate: [AuthGuard] },
   { path: 'vpViewCost/:id', component: VisboProjectViewCostComponent, canActivate: [AuthGuard]  },
   { path: 'vpViewDelivery/:id', component: VisboProjectViewDeliveryComponent, canActivate: [AuthGuard] },
   { path: 'vpViewDeadline/:id', component: VisboProjectViewDeadlineComponent, canActivate: [AuthGuard] },

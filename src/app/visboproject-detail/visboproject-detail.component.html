@@ -19,6 +19,10 @@
       <label for="vpType" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.type' | translate }}:</label>
       <label name=vpType class="col form-control-static col-form-label">{{ getVPType(visboproject.vpType) }} </label>
     </div>
+    <div *ngIf="hasVPPerm(permVP.Modify)" class="form-group row">
+      <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
+      <label name=vpVersion class="col form-control-static col-form-label"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+    </div>
     <div class="form-group row d-none d-md-block">
       <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
       <label class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>

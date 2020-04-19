@@ -1,6 +1,14 @@
-<div *ngIf="vpvActive" class='well'>
+<div *ngIf="displayDelivery()" class='well'>
+  <div *ngIf="displaySwitch()" class="container">
+    <div class="d-flex justify-content-left">
+      <select class="col-3 form-control mx-1" name="type" [(ngModel)]="type" (change)="switchView()">
+        <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
+      </select>
+    </div>
+  </div>
+
   <div *ngIf="!reducedList" class="container">
-    <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
+    <div *ngIf="graphAllDataPieChart.length > 1" class="d-flex justify-content-center">
       <div class="align-center" >
         <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
       </div>
@@ -31,12 +39,12 @@
           <td *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
           <td *ngIf="getStatus(delivery) === -1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
           <td class="d-none d-md-table-cell" title="{{getFullName(delivery)}}">{{getShortText(getFullName(delivery), 50, 'right')}}</td>
-          <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.datePFV | date :'dd.MM.yy'}}</td>
-          <td class="d-none d-lg-table-cell text-right">{{delivery.dateVPV | date :'dd.MM.yy'}}</td>
-          <td *ngIf="!reducedList" class="text-right" title="{{delivery.datePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+          <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.endDatePFV | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-lg-table-cell text-right">{{delivery.endDateVPV | date :'dd.MM.yy'}}</td>
+          <td *ngIf="!reducedList" class="text-right" title="{{delivery.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
 
-          <td *ngIf="(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
-          <td *ngIf="!(inFuture(delivery.dateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td *ngIf="(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td *ngIf="!(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
         </tr>
       </tbody>
       <!--Table body-->

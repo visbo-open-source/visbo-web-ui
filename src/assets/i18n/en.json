@@ -311,6 +311,7 @@
 			"expires": "Expires",
 			"variant": "Variant",
 			"versions": "Versions",
+			"ofTotal": "of total",
 			"unlock": "Unlock",
 			"delete": "Delete",
 			"deleteUser": "Remove User"
@@ -409,6 +410,7 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
+			"vpView": "Show Project Information",
 			"allVersions": "Show all Versions",
 			"back": "Back"
 		},
@@ -447,7 +449,10 @@
 			"endDateVPV": "End Date (planned)",
 			"endDatePFV": "End Date (baseline)",
 			"change": "Change (in weeks)",
-			"done": "Done"
+			"done": "Done",
+			"VPV": "Show all from Project",
+			"PFV": "Show all from Order",
+			"All": "Show all combined"
 		},
 		"msg": {
 			"errorPermVersion": "Permission denied for project versions {{name}}"
@@ -480,7 +485,10 @@
 			"endDateVPV": "End Date (planned)",
 			"endDatePFV": "End Date (baseline)",
 			"change": "Change (in weeks)",
-			"done": "Done"
+			"done": "Done",
+			"VPV": "Zeige alle vom Projekt",
+			"PFV": "Zeige alle vom Auftrag",
+			"All": "Zeige alle kombiniert"
 		},
 		"msg": {
 			"errorPermVersion": "Permission denied for project versions {{name}}"
@@ -509,7 +517,7 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
-	"vpViewVPV": {
+	"vpView": {
 		"title": "Information about",
 		"titleVersion": "Version of",
 		"lbl": {
@@ -522,6 +530,7 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
+			"cost": "Show Cost",
 			"deadline": "Show Deadline",
 			"delivery": "Show Delivery"
 		},

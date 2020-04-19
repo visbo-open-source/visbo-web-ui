@@ -1,4 +1,12 @@
-<div *ngIf="vpvActive" class='well'>
+<div *ngIf="displayDeadline()" class='well'>
+  <div *ngIf="displaySwitch()" class="container">
+    <div class="d-flex justify-content-left">
+      <select class="col-3 form-control mx-1" name="type" [(ngModel)]="type" (change)="switchView()">
+        <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
+      </select>
+    </div>
+  </div>
+
   <div *ngIf="!reducedList" class="container">
     <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
       <div class="align-center" >

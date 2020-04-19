@@ -186,6 +186,11 @@ export class VisboprojectDetailComponent implements OnInit {
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  gotoVPView(visboproject: VisboProject): void {
+    this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
+    this.router.navigate(['vpv/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
@@ -521,6 +526,14 @@ export class VisboprojectDetailComponent implements OnInit {
           }
         }
       );
+  }
+
+  getVPVersionsTotal(): number {
+    let totalVersions = this.visboproject.vpvCount || 0;
+    if (this.visboproject.variant) {
+      this.visboproject.variant.forEach(variant => totalVersions += variant.vpvCount || 0);
+    }
+    return totalVersions
   }
 
   sortUserTable(n?: number) {
