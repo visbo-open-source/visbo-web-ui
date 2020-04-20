@@ -82,7 +82,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
                   this.visboprojectversions.reverse();
                   let index = 0;
                   if (this.initVPVID) {
-                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID)
+                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
                     index = index >= 0 ? index : 0;
                   }
                   this.setVpvActive(visboprojectversions[index]);

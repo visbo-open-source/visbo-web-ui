@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="row">
-      <span class="text-dark">{{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }}) {{estimateAtCompletion | number:'1.0-0'}} T€ {{ 'keyMetrics.versus' | translate }} {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }}) {{budgetAtCompletion | number:'1.0-0'}} T€</span>
+      <span class="text-dark">{{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }}) {{estimateAtCompletion | number:'1.0-0'}} T€ {{ 'keyMetrics.versus' | translate }} {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longBAC' | translate }}) {{budgetAtCompletion | number:'1.0-0'}} T€</span>
       <span *ngIf="estimateAtCompletion <= budgetAtCompletion"><strong class="mx-2 fas fa-check-circle" style="color:green"></strong></span>
       <span *ngIf="estimateAtCompletion > budgetAtCompletion && estimateAtCompletion <= budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-triangle" style="color:orange"></strong></span>
       <span *ngIf="estimateAtCompletion > budgetAtCompletion * 1.05"><strong class="mx-2 fas fa-exclamation-circle" style="color:red"></strong></span>
