@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './line-chart.component.html',
   styleUrls: ['./line-chart.component.css']
 })
-export class LineChartComponent implements OnInit {
+export class LineChartComponent implements OnInit, OnChanges {
 
   @Input() graphData: any;
   @Input() graphOptions: any;

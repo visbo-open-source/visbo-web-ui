@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './gantt-chart.component.html',
   styleUrls: ['./gantt-chart.component.css']
 })
-export class GanttChartComponent implements OnInit {
+export class GanttChartComponent implements OnInit, OnChanges {
 
   @Input() graphData: any;
   @Input() graphOptions: any;

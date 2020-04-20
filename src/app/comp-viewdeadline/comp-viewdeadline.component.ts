@@ -19,7 +19,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
   templateUrl: './comp-viewdeadline.component.html',
   styleUrls: ['./comp-viewdeadline.component.css']
 })
-export class VisboCompViewDeadlineComponent implements OnInit {
+export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   @Input() vpvActive: VisboProjectVersion;
   @Input() combinedPerm: VGPermission;
@@ -132,7 +132,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
     if (this.allDeadline === undefined) {
       return;
     }
-    this.switchType = (this.refType == 'vpv')
+    this.switchType = (this.refType === 'vpv');
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
@@ -160,7 +160,7 @@ export class VisboCompViewDeadlineComponent implements OnInit {
         // we get PFV information
         this.reducedList = false;
       }
-      if (this.filterStatus == undefined  || this.filterStatus ===  this.allDeadline[i].statusID) {
+      if (this.filterStatus === undefined  || this.filterStatus ===  this.allDeadline[i].statusID) {
         if (!this.filterPhase  || this.filterPhase ===  this.allDeadline[i].phasePFV) {
           this.filteredDeadline.push(this.allDeadline[i]);
         }
@@ -305,10 +305,10 @@ export class VisboCompViewDeadlineComponent implements OnInit {
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
-    if (row == undefined) {
+    if (row === undefined) {
       this.filterStatus = undefined;
     } else {
-      const index = this.statusList.findIndex(element => element == label);
+      const index = this.statusList.findIndex(element => element === label);
       if (index < 0 || this.filterStatus === index) {
         this.filterStatus = undefined;
       } else {

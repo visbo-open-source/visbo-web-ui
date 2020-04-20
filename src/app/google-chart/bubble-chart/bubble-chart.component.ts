@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './bubble-chart.component.html',
   styleUrls: ['./bubble-chart.component.css']
 })
-export class BubbleChartComponent implements OnInit {
+export class BubbleChartComponent implements OnInit, OnChanges {
 
   private gLib: any;
   @Input() graphData: any;

@@ -273,7 +273,7 @@ export class VisboProjectsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.log(`get VC Key metrics: Get ${visboprojectversions.length} Project Versions`);
           this.visboKeyMetricsCalc();
-          if (this.visboprojectversions.length == 0) {
+          if (this.visboprojectversions.length === 0) {
             chart = false;
           }
           this.showChartOption(chart);

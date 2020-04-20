@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './scatter-chart.component.html',
   styleUrls: ['./scatter-chart.component.css']
 })
-export class ScatterChartComponent implements OnInit {
+export class ScatterChartComponent implements OnInit, OnChanges {
 
   @Input() graphData: any;
   @Input() graphOptions: any;

@@ -19,7 +19,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
   templateUrl: './comp-viewdelivery.component.html',
   styleUrls: ['./comp-viewdelivery.component.css']
 })
-export class VisboCompViewDeliveryComponent implements OnInit {
+export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -104,7 +104,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
             this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].delivery.length} Timestamp ${visboprojectversions[0].timestamp}`);
             this.allDelivery = visboprojectversions[0].delivery;
           }
-          this.initDeliveries()
+          this.initDeliveries();
           this.visboViewAllDeliveryPie();
         },
         error => {
@@ -123,7 +123,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
     if (this.allDelivery === undefined) {
       return;
     }
-    this.switchType = (this.refType == 'vpv')
+    this.switchType = (this.refType === 'vpv');
     // generate long Names
     for (let i = 0; i < this.allDelivery.length; i++) {
       this.allDelivery[i].fullName = this.getFullName(this.allDelivery[i]);
@@ -147,7 +147,7 @@ export class VisboCompViewDeliveryComponent implements OnInit {
       if (this.allDelivery[i].phasePFV) {
         this.reducedList = false;
       }
-      if (this.filterStatus == undefined  || this.filterStatus ===  this.allDelivery[i].statusID) {
+      if (this.filterStatus === undefined  || this.filterStatus ===  this.allDelivery[i].statusID) {
         this.filteredDelivery.push(this.allDelivery[i]);
       }
     }
@@ -231,10 +231,10 @@ export class VisboCompViewDeliveryComponent implements OnInit {
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
-    if (row == undefined) {
+    if (row === undefined) {
       this.filterStatus = undefined;
     } else {
-      const index = this.statusList.findIndex(element => element == label);
+      const index = this.statusList.findIndex(element => element === label);
       if (index < 0 || this.filterStatus === index) {
         this.filterStatus = undefined;
       } else {

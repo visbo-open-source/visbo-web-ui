@@ -223,11 +223,7 @@ export class VisboProjectVersionService {
   getCost(id: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/cost`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let params = new HttpParams();
-    // if (id) params = params.append('vpid', id);
-    // if (deleted) params = params.append('deleted', '1');
-    // if (variantName != undefined) params = params.append('variantName', variantName);
-    // if (keyMetrics) params = params.append('keyMetrics', '1');
+    const params = new HttpParams();
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })

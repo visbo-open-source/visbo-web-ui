@@ -602,7 +602,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const url = 'vpView/';
     this.log(`goto VP View`);
     let vpid, vpvid;
-    let queryParams: any = {};
+    const queryParams: any = {};
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
       vpvid = this.vpvKeyMetricActive._id;

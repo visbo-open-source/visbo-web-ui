@@ -180,7 +180,7 @@ export class VisboprojectDetailComponent implements OnInit {
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
-    if (visboproject.vpType == VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE['Portfolio']) {
       url = 'vpf/';
     }
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
@@ -533,7 +533,7 @@ export class VisboprojectDetailComponent implements OnInit {
     if (this.visboproject.variant) {
       this.visboproject.variant.forEach(variant => totalVersions += variant.vpvCount || 0);
     }
-    return totalVersions
+    return totalVersions;
   }
 
   sortUserTable(n?: number) {

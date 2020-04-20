@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.css']
 })
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnInit, OnChanges {
 
   @Input() graphData: any;
   @Input() graphOptions: any;

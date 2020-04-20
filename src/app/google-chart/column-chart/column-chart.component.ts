@@ -7,7 +7,7 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './column-chart.component.html',
   styleUrls: ['./column-chart.component.css']
 })
-export class ColumnChartComponent implements OnInit {
+export class ColumnChartComponent implements OnInit, OnChanges {
 
   @Input() graphData: any;
   @Input() graphOptions: any;

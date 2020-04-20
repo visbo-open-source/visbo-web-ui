@@ -90,7 +90,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
                   let index = 0;
                   if (this.initVPVID) {
-                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID)
+                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
                     index = index >= 0 ? index : 0;
                   }
                   this.setVpvActive(visboprojectversions[index]);
@@ -193,7 +193,7 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
         this.scrollRefDate = new Date(this.vpvRefDate);
       }
     } else {
-      this.scrollRefDate === undefined;
+      this.scrollRefDate = undefined;
     }
   }
 

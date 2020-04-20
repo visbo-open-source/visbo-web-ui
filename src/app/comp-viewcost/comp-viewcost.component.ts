@@ -18,7 +18,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
   selector: 'app-comp-viewcost',
   templateUrl: './comp-viewcost.component.html'
 })
-export class VisboCompViewCostComponent implements OnInit {
+export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   @Input() vpvActive: VisboProjectVersion;
   @Input() combinedPerm: VGPermission;
