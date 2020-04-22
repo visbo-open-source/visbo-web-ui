@@ -10,11 +10,9 @@
       </h2>
     </div>
     <div class='btn-group'>
-      <div *ngIf="hasVPPerm(permVP.ViewAudit)">
+      <div *ngIf="vcActive">
         <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
         <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
-        <!-- <button *ngIf="!chart" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboChart()">{{ 'vp.btn.showChart' | translate }}</button>
-        <button *ngIf="chart" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboChart()">{{ 'vp.btn.hideChart' | translate }}</button> -->
       </div>
       <div *ngIf="hasVPPerm(permVP.DeleteVP)">
         <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showDeleted' | translate }}</button>
@@ -61,22 +59,10 @@
     </table>
   </div>
 
-  <div *ngIf="chart==true">
-    <div class="row text-dark">
-      <div class="my-1">
-        <span>{{ 'vpfVersion.lbl.show' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpMetricSelector">{{typeMetricX}}</a></span>
-        <span> {{ 'vpfVersion.lbl.and' | translate }} </span>
-        <span class="font-weight-bold"><a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpMetricSelector">{{typeMetricY}}</a></span>
-        <span> {{ 'vpfVersion.lbl.planVsBase' | translate }}</span>
-        <span *ngIf="vpFilter" class="font-weight-bold">, <a data-toggle="modal" (click)= "drawChart(false)" data-target="#VpMetricSelector">{{ 'vpfVersion.lbl.filtered' | translate }} {{vpFilter}}</a>.</span>
-      </div>
-    </div>
-    <!-- <div *ngIf="chart && graphBarData.length > 0" >
-      <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
-    </div> -->
-    <div *ngIf="graphBubbleData && graphBubbleData.length">
-      <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
+  <div *ngIf="chart">
+    <hr>
+    <div *ngIf="visboprojectversions && vcActive">
+      <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
     </div>
   </div>
 </div>
@@ -115,50 +101,6 @@
         <button type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
           {{ 'vp.btn.save' | translate }}
         </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Change Key metrics -->
-<div class="modal fade" id="VpMetricSelector" tabindex="-1" role="dialog" aria-labelledby="VpMetricSelectorTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="VpMetricSelectorTitle">{{ 'vpfVersion.titleChange' | translate }}</h5>
-        <button type="button" class="close"  (click)="changeChart()" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form #f="ngForm" novalidate>
-          <div class="form-group">
-            <label for="typeMetricXLabel" class="col-form-label">{{ 'vpfVersion.lbl.xAxis' | translate }}:</label>
-            <select class="form-control" id="typeMetricXLabel" name="typeMetricX" [(ngModel)]="typeMetricX">
-              <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="typeMetricYLabel" class="col-form-label">{{ 'vpfVersion.lbl.yAxis' | translate }}:</label>
-            <select class="form-control" id="typeMetricYLabel" name="typeMetricY" [(ngModel)]="typeMetricY">
-              <option *ngFor="let metricItem of typeMetricList">{{metricItem.name}}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="Filter" class="col-form-label">{{ 'vpfVersion.lbl.filter' | translate }}:</label>
-            <input class="form-control"  (keyup)="visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
-          </div>
-          <div *ngIf="hasVPPerm(permVP.ViewAudit)">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="idList" name="modalChart" [(ngModel)]="modalChart">
-                <label class="custom-control-label" for="idList">{{ 'vpfVersion.btn.showChart' | translate }}</label>
-            </div>
-          </div>
-          <div class="modal-footer align-items-end">
-            <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.cancel' | translate }}</button>
-            <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">{{ 'vpfVersion.btn.change' | translate }}</button>
-          </div>
-        </form>
       </div>
     </div>
   </div>

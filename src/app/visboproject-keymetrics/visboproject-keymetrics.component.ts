@@ -130,7 +130,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
 
                   this.visboKeyMetricsCalc();
-                  if (this.hasVPPerm(this.permVP.ViewAudit)) {
+                  if (visboprojectversions[0].keyMetrics) {
                     this.chart = chartFlag;
                   } else {
                     this.chart = false;
