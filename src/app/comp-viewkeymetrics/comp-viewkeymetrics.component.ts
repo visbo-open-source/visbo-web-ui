@@ -285,13 +285,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   storeSetting() {
-    // let vpvRefDate = new Date();
-    // // store refDate only if it is different from today
-    // if (this.isSameDay(vpvRefDate, this.vpvRefDate)) {
-    //   vpvRefDate = undefined;
-    // } else {
-    //   vpvRefDate = this.vpvRefDate;
-    // }
     const view = {
       'updatedAt': (new Date()).toISOString(),
       'objectID': this.currentID,
@@ -374,7 +367,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           break;
         case 'Deadlines':
           valueY = Math.round(this.visbokeymetrics[i].timeCompletionActual * 100);
-          colorValue += valueY >= 1 ? 1 : 0;
+          colorValue += valueY >= 100 ? 1 : 0;
           break;
         case 'Deliveries':
           valueY = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
