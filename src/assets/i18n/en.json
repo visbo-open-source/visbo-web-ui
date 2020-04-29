@@ -496,18 +496,24 @@
 	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status of Deliveries",
+		"titleDetailDelivery": "Status of Delivery",
 		"lbl": {
 			"status": "Status",
 			"count": "Count",
-			"phase": "Plan Element",
+			"planElement": "Plan Element",
 			"description": "Delivery",
 			"endDateVPV": "End Date (planned)",
 			"endDatePFV": "End Date (baseline)",
 			"change": "Change (in weeks)",
 			"done": "Done",
+			"vp": "VISBO Project",
 			"VPV": "Show all from Project",
 			"PFV": "Show all from Order",
 			"All": "Show all combined"
+		},
+		"btn": {
+			"detail": "Restrictions",
+			"back": "Back"
 		},
 		"msg": {
 			"errorPermVersion": "Permission denied for project versions {{name}}"

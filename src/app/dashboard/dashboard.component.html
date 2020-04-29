@@ -2,7 +2,7 @@
   <app-usernavbar></app-usernavbar>
 </div>
 
-<div *ngIf="(visbocenters && visbocenters.length > 1) || (visbocenters && visbocenters.length == 1 && visboprojects && visboprojects.length == 0)" class="container-fluit" >
+<div *ngIf="visbocenters" class="container-fluit" >
   <div class='panel-heading'>
     <h2>{{ 'dashboard.topvc' | translate }}</h2>
   </div>

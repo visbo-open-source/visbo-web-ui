@@ -540,9 +540,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   getMetric(axis: string): string {
     let result: string;
     if (axis === 'X') {
-      result = this.metricList[this.metricX];
+      result = this.metricList[this.metricX].name;
     } else if (axis === 'Y') {
-      result = this.metricList[this.metricY];
+      result = this.metricList[this.metricY].name;
     }
     result = result || 'UNKNOWN';
     return result;

@@ -496,18 +496,24 @@
 	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status der Lieferungen",
+		"titleDetailDelivery": "Status der Lieferung",
 		"lbl": {
 			"status": "Status",
 			"count": "Anzahl",
-			"phase": "Planelement",
+			"planElement": "Planelement",
 			"description": "Lieferung",
 			"endDatePFV": "Termin (Baseline)",
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
 			"done": "Erledigt",
+			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle vom Auftrag",
 			"All": "Zeige alle kombiniert"
+		},
+		"btn": {
+			"detail": "Freigaben",
+			"back": "Back"
 		},
 		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"

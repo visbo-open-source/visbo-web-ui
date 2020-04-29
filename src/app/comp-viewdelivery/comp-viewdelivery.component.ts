@@ -39,6 +39,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   filterStatus: number;
   reducedList: boolean;
   statusList: string[];
+  deliveryIndex: number;
 
   listType: any[] = [
     {name: 'PFV', ref: 'pfv', localName: ''},
@@ -154,11 +155,35 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     this.sortDeliveryTable(undefined);
   }
 
+  helperDelivery(index: number): void {
+    this.deliveryIndex = index;
+  }
+
+  getElementPath(index: number, len?: number): string {
+    const path = this.filteredDelivery[index].fullPathVPV;
+    let result = '';
+    if (path.length <= 1) {
+      result = this.vpvActive.name;
+    } else {
+      result = path.slice(1).join(' / ');
+    }
+    if (len > 0) {
+      result = visboGetShortText(result, len, 'right');
+    }
+    return result;
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
     }
     return (this.combinedPerm.vp & perm) > 0;
+  }
+
+  canSeeRestriction(): boolean {
+      let perm = this.combinedPerm.vp || 0;
+      perm = perm & (this.permVP.Modify + this.permVP.ManagePerm);
+      return perm > 0;
   }
 
   getStatus(element: VPVDelivery): number {
@@ -287,6 +312,15 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       result = true;
     }
     return result;
+  }
+
+  gotoVPRestrict(index: number): void {
+    const path = this.filteredDelivery[index].fullPathVPV;
+    const nameID = this.filteredDelivery[index].nameID;
+    sessionStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
+
+    this.log(`goto VP Restrict: ${this.vpvActive.vpid} ID ${nameID} Path ${path.join(' / ')}`);
+    this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});
   }
 
   sortDeliveryTable(n?: number) {

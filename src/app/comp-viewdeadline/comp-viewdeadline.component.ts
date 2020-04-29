@@ -200,7 +200,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   canSeeRestriction(): boolean {
       let perm = this.combinedPerm.vp || 0;
-      perm = perm & (this.permVP.Modify + this.permVP.ManagePerm + this.permVP.DeleteVP);
+      perm = perm & (this.permVP.Modify + this.permVP.ManagePerm);
       return perm > 0;
   }
 
