@@ -117,7 +117,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.log(`Delivery on Changes  ${this.activeID}`);
-    if (this.currentID !== undefined && this.activeID !== this.currentID) {
+    if (this.currentID !== undefined) {
       this.visboKeyMetricsCalc();
     }
   }

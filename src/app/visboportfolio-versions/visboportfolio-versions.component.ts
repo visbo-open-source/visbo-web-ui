@@ -32,37 +32,14 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     dropDownSelected: string;
     dropDownValue: number;
 
-    colorMetric: any[] = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
-
-    metricList: any[];
-    metricX = 0;
-    metricY = 1;
-
-    hasKMCost = false;
-    hasKMDelivery = false;
-    hasKMDeadline = false;
-    hasKMEndDate = false;
-
     vpSelected: string;
-    vpFilter: string;
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
-    estimateAtCompletion = 0;
-    budgetAtCompletion = 0;
     vpvRefDate: Date = new Date();
     refDateInterval = 'month';
     vpfActiveIndex: number;
     deleted = false;
-    chart = true;
-    parentThis: any;
-    graphBubbleData: any[] = [];
-    graphBubbleOptions: any = undefined;
-    graphBubbleLabelX: string;
-    graphBubbleLabelY: string;
     currentLang: string;
-
-    sortAscending: boolean;
-    sortColumn = 6;
 
     combinedPerm: VGPermission = undefined;
     permVC: any = VGPVC;
@@ -81,55 +58,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
-    this.metricList = [
-      {
-        name: this.translate.instant('vpfVersion.metric.costName'),
-        metric: 'Costs',
-        axis: this.translate.instant('vpfVersion.metric.costAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.costBubble'),
-        table: this.translate.instant('vpfVersion.metric.costTable'),
-        hidden: false
-      },
-      {
-        name: this.translate.instant('vpfVersion.metric.endDateName'),
-        metric: 'EndDate',
-        axis: this.translate.instant('vpfVersion.metric.endDateAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.endDateBubble'),
-        table: this.translate.instant('vpfVersion.metric.endDateTable'),
-        hidden: false
-      },
-      {
-        name: this.translate.instant('vpfVersion.metric.deadlineName'),
-        metric: 'Deadlines',
-        axis: this.translate.instant('vpfVersion.metric.deadlineAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deadlineBubble'),
-        table: this.translate.instant('vpfVersion.metric.deadlineTable'),
-        hidden: false
-      },
-      {
-        name: this.translate.instant('vpfVersion.metric.deliveryName'),
-        metric: 'Deliveries',
-        axis: this.translate.instant('vpfVersion.metric.deliveryAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deliveryBubble'),
-        table: this.translate.instant('vpfVersion.metric.deliveryTable'),
-        hidden: false
-      }
-    ];
 
-    const view = JSON.parse(sessionStorage.getItem('vpf-view'));
     const id = this.route.snapshot.paramMap.get('id');
-    if (view) {
-      if (view.xAxis >= 0 && view.xAxis < this.metricList.length) {
-        this.metricX = view.xAxis;
-      }
-      if (view.yAxis >= 0 && view.yAxis < this.metricList.length) {
-        this.metricY = view.yAxis;
-      }
-      if (view.vpID && view.vpID === id) {
-        this.vpFilter = view.vpFilter || undefined;
-        this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
-      }
-    }
+    const refDate = this.route.snapshot.queryParams['refDate'];
+    this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
+
     this.getVisboPortfolioVersions();
   }
 
@@ -142,7 +75,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   getVisboPortfolioVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    this.parentThis = this;
     this.vpSelected = id;
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -285,6 +217,25 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     dateB.setHours(0, 0, 0, 0);
     return dateA.toISOString() === dateB.toISOString();
   }
+
+  getNextVersion(direction: number): void {
+    this.getRefDateVersions(direction);
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = {
+      refDate: this.vpvRefDate.toISOString()
+    };
+    // this.visboprojectversions = [];
+    this.log(`GoTo Prev refDate ${this.vpvRefDate.toISOString()}`);
+    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+  }
+
+  // getNextVersion(): void {
+  //   const vpv = this.getRefDateVersions(+1);
+  //   const url = this.route.snapshot.url[0].path + '/';
+  //   const queryParams = { vpvid: vpv._id };
+  //   this.log(`GoTo Next Version ${vpv._id} ${vpv.timestamp}`);
+  //   this.router.navigate([url.concat(vpv.vpid)], { queryParams: queryParams, replaceUrl: true });
+  // }
 
   // get the details of the project
   gotoVPDetail(visboproject: VisboProject): void {

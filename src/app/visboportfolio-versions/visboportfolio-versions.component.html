@@ -27,14 +27,14 @@
       </h3>
       <div class="col-4">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getRefDateVersions(-1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(-1)'></span>
           <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpfVersion.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpfVersion.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpfVersion.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpfVersion.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getRefDateVersions(1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(1)'></span>
         </div>
       </div>
     </div>
