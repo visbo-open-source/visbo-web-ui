@@ -31,8 +31,7 @@
       </thead>
       <!--Table body-->
       <tbody>
-        <tr *ngFor="let deadlines of filteredDeadline">
-           <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
+        <tr *ngFor="let deadlines of filteredDeadline; let deadlineIndex=index" (click)='helperDeadline(deadlineIndex)' data-toggle="modal" data-target="#detailDeadline">
           <td *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
@@ -50,4 +49,51 @@
       <!--Table body-->
     </table>
   </div>
+
+  <!-- Modal Show Deadline Detail -->
+  <div class="modal fade" id="detailDeadline" tabindex="-1" role="dialog" aria-labelledby="Detail Deadline" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailDeadlineTitle">{{ 'compViewDeadline.titleDetailDeadline' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" *ngIf="deadlineIndex >= 0 && deadlineIndex < filteredDeadline.length">
+          <form>
+            <div class="form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.vp' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vpvActive.name }} </label>
+            </div>
+            <div class="form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.planElement' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ getElementPath(deadlineIndex) }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.type' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].type }}</label>
+            </div>
+            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].endDatePFV">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].endDatePFV | date :'dd.MM.yy' }}</label>
+            </div>
+            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].endDateVPV">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.endDateVPV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].endDateVPV | date :'dd.MM.yy' }}</label>
+            </div>
+            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].percentDone">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.done' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].percentDone * 100 | number : '1.0-0' }} %</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'compViewDeadline.btn.back' | translate }}</button>
+          <button *ngIf="canSeeRestriction()" type="button" class="btn btn-primary" data-dismiss="modal" (click)="gotoVPRestrict(deadlineIndex)">{{ 'compViewDeadline.btn.detail' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

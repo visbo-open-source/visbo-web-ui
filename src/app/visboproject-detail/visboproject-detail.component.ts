@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -91,7 +91,7 @@ export class VisboprojectDetailComponent implements OnInit {
     if (this.combinedUserPerm === undefined) {
       return false;
     }
-    this.log(`Has User VP Permission ${perm}? ${(this.combinedUserPerm.vp & perm) > 0} `);
+    // this.log(`Has User VP Permission ${perm}? ${(this.combinedUserPerm.vp & perm) > 0} `);
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
@@ -100,6 +100,15 @@ export class VisboprojectDetailComponent implements OnInit {
       return 0;
     }
     return this.combinedPerm.vp;
+  }
+
+  viewRestriction(): boolean {
+    if (!this.visboproject.restrict || !this.visboproject.restrict.length) {
+      return false;
+    }
+    let perm = this.combinedPerm.vp || 0;
+    perm = perm & (this.permVP.Modify + this.permVP.ManagePerm + this.permVP.DeleteVP);
+    return perm > 0;
   }
 
   getVPType(vpType: number): string {
@@ -163,6 +172,11 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  gotoVPRestriction(visboproject: VisboProject): void {
+    this.log(`goto VP Restriction: ${visboproject._id} Deleted ${this.deleted}`);
+    this.router.navigate(['vpRestrict/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+  }
+
   gotoVPAudit(visboproject: VisboProject): void {
     this.log(`goto VP Audit: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpAudit/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
@@ -218,16 +232,16 @@ export class VisboprojectDetailComponent implements OnInit {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
     const inviteGroup = this.vgGroups.filter(group => group.name === groupName)[0];
-    const groupId = inviteGroup._id;
+    const groupid = inviteGroup._id;
     let inviteMessage = '';
     if (this.newUserInvite.inviteMessage) {
       inviteMessage = this.newUserInvite.inviteMessage.trim();
     }
     const vpid = this.visboproject._id;
 
-    this.log(`Add VisboProject User: ${email} Group: ${groupName}/${groupId} VP: ${vpid}`);
-    if (!email || !groupId) { return; }
-    this.visboprojectService.addVPUser(email, groupId, inviteMessage, vpid )
+    this.log(`Add VisboProject User: ${email} Group: ${groupName}/${groupid} VP: ${vpid}`);
+    if (!email || !groupid) { return; }
+    this.visboprojectService.addVPUser(email, groupid, inviteMessage, vpid )
       .subscribe(
         group => {
           // Add User to User & Group list
@@ -342,6 +356,9 @@ export class VisboprojectDetailComponent implements OnInit {
 
   helperVPPerm(newGroup: any): number {
     let perm = 0;
+    if (newGroup.checkedVPViewRestricted) {
+      perm += this.permVP.ViewRestricted;
+    }
     if (newGroup.checkedVPView) {
       perm += this.permVP.View;
     }
@@ -380,6 +397,7 @@ export class VisboprojectDetailComponent implements OnInit {
       this.actGroup.checkedCreateVP = (curGroup.permission.vc & this.permVC.CreateVP) > 0;
       this.actGroup.checkedManagePerm = (curGroup.permission.vc & this.permVC.ManagePerm) > 0;
 
+      this.actGroup.checkedVPViewRestricted = (curGroup.permission.vp & this.permVP.ViewRestricted) > 0;
       this.actGroup.checkedVPView = (curGroup.permission.vp & this.permVP.View) > 0;
       this.actGroup.checkedVPViewAudit = (curGroup.permission.vp & this.permVP.ViewAudit) > 0;
       this.actGroup.checkedVPModify = (curGroup.permission.vp & this.permVP.Modify) > 0;

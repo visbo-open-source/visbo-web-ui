@@ -34,6 +34,7 @@
       <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
       <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
+      <button *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
     </div>
 
     <div *ngIf="!showGroups" >
@@ -139,7 +140,7 @@
     </div>
 
     <!-- Show Locks -->
-    <div *ngIf="visboproject.lock.length >0">
+    <div *ngIf="visboproject.lock.length >0 && hasVPPerm(permVP.Modify)">
       <div class='row'>
         <div class='col'>
           <h5 class='panel-heading'>
@@ -165,7 +166,7 @@
               <td>{{visboproject.lock[lockIndex].expiresAt | date :'dd.MM HH:mm'}}</td>
               <td>{{visboproject.lock[lockIndex].variantName}}</td>
               <td *ngIf="!deleted && hasVPPerm(permVP.Modify)">
-                <button class="btn btn-sm" title="{{ 'vpDetail.lbl.unlock' | translate }}" (click)='unlockVP(lockIndex)'
+                <button class="btn btn-md" title="{{ 'vpDetail.lbl.unlock' | translate }}" (click)='unlockVP(lockIndex)'
                 data-toggle="modal" data-target="#VpUnlock">&times;</button>
               </td>
             </tr>
@@ -175,6 +176,7 @@
       </div>
     </div>
   </div>
+
   <div class="mb-3">
     <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
     <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
@@ -283,6 +285,10 @@
             </div>
             <!-- VP Permissions -->
             <div>{{ 'perm.titleVPPerm' | translate }}</div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="permVP0" name="checkedVPViewRestricted" [(ngModel)]="actGroup.checkedVPViewRestricted" #checkedVPViewRestricted="ngModel">
+                <label class="custom-control-label" for="permVP0">{{ 'perm.vpViewRestricted' | translate }}</label>
+            </div>
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="permVP1" name="checkedVPView" [(ngModel)]="actGroup.checkedVPView" #checkedVPView="ngModel">
                 <label class="custom-control-label" for="permVP1">{{ 'perm.vpView' | translate }}</label>
@@ -420,6 +426,11 @@
         <div class="modal-body">
           <!-- VP Permissions -->
           <div>{{ 'perm.titleVPPerm' | translate }}</div>
+          <div class="custom-control custom-checkbox">
+            <input *ngIf="hasUserVPPerm(permVP.ViewRestricted)" type="checkbox" checked disabled class="custom-control-input" id="permVP0" name="checkedViewRestricted" >
+            <input *ngIf="!hasUserVPPerm(permVP.ViewRestricted)" type="checkbox" disabled class="custom-control-input" id="permVP0" name="checkedViewRestricted" >
+            <label class="custom-control-label" for="permVP1">{{ 'perm.vpViewRestricted' | translate }}</label>
+          </div>
           <div class="custom-control custom-checkbox">
             <input *ngIf="hasUserVPPerm(permVP.View)" type="checkbox" checked disabled class="custom-control-input" id="permVP1" name="checkedView" >
             <input *ngIf="!hasUserVPPerm(permVP.View)" type="checkbox" disabled class="custom-control-input" id="permVP1" name="checkedView" >

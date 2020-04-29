@@ -1,0 +1,167 @@
+<app-usernavbar></app-usernavbar>
+<div *ngIf="visboproject">
+  <h3>{{ 'vpRestrict.title' | translate }}: <a (click)="gotoVP(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
+  <h5>{{ 'vpRestrict.titleVC' | translate }}:
+    <a (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
+  </h5>
+  <form>
+    <div class="form-group row">
+      <label for="vpName" class="col-3 col-md-2 col-form-label">{{ 'vpRestrict.lbl.name' | translate }}:</label>
+      <label class="col-8 form-control-static">{{ visboproject.name }} </label>
+    </div>
+    <div *ngIf="visboproject.description" class="form-group row">
+      <label for="vpDescription" class="col-3 col-md-2 col-form-label">{{ 'vpRestrict.lbl.description' | translate }}:</label>
+      <label class="col-8 form-control-static">{{ visboproject.description }} </label>
+    </div>
+    <div class="form-group row">
+      <label for="vpType" class="col-3 col-md-2 col-form-label">{{ 'vpRestrict.lbl.type' | translate }}:</label>
+      <label name=vpType class="col form-control-static col-form-label">{{ getVPType(visboproject.vpType) }} </label>
+    </div>
+    <div class="form-group row d-none d-md-block">
+      <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vpRestrict.lbl.createdUpdated' | translate }}:</label>
+      <label class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label class="col-4 form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+  </form>
+  <div *ngIf="getVPPerm() != permVP.View">
+    <!-- Show Restrictions -->
+    <div *ngIf="visboproject.restrict.length >0 && hasVPPerm(permVP.Modify)">
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+            {{ 'vpRestrict.titleProjectRestrict' | translate }}
+          </h5>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortRestrictTable(1)">{{ 'vpRestrict.lbl.restrictpath' | translate }}</th>
+              <th (click)="sortRestrictTable(2)" class="d-none d-md-table-cell">{{ 'vpRestrict.lbl.restrictgroup' | translate }}</th>
+              <th class="d-none d-md-table-cell">{{ 'vpRestrict.lbl.inclChildren' | translate }}</th>
+              <th (click)="sortRestrictTable(4)" class="d-none d-lg-table-cell">{{ 'vpRestrict.lbl.createdBy' | translate }}</th>
+              <th (click)="sortRestrictTable(5)" class="d-none d-lg-table-cell">{{ 'vpRestrict.lbl.createdAt' | translate }}</th>
+              <th>{{ 'vpRestrict.lbl.delete' | translate }}</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let restrict of visboproject.restrict; let restrictIndex=index">
+              <td title="{{getRestrictPath(restrictIndex)}}">{{getRestrictPath(restrictIndex, 30)}}</td>
+              <td class="d-none d-md-table-cell">{{getGroupName(restrict.groupid)}}</td>
+              <td class="d-none d-md-table-cell"><i *ngIf="restrict.inclChildren" class="fa fa-check" aria-hidden="true"></i></td>
+              <!-- <td class="d-none d-md-table-cell">{{restrict.inclChildren}}</td> -->
+              <td class="d-none d-lg-table-cell">{{restrict.user.email}}</td>
+              <td class="d-none d-lg-table-cell">{{restrict.createdAt | date :'dd.MM HH:mm' }}</td>
+              <td>
+                <button class="btn btn-md" title="{{ 'vpRestrict.lbl.rmRestrict' | translate }}"  (click)='helperRemoveRestriction(restrictIndex)'
+                data-toggle="modal" data-target="#VpRestrictionRemove">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+          <!--Table body-->
+        </table>
+        <div *ngIf="newItemPath" class="row">
+          <label class="col" title="{{getRestrictPath(-1)}}">{{getRestrictPath(-1, 30)}}</label>
+          <button type="button" class="col-2 btn btn-primary" data-toggle="modal" data-target="#VpRestrictionAdd">{{ 'vpRestrict.btn.add' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <button (click)="goBack()">{{ 'vpRestrict.btn.back' | translate }}</button>
+  </div>
+
+  <!-- Modal Add Restriction -->
+  <div class="modal fade" id="VpRestrictionAdd" tabindex="-1" role="dialog" aria-labelledby="VpRestrictModalCreateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" >{{ 'vpRestrict.titleAddRestriction' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form #f1="ngForm" novalidate>
+            <div class="form-group">
+              <label for="path" class="col-form-label">{{ 'vpRestrict.lbl.restrictpath' | translate }}:</label>
+              <label>{{ getRestrictPath(-1) }}</label>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
+              <label for="group" class="col-form-label">{{ 'vpRestrict.lbl.group' | translate }}:</label>
+              <select class="form-control" name="group" [(ngModel)]="newItemGroup" #group="ngModel" required>
+                <option></option>
+                <option *ngFor="let groupItem of vgGroups" value="{{groupItem._id}}">{{groupItem.name}}</option>
+              </select>
+              <div *ngIf="f1.submitted && !group.valid" class="help-block">{{ 'vpRestrict.msg.groupRequired' | translate }}</div>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" name="inclChildren" id="inclChildrenID" [(ngModel)]="newItemInclChildren" #inclChildren="ngModel">
+                <label class="custom-control-label" for="inclChildrenID">{{ 'vpRestrict.lbl.inclChildrenDesc' | translate }}</label>
+            </div>
+            <br>
+
+            <div class="modal-footer align-items-end">
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpRestrict.btn.cancel' | translate }}</button>
+              <button *ngIf="!group.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpRestrict.btn.add' | translate }}</button>
+              <button *ngIf="group.valid" type="submit" class="btn btn-primary mx-1" (click)="addRestriction()" data-dismiss="modal">{{ 'vpRestrict.btn.add' | translate }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Delete Restriction -->
+  <div class="modal fade" id="VpRestrictionRemove" tabindex="-1" role="dialog" aria-labelledby="Remove Restriction" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VpUserRemoveTitle">{{ 'vpRestrict.titleRemoveRestriction' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" *ngIf="restrictIndex >= 0 && restrictIndex < visboproject.restrict.length">
+          <div>
+            <label class="bg-warning">{{ 'vpRestrict.msg.removeRestrictionConfirm' | translate }}</label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.vp' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ visboproject.name }} </label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.restrictpath' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ getRestrictPath(restrictIndex) }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.group' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ getGroupName(visboproject.restrict[restrictIndex].groupid) }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.includeChilds' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ visboproject.restrict[restrictIndex].inclChildren }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.createdBy' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ visboproject.restrict[restrictIndex].user.email}}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vpRestrict.lbl.createdAt' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ visboproject.restrict[restrictIndex].createdAt | date :'dd.MM HH:mm' }}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpRestrict.btn.back' | translate }}</button>
+          <button type="button" class="btn btn-warning" (click)="removeRestriction(restrictIndex)" data-dismiss="modal">{{ 'vpRestrict.btn.delete' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -308,12 +308,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       this.sortColumnDelivery = 2;
       this.sortAscendingDelivery = true;
     }
-    if (this.sortColumnDelivery === 1) {
-      // sort by Delivery Index
-      this.filteredDelivery.sort(function(a, b) {
-        return a.id - b.id;
-      });
-    } else if (this.sortColumnDelivery === 2) {
+    if (this.sortColumnDelivery === 2) {
       this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
     } else if (this.sortColumnDelivery === 3) {
       this.filteredDelivery.sort(function(a, b) {

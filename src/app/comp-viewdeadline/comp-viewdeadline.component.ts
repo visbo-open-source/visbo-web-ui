@@ -32,6 +32,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   filterPhase: string;
   reducedList: boolean;
 
+  deadlineIndex: number;
+
   listType: any[] = [
     {name: 'PFV', ref: 'pfv', localName: ''},
     {name: 'VPV', ref: 'vpv', localName: ''},
@@ -171,11 +173,35 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // this.visboViewDeadlineGantt();
   }
 
+  helperDeadline(index: number): void {
+    this.deadlineIndex = index;
+  }
+
+  getElementPath(index: number, len?: number): string {
+    const path = this.filteredDeadline[index].fullPathVPV;
+    let result = '';
+    if (path.length <= 1) {
+      result = this.vpvActive.name;
+    } else {
+      result = path.slice(1).join(' / ');
+    }
+    if (len > 0) {
+      result = visboGetShortText(result, len, 'right');
+    }
+    return result;
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
     }
     return (this.combinedPerm.vp & perm) > 0;
+  }
+
+  canSeeRestriction(): boolean {
+      let perm = this.combinedPerm.vp || 0;
+      perm = perm & (this.permVP.Modify + this.permVP.ManagePerm + this.permVP.DeleteVP);
+      return perm > 0;
   }
 
   getStatus(element: VPVDeadline): number {
@@ -372,6 +398,15 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     return result;
   }
 
+  gotoVPRestrict(index: number): void {
+    const path = this.filteredDeadline[index].fullPathVPV;
+    const nameID = this.filteredDeadline[index].nameID;
+    sessionStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
+
+    this.log(`goto VP Restrict: ${this.vpvActive.vpid} ID ${nameID} Path ${path.join(' / ')}`);
+    this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});
+  }
+
   sortDeadlineTable(n?: number) {
     if (!this.filteredDeadline) {
       return;
@@ -391,12 +426,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       this.sortColumnDeadline = 2;
       this.sortAscendingDeadline = true;
     }
-    if (this.sortColumnDeadline === 1) {
-      // sort by Deadline Index
-      this.filteredDeadline.sort(function(a, b) {
-        return a.id - b.id;
-      });
-    } else if (this.sortColumnDeadline === 2) {
+    if (this.sortColumnDeadline === 2) {
       this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
     } else if (this.sortColumnDeadline === 3) {
       this.filteredDeadline.sort(function(a, b) {

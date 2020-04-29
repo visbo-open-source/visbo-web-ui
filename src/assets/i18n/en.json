@@ -290,6 +290,8 @@
 		"titleDeleteProject": "Delete VISBO Project",
 		"titleProjectLocks": "VISBO Project Locks",
 		"titlePermUser": "Permission for {{name}}",
+		"titleProjectRestrict": "VISBO Project Restrictions",
+		"titleRemoveRestriction": "Delete a Restriction from the VISBO Projekt",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -314,7 +316,13 @@
 			"ofTotal": "of total",
 			"unlock": "Unlock",
 			"delete": "Delete",
-			"deleteUser": "Remove User"
+			"deleteUser": "Remove User",
+			"restrictpath": "Plan Element",
+			"restrictgroup": "Group",
+			"inclChildren": "hierarchical",
+			"createdBy": "Created by",
+			"createdAt": "Created at",
+			"rmRestrict": "Remove Restriction"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -331,6 +339,7 @@
 			"save": "Save",
 			"restore": "Restore",
 			"destroy": "Destroy!",
+			"viewRestriction": "Restriction",
 			"view": "View",
 			"delete": "Delete",
 			"back": "Go Back",
@@ -364,6 +373,52 @@
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveLockPerm": "No Permission to delete Lock",
 			"errorVPConflict": "A VISBO Project with {{name}} does already exist!"
+		}
+	},
+	"vpRestrict": {
+		"title": "VISBO Project",
+		"titleVC": "VISBO Center",
+		"titleProjectRestrict": "VISBO Project Restrictions",
+		"titleAddRestriction": "Add a Restriction to the VISBO Project",
+		"titleRemoveRestriction": "Delete a Restriction from the VISBO Projekt",
+		"lbl": {
+			"name": "Name",
+			"vc": "VISBO Center",
+			"vp": "VISBO Project",
+			"modified": "Änderung",
+			"createdUpdated": "Created / Updated at",
+			"description": "Description",
+			"group": "Group",
+			"type": "Type",
+			"info": "Info",
+			"restrictpath": "Plan Element",
+			"restrictgroup": "Group",
+			"inclChildren": "hierarchical",
+			"inclChildrenDesc": "hierarchical, including all Children",
+			"delete": "Delete",
+			"createdBy": "Created by",
+			"createdAt": "Created at",
+			"rmRestrict": "Remove Restriction"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"add": "Add",
+			"delete": "Delete",
+			"cancel": "Cancel",
+			"back": "Go Back"
+		},
+		"msg": {
+			"groupRequired": "Group must be defined",
+			"errorPerm": "No Permission for this VISBO Project",
+			"errorPermVP": "No Permission for VISBO Project {{name}}",
+			"removeRestrictionConfirm": "Do you really want to delete this Restriction",
+			"addRestrictionSuccess": "Restriction was added successfully",
+			"removeRestrictionSuccess": "Restriction was deleted successfully",
+			"errorRemoveRestrictionPerm": "No Permission to remove the restriction"
 		}
 	},
 	"vpKeyMetric": {
@@ -477,6 +532,7 @@
 	},
 	"compViewDeadline": {
 		"titleAllDeadlines": "Status of Deadline",
+		"titleDetailDeadline": "Details about Deadline",
 		"lbl": {
 			"status": "Status",
 			"count": "Anzahl",
@@ -486,9 +542,14 @@
 			"endDatePFV": "End Date (baseline)",
 			"change": "Change (in weeks)",
 			"done": "Done",
+			"vp": "VISBO Project",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle vom Auftrag",
 			"All": "Zeige alle kombiniert"
+		},
+		"btn": {
+			"detail": "Restrictions",
+			"back": "Back"
 		},
 		"msg": {
 			"errorPermVersion": "Permission denied for project versions {{name}}"
@@ -504,12 +565,6 @@
 			"quarter": "quarter",
 			"previousPeriod": "Previous Period before {{refDate}}",
 			"nextPeriod": "Next Period after {{refDate}}",
-			"planElement": "Plan Element",
-			"type": "Type",
-			"endDateVPV": "End Date (planned)",
-			"endDatePFV": "End Date (baseline)",
-			"change": "Change (in weeks)",
-			"done": "Done",
 			"vc": "VISBO Center"
 		},
 		"msg": {
@@ -856,6 +911,7 @@
 		"vcCreateVP": "Create VISBO Project",
 		"vcManagePerm": "Manage Permissions, Users and Groups",
 		"vcGlobal": "Group has Access to all VISBO Projects",
+		"vpViewRestricted": "View Restricted",
 		"vpView": "View Project",
 		"vpViewAudit": "View Project Audit",
 		"vpModify": "Modify Project",

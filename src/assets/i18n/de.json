@@ -290,6 +290,8 @@
 		"titleDeleteProject": "VISBO Projekt löschen",
 		"titleProjectLocks": "VISBO Projekt Locks",
 		"titlePermUser": "Berechtigung für {{name}}",
+		"titleProjectRestrict": "VISBO Projekt Freigaben",
+		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -314,7 +316,13 @@
 			"ofTotal": "of total",
 			"unlock": "Entsperren",
 			"delete": "Löschen",
-			"deleteUser": "Benutzer löschen"
+			"deleteUser": "Benutzer löschen",
+			"restrictpath": "Planelement",
+			"restrictgroup": "Gruppe",
+			"inclChildren": "hierarchisch",
+			"createdBy": "Erstellt von",
+			"createdAt": "Erstellt am",
+			"rmRestrict": "Freigabe löschen"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -331,6 +339,7 @@
 			"save": "Speichern",
 			"restore": "Wiederherstellen",
 			"destroy": "Vernichten!",
+			"viewRestriction": "Freigaben",
 			"view": "Anzeigen",
 			"delete": "Löschen",
 			"back": "Zurück",
@@ -364,6 +373,52 @@
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
 			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vpRestrict": {
+		"title": "VISBO Projekt",
+		"titleVC": "VISBO Center",
+		"titleProjectRestrict": "VISBO Projekt Freigaben",
+		"titleAddRestriction": "Freigabe zum VISBO Project hinzufügen",
+		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
+		"lbl": {
+			"name": "Name",
+			"vc": "VISBO Center",
+			"vp": "VISBO Projekt",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"group": "Gruppe",
+			"type": "Typ",
+			"info": "Info",
+			"restrictpath": "Planelement",
+			"restrictgroup": "Gruppe",
+			"inclChildren": "hierarchisch",
+			"inclChildrenDesc": "hierarchisch, inklusive aller Kinder",
+			"delete": "Löschen",
+			"createdBy": "Erstellt von",
+			"createdAt": "Erstellt am",
+			"rmRestrict": "Freigabe löschen"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"add": "Hinzufügen",
+			"delete": "Löschen",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"msg": {
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
+			"removeRestrictionConfirm": "Wollem Sie die Freigabe wirklich löschen?",
+			"addRestrictionSuccess": "Freigabe wurde erfolgreich hinzugefügt",
+			"removeRestrictionSuccess": "Freigabe wurde erfolgreich aufgehoben",
+			"errorRemoveRestrictionPerm": "Keine Berechtigung die Freigabe aufzuheben"
 		}
 	},
 	"vpKeyMetric": {
@@ -477,6 +532,7 @@
 	},
 	"compViewDeadline": {
 		"titleAllDeadlines": "Status der Termine",
+		"titleDetailDeadline": "Details zum Termin",
 		"lbl": {
 			"status": "Status",
 			"count": "Anzahl",
@@ -486,9 +542,14 @@
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
 			"done": "Erledigt",
+			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle vom Auftrag",
 			"All": "Zeige alle kombiniert"
+		},
+		"btn": {
+			"detail": "Freigaben",
+			"back": "Back"
 		},
 		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
@@ -850,6 +911,7 @@
 		"vcCreateVP": "Projekt anlegen",
 		"vcManagePerm": "Berechtigung, Benutzer und Gruppen verwalten",
 		"vcGlobal": "Gruppe hat Zugriff auf alle Projekte im VISBO Center",
+		"vpViewRestricted": "Eingeschränkte Ansicht",
 		"vpView": "Projekt anzeigen",
 		"vpViewAudit": "Projekt Audit anzeigen",
 		"vpModify": "Projekt ändern",

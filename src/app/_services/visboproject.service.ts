@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboProject, VisboProjectResponse, VisboProjectLockResponse } from '../_models/visboproject';
+import { VisboProject, VisboProjectResponse, VisboProjectLockResponse, VPRestrict } from '../_models/visboproject';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -284,6 +284,34 @@ export class VisboProjectService {
       // map(response => response.vc[0].users),
       tap(lock => this.log(`deleted Visbo Project Lock ${variantName}`)),
       catchError(this.handleError<any>('deleteVisboProjectLock'))
+    );
+  }
+
+  /** DELETE: delete Visbo Project Restriction */
+  deleteRestriction (vpid: string, restrictid: string): Observable<any> {
+    const url = `${this.vpUrl}/${vpid}/restrict/${restrictid}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const params = new HttpParams();
+    this.log(`Calling HTTP Request: ${url} Params ${params} `);
+    return this.http.delete<VisboProjectResponse>(url, { headers , params })
+    .pipe(
+      // map(response => response.vc[0].users),
+      tap(response => this.log(`deleted Visbo Project Restriction ${response.vp[0].name}`)),
+      catchError(this.handleError<any>('deleteVisboProjectRestriction'))
+    );
+  }
+
+  /** Add: add Visbo Project Restriction */
+  addRestriction (vpid: string, restrict: VPRestrict): Observable<any> {
+    const url = `${this.vpUrl}/${vpid}/restrict`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const params = new HttpParams();
+    this.log(`Calling HTTP Request: ${url} Params ${params} `);
+    return this.http.post<VisboProjectResponse>(url, restrict, { headers , params })
+    .pipe(
+      // map(response => response.vc[0].users),
+      tap(response => this.log(`added Visbo Project Restriction ${JSON.stringify(response)}`)),
+      catchError(this.handleError<any>('addVisboProjectRestriction'))
     );
   }
 

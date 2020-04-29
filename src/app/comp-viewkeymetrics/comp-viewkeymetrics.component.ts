@@ -230,25 +230,25 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.hasKMEndDate = true;
     }
     if (!this.hasKMCost) {
-      index = this.metricList.findIndex(item => item.metric === 'Costs')
+      index = this.metricList.findIndex(item => item.metric === 'Costs');
       if (index >= 0) {
         this.metricList.splice(index, 1);
       }
     }
     if (!this.hasKMEndDate) {
-      index = this.metricList.findIndex(item => item.metric === 'EndDate')
+      index = this.metricList.findIndex(item => item.metric === 'EndDate');
       if (index >= 0) {
         this.metricList.splice(index, 1);
       }
     }
     if (!this.hasKMDelivery) {
-      index = this.metricList.findIndex(item => item.metric === 'Deliveries')
+      index = this.metricList.findIndex(item => item.metric === 'Deliveries');
       if (index >= 0) {
         this.metricList.splice(index, 1);
       }
     }
     if (!this.hasKMDelivery) {
-      index = this.metricList.findIndex(item => item.metric === 'Deadlines')
+      index = this.metricList.findIndex(item => item.metric === 'Deadlines');
       if (index >= 0) {
         this.metricList.splice(index, 1);
       }
@@ -259,10 +259,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       // set the X & Y Axis to values that are available
       if (this.metricX >= this.metricList.length) {
-        this.metricX = this.metricY == 0 ? 1 : 0;
+        this.metricX = this.metricY === 0 ? 1 : 0;
       }
       if (this.metricY >= this.metricList.length) {
-        this.metricY = this.metricX == 0 ? 1 : 0;
+        this.metricY = this.metricX === 0 ? 1 : 0;
       }
     }
   }
@@ -538,13 +538,13 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   getMetric(axis: string): string {
-    let result = undefined;
+    let result: string;
     if (axis === 'X') {
       result = this.metricList[this.metricX];
     } else if (axis === 'Y') {
       result = this.metricList[this.metricY];
     }
-    result = result ? result.name : 'UNKNOWN';
+    result = result || 'UNKNOWN';
     return result;
   }
 

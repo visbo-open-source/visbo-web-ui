@@ -5,7 +5,7 @@ export class VPVCost {
 }
 
 export class VPVDelivery {
-  id: number;
+  nameID: string;
   name: string;
   phasePFV: string;
   fullPathPFV: [string];
@@ -24,7 +24,7 @@ export class VPVDelivery {
 
 
 export class VPVDeadline {
-  id: number;
+  nameID: string;
   name: string;
   phasePFV: string;
   fullPathPFV: [string];
