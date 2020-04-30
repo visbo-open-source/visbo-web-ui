@@ -37,6 +37,9 @@ export class VPVDeadline {
   endDateVPV: Date;
   changeDays: number;
   percentDone: number;
+  trafficlight: number;
+  trafficlightDesc: string;
+  responsible: string;
 
   fullName: string;
   statusID: number;

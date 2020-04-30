@@ -56,7 +56,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
-
+    this.currentVpvId = this.vpvActive._id;
     this.visboCostCalc();
   }
 

@@ -548,6 +548,8 @@
 			"endDatePFV": "End Date (baseline)",
 			"change": "Change (in weeks)",
 			"done": "Done",
+			"trafficlight": "Traffic Light",
+			"responsible": "Responsible",
 			"vp": "VISBO Project",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle vom Auftrag",

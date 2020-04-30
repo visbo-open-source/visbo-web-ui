@@ -1,23 +1,25 @@
 
   .my_darkgreen {
-   color: #005600;
-  }
+    color: #005600;
+   }
 
+   .my_green {
+     color: #008000;
+   }
 
-  .my_green {
-    color: #008000;
-  }
+   .my_orange {
+     color: #ffa500;
+   }
 
+   .my_red {
+     color: #ff0000;
+   }
 
-  .my_orange {
-    color: #ffa500;
-  }
+   .my_bg_red {
+     background-color: #ff0000;
+   }
 
-
-  .my_red {
-    color: #ff0000;
-  }
-
-  .my_bg_red {
-    background-color: #ff0000;
-  }
+   .v_compact_t {
+    margin: 0em;
+    padding-top: 0em;
+   }

@@ -62,27 +62,27 @@
         </div>
         <div class="modal-body" *ngIf="deliveryIndex >= 0 && deliveryIndex < filteredDelivery.length">
           <form>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.vp' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vpvActive.name }} </label>
             </div>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.planElement' | translate }}:</label>
               <label class="col-8 form-control-static">{{ getElementPath(deliveryIndex) }}</label>
             </div>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.description' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].description }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDelivery[deliveryIndex].endDatePFV">
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].endDatePFV">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.endDatePFV' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].endDatePFV | date :'dd.MM.yy' }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDelivery[deliveryIndex].endDateVPV">
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].endDateVPV">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.endDateVPV' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].endDateVPV | date :'dd.MM.yy' }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDelivery[deliveryIndex].percentDone">
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].percentDone">
               <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.done' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].percentDone * 100 | number : '1.0-0' }} %</label>
             </div>

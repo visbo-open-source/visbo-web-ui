@@ -77,6 +77,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       'Unknown'
     ];
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
+    this.currentVpvId = this.vpvActive._id;
     this.visboDeliveryCalc();
   }
 

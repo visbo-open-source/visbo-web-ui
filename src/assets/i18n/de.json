@@ -548,6 +548,8 @@
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
 			"done": "Erledigt",
+			"trafficlight": "Ampel",
+			"responsible": "Verantwortlich",
 			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle vom Auftrag",

@@ -23,10 +23,11 @@
         <tr>
           <th class="text-left" (click)="sortDeadlineTable(2)">{{ 'compViewDeadline.lbl.planElement' | translate }}</th>
           <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'compViewDeadline.lbl.type' | translate }}</th>
-          <th *ngIf="!reducedList" class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}</th>
+          <th *ngIf="!reducedList" class="d-none d-xl-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}</th>
           <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'compViewDeadline.lbl.endDateVPV' | translate }}</th>
           <th *ngIf="!reducedList" class="text-right" (click)="sortDeadlineTable(5)">{{ 'compViewDeadline.lbl.change' | translate }}</th>
           <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'compViewDeadline.lbl.done' | translate }}</th>
+          <th class="d-none d-md-table-cell"><i class="fas fa-lightbulb text-grey"></i></th>
         </tr>
       </thead>
       <!--Table body-->
@@ -38,12 +39,17 @@
           <td *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td *ngIf="getStatus(deadlines) === -1" title="{{getFullName(deadlines)}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
-          <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
+          <td *ngIf="!reducedList" class="d-none d-xl-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
           <td *ngIf="!reducedList" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
 
           <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
           <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td class="d-none d-md-table-cell">
+            <i *ngIf="deadlines.trafficlight == 1" class="fas fa-lightbulb text-success" title="{{deadlines.trafficlightDesc}}"></i>
+            <i *ngIf="deadlines.trafficlight == 2" class="fas fa-lightbulb text-warning" title="{{deadlines.trafficlightDesc}}"></i>
+            <i *ngIf="deadlines.trafficlight == 3" class="fas fa-lightbulb text-danger" title="{{deadlines.trafficlightDesc}}"></i>
+          </td>
         </tr>
       </tbody>
       <!--Table body-->
@@ -62,29 +68,47 @@
         </div>
         <div class="modal-body" *ngIf="deadlineIndex >= 0 && deadlineIndex < filteredDeadline.length">
           <form>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.vp' | translate }}:</label>
               <label class="col-8 form-control-static">{{ vpvActive.name }} </label>
             </div>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.planElement' | translate }}:</label>
               <label class="col-8 form-control-static">{{ getElementPath(deadlineIndex) }}</label>
             </div>
-            <div class="form-group">
+            <div class="v_compact_t form-group">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.type' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].type }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].endDatePFV">
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].endDatePFV">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].endDatePFV | date :'dd.MM.yy' }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].endDateVPV">
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].endDateVPV">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.endDateVPV' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].endDateVPV | date :'dd.MM.yy' }}</label>
             </div>
-            <div class="form-group" *ngIf="filteredDeadline[deadlineIndex].percentDone">
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].percentDone">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.done' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].percentDone * 100 | number : '1.0-0' }} %</label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].trafficlight || filteredDeadline[deadlineIndex].trafficlightDesc">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.trafficlight' | translate }}:</label>
+              <label class="col-8 form-control-static">
+                <span class="mx-2" title="{{ filteredDeadline[deadlineIndex].trafficlightDesc }}">
+                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 0" class="fas fa-lightbulb text-grey"></i>
+                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 1" class="fas fa-lightbulb text-success"></i>
+                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 2" class="fas fa-lightbulb text-warning"></i>
+                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 3" class="fas fa-lightbulb text-danger"></i>
+                </span>
+                <span class="mx-1">
+                  {{ filteredDeadline[deadlineIndex].trafficlightDesc }}
+                </span>
+              </label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].percentDone">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.responsible' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].responsible }}</label>
             </div>
           </form>
         </div>

@@ -103,57 +103,57 @@
           </div>
         </div>
         <form>
-          <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.created' | translate }}:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
-          <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.user' | translate }}:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
-          <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.action' | translate }}:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
+          <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.created' | translate }}:</label>
+          <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
+          <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.user' | translate }}:</label>
+          <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
+          <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.action' | translate }}:</label>
+          <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].actionDescription }} </label>
           <div *ngIf="audit[auditIndex].actionInfo">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.info' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].actionInfo }} </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.info' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].actionInfo }} </label>
           </div>
           <div *ngIf="audit[auditIndex].vc">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.vc' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.vc' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
           </div>
           <div *ngIf="audit[auditIndex].vp">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.vp' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.vp' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
           </div>
           <div *ngIf="audit[auditIndex].vpv">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.vpv' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.vpv' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
           </div>
-          <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.result' | translate }}:</label>
-          <label class="py-0 m-0 col-7 form-control-static">{{ helperResponseText(audit[auditIndex]) }} </label>
+          <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.result' | translate }}:</label>
+          <label class="v_compact_t col-7 form-control-static">{{ helperResponseText(audit[auditIndex]) }} </label>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.techAction' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].action }} </label>
-          </div>
-          <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.url' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static" style="overflow-wrap: break-word;">{{ audit[auditIndex].url }} </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.techAction' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].action }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.responseTime' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].result.time }} ms </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.url' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static" style="overflow-wrap: break-word;">{{ audit[auditIndex].url }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.responseSize' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }} </label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.responseTime' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].result.time }} ms </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.userAgent' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].userAgent }}</label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.responseSize' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }} </label>
           </div>
           <div *ngIf="showMore">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.ip' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ip }}</label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.userAgent' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].userAgent }}</label>
+          </div>
+          <div *ngIf="showMore">
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.ip' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].ip }}</label>
           </div>
           <div *ngIf="showMore && audit[auditIndex].ttl">
-            <label class="py-0 m-0 col-4 form-control-static">{{ 'vcAudit.lbl.ttl' | translate }}:</label>
-            <label class="py-0 m-0 col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM HH:mm' }}</label>
+            <label class="v_compact_t col-4 form-control-static">{{ 'vcAudit.lbl.ttl' | translate }}:</label>
+            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].ttl | date :'dd.MM HH:mm' }}</label>
           </div>
         </form>
       </div>
