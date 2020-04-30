@@ -206,6 +206,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     && this.vpvCost && this.vpvCost.length > 0) {     // vpv contains cost data
       result = true;
     }
+    if (this.vpvTotalCostBaseLine === 0 && this.vpvTotalCostCurrent === 0) {
+      result = false;
+    }
     return result;
   }
 
