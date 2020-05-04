@@ -220,14 +220,14 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.getRefDateVersions(-1);
     const queryParams = { vpvid: this.vpvActive._id };
     this.log(`GoTo Prev Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
+    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams, replaceUrl: true});
   }
 
   getNextVersion(): void {
     this.getRefDateVersions(+1);
     const queryParams = { vpvid: this.vpvActive._id };
     this.log(`GoTo Next Version ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams});
+    this.router.navigate(['vpView/'.concat(this.vpvActive.vpid)], { queryParams: queryParams, replaceUrl: true});
   }
 
   gotoRoot(): void {
