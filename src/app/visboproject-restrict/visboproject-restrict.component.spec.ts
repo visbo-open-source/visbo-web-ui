@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VisboprojectRestrictComponent } from './visboproject-detail.component';
+import { VisboprojectRestrictComponent } from './visboproject-restrict.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 
 describe('VisboprojectRestrictComponent', () => {

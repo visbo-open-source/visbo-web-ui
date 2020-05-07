@@ -415,7 +415,7 @@
 			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
-			"removeRestrictionConfirm": "Wollem Sie die Freigabe wirklich löschen?",
+			"removeRestrictionConfirm": "Wollen Sie die Freigabe wirklich löschen?",
 			"addRestrictionSuccess": "Freigabe wurde erfolgreich hinzugefügt",
 			"removeRestrictionSuccess": "Freigabe wurde erfolgreich aufgehoben",
 			"errorRemoveRestrictionPerm": "Keine Berechtigung die Freigabe aufzuheben"
@@ -705,7 +705,7 @@
 		},
 		"metric": {
 			"costName": "Gesamtkosten",
-			"costAxis": "Abweichung bei den Gesamtkosten",
+			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
 			"endDateName": "Termin (Projektende)",
@@ -717,7 +717,7 @@
 			"deadlineBubble": "Erreichte Termine in %",
 			"deadlineTable": "Erreichte Termine",
 			"deliveryName": "Qualität (Lieferungen)",
-			"deliveryAxis": "Abweichungen bei erreichten Lieferungen",
+			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
 			"deliveryTable": "Erreichte Lieferungen"
 		},
