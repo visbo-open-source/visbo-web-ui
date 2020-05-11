@@ -61,6 +61,10 @@
 
   <div *ngIf="chart">
     <hr>
+    <div *ngIf="vcActive">
+      <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    </div>
+    <hr>
     <div *ngIf="visboprojectversions && vcActive">
       <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
     </div>

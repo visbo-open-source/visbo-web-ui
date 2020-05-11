@@ -133,6 +133,32 @@ export class VisboCenterService  {
     );
   }
 
+  /** GET Capacity of VisboCenter by id. Will 404 if id not found */
+  getCapacity(id: string, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+    const url = `${this.vcUrl}/${id}/capacity`;
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (roleID) {
+      params = params.append('organisationID', roleID);
+    }
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                return response.vc[0];
+              }),
+      tap(visbocenter => this.log(`fetched Capacity for VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
+    );
+  }
+
+
   /* GET VisboCenters whose name contains search term */
   // searchVisboCenters(term: string): Observable<VisboCenter[]> {
   //   if (!term.trim()) {
