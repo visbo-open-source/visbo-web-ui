@@ -83,7 +83,7 @@ export class VisboProjectsComponent implements OnInit {
 
   toggleVisboChart(): void {
     this.chart = !this.chart;
-    if (!this.visboprojectversions) {
+    if (this.chart && !this.visboprojectversions) {
       this.getVisboProjectKeyMetrics();
     }
   }
