@@ -18,10 +18,14 @@
 	},
 	"dashboard": {
 		"topvc": "Top VISBO Centers",
+		"noVC": "Kein Zugriff auf ein VISBO Center",
 		"topvp": "Top VISBO Projekte",
 		"projects": "Projekte",
 		"versions": "Versionen",
-		"detail": "Details"
+		"detail": "Details",
+		"msg": {
+			"noVC": "Sie haben keinen Zugriff auf ein VISBO Center oder ein VISBO Projekt. Bitte kontaktieren Sie ihren Administrator für weitere Hilfe."
+		}
 	},
 	"autologout": {
 		"msg": {
@@ -153,6 +157,7 @@
 	},
 	"vc": {
 		"title": "VISBO Centers",
+		"noVC": "Kein VISBO Center",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -161,7 +166,8 @@
 			"detail": "Detail"
 		},
 		"msg": {
-			"detail": "Details zum VISBO Center"
+			"detail": "Details zum VISBO Center",
+			"noVC": "Sie haben keinen Zugriff auf ein VISBO Center."
 		}
 	},
 	"vcDetail": {
@@ -237,6 +243,7 @@
 	"vp": {
 		"title": "Projekte",
 		"titleVC": "Projekte in",
+		"noVP": "Kein VISBO Projekt",
 		"titleCreate": "Ein neues Projekt anlegen",
 		"lbl": {
 			"nr": "Nr.",
@@ -265,7 +272,8 @@
 			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
-			"detail": "Details zum VISBO Projekt"
+			"detail": "Details zum VISBO Projekt",
+			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt."
 		}
 	},
 	"vpDetail": {
@@ -282,6 +290,8 @@
 		"titleDeleteProject": "VISBO Projekt löschen",
 		"titleProjectLocks": "VISBO Projekt Locks",
 		"titlePermUser": "Berechtigung für {{name}}",
+		"titleProjectRestrict": "VISBO Projekt Freigaben",
+		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -303,9 +313,16 @@
 			"expires": "Läuft ab",
 			"variant": "Variante",
 			"versions": "Versionen",
+			"ofTotal": "of total",
 			"unlock": "Entsperren",
 			"delete": "Löschen",
-			"deleteUser": "Benutzer löschen"
+			"deleteUser": "Benutzer löschen",
+			"restrictpath": "Planelement",
+			"restrictgroup": "Gruppe",
+			"inclChildren": "hierarchisch",
+			"createdBy": "Erstellt von",
+			"createdAt": "Erstellt am",
+			"rmRestrict": "Freigabe löschen"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -322,6 +339,7 @@
 			"save": "Speichern",
 			"restore": "Wiederherstellen",
 			"destroy": "Vernichten!",
+			"viewRestriction": "Freigaben",
 			"view": "Anzeigen",
 			"delete": "Löschen",
 			"back": "Zurück",
@@ -357,6 +375,52 @@
 			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!"
 		}
 	},
+	"vpRestrict": {
+		"title": "VISBO Projekt",
+		"titleVC": "VISBO Center",
+		"titleProjectRestrict": "VISBO Projekt Freigaben",
+		"titleAddRestriction": "Freigabe zum VISBO Project hinzufügen",
+		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
+		"lbl": {
+			"name": "Name",
+			"vc": "VISBO Center",
+			"vp": "VISBO Projekt",
+			"modified": "Änderung",
+			"createdUpdated": "Angelegt / Aktualisiert",
+			"description": "Beschreibung",
+			"group": "Gruppe",
+			"type": "Typ",
+			"info": "Info",
+			"restrictpath": "Planelement",
+			"restrictgroup": "Gruppe",
+			"inclChildren": "hierarchisch",
+			"inclChildrenDesc": "hierarchisch, inklusive aller Kinder",
+			"delete": "Löschen",
+			"createdBy": "Erstellt von",
+			"createdAt": "Erstellt am",
+			"rmRestrict": "Freigabe löschen"
+		},
+		"type": {
+			"vpType0": "Project",
+			"vpType1": "Portfolio",
+			"vpType2": "Template"
+		},
+		"btn": {
+			"add": "Hinzufügen",
+			"delete": "Löschen",
+			"cancel": "Abbrechen",
+			"back": "Zurück"
+		},
+		"msg": {
+			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
+			"removeRestrictionConfirm": "Wollen Sie die Freigabe wirklich löschen?",
+			"addRestrictionSuccess": "Freigabe wurde erfolgreich hinzugefügt",
+			"removeRestrictionSuccess": "Freigabe wurde erfolgreich aufgehoben",
+			"errorRemoveRestrictionPerm": "Keine Berechtigung die Freigabe aufzuheben"
+		}
+	},
 	"vpKeyMetric": {
 		"title": "Projekt-Kennzahlen für",
 		"titleVersion": "Version vom",
@@ -375,7 +439,7 @@
 			"weeksAhead": "Wochen voraus",
 			"weeksDelay": "Wochen verzögert",
 			"inTime": "pünktlich",
-			"status": "Status vom:",
+			"status": "Status vom",
 			"keyMetric": "Kennzahl",
 			"planToDate": "Plan-to-Date",
 			"total": "Gesamt",
@@ -401,6 +465,7 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
+			"vpView": "Zeige Projekt Informationen",
 			"allVersions": "Alle Versionen",
 			"back": "Zurück"
 		},
@@ -429,6 +494,31 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
+	"compViewDelivery": {
+		"titleAllDelivery": "Status der Lieferungen",
+		"titleDetailDelivery": "Status der Lieferung",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"planElement": "Planelement",
+			"description": "Lieferung",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"vp": "VISBO Projekt",
+			"VPV": "Zeige alle vom Projekt",
+			"PFV": "Zeige alle vom Auftrag",
+			"All": "Zeige alle kombiniert"
+		},
+		"btn": {
+			"detail": "Freigaben",
+			"back": "Back"
+		},
+		"msg": {
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
 	"vpViewDelivery": {
 		"title": "Lieferungen für",
 		"titleVersion": "Version vom",
@@ -439,16 +529,37 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
-			"phase": "Planelement",
-			"description": "Lieferung",
-			"endDatePFV": "Termin (Baseline)",
-			"endDateVPV": "Termin (Plan)",
-			"change": "Änderung (Wochen)",
-			"done": "Erledigt",
 			"vc": "VISBO Center"
 		},
 		"msg": {
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"compViewDeadline": {
+		"titleAllDeadlines": "Status der Termine",
+		"titleDetailDeadline": "Details zum Termin",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"planElement": "Planelement",
+			"type": "Typ",
+			"endDatePFV": "Termin (Baseline)",
+			"endDateVPV": "Termin (Plan)",
+			"change": "Änderung (Wochen)",
+			"done": "Erledigt",
+			"trafficlight": "Ampel",
+			"responsible": "Verantwortlich",
+			"vp": "VISBO Projekt",
+			"VPV": "Zeige alle vom Projekt",
+			"PFV": "Zeige alle vom Auftrag",
+			"All": "Zeige alle kombiniert"
+		},
+		"btn": {
+			"detail": "Freigaben",
+			"back": "Back"
+		},
+		"msg": {
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
@@ -462,13 +573,29 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
-			"planElement": "Planelement",
-			"type": "Typ",
-			"endDatePFV": "Termin (Baseline)",
-			"endDateVPV": "Termin (Plan)",
-			"change": "Änderung (Wochen)",
-			"done": "Erledigt",
 			"vc": "VISBO Center"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+		}
+	},
+	"vpView": {
+		"title": "Information über",
+		"titleVersion": "Version vom",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "VISBO Center"
+		},
+		"btn": {
+			"cost": "Kosten anzeigen",
+			"deadline": "Termine anzeigen",
+			"delivery": "Lieferungen anzeigen"
 		},
 		"msg": {
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
@@ -578,8 +705,8 @@
 		},
 		"metric": {
 			"costName": "Gesamtkosten",
-			"costAxis": "Abweichung bei den Gesamtkosten",
-			"costBubble": "Erwartete Gesmatkosten (%)",
+			"costAxis": "Erwartete Gesamtkosten",
+			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
 			"endDateName": "Termin (Projektende)",
 			"endDateAxis": "Abweichung beim Projektende",
@@ -590,7 +717,7 @@
 			"deadlineBubble": "Erreichte Termine in %",
 			"deadlineTable": "Erreichte Termine",
 			"deliveryName": "Qualität (Lieferungen)",
-			"deliveryAxis": "Abweichungen bei erreichten Lieferungen",
+			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
 			"deliveryTable": "Erreichte Lieferungen"
 		},
@@ -768,8 +895,7 @@
 			"statusDeadlineInTime": "Pünktlich",
 			"statusDeadlineDelay": "Verzögert",
 			"statusDeadlineNotCompleted": "Noch nicht erledigt",
-			"titleFinishedDelivery": "Status Lieferungen",
-			"titleUnFinishedDelivery": "Status unerledigter Lieferungen",
+			"titleAllDelivery": "Status Lieferungen",
 			"titleFinishedDeadlines": "Status Fälligkeiten",
 			"titleUnFinishedDeadlines": "Status unerledigter Fälligkeiten",
 			"yAxisCostOverTime": "Monatliche Kosten",
@@ -790,15 +916,16 @@
 		"vcView": "VISBO Center anzeigen",
 		"vcViewAudit": "Audit anzeigen",
 		"vcModify": "VISBO Center ändern",
-		"vcCreateVP": "VISBO Projekt anlegen",
-		"vcManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
-		"vcGlobal": "Gruppe hat Zugriff auf alle VISBO Projekte",
-		"vpView": "VISBO Projekt",
-		"vpViewAudit": "View Projekt Audit",
-		"vpModify": "Modify VISBO Projekt",
-		"vpCreateVariant": "VISBO Projekt Variante anlegen",
-		"vpManagePerm": "Berechtigung verwalten, Benutzer und Gruppen",
-		"vpDelete": "VISBO Projekt löschen",
+		"vcCreateVP": "Projekt anlegen",
+		"vcManagePerm": "Berechtigung, Benutzer und Gruppen verwalten",
+		"vcGlobal": "Gruppe hat Zugriff auf alle Projekte im VISBO Center",
+		"vpViewRestricted": "Eingeschränkte Ansicht",
+		"vpView": "Projekt anzeigen",
+		"vpViewAudit": "Projekt Audit anzeigen",
+		"vpModify": "Projekt ändern",
+		"vpCreateVariant": "Projekt Variante anlegen",
+		"vpManagePerm": "Berechtigung, Benutzer und Gruppen verwalten",
+		"vpDelete": "Projekt löschen",
 		"lblGroupMembers": "Mitglieder der Gruppe",
 		"lblNoGroupMembers": "Keine Mitglieder in der Gruppe",
 		"lblGroupMembership": "Mitglied in den Gruppen"

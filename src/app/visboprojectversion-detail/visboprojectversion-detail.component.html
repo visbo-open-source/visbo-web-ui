@@ -26,41 +26,6 @@
     </div>
   </form>
 
-  <table *ngIf="hasVPPerm(permVP.ViewAudit)" class='table table-hover table-sortable'>
-    <!--Table head-->
-    <thead>
-      <tr>
-        <th>{{ 'vpvDetails.lbl.keyMetric' | translate }}</th>
-        <th>{{ 'vpvDetails.lbl.detail' | translate }}</th>
-      </tr>
-    </thead>
-    <!--Table body-->
-    <tbody>
-      <tr>
-        <td>{{ 'vpvDetails.lbl.kmCost' | translate }}</td>
-        <td>
-          <button type="button" class="btn" title="View Monthly Cost"
-          (click)="gotoViewCost()">{{ 'vpvDetails.lbl.kmCostDetail' | translate }}</button>
-        </td>
-      </tr>
-      <tr>
-        <td>{{ 'vpvDetails.lbl.kmDelivery' | translate }}</td>
-        <td>
-          <button type="button" class="btn" title="View Deliveries"
-          (click)="gotoViewDelivery()">{{ 'vpvDetails.lbl.kmDeliveryDetail' | translate }}</button>
-        </td>
-      </tr>
-      <tr>
-        <td>{{ 'vpvDetails.lbl.kmDeadline' | translate }}</td>
-        <td>
-          <button type="button" class="btn" title="View Deadlines"
-          (click)="gotoViewDeadline()">{{ 'vpvDetails.lbl.kmDeadlineDetail' | translate }}</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-
   <div>
     <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary">{{ 'vpvDetails.btn.restore' | translate }}</button>
     <button (click)="goBack()">{{ 'vpvDetails.btn.back' | translate }}</button>

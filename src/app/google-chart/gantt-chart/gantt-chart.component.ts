@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -8,13 +7,15 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './gantt-chart.component.html',
   styleUrls: ['./gantt-chart.component.css']
 })
-export class GanttChartComponent implements OnInit {
+export class GanttChartComponent implements OnInit, OnChanges {
 
-  private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
+
+  private gLib: any;
+  initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
@@ -26,7 +27,14 @@ export class GanttChartComponent implements OnInit {
     this.gLib.charts.load('current', {'packages': ['gantt'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
-    // this.log(`Google Chart Gantt Chart Init ${JSON.stringify(this.graphData)}`);
+    // console.log(`Google Chart Gantt Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Gantt Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
@@ -87,5 +95,6 @@ export class GanttChartComponent implements OnInit {
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
 
     chart.draw(data, this.graphOptions || options);
+    this.initialised = true;
   }
 }

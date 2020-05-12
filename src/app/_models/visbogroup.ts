@@ -20,7 +20,7 @@ export enum VGPVC {
 }
 
 export enum VGPVP {
-    'View' = 1, 'ViewAudit' = 2, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVariant' = 256, 'DeleteVP' = 1024
+    'View' = 1, 'ViewAudit' = 2, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVariant' = 256, 'ViewRestricted' = 512, 'DeleteVP' = 1024
 }
 
 export class VGGroup {

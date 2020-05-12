@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -7,13 +7,15 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './bubble-chart.component.html',
   styleUrls: ['./bubble-chart.component.css']
 })
-export class BubbleChartComponent implements OnInit {
+export class BubbleChartComponent implements OnInit, OnChanges {
 
   private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
+
+  initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
@@ -26,6 +28,13 @@ export class BubbleChartComponent implements OnInit {
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Bubble Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
@@ -50,7 +59,8 @@ export class BubbleChartComponent implements OnInit {
         parentThis.chartSelectRow(row, label);
       }
     }
-    // The select handler. Call the chart's getSelection() method
+
+    // The click handler. Call the chart's getSelection() method
     function clickHandler(targetID: any) {
       if (parentThis === undefined) {
         console.log(`Bubble: The user clicked and this is undefined`);
@@ -67,5 +77,6 @@ export class BubbleChartComponent implements OnInit {
     this.gLib.visualization.events.addListener(chart, 'click', clickHandler);
 
     chart.draw(data, this.graphOptions || options);
+    this.initialised = true;
   }
 }

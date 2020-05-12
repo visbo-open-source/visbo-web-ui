@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -8,17 +7,18 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './scatter-chart.component.html',
   styleUrls: ['./scatter-chart.component.css']
 })
-export class ScatterChartComponent implements OnInit {
+export class ScatterChartComponent implements OnInit, OnChanges {
 
-  private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
 
+  private gLib: any;
+  initialised: boolean;
+
   constructor(
-    private gChartService: GoogleChartService,
-    private messageService: MessageService
+    private gChartService: GoogleChartService
   ) {}
 
   ngOnInit() {
@@ -26,11 +26,18 @@ export class ScatterChartComponent implements OnInit {
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
-    // this.log(`Google Chart Scatter Chart Init ${JSON.stringify(this.graphData)}`);
+    // console.log(`Google Chart Scatter Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Scatter Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
-    // this.log(`Google Chart Scatter Chart Draw ${this.graphData.length}`);
+    // console.log(`Google Chart Scatter Chart Draw ${this.graphData.length}`);
     let chart: any, data: any;
     chart = new this.gLib.visualization.ScatterChart(document.getElementById('divScatterChart'));
     data = new this.gLib.visualization.arrayToDataTable(this.graphData);
@@ -38,10 +45,6 @@ export class ScatterChartComponent implements OnInit {
     const options = {'title': 'Scatter Chart'};
 
     chart.draw(data, this.graphOptions || options);
-  }
-
-  /** Log a message with the MessageService */
-  private log(message: string) {
-    this.messageService.add('Scatter Chart: ' + message);
+    this.initialised = true;
   }
 }

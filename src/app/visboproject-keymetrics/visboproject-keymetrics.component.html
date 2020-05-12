@@ -18,14 +18,17 @@
       </h5>
     </div>
   </div>
-  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvKeyMetricActive">
+  <div *ngIf="vpvKeyMetricActive">
+    <div class="btn-group row my-2">
+      <button class="btn btn-primary mx-2" (click)="gotoVpView()">{{ 'vpKeyMetric.btn.vpView' | translate }}</button>
+    </div>
     <form>
       <div class="container">
         <div class="row">
           <label for="vpName" class="col-3 col-md-2">{{ 'vpKeyMetric.lbl.status' | translate }}:</label>
-          <dt class="col-8">{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy hh:mm'}} </dt>
+          <dt class="col-8">{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy HH:mm'}} </dt>
         </div>
-        <table *ngIf="hasVPPerm(permVP.ViewAudit) && vpvKeyMetricActive" class='table table-hover table-sortable'>
+        <table *ngIf="vpvKeyMetricActive" class='table table-hover table-sortable'>
           <!--Table head-->
           <thead>
             <tr>
@@ -132,7 +135,7 @@
     <div *ngIf="history">
       <hr>
       <div class="btn-group row">
-        <button *ngIf="hasVPPerm(permVP.ViewAudit)" class="mx-1" (click)="switchChart()">{{chartButton}}</button>
+        <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
         <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
         <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
       </div>
@@ -165,8 +168,8 @@
           <tbody>
             <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
             data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
+              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
+              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
               <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}} k€</td>
               <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
@@ -201,8 +204,8 @@
           <tbody>
             <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
             data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
+              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
+              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
               <!-- <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td> -->
               <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentActual | number :'1.0-1'}}</td>
@@ -241,8 +244,8 @@
           <tbody>
             <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
             data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy hh:mm' }}</td>
+              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
+              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual |number :'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortPDV' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-1'}}</td>
@@ -263,28 +266,6 @@
       </div>
     </div>
   </div>
-
-  <div *ngIf="!hasVPPerm(permVP.ViewAudit)" class='container-fluid'>
-    <div class='panel-body'>
-      <table class='table table-hover table-sortable'>
-        <!--Table head-->
-        <thead>
-          <tr>
-            <th (click)="sortKeyMetricsTable(1)">{{ 'vpKeyMetric.lbl.project' | translate }}</th>
-            <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-          </tr>
-        </thead>
-        <!--Table body-->
-        <tbody>
-          <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vp)'
-          data-toggle="modal" data-target="#ProjectDetail">
-            <td>{{vp.name }}</td>
-            <td class="text-right">{{vp.timestamp  | date :'dd.MM.yyyy'}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
 
 <!-- Modal Show Project Version Info -->
@@ -292,7 +273,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy hh:mm'}} </h5>
+        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy HH:mm'}} </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

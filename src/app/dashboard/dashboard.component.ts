@@ -77,6 +77,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  gotoClickedVpVc(visboproject: VisboProject): void {
+    this.router.navigate(['vp/' + visboproject.vcid]);
+  }
+
   gotoClickedVpDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/' + visboproject._id]);
   }

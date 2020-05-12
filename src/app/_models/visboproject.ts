@@ -2,6 +2,19 @@ export enum VPTYPE {
     'Project' = 0, 'Portfolio' = 1, 'Template' = 2
 }
 
+export class VPRestrict {
+  _id: string;
+  name: string;
+  groupid: string;
+  inclChildren: boolean;
+  user: {
+    userId: string;
+    email: string;
+  };
+  elementPath: [string];
+  createdAt: Date;
+}
+
 export class VPVariant {
   _id: string;
   variantName: string;
@@ -29,6 +42,7 @@ export class VisboProject {
   vpvCount: number;
   variant: [VPVariant];
   lock: [VPLock];
+  restrict: [VPRestrict];
   vc: {
     name: string;
     deletedAt: Date;
