@@ -28,6 +28,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() combinedPerm: VGPermission;
 
   visboCapcity: VisboCapacity[];
+  roleID: string = '1';
 
   parentThis: any;
 
@@ -85,7 +86,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     this.log(`Capacity Calc for Object  ${this.vcActive._id}`);
-    this.visbocenterService.getCapacity(this.vcActive._id, '1')
+    this.visbocenterService.getCapacity(this.vcActive._id, this.roleID)
       .subscribe(
         visbocenter => {
           if (!visbocenter.capacity) {
