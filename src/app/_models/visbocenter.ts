@@ -5,6 +5,7 @@ export class VisboCenter {
   name: string;
   description: string;
   vpCount: number;
+  capacity: any[];
   deletedAt: Date;
   perm: {system: number, vc: number, vp: number};
 }

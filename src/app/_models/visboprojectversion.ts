@@ -1,3 +1,15 @@
+export class VisboCapacity {
+  month: Date;
+  actualCost_PT: number;
+  plannedCost_PT: number;
+  internCapa_PT: number;
+  externCapa_PT:	number;
+  actualCost: number;
+  plannedCost: number;
+  internCapa: number;
+  externCapa: number;
+}
+
 export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
