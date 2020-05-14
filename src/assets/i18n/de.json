@@ -494,6 +494,38 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
+	"ViewCapacity": {
+		"title": "Monatliche Kosten für Rolle Nr.",
+		"titleVersion": "Version vom",		
+		"yAxisCapaOverTime": "Monatliche Kosten",
+		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
+		"internCapaPT": "interne Kapazität",
+		"totalCapaPT": "gesamte Kapazität",
+		"actualCostPT": "Istkosten",
+		"plannedCostPT": "geplante Kosten",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "VISBO Center",
+			"pd": "PT",
+			"euro": "Euro"
+		},
+		"btn": {
+			"back": "Zurück",
+			"showUnit": "Einheit:",
+			"ressourceID": "RessourcenID:",
+			"from": "von:",
+			"to": "bis:"
+		},
+		"msg": {
+			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen "
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status der Lieferungen",
 		"titleDetailDelivery": "Status der Lieferung",

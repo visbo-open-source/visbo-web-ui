@@ -10,7 +10,7 @@ describe('VisboCompViewCapacityComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        VisboProjectViewCapacityComponent
+        VisboCompViewCapacityComponent
       ]
     })
     .compileComponents();
