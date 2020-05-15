@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -144,7 +145,7 @@ export class VisboCenterService  {
       params = params.append('deleted', '1');
     }
     if (roleID) {
-      params = params.append('organisationID', roleID);
+      params = params.append('roleID', roleID);
     }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
@@ -158,7 +159,7 @@ export class VisboCenterService  {
     );
   }
 
-
+  
   /* GET VisboCenters whose name contains search term */
   // searchVisboCenters(term: string): Observable<VisboCenter[]> {
   //   if (!term.trim()) {

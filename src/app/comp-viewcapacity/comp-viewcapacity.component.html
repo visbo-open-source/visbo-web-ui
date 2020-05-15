@@ -9,7 +9,7 @@
     <!-- <div class="col-sm-1"></div>  -->
     <label for="Ressourcen" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.ressourceID' | translate }} </label>
     <input id="ressourceID" type="text" class="form-control mb-2 mr-sm-2" name="ressourceID" [(ngModel)]="ressourceID" (change)="visboCapacityCalc()" >
-    <div class="col-sm-5"></div>
+    <!-- <div class="col-sm-4"></div> -->
     <label for="capacityFrom" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.from' | translate }} </label>
     <input id="capacityFrom" type="date" class="form-control mb-2 mr-sm-2" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >    
     <label for="capacityTo" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.to' | translate }} </label>

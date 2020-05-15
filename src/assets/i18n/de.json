@@ -523,7 +523,8 @@
 		},
 		"msg": {
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen "
+			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
+			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
 		}
 	},
 	"compViewDelivery": {
