@@ -8,8 +8,10 @@ import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
+import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
+import { VisboCenter } from '../_models/visbocenter';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
@@ -40,14 +42,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpfActiveIndex: number;
     deleted = false;
     currentLang: string;
+    currentView: string;
 
     combinedPerm: VGPermission = undefined;
+    combinedPermVC: VGPermission = undefined;
     permVC: any = VGPVC;
     permVP: any = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
+    private visbocenterService: VisboCenterService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -62,8 +67,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
+    this.changeView(undefined);
 
-    this.getVisboPortfolioVersions();
+    this.getVisboProject();
   }
 
   hasVPPerm(perm: number): boolean {
@@ -74,73 +80,82 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   hasVCPerm(perm: number): boolean {
-    if (this.combinedPerm === undefined) {
-      return false;
+    let result = false;
+    if ((this.combinedPerm.vc & perm) > 0) {
+      result = true;
     }
-    return (this.combinedPerm.vc & perm) > 0;
+    if ((this.combinedPermVC.vc & perm) > 0) {
+      result = true;
+    }
+    return result;
   }
 
-  getVisboPortfolioVersions(): void {
+  getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
     this.log(`get VP name if ID is used ${id}`);
-    if (id) {
-      this.visboprojectService.getVisboProject(id)
+    this.visboprojectService.getVisboProject(id)
+      .subscribe(
+        visboproject => {
+          this.vpActive = visboproject;
+          this.deleted = visboproject.deletedAt ? true : false;
+          this.combinedPerm = visboproject.perm;
+          this.getVisboPortfolioVersions();
+          this.getVisboCenter();
+        },
+        error => {
+          this.log(`get Portfolio VP failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+      });
+  }
+
+  getVisboCenter(): void {
+    if (this.vpActive) {
+      // MS TODO: add silent parameter to get an empty item instead of access denied
+      this.log(`get VC Permission for VCID ${this.vpActive.vcid}`);
+      this.visbocenterService.getVisboCenter(this.vpActive.vcid)
         .subscribe(
-          visboproject => {
-            this.vpActive = visboproject;
-            this.combinedPerm = visboproject.perm;
-            this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboPortfolioVersions(id, this.deleted)
-              .subscribe(
-                visboportfolioversions => {
-                  this.visboportfolioversions = visboportfolioversions;
-                  this.vpfActive = visboportfolioversions[0];
-                  this.vpfActiveIndex = visboportfolioversions.length;
-                  if (visboportfolioversions.length > 0) {
-                    // this.combinedPerm = visboportfolioversions[0].perm;
-                    this.dropDownInit();
-                    this.getVisboPortfolioKeyMetrics();
-                    this.log(`get VPF Index ${this.vpfActiveIndex}`);
-                  }
-                },
-                error => {
-                  this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  if (error.status === 403) {
-                    const message = this.translate.instant('vpfVersion.msg.errorPermVersion', {'name': this.vpActive.name});
-                    this.alertService.error(message);
-                  } else {
-                    this.alertService.error(getErrorMessage(error));
-                  }
-                }
-              );
+          visbocenter => {
+            this.combinedPermVC = visbocenter.perm;
           },
           error => {
-            this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
+            this.log(`get VisboCenter failed: error: ${error.status} message: ${error.error.message}`);
+            this.combinedPermVC = new VGPermission();
+            this.combinedPermVC.vc = 0;
         });
-    } else {
-      this.vpSelected = null;
-      this.vpActive = null;
-      this.visboprojectversionService.getVisboPortfolioVersions(null)
-        .subscribe(
-          visboportfolioversions => this.visboportfolioversions = visboportfolioversions,
-          error => {
-            this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-          }
-        );
     }
+  }
+
+  getVisboPortfolioVersions(): void {
+    this.log(`get Portfolio Versions ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
+    this.visboprojectversionService.getVisboPortfolioVersions(this.vpActive._id, this.deleted)
+      .subscribe(
+        visboportfolioversions => {
+          this.visboportfolioversions = visboportfolioversions;
+          this.vpfActive = visboportfolioversions[0];
+          this.vpfActiveIndex = visboportfolioversions.length;
+          if (visboportfolioversions.length > 0) {
+            // this.combinedPerm = visboportfolioversions[0].perm;
+            this.dropDownInit();
+            this.getVisboPortfolioKeyMetrics();
+            this.log(`get VPF Index ${this.vpfActiveIndex}`);
+          }
+        },
+        error => {
+          this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpfVersion.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
   }
 
   getVisboPortfolioKeyMetrics(): void {
@@ -206,6 +221,16 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
     this.getVisboPortfolioKeyMetrics();
+  }
+
+  changeView(newView: string): void {
+    if (newView == 'Capacity') {
+      this.currentView = newView;
+    } else if (newView == 'ProjectBoard') {
+      this.currentView  = newView;
+    } else {
+      this.currentView = 'KeyMetrics'
+    }
   }
 
   calcPercent(current, baseline) {

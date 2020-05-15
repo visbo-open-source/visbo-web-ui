@@ -698,6 +698,9 @@
 		"btn": {
 			"showChart": "View Chart",
 			"showList": "View List",
+			"viewKeyMetrics": "View Metrics",
+			"viewCapacity": "View Capacity",
+			"viewProjectBoard": "View Projectboard",
 			"filter": "Filter",
 			"change": "Change",
 			"cancel": "Cancel",

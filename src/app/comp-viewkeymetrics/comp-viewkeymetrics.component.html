@@ -1,5 +1,5 @@
 <div *ngIf="visbokeymetrics" class='well'>
-  <div class='container-fluid'>
+  <div *ngIf="visbokeymetrics.length > 0" class='container-fluid'>
     <div class="row text-dark">
       <div class="my-1">
         <span>{{ 'vpfVersion.lbl.show' | translate }} </span>

@@ -210,6 +210,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphDataComboChart = graphDataCapacity;
   }
 
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} `);
+    // if (row === undefined) {
+    //   this.filterStatus = undefined;
+    // } else {
+    //   const index = this.statusList.findIndex(element => element === label);
+    //   if (index < 0 || this.filterStatus === index) {
+    //     this.filterStatus = undefined;
+    //   } else {
+    //     this.filterStatus = index;
+    //   }
+    // }
+    // this.filterDeadlines();
+  }
+
+
   displayCapacity(): boolean {
     let result = false;
     if (this.visboCapcity && this.visboCapcity.length > 0) {     // Capacity data available

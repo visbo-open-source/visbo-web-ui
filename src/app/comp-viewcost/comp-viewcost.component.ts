@@ -199,6 +199,10 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     this.graphDataComboChart = graphDataCost;
   }
 
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} `);
+  }
+
   displayCost(): boolean {
     let result = false;
     if (this.vpvActive                                // the vpv is already available

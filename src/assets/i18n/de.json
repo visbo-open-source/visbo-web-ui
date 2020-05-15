@@ -698,6 +698,9 @@
 		"btn": {
 			"showChart": "Zeige Chart",
 			"showList": "Zeige Liste",
+			"viewKeyMetrics": "Zeige Kennzahlen",
+			"viewCapacity": "Zeige Auslastung",
+			"viewProjectBoard": "Zeige Projektübersicht",
 			"filter": "Filter",
 			"change": "Ändern",
 			"cancel": "Abbrechen",
