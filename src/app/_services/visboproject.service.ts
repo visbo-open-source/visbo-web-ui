@@ -94,6 +94,33 @@ export class VisboProjectService {
       );
   }
 
+  /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
+  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject> {
+    const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (roleID) {
+      params = params.append('roleID', roleID);
+    }
+    if (refDate) {
+      params = params.append('refDate', refDate.toISOString());
+    }
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboProjectResponse>(url, { headers , params }).pipe(
+      map(response => {
+        return response.vp[0];
+      }),
+      tap(vp => this.log(`fetched Capacity for VP/VPF ${vpid}/ ${vpfid} Len: ${vp.capacity.length}`)),
+      catchError(this.handleError<VisboProject>(`getVisboPortfolio Capacity id:${vpfid}`))
+    );
+  }
+
   /* GET VisboProjects whose name contains search term */
   // searchVisboProjects(term: string): Observable<VisboProject[]> {
   //   if (!term.trim()) {

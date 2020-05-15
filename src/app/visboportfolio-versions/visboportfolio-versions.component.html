@@ -39,8 +39,12 @@
       </div>
     </div>
   </div>
-  <hr>
+  <div *ngIf="hasVCPerm(permVC.ViewAudit) && vpActive && vpfActive">
+    <hr>
+    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+  </div>
   <div *ngIf="visboprojectversions">
+    <hr>
     <app-comp-viewkeymetrics [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
   </div>
 </div>

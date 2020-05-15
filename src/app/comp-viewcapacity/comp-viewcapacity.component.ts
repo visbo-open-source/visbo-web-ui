@@ -8,10 +8,13 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboSetting } from '../_models/visbosetting';
+import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
 import { VisboProjectVersion, VisboCapacity } from '../_models/visboprojectversion';
+import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -24,11 +27,15 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   @Input() vcActive: VisboCenter;
+  @Input() vpActive: VisboProject;
+  @Input() vpfActive: VisboPortfolioVersion;
   @Input() organisation: VisboSetting;
+  @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
   visboCapcity: VisboCapacity[];
   roleID: string = '1';
+  currentRefDate: Date;
 
   parentThis: any;
 
@@ -46,6 +53,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   constructor(
     private visbocenterService: VisboCenterService,
+    private visboprojectService: VisboProjectService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -56,14 +64,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
+    this.currentRefDate = this.refDate;
     this.visboCapacityCalc();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // this.log(`Capacity Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
-    // if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
-    //   this.visboCapacityCalc();
-    // }
+    this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}`);
+    if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
+      this.visboCapacityCalc();
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -81,34 +90,56 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   visboCapacityCalc(): void {
-    if (!this.vcActive) {
-      return;
+    if (this.vcActive) {
+      this.log(`Capacity Calc for VC  ${this.vcActive._id} `);
+      this.visbocenterService.getCapacity(this.vcActive._id, this.roleID)
+        .subscribe(
+          visbocenter => {
+            if (!visbocenter.capacity) {
+              this.log(`get VPV Calc: Reset Capacity to empty `);
+              // this.vpvCost[visboprojectversions[0]._id] = [];
+              this.visboCapcity = [];
+            } else {
+              this.log(`Store Capacity for Len ${visbocenter.capacity.length}`);
+              this.visboCapcity = visbocenter.capacity;
+            }
+            this.visboViewCapacityOverTime();
+          },
+          error => {
+            this.log(`get VC Capacity failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vcActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpfActive){
+      this.log(`Capacity Calc for VP  ${this.vpActive._id} VPF  ${this.vpfActive._id}`);
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.roleID)
+        .subscribe(
+          vp => {
+            if (!vp.capacity) {
+              this.log(`get VPF Calc: Reset Capacity to empty `);
+              this.visboCapcity = [];
+            } else {
+              this.log(`Store Capacity for Len ${vp.capacity.length}`);
+              this.visboCapcity = vp.capacity;
+            }
+            this.visboViewCapacityOverTime();
+          },
+          error => {
+            this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
     }
-
-    this.log(`Capacity Calc for Object  ${this.vcActive._id}`);
-    this.visbocenterService.getCapacity(this.vcActive._id, this.roleID)
-      .subscribe(
-        visbocenter => {
-          if (!visbocenter.capacity) {
-            this.log(`get VPV Calc: Reset Capacity to empty `);
-            // this.vpvCost[visboprojectversions[0]._id] = [];
-            this.visboCapcity = [];
-          } else {
-            this.log(`Store Capacity for Len ${visbocenter.capacity.length}`);
-            this.visboCapcity = visbocenter.capacity;
-          }
-          this.visboViewCapacityOverTime();
-        },
-        error => {
-          this.log(`get VC Capacity failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status === 403) {
-            const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vcActive.name});
-            this.alertService.error(message);
-          } else {
-            this.alertService.error(getErrorMessage(error));
-          }
-        }
-      );
   }
 
   visboViewCapacityOverTime(): void {
@@ -181,9 +212,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   displayCapacity(): boolean {
     let result = false;
-    if (this.vcActive                                // the vpv is already available
-    && this.hasVCPerm(this.permVC.ViewAudit)          // user has audit permission
-    && this.visboCapcity && this.visboCapcity.length > 0) {     // Capacity data available
+    if (this.visboCapcity && this.visboCapcity.length > 0) {     // Capacity data available
       result = true;
     }
     return result;

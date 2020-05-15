@@ -312,8 +312,8 @@ export class VisboprojectDetailComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
-  helperUsersPerGroup(groupName: string): number {
-    const group = this.vgGroups && this.vgGroups.find(x => x.name === groupName);
+  helperUsersPerGroup(groupId: string): number {
+    const group = this.vgGroups && this.vgGroups.find(x => x._id === groupId);
     if (group) {
       return group.users.length;
     }

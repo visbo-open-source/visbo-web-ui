@@ -73,6 +73,13 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
+  }
+
   getVisboPortfolioVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
