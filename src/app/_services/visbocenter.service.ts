@@ -159,7 +159,6 @@ export class VisboCenterService  {
     );
   }
 
-  
   /* GET VisboCenters whose name contains search term */
   // searchVisboCenters(term: string): Observable<VisboCenter[]> {
   //   if (!term.trim()) {

@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboSetting, VisboSettingResponse, VisboSettingListResponse ,VisboOrganisationListResponse } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingResponse, VisboSettingListResponse, VisboOrganisationListResponse } from '../_models/visbosetting';
 
 import { MessageService } from './message.service';
 
