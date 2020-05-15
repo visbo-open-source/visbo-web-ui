@@ -66,8 +66,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.parentThis = this;
     this.showUnit = this.translate.instant('ViewCapacity.lbl.euro');
     this.ressourceID = '';
-    this.capacityFrom = new Date(2019, 5, 1, 0, 0, 0, 0);
+    this.capacityFrom = new Date();
+    this.capacityFrom.setDate(1);
+		this.capacityFrom.setHours(0, 0, 0, 0);
+    this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 2);    
     this.capacityTo = new Date();
+    this.capacityTo.setDate(1);
+		this.capacityTo.setHours(0, 0, 0, 0);
+    this.capacityTo.setMonth(this.capacityTo.getMonth() + 6);
     this.visboCapacityCalc();
   }
 
@@ -134,15 +140,25 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             this.visboCapacity = visbocenter.capacity;
           }
 
-          if (!this.capacityFrom) {
-            this.capacityFrom = new Date(this.visboCapacity[0].month);
-          }
-          if (!this.capacityTo) {
-            this.capacityTo = new Date(this.visboCapacity[visbocenter.capacity.length - 1].month);
-          }
+          // if (!this.capacityFrom) {
+          //   this.capacityFrom = new Date();
+          //   this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 2);
+          //   // this.capacityFrom = new Date(this.visboCapacity[0].month);
+          // }
+          // if (!this.capacityTo) {
+          //   this.capacityTo = new Date();
+          //   this.capacityTo.setMonth(this.capacityTo.getMonth() + 6);
+          //   // this.capacityTo = new Date(this.visboCapacity[visbocenter.capacity.length - 1].month);
+          // }
+          // if (this.capacityTo < this.capacityFrom) {
+          //   this.capacityTo.setMonth(this.capacityFrom.getMonth() + 1);
+          // }
+
+          // show the RessourceID which is actual calculated
           if (!this.ressourceID) {
             this.ressourceID = this.aktOrga.allRoles[0].name;
           }
+          
           this.visboViewCapacityOverTime();
         },
         error => {
@@ -216,6 +232,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     if (!this.capacityTo) {
       this.capacityTo = new Date(capacity[capacity.length - 1].month);
+    }
+    if (this.capacityTo < this.capacityFrom) {
+      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 1);
     }
 
     this.log(`ViewCapacityOverTime ${this.ressourceID} `);
