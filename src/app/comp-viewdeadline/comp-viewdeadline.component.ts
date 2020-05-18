@@ -358,8 +358,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   getFullName(deadline: VPVDeadline): string {
     let result: string;
     if (deadline.fullName) {
-      result = deadline.fullName;
-    } else if (deadline.fullPathVPV.length > 1) {
+       result = deadline.fullName;    
+    // } else if (deadline.fullPathPFV && deadline.fullPathPFV.length > 1) {
+    //   result = deadline.fullPathPFV.slice(1).join(' / ');
+    } else if (deadline.fullPathVPV && deadline.fullPathVPV.length > 1) {
       result = deadline.fullPathVPV.slice(1).join(' / ');
     } else { // Root phase
       result = this.vpvActive.name;
