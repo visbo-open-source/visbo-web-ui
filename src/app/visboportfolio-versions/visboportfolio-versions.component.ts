@@ -224,12 +224,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   changeView(newView: string): void {
-    if (newView == 'Capacity') {
+    if (newView === 'Capacity') {
       this.currentView = newView;
-    } else if (newView == 'ProjectBoard') {
+    } else if (newView === 'ProjectBoard') {
       this.currentView  = newView;
     } else {
-      this.currentView = 'KeyMetrics'
+      this.currentView = 'KeyMetrics';
     }
   }
 
