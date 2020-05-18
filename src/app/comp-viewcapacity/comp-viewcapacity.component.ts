@@ -34,14 +34,20 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() combinedPerm: VGPermission;
 
   visboCapcity: VisboCapacity[];
+  showUnit: string;
+  ressourceID: string;
+  capacityFrom: Date;
+  capacityTo: Date;
+
   roleID: string = '1';
   currentRefDate: Date;
 
   parentThis: any;
 
-  colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
+  colors: string[] = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
   series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' }
+    '0': { lineWidth: 4, pointShape: 'star' },
+    '1': { lineWidth: 2, lineDashStyle: [4, 4], pointShape: 'star' }
   };
 
   graphDataComboChart: any[] = [];
@@ -65,6 +71,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
     this.currentRefDate = this.refDate;
+    this.showUnit = this.translate.instant('ViewCapacity.lbl.euro');
+    this.ressourceID = '';
+    this.capacityFrom = new Date();
+    this.capacityTo = new Date();
+    this.capacityFrom.setMonth(this.capacityFrom.getMonth()-3);
+    this.capacityTo.setMonth(this.capacityTo.getMonth()+9);
     this.visboCapacityCalc();
   }
 
@@ -195,12 +207,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         new Date(),
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
-        graphDataCapacity[len - 1][3]
+        graphDataCapacity[len - 1][3],
+        graphDataCapacity[len - 1][4]
       ]);
     }
 
     graphDataCapacity.push([
       'Month',
+      this.translate.instant('ViewCapacity.totalCapaPT'),
       this.translate.instant('ViewCapacity.internCapaPT'),
       this.translate.instant('ViewCapacity.actualCostPT'),
       this.translate.instant('ViewCapacity.plannedCostPT')
