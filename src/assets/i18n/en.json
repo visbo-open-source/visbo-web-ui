@@ -494,6 +494,39 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
+	"ViewCapacity": {
+		"title": "Monthly Cost for Role No.",
+		"titleVersion": "Version of",
+		"yAxisCapaOverTime": "Monthly Cost",
+		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
+		"internCapaPT": "Internal Capacity ",
+		"totalCapaPT": "Total Capacity",
+		"actualCostPT": "Actual Cost",
+		"plannedCostPT": "Planned Cost",
+		"lbl": {
+			"day": "day",
+			"week": "week",
+			"month": "month",
+			"quarter": "quarter",
+			"previousPeriod": "Previous Period before {{refDate}}",
+			"nextPeriod": "Next Period after {{refDate}}",
+			"vc": "VISBO Center",
+			"pd": "PD",
+			"euro": "Euro"
+		},
+		"btn": {
+			"back": "Back",
+			"showUnit": "Unit:",
+			"ressourceID": "RessourcenID:",
+			"from": "from:",
+			"to": "to:"
+		},
+		"msg": {
+			"errorPerm": "Permission denied for this VISBO Center",
+			"errorPermCapacity": "Permission denied for this VISBO Capacity ",
+			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status of Deliveries",
 		"titleDetailDelivery": "Status of Delivery",
