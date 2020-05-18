@@ -43,6 +43,7 @@ export class VisboProject {
   variant: [VPVariant];
   lock: [VPLock];
   restrict: [VPRestrict];
+  capacity: any[];
   vc: {
     name: string;
     deletedAt: Date;

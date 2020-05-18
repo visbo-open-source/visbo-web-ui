@@ -38,9 +38,19 @@
         </div>
       </div>
     </div>
+    <div class="btn-toolbar" style="">
+      <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
+      <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+      <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
+    </div>
   </div>
-  <hr>
-  <div *ngIf="visboprojectversions">
+
+  <div *ngIf="currentView == 'Capacity' && vpActive && vpfActive">
+    <hr>
+    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+  </div>
+  <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions">
+    <hr>
     <app-comp-viewkeymetrics [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
   </div>
 </div>

@@ -522,6 +522,8 @@
 			"to": "bis:"
 		},
 		"msg": {
+			"calculating": "Berechnen der Kapzitäten ...",
+			"noCapacity": "Keine Informationen zu RessourcenID",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
@@ -731,6 +733,9 @@
 		"btn": {
 			"showChart": "Zeige Chart",
 			"showList": "Zeige Liste",
+			"viewKeyMetrics": "Zeige Kennzahlen",
+			"viewCapacity": "Zeige Auslastung",
+			"viewProjectBoard": "Zeige Projektübersicht",
 			"filter": "Filter",
 			"change": "Ändern",
 			"cancel": "Abbrechen",

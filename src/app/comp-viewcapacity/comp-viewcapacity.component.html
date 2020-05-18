@@ -1,5 +1,6 @@
 <div *ngIf="displayCapacity()" class='well'>
   
+<div class='well'>
   <div class="form-inline">
     <label for="showUnit" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.showUnit' | translate }}</label>
     <select class="form-control mb-2 mr-sm-2" name="showUnit" [(ngModel)]="showUnit" (change)="visboViewCapacityOverTime()">
@@ -16,10 +17,19 @@
     <input id="capacityTo" type="date" class="form-control mb-2 mr-sm-2" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'"  (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
   </div>
 
-  <div *ngIf="graphDataComboChart.length > 0" >
-    <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+  <div *ngIf="displayCapacity() >= 0">
+    <div *ngIf="graphDataComboChart.length > 0" >
+      <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+      <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
+    </div>
   </div>
-  <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
+  <div *ngIf="graphDataComboChart.length == 0" >
+    {{ 'ViewCapacity.msg.noCapacity' | translate }}
+  </div>
+  <div *ngIf="displayCapacity() < 0" >
+    <div class="spinner-border" role="status"></div>
+    <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>
+  </div>
 </div>
 
 <!-- Modal Show Shortcut explanation -->
