@@ -53,9 +53,9 @@ export class VisboSettingService  {
       params = params.append('sysadmin', '1');
     }
     this.log(`Calling HTTP Request: ${url} `);
-    return this.http.get<VisboOrganisationListResponse>(url, { headers , params })
+    return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
-        map(response => response.vcorganisation),
+        map(response => response.vcsetting),
         tap(vcorganisations => this.log(`fetched ${vcorganisations.length} VCOrganisations `)),
         catchError(this.handleError('getVCOrganisations', []))
       );

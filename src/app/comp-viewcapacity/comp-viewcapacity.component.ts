@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboOrganisationListResponse, VisboOrganisation } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation } from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -30,6 +30,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
+  @Input() vcOrganisation:VisboSettingListResponse
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
@@ -157,6 +158,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Capacity for Len ${visbocenter.capacity.length}`);
               this.visboCapcity = visbocenter.capacity;
+            }
+            // show the RessourceID which is actual calculated
+            if (!this.ressourceID) {
+              this.ressourceID = this.actOrga.allRoles[0].name;
             }
             this.visboViewCapacityOverTime();
           },
