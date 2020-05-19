@@ -179,7 +179,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getElementPath(index: number, len?: number): string {
-    const path = this.filteredDeadline[index].fullPathVPV;
+    var path = [];
+    if (this.refType === 'vpv' || this.refType === undefined) {
+      path = this.filteredDeadline[index].fullPathVPV;
+    }
+    if (this.refType === 'pfv' ) {
+       path = this.filteredDeadline[index].fullPathPFV;
+    }
+    
     let result = '';
     if (path.length <= 1) {
       result = this.vpvActive.name;
@@ -359,14 +366,27 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     let result: string;
     if (deadline.fullName) {
        result = deadline.fullName;    
-    // } else if (deadline.fullPathPFV && deadline.fullPathPFV.length > 1) {
-    //   result = deadline.fullPathPFV.slice(1).join(' / ');
-    } else if (deadline.fullPathVPV && deadline.fullPathVPV.length > 1) {
-      result = deadline.fullPathVPV.slice(1).join(' / ');
-    } else { // Root phase
-      result = this.vpvActive.name;
+    } 
+    if (this.refType === 'vpv' || this.refType === undefined) {
+      if (deadline.fullPathVPV && deadline.fullPathVPV.length > 1) {
+        result = deadline.fullPathVPV.slice(1).join(' / ');
+      } else if (!deadline.fullPathVPV) {
+          if (deadline.fullPathPFV && deadline.fullPathPFV.length > 1) {
+            result = deadline.fullPathPFV.slice(1).join(' / ');
+          }
+      } else { // Root phase
+        result = this.vpvActive.name;
+      }
+      return result;
     }
-    return result;
+    if (this.refType === 'pfv') {
+      if (deadline.fullPathPFV && deadline.fullPathPFV.length > 1) {
+        result = deadline.fullPathPFV.slice(1).join(' / ');
+      } else { // Root phase
+        result = this.vpvActive.name;
+      }
+      return result;
+    }
   }
 
   inFuture(ref: string): boolean {
@@ -430,7 +450,20 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       this.sortAscendingDeadline = true;
     }
     if (this.sortColumnDeadline === 2) {
-      this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
+      if (this.refType === undefined) {
+        this.filteredDeadline.sort(function(a, b) { 
+          if (!a.fullPathVPV && a.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / '))}; 
+          if (!b.fullPathVPV && b.fullPathPFV) {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / '))};
+          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '))};
+          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); 
+        });
+      }
+      if (this.refType === 'vpv') {
+        this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
+      }      
+      if (this.refType === 'pfv') {
+        this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / ')); });
+      }      
     } else if (this.sortColumnDeadline === 3) {
       this.filteredDeadline.sort(function(a, b) {
         return visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());
