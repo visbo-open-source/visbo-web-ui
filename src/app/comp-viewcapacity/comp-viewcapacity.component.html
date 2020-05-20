@@ -1,5 +1,3 @@
-<div *ngIf="displayCapacity()" class='well'>
-  
 <div class='well'>
   <div class="form-inline">
     <label for="showUnit" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.showUnit' | translate }}</label>
@@ -26,6 +24,9 @@
   <div *ngIf="graphDataComboChart.length == 0" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div>
+  <!-- <div *ngIf="ressourceID == ''" >
+    {{ 'ViewCapacity.msg.noCapacity' | translate }}
+  </div> -->
   <div *ngIf="displayCapacity() < 0" >
     <div class="spinner-border" role="status"></div>
     <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>

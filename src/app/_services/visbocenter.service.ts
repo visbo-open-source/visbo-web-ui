@@ -135,7 +135,7 @@ export class VisboCenterService  {
   }
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
-  getCapacity(id: string, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+  getCapacity(id: string, refDate: Date, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -146,7 +146,8 @@ export class VisboCenterService  {
     }
     if (roleID) {
       params = params.append('roleID', roleID);
-    }
+    }    
+    
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
       map(response => {
