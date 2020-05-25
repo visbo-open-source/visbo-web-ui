@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole, VisboOrgaTreeLeaf, VisboOrganisationListResponse} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -45,6 +45,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   showUnit: string;
   parentThis: any;
+
+  orgaTreeData: VisboOrgaTreeLeaf;
   
 
   colors: string[] = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
@@ -218,11 +220,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   visboViewOrganisationTree(): void {
+
     const organisation = this.actOrga;
-    // var allRoleNames = [];
-    // for (var i = 0; organisation  && organisation.allRoles && i < organisation.allRoles.length; i++) {
-    //   allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
-    // }
+    var allRoles = [];
+    for (var  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
+      allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
+    }
+
+    var topLevelNodes = this.buildTopNodes(allRoles);
+    this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
+    console.log(this.orgaTreeData);
+   
     // // URK TODO:  the topNOde is to be fetched
     // sort the Orga like VisboBusiness for direct access
     
@@ -346,6 +354,155 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     return result;
   }
+
+  
+
+// find summary Roles
+  getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
+    var summaryRoles = [];
+
+    function findSummaryRoles(value: any) {
+      //value is the Id of one subrole
+      var hroleID = value.key;
+      var hrole = allRoles[hroleID];
+      if (hrole.subRoleIDs.length > 0){
+        summaryRoles[hroleID] = hrole;
+        var shroles = hrole.subRoleIDs;
+        shroles.forEach(findSummaryRoles);
+      }
+    }
+    // all summary roles
+    if (roleID === undefined && allRoles) {
+      var i = 0;
+      for (i=0; allRoles &&  i <= allRoles.length; i++ ){
+        var hrole = allRoles[i];
+        if (hrole && hrole.subRoleIDs.length > 0 ) summaryRoles[allRoles[i].uid] = allRoles[i];
+      }
+      return summaryRoles;
+    }
+
+    // only summary roles that are children of the role roleID
+    if (roleID && allRoles){
+      var role = allRoles[roleID];
+
+      if (role.subRoleIDs && role.subRoleIDs.length > 0) {
+
+        var subRoles = role.subRoleIDs;
+        if (subRoles.length > 0 ){
+          summaryRoles[role.uid] = role;
+          subRoles.forEach(findSummaryRoles);
+        }
+
+      }
+      return summaryRoles;
+    }
+  }
+
+  getParentOfRole (roleID: number, allRoles: VisboRole[]): unknown {
+    var parentRole = undefined;
+    if (allRoles[roleID]) {
+      // find all summaryRoles
+      var sumRoles = this.getSummaryRoles(allRoles, undefined);
+      var notFound = true;
+      for (var k=0; sumRoles && k < sumRoles.length;k++){
+        // check only roles, which are not isTeam or isTeamParent
+        var hrole = sumRoles[k];
+        if (hrole && !hrole.isTeam && !hrole.isTeamParent)	{
+          for( var i = 0; notFound && hrole && i< hrole.subRoleIDs.length; i++ ){
+            // ur: für Testzwecke: var roleuid = hrole.subRoleIDs[i].key;
+            if ( hrole.subRoleIDs[i] && hrole.subRoleIDs[i].key == roleID) {
+              parentRole = hrole;
+            }
+          }
+        }
+
+      }
+    }
+    return parentRole;
+  }
+
+  buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
+    var topLevelNodes = [];
+    var topLevel = [];
+    var i = 1;
+
+    while (i <= allRoles.length){
+      var currentRole = allRoles[i];
+      if (currentRole) {
+        var parent = this.getParentOfRole(currentRole.uid, allRoles);
+        if (!parent && !topLevel[currentRole.uid]) {
+          topLevel[currentRole.uid]=currentRole;
+          topLevelNodes.push(currentRole);
+        }
+      }
+      i++;
+    }
+    return topLevelNodes;
+  }
+
+
+  buildOrgaTree(topLevelNodes:VisboRole[], allRoles:VisboRole[]) {
+    
+    type subRole = {
+      key: number;
+      value: number;
+    }
+
+    let tree = new VisboOrgaTreeLeaf();
+    tree.uid = 0;
+    tree.name = 'root';
+    tree.children = [];
+    tree.showChildren = true;
+
+    function makeLeaf(value:subRole): VisboOrgaTreeLeaf {
+      var leaf = new VisboOrgaTreeLeaf();
+      var hroleID = value.key;
+      var hrole = allRoles[hroleID];
+      var hroleName = hrole?.name;
+      leaf.children = [];
+      leaf.uid = hroleID;
+      leaf.name = hroleName;
+      var children = hrole.subRoleIDs;
+      children.forEach(function(child) {
+        leaf.children.push(makeLeaf(child));
+      })
+      return leaf;
+    }
+
+    for (var i=0; topLevelNodes && i < topLevelNodes.length; i++) {
+     
+      const topLevelLeaf = new VisboOrgaTreeLeaf();
+      topLevelLeaf.children = [];
+      topLevelLeaf.uid = topLevelNodes[i].uid;
+      topLevelLeaf.name = topLevelNodes[i].name;
+      topLevelLeaf.showChildren = false;
+      
+      if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
+        var sRoles = topLevelNodes[i].subRoleIDs;
+        
+        sRoles.forEach(function(sRole){
+          topLevelLeaf.children.push(makeLeaf(sRole));
+        });
+        // alternativ (Philipp): 
+        // topLevelLeaf.children = sRoles.map(makeLeaf);
+      }     
+      tree.children.push(topLevelLeaf);
+    }
+
+    return tree;   
+  }
+
+  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
+    leaf.isSelected = value;
+    if (!leaf.children || leaf.children.length === 0) {
+      return;
+    }
+    leaf.children.forEach((child) => {
+      this.setTreeLeafSelection(child, value);
+    });
+  }
+
+  
 
   // controller
   parseDate(dateString: string): Date {

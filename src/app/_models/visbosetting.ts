@@ -45,7 +45,12 @@ export class VisboRole {
   name: string;
   employeeNr: string;
   uid: number;
-  subRoleIDs: any;
+  subRoleIDs: Array<{
+    key: number;
+    value: number;
+  }>;
+  // flowers: string[]
+  // flowers: Array<string>;
   teamIDs: [any];
   isTeam: boolean;
   isTeamParent: boolean;
@@ -58,4 +63,12 @@ export class VisboRole {
   kapazitaet: [number];
   timestamp: Date;
   startOfCal: Date;
+}
+
+export class VisboOrgaTreeLeaf {
+  uid: number;
+  name: string;
+  children: VisboOrgaTreeLeaf[];
+  showChildren: boolean;
+  isSelected: boolean;
 }

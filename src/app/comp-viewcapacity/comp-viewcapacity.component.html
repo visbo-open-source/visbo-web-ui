@@ -18,7 +18,7 @@
   <div *ngIf="displayCapacity() >= 0">
     <div *ngIf="graphDataComboChart.length > 0" >
       <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
-      <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
+      <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i> -->
     </div>
   </div>
   <div *ngIf="graphDataComboChart.length == 0" >
@@ -27,6 +27,45 @@
   <!-- <div *ngIf="ressourceID == ''" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div> -->
+
+  <ul [ngStyle]="{'list-style-type': 'none'}" *ngIf="orgaTreeData">
+    <ng-template #recursiveList let-list>
+      <li *ngFor="let item of list">
+        <a (click)="item.showChildren = !item.showChildren">
+          <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
+        </a>
+        <span>
+          <input class="mx-1" type="checkbox" [checked]="item.isSelected" (change)="setTreeLeafSelection(item, !item.isSelected)" />
+          <span>{{item.name}}</span>
+        </span>
+        <ul *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
+          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children }"></ng-container>
+        </ul>
+      </li>
+    </ng-template>
+    <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children }"></ng-container>
+  </ul>
+
+  
+  <!-- <div>
+    <a class="btn btn-clear btn-xs" data-ng-show="item.items.length" ng-click="expandNode(this,$event)">
+        <i class="fa" ng-class="{'fa-chevron-right': collapsed, 'fa-chevron-down': !collapsed}"></i>
+    </a>
+    <span class="node-header">
+        <input type="checkbox" ng-checked="item.isSelected" indeterminate-checkbox node="item" />
+    </span>
+    {{item.title}}
+    
+  </div>
+
+  <ol ui-tree-nodes="options" ng-model="item.items" ng-class="{hidden: collapsed,displayed:!collapsed}">
+    <li ng-repeat="item in item.items" ui-tree-node collapsed="true" ng-include="'items_renderer.html'">
+    </li>
+  </ol> -->
+
+
+
+  
   <div *ngIf="displayCapacity() < 0" >
     <div class="spinner-border" role="status"></div>
     <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>
