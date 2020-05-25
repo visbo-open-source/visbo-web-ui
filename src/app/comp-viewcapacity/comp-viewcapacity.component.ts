@@ -153,16 +153,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboCapacityCalc(): void {    
     this.visboCapcity = undefined;
 
-    // if (this.ressourceID){
-    //   for (var i=0; organisation && organisation.allRoles && i < organisation.allRoles.length; i++){
-    //     if (organisation.allRoles[i].name === this.ressourceID) { 
-    //       break;
-    //     }
-    //   }
-    //   if (i === organisation.allRoles.length) {
-    //     this.ressourceID = undefined;
-    //   }     
-    // }
     if (this.vcActive) {
       this.log(`Capacity Calc for VC  ${this.vcActive._id} `);
 
@@ -179,7 +169,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             }
             // show the RessourceID which is actual calculated
             if (!this.ressourceID) {
-              this.ressourceID = this.actOrga.allRoles[0].name;              
+              this.ressourceID = this.actOrga?.allRoles[0]?.name;              
             }
             this.visboViewCapacityOverTime();
           },
@@ -205,6 +195,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store Capacity for Len ${vp.capacity.length}`);
               this.visboCapcity = vp.capacity;
             }
+            // show the RessourceID which is actual calculated
+            if (!this.ressourceID) {
+              this.ressourceID = this.actOrga?.allRoles[0]?.name;              
+            }
             this.visboViewCapacityOverTime();
           },
           error => {
@@ -221,15 +215,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   visboViewOrganisationTree(): void {
-
+    this.log(`Show the OrgaTree of the VC `);
     const organisation = this.actOrga;
     var allRoles = [];
+    this.log(`get all roles of the organisation, prepared for direct access`);
     for (var  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
       allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
     }
-
+    this.log(`get all roles of the organisation, prepared for the TreeView`);
     var topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
+    this.log(`initialize the orgaTreeData with one of the topLevel`);
     this.currentLeaf = this.orgaTreeData.children[0];
     this.setTreeLeafSelection(this.currentLeaf, true);  
     // console.log(this.orgaTreeData);
@@ -238,7 +234,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   visboViewCapacityOverTime(): void {
-    let optformat = "# T\u20AC";
+    let optformat = "###,###.## T\u20AC";
     if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
       optformat = "# PT";
     }
@@ -277,14 +273,27 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const capacity = this.visboCapcity;
-    if (!this.capacityFrom) {
-      this.capacityFrom = new Date(capacity[0].month);
+
+    // if (!this.capacityFrom){
+    //   this.capacityFrom = new Date();
+    //   this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
+    //   this.capacityFrom.setDate(1);
+    // }
+    if (!this.capacityTo){
+      this.capacityTo = new Date();
+      this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
+      this.capacityTo.setDate(1);
     }
-    if (!this.capacityTo) {
-      this.capacityTo = new Date(capacity[capacity.length - 1].month);
-    }
+
+    // if (!this.capacityFrom) {
+    //   this.capacityFrom = new Date(capacity[0].month);
+    // }
+    // if (!this.capacityTo) {
+    //   this.capacityTo = new Date(capacity[capacity.length - 1].month);
+    // }
+
     if (this.capacityTo < this.capacityFrom) {
-      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 1);
+      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 12);
     }
 
     this.log(`ViewCapacityOverTime ressourceID ${this.ressourceID}`);
@@ -354,6 +363,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
     var summaryRoles = [];
+    this.log(`get all summary roles of the organisation roleID ${{roleID}}`);
 
     function findSummaryRoles(value: any) {
       //value is the Id of one subrole
@@ -365,6 +375,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         shroles.forEach(findSummaryRoles);
       }
     }
+    
     // all summary roles
     if (roleID === undefined && allRoles) {
       var i = 0;
@@ -394,6 +405,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
     var parentRole = undefined;
+
+    this.log(`get the parentRole of roleID ${{roleID}}`);
     if (allRoles[roleID]) {
       
       var notFound = true;
@@ -417,6 +430,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     var topLevelNodes = [];
     var topLevel = [];
     var i = 1;
+
+    this.log(`get all TopNodes of the organisation`);
 
     // find all summaryRoles
     var sumRoles = this.getSummaryRoles(allRoles, undefined);
@@ -443,6 +458,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       key: number;
       value: number;
     }
+
+    this.log(`build the OrgaTree used for the selectionTree of the organisation`);
 
     let tree = new VisboOrgaTreeLeaf();
     tree.uid = 0;
@@ -501,6 +518,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   reactionOnSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
+
     leaf.isSelected = value;
     if (leaf.isSelected && leaf.name != this.ressourceID ){
       this.ressourceID = leaf.name;
