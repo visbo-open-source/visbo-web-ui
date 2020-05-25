@@ -398,27 +398,25 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  getParentOfRole (roleID: number, allRoles: VisboRole[]): unknown {
+  getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
     var parentRole = undefined;
     if (allRoles[roleID]) {
-      // find all summaryRoles
-      var sumRoles = this.getSummaryRoles(allRoles, undefined);
+      
       var notFound = true;
       for (var k=0; sumRoles && k < sumRoles.length;k++){
-        // check only roles, which are not isTeam or isTeamParent
+        
         var hrole = sumRoles[k];
-        if (hrole && !hrole.isTeam && !hrole.isTeamParent)	{
-          for( var i = 0; notFound && hrole && i< hrole.subRoleIDs.length; i++ ){
-            // ur: für Testzwecke: var roleuid = hrole.subRoleIDs[i].key;
+        if (hrole)	{
+          for( var i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ){            
             if ( hrole.subRoleIDs[i] && hrole.subRoleIDs[i].key == roleID) {
               parentRole = hrole;
+              notFound = false;
             }
           }
-        }
-
+        }         
       }
+      return parentRole;           
     }
-    return parentRole;
   }
 
   buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
@@ -426,10 +424,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     var topLevel = [];
     var i = 1;
 
+    // find all summaryRoles
+    var sumRoles = this.getSummaryRoles(allRoles, undefined);
+
     while (i <= allRoles.length){
       var currentRole = allRoles[i];
       if (currentRole) {
-        var parent = this.getParentOfRole(currentRole.uid, allRoles);
+        // get parent of currentRole
+        var parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
         if (!parent && !topLevel[currentRole.uid]) {
           topLevel[currentRole.uid]=currentRole;
           topLevelNodes.push(currentRole);
