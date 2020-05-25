@@ -499,7 +499,7 @@
 	},
 	"ViewCapacity": {
 		"title": "Monatliche Kosten für Rolle Nr.",
-		"titleVersion": "Version vom",
+		"titleVersion": "Version vom",		
 		"yAxisCapaOverTime": "Monatliche Kosten",
 		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
 		"internCapaPT": "interne Kapazität",

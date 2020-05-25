@@ -23,6 +23,12 @@ export class VisboSettingListResponse {
   vcsetting: [ VisboSetting ];
 }
 
+export class VisboOrganisationListResponse {
+  state: string;
+  message: string;
+  vcorganisation: [ VisboSetting ];
+}
+
 export class VisboOrganisation {
   allCosts: [ VisboCost ];
   allRoles: [ VisboRole ];

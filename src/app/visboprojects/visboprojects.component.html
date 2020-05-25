@@ -22,6 +22,13 @@
         <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
+    <div class='container-fluid'></div>
+      <div *ngIf="chart" class="btn-toolbar" >
+          <button type="button" class="m-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
+          <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light m-2" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+          <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
+      </div>
+    </div>
   </div>
 
   <div *ngIf="!chart" class='panel-body'>
@@ -70,16 +77,13 @@
       <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
+        <hr>
+        <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+    </div>
+    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
     </div>
   </div>
-</div>
-<div *ngIf="visboprojects && visboprojects.length == 0" class='panel-body'>
-  <div class='panel-heading'>
-    <h2>{{ 'vp.noVP' | translate }}</h2>
-    <div> {{ 'vp.msg.noVP' | translate }} </div>
-  </div>
-</div>
 
 
 <!-- Modal VP Create-->

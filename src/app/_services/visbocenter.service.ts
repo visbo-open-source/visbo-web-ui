@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -134,7 +135,7 @@ export class VisboCenterService  {
   }
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
-  getCapacity(id: string, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+  getCapacity(id: string, refDate: Date, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -145,7 +146,8 @@ export class VisboCenterService  {
     }
     if (roleID) {
       params = params.append('roleID', roleID);
-    }
+    }    
+    
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
       map(response => {
@@ -157,7 +159,6 @@ export class VisboCenterService  {
       catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
   }
-
 
   /* GET VisboCenters whose name contains search term */
   // searchVisboCenters(term: string): Observable<VisboCenter[]> {

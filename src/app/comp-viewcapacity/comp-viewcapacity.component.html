@@ -5,11 +5,12 @@
       <option>{{ 'ViewCapacity.lbl.pd' | translate }}</option>
       <option>{{ 'ViewCapacity.lbl.euro' | translate }}</option>
     </select>
-
+    <!-- <div class="col-sm-1"></div>  -->
     <label for="Ressourcen" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.ressourceID' | translate }} </label>
     <input id="ressourceID" type="text" class="form-control mb-2 mr-sm-2" name="ressourceID" [(ngModel)]="ressourceID" (change)="visboCapacityCalc()" >
+    <!-- <div class="col-sm-4"></div> -->
     <label for="capacityFrom" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.from' | translate }} </label>
-    <input id="capacityFrom" type="date" class="form-control mb-2 mr-sm-2" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
+    <input id="capacityFrom" type="date" class="form-control mb-2 mr-sm-2" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >    
     <label for="capacityTo" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.to' | translate }} </label>
     <input id="capacityTo" type="date" class="form-control mb-2 mr-sm-2" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'"  (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
   </div>
@@ -23,6 +24,9 @@
   <div *ngIf="graphDataComboChart.length == 0" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div>
+  <!-- <div *ngIf="ressourceID == ''" >
+    {{ 'ViewCapacity.msg.noCapacity' | translate }}
+  </div> -->
   <div *ngIf="displayCapacity() < 0" >
     <div class="spinner-border" role="status"></div>
     <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>

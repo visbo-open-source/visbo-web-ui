@@ -1,3 +1,5 @@
+import { VisboSetting } from './visbosetting';
+
 export class VisboCenter {
   _id: string;
   updatedAt: Date;
@@ -16,3 +18,4 @@ export class VisboCenterResponse {
   vc: [ VisboCenter ];
   perm: {system: number, vc: number, vp: number};
 }
+

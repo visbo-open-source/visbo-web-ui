@@ -30,7 +30,7 @@
     </div>
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
-    <div class="btn-toolbar" style="">
+    <div class="btn-toolbar" style ="">
       <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
       <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>

@@ -499,7 +499,7 @@
 	},
 	"ViewCapacity": {
 		"title": "Monthly Cost for Role No.",
-		"titleVersion": "Version of",
+		"titleVersion": "Version of",		
 		"yAxisCapaOverTime": "Monthly Cost",
 		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
 		"internCapaPT": "Internal Capacity ",
