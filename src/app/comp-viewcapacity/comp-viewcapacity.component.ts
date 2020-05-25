@@ -39,6 +39,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   actOrga: VisboOrganisation;
 
   ressourceID: string;
+  currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
   currentRefDate: Date;
@@ -178,7 +179,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             }
             // show the RessourceID which is actual calculated
             if (!this.ressourceID) {
-              this.ressourceID = this.actOrga.allRoles[0].name;
+              this.ressourceID = this.actOrga.allRoles[0].name;              
             }
             this.visboViewCapacityOverTime();
           },
@@ -229,17 +230,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     var topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
-    console.log(this.orgaTreeData);
-   
-    // // URK TODO:  the topNOde is to be fetched
-    // sort the Orga like VisboBusiness for direct access
-    
-    if (organisation && organisation.allRoles && organisation.allRoles.length > 0) {
-      this.ressourceID = organisation.allRoles[0].name;
-    }
-    // if (this.ressourceID && !allRoleNames && !allRoleNames[this.ressourceID]) {
-    //   return;
-    // }
+    this.currentLeaf = this.orgaTreeData.children[0];
+    this.setTreeLeafSelection(this.currentLeaf, true);  
+    // console.log(this.orgaTreeData);
+      
   }
 
 
@@ -478,7 +472,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       topLevelLeaf.uid = topLevelNodes[i].uid;
       topLevelLeaf.name = topLevelNodes[i].name;
       topLevelLeaf.showChildren = false;
-      
+            
       if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
         var sRoles = topLevelNodes[i].subRoleIDs;
         
@@ -495,13 +489,27 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
-    leaf.isSelected = value;
+    leaf.isSelected = value;    
     if (!leaf.children || leaf.children.length === 0) {
       return;
     }
     leaf.children.forEach((child) => {
       this.setTreeLeafSelection(child, value);
     });
+
+  }
+
+
+  reactionOnSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
+    leaf.isSelected = value;
+    if (leaf.isSelected && leaf.name != this.ressourceID ){
+      this.ressourceID = leaf.name;
+      this.visboCapacityCalc();  
+      this.setTreeLeafSelection(this.currentLeaf, false);   
+      this.currentLeaf = leaf;
+    }
+    this.setTreeLeafSelection(leaf, value);   
+    return; 
   }
 
   

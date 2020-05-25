@@ -35,7 +35,7 @@
           <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
         </a>
         <span>
-          <input class="mx-1" type="checkbox" [checked]="item.isSelected" (change)="setTreeLeafSelection(item, !item.isSelected)" />
+          <input class="mx-1" type="checkbox" [checked]="item.isSelected" (change)="reactionOnSelection(item, !item.isSelected)" />
           <span>{{item.name}}</span>
         </span>
         <ul *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
