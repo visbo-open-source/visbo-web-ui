@@ -1,5 +1,4 @@
 <app-usernavbar></app-usernavbar>
-
 <div *ngIf="vpActive" class='well'>
   <div class='row'>
     <div class='col'>
@@ -11,7 +10,7 @@
       </h5>
     </div>
   </div>
-  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive && vpvDeadline">
+  <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block">{{ 'vpViewDeadline.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
@@ -19,76 +18,21 @@
       </h4>
       <div class="col-6">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(-1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getPrevVersion()'></span>
           <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpViewDeadline.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpViewDeadline.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpViewDeadline.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpViewDeadline.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getRefDateVersions(1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getNextVersion()'></span>
         </div>
       </div>
     </div>
     <hr>
-
-    <div class="container">
-        <div class="d-flex justify-content-center">
-        <div *ngIf="chart && graphFinishedDataPieChart.length > 1" >
-          <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart" [graphDataBefore]="graphBeforeFinishedDataPieChart" [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div>
-          <!-- <div  class="col-6 align-center" > <app-pie-chart [elementID]="divFinishedPieChart" [graphData]="graphFinishedDataPieChart"  [graphLegend]="graphFinishedPieLegend" [graphOptions]="graphFinishedOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart></div> -->
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <div *ngIf="chart && graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
-        <div>
-          <app-gantt-chart [graphData]="graphDataDeadlinesGantt" [graphOptions]="graphOptionsDeadlinesGantt" [parentThis]="parentThis" [language]="currentLang"></app-gantt-chart>
-        </div>
-      </div>
-    </div>
-    <br>
-
-    <div class='panel-body'>
-      <table class='table table-hover table-sortable'>
-        <!--Table head-->
-        <thead>
-          <tr>
-            <th class="text-left" (click)="sortDeadlineTable(2)">{{ 'vpViewDeadline.lbl.planElement' | translate }}</th>
-            <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'vpViewDeadline.lbl.type' | translate }}</th>
-            <th class="d-none d-lg-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'vpViewDeadline.lbl.endDatePFV' | translate }}</th>
-            <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'vpViewDeadline.lbl.endDateVPV' | translate }}</th>
-            <th class="text-right" (click)="sortDeadlineTable(5)">{{ 'vpViewDeadline.lbl.change' | translate }}</th>
-            <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'vpViewDeadline.lbl.done' | translate }}</th>
-          </tr>
-        </thead>
-        <!--Table body-->
-        <tbody>
-          <tr *ngFor="let deadlines of vpvDeadline">
-             <!-- ur:05.03.2020: all deadlines the same look as in the pie-chart -->
-            <td   *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-            <td   *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getFullName(deadlines, true)}}</td>
-            <!-- <td  class="d-none d-sm-table-cell " title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
-            <!-- <td *ngIf="deadlines.percentDone == 1" class="d-none d-sm-table-cell" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td>
-            <td *ngIf="deadlines.percentDone != 1" class="d-none d-sm-table-cell font-weight-bold" title="{{deadlines.type}}">{{getFullName(deadlines)}}</td> -->
-            <td class="d-none d-lg-table-cell" title="{{deadlines.type}}">{{getShortText(deadlines.type, 100)}}</td>
-            <td class="d-none d-lg-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>            
-            <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>            
-            <!-- ur: 03.03.2020: no difference in display for the different values for changeDays -->
-            <!-- <td *ngIf="deadlines.changeDays <= 0" class="d-none d-sm-table-cell text-right text-success" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
-            <td *ngIf="deadlines.changeDays > 0 && deadlines.changeDays <= 31" class="text-right text-warning" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
-            <td *ngIf="deadlines.changeDays > 0" class="d-none d-sm-table-cell text-right text-danger" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td> -->
-            <td class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
-
-            <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
-            <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
-          </tr>
-        </tbody>
-        <!--Table body-->
-      </table>
-    </div>
   </div>
+</div>
+
+<div *ngIf="vpvActive">
+  <app-comp-viewdeadline [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
 </div>

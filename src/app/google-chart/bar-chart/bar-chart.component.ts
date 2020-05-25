@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../_services/message.service';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -8,17 +7,18 @@ import { GoogleChartService } from '../service/google-chart.service';
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.css']
 })
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnInit, OnChanges {
 
-  private gLib: any;
   @Input() graphData: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
   @Input() language: string;
 
+  private gLib: any;
+  initialised: boolean;
+
   constructor(
-    private gChartService: GoogleChartService,
-    private messageService: MessageService
+    private gChartService: GoogleChartService
   ) {}
 
   ngOnInit() {
@@ -27,11 +27,18 @@ export class BarChartComponent implements OnInit {
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
-    // this.log(`Google Chart Bar Chart Init ${JSON.stringify(this.graphData)}`);
+    // console.log(`Google Chart Bar Chart Init ${JSON.stringify(this.graphData)}`);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log(`Bar Chart On Changes`);
+    if (this.initialised) {
+      this.drawChart();
+    }
   }
 
   private drawChart() {
-    // this.log(`Google Chart Bar Chart Draw ${this.graphData.length}`);
+    // parentThis.log(`Google Chart Bar Chart Draw ${this.graphData.length}`);
     let chart: any, data: any;
     chart = new this.gLib.visualization.BarChart(document.getElementById('divBarChart'));
     data = new this.gLib.visualization.arrayToDataTable(this.graphData);
@@ -39,10 +46,6 @@ export class BarChartComponent implements OnInit {
     const options = {'title': 'Bar Chart'};
 
     chart.draw(data, this.graphOptions || options);
-  }
-
-  /** Log a message with the MessageService */
-  private log(message: string) {
-    this.messageService.add('Bar Chart: ' + message);
+    this.initialised = true;
   }
 }

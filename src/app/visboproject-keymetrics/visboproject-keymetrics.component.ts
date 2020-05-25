@@ -130,7 +130,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
 
                   this.visboKeyMetricsCalc();
-                  if (this.hasVPPerm(this.permVP.ViewAudit)) {
+                  if (visboprojectversions[0].keyMetrics) {
                     this.chart = chartFlag;
                   } else {
                     this.chart = false;
@@ -597,6 +597,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     return rangeAxis;
   }
 
+
+  gotoVpView(): void {
+    const url = 'vpView/';
+    this.log(`goto VP View`);
+    let vpid, vpvid;
+    const queryParams: any = {};
+    if (this.vpvKeyMetricActive) {
+      vpid = this.vpvKeyMetricActive.vpid;
+      vpvid = this.vpvKeyMetricActive._id;
+    } else if (this.vpActive) {
+      vpid = this.vpActive._id;
+    }
+    if (vpid) {
+      if (vpvid) { queryParams.vpvid = vpvid; }
+      this.router.navigate([url.concat(vpid)], { queryParams: queryParams});
+    }
+  }
+
   gotoVisboProjectVersions(): void {
     this.log(`goto VPV All Versions`);
     let vpid;
@@ -604,13 +622,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
     }
+    let url = 'vpv/';
     if (!vpid && this.vpActive) {
       vpid = this.vpActive._id;
       // no keyMetrics redirect to vpv View and clear history
       params = {replaceUrl: true};
+      // if ((this.vpActive.perm.vp & (this.permVP.View + this.permVP.ViewRestricted)) == this.permVP.ViewRestricted) {
+        url = 'vpView/';
+      // }
     }
     if (vpid) {
-      this.router.navigate(['vpv/'.concat(vpid)], params);
+      this.router.navigate([url.concat(vpid)], params);
     }
   }
 

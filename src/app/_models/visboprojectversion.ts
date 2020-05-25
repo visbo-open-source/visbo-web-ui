@@ -5,26 +5,31 @@ export class VPVCost {
 }
 
 export class VPVDelivery {
-  id: number;
+  nameID: string;
   name: string;
   phasePFV: string;
+  fullPathPFV: [string];
   phaseVPV: string;
+  fullPathVPV: [string];
   description: string;
-  datePFV: Date;
-  dateVPV: Date;
+  endDatePFV: Date;
+  endDateVPV: Date;
   changeDays: number;
   percentDone: number;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 
 
 export class VPVDeadline {
-  id: number;
+  nameID: string;
   name: string;
   phasePFV: string;
+  fullPathPFV: [string];
   phaseVPV: string;
+  fullPathVPV: [string];
   type: string;
   startDatePFV: Date;
   startDateVPV: Date;
@@ -32,8 +37,12 @@ export class VPVDeadline {
   endDateVPV: Date;
   changeDays: number;
   percentDone: number;
+  trafficlight: number;
+  trafficlightDesc: string;
+  responsible: string;
 
   fullName: string;
+  statusID: number;
   status: string;
 }
 
@@ -120,8 +129,8 @@ export class VisboProjectVersion {
 
   keyMetrics: VPVKeyMetrics;
   cost: VPVCost[];
-  deliveries: VPVDelivery[];
-  deadlines: VPVDeadline[];
+  delivery: VPVDelivery[];
+  deadline: VPVDeadline[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

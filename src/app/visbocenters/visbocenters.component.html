@@ -1,10 +1,9 @@
 <app-usernavbar></app-usernavbar>
 <div class='well'>
-  <h2 class='panel-heading'>
-    {{ 'vc.title' | translate }}
-  </h2>
-
-  <div class='panel-body'>
+  <div *ngIf="visbocenters && visbocenters.length > 0" class='panel-body'>
+    <h2 class='panel-heading'>
+      {{ 'vc.title' | translate }}
+    </h2>
     <table class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
@@ -32,4 +31,11 @@
       </tbody>
     </table>
   </div>
+  <div *ngIf="visbocenters && visbocenters.length == 0" class='panel-body'>
+    <div class='panel-heading'>
+      <h2>{{ 'vc.noVC' | translate }}</h2>
+      <div> {{ 'vc.msg.noVC' | translate }} </div>
+    </div>
+  </div>
+
 </div>

@@ -1,0 +1,99 @@
+<div *ngIf="displayDelivery()" class='well'>
+  <div *ngIf="displaySwitch()" class="container">
+    <div class="d-flex justify-content-left">
+      <select class="col-3 form-control mx-1" name="type" [(ngModel)]="type" (change)="switchView()">
+        <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="!reducedList" class="container">
+    <div *ngIf="graphAllDataPieChart.length > 1" class="d-flex justify-content-center">
+      <div class="align-center" >
+        <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class='panel-body'>
+    <!-- <div> Timestamp {{vpvActive.timestamp}}</div> -->
+    <table class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th (click)="sortDeliveryTable(3)">{{ 'compViewDelivery.lbl.description' | translate }}</th>
+          <th class="d-none d-md-table-cell" (click)="sortDeliveryTable(2)">{{ 'compViewDelivery.lbl.planElement' | translate }}</th>
+          <th *ngIf="!reducedList" class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">{{ 'compViewDelivery.lbl.endDatePFV' | translate }}</th>
+          <th class="d-none d-lg-table-cell text-right" (click)="sortDeliveryTable(4)">{{ 'compViewDelivery.lbl.endDateVPV' | translate }}</th>
+          <th *ngIf="!reducedList" class=" text-right" (click)="sortDeliveryTable(5)">{{ 'compViewDelivery.lbl.change' | translate }}</th>
+          <th class="d-none d-md-table-cell text-right" (click)="sortDeliveryTable(6)">{{ 'compViewDelivery.lbl.done' | translate }}</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let delivery of filteredDelivery; let deliveryIndex=index" (click)='helperDelivery(deliveryIndex)' data-toggle="modal" data-target="#detailDelivery">
+          <td *ngIf="getStatus(delivery) === 0" class="font-weight-bold my_darkgreen" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td *ngIf="getStatus(delivery) === 1" class="font-weight-bold my_green" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td *ngIf="getStatus(delivery) === -1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td class="d-none d-md-table-cell" title="{{getFullName(delivery)}}">{{getShortText(getFullName(delivery), 50, 'right')}}</td>
+          <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.endDatePFV | date :'dd.MM.yy'}}</td>
+          <td class="d-none d-lg-table-cell text-right">{{delivery.endDateVPV | date :'dd.MM.yy'}}</td>
+          <td *ngIf="!reducedList" class="text-right" title="{{delivery.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
+
+          <td *ngIf="(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td *ngIf="!(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+        </tr>
+      </tbody>
+      <!--Table body-->
+    </table>
+  </div>
+
+  <!-- Modal Show Delivery Detail -->
+  <div class="modal fade" id="detailDelivery" tabindex="-1" role="dialog" aria-labelledby="Detail Delivery" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailDeliveryTitle">{{ 'compViewDelivery.titleDetailDelivery' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" *ngIf="deliveryIndex >= 0 && deliveryIndex < filteredDelivery.length">
+          <form>
+            <div class="v_compact_t form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.vp' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vpvActive.name }} </label>
+            </div>
+            <div class="v_compact_t form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.planElement' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ getElementPath(deliveryIndex) }}</label>
+            </div>
+            <div class="v_compact_t form-group">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.description' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].description }}</label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].endDatePFV">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.endDatePFV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].endDatePFV | date :'dd.MM.yy' }}</label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].endDateVPV">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.endDateVPV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].endDateVPV | date :'dd.MM.yy' }}</label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDelivery[deliveryIndex].percentDone">
+              <label class="col-4 col-form-label">{{ 'compViewDelivery.lbl.done' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDelivery[deliveryIndex].percentDone * 100 | number : '1.0-0' }} %</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'compViewDelivery.btn.back' | translate }}</button>
+          <button *ngIf="canSeeRestriction()" type="button" class="btn btn-primary" data-dismiss="modal" (click)="gotoVPRestrict(deliveryIndex)">{{ 'compViewDelivery.btn.detail' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
