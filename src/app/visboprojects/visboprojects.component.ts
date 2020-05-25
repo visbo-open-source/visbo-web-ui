@@ -276,16 +276,6 @@ export class VisboProjectsComponent implements OnInit {
   }
 
 
-  changeView(newView: string): void {
-    if (newView === 'Capacity') {
-      this.currentView = newView;
-    } else if (newView === 'ProjectBoard') {
-      this.currentView  = newView;
-    } else {
-      this.currentView = 'KeyMetrics';
-    }
-  }
-
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProject: ' + message);

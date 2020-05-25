@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div *ngIf="visboprojects && visboprojects.length > 0" class='well'>
+<div *ngIf="visboprojects" class='well'>
   <div class='row'>
     <div class='col'>
       <h2 *ngIf="!vcActive" class='panel-heading ml-0'>
@@ -10,7 +10,7 @@
       </h2>
     </div>
     <div class='btn-group'>
-      <div *ngIf="vcActive">
+      <div *ngIf="vcActive && visboprojects.length > 0">
         <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
         <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
       </div>
@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class='container-fluid'></div>
-      <div *ngIf="chart" class="btn-toolbar" >
+      <div *ngIf="chart && visboprojects.length > 0" class="btn-toolbar" >
           <button type="button" class="m-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
           <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light m-2" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
           <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
@@ -46,7 +46,7 @@
         </tr>
       </thead>
       <!--Table body-->
-      <tbody>
+      <tbody *ngIf="visboprojects.length > 0">
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td><a>{{vp.name}}</a></td>
@@ -64,21 +64,17 @@
       </tbody>
       <!--Table body-->
     </table>
+    <div *ngIf="visboprojects.length == 0">
+      <h3 class="d-flex justify-content-center">
+        {{ 'vp.msg.noVP' | translate }}
+      </h3>
+    </div>
   </div>
 
   <div *ngIf="chart">
-    <div class="btn-toolbar" style="">
-      <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
-      <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
-      <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
-    </div>
     <hr>
     <div *ngIf="currentView == 'Capacity' && vcActive">
       <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-    </div>
-    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
-        <hr>
-        <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
     </div>
     <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
