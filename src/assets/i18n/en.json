@@ -263,6 +263,9 @@
 		"btn": {
 			"showDeleted": "Show deleted",
 			"showExisting": "Show existing",
+			"viewKeyMetrics": "View Metrics",
+			"viewCapacity": "View Capacity",
+			"viewProjectBoard": "View Projectboard",
 			"create": "New project",
 			"save": "Save",
 			"cancel": "Cancel"

@@ -60,12 +60,16 @@
   </div>
 
   <div *ngIf="chart">
-    <hr>
-    <div *ngIf="vcActive">
-      <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    <div class="btn-toolbar" style="">
+      <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
+      <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
+      <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
     </div>
     <hr>
-    <div *ngIf="visboprojectversions && vcActive">
+    <div *ngIf="currentView == 'Capacity' && vcActive">
+      <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    </div>
+    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
     </div>
   </div>

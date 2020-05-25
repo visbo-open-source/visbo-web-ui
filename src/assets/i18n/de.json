@@ -263,6 +263,9 @@
 		"btn": {
 			"showDeleted": "Gelöschte",
 			"showExisting": "Nicht gelöschte",
+			"viewKeyMetrics": "Zeige Kennzahlen",
+			"viewCapacity": "Zeige Auslastung",
+			"viewProjectBoard": "Zeige Projektübersicht",
 			"create": "Neues Projekt",
 			"save": "Speichern",
 			"cancel": "Abbrechen"

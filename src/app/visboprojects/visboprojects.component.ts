@@ -38,6 +38,7 @@ export class VisboProjectsComponent implements OnInit {
   sortColumn: number;
 
   currentLang: string;
+  currentView: string;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -59,6 +60,7 @@ export class VisboProjectsComponent implements OnInit {
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.log(`Init VP Deleted: ${this.deleted}`);
+    this.changeView(undefined);
 
     this.getVisboProjects(this.deleted);
   }
@@ -79,6 +81,16 @@ export class VisboProjectsComponent implements OnInit {
 
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
+  }
+
+  changeView(newView: string): void {
+    if (newView === 'Capacity') {
+      this.currentView = newView;
+    } else if (newView === 'ProjectBoard') {
+      this.currentView  = newView;
+    } else {
+      this.currentView = 'KeyMetrics';
+    }
   }
 
   toggleVisboChart(): void {
