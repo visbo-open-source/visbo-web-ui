@@ -28,13 +28,16 @@
   <div *ngIf="graphDataComboChart.length == 0" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div>
-  <!-- <div *ngIf="ressourceID == ''" >
+  <!-- here will be shown the text: Keine Kapaität the spinner -->
+  <div *ngIf="ressourceID == ''" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
-  </div> -->
+  </div>
 
+  <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
   <ul [ngStyle]="{'list-style-type': 'none'}" *ngIf="orgaTreeData">
     <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children }"></ng-container>
   </ul>
+  <!-- End of definitions for the OrgaTree -->
 
   <ng-template #recursiveList let-list>
     <li *ngFor="let item of list">
