@@ -495,7 +495,10 @@
 		}
 	},
 	"ViewCapacity": {
-		"title": "Monatliche Kosten für Rolle Nr.",
+		"title1": "Auslastung der Organisations-Einheit ",
+		"title2": " angegeben in ",
+		"titleTimeFrom": " für den Zeitraum: von",
+		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",		
 		"yAxisCapaOverTime": "Monatliche Kosten",
 		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
@@ -705,6 +708,7 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleChange": "Ändern der Kennzahlen",
+		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"lbl": {
 			"variant": "Variante",
 			"day": "Tag",

@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <div class='container-fluid'>
+  <div class="container-fluid">
     <div class="row">
       <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
@@ -38,12 +38,13 @@
         </div>
       </div>
     </div>
-    <div class="btn-toolbar" style="">
+    <div class="row btn-toolbar ">
       <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
       <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
       <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
     </div>
   </div>
+    
 
   <div *ngIf="currentView == 'Capacity' && vpActive && vpfActive">
     <hr>

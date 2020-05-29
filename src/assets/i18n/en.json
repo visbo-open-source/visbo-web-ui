@@ -495,7 +495,10 @@
 		}
 	},
 	"ViewCapacity": {
-		"title": "Monthly Cost for Role No.",
+		"title1": "Capacity Utilisation of Organisation Unit",
+		"title2": " expressed in ",
+		"titleTimeFrom": " Timespam: From",
+		"titleTimeTo": " To ",
 		"titleVersion": "Version of",		
 		"yAxisCapaOverTime": "Monthly Cost",
 		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
@@ -704,7 +707,8 @@
 		"titleSelectVersion": "Select Portfolio Version",
 		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
-		"titleChange": "Change Key Metric",
+		"titleChange": "Change Key Metric",		
+		"titleRessourceChange": "Change Ressource",
 		"lbl": {
 			"variant": "Variant",
 			"day": "day",

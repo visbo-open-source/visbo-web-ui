@@ -1,23 +1,53 @@
-<div class='well'>
-  <div class="form-inline" *ngIf="orgaTreeData">
+<div class='well'>    
+  <div  class='container-fluid'>
+    <div class="row text-dark">
+      <div class="my-1">       
+          <!-- <span>{{ 'vpfVersion.lbl.show' | translate }} </span> -->
+          <span>{{ 'ViewCapacity.title1'  | translate }}</span>
+          <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{ressourceID}}</a></span>
+          <span>{{ 'ViewCapacity.title2'  | translate }}</span>
+          <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{showUnit}}</a></span>
+          <span class="ml-2 pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
+      </div>
+    </div>
+    <div class="row text-dark">
+      <div class="row ml-0">
+        <!-- <span> {{ 'vpfVersion.lbl.and' | translate }} </span> -->
+        <span class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</span>
+        <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">von </label> -->
+        <input id="capacityFrom" type="date" class="form-control mb-4 mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
+        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorFrom">{{capacityFrom}}</a></span>   -->      
+        <span class="pt-2">{{ 'ViewCapacity.titleTimeTo'  | translate }}</span>
+        <input id="capacityTo" type="date" class="form-control mb-4 mr-auto border-0 font-weight-bold" style="width:170px" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
+        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorTo">{{capacityTo}}</a></span>    -->    
+        <!-- <span class="pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
+      </div>
+    </div>
+    <!-- </div>     
+    <h5 class="text-right">
+      <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
+      <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
+    </h5> -->
+  </div>
+<!--<div class="form-inline" *ngIf="orgaTreeData">
     <label for="showUnit" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.showUnit' | translate }}</label>
     <select class="form-control mb-2 mr-sm-2" name="showUnit" [(ngModel)]="showUnit" (change)="visboViewCapacityOverTime()">
       <option>{{ 'ViewCapacity.lbl.pd' | translate }}</option>
       <option>{{ 'ViewCapacity.lbl.euro' | translate }}</option>
-    </select>
+    </select>  -->
     <!-- <div class="col-sm-1"></div>  -->
-    <label for="Ressourcen" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.ressourceID' | translate }} </label>
+    <!-- <label for="Ressourcen" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.ressourceID' | translate }} </label>
 
-    <span class="mb-2 mx-2 font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{ressourceID}}</a></span>
+    <span class="mb-2 mx-2 font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{ressourceID}}</a></span> -->
 
     <!-- <input id="ressourceID" type="text" class="form-control mb-2 mr-sm-2" name="ressourceID" [(ngModel)]="ressourceID" (change)="visboCapacityCalc()" > -->
     <!-- <div class="col-sm-4"></div> -->
-    <label for="capacityFrom" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.from' | translate }} </label>
+    <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.from' | translate }} </label>
     <input id="capacityFrom" type="date" class="form-control mb-2 mr-sm-2" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
     <label for="capacityTo" class="mb-2 mr-sm-2">{{ 'ViewCapacity.btn.to' | translate }} </label>
     <input id="capacityTo" type="date" class="form-control mb-2 mr-sm-2" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'"  (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
-    <span class="ml-2"><a data-toggle="modal" data-target="#VpfOrgaSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
-  </div>
+    <span class="ml-2"><a data-toggle="modal" data-target="#VpfOrgaSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
+  <!-- </div> -->
 
   <div *ngIf="displayCapacity() >= 0">
     <div *ngIf="graphDataComboChart.length > 0" >
@@ -33,12 +63,14 @@
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div>
 
-  <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
-  <ul [ngStyle]="{'list-style-type': 'none'}" *ngIf="orgaTreeData">
+  <!-- Here is the call for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
+  <!-- <ul *ngIf="orgaTreeData" [ngStyle]="{'list-style-type': 'none'}" >
     <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children }"></ng-container>
-  </ul>
-  <!-- End of definitions for the OrgaTree -->
+  </ul> -->
+  <!-- End of Call -->
+  
 
+  <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
   <ng-template #recursiveList let-list>
     <li *ngFor="let item of list">
       <a (click)="item.showChildren = !item.showChildren">
@@ -53,7 +85,7 @@
       </ul>
     </li>
   </ng-template>
-
+  <!-- End of definitions for the OrgaTree -->
 
   <!-- <div>
     <a class="btn btn-clear btn-xs" data-ng-show="item.items.length" ng-click="expandNode(this,$event)">
@@ -124,7 +156,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpfOrgaSelectorTitle">{{ 'vpfVersion.titleChange' | translate }}</h5>
+        <h5 class="modal-title" id="VpfOrgaSelectorTitle">{{ 'vpfVersion.titleRessourceChange' | translate }}</h5>
         <button type="button" class="close"  (click)="changeOrga()" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

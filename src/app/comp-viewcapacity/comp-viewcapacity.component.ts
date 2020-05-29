@@ -241,9 +241,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
-        title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+        //title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
         animation: {startup: true, duration: 200},
-        legend: {position: 'top'},
+        legend: {position: 'bottom'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         // curveType: 'function',
         colors: this.colors,
@@ -264,7 +264,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         }
       };
-    this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
+    //this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     const graphDataCapacity: any = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
