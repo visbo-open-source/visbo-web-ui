@@ -318,10 +318,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
       keyMetricsCost.push([
         new Date(this.visboprojectversions[i].timestamp),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
-        Math.trunc(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
+        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
+        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
       ]);
     }
     if (keyMetricsCost.length === 0) {
@@ -453,16 +453,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.translate.instant('keyMetrics.shortPDV'),
       this.translate.instant('keyMetrics.shortEDVC'),
       this.translate.instant('keyMetrics.shortDVAC')
-          // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
+      // ,
+      // this.translate.instant('keyMetrics.shortDelayFinished'),
+      // this.translate.instant('keyMetrics.shortDelayUnFinished')
     ]);
-    // keyMetrics.push([
-    //   'Timestamp',
-    //   this.translate.instant('keyMetrics.shortDVAC'),
-    //   this.translate.instant('keyMetrics.shortEDVC'),
-    //   this.translate.instant('keyMetrics.shortPDV'),
-    //   this.translate.instant('keyMetrics.shortADV')
-    //       // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
-    // ]);
     keyMetrics.reverse();
     this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(this.graphOptionsLineChart)}`);
     this.graphDataLineChart = keyMetrics;
@@ -503,8 +497,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
     this.graphOptionsLineChart.vAxes[0].title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
     // assign to second yAxis
-    this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
-    this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
+    // this.graphOptionsLineChart.series[4].targetAxisIndex = 1;
+    // this.graphOptionsLineChart.series[5].targetAxisIndex = 1;
 
     let keyMetrics: any;
     keyMetrics = [];
@@ -527,7 +521,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100) / 100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100) / 100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100,
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100
         // ,
         // this.visboprojectversions[i].keyMetrics.timeDelayCurrentActual || 0,
         // this.visboprojectversions[i].keyMetrics.timeDelayCurrentTotal || 0
@@ -565,10 +559,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.translate.instant('keyMetrics.shortAD'),
       this.translate.instant('keyMetrics.shortPD'),
       this.translate.instant('keyMetrics.shortEDC'),
-      this.translate.instant('keyMetrics.shortDAC'),
-      // , 'Ahead/Delay Actual', 'Ahead/Delay Total'
+      this.translate.instant('keyMetrics.shortDAC')
+      // ,
+      // this.translate.instant('keyMetrics.shortDeadlineDelayFinished'),
+      // this.translate.instant('keyMetrics.shortDeadlineDelayUnFinished')
     ]);
-    // keyMetrics.push(['Timestamp', 'All Deadlines', 'Past Deadlines']);
     keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
     this.graphDataLineChart = keyMetrics;
@@ -758,7 +753,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     index = keyMetrics.timeDelayCurrentActual || 0;
     if (index <= 0) {
       this.delayActualDeadlines = 1;
-    } else if (index > delay1) {
+    } else if (index <= delay1) {
       this.delayActualDeadlines = 2;
     } else {
       this.delayActualDeadlines = 3;
@@ -767,7 +762,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     index = keyMetrics.timeDelayCurrentTotal || 0;
     if (index <= 0) {
       this.delayTotalDeadlines = 1;
-    } else if (index > delay1) {
+    } else if (index <= delay1) {
       this.delayTotalDeadlines = 2;
     } else {
       this.delayTotalDeadlines = 3;

@@ -77,7 +77,6 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       'Unknown'
     ];
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
-    this.currentVpvId = this.vpvActive._id;
     this.visboDeliveryCalc();
   }
 
@@ -274,8 +273,8 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   getFullName(delivery: VPVDelivery): string {
     let result: string;
     if (delivery.fullName) {
-       result = delivery.fullName;    
-    } 
+       result = delivery.fullName;
+    }
     if (this.refType === 'vpv' || this.refType === undefined) {
       if (delivery.fullPathVPV && delivery.fullPathVPV.length > 1) {
         result = delivery.fullPathVPV.slice(1).join(' / ');
@@ -358,21 +357,21 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       this.sortColumnDelivery = 2;
       this.sortAscendingDelivery = true;
     }
-    if (this.sortColumnDelivery === 2) {       
+    if (this.sortColumnDelivery === 2) {
       if (this.refType === undefined) {
-        this.filteredDelivery.sort(function(a, b) { 
-          if (!a.fullPathVPV && a.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / '))}; 
+        this.filteredDelivery.sort(function(a, b) {
+          if (!a.fullPathVPV && a.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / '))};
           if (!b.fullPathVPV && b.fullPathPFV) {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / '))};
           if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '))};
-          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); 
+          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));
         });
       }
       if (this.refType === 'vpv') {
         this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
-      }      
+      }
       if (this.refType === 'pfv') {
         this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / ')); });
-      }  
+      }
     } else if (this.sortColumnDelivery === 3) {
       this.filteredDelivery.sort(function(a, b) {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());
