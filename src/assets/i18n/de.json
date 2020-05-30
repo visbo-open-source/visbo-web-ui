@@ -923,6 +923,9 @@
 		"planADV": "ADV, plan-to-date",
 		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
 
+		"finishedDeadline": "Erledigte Termine",
+		"unfinishedDeadline": "Offene Termine",
+
 		"lbl": {
 			"trafficLight": "Ampel",
 			"info": "Info.",
@@ -949,6 +952,8 @@
 			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",
 			"yAxisDeadlineTrend": "gewichtete Anzahl von Terminen",
 			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
+			"yAxisDeadlineDelayTrend": "durschnittliche Terminabweichung in Tagen",
+			"titleDeadlineDelayTrend": "Historischer Vergleich der Terminabweichungen: erledigt vs. offen",
 			"yAxisCostTrend": "Kosten in T€",
 			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},

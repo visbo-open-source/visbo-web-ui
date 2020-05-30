@@ -76,15 +76,6 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
               </a></td>
-              <!-- <td class="d-none d-md-table-cell">
-                <span *ngIf="delayActualDelivery == 1" title="Status Actual Deliveries" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayActualDelivery == 2" title="Status Actual Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayActualDelivery == 3" title="Status Actual Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
-                <span> / </span>
-                <span *ngIf="delayTotalDelivery == 1" title="Status Total Deliveries" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayTotalDelivery == 2" title="Status Total Deliveries" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayTotalDelivery == 3" title="Status Total Deliveries" class="fas fa-exclamation-circle" style="color:red"></span>
-              </td> -->
               <td>
                 <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
               </td>
@@ -103,22 +94,13 @@
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
                 <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
               </a></td>
-              <!-- <td (click)="gotoViewDeadline()" class="d-none d-md-table-cell">
-                <span *ngIf="delayActualDeadlines == 1" title="Status Actual Deadline" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayActualDeadlines == 2" title="Status Actual Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayActualDeadlines == 3" title="Status Actual Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
-                <span> / </span>
-                <span *ngIf="delayTotalDeadlines == 1" title="Status Total Deadline" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayTotalDeadlines == 2" title="Status Total Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayTotalDeadlines == 3" title="Status Total Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
-              </td> -->
               <td>
                 <button type="button" class="btn" (click)="switchTo('Deadlines')" title="{{historyButton}}">i</button>
               </td>
             </tr>
-            <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
-              <td *ngIf="typeMetricChart == 'DeadlineDelay' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'DeadlineDelay' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
+            <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
+              <td *ngIf="typeMetricChart == 'DeadlinesDelay' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'DeadlinesDelay' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
               <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.finishedDeadlineDelay' | translate }}"><a>
                 <span *ngIf="delayActualDeadlines == 1" title="Finished Deadlines" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="delayActualDeadlines == 2" title="Finished Deadlines" class="fas fa-exclamation-triangle" style="color:orange"></span>
@@ -132,7 +114,7 @@
                 <span> {{vpvKeyMetricActive.keyMetrics.timeDelayCurrentTotal | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
               </a></td>
               <td>
-                <button type="button" class="btn" (click)="switchTo('Deadlines')" title="{{historyButton}}">i</button>
+                <button type="button" class="btn" (click)="switchTo('DeadlinesDelay')" title="{{historyButton}}">i</button>
               </td>
             </tr>
           </tbody>
@@ -151,6 +133,9 @@
           <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deadlines'">
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
+        </div>
+        <div *ngIf="typeMetricChart == 'DeadlinesDelay'">
           <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
         <div *ngIf="typeMetricChart == 'Deliveries'">
@@ -192,7 +177,7 @@
           </tbody>
         </table>
 
-        <table *ngIf="typeMetricChart == 'Deadlines'" class='table table-hover table-sortable'>
+        <table *ngIf="typeMetricChart == 'Deadlines' || typeMetricChart == 'DeadlinesDelay'" class='table table-hover table-sortable'>
           <!--Table head-->
           <thead>
             <tr>

@@ -923,6 +923,9 @@
 		"planADV": "ADV, plan-to-date",
 		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
 
+		"finishedDeadline": "finished Deadlines",
+		"unfinishedDeadline": "unfinished Deadlines",
+
 		"lbl": {
 			"trafficLight": "Traffic Light",
 			"info": "Info",
@@ -949,6 +952,8 @@
 			"titleDeliveryTrend": "Historical Delivery comparison: plan-to-date vs. baseline",
 			"yAxisDeadlineTrend": "weighted numbers of deliveries",
 			"titleDeadlineTrend": "Historical Deadline comparison: plan-to-date vs. baseline",
+			"yAxisDeadlineDelayTrend": "average ahead/delay of deadlines",
+			"titleDeadlineDelayTrend": "Historical Deadline achievement comparison: finished vc unfinished",
 			"yAxisCostTrend": "Cost in T€",
 			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
