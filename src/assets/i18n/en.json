@@ -263,8 +263,8 @@
 		"btn": {
 			"showDeleted": "Show deleted",
 			"showExisting": "Show existing",
-			"viewKeyMetrics": "View Metrics",
-			"viewCapacity": "View Capacity",
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
 			"viewProjectBoard": "View Projectboard",
 			"create": "New project",
 			"save": "Save",
@@ -713,6 +713,7 @@
 		"titleKMShort": "Metrics from",
 		"titleChange": "Change Key Metric",
 		"lbl": {
+			"nr": "Number",
 			"variant": "Variant",
 			"day": "day",
 			"week": "week",
@@ -731,6 +732,7 @@
 			"yAxis": "Y-Axis",
 			"project": "Project",
 			"timestamp": "Timestamp",
+			"keyMetrics": "Project Metric",
 			"name": "Name",
 			"bac": "Total Cost (Baseline)",
 			"endDate": "End Date (Baseline)",
@@ -740,8 +742,9 @@
 		"btn": {
 			"showChart": "View Chart",
 			"showList": "View List",
-			"viewKeyMetrics": "View Metrics",
-			"viewCapacity": "View Capacity",
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
+			"viewList": "List",
 			"viewProjectBoard": "View Projectboard",
 			"filter": "Filter",
 			"change": "Change",
@@ -769,7 +772,8 @@
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects"
 		}
 	},
 	"vcAudit": {

@@ -263,8 +263,8 @@
 		"btn": {
 			"showDeleted": "Gelöschte",
 			"showExisting": "Nicht gelöschte",
-			"viewKeyMetrics": "Zeige Kennzahlen",
-			"viewCapacity": "Zeige Auslastung",
+			"viewKeyMetrics": "Projekt Metrik",
+			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Zeige Projektübersicht",
 			"create": "Neues Projekt",
 			"save": "Speichern",
@@ -713,6 +713,7 @@
 		"titleKMShort": "Zahlen vom",
 		"titleChange": "Ändern der Kennzahlen",
 		"lbl": {
+			"nr": "Nummer",
 			"variant": "Variante",
 			"day": "Tag",
 			"week": "Woche",
@@ -731,6 +732,7 @@
 			"yAxis": "Y-Achse",
 			"project": "Projekt",
 			"timestamp": "Zeitstempel",
+			"keyMetrics": "Projekt Metrik",
 			"name": "Name",
 			"bac": "Gesamtkosten (Baseline)",
 			"endDate": "Projektende (Baseline)",
@@ -740,8 +742,9 @@
 		"btn": {
 			"showChart": "Zeige Chart",
 			"showList": "Zeige Liste",
-			"viewKeyMetrics": "Zeige Kennzahlen",
-			"viewCapacity": "Zeige Auslastung",
+			"viewKeyMetrics": "Projekt Metrik",
+			"viewCapacity": "Auslastung",
+			"viewList": "Liste",
 			"viewProjectBoard": "Zeige Projektübersicht",
 			"filter": "Filter",
 			"change": "Ändern",
@@ -769,7 +772,8 @@
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte"
 		}
 	},
 	"vcAudit": {

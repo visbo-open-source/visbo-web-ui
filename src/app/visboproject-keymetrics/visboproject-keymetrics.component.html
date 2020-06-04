@@ -1,6 +1,6 @@
 <app-usernavbar></app-usernavbar>
 <div class='well'>
-  <div  *ngIf="vpActive" class='row'>
+  <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
