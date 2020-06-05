@@ -70,5 +70,11 @@ export class VisboOrgaTreeLeaf {
   name: string;
   children: VisboOrgaTreeLeaf[];
   showChildren: boolean;
-  isSelected: boolean;
+  isSelected: TreeLeafSelection;
+}
+
+export enum TreeLeafSelection {
+  SELECTED = "SELECTED",
+  NOT_SELECTED = "NOT_SELECTED",
+  PARENT_SELECTED = "PARENT_SELECTED"
 }

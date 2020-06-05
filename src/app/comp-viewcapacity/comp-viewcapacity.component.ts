@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole, VisboOrgaTreeLeaf, VisboOrganisationListResponse} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole, VisboOrgaTreeLeaf, VisboOrganisationListResponse, TreeLeafSelection} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -23,7 +23,8 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 
 @Component({
   selector: 'app-comp-viewcapacity',
-  templateUrl: './comp-viewcapacity.component.html'
+  templateUrl: './comp-viewcapacity.component.html',
+  styleUrls: ['./comp-viewcapacity.component.css']
 })
 export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
@@ -228,11 +229,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
     this.currentLeaf = this.orgaTreeData.children[0];
-    this.setTreeLeafSelection(this.currentLeaf, true);
+    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
     // console.log(this.orgaTreeData);
 
   }
 
+  updateShowUnit(unit: string): void {
+    this.showUnit = this.translate.instant(unit);
+    this.visboViewCapacityOverTime();
+  }
 
   visboViewCapacityOverTime(): void {
     let optformat = "###,###.## T\u20AC";
@@ -506,28 +511,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return tree;
   }
 
-  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
+  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: TreeLeafSelection) {
     leaf.isSelected = value;
     if (!leaf.children || leaf.children.length === 0) {
       return;
     }
     leaf.children.forEach((child) => {
-      this.setTreeLeafSelection(child, value);
+      this.setTreeLeafSelection(child, value === TreeLeafSelection.SELECTED ? TreeLeafSelection.PARENT_SELECTED : value);
     });
 
   }
 
 
-  reactionOnSelection(leaf: VisboOrgaTreeLeaf, value: boolean) {
-
-    leaf.isSelected = value;
-    if (leaf.isSelected && leaf.name != this.ressourceID ){
+  selectLeaf(leaf: VisboOrgaTreeLeaf) {
+    if (leaf.name != this.ressourceID ){
       this.ressourceID = leaf.name;
       this.visboCapacityCalc();
-      this.setTreeLeafSelection(this.currentLeaf, false);
+      this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
     }
-    this.setTreeLeafSelection(leaf, value);
+    this.setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
     return;
   }
 

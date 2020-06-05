@@ -4,12 +4,35 @@
       <div class="my-1">       
           <!-- <span>{{ 'vpfVersion.lbl.show' | translate }} </span> -->
           <span>{{ 'ViewCapacity.title1'  | translate }}</span>
-          <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{ressourceID}}</a></span>
+
+          <span class="dropdown">
+            <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
+              {{ressourceID}}
+            </a>
+            <div class="dropdown-menu" (click)="$event.stopPropagation();">
+              <div *ngIf="orgaTreeData">
+                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }"></ng-container>
+              </div>
+            </div>
+          </span>
+          
+
           <span>{{ 'ViewCapacity.title2'  | translate }}</span>
-          <select class="mb-2 mr-auto border-0 font-weight-bold" name="showUnit" [(ngModel)]="showUnit" (change)="visboViewCapacityOverTime()" style="border-bottom: 1px dashed darkgrey !important">
+          
+          <span class="dropdown">
+            <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
+              {{showUnit | translate}}
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.pd')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
+              <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
+            </div>
+          </span>
+
+          <!-- <select class="mb-2 mr-auto border-0 font-weight-bold" name="showUnit" [(ngModel)]="showUnit" (change)="visboViewCapacityOverTime()" style="border-bottom: 1px dashed darkgrey !important">
             <option>{{ 'ViewCapacity.lbl.pd' | translate }}</option>
             <option>{{ 'ViewCapacity.lbl.euro' | translate }}</option>
-          </select> 
+          </select>  -->
           <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{showUnit}}</a></span> -->
           <!-- <span class="ml-2 pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
       </div>
@@ -75,20 +98,30 @@
   
 
   <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
-  <ng-template #recursiveList let-list>
-    <li *ngFor="let item of list">
-      <a (click)="item.showChildren = !item.showChildren">
-        <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
-      </a>
-      <span>
-        <input class="mx-1" type="checkbox" [checked]="item.isSelected" (change)="reactionOnSelection(item, !item.isSelected)" />
-        <span>{{item.name}}</span>
-      </span>
-      <ul *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
-        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children }"></ng-container>
-      </ul>
-    </li>
+  <ng-template #recursiveList let-list let-level="level">
+    <div *ngFor="let item of list" style="white-space: nowrap;">
+      <div class="dropdown-item tree-item"
+      [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
+        <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
+          <a (click)="$event.stopPropagation(); item.showChildren = !item.showChildren;">
+            <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
+          </a>
+          <span class="ml-sm-1">
+            <a (click)="selectLeaf(item)">{{item.name}}</a>
+          </span>  
+        </span>
+      </div>
+      <div *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
+        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children, level: level + 1 }"></ng-container>
+      </div>
+    </div>
   </ng-template>
+
+<!--
+  #dcedf7
+  #bddaea
+-->
+
   <!-- End of definitions for the OrgaTree -->
 
   <!-- <div>
@@ -156,7 +189,7 @@
 </div>
 
 <!-- Modal Change Orga Selection -->
-<div class="modal fade" id="VpfOrgaSelector" tabindex="-1" role="dialog" aria-labelledby="VpfOrgaSelectorTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="VpfOrgaSelector" tabindex="-1" role="dialog" aria-labelledby="VpfOrgaSelectorTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -172,4 +205,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
