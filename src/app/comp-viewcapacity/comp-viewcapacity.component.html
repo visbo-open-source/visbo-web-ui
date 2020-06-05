@@ -100,14 +100,14 @@
   <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
   <ng-template #recursiveList let-list let-level="level">
     <div *ngFor="let item of list" style="white-space: nowrap;">
-      <div class="dropdown-item tree-item"
+      <div class="dropdown-item tree-item" (click)="selectLeaf(item)"
       [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
         <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
           <a (click)="$event.stopPropagation(); item.showChildren = !item.showChildren;">
             <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
           </a>
           <span class="ml-sm-1">
-            <a (click)="selectLeaf(item)">{{item.name}}</a>
+            {{item.name}}
           </span>  
         </span>
       </div>
