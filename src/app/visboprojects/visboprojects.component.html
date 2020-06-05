@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div *ngIf="visboprojects && visboprojects.length > 0" class='well'>
+<div *ngIf="visboprojects" class='well'>
   <div class='row'>
     <div class='col'>
       <h2 *ngIf="!vcActive" class='panel-heading ml-0'>
@@ -10,80 +10,74 @@
       </h2>
     </div>
     <div class='btn-group'>
-      <div *ngIf="vcActive">
+      <div *ngIf="vcActive && visboprojects.length > 0">
         <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
         <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
       </div>
       <div *ngIf="hasVPPerm(permVP.DeleteVP)">
         <button *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showDeleted' | translate }}</button>
         <button *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showExisting' | translate }}</button>
-      </div>    
+      </div>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
         <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
     <div class='container-fluid'></div>
-      <div *ngIf="chart" class="btn-toolbar col" >    
-          <button type="button" class="mr-1 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
-          <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+      <div *ngIf="chart && visboprojects.length > 0" class="btn-toolbar" >
+          <button type="button" class="m-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
+          <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light m-2" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
           <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
       </div>
     </div>
-  </div>
-
-  <div *ngIf="!chart" class='panel-body'>
-    <table class='table table-hover table-sortable'>
-      <!--Table head-->
-      <thead>
-        <tr>
-          <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
-          <th (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
-          <th class="d-none d-md-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
-          <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
-          <th>Info</th>
-        </tr>
-      </thead>
-      <!--Table body-->
-      <tbody>
-        <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
-          <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
-          <td><a>{{vp.name}}</a></td>
-          <td class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
-          <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
-          <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
-          <td class="d-none d-md-table-cell">{{vp.vpvCount}}</td>
-          <td class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
-          <td class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
-          <td>
-            <button class="Detail" title="Detail of Visbo Project"
-            (click)="gotoDetail(vp)">i</button>
-          </td>
-        </tr>
-      </tbody>
-      <!--Table body-->
-    </table>
-  </div>
-
-  <div *ngIf="chart">
-    <hr>    
-    <div *ngIf="currentView == 'Capacity' && vcActive ">
-      <hr>    
-      <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-    </div>    
-    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
-        <hr>
+    <div *ngIf="!chart" class='panel-body'>
+      <table class='table table-hover table-sortable'>
+        <!--Table head-->
+        <thead>
+          <tr>
+            <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
+            <th (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
+            <th class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
+            <th class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
+            <th class="d-none d-md-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
+            <th class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
+            <th>Info</th>
+          </tr>
+        </thead>
+        <!--Table body-->
+        <tbody *ngIf="visboprojects.length > 0">
+          <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
+            <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
+            <td><a>{{vp.name}}</a></td>
+            <td class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
+            <td class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+            <td class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
+            <td class="d-none d-md-table-cell">{{vp.vpvCount}}</td>
+            <td class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
+            <td class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
+            <td>
+              <button class="Detail" title="Detail of Visbo Project"
+              (click)="gotoDetail(vp)">i</button>
+            </td>
+          </tr>
+        </tbody>
+        <!--Table body-->
+      </table>
+      <div *ngIf="visboprojects.length == 0">
+        <h3 class="d-flex justify-content-center">
+          {{ 'vp.msg.noVP' | translate }}
+        </h3>
+      </div>
+    </div>
+    <div *ngIf="chart">
+      <hr>
+      <div *ngIf="currentView == 'Capacity' && vcActive">
+        <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+      </div>
+      <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
         <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
-    </div>
-  </div> 
-  <div *ngIf="visboprojects && visboprojects.length == 0" class='panel-body'>
-    <div class='panel-heading'>
-      <h2>{{ 'vp.noVP' | translate }}</h2>
-      <div> {{ 'vp.msg.noVP' | translate }} </div>
+      </div>
     </div>
   </div>
-
 
 <!-- Modal VP Create-->
 <div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">

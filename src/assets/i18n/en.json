@@ -263,6 +263,9 @@
 		"btn": {
 			"showDeleted": "Show deleted",
 			"showExisting": "Show existing",
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
+			"viewProjectBoard": "View Projectboard",
 			"create": "New project",
 			"save": "Save",
 			"cancel": "Cancel"
@@ -447,7 +450,11 @@
 			"trend": "Trend",
 			"metricCost": "Cost",
 			"metricDelivery": "Quality",
-			"metricDeadline": "Time",
+			"metricDeadline": "Deadline",
+			"metricDeadlineDelay": "Deadline Delay",
+			"unitsDelay": "Days",
+			"finishedDeadlineDelay": "Average delay of finished deadlines",
+			"unfinishedDeadlineDelay": "Planned average delay of unfinished deadlines",
 			"actualCost": "actual achievement of costs",
 			"actualDelivery": "actual achievement of deliveries",
 			"actualDeadline": "actual achievement od deadlines",
@@ -710,6 +717,7 @@
 		"titleChange": "Change Key Metric",		
 		"titleRessourceChange": "Change Ressource",
 		"lbl": {
+			"nr": "Number",
 			"variant": "Variant",
 			"day": "day",
 			"week": "week",
@@ -728,6 +736,7 @@
 			"yAxis": "Y-Axis",
 			"project": "Project",
 			"timestamp": "Timestamp",
+			"keyMetrics": "Project Metric",
 			"name": "Name",
 			"bac": "Total Cost (Baseline)",
 			"endDate": "End Date (Baseline)",
@@ -737,8 +746,9 @@
 		"btn": {
 			"showChart": "View Chart",
 			"showList": "View List",
-			"viewKeyMetrics": "View Metrics",
-			"viewCapacity": "View Capacity",
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
+			"viewList": "List",
 			"viewProjectBoard": "View Projectboard",
 			"filter": "Filter",
 			"change": "Change",
@@ -766,7 +776,8 @@
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects"
 		}
 	},
 	"vcAudit": {
@@ -920,6 +931,9 @@
 		"planADV": "ADV, plan-to-date",
 		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
 
+		"finishedDeadline": "finished Deadlines",
+		"unfinishedDeadline": "unfinished Deadlines",
+
 		"lbl": {
 			"trafficLight": "Traffic Light",
 			"info": "Info",
@@ -946,6 +960,8 @@
 			"titleDeliveryTrend": "Historical Delivery comparison: plan-to-date vs. baseline",
 			"yAxisDeadlineTrend": "weighted numbers of deliveries",
 			"titleDeadlineTrend": "Historical Deadline comparison: plan-to-date vs. baseline",
+			"yAxisDeadlineDelayTrend": "average ahead/delay of deadlines",
+			"titleDeadlineDelayTrend": "Historical Deadline achievement comparison: finished vc unfinished",
 			"yAxisCostTrend": "Cost in T€",
 			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
