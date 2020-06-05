@@ -6,8 +6,12 @@
           <span>{{ 'ViewCapacity.title1'  | translate }}</span>
           <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{ressourceID}}</a></span>
           <span>{{ 'ViewCapacity.title2'  | translate }}</span>
-          <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{showUnit}}</a></span>
-          <span class="ml-2 pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
+          <select class="mb-2 mr-auto border-0 font-weight-bold" name="showUnit" [(ngModel)]="showUnit" (change)="visboViewCapacityOverTime()" style="border-bottom: 1px dashed darkgrey !important">
+            <option>{{ 'ViewCapacity.lbl.pd' | translate }}</option>
+            <option>{{ 'ViewCapacity.lbl.euro' | translate }}</option>
+          </select> 
+          <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfOrgaSelector">{{showUnit}}</a></span> -->
+          <!-- <span class="ml-2 pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
       </div>
     </div>
     <div class="row text-dark">

@@ -80,11 +80,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (!this.refDate) { this.refDate = new Date() };
     this.currentRefDate = this.refDate;
 
-    this.showUnit = this.translate.instant('ViewCapacity.lbl.euro');
+    this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
     if (!this.capacityFrom){
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
       this.capacityFrom.setDate(1);
+      this.capacityFrom.setHours(0,0,0,0);
     }
     this.capacityTo = new Date();
     this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
