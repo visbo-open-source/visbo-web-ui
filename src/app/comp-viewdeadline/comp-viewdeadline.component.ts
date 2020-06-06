@@ -179,14 +179,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getElementPath(index: number, len?: number): string {
-    var path = [];
+    let path = [];
     if (this.refType === 'vpv' || this.refType === undefined) {
       path = this.filteredDeadline[index].fullPathVPV;
     }
     if (this.refType === 'pfv' ) {
        path = this.filteredDeadline[index].fullPathPFV;
     }
-    
+
     let result = '';
     if (path.length <= 1) {
       result = this.vpvActive.name;
@@ -365,8 +365,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   getFullName(deadline: VPVDeadline): string {
     let result: string;
     if (deadline.fullName) {
-       result = deadline.fullName;    
-    } 
+       result = deadline.fullName;
+    }
     if (this.refType === 'vpv' || this.refType === undefined) {
       if (deadline.fullPathVPV && deadline.fullPathVPV.length > 1) {
         result = deadline.fullPathVPV.slice(1).join(' / ');
@@ -451,19 +451,21 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
     if (this.sortColumnDeadline === 2) {
       if (this.refType === undefined) {
-        this.filteredDeadline.sort(function(a, b) { 
-          if (!a.fullPathVPV && a.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / '))}; 
-          if (!b.fullPathVPV && b.fullPathPFV) {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / '))};
-          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '))};
-          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); 
+        this.filteredDeadline.sort(function(a, b) {
+          if (!a.fullPathVPV && a.fullPathPFV) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / ')); }
+          if (!b.fullPathVPV && b.fullPathPFV) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / ')); }
+          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {
+            return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '));
+          }
+          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));
         });
       }
       if (this.refType === 'vpv') {
         this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
-      }      
+      }
       if (this.refType === 'pfv') {
         this.filteredDeadline.sort(function(a, b) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / ')); });
-      }      
+      }
     } else if (this.sortColumnDeadline === 3) {
       this.filteredDeadline.sort(function(a, b) {
         return visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());

@@ -30,11 +30,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
-  @Input() vcOrganisation:VisboSettingListResponse
+  @Input() vcOrganisation: VisboSettingListResponse;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
-  visboCapcity: VisboCapacity[];  
+  visboCapcity: VisboCapacity[];
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
@@ -45,7 +45,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   showUnit: string;
   parentThis: any;
-  
 
   colors: string[] = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
   series: any =  {
@@ -74,11 +73,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
-    if (!this.refDate) { this.refDate = new Date() };
+    if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
-    
+
     this.showUnit = this.translate.instant('ViewCapacity.lbl.euro');
-    if (!this.capacityFrom){
+    if (!this.capacityFrom) {
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
       this.capacityFrom.setDate(1);
@@ -92,9 +91,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}`);
-    if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
+    // if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
       this.visboCapacityCalc();
-    }
+    // }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -147,18 +146,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  visboCapacityCalc(): void {    
+  visboCapacityCalc(): void {
     this.visboCapcity = undefined;
 
     // if (this.ressourceID){
     //   for (var i=0; organisation && organisation.allRoles && i < organisation.allRoles.length; i++){
-    //     if (organisation.allRoles[i].name === this.ressourceID) { 
+    //     if (organisation.allRoles[i].name === this.ressourceID) {
     //       break;
     //     }
     //   }
     //   if (i === organisation.allRoles.length) {
     //     this.ressourceID = undefined;
-    //   }     
+    //   }
     // }
     if (this.vcActive) {
       this.log(`Capacity Calc for VC  ${this.vcActive._id} `);
@@ -225,7 +224,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // }
     // // URK TODO:  the topNOde is to be fetched
     // sort the Orga like VisboBusiness for direct access
-    
+
     if (organisation && organisation.allRoles && organisation.allRoles.length > 0) {
       this.ressourceID = organisation.allRoles[0].name;
     }
@@ -330,7 +329,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     ]);
     graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
-   
+
     this.graphDataComboChart = graphDataCapacity;
   }
 

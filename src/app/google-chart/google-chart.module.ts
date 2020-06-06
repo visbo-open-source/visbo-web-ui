@@ -9,6 +9,7 @@ import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { GanttChartComponent } from './gantt-chart/gantt-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
+import { TimelineChartComponent } from './timeline-chart/timeline-chart.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { BarChartComponent } from './bar-chart/bar-chart.component';
     PieChartComponent,
     GanttChartComponent,
     ColumnChartComponent,
-    BarChartComponent
+    BarChartComponent,
+    TimelineChartComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +35,8 @@ import { BarChartComponent } from './bar-chart/bar-chart.component';
     PieChartComponent,
     GanttChartComponent,
     ColumnChartComponent,
-    BarChartComponent
+    BarChartComponent,
+    TimelineChartComponent
   ],
   providers : []
 })

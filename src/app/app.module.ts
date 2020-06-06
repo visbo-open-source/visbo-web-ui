@@ -58,6 +58,7 @@ import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdel
 import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
 import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
+import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
 import { VisboCompViewKeyMetricsComponent } from './comp-viewkeymetrics/comp-viewkeymetrics.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 
@@ -108,6 +109,7 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
     VisboCompViewCapacityComponent,
+    VisboCompViewBoardComponent,
     VisboCompViewKeyMetricsComponent,
     VisboProjectViewDeadlineComponent,
     VisboprojectRestrictComponent,

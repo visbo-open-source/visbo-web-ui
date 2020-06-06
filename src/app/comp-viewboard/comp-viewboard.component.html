@@ -1,0 +1,18 @@
+<div class='well'>
+  <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
+    <div class="row text-dark">
+      <div class="my-1 pl-0 col-11">
+        <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
+        <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
+        <input class="ml-2" type="text" (keyup)="visboViewBoardOverTime()" [(ngModel)]="vpFilter" placeholder="Filter">
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="graphDataTimeline.length > 1" class="mt-2">
+    <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
+  </div>
+  <h5 *ngIf="graphDataTimeline.length == 1" class="mt-2">
+    {{ 'compViewBoard.msg.errorNoMatchingProjects' | translate }}
+  </h5>
+</div>
