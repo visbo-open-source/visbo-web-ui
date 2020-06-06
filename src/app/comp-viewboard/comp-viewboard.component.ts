@@ -51,7 +51,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.log(`ProjectBoard Changes  ${this.refDate.toISOString()} ${this.refDate.getTime() !== this.currentRefDate.getTime()} `);
+    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()} `);
     // if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
       this.visboViewBoardOverTime();
     // }
@@ -100,7 +100,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         // ignore projects not matching filter
         continue;
       }
-      if (this.vps[i].startDate && this.vps[i].endDate ) {
+      const startDate = this.vps[i].startDate;
+      const endDate = this.vps[i].endDate;
+      if (startDate && endDate && startDate <= endDate) {
         // we have a start & end date for the project, add it to the Timeline
         let name = this.vps[i].name;
         if (this.vps[i].variantName) {

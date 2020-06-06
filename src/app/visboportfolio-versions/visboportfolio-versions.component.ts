@@ -74,7 +74,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const nextView = this.route.snapshot.queryParams['view'];
     this.vpfid = this.route.snapshot.queryParams['vpfid'];
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
-    this.changeView(nextView);
+    this.currentView = nextView || 'KeyMetrics';
 
     this.getVisboProject();
   }
@@ -175,7 +175,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.calcVPList();
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
-          this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics.endDateCurrent} `);
+          this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -244,9 +244,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       vpfid: this.vpfActive?._id,
       view: this.currentView
     };
-    // this.visboprojectversions = [];
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
-
   }
 
   calcPercent(current: number, baseline: number) {
@@ -353,10 +351,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     // this.log(`Init Drop Down List Finished ${this.dropDown.length} Selected ${this.dropDownSelected}`);
   }
 
-  changePFVersion(): void {
-    this.dropDownValue = this.dropDown.find(x => x.name === this.dropDownSelected).version;
-    this.log(`Change Drop Down ${this.dropDownSelected} ${this.dropDownValue}`);
-    this.vpfActive = this.visboportfolioversions[this.dropDownValue];
+  switchPFVersion(i: number): void {
+    this.log(`Change Drop Down ${i} `);
+    this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
 
     const url = this.route.snapshot.url.join('/');

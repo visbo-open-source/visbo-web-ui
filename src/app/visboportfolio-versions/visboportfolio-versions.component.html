@@ -7,8 +7,15 @@
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="vpfActive.variantName" class="ml-2"> ({{vpfActive.variantName}})</span>
         <span class="ml-2">{{ 'vpfVersion.lbl.from' | translate }} </span>
-        <span  class="ml-2" data-toggle="modal" data-target="#VPFVersionSelect"><a> {{ vpfActive.timestamp | date : 'dd.MM.yy' }}</a></span>
-      </h2>
+        <span class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">
+            {{ vpfActive.timestamp | date : 'dd.MM.yy' }}
+          </a>
+          <div class="dropdown-menu">
+            <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
+          </div>
+        </span>
+    </h2>
       <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
       </h5>
@@ -82,28 +89,5 @@
         </tr>
       </tbody>
     </table>
-  </div>
-</div>
-
-<div class="modal fade" id="VPFVersionSelect" tabindex="-1" role="dialog" >
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="VPFVersionSelectTitle">{{ 'vpfVersion.titleSelectVersion' | translate }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <label class="my-0">{{ 'vpfVersion.titleVersion' | translate }}:</label>
-        <select class="form-control" id="dropDownSelected" name="dropDownSelected" [(ngModel)]="dropDownSelected">
-          <option *ngFor="let item of dropDown">{{item.name}}</option>
-        </select>
-      </div>
-      <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="changePFVersion()">{{ 'vpfVersion.btn.change' | translate }}</button>
-      </div>
-    </div>
   </div>
 </div>
