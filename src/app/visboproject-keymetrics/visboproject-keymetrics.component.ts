@@ -114,8 +114,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (!km) {
       return result;
     }
-    if (type == 'DeadlinesDelay') {
-      result = km.timeDelayCurrentActual != undefined && km.timeDelayCurrentTotal != undefined
+    if (type === 'DeadlinesDelay') {
+      result = km.timeDelayCurrentActual !== undefined && km.timeDelayCurrentTotal !== undefined;
     }
     return result;
   }

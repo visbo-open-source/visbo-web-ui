@@ -146,8 +146,7 @@ export class VisboCenterService  {
     }
     if (roleID) {
       params = params.append('organisationID', roleID);
-    }    
-    
+    }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
       map(response => {

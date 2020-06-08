@@ -143,7 +143,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           let index = 0;
           if (this.vpfid ) {
             index = visboportfolioversions.findIndex(item => item._id.toString() === this.vpfid);
-            if (index < 0) index = 0;
+            if (index < 0) { index = 0; }
           }
           if (visboportfolioversions.length > 0) {
             // this.combinedPerm = visboportfolioversions[0].perm;
@@ -258,9 +258,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   isVersionMismatch(): boolean {
     let result = false;
-    if (this.currentView == 'KeyMetrics'
+    if (this.currentView === 'KeyMetrics'
       && this.vpList
-      && this.vpvWithKM != this.vpList.length) {
+      && this.vpvWithKM !== this.vpList.length) {
         result = true;
       }
     return result;
@@ -269,14 +269,14 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   calcVPList(): void {
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.vpList = [];
-    for (let i=0; i < this.vpfActive.allItems.length; i++) {
-      let nextVP: any = {};
+    for (let i = 0; i < this.vpfActive.allItems.length; i++) {
+      const nextVP: any = {};
       const item = this.vpfActive.allItems[i];
       nextVP.vpid = item.vpid;
       nextVP.name = item.name;
       nextVP.variantName = item.variantName;
       nextVP.keyMetricsSet = 0;
-      let index = this.visboprojectversions.findIndex(item => item.vpid === nextVP.vpid)
+      const index = this.visboprojectversions.findIndex(item => item.vpid === nextVP.vpid);
       if (index >= 0) {
         nextVP.timestamp = new Date(this.visboprojectversions[index].timestamp);
         nextVP.startDate = this.visboprojectversions[index].startDate;
@@ -287,7 +287,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     }
     this.vpvWithKM = 0;
     if (this.visboprojectversions) {
-      this.visboprojectversions.forEach(element => { if (element.keyMetrics) this.vpvWithKM += 1; });
+      this.visboprojectversions.forEach(element => { if (element.keyMetrics) { this.vpvWithKM += 1; } });
     }
   }
 
@@ -332,7 +332,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
       }
       this.dropDown.push({name: text, version: i, timestamp: timestamp.getTime() });
     }
-    this.dropDown.sort(function (a, b) { return b.timestamp - a.timestamp})
+    this.dropDown.sort(function (a, b) { return b.timestamp - a.timestamp; });
     if (len > 0 ) {
       this.dropDownSelected = this.dropDown[0].name;
     }
@@ -346,7 +346,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.getVisboPortfolioKeyMetrics();
 
     const url = this.route.snapshot.url.join('/');
-    let queryParams: any = {
+    const queryParams: any = {
       vpfid: this.vpfActive._id.toString()
     };
     if (this.vpvRefDate) {

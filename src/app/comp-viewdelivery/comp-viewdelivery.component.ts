@@ -360,9 +360,11 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     if (this.sortColumnDelivery === 2) {
       if (this.refType === undefined) {
         this.filteredDelivery.sort(function(a, b) {
-          if (!a.fullPathVPV && a.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / '))};
-          if (!b.fullPathVPV && b.fullPathPFV) {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / '))};
-          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '))};
+          if (!a.fullPathVPV && a.fullPathPFV) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / ')); }
+          if (!b.fullPathVPV && b.fullPathPFV) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / ')); }
+          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {
+            return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '));
+          }
           return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));
         });
       }
