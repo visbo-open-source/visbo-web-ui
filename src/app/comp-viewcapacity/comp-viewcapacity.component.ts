@@ -31,7 +31,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
-  @Input() vcOrganisation:VisboSettingListResponse
+  @Input() vcOrganisation: VisboSettingListResponse;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
@@ -78,15 +78,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
-    if (!this.refDate) { this.refDate = new Date() };
+    if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
 
     this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
-    if (!this.capacityFrom){
+    if (!this.capacityFrom) {
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
       this.capacityFrom.setDate(1);
-      this.capacityFrom.setHours(0,0,0,0);
+      this.capacityFrom.setHours(0, 0, 0, 0);
     }
     this.capacityTo = new Date();
     this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
@@ -247,7 +247,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
-        //title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+        // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
         animation: {startup: true, duration: 200},
         legend: {position: 'bottom'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
@@ -270,7 +270,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         }
       };
-    //this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
+    // this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     const graphDataCapacity: any = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
@@ -285,7 +285,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     //   this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
     //   this.capacityFrom.setDate(1);
     // }
-    if (!this.capacityTo){
+    if (!this.capacityTo) {
       this.capacityTo = new Date();
       this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
       this.capacityTo.setDate(1);
@@ -375,7 +375,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // value is the Id of one subrole
       const hroleID = value.key;
       let hrole = allRoles[hroleID];
-      if (hrole.subRoleIDs.length > 0){
+      if (hrole.subRoleIDs.length > 0) {
         summaryRoles[hroleID] = hrole;
         let shroles = hrole.subRoleIDs;
         shroles.forEach(findSummaryRoles);
@@ -387,7 +387,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       let i = 0;
       for (i = 0; allRoles &&  i <= allRoles.length; i++ ) {
         const hrole = allRoles[i];
-        if (hrole && hrole.subRoleIDs.length > 0 ) {summaryRoles[allRoles[i].uid] = allRoles[i];}
+        if (hrole && hrole.subRoleIDs.length > 0 ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
       }
       return summaryRoles;
     }
@@ -418,8 +418,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       for (let k = 0; sumRoles && k < sumRoles.length; k++) {
         let hrole = sumRoles[k];
         if (hrole)	{
-          for( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
-            if ( hrole.subRoleIDs[i] && hrole.subRoleIDs[i].key == roleID) {
+          for ( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
+            // asked Philipp for the difference: hrole.subRoleIDs[i].key is a string with the value 'roleID' and roleID is a number
+            // therefore it isn't possible to put === instead for ==, now the multiplikation with 1 makes a number of it
+            if ( hrole.subRoleIDs[i] && (hrole.subRoleIDs[i].key * 1 === roleID) ) {
               parentRole = hrole;
               notFound = false;
             }
@@ -446,7 +448,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         // get parent of currentRole
         let parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
         if (!parent && !topLevel[currentRole.uid]) {
-          topLevel[currentRole.uid]=currentRole;
+          topLevel[currentRole.uid] = currentRole;
           topLevelNodes.push(currentRole);
         }
       }
@@ -461,7 +463,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     type subRole = {
       key: number;
       value: number;
-    }
+    };
 
     this.log(`build the OrgaTree used for the selectionTree of the organisation`);
 
@@ -471,7 +473,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     tree.children = [];
     tree.showChildren = true;
 
-    function makeLeaf(value:subRole): VisboOrgaTreeLeaf {
+    function makeLeaf(value: subRole): VisboOrgaTreeLeaf {
       let leaf = new VisboOrgaTreeLeaf();
       let hroleID = value.key;
       let hrole = allRoles[hroleID];
@@ -482,12 +484,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       let children = hrole.subRoleIDs;
       children.forEach(function(child) {
         leaf.children.push(makeLeaf(child));
-      })
+      });
       return leaf;
     }
 
-    for (let i=0; topLevelNodes && i < topLevelNodes.length; i++) {
-
+    for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
       let topLevelLeaf = new VisboOrgaTreeLeaf();
       topLevelLeaf.children = [];
       topLevelLeaf.uid = topLevelNodes[i].uid;
@@ -496,14 +497,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
       if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
         let sRoles = topLevelNodes[i].subRoleIDs;
-
         sRoles.forEach(function(sRole) {
           topLevelLeaf.children.push(makeLeaf(sRole));
         });
       }
       tree.children.push(topLevelLeaf);
     }
-
     return tree;
   }
 
@@ -520,7 +519,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   selectLeaf(leaf: VisboOrgaTreeLeaf) {
-    if (leaf.name != this.ressourceID ){
+    if (leaf.name !== this.ressourceID ) {
       this.ressourceID = leaf.name;
       this.visboCapacityCalc();
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
