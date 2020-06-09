@@ -71,9 +71,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
+    const nextView = this.route.snapshot.queryParams['view'];
     this.vpfid = this.route.snapshot.queryParams['vpfid'];
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
-    this.changeView('KeyMetrics');
+    this.currentView = nextView || 'KeyMetrics';
 
     this.getVisboProject();
   }
@@ -174,6 +175,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.calcVPList();
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
+          this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -188,7 +190,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   }
 
   getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions ${this.vpvRefDate} ${increment}`);
+    this.log(`get getRefDateVersions ${this.vpvRefDate.toISOString()} ${this.refDateInterval} ${increment}`);
     let newRefDate = new Date(this.vpvRefDate.getTime());
     switch (this.refDateInterval) {
       case 'day':
@@ -221,12 +223,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         }
         break;
     }
-    this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
     const today = new Date();
     if (newRefDate > today) {
       newRefDate = today;
     }
-    this.log(`get getRefDateVersions Quarter ${newRefDate} ${increment}`);
+    this.log(`get getRefDateVersions ${newRefDate.toISOString()}`);
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
     this.getVisboPortfolioKeyMetrics();
   }
@@ -235,8 +236,15 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
       this.currentView = nextView;
     } else {
-      this.currentView = 'List';
+      this.currentView = 'KeyMetrics';
     }
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = {
+      refDate: this.vpvRefDate?.toISOString(),
+      vpfid: this.vpfActive?._id,
+      view: this.currentView
+    };
+    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
   }
 
   calcPercent(current: number, baseline: number) {
@@ -269,25 +277,28 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   calcVPList(): void {
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.vpList = [];
+    this.vpvWithKM = 0;
     for (let i = 0; i < this.vpfActive.allItems.length; i++) {
-      const nextVP: any = {};
+      let nextVP: any;
+      nextVP = {};
       const item = this.vpfActive.allItems[i];
       nextVP.vpid = item.vpid;
       nextVP.name = item.name;
       nextVP.variantName = item.variantName;
       nextVP.keyMetricsSet = 0;
-      const index = this.visboprojectversions.findIndex(item => item.vpid === nextVP.vpid);
+      const index = this.visboprojectversions.findIndex(vpvItem => vpvItem.vpid === nextVP.vpid);
       if (index >= 0) {
         nextVP.timestamp = new Date(this.visboprojectversions[index].timestamp);
         nextVP.startDate = this.visboprojectversions[index].startDate;
-        nextVP.endDate = this.visboprojectversions[index].keyMetrics?.endDateCurrent;
+        nextVP.endDate = this.visboprojectversions[index].keyMetrics?.endDateCurrent || this.visboprojectversions[index].endDate;
+        nextVP.leadPerson = this.visboprojectversions[index].leadPerson;
+        nextVP.VorlagenName = this.visboprojectversions[index].VorlagenName;
+        nextVP.businessUnit = this.visboprojectversions[index].businessUnit;
+        nextVP.status = this.visboprojectversions[index].status;
         nextVP.keyMetricsSet = this.visboprojectversions[index].keyMetrics ? 1 : 0;
+        this.vpvWithKM += nextVP.keyMetricsSet;
       }
       this.vpList.push(nextVP);
-    }
-    this.vpvWithKM = 0;
-    if (this.visboprojectversions) {
-      this.visboprojectversions.forEach(element => { if (element.keyMetrics) { this.vpvWithKM += 1; } });
     }
   }
 
@@ -296,7 +307,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const url = this.route.snapshot.url.join('/');
     const queryParams = {
       refDate: this.vpvRefDate.toISOString(),
-      vpfid: this.vpfActive._id
+      vpfid: this.vpfActive._id,
+      view: this.currentView
     };
     // this.visboprojectversions = [];
     this.log(`GoTo Next Version ${JSON.stringify(queryParams)}`);
@@ -339,19 +351,17 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     // this.log(`Init Drop Down List Finished ${this.dropDown.length} Selected ${this.dropDownSelected}`);
   }
 
-  changePFVersion(): void {
-    this.dropDownValue = this.dropDown.find(x => x.name === this.dropDownSelected).version;
-    this.log(`Change Drop Down ${this.dropDownSelected} ${this.dropDownValue}`);
-    this.vpfActive = this.visboportfolioversions[this.dropDownValue];
+  switchPFVersion(i: number): void {
+    this.log(`Change Drop Down ${i} `);
+    this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
 
     const url = this.route.snapshot.url.join('/');
     const queryParams: any = {
-      vpfid: this.vpfActive._id.toString()
+      vpfid: this.vpfActive._id.toString(),
+      refDate: this.vpvRefDate.toISOString(),
+      view: this.currentView
     };
-    if (this.vpvRefDate) {
-      queryParams.refDate = this.vpvRefDate.toISOString();
-    }
     this.log(`GoTo Portfolio Version ${this.vpfActive._id.toString()}`);
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
   }

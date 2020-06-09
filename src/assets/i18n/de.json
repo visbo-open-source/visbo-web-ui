@@ -539,6 +539,15 @@
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
 		}
 	},
+	"compViewBoard": {
+		"lbl": {
+			"timeline": "Projektübersicht",
+			"filter": "Filter"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status der Lieferungen",
 		"titleDetailDelivery": "Status der Lieferung",
@@ -749,7 +758,7 @@
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
-			"viewProjectBoard": "Zeige Projektübersicht",
+			"viewProjectBoard": "Projekttafel",
 			"filter": "Filter",
 			"change": "Ändern",
 			"cancel": "Abbrechen",

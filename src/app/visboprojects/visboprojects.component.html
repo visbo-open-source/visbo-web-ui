@@ -22,14 +22,13 @@
         <button type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
-      <div class='container-fluid'>
-        <div *ngIf="chart && visboprojects.length > 0" class="btn-toolbar" >
-            <button type="button" class="btn btn-md btn-light mr-1 mt-2 mb-2" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
-            <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light m-2" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
-            <!-- <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button> -->
-        </div>
-      </div>  
-  </div>
+    <div class='container-fluid'></div>
+      <div *ngIf="chart && visboprojects.length > 0" class="btn-toolbar" >
+          <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
+          <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+          <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
+      </div>
+    </div>
     <div *ngIf="!chart" class='panel-body'>
       <table class='table table-hover table-sortable'>
         <!--Table head-->
@@ -76,6 +75,9 @@
       </div>
       <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
         <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+      </div>
+      <div *ngIf="currentView == 'ProjectBoard' && vpList">
+        <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
       </div>
     </div>
   </div>

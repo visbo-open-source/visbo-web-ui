@@ -539,6 +539,15 @@
 			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
 		}
 	},
+	"compViewBoard": {
+		"lbl": {
+			"timeline": "Timeline",
+			"filter": "Filter"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status of Deliveries",
 		"titleDetailDelivery": "Status of Delivery",
@@ -749,7 +758,7 @@
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewList": "List",
-			"viewProjectBoard": "View Projectboard",
+			"viewProjectBoard": "Project Board",
 			"filter": "Filter",
 			"change": "Change",
 			"cancel": "Cancel",
