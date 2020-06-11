@@ -20,6 +20,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { threadId } from 'worker_threads';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -39,6 +41,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
+  role: string;
+  roleUID: number;
   ressourceID: string;
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
@@ -76,6 +80,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
+    // this.role =  this.route.snapshot.queryParams['roleID'];
+    // if ( parseInt(this.role) == NaN ) { 
+    //   this.ressourceID = this.role 
+    // } else {
+    //   this.roleUID = parseInt(this.role)
+    // }    
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
     if (!this.refDate) { this.refDate = new Date(); }
@@ -135,6 +145,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
               this.actOrga = this.vcorganisation[0].value;
+              
+              if (this.actOrga) {
+                const organisation = this.actOrga;
+                let allRoles = [];
+                this.log(`get all roles of the organisation, prepared for direct access`);
+                for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
+                  allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
+                }                
+                if (this.roleUID) {
+                  this.ressourceID = allRoles[this.roleUID].name;
+                } 
+              }
+
             }
             this.visboViewOrganisationTree();
           },
@@ -155,7 +178,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboCapacityCalc(): void {
     this.visboCapcity = undefined;
 
-    if (this.vcActive) {
+    if (this.vcActive) {      
       this.log(`Capacity Calc for VC  ${this.vcActive._id} `);
 
       this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.ressourceID)
@@ -220,15 +243,28 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`Show the OrgaTree of the VC `);
     const organisation = this.actOrga;
     let allRoles = [];
+    let allRoleNames = [];
+    
     this.log(`get all roles of the organisation, prepared for direct access`);
     for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
       allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
-    }
+      allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
+    }   
     this.log(`get all roles of the organisation, prepared for the TreeView`);
     const topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
-    this.currentLeaf = this.orgaTreeData.children[0];
+    // // findRoleInVisboOrgaTree(role,roleUID)
+    // this.roleUID && !this.ressourceID;
+    // this.currentLeaf = new VisboOrgaTreeLeaf();
+    // // this.currentLeaf = this.getTreeLeafRole(this.orgaTreeData.children[0],this.role)
+    // this.currentLeaf.uid = this.roleUID;
+    // this.currentLeaf.name = this.ressourceID;
+    // this.currentLeaf.children = [];
+    // this.currentLeaf.isSelected = undefined;
+    // this.currentLeaf.showChildren = true;
+
+    this.currentLeaf  = this.orgaTreeData.children[0];
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
     // console.log(this.orgaTreeData);
 

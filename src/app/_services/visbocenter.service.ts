@@ -145,7 +145,7 @@ export class VisboCenterService  {
       params = params.append('deleted', '1');
     }
     if (roleID) {
-      params = params.append('organisationID', roleID);
+      params = params.append('roleID', roleID);
     }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
