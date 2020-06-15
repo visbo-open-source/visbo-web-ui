@@ -533,7 +533,7 @@
 		},
 		"msg": {
 			"calculating": "Berechnen der Kapzitäten ...",
-			"noCapacity": "Keine Informationen zu RessourcenID",
+			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "

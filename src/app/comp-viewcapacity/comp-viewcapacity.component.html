@@ -54,18 +54,19 @@
   </div>
 
   <div *ngIf="displayCapacity() >= 0">
-    <div *ngIf="graphDataComboChart.length > 0" >
+    <div *ngIf="graphDataComboChart.length > 2" >
       <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
       <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i> -->
     </div>
+    <div *ngIf="graphDataComboChart.length < 2" >
+      {{ 'ViewCapacity.msg.noCapacity' | translate }}
+    </div>
   </div>
-  <div *ngIf="graphDataComboChart.length == 0" >
+    <!-- here will be shown the text: Keine Kapaität the spinner -->
+  <div *ngIf="displayCapacity() == 0" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
   </div>
-  <!-- here will be shown the text: Keine Kapaität the spinner -->
-  <div *ngIf="ressourceID == ''" >
-    {{ 'ViewCapacity.msg.noCapacity' | translate }}
-  </div>
+     
 
   <!-- ur:05.06.2020: Here is the call for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
   <!-- <ul *ngIf="orgaTreeData" [ngStyle]="{'list-style-type': 'none'}" >

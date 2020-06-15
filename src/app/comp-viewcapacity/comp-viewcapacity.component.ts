@@ -20,8 +20,6 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
-import { threadId } from 'worker_threads';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -254,15 +252,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
-    // // findRoleInVisboOrgaTree(role,roleUID)
-    // this.roleUID && !this.ressourceID;
-    // this.currentLeaf = new VisboOrgaTreeLeaf();
-    // // this.currentLeaf = this.getTreeLeafRole(this.orgaTreeData.children[0],this.role)
-    // this.currentLeaf.uid = this.roleUID;
-    // this.currentLeaf.name = this.ressourceID;
-    // this.currentLeaf.children = [];
-    // this.currentLeaf.isSelected = undefined;
-    // this.currentLeaf.showChildren = true;
 
     this.currentLeaf  = this.orgaTreeData.children[0];
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
@@ -300,6 +289,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         },
         hAxis: {
           format: 'MMM YY',
+          // textStyle: {fontSize: 15},
           gridlines: {
             color: '#FFF',
             count: -1
@@ -315,45 +305,34 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const capacity = this.visboCapcity;
-
-    // if (!this.capacityFrom){
-    //   this.capacityFrom = new Date();
-    //   this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
-    //   this.capacityFrom.setDate(1);
-    // }
+  
     if (!this.capacityTo) {
       this.capacityTo = new Date();
       this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
       this.capacityTo.setDate(1);
     }
 
-    // if (!this.capacityFrom) {
-    //   this.capacityFrom = new Date(capacity[0].month);
-    // }
-    // if (!this.capacityTo) {
-    //   this.capacityTo = new Date(capacity[capacity.length - 1].month);
-    // }
-
     if (this.capacityTo < this.capacityFrom) {
       this.capacityTo.setMonth(this.capacityFrom.getMonth() + 12);
     }
 
     this.log(`ViewCapacityOverTime ressourceID ${this.ressourceID}`);
-
+    
     for (let i = 0; i < capacity.length; i++) {
+    
       const currentDate = new Date(capacity[i].month);
       currentDate.setHours(2, 0, 0, 0);
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            currentDate,
+            this.changeDateToMMMYYYY (currentDate),
             Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
             Math.trunc(capacity[i].internCapa_PT || 0),
             Math.trunc(capacity[i].actualCost_PT || 0),
             Math.trunc(capacity[i].plannedCost_PT || 0)]);
         } else {
           graphDataCapacity.push([
-            currentDate,
+            this.changeDateToMMMYYYY (currentDate),
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
             Math.trunc(capacity[i].internCapa || 0),
             Math.trunc(capacity[i].actualCost || 0),
@@ -364,24 +343,30 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCapacity.length;
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
+    if (len < 1) {
+
+    }
+    
+    this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       graphDataCapacity.push([
-        new Date(),
+        this.changeDateToMMMYYYY(new Date()),
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
         graphDataCapacity[len - 1][3],
-        graphDataCapacity[len - 1][4]
+        graphDataCapacity[len - 1][4]        
       ]);
-    }
-
-    graphDataCapacity.push([
+    }    
+    
+    graphDataCapacity.unshift([
       'Month',
       this.translate.instant('ViewCapacity.totalCapaPT'),
       this.translate.instant('ViewCapacity.internCapaPT'),
       this.translate.instant('ViewCapacity.actualCostPT'),
       this.translate.instant('ViewCapacity.plannedCostPT')
     ]);
-    graphDataCapacity.reverse();
+
+    // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
 
     this.graphDataComboChart = graphDataCapacity;
@@ -400,7 +385,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-
+  changeDateToMMMYYYY (currentDate: Date): String {
+    let mm = currentDate.getMonth();
+    let yyyy = currentDate.getFullYear().toString();
+    let yy = yyyy.slice(2);
+    let mmStr = ["Jan", "Feb", "März", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+    let currentDateMMMYYYY = mmStr[mm] + " " + yy;
+    return currentDateMMMYYYY;
+  }
 
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {

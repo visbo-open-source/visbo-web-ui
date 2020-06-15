@@ -533,7 +533,7 @@
 		},
 		"msg": {
 			"calculating": "Calculating Capacity ...",
-			"noCapacity": "No Capacity Information for RessourcenID",
+			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
 			"errorPermCapacity": "Permission denied for this VISBO Capacity ",
 			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
