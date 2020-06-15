@@ -19,7 +19,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate , visboChangeDateToMMMYY} from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -325,14 +325,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            this.changeDateToMMMYYYY (currentDate),
+            visboChangeDateToMMMYY (currentDate),
             Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
             Math.trunc(capacity[i].internCapa_PT || 0),
             Math.trunc(capacity[i].actualCost_PT || 0),
             Math.trunc(capacity[i].plannedCost_PT || 0)]);
         } else {
           graphDataCapacity.push([
-            this.changeDateToMMMYYYY (currentDate),
+            visboChangeDateToMMMYY (currentDate),
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
             Math.trunc(capacity[i].internCapa || 0),
             Math.trunc(capacity[i].actualCost || 0),
@@ -350,7 +350,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       graphDataCapacity.push([
-        this.changeDateToMMMYYYY(new Date()),
+        visboChangeDateToMMMYY(new Date()),
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
         graphDataCapacity[len - 1][3],
@@ -385,14 +385,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-  changeDateToMMMYYYY (currentDate: Date): String {
-    let mm = currentDate.getMonth();
-    let yyyy = currentDate.getFullYear().toString();
-    let yy = yyyy.slice(2);
-    let mmStr = ["Jan", "Feb", "März", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
-    let currentDateMMMYYYY = mmStr[mm] + " " + yy;
-    return currentDateMMMYYYY;
-  }
+  // changeDateToMMMYYYY (currentDate: Date): String {
+  //   let mm = currentDate.getMonth();
+  //   let yyyy = currentDate.getFullYear().toString();
+  //   let yy = yyyy.slice(2);
+  //   let mmStr = ["Jan", "Feb", "März", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+  //   let currentDateMMMYYYY = mmStr[mm] + " " + yy;
+  //   return currentDateMMMYYYY;
+  // }
 
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
