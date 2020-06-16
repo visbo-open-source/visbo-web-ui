@@ -12,7 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboChangeDateToMMMYY } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -157,13 +157,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
       if (currentDate.getTime() < actualDataUntilTime) {
         graphDataCost.push([
-          new Date(cost[i].currentDate),
+          visboChangeDateToMMMYY(new Date(cost[i].currentDate)),
           Math.trunc(cost[i].baseLineCost || 0),
           Math.trunc(cost[i].currentCost || 0),
           0]);
       } else {
         graphDataCost.push([
-          new Date(cost[i].currentDate),
+          visboChangeDateToMMMYY(new Date(cost[i].currentDate)),
           Math.trunc(cost[i].baseLineCost || 0),
           0,
           Math.trunc(cost[i].currentCost || 0)]);
@@ -175,10 +175,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.log(`ViewCostOverTime Result empty`);
       graphDataCost.push([new Date(), 0, 0, 0]);
     }
-    graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
+    // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
     this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
+    if (len < 1 ) {
+
+    }
     if (len === 1) {
       graphDataCost.push([
         new Date(),
@@ -187,14 +190,14 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         graphDataCost[len - 1][3]
       ]);
     }
-
-    graphDataCost.push([
+    // header will be written in the array at the beginning
+    graphDataCost.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.baselinePV'),
       this.translate.instant('keyMetrics.planAC'),
       this.translate.instant('keyMetrics.planETC')
     ]);
-    graphDataCost.reverse();
+    // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
   }

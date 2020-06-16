@@ -234,7 +234,7 @@ export class VisboProjectVersionService {
       );
   }
 
-  /** GET CostCalculation from the server for the specified vpv id */
+  /** GET DeliveryCalculation from the server for the specified vpv id */
   getDelivery(id: string, ref: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/delivery`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

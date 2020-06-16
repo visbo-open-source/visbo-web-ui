@@ -252,7 +252,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
-
     this.currentLeaf  = this.orgaTreeData.children[0];
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
     // console.log(this.orgaTreeData);
@@ -325,14 +324,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            visboChangeDateToMMMYY (currentDate),
+            visboChangeDateToMMMYY(currentDate),
             Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
             Math.trunc(capacity[i].internCapa_PT || 0),
             Math.trunc(capacity[i].actualCost_PT || 0),
             Math.trunc(capacity[i].plannedCost_PT || 0)]);
         } else {
           graphDataCapacity.push([
-            visboChangeDateToMMMYY (currentDate),
+            visboChangeDateToMMMYY(currentDate),
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
             Math.trunc(capacity[i].internCapa || 0),
             Math.trunc(capacity[i].actualCost || 0),
@@ -345,8 +344,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len < 1) {
 
-    }
-    
+    }    
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       graphDataCapacity.push([
@@ -356,8 +354,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         graphDataCapacity[len - 1][3],
         graphDataCapacity[len - 1][4]        
       ]);
-    }    
-    
+    }        
     graphDataCapacity.unshift([
       'Month',
       this.translate.instant('ViewCapacity.totalCapaPT'),
@@ -365,17 +362,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.translate.instant('ViewCapacity.actualCostPT'),
       this.translate.instant('ViewCapacity.plannedCostPT')
     ]);
-
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
-
     this.graphDataComboChart = graphDataCapacity;
   }
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} `);
   }
-
 
   displayCapacity(): number {
     let result = -1;
@@ -384,15 +378,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     return result;
   }
-
-  // changeDateToMMMYYYY (currentDate: Date): String {
-  //   let mm = currentDate.getMonth();
-  //   let yyyy = currentDate.getFullYear().toString();
-  //   let yy = yyyy.slice(2);
-  //   let mmStr = ["Jan", "Feb", "März", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
-  //   let currentDateMMMYYYY = mmStr[mm] + " " + yy;
-  //   return currentDateMMMYYYY;
-  // }
 
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {

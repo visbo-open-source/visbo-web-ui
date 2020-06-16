@@ -56,7 +56,6 @@
   <div *ngIf="displayCapacity() >= 0">
     <div *ngIf="graphDataComboChart.length > 2" >
       <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
-      <!-- <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i> -->
     </div>
     <div *ngIf="graphDataComboChart.length < 2" >
       {{ 'ViewCapacity.msg.noCapacity' | translate }}
@@ -94,9 +93,6 @@
       </div>
     </div>
   </ng-template>
-
-
-
   <!-- End of definitions for the OrgaTree -->
 
   <div *ngIf="displayCapacity() < 0" >
@@ -105,60 +101,4 @@
   </div>
 </div>
 
-<!-- Modal Show Shortcut explanation -->
-<div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <table class='table table-hover'>
-          <thead>
-            <tr>
-              <th>{{ 'keyMetrics.lbl.shortcut' | translate }}</th>
-              <th>{{ 'keyMetrics.lbl.explanation' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ 'keyMetrics.shortPV' | translate }}</td>
-              <td>{{ 'keyMetrics.longPV' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longAC' | translate }}</td>
-            </tr>
-            <!-- <tr>
-              <td>{{ 'keyMetrics.shortAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longAC' | translate }}</td>
-            </tr> -->
-            <tr>
-              <td>{{ 'keyMetrics.shortETC' | translate }}</td>
-              <td>{{ 'keyMetrics.longETC' | translate }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="modal-footer align-items-end">
-          <button class="btn btn-primary" data-dismiss="modal">{{ 'vpViewCost.btn.back' | translate }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- Modal Change Orga Selection -->
-<!-- <div class="modal fade" id="VpfOrgaSelector" tabindex="-1" role="dialog" aria-labelledby="VpfOrgaSelectorTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="VpfOrgaSelectorTitle">{{ 'vpfVersion.titleRessourceChange' | translate }}</h5>
-        <button type="button" class="close"  (click)="changeOrga()" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ul [ngStyle]="{'list-style-type': 'none'}" *ngIf="orgaTreeData">
-          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children }"></ng-container>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div> -->
