@@ -53,18 +53,18 @@
     </span>
   </div>
 
-  <div *ngIf="displayCapacity() >= 0">
+  <div *ngIf="displayCapacity() > 0">
     <div *ngIf="graphDataComboChart.length > 2" >
       <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
     </div>
-    <div *ngIf="graphDataComboChart.length < 2" >
+    <div *ngIf="graphDataComboChart.length < 2"  >
       {{ 'ViewCapacity.msg.noCapacity' | translate }}
     </div>
   </div>
-    <!-- here will be shown the text: Keine Kapaität the spinner -->
+  <!-- here will be shown the text: Keine Kapaität the spinner -->
   <div *ngIf="displayCapacity() == 0" >
     {{ 'ViewCapacity.msg.noCapacity' | translate }}
-  </div>
+  </div> 
      
 
   <!-- ur:05.06.2020: Here is the call for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
