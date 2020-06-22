@@ -19,6 +19,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import * as moment from 'moment';
 import { getErrorMessage, visboCmpString, visboCmpDate , visboChangeDateToMMMYY} from '../_helpers/visbo.helper';
 import { DatePipe } from '@angular/common';
 
@@ -274,7 +275,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         colors: this.colors,
         seriesType: 'bars',
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
-        isStacked: true,
+        isStacked: true,        
+        tooltip: {
+          isHtml: true
+        },
         vAxis: {
           title: 'Monthly Capacity',
           // format: "# T\u20AC",
@@ -319,18 +323,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            currentDate,
-            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
+            currentDate,  
+            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),            
+            this.createCustomHTMLContent(capacity[i], true),
             Math.trunc(capacity[i].internCapa_PT || 0),
+            this.createCustomHTMLContent(capacity[i], true),
             Math.trunc(capacity[i].actualCost_PT || 0),
-            Math.trunc(capacity[i].plannedCost_PT || 0)]);
+            this.createCustomHTMLContent(capacity[i], true),
+            Math.trunc(capacity[i].plannedCost_PT || 0),
+            this.createCustomHTMLContent(capacity[i], true)]);
         } else {
           graphDataCapacity.push([
             currentDate,
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
+            this.createCustomHTMLContent(capacity[i], false),
             Math.trunc(capacity[i].internCapa || 0),
+            this.createCustomHTMLContent(capacity[i], false),
             Math.trunc(capacity[i].actualCost || 0),
-            Math.trunc(capacity[i].plannedCost || 0)]);
+            this.createCustomHTMLContent(capacity[i], false),
+            Math.trunc(capacity[i].plannedCost || 0),
+            this.createCustomHTMLContent(capacity[i], false)]);
         }
       }
     }
@@ -347,15 +359,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
         graphDataCapacity[len - 1][3],
-        graphDataCapacity[len - 1][4]        
+        graphDataCapacity[len - 1][4],
+        graphDataCapacity[len - 1][5],
+        graphDataCapacity[len - 1][6],
+        graphDataCapacity[len - 1][7],
+        graphDataCapacity[len - 1][8]     
       ]);
     }        
     graphDataCapacity.unshift([
       'Month',
       this.translate.instant('ViewCapacity.totalCapaPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('ViewCapacity.internCapaPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('ViewCapacity.actualCostPT'),
-      this.translate.instant('ViewCapacity.plannedCostPT')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('ViewCapacity.plannedCostPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
@@ -364,6 +384,35 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} `);
+  }
+
+  
+
+  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean): string {
+    const currentDate = moment(capacity.month).format('MMM YYYY');
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + currentDate + '</b></div>' + '<div>' +
+      '<table>';
+
+    const totalCapaPT = this.translate.instant('ViewCapacity.totalCapaPT');
+    const internCapaPT = this.translate.instant('ViewCapacity.internCapaPT');
+    const actualCostPT = this.translate.instant('ViewCapacity.actualCostPT');
+    const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
+
+    if (PT) {
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10 + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + Math.round(capacity.internCapa_PT * 10) / 10 + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + Math.round(capacity.actualCost_PT * 10) / 10 + ' PT</b></td>' + '</tr>';    
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + Math.round(capacity.plannedCost_PT * 10) / 10 + ' PT</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+    } else {
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + Math.round(capacity.internCapa * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + Math.round(capacity.actualCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';    
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + Math.round(capacity.plannedCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+    }   
+    return result;
   }
 
   displayCapacity(): number {
