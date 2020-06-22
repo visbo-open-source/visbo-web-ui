@@ -538,6 +538,12 @@
 	},
 	"compViewBoard": {
 		"lbl": {
+			"project": "Projekt",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
 			"filter": "Filter"
 		},

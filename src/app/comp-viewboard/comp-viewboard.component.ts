@@ -121,12 +121,16 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
 
+    const project = this.translate.instant('compViewBoard.lbl.project');
+    const start = this.translate.instant('compViewBoard.lbl.startDate');
+    const end = this.translate.instant('compViewBoard.lbl.endDate');
+
     graphDataTimeline.push([
       'ID',
-      this.translate.instant('ViewBoard.project'),
+      project,
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      this.translate.instant('ViewBoard.startDate'),
-      this.translate.instant('ViewBoard.endDate')
+      start,
+      end
     ]);
     graphDataTimeline.reverse();
     // this.log(`view Timeline VP Timeline ${JSON.stringify(graphDataTimeline)}`);
@@ -145,20 +149,26 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       '<div><b>' + vp.name + '</b></div>' + '<div>' +
       '<table>';
 
+    const bu = this.translate.instant('compViewBoard.lbl.bu');
+    const lead = this.translate.instant('compViewBoard.lbl.lead');
+    const template = this.translate.instant('compViewBoard.lbl.template');
+    const start = this.translate.instant('compViewBoard.lbl.startDate');
+    const end = this.translate.instant('compViewBoard.lbl.endDate');
+
     if (vp.businessUnit) {
-      result = result + '<tr>' + '<td>BU</td>' + '<td><b>' + vp.businessUnit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + vp.businessUnit + '</b></td>' + '</tr>';
     }
     if (vp.leadPerson) {
-      result = result + '<tr>' + '<td>Lead Person</td>' + '<td><b>' + vp.leadPerson + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + vp.leadPerson + '</b></td>' + '</tr>';
     }
     if (vp.VorlagenName) {
-      result = result + '<tr>' + '<td>Vorlage</td>' + '<td><b>' + vp.VorlagenName + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + template + ':</td>' + '<td><b>' + vp.VorlagenName + '</b></td>' + '</tr>';
     }
-    result = result + '<tr>' + '<td>Start</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>Ende</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
-}
+  }
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} ${value} `);
