@@ -157,13 +157,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       // this.log(`ViewCostOverTime Push  ${cost[i].currentDate}`);
       if (currentDate.getTime() < actualDataUntilTime) {
         graphDataCost.push([
-          visboChangeDateToMMMYY(new Date(cost[i].currentDate)),
+          new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
           Math.trunc(cost[i].currentCost || 0),
           0]);
       } else {
         graphDataCost.push([
-          visboChangeDateToMMMYY(new Date(cost[i].currentDate)),
+          new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
           0,
           Math.trunc(cost[i].currentCost || 0)]);

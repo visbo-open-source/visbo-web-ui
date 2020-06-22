@@ -20,6 +20,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate , visboChangeDateToMMMYY} from '../_helpers/visbo.helper';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -318,14 +319,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            visboChangeDateToMMMYY(currentDate),
+            currentDate,
             Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
             Math.trunc(capacity[i].internCapa_PT || 0),
             Math.trunc(capacity[i].actualCost_PT || 0),
             Math.trunc(capacity[i].plannedCost_PT || 0)]);
         } else {
           graphDataCapacity.push([
-            visboChangeDateToMMMYY(currentDate),
+            currentDate,
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
             Math.trunc(capacity[i].internCapa || 0),
             Math.trunc(capacity[i].actualCost || 0),
@@ -342,7 +343,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       graphDataCapacity.push([
-        visboChangeDateToMMMYY(new Date()),
+        new Date(),
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
         graphDataCapacity[len - 1][3],
@@ -565,10 +566,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // this.visboCapacityCalc();
   }
 
-  // controller
   parseDate(dateString: string): Date {
-    if (dateString) {
-        return new Date(dateString);
+     if (dateString) {
+       return new Date(dateString);
+    //   var d = Date.parse(dateString);
+    //   if (d > 0) {
+    //     return new Date(d);
+    // }      
     }
     return null;
   }
