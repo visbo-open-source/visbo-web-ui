@@ -502,8 +502,11 @@
 		}
 	},
 	"ViewCapacity": {
-		"title": "Monatliche Kosten für Rolle Nr.",
-		"titleVersion": "Version vom",
+		"title1": "Auslastung der Organisations-Einheit ",
+		"title2": " angegeben in ",
+		"titleTimeFrom": " für den Zeitraum: von",
+		"titleTimeTo": " bis ",
+		"titleVersion": "Version vom",		
 		"yAxisCapaOverTime": "Monatliche Kosten",
 		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
 		"internCapaPT": "interne Kapazität",
@@ -530,7 +533,7 @@
 		},
 		"msg": {
 			"calculating": "Berechnen der Kapzitäten ...",
-			"noCapacity": "Keine Informationen zu RessourcenID",
+			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
@@ -727,6 +730,7 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleChange": "Ändern der Kennzahlen",
+		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"lbl": {
 			"nr": "Nummer",
 			"variant": "Variante",

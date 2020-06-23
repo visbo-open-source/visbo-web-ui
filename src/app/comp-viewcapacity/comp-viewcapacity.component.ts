@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole, VisboOrgaTreeLeaf, VisboOrganisationListResponse, TreeLeafSelection} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -19,11 +19,14 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import * as moment from 'moment';
+import { getErrorMessage, visboCmpString, visboCmpDate , visboChangeDateToMMMYY} from '../_helpers/visbo.helper';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-comp-viewcapacity',
-  templateUrl: './comp-viewcapacity.component.html'
+  templateUrl: './comp-viewcapacity.component.html',
+  styleUrls: ['./comp-viewcapacity.component.css']
 })
 export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
@@ -38,13 +41,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
+  role: any;
+  roleUID: number;
   ressourceID: string;
+  currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
   currentRefDate: Date;
 
   showUnit: string;
   parentThis: any;
+
+  orgaTreeData: VisboOrgaTreeLeaf;
+
 
   colors: string[] = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
   series: any =  {
@@ -71,16 +80,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
+    this.role =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
     this.parentThis = this;
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
-
-    this.showUnit = this.translate.instant('ViewCapacity.lbl.euro');
+    this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
     if (!this.capacityFrom) {
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
       this.capacityFrom.setDate(1);
+      this.capacityFrom.setHours(0, 0, 0, 0);
     }
     this.capacityTo = new Date();
     this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
@@ -91,9 +101,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}`);
-    // if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
+    if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
       this.visboCapacityCalc();
-    // }
+    }    
   }
 
   hasVPPerm(perm: number): boolean {
@@ -129,6 +139,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
               this.actOrga = this.vcorganisation[0].value;
+              
+              // if (this.actOrga) {
+              //   const organisation = this.actOrga;
+              //   let allRoles = [];
+              //   this.log(`get all roles of the organisation, prepared for direct access`);
+              //   for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
+              //     allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
+              //   }   
+              // }
+
             }
             this.visboViewOrganisationTree();
           },
@@ -149,33 +169,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboCapacityCalc(): void {
     this.visboCapcity = undefined;
 
-    // if (this.ressourceID){
-    //   for (var i=0; organisation && organisation.allRoles && i < organisation.allRoles.length; i++){
-    //     if (organisation.allRoles[i].name === this.ressourceID) {
-    //       break;
-    //     }
-    //   }
-    //   if (i === organisation.allRoles.length) {
-    //     this.ressourceID = undefined;
-    //   }
-    // }
-    if (this.vcActive) {
-      this.log(`Capacity Calc for VC  ${this.vcActive._id} `);
-
-      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.ressourceID)
+    if (this.vcActive ) {      
+      this.log(`Capacity Calc for VC  ${this.vcActive._id}  role  ${this.role}`);
+      
+      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.role)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
               this.log(`get VPV Calc: Reset Capacity to empty `);
-              // this.vpvCost[visboprojectversions[0]._id] = [];
               this.visboCapcity = [];
             } else {
               this.log(`Store Capacity for Len ${visbocenter.capacity.length}`);
               this.visboCapcity = visbocenter.capacity;
-            }
-            // show the RessourceID which is actual calculated
-            if (!this.ressourceID) {
-              this.ressourceID = this.actOrga.allRoles[0].name;
             }
             this.visboViewCapacityOverTime();
           },
@@ -191,7 +196,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive) {
       this.log(`Capacity Calc for VP  ${this.vpActive._id} VPF  ${this.vpfActive._id}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.ressourceID)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.role)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -217,40 +222,63 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   visboViewOrganisationTree(): void {
+    this.log(`Show the OrgaTree of the VC `);
     const organisation = this.actOrga;
-    // var allRoleNames = [];
-    // for (var i = 0; organisation  && organisation.allRoles && i < organisation.allRoles.length; i++) {
-    //   allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
-    // }
-    // // URK TODO:  the topNOde is to be fetched
-    // sort the Orga like VisboBusiness for direct access
-
-    if (organisation && organisation.allRoles && organisation.allRoles.length > 0) {
-      this.ressourceID = organisation.allRoles[0].name;
+    let allRoles = [];
+    let allRoleNames = [];
+    
+    this.log(`get all roles of the organisation, prepared for direct access`);
+    for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
+      allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
+      allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
+    }   
+    this.log(`get all roles of the organisation, prepared for the TreeView`);
+    const topLevelNodes = this.buildTopNodes(allRoles);
+    this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
+    this.log(`initialize the orgaTreeData with one of the topLevel`);
+    // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
+    let roleName: string;
+    if (this.role) {
+      if ( isNaN(parseInt(this.role)) ) {         
+        roleName = this.role
+      } else {
+        this.roleUID = parseInt(this.role)
+        roleName = allRoles[this.roleUID].name
+      }      
+      this.currentLeaf = this.getMappingLeaf(roleName);    
+    } 
+    if (!this.role || !this.currentLeaf) {
+      this.currentLeaf = this.orgaTreeData.children[0];
     }
-    // if (this.ressourceID && !allRoleNames && !allRoleNames[this.ressourceID]) {
-    //   return;
-    // }
+    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
+    this.ressourceID = this.currentLeaf.name;   
   }
 
+  updateShowUnit(unit: string): void {
+    this.showUnit = this.translate.instant(unit);
+    this.visboViewCapacityOverTime();
+  }
 
   visboViewCapacityOverTime(): void {
-    let optformat = "# T\u20AC";
+    let optformat = "###,###.## T\u20AC";
     if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
       optformat = "# PT";
     }
     this.graphOptionsComboChart = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
-        title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+        // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
         animation: {startup: true, duration: 200},
-        legend: {position: 'top'},
+        legend: {position: 'bottom'},
         explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
         // curveType: 'function',
         colors: this.colors,
         seriesType: 'bars',
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
-        isStacked: true,
+        isStacked: true,        
+        tooltip: {
+          isHtml: true
+        },
         vAxis: {
           title: 'Monthly Capacity',
           // format: "# T\u20AC",
@@ -259,13 +287,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         },
         hAxis: {
           format: 'MMM YY',
+          // textStyle: {fontSize: 15},
           gridlines: {
             color: '#FFF',
             count: -1
           }
         }
       };
-    this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
+    // this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     const graphDataCapacity: any = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
@@ -274,41 +303,55 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const capacity = this.visboCapcity;
-    if (!this.capacityFrom) {
-      this.capacityFrom = new Date(capacity[0].month);
-    }
+  
     if (!this.capacityTo) {
-      this.capacityTo = new Date(capacity[capacity.length - 1].month);
+      this.capacityTo = new Date();
+      this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
+      this.capacityTo.setDate(1);
     }
+
     if (this.capacityTo < this.capacityFrom) {
-      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 1);
+      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 12);
     }
 
     this.log(`ViewCapacityOverTime ressourceID ${this.ressourceID}`);
-
+    
     for (let i = 0; i < capacity.length; i++) {
+    
       const currentDate = new Date(capacity[i].month);
       currentDate.setHours(2, 0, 0, 0);
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
-            currentDate,
-            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
+            currentDate,  
+            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),            
+            this.createCustomHTMLContent(capacity[i], true),
             Math.trunc(capacity[i].internCapa_PT || 0),
+            this.createCustomHTMLContent(capacity[i], true),
             Math.trunc(capacity[i].actualCost_PT || 0),
-            Math.trunc(capacity[i].plannedCost_PT || 0)]);
+            this.createCustomHTMLContent(capacity[i], true),
+            Math.trunc(capacity[i].plannedCost_PT || 0),
+            this.createCustomHTMLContent(capacity[i], true)]);
         } else {
           graphDataCapacity.push([
             currentDate,
             Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
+            this.createCustomHTMLContent(capacity[i], false),
             Math.trunc(capacity[i].internCapa || 0),
+            this.createCustomHTMLContent(capacity[i], false),
             Math.trunc(capacity[i].actualCost || 0),
-            Math.trunc(capacity[i].plannedCost || 0)]);
+            this.createCustomHTMLContent(capacity[i], false),
+            Math.trunc(capacity[i].plannedCost || 0),
+            this.createCustomHTMLContent(capacity[i], false)]);
         }
       }
     }
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCapacity.length;
+    this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
+    if (len < 1) {
+
+    }    
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       graphDataCapacity.push([
@@ -316,20 +359,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         graphDataCapacity[len - 1][1],
         graphDataCapacity[len - 1][2],
         graphDataCapacity[len - 1][3],
-        graphDataCapacity[len - 1][4]
+        graphDataCapacity[len - 1][4],
+        graphDataCapacity[len - 1][5],
+        graphDataCapacity[len - 1][6],
+        graphDataCapacity[len - 1][7],
+        graphDataCapacity[len - 1][8]     
       ]);
-    }
-
-    graphDataCapacity.push([
+    }        
+    graphDataCapacity.unshift([
       'Month',
       this.translate.instant('ViewCapacity.totalCapaPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('ViewCapacity.internCapaPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('ViewCapacity.actualCostPT'),
-      this.translate.instant('ViewCapacity.plannedCostPT')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('ViewCapacity.plannedCostPT'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-    graphDataCapacity.reverse();
+    // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
-
     this.graphDataComboChart = graphDataCapacity;
   }
 
@@ -337,6 +386,34 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`chart Select Row ${row} ${label} ${value} `);
   }
 
+  
+
+  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean): string {
+    const currentDate = moment(capacity.month).format('MMM YYYY');
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + currentDate + '</b></div>' + '<div>' +
+      '<table>';
+
+    const totalCapaPT = this.translate.instant('ViewCapacity.totalCapaPT');
+    const internCapaPT = this.translate.instant('ViewCapacity.internCapaPT');
+    const actualCostPT = this.translate.instant('ViewCapacity.actualCostPT');
+    const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
+
+    if (PT) {
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';    
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+    } else {
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' +(Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';    
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+    }   
+    return result;
+  }
 
   displayCapacity(): number {
     let result = -1;
@@ -346,10 +423,205 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-  // controller
+// find summary Roles
+  getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
+    let summaryRoles = [];
+    this.log(`get all summary roles of the organisation roleID ${{roleID}}`);
+
+    function findSummaryRoles(value: any) {
+      // value is the Id of one subrole
+      const hroleID = value.key;
+      let hrole = allRoles[hroleID];
+      if (hrole.subRoleIDs.length > 0) {
+        summaryRoles[hroleID] = hrole;
+        let shroles = hrole.subRoleIDs;
+        shroles.forEach(findSummaryRoles);
+      }
+    }
+
+    // all summary roles
+    if (roleID === undefined && allRoles) {
+      let i = 0;
+      for (i = 0; allRoles &&  i <= allRoles.length; i++ ) {
+        const hrole = allRoles[i];
+        if (hrole && hrole.subRoleIDs.length > 0 ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
+      }
+      return summaryRoles;
+    }
+
+    // only summary roles that are children of the role roleID
+    if (roleID && allRoles) {
+      const role = allRoles[roleID];
+
+      if (role.subRoleIDs && role.subRoleIDs.length > 0) {
+
+        let subRoles = role.subRoleIDs;
+        if (subRoles.length > 0 ) {
+          summaryRoles[role.uid] = role;
+          subRoles.forEach(findSummaryRoles);
+        }
+      }
+      return summaryRoles;
+    }
+  }
+
+  getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
+    let parentRole = undefined;
+
+    this.log(`get the parentRole of roleID ${{roleID}}`);
+    if (allRoles[roleID]) {
+
+      let notFound = true;
+      for (let k = 0; sumRoles && k < sumRoles.length; k++) {
+        let hrole = sumRoles[k];
+        if (hrole)	{
+          for ( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
+            // asked Philipp for the difference: hrole.subRoleIDs[i].key is a string with the value 'roleID' and roleID is a number
+            // therefore it isn't possible to put === instead for ==, now the multiplikation with 1 makes a number of it
+            if ( hrole.subRoleIDs[i] && (hrole.subRoleIDs[i].key * 1 === roleID) ) {
+              parentRole = hrole;
+              notFound = false;
+            }
+          }
+        }
+      }
+      return parentRole;
+    }
+  }
+
+  buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
+    let topLevelNodes = [];
+    let topLevel = [];
+    let i = 1;
+
+    this.log(`get all TopNodes of the organisation`);
+
+    // find all summaryRoles
+    let sumRoles = this.getSummaryRoles(allRoles, undefined);
+
+    while (i <= allRoles.length) {
+      let currentRole = allRoles[i];
+      if (currentRole) {
+        // get parent of currentRole
+        let parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
+        if (!parent && !topLevel[currentRole.uid]) {
+          topLevel[currentRole.uid] = currentRole;
+          topLevelNodes.push(currentRole);
+        }
+      }
+      i++;
+    }
+    return topLevelNodes;
+  }
+
+
+  buildOrgaTree(topLevelNodes: VisboRole[], allRoles: VisboRole[]) {
+
+    type subRole = {
+      key: number;
+      value: number;
+    };
+
+    this.log(`build the OrgaTree used for the selectionTree of the organisation`);
+
+    let tree = new VisboOrgaTreeLeaf();
+    tree.uid = 0;
+    tree.name = 'root';
+    tree.children = [];
+    tree.showChildren = true;
+
+    function makeLeaf(value: subRole): VisboOrgaTreeLeaf {
+      let leaf = new VisboOrgaTreeLeaf();
+      let hroleID = value.key;
+      let hrole = allRoles[hroleID];
+      let hroleName = hrole?.name;
+      leaf.children = [];
+      leaf.uid = hroleID;
+      leaf.name = hroleName;
+      let children = hrole.subRoleIDs;
+      children.forEach(function(child) {
+        leaf.children.push(makeLeaf(child));
+      });
+      return leaf;
+    }
+
+    for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
+      let topLevelLeaf = new VisboOrgaTreeLeaf();
+      topLevelLeaf.children = [];
+      topLevelLeaf.uid = topLevelNodes[i].uid;
+      topLevelLeaf.name = topLevelNodes[i].name;
+      topLevelLeaf.showChildren = false;
+
+      if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
+        let sRoles = topLevelNodes[i].subRoleIDs;
+        sRoles.forEach(function(sRole) {
+          topLevelLeaf.children.push(makeLeaf(sRole));
+        });
+      }
+      tree.children.push(topLevelLeaf);
+    }
+    return tree;
+  }
+
+  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: TreeLeafSelection) {
+    leaf.isSelected = value;
+    if (!leaf.children || leaf.children.length === 0) {
+      return;
+    }
+    leaf.children.forEach((child) => {
+      this.setTreeLeafSelection(child, value === TreeLeafSelection.SELECTED ? TreeLeafSelection.PARENT_SELECTED : value);
+    });
+
+  }
+
+
+  selectLeaf(leaf: VisboOrgaTreeLeaf) {
+    if (leaf.name !== this.ressourceID ) {
+      this.ressourceID = leaf.name;
+      this.role = this.ressourceID;
+      this.visboCapacityCalc();
+      this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
+      this.currentLeaf = leaf;
+    }
+    this.setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
+    return;
+  }
+
+  getMappingLeaf(roleName: string) : VisboOrgaTreeLeaf {
+    let resultLeaf = this.orgaTreeData.children[0];
+    let curLeaf = this.orgaTreeData;
+    
+    function findMappingLeaf(value: any) {
+      // value is the Id of one subrole
+      const leaf = value;
+      if (leaf.name === roleName) {
+        if (leaf && leaf.children && leaf.children.length > 0) {  leaf.showChildren = true;
+         } 
+        resultLeaf = leaf; 
+        return resultLeaf;
+      } else {                
+        let children = leaf.children;
+        children.forEach(findMappingLeaf);
+      }
+    }
+
+    if (curLeaf && curLeaf.children) { 
+      curLeaf.children.forEach(findMappingLeaf) 
+    };
+    return resultLeaf;    
+  }
+
+  changeOrga(): void {
+    // this.visboCapacityCalc();
+  }
+
   parseDate(dateString: string): Date {
-    if (dateString) {
-        return new Date(dateString);
+     if (dateString) {
+       return new Date(dateString);
+    //   var d = Date.parse(dateString);
+    //   if (d > 0) {
+    //     return new Date(d);
+    // }      
     }
     return null;
   }
