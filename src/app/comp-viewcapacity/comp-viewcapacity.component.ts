@@ -82,6 +82,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.role =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
+    moment.locale(this.currentLang);
     this.parentThis = this;
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;

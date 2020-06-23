@@ -56,6 +56,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
+    moment.locale(this.currentLang);
     this.parentThis = this;
     this.visboCostCalc();
   }
