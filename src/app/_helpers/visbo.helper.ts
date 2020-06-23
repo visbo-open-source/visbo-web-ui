@@ -56,13 +56,3 @@ export function getErrorMessage(error: any): string {
   }
   return result;
 }
-
-
-export function visboChangeDateToMMMYY (currentDate: Date): String {
-  let mm = currentDate.getMonth();
-  let yyyy = currentDate.getFullYear().toString();
-  let yy = yyyy.slice(2);
-  let mmStr = ["Jan", "Feb", "März", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
-  let currentDateMMMYYYY = mmStr[mm] + " " + yy;
-  return currentDateMMMYYYY;
-}
