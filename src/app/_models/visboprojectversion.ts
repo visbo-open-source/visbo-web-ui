@@ -67,16 +67,16 @@ export class VPVKeyMetrics {
   timeCompletionCurrentTotal: number;
   timeCompletionBaseLastActual: number;
   timeCompletionBaseLastTotal: number;
-  timeDelayCurrentActual: number;
-  timeDelayCurrentTotal: number;
+  timeDelayFinished: number;
+  timeDelayUnFinished: number;
   endDateCurrent: Date;
   endDateBaseLast: Date;
   deliverableCompletionCurrentActual: number;
   deliverableCompletionCurrentTotal: number;
   deliverableCompletionBaseLastActual: number;
   deliverableCompletionBaseLastTotal: number;
-  deliverableDelayCurrentActual: number;
-  deliverableDelayCurrentTotal: number;
+  deliverableDelayFinished: number;
+  deliverableDelayUnFinished: number;
 }
 
 export class VPVKeyMetricsCalc {

@@ -506,7 +506,7 @@
 		"title2": " angegeben in ",
 		"titleTimeFrom": " für den Zeitraum: von",
 		"titleTimeTo": " bis ",
-		"titleVersion": "Version vom",		
+		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Kosten",
 		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
 		"internCapaPT": "interne Kapazität",
@@ -948,6 +948,8 @@
 
 		"finishedDeadline": "Erledigte Termine",
 		"unfinishedDeadline": "Offene Termine",
+		"longFinishedDeadline": "Durchschnittliche Abweichung über alle erledigten Termine gegenüber baseline in Tagen",
+		"longUnfinishedDeadline": "Durchschnittliche Abweichung über alle nicht erledigten Termine gegenüber baseline in Tagen",
 
 		"lbl": {
 			"trafficLight": "Ampel",

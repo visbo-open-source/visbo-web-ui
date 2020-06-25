@@ -506,7 +506,7 @@
 		"title2": " expressed in ",
 		"titleTimeFrom": " Timespam: From",
 		"titleTimeTo": " To ",
-		"titleVersion": "Version of",		
+		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",
 		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
 		"internCapaPT": "Internal Capacity ",
@@ -729,7 +729,7 @@
 		"titleSelectVersion": "Select Portfolio Version",
 		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
-		"titleChange": "Change Key Metric",		
+		"titleChange": "Change Key Metric",
 		"titleRessourceChange": "Change Ressource",
 		"lbl": {
 			"nr": "Number",
@@ -948,6 +948,8 @@
 
 		"finishedDeadline": "finished Deadlines",
 		"unfinishedDeadline": "unfinished Deadlines",
+		"longFinishedDeadline": "Average deviation across all finished Deadlines against baseline in days",
+		"longUnfinishedDeadline": "Average deviation across all unfinished Deadlines against baseline in days",
 
 		"lbl": {
 			"trafficLight": "Traffic Light",
