@@ -572,6 +572,8 @@
 			"All": "Show all combined"
 		},
 		"btn": {
+			"buttonGanttOn": "View Gantt Chart",
+			"buttonGanttOff": "Hide Gantt Chart",
 			"detail": "Restrictions",
 			"back": "Back"
 		},
@@ -735,6 +737,7 @@
 			"nr": "Number",
 			"variant": "Variant",
 			"day": "day",
+			"days": "days",
 			"week": "week",
 			"weeks": "weeks",
 			"month": "month",
@@ -783,6 +786,14 @@
 			"deadlineAxis": "Deviation in achieved Deadlines",
 			"deadlineBubble": "Achieved Deadlines in %",
 			"deadlineTable": "Achieved Deadlines",
+			"deadlineFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deadlineFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deadlineFinishedDelayBubble": "Average Deviation in finished Deadlines in days",
+			"deadlineFinishedDelayTable": "finished Deadlines",
+			"deadlineUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deadlineUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deadlineUnFinishedDelayBubble": "Deviation in unfinished Deadlines in days",
+			"deadlineUnFinishedDelayTable": "unfinished Deadlines",
 			"deliveryName": "Quality (Deliveries)",
 			"deliveryAxis": "Achieved Deliveries",
 			"deliveryBubble": "Achieved Deliveries in %",

@@ -5,12 +5,9 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="vpfActive.variantName" class="ml-2"> ({{vpfActive.variantName}})</span>
-        <span class="ml-2">{{ 'vpfVersion.lbl.from' | translate }} </span>
-        <span class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">
-            {{ vpfActive.timestamp | date : 'dd.MM.yy' }}
-          </a>
+        <span *ngIf="vpfActive.variantName" class="ml-1"> ({{vpfActive.variantName}})</span>
+        <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
           </div>
@@ -53,7 +50,7 @@
       </div>
     </div>
   </div>
-    
+
 
   <div *ngIf="currentView == 'Capacity' && vpActive && vpfActive">
     <hr>

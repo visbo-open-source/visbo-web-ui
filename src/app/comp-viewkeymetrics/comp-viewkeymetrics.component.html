@@ -45,6 +45,8 @@
               <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'vpfVersion.lbl.endDate' | translate }}</th>
               <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">{{metricLabel('Deadlines', 'table')}}</th>
               <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'vpfVersion.lbl.deadlines' | translate }}</th>
+              <th *ngIf="selectedMetric('DeadlinesFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{metricLabel('DeadlinesFinishedDelay', 'table')}}</th>
+              <th *ngIf="selectedMetric('DeadlinesUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{metricLabel('DeadlinesUnFinishedDelay', 'table')}}</th>
               <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">{{metricLabel('Deliveries', 'table')}}</th>
               <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'vpfVersion.lbl.deliveries' | translate }}</th>
             </tr>
@@ -60,6 +62,8 @@
               <td *ngIf="selectedMetric('EndDate')" class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
               <td *ngIf="selectedMetric('Deadlines')" class="text-right">{{vp.timeCompletionActual*100 | number:'1.0-0'}} %</td>
               <td *ngIf="selectedMetric('Deadlines')" class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('DeadlinesFinishedDelay')" class="text-right">{{vp.keyMetrics.timeDelayFinished || 0 | number:'1.0-0'}} {{ 'vpfVersion.lbl.days' | translate }}</td>
+              <td *ngIf="selectedMetric('DeadlinesUnFinishedDelay')" class="text-right">{{vp.keyMetrics.timeDelayUnFinished || 0 | number:'1.0-0'}} {{ 'vpfVersion.lbl.days' | translate }}</td>
               <td *ngIf="selectedMetric('Deliveries')" class="text-right">{{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %</td>
               <td *ngIf="selectedMetric('Deliveries')" class="text-right">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
             </tr>

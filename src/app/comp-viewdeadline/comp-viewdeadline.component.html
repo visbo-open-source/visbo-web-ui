@@ -1,7 +1,8 @@
 <div *ngIf="displayDeadline()" class='well'>
   <div *ngIf="displaySwitch()" class="container">
-    <div class="d-flex justify-content-left">
-      <select class="col-3 form-control mx-1" name="type" [(ngModel)]="type" (change)="switchView()">
+    <div class="d-flex justify-content-center my-1">
+      <button type="button" class="btn btn-md btn-light mx-2" (click)="toggleGantt()">{{ buttonGantt }}</button>
+      <select class="col-3 form-control mx-2" name="type" [(ngModel)]="type" (change)="switchView()">
         <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
       </select>
     </div>
@@ -11,6 +12,13 @@
     <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
       <div class="align-center" >
         <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphDataBefore]="graphBeforeAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="viewGantt" class="container">
+    <div *ngIf="graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
+      <div>
+        <app-gantt-chart [graphData]="graphDataDeadlinesGantt" [graphOptions]="graphOptionsDeadlinesGantt" [parentThis]="parentThis"></app-gantt-chart>
       </div>
     </div>
   </div>

@@ -572,6 +572,8 @@
 			"All": "Zeige alle kombiniert"
 		},
 		"btn": {
+			"buttonGanttOn": "Zeige Gantt Chart",
+			"buttonGanttOff": "Ausblenden Gantt Chart",
 			"detail": "Freigaben",
 			"back": "Back"
 		},
@@ -735,6 +737,7 @@
 			"nr": "Nummer",
 			"variant": "Variante",
 			"day": "Tag",
+			"days": "Tage",
 			"week": "Woche",
 			"weeks": "Wochen",
 			"month": "Monat",
@@ -783,6 +786,14 @@
 			"deadlineAxis": "Abweichung bei den Terminen",
 			"deadlineBubble": "Erreichte Termine in %",
 			"deadlineTable": "Erreichte Termine",
+			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
+			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayBubble": "Durchschnittliche Abweichung bei erledigten Terminen in Tagen",
+			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
+			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayBubble": "Durchschnittliche Abweichung bei unerledigten Terminen in Tagen",
+			"deadlineUnFinishedDelayTable": "Unerledigte",
 			"deliveryName": "Qualität (Lieferungen)",
 			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
