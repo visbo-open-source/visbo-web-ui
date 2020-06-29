@@ -62,24 +62,6 @@
                 <button type="button" class="btn" (click)="switchTo('Costs')" title="{{historyButton}}">i</button>
               </a></td>
             </tr>
-            <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
-              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
-              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}"><a>
-                <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
-                <span> {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} %) </span>
-              </a></td>
-              <td (click)="gotoViewDelivery()"><a>
-                <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
-              </a></td>
-              <td>
-                <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
-              </td>
-            </tr>
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
@@ -115,6 +97,24 @@
               </a></td>
               <td>
                 <button type="button" class="btn" (click)="switchTo('DeadlinesDelay')" title="{{historyButton}}">i</button>
+              </td>
+            </tr>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
+              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
+              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}"><a>
+                <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <span> {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} %) </span>
+              </a></td>
+              <td (click)="gotoViewDelivery()"><a>
+                <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
+                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
+              </a></td>
+              <td>
+                <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
               </td>
             </tr>
           </tbody>
