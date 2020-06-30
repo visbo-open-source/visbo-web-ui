@@ -21,7 +21,6 @@ import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_mo
 
 import * as moment from 'moment';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -589,8 +588,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getMappingLeaf(roleName: string) : VisboOrgaTreeLeaf {
-    let resultLeaf = this.orgaTreeData.children[0];
+    let resultLeaf = undefined;
     let curLeaf = this.orgaTreeData;
+    let found = false;
 
     function findMappingLeaf(value: any) {
       // value is the Id of one subrole
@@ -599,15 +599,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (leaf && leaf.children && leaf.children.length > 0) {  leaf.showChildren = true;
          }
         resultLeaf = leaf;
-        return resultLeaf;
+        found = true;        
       } else {
         let children = leaf.children;
-        children.forEach(findMappingLeaf);
+        for (let i= 0; !found && children && i < children.length; i++) {
+          findMappingLeaf(children[i]);
+        }
       }
     }
 
-    if (curLeaf && curLeaf.children) {
-      curLeaf.children.forEach(findMappingLeaf)
+    for (let j = 0; !found && curLeaf && curLeaf.children && j < curLeaf.children.length; j++) {
+      findMappingLeaf(curLeaf.children[j])
     };
     return resultLeaf;
   }
