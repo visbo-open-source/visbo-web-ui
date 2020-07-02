@@ -170,8 +170,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return result;
   }
 
-  chartSelectRow(row: number, label: string, value: number): void {
-    this.log(`chart Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} ${value} `);
+  timelineSelectRow(row: number, label: string, value: number): void {
+    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} ${value} `);
     const vpName = this.graphDataTimeline[row + 1][1];
     const vp = this.vps.find(x => x.name === vpName);
 
