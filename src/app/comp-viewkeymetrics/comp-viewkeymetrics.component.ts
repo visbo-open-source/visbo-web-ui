@@ -113,7 +113,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       }
     ];
 
-    const view = JSON.parse(sessionStorage.getItem('KeyMetrics-view'));
+    const view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
     if (view) {
       if (view.xAxis >= 0 && view.xAxis < this.metricList.length) {
         this.metricX = view.xAxis;
@@ -315,7 +315,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // 'vpvRefDate': vpvRefDate ? vpvRefDate.toISOString() : undefined,
       'vpFilter': this.vpFilter
     };
-    sessionStorage.setItem('KeyMetrics-view', JSON.stringify(view));
+    localStorage.setItem('KeyMetrics-view', JSON.stringify(view));
   }
 
   toggleVisboChart() {

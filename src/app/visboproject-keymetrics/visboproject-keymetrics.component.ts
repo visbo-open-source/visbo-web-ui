@@ -593,7 +593,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         legend: {position: 'top'},
         vAxes: [
           {
-            direction: -1, 
+            direction: -1,
             title: 'Average delay/ahead per Deadline',
             minorGridlines: {count: 0, color: 'none'}
           }
@@ -655,8 +655,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
     keyMetrics.push([
       'Timestamp',
-      this.translate.instant('keyMetrics.finishedDeadline'),
-      this.translate.instant('keyMetrics.unfinishedDeadline')
+      this.translate.instant('keyMetrics.finishedDeadlineDelay'),
+      this.translate.instant('keyMetrics.unfinishedDeadlineDelay')
     ]);
     keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);

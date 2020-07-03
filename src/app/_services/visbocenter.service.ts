@@ -59,8 +59,8 @@ export class VisboCenterService  {
                 if (response.vc && response.vc.length > 0) {
                   response.vc[0].perm = response.perm;
                   this.combinedPerm = response.perm;
-                  sessionStorage.setItem('combinedPerm', JSON.stringify(response.perm));
-                  sessionStorage.setItem('systemVC', response.vc[0]._id);
+                  localStorage.setItem('combinedPerm', JSON.stringify(response.perm));
+                  localStorage.setItem('systemVC', response.vc[0]._id);
                 }
                 return response.vc;
               }),
@@ -75,7 +75,7 @@ export class VisboCenterService  {
   getSysAdminRole() {
     let result: any;
     if (this.combinedPerm === undefined) {
-      result = JSON.parse(sessionStorage.getItem('combinedPerm'));
+      result = JSON.parse(localStorage.getItem('combinedPerm'));
     } else {
       result = this.combinedPerm;
     }
@@ -87,7 +87,7 @@ export class VisboCenterService  {
   getSysVCId() {
     let result: any;
     if (this.systemVC === undefined) {
-      result = sessionStorage.getItem('systemVC');
+      result = localStorage.getItem('systemVC');
     } else {
       result = this.systemVC;
     }

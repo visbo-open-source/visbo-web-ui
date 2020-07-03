@@ -12,6 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import * as moment from 'moment';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
@@ -182,7 +183,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
     this.sortDeadlineTable();
     this.visboViewAllDeadlinePie(change);
-    this.visboViewDeadlineGantt();
+    // this.visboViewDeadlineGantt();
+    this.visboViewDeadlineTimeline();
   }
 
   helperDeadline(index: number): void {
@@ -353,6 +355,95 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.graphDataDeadlinesGantt = graphData;
   }
 
+  visboViewDeadlineTimeline(): void {
+    this.graphOptionsDeadlinesGantt = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      height: 500,
+      timeline: {
+        showRowLabels: false,
+        showBarLabels: true
+      },
+      tooltip: {
+        isHtml: true
+      },
+      animation: {startup: true, duration: 200}
+      // explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01}
+      // colors: this.colors,
+      // hAxis: {
+      //   format: 'MMM YY',
+      //   gridlines: {
+      //     color: '#FFF',
+      //     count: -1
+      //   }
+      // }
+    };
+
+    let graphData: any;
+    graphData = [];
+    for (let i = 0; i < this.hierarchyDeadline.length; i++) {
+      const deadline = this.hierarchyDeadline[i];
+      if (deadline.type === "Phase") {
+        const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
+        const endDate = new Date(deadline.endDatePFV);
+        const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
+        const path = this.getFullPath(deadline);
+        // filter Gantt Chart by Layer
+        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) == 0   // childs of filter Path
+        && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
+          graphData.push([
+            i.toString(),
+            phase,
+            this.createCustomHTMLContent(deadline),
+            startDate.getTime(),
+            endDate.getTime()
+          ]);
+        }
+      }
+    }
+    graphData.reverse();
+    graphData.push([
+      'Task ID',
+      'Task Name',
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      'Start Date',
+      'End Date'
+    ]);
+    graphData.reverse();
+    // calculate the necessary height as it has to be defined fixed, legend + number of lines * height
+    this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * 40;
+    this.graphDataDeadlinesGantt = graphData;
+  }
+
+  createCustomHTMLContent(deadline: VPVDeadline): string {
+    const startDate = moment(deadline.startDateVPV).format('DD.MM.YY');
+    const endDate = moment(deadline.endDateVPV).format('DD.MM.YY');
+    let name = deadline.fullName;
+    if (name === '.') {
+      name = this.vpvActive.name;
+    }
+    let result = '<div style="padding:5px 5px 5px 5px">' +
+      '<div><b>' + name + '</b></div>' + '<div>' +
+      '<table>';
+
+    const start = this.translate.instant('compViewDeadline.lbl.startDateVPV');
+    const end = this.translate.instant('compViewDeadline.lbl.endDateVPV');
+    const percentDone = this.translate.instant('compViewDeadline.lbl.percentDone');
+    const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight');
+    const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc');
+
+    result = result + '<tr>' + '<td width="70%">' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td width="70%">' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td width="70%">' + percentDone + ':</td>' + '<td><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
+    if (deadline.trafficlight) {
+      result = result + '<tr>' + '<td width="70%">' + trafficlight + ':</td>' + '<td><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
+    }
+    if (deadline.trafficlightDesc) {
+      result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';
+    }
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
+  }
 
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
@@ -369,8 +460,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.filterDeadlines(false);
   }
 
-  ganttSelectRow(row: number, strIndex: string): void {
-    this.log(`gantt Select Row ${row} for Index ${strIndex}`);
+  timelineSelectRow(row: number, col: number, strIndex: string): void {
+    this.log(`timeline Select Row ${row} Col ${col} for Index ${strIndex}`);
     var index = parseInt(strIndex);
     if (row >= 0 && row < this.hierarchyDeadline.length) {
       this.filterPath = this.getFullPath(this.hierarchyDeadline[index]);
@@ -416,6 +507,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getFullPath(deadline: VPVDeadline): string[] {
+    if (!deadline) return undefined;
     return this.refType === 'pfv' ? (deadline.fullPathPFV || deadline.fullPathVPV) : deadline.fullPathVPV;
   }
 
@@ -473,7 +565,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   gotoVPRestrict(index: number): void {
     const path = this.getFullPath(this.filteredDeadline[index]);
     const nameID = this.filteredDeadline[index].nameID;
-    sessionStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
+    localStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
 
     this.log(`goto VP Restrict: ${this.vpvActive.vpid} ID ${nameID} Path ${path.join(' / ')}`);
     this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});

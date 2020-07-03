@@ -63,7 +63,7 @@ export class TimelineChartComponent implements OnInit, OnChanges {
           const col = selectedItem.column;
           if (row != null && row >= 0) {
             const label = data.getValue(row, 0);
-            parentThis.chartSelectRow(row, col, label);
+            parentThis.timelineSelectRow(row, col, label);
           }
         }
       }
