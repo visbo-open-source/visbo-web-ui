@@ -565,7 +565,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   gotoVPRestrict(index: number): void {
     const path = this.getFullPath(this.filteredDeadline[index]);
     const nameID = this.filteredDeadline[index].nameID;
-    sessionStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
+    localStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
 
     this.log(`goto VP Restrict: ${this.vpvActive.vpid} ID ${nameID} Path ${path.join(' / ')}`);
     this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});

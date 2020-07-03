@@ -16,7 +16,7 @@ var AuthGuard = /** @class */ (function () {
         this.router = router;
     }
     AuthGuard.prototype.canActivate = function (route, state) {
-        if (sessionStorage.getItem('currentUser')) {
+        if (localStorage.getItem('currentUser')) {
             // logged in so return true
             return true;
         }
