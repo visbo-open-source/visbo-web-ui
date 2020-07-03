@@ -102,7 +102,7 @@
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
-              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery ' | translate }}"><a>
+              <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}"><a>
                 <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
                 <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
                 <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
