@@ -183,7 +183,6 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
     this.sortDeadlineTable();
     this.visboViewAllDeadlinePie(change);
-    // this.visboViewDeadlineGantt();
     this.visboViewDeadlineTimeline();
   }
 
@@ -295,71 +294,11 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
   }
 
-  visboViewDeadlineGantt(): void {
-    this.graphOptionsDeadlinesGantt = {
-        gantt: {
-          labelStyle: {
-            fontName: 'arial',
-            fontSize: 18,
-            color: '#F7941E'
-          },
-          percentEnabled: true,
-          percentStyle: {
-            fill: '#F7941E'
-          },
-          trackHeight: 30,
-          barHeight: 15
-        }
-        // colors: this.colors
-      };
-
-    let graphData: any;
-    graphData = [];
-    for (let i = 0; i < this.hierarchyDeadline.length; i++) {
-      const deadline = this.hierarchyDeadline[i];
-      if (deadline.type === "Phase") {
-        const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
-        const endDate = new Date(deadline.endDatePFV);
-        const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
-        const path = this.getFullPath(deadline);
-        // filter Gantt Chart by Layer
-        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) == 0   // childs of filter Path
-        && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
-          graphData.push([
-            i.toString(),
-            phase,
-            // 'Level'.concat(path.length.toString()),
-            startDate.getTime(),
-            endDate.getTime(),
-            0,
-            deadline.percentDone * 100,
-            null
-          ]);
-        }
-      }
-    }
-    graphData.reverse();
-    graphData.push([
-      'Task ID',
-      'Task Name',
-      // 'Resource',
-      'Start Date',
-      'End Date',
-      'Duration',
-      'Percent Complete',
-      'Dependencies'
-    ]);
-    graphData.reverse();
-    // calculate the necessary height as it has to be defined fixed, legend + number of lines * height
-    this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * (this.graphOptionsDeadlinesGantt.gantt.trackHeight || 40);
-    this.graphDataDeadlinesGantt = graphData;
-  }
-
   visboViewDeadlineTimeline(): void {
     this.graphOptionsDeadlinesGantt = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
       width: '100%',
-      height: 500,
+      // height: 500,
       timeline: {
         showRowLabels: false,
         showBarLabels: true
@@ -385,14 +324,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       const deadline = this.hierarchyDeadline[i];
       if (deadline.type === "Phase") {
         const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
-        const endDate = new Date(deadline.endDatePFV);
+        const endDate = new Date(deadline.endDateVPV);
         const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
         const path = this.getFullPath(deadline);
         // filter Gantt Chart by Layer
         if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) == 0   // childs of filter Path
         && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
           graphData.push([
-            i.toString(),
+            i === 0 ? 'Root' : 'Children',
             phase,
             this.createCustomHTMLContent(deadline),
             startDate.getTime(),
@@ -411,7 +350,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     ]);
     graphData.reverse();
     // calculate the necessary height as it has to be defined fixed, legend + number of lines * height
-    this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * 40;
+    // this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * 40;
     this.graphDataDeadlinesGantt = graphData;
   }
 
@@ -461,11 +400,11 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   timelineSelectRow(row: number, col: number, strIndex: string): void {
-    this.log(`timeline Select Row ${row} Col ${col} for Index ${strIndex}`);
-    var index = parseInt(strIndex);
-    if (row >= 0 && row < this.hierarchyDeadline.length) {
-      this.filterPath = this.getFullPath(this.hierarchyDeadline[index]);
-    }
+    const phase = this.graphDataDeadlinesGantt[row + 1][1];
+    this.log(`timeline Select Row ${row} Phase ${phase}`);
+    let index = this.hierarchyDeadline.findIndex(item => item.name === phase);
+    if (index < 0) index = 0;
+    this.filterPath = this.getFullPath(this.hierarchyDeadline[index]);
     this.filterDeadlines(false);
   }
 

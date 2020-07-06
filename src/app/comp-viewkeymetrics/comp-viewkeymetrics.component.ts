@@ -101,7 +101,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         name: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayName'),
         metric: 'DeadlinesUnFinishedDelay',
         axis: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deadlineUnFinishedBubble'),
+        bubble: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayBubble'),
         table: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayTable')
       },
       {
@@ -375,11 +375,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           break;
         case 'DeadlinesFinishedDelay':
           valueX = this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0;
-          colorValue += valueX >= 0 ? 1 : 0;
+          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'DeadlinesUnFinishedDelay':
           valueX = this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0;
-          colorValue += valueX >= 0 ? 1 : 0;
+          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Deliveries':
           valueX = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
@@ -401,11 +401,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           break;
         case 'DeadlinesFinishedDelay':
           valueY = this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0;
-          colorValue += valueY >= 0 ? 1 : 0;
+          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'DeadlinesUnFinishedDelay':
           valueY = this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0;
-          colorValue += valueY >= 0 ? 1 : 0;
+          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Deliveries':
           valueY = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);

@@ -333,18 +333,23 @@ export class SysauditComponent implements OnInit {
         if (this.audit[auditElement].user && this.audit[auditElement].user.email) {
           const userString = this.audit[auditElement].user.email;
           if (graphSum[userString] === undefined) {
-            graphSum[userString] = [userString, 0, 0, 0, 0, 0, ''];
+            graphSum[userString] = [userString, 0, 0, 0, 0, 0, 0, ''];
           }
-          if (this.audit[auditElement].vpv) {
+          if (this.audit[auditElement].vpv || this.auditGroup(this.audit[auditElement], '/vpv')) {
             graphSum[userString][3] = graphSum[userString][3] + 1;
-          } else if (this.audit[auditElement].vp) {
+          } else if (this.audit[auditElement].vp || this.auditGroup(this.audit[auditElement], '/vp')) {
             graphSum[userString][2] = graphSum[userString][2] + 1;
-          } else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() !== this.sysVCId) {
+          } else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() !== this.sysVCId
+                || this.auditGroup(this.audit[auditElement], '/vc')) {
             graphSum[userString][1] = graphSum[userString][1] + 1;
-          } else if (this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() === this.sysVCId) {
+          } else if ((this.audit[auditElement].vc && this.audit[auditElement].vc.vcid.toString() === this.sysVCId)
+                || this.auditGroup(this.audit[auditElement], '/audit')) {
             graphSum[userString][4] = graphSum[userString][4] + 1;
-          } else {
+          } else if (this.auditGroup(this.audit[auditElement], '/token')
+                || this.auditGroup(this.audit[auditElement], '/user')) {
             graphSum[userString][5] = graphSum[userString][5] + 1;
+          } else {
+            graphSum[userString][6] = graphSum[userString][6] + 1;
           }
 
           // this.log(`Group Graph Time Chart Element ${userString}: ${graphSum[userString]}`);
@@ -355,16 +360,24 @@ export class SysauditComponent implements OnInit {
       }
 
       graphData.sort(function(a, b) {
-        const firstSum = a[1] + a[2] + a[3] + a[4] + a[5];
-        const secondSum = b[1] + b[2] + b[3] + b[4] + b[5];
+        const firstSum = a[1] + a[2] + a[3] + a[4] + a[5] + a[6];
+        const secondSum = b[1] + b[2] + b[3] + b[4] + b[5] + b[6];
         return firstSum - secondSum;
       });
-      graphData.push(['User', 'VC', 'VP', 'VPV', 'System', 'Other', { role: 'annotation' } ]);
+      graphData.push(['User', 'VC', 'VP', 'VPV', 'System', 'User', 'Other', { role: 'annotation' } ]);
       graphData.reverse();
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[0])}`);
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[1])}`);
 
       this.graphDataColumnChart = graphData;
+    }
+
+    auditGroup(audit: VisboAudit, match: string): boolean {
+      let result = false;
+      if (audit.url.indexOf(match) === 0) {
+        result = true;
+      }
+      return result;
     }
 
     helperAuditIndex(auditIndex: number): void {
