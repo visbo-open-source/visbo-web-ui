@@ -239,11 +239,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
     let roleName: string;
     if (this.role) {
-      if ( isNaN(parseInt(this.role)) ) {
-        roleName = this.role
+      if ( isNaN(parseInt(this.role, 10)) ) {
+        roleName = this.role;
       } else {
-        this.roleUID = parseInt(this.role)
-        roleName = allRoles[this.roleUID].name
+        this.roleUID = parseInt(this.role, 10);
+        roleName = allRoles[this.roleUID].name;
       }
       this.currentLeaf = this.getMappingLeaf(roleName);
     }
@@ -400,16 +400,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
 
     if (PT) {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' +
+                (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     } else {
       result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' +(Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' +
+                (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' +
+                (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     }
     return result;
@@ -431,10 +434,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     function findSummaryRoles(value: any) {
       // value is the Id of one subrole
       const hroleID = value.key;
-      let hrole = allRoles[hroleID];
+      const hrole = allRoles[hroleID];
       if (hrole.subRoleIDs.length > 0) {
         summaryRoles[hroleID] = hrole;
-        let shroles = hrole.subRoleIDs;
+        const shroles = hrole.subRoleIDs;
         shroles.forEach(findSummaryRoles);
       }
     }
@@ -455,7 +458,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
       if (role.subRoleIDs && role.subRoleIDs.length > 0) {
 
-        let subRoles = role.subRoleIDs;
+        const subRoles = role.subRoleIDs;
         if (subRoles.length > 0 ) {
           summaryRoles[role.uid] = role;
           subRoles.forEach(findSummaryRoles);
@@ -473,7 +476,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
       let notFound = true;
       for (let k = 0; sumRoles && k < sumRoles.length; k++) {
-        let hrole = sumRoles[k];
+        const hrole = sumRoles[k];
         if (hrole)	{
           for ( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
             // asked Philipp for the difference: hrole.subRoleIDs[i].key is a string with the value 'roleID' and roleID is a number
@@ -497,7 +500,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`get all TopNodes of the organisation`);
 
     // find all summaryRoles
-    let sumRoles = this.getSummaryRoles(allRoles, undefined);
+    const sumRoles = this.getSummaryRoles(allRoles, undefined);
 
     while (i <= allRoles.length) {
       let currentRole = allRoles[i];
@@ -532,13 +535,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     function makeLeaf(value: subRole): VisboOrgaTreeLeaf {
       let leaf = new VisboOrgaTreeLeaf();
-      let hroleID = value.key;
-      let hrole = allRoles[hroleID];
-      let hroleName = hrole?.name;
+      const hroleID = value.key;
+      const hrole = allRoles[hroleID];
+      const hroleName = hrole?.name;
       leaf.children = [];
       leaf.uid = hroleID;
       leaf.name = hroleName;
-      let children = hrole.subRoleIDs;
+      const children = hrole.subRoleIDs;
       children.forEach(function(child) {
         leaf.children.push(makeLeaf(child));
       });
@@ -553,7 +556,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       topLevelLeaf.showChildren = false;
 
       if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
-        let sRoles = topLevelNodes[i].subRoleIDs;
+        const sRoles = topLevelNodes[i].subRoleIDs;
         sRoles.forEach(function(sRole) {
           topLevelLeaf.children.push(makeLeaf(sRole));
         });
@@ -587,9 +590,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return;
   }
 
-  getMappingLeaf(roleName: string) : VisboOrgaTreeLeaf {
+  getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
     let resultLeaf = undefined;
-    let curLeaf = this.orgaTreeData;
+    const curLeaf = this.orgaTreeData;
     let found = false;
 
     function findMappingLeaf(value: any) {
@@ -599,18 +602,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (leaf && leaf.children && leaf.children.length > 0) {  leaf.showChildren = true;
          }
         resultLeaf = leaf;
-        found = true;        
+        found = true;
       } else {
-        let children = leaf.children;
-        for (let i= 0; !found && children && i < children.length; i++) {
+        const children = leaf.children;
+        for ( let i = 0; !found && children && i < children.length; i++) {
           findMappingLeaf(children[i]);
         }
       }
     }
 
     for (let j = 0; !found && curLeaf && curLeaf.children && j < curLeaf.children.length; j++) {
-      findMappingLeaf(curLeaf.children[j])
-    };
+      findMappingLeaf(curLeaf.children[j]);
+    }
     return resultLeaf;
   }
 
