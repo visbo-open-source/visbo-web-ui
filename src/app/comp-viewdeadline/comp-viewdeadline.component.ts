@@ -172,7 +172,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // filter by hierarchy
     for (let i = 0; i < this.allDeadline.length; i++) {
       const path = this.getFullPath(this.allDeadline[i]);
-      if (path.join(' / ').indexOf(strFilterPath) == 0) {  // sub item of filtered hierarchy
+      if (path.join(' / ').indexOf(strFilterPath) === 0) {  // sub item of filtered hierarchy
         this.hierarchyDeadline.push(this.allDeadline[i]);
       }
     }
@@ -323,7 +323,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
         const path = this.getFullPath(deadline);
         // filter Gantt Chart by Layer
-        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) == 0   // childs of filter Path
+        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
         && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
           graphData.push([
             i.toString(),
@@ -389,7 +389,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
         const path = this.getFullPath(deadline);
         // filter Gantt Chart by Layer
-        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) == 0   // childs of filter Path
+        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
         && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
           graphData.push([
             i.toString(),
@@ -462,7 +462,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   timelineSelectRow(row: number, col: number, strIndex: string): void {
     this.log(`timeline Select Row ${row} Col ${col} for Index ${strIndex}`);
-    var index = parseInt(strIndex);
+    const index = parseInt(strIndex, 10);
     if (row >= 0 && row < this.hierarchyDeadline.length) {
       this.filterPath = this.getFullPath(this.hierarchyDeadline[index]);
     }
@@ -507,13 +507,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getFullPath(deadline: VPVDeadline): string[] {
-    if (!deadline) return undefined;
+    if (!deadline) { return undefined; }
     return this.refType === 'pfv' ? (deadline.fullPathPFV || deadline.fullPathVPV) : deadline.fullPathVPV;
   }
 
   getBreadCrumb(): string[] {
-    var path = this.getFullPath(this.hierarchyDeadline[0]);
-    var result = path.slice(0, path.length - 1);
+    let path = this.getFullPath(this.hierarchyDeadline[0]);
+    let result = path.slice(0, path.length - 1);
     if (result.length >= 0) {
       result[0] = this.vpvActive.name;
     }
