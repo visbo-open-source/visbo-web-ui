@@ -481,6 +481,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.viewGantt = !this.viewGantt;
     this.buttonGantt = this.viewGantt ? this.translate.instant('compViewDelivery.btn.buttonGanttOff')
                                       : this.buttonGantt = this.translate.instant('compViewDelivery.btn.buttonGanttOn');
+    if (!this.viewGantt) {
+      this.filterPath = this.getFullPath(this.allDeadline[0]);
+      this.filterDeadlines(false);
+    }
   }
 
   hasDeadlines(): boolean {
