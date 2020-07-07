@@ -403,7 +403,9 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     const phase = this.graphDataDeadlinesGantt[row + 1][1];
     this.log(`timeline Select Row ${row} Phase ${phase}`);
     let index = this.hierarchyDeadline.findIndex(item => item.name === phase);
-    if (index < 0) index = 0;
+    if (index < 0) {
+      index = 0;
+    }
     this.filterPath = this.getFullPath(this.hierarchyDeadline[index]);
     this.filterDeadlines(false);
   }
@@ -451,8 +453,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getBreadCrumb(): string[] {
-    let path = this.getFullPath(this.hierarchyDeadline[0]);
-    let result = path.slice(0, path.length - 1);
+    const path = this.getFullPath(this.hierarchyDeadline[0]);
+    const result = path.slice(0, path.length - 1);
     if (result.length >= 0) {
       result[0] = this.vpvActive.name;
     }

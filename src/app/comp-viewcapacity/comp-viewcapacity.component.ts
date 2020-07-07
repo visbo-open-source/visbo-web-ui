@@ -224,9 +224,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewOrganisationTree(): void {
     this.log(`Show the OrgaTree of the VC `);
     const organisation = this.actOrga;
-    let allRoles = [];
-    let allRoleNames = [];
+    let allRoles;
+    let allRoleNames;
 
+    allRoles = [];
+    allRoleNames = [];
     this.log(`get all roles of the organisation, prepared for direct access`);
     for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
       allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
@@ -428,8 +430,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
-    let summaryRoles = [];
+    let summaryRoles;
     this.log(`get all summary roles of the organisation roleID ${{roleID}}`);
+    summaryRoles = [];
 
     function findSummaryRoles(value: any) {
       // value is the Id of one subrole
@@ -469,7 +472,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
-    let parentRole = undefined;
+    let parentRole;
 
     this.log(`get the parentRole of roleID ${{roleID}}`);
     if (allRoles[roleID]) {
@@ -493,20 +496,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
-    let topLevelNodes = [];
-    let topLevel = [];
+    let topLevelNodes;
+    let topLevel;
     let i = 1;
 
     this.log(`get all TopNodes of the organisation`);
 
+    topLevelNodes = [];
+    topLevel = [];
     // find all summaryRoles
     const sumRoles = this.getSummaryRoles(allRoles, undefined);
 
     while (i <= allRoles.length) {
-      let currentRole = allRoles[i];
+      const currentRole = allRoles[i];
       if (currentRole) {
         // get parent of currentRole
-        let parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
+        const parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
         if (!parent && !topLevel[currentRole.uid]) {
           topLevel[currentRole.uid] = currentRole;
           topLevelNodes.push(currentRole);
@@ -520,21 +525,21 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   buildOrgaTree(topLevelNodes: VisboRole[], allRoles: VisboRole[]) {
 
-    type subRole = {
+    class SubRole {
       key: number;
       value: number;
-    };
+    }
 
     this.log(`build the OrgaTree used for the selectionTree of the organisation`);
 
-    let tree = new VisboOrgaTreeLeaf();
+    const tree = new VisboOrgaTreeLeaf();
     tree.uid = 0;
     tree.name = 'root';
     tree.children = [];
     tree.showChildren = true;
 
-    function makeLeaf(value: subRole): VisboOrgaTreeLeaf {
-      let leaf = new VisboOrgaTreeLeaf();
+    function makeLeaf(value: SubRole): VisboOrgaTreeLeaf {
+      const leaf = new VisboOrgaTreeLeaf();
       const hroleID = value.key;
       const hrole = allRoles[hroleID];
       const hroleName = hrole?.name;
@@ -549,7 +554,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
-      let topLevelLeaf = new VisboOrgaTreeLeaf();
+      const topLevelLeaf = new VisboOrgaTreeLeaf();
       topLevelLeaf.children = [];
       topLevelLeaf.uid = topLevelNodes[i].uid;
       topLevelLeaf.name = topLevelNodes[i].name;
@@ -591,7 +596,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
-    let resultLeaf = undefined;
+    let resultLeaf;
     const curLeaf = this.orgaTreeData;
     let found = false;
 
