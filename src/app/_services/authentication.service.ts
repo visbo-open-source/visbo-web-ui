@@ -52,8 +52,8 @@ export class AuthenticationService {
                 if (result && result.token) {
                     this.log(`Login Request Successful:  ${result.user.email}`);
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    sessionStorage.setItem('currentUser', JSON.stringify(result.user));
-                    sessionStorage.setItem('currentToken', JSON.stringify(result.token));
+                    localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    localStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
                     let decoded: any;
                     decoded = JWT(result.token);
@@ -72,11 +72,11 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         this.isLoggedIn = false;
-        sessionStorage.clear();
+        localStorage.clear();
     }
 
     getActiveUser() {
-      return JSON.parse(sessionStorage.getItem('currentUser'));
+      return JSON.parse(localStorage.getItem('currentUser'));
     }
 
     pwforgotten(model: any) {

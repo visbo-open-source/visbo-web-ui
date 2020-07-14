@@ -30,6 +30,8 @@ export class VisboProjectsComponent implements OnInit {
   vcActive: VisboCenter;
 
   visboprojectversions: VisboProjectVersion[];
+  vpList: any[];
+  vpvWithKM: number;
   vpvRefDate: Date = new Date();
   chart = false;
   modalChart = true;
@@ -38,6 +40,7 @@ export class VisboProjectsComponent implements OnInit {
   sortColumn: number;
 
   currentLang: string;
+  currentView: string;
 
   combinedPerm: VGPermission = undefined;
   permVC: any = VGPVC;
@@ -58,8 +61,11 @@ export class VisboProjectsComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
-    this.log(`Init VP Deleted: ${this.deleted}`);
+    const nextView = this.route.snapshot.queryParams['view'];
+    if (nextView) { this.chart = true; }
+    this.currentView = nextView || 'KeyMetrics';
 
+    this.log(`Init VP View: ${this.currentView} Deleted: ${this.deleted}`);
     this.getVisboProjects(this.deleted);
   }
 
@@ -79,6 +85,20 @@ export class VisboProjectsComponent implements OnInit {
 
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
+  }
+
+  changeView(nextView: string): void {
+    if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
+      this.currentView = nextView;
+    } else {
+      this.currentView = 'KeyMetrics';
+    }
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = {
+      deleted: this.deleted,
+      view: this.currentView
+    };
+    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
   }
 
   toggleVisboChart(): void {
@@ -177,6 +197,7 @@ export class VisboProjectsComponent implements OnInit {
       .subscribe(
         visboprojectversions => {
           this.visboprojectversions = visboprojectversions;
+          this.calcVPList();
           this.log(`get VC Key metrics: Get ${visboprojectversions.length} Project Versions`);
           if (this.visboprojectversions.length === 0) {
             this.chart = false;
@@ -192,6 +213,31 @@ export class VisboProjectsComponent implements OnInit {
           }
         }
       );
+  }
+
+  calcVPList(): void {
+    if (!this.visboprojectversions?.length) { return; }
+    this.vpList = [];
+    this.vpvWithKM = 0;
+    for (let i = 0; i < this.visboprojectversions.length; i++) {
+      let nextVP: any;
+      nextVP = {};
+      const item = this.visboprojectversions[i];
+      nextVP.vpid = item.vpid;
+      nextVP.name = item.name;
+      nextVP.variantName = item.variantName;
+      nextVP.keyMetricsSet = 0;
+      nextVP.timestamp = new Date(this.visboprojectversions[i].timestamp);
+      nextVP.startDate = this.visboprojectversions[i].startDate;
+      nextVP.endDate = this.visboprojectversions[i].keyMetrics?.endDateCurrent || this.visboprojectversions[i].endDate;
+      nextVP.leadPerson = this.visboprojectversions[i].leadPerson;
+      nextVP.VorlagenName = this.visboprojectversions[i].VorlagenName;
+      nextVP.businessUnit = this.visboprojectversions[i].businessUnit;
+      nextVP.status = this.visboprojectversions[i].status;
+      nextVP.keyMetricsSet = this.visboprojectversions[i].keyMetrics ? 1 : 0;
+      this.vpvWithKM += nextVP.keyMetricsSet;
+      this.vpList.push(nextVP);
+    }
   }
 
   gotoClickedRow(visboproject: VisboProject): void {
@@ -262,6 +308,7 @@ export class VisboProjectsComponent implements OnInit {
       // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
+
 
   /** Log a message with the MessageService */
   private log(message: string) {

@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -58,8 +59,8 @@ export class VisboCenterService  {
                 if (response.vc && response.vc.length > 0) {
                   response.vc[0].perm = response.perm;
                   this.combinedPerm = response.perm;
-                  sessionStorage.setItem('combinedPerm', JSON.stringify(response.perm));
-                  sessionStorage.setItem('systemVC', response.vc[0]._id);
+                  localStorage.setItem('combinedPerm', JSON.stringify(response.perm));
+                  localStorage.setItem('systemVC', response.vc[0]._id);
                 }
                 return response.vc;
               }),
@@ -74,7 +75,7 @@ export class VisboCenterService  {
   getSysAdminRole() {
     let result: any;
     if (this.combinedPerm === undefined) {
-      result = JSON.parse(sessionStorage.getItem('combinedPerm'));
+      result = JSON.parse(localStorage.getItem('combinedPerm'));
     } else {
       result = this.combinedPerm;
     }
@@ -86,7 +87,7 @@ export class VisboCenterService  {
   getSysVCId() {
     let result: any;
     if (this.systemVC === undefined) {
-      result = sessionStorage.getItem('systemVC');
+      result = localStorage.getItem('systemVC');
     } else {
       result = this.systemVC;
     }
@@ -129,6 +130,31 @@ export class VisboCenterService  {
                 return response.vc[0];
               }),
       tap(visbocenter => this.log(`fetched VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
+    );
+  }
+
+  /** GET Capacity of VisboCenter by id. Will 404 if id not found */
+  getCapacity(id: string, refDate: Date, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+    const url = `${this.vcUrl}/${id}/capacity`;
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (roleID) {
+      params = params.append('roleID', roleID);
+    }
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                return response.vc[0];
+              }),
+      tap(visbocenter => this.log(`fetched Capacity for VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
       catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
     );
   }

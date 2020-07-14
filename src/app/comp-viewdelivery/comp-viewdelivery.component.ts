@@ -77,7 +77,6 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       'Unknown'
     ];
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
-    this.currentVpvId = this.vpvActive._id;
     this.visboDeliveryCalc();
   }
 
@@ -274,13 +273,28 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   getFullName(delivery: VPVDelivery): string {
     let result: string;
     if (delivery.fullName) {
-      result = delivery.fullName;
-    } else if (delivery.fullPathVPV.length > 1) {
-      result = delivery.fullPathVPV.slice(1).join(' / ');
-    } else { // Root phase
-      result = this.vpvActive.name;
+       result = delivery.fullName;
     }
-    return result;
+    if (this.refType === 'vpv' || this.refType === undefined) {
+      if (delivery.fullPathVPV && delivery.fullPathVPV.length > 1) {
+        result = delivery.fullPathVPV.slice(1).join(' / ');
+      } else if (!delivery.fullPathVPV) {
+          if (delivery.fullPathPFV && delivery.fullPathPFV.length > 1) {
+            result = delivery.fullPathPFV.slice(1).join(' / ');
+          }
+      } else { // Root phase
+        result = this.vpvActive.name;
+      }
+      return result;
+    }
+    if (this.refType === 'pfv') {
+      if (delivery.fullPathPFV && delivery.fullPathPFV.length > 1) {
+        result = delivery.fullPathPFV.slice(1).join(' / ');
+      } else { // Root phase
+        result = this.vpvActive.name;
+      }
+      return result;
+    }
   }
 
   inFuture(ref: string): boolean {
@@ -318,7 +332,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   gotoVPRestrict(index: number): void {
     const path = this.filteredDelivery[index].fullPathVPV;
     const nameID = this.filteredDelivery[index].nameID;
-    sessionStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
+    localStorage.setItem('restrict', JSON.stringify({id: nameID, path: path}));
 
     this.log(`goto VP Restrict: ${this.vpvActive.vpid} ID ${nameID} Path ${path.join(' / ')}`);
     this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});
@@ -344,7 +358,22 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       this.sortAscendingDelivery = true;
     }
     if (this.sortColumnDelivery === 2) {
-      this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
+      if (this.refType === undefined) {
+        this.filteredDelivery.sort(function(a, b) {
+          if (!a.fullPathVPV && a.fullPathPFV) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathVPV.join(' / ')); }
+          if (!b.fullPathVPV && b.fullPathPFV) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathPFV.join(' / ')); }
+          if (!a.fullPathVPV && !b.fullPathVPV && a.fullPathPFV && b.fullPathPFV) {
+            return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / '));
+          }
+          return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));
+        });
+      }
+      if (this.refType === 'vpv') {
+        this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / ')); });
+      }
+      if (this.refType === 'pfv') {
+        this.filteredDelivery.sort(function(a, b) { return visboCmpString(a.fullPathPFV.join(' / '), b.fullPathPFV.join(' / ')); });
+      }
     } else if (this.sortColumnDelivery === 3) {
       this.filteredDelivery.sort(function(a, b) {
         return visboCmpString(a.description.toLowerCase(), b.description.toLowerCase());

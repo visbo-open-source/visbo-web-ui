@@ -1,3 +1,15 @@
+export class VisboCapacity {
+  month: Date;
+  actualCost_PT: number;
+  plannedCost_PT: number;
+  internCapa_PT: number;
+  externCapa_PT:	number;
+  actualCost: number;
+  plannedCost: number;
+  internCapa: number;
+  externCapa: number;
+}
+
 export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
@@ -55,16 +67,16 @@ export class VPVKeyMetrics {
   timeCompletionCurrentTotal: number;
   timeCompletionBaseLastActual: number;
   timeCompletionBaseLastTotal: number;
-  timeDelayCurrentActual: number;
-  timeDelayCurrentTotal: number;
+  timeDelayFinished: number;
+  timeDelayUnFinished: number;
   endDateCurrent: Date;
   endDateBaseLast: Date;
   deliverableCompletionCurrentActual: number;
   deliverableCompletionCurrentTotal: number;
   deliverableCompletionBaseLastActual: number;
   deliverableCompletionBaseLastTotal: number;
-  deliverableDelayCurrentActual: number;
-  deliverableDelayCurrentTotal: number;
+  deliverableDelayFinished: number;
+  deliverableDelayUnFinished: number;
 }
 
 export class VPVKeyMetricsCalc {

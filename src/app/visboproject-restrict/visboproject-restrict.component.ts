@@ -52,7 +52,7 @@ export class VisboprojectRestrictComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.queryParams['id'];
     if (id) {
-      const pathItem = JSON.parse(sessionStorage.getItem('restrict'));
+      const pathItem = JSON.parse(localStorage.getItem('restrict'));
       if (pathItem && pathItem.id === id) {
         this.newItemPath = pathItem.path;
       }
@@ -140,7 +140,7 @@ export class VisboprojectRestrictComponent implements OnInit {
           this.log(`Add VisboProject Restriction result: ${JSON.stringify(response)}`);
           this.visboproject.restrict.push(response.restrict[0]);
           const message = this.translate.instant('vpRestrict.msg.addRestrictionSuccess');
-          sessionStorage.removeItem('restrict');
+          localStorage.removeItem('restrict');
           this.newItemPath = undefined;
           this.alertService.success(message);
         },

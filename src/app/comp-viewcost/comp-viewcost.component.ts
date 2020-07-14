@@ -12,6 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 
+import * as moment from 'moment';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
@@ -55,8 +56,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.currentLang = this.translate.currentLang;
+    moment.locale(this.currentLang);
     this.parentThis = this;
-    this.currentVpvId = this.vpvActive._id;
     this.visboCostCalc();
   }
 
@@ -78,6 +79,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     if (!this.vpvActive) {
       return;
     }
+    this.currentVpvId = this.vpvActive._id;
 
     this.log(`Cost Calc for Version  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     this.visboprojectversionService.getCost(this.vpvActive._id)
@@ -120,6 +122,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         seriesType: 'bars',
         series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
         isStacked: true,
+        tooltip: {
+          isHtml: true
+        },
         vAxis: {
           title: 'Monthly Cost',
           format: "# T\u20AC",
@@ -159,44 +164,82 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         graphDataCost.push([
           new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
+          this.createCustomHTMLContent(cost[i], true),
           Math.trunc(cost[i].currentCost || 0),
-          0]);
+          this.createCustomHTMLContent(cost[i], true),
+          0,
+          ''
+        ]);
       } else {
         graphDataCost.push([
           new Date(cost[i].currentDate),
           Math.trunc(cost[i].baseLineCost || 0),
+          this.createCustomHTMLContent(cost[i], false),
           0,
-          Math.trunc(cost[i].currentCost || 0)]);
+          '',
+          Math.trunc(cost[i].currentCost || 0),
+          this.createCustomHTMLContent(cost[i], false)
+        ]);
       }
       this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
       this.vpvTotalCostCurrent += cost[i].currentCost || 0;
     }
     if (graphDataCost.length === 0) {
       this.log(`ViewCostOverTime Result empty`);
-      graphDataCost.push([new Date(), 0, 0, 0]);
+      graphDataCost.push([new Date(), 0, '', 0, 0]);
     }
-    graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
+    // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
     this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
+    if (len < 1 ) {
+
+    }
     if (len === 1) {
       graphDataCost.push([
         new Date(),
         graphDataCost[len - 1][1],
         graphDataCost[len - 1][2],
-        graphDataCost[len - 1][3]
+        graphDataCost[len - 1][3],
+        graphDataCost[len - 1][4],
+        graphDataCost[len - 1][5],
+        graphDataCost[len - 1][6],
+        graphDataCost[len - 1][7]
       ]);
     }
-
-    graphDataCost.push([
+    // header will be written in the array at the beginning
+    graphDataCost.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.baselinePV'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.planAC'),
-      this.translate.instant('keyMetrics.planETC')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.planETC'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-    graphDataCost.reverse();
+    // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
+  }
+
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} `);
+  }
+
+  createCustomHTMLContent(cost: VPVCost, actualData: boolean): string {
+    const currentDate = moment(cost.currentDate).format('MMM YYYY');
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + currentDate + '</b></div>' + '<div>' +
+      '<table>';
+
+    const baselinePV = this.translate.instant('keyMetrics.baselinePV');
+    const planAC = this.translate.instant('keyMetrics.planAC');
+    const planETC = this.translate.instant('keyMetrics.planETC');
+
+    result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC) + ':</td>' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
   }
 
   displayCost(): boolean {

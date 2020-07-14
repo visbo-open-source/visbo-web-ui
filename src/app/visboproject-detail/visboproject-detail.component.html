@@ -30,7 +30,7 @@
     </div>
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
-    <div class="btn-toolbar" style="">
+    <div class="btn-toolbar" style ="">
       <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
       <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
       <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
@@ -314,15 +314,15 @@
                 <label class="custom-control-label" for="permVP6">{{ 'perm.vpDelete' | translate }}</label>
             </div>
 
-            <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="helperUsersPerGroup(actGroup.gid)" class="mt-2">
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
-                <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
+                <div class="col-8 ml-3" *ngIf="member.groupId == actGroup.gid">
                   <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
-            <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="!helperUsersPerGroup(actGroup.gid)" class="mt-2">
               <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
             <div class="modal-footer align-items-end">
