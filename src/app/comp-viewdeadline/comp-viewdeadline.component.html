@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  <div *ngIf="fullList" class="container">
+  <div *ngIf="fullList && refType != 'vpv'" class="container">
     <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
       <div class="align-center" >
         <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphDataBefore]="graphBeforeAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>

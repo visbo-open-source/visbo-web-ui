@@ -2,16 +2,15 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
-
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
+import { VisboUserInvite } from '../_models/visbouser';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -21,19 +20,20 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
 export class VisboprojectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
-  newUserInvite: any = {};
+  newUserInvite = new VisboUserInvite();
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
   vgGroupsInvite: VGGroup[];
-  actGroup: any = {};
+  actGroup = new VGGroupExpanded();
+  confirm: string;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
 
   combinedPerm: VGPermission = undefined;
   combinedUserPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
   deleted = false;
 
   sortUserColumn = 1;
@@ -51,7 +51,7 @@ export class VisboprojectDetailComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboProject();
     this.getVisboProjectUsers();
@@ -208,7 +208,7 @@ export class VisboprojectDetailComponent implements OnInit {
   save(): void {
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
-        (vp) => {
+        () => {
           const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.visboproject.name});
           this.alertService.success(message, true);
           this.goBack();
@@ -245,8 +245,7 @@ export class VisboprojectDetailComponent implements OnInit {
       .subscribe(
         group => {
           // Add User to User & Group list
-          let newUserGroup: VGUserGroup;
-          newUserGroup = new VGUserGroup();
+          const newUserGroup = new VGUserGroup();
           newUserGroup.userId = group.users.filter(user => user.email === email)[0].userId;
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
@@ -285,7 +284,7 @@ export class VisboprojectDetailComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
-  addUserPerm(listUser): void {
+  addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
     }
@@ -324,7 +323,7 @@ export class VisboprojectDetailComponent implements OnInit {
     this.log(`Remove VisboProject User: ${user.email}/${user.userId} Group: ${user.groupName} VP: ${vpid}`);
     this.visboprojectService.deleteVPUser(user, vpid)
       .subscribe(
-        users => {
+        () => {
           this.vgUsers = this.vgUsers.filter(vcUser => vcUser !== user);
           // filter user from vgGroups
           for (let i = 0; i < this.vgGroups.length; i++) {
@@ -354,7 +353,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
-  helperVPPerm(newGroup: any): number {
+  helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPViewRestricted) {
       perm += this.permVP.ViewRestricted;
@@ -382,15 +381,15 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   initGroup(curGroup: VGGroup): void {
-
+    this.actGroup = new VGGroupExpanded();
     if (curGroup) {
-      this.actGroup.confirm = (curGroup.groupType === 'VP') ? 'Modify' : 'View';
-      this.actGroup.gid = curGroup._id;
-      this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
-      this.actGroup.groupName = curGroup.name;
+      this.confirm = (curGroup.groupType === 'VP') ? 'Modify' : 'View';
+      this.actGroup._id = curGroup._id;
+      this.log(`Init Group Set GroupID : ${this.actGroup._id} ID ${curGroup._id}`);
+      this.actGroup.name = curGroup.name;
       this.actGroup.groupType = curGroup.groupType;
       this.actGroup.internal = curGroup.internal;
-      this.actGroup.checkGlobal = curGroup.global;
+      this.actGroup.global = curGroup.global;
       this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0;
       this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0;
       this.actGroup.checkedModify = (curGroup.permission.vc & this.permVC.Modify) > 0;
@@ -405,23 +404,26 @@ export class VisboprojectDetailComponent implements OnInit {
       this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0;
       this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0;
     } else {
-      this.actGroup.confirm = 'Add';
-      this.actGroup.gid = undefined;
-      this.actGroup.groupName = '';
+      this.confirm = 'Add';
+      this.actGroup._id = undefined;
+      this.actGroup.name = '';
       this.actGroup.groupType = 'VP';
       this.actGroup.internal = false;
-      this.actGroup.checkGlobal = false;
+      this.actGroup.global = false;
       this.actGroup.checkedView = true;
     }
-    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
+    this.log(`Init Group for Creation / Modification: ${this.actGroup.name} ID ${this.actGroup._id} Action ${this.confirm} `);
   }
 
   addModifyVPGroup(): void {
-    let newGroup: VGGroup;
-    newGroup = new VGGroup;
+    const newGroup = new VGGroup;
+    if (this.actGroup.global || !this.hasVPPerm(this.permVP.ManagePerm)) {
+      // no modify of a global group or missing permission
+      return;
+    }
 
-    this.log(`Modify VisboProject Group: Group: ${this.actGroup.groupName} VC: ${this.visboproject.vcid} VP: ${this.visboproject._id} }`);
-    newGroup.name = this.actGroup.groupName.trim();
+    this.log(`Modify VisboProject Group: Group: ${this.actGroup.name} VC: ${this.visboproject.vcid} VP: ${this.visboproject._id} }`);
+    newGroup.name = this.actGroup.name.trim();
     newGroup.global = false;
     newGroup.vcid = this.visboproject.vcid;
     newGroup.vpids = [];
@@ -429,10 +431,10 @@ export class VisboprojectDetailComponent implements OnInit {
     newGroup.permission = new VGPermission;
     newGroup.permission.vp = this.helperVPPerm(this.actGroup);
 
-    if (this.actGroup.gid) {
+    if (this.actGroup._id) {
       // modify existing Group
       this.log(`Modify VisboProject Group: Group: ${newGroup.name} VC: ${newGroup.vcid} Perm: ${JSON.stringify(newGroup.permission)}`);
-      newGroup._id = this.actGroup.gid;
+      newGroup._id = this.actGroup._id;
       this.visboprojectService.modifyVPGroup(newGroup)
         .subscribe(
           group => {
@@ -554,7 +556,7 @@ export class VisboprojectDetailComponent implements OnInit {
     return totalVersions;
   }
 
-  sortUserTable(n?: number) {
+  sortUserTable(n?: number): void {
 
     if (!this.vgUsers) {
       return;
@@ -582,7 +584,7 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
-  sortGroupTable(n?: number) {
+  sortGroupTable(n?: number): void {
 
     if (!this.vgGroups) {
       return;

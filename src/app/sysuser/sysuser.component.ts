@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboUser } from '../_models/login';
+import { VisboUser } from '../_models/visbouser';
 import { SysUserService } from '../_services/sysuser.service';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
@@ -31,7 +30,7 @@ export class SysuserComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getSysUsers();
     this.sortTable(undefined);
   }
@@ -74,12 +73,12 @@ export class SysuserComponent implements OnInit {
     return visboGetShortText(text, len);
   }
 
-  toggleDetail() {
+  toggleDetail(): void {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
   }
 
-  sortTable(n) {
+  sortTable(n: number): void {
     if (!this.user) {
       return;
     }

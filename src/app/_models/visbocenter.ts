@@ -1,5 +1,3 @@
-import { VisboSetting } from './visbosetting';
-
 export class VisboCenter {
   _id: string;
   updatedAt: Date;
@@ -7,6 +5,7 @@ export class VisboCenter {
   name: string;
   description: string;
   vpCount: number;
+  // eslint-disable-next-line
   capacity: any[];
   deletedAt: Date;
   perm: {system: number, vc: number, vp: number};
@@ -18,4 +17,3 @@ export class VisboCenterResponse {
   vc: [ VisboCenter ];
   perm: {system: number, vc: number, vp: number};
 }
-

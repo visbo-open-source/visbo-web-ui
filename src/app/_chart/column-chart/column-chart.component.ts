@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -9,18 +9,22 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class ColumnChartComponent implements OnInit, OnChanges {
 
-  @Input() graphData: any;
-  @Input() graphOptions: any;
+  @Input() graphData: [];
   @Input() language: string;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  @Input() graphOptions: any;
+  @Input() parentThis: any;
   private gLib: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
@@ -29,7 +33,7 @@ export class ColumnChartComponent implements OnInit, OnChanges {
     // console.log(`Google Chart Column Chart Init ${this.language} ${JSON.stringify(this.graphData)}`);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     // console.log(`Column Chart On Changes`);
     if (this.initialised) {
       this.drawChart();
@@ -38,9 +42,8 @@ export class ColumnChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // console.log(`Google Chart Column Chart Draw ${this.graphData.length}`);
-    let chart: any, data: any;
-    chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
-    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
+    const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
     const options = {'title': 'Column Chart'};
 

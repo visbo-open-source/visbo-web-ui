@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -9,19 +9,22 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class ComboChartComponent implements OnInit, OnChanges {
 
-  @Input() graphData: any;
-  @Input() graphOptions: any;
-  @Input() parentThis: any;
+  @Input() graphData: [];
   @Input() language: string;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  @Input() graphOptions: any;
+  @Input() parentThis: any;
   private gLib: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
@@ -29,7 +32,7 @@ export class ComboChartComponent implements OnInit, OnChanges {
     // this.log(`Google Chart Combo Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     // console.log(`Combo Chart On Changes`);
     if (this.initialised) {
       this.drawChart();
@@ -38,9 +41,8 @@ export class ComboChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // this.log(`Google Chart Combo Chart Draw ${this.graphData.length}`);
-    let chart: any, data: any;
-    chart = new this.gLib.visualization.ComboChart(document.getElementById('divComboChart'));
-    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const chart = new this.gLib.visualization.ComboChart(document.getElementById('divComboChart'));
+    const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     const parentThis = this.parentThis;
 
     const options = {'title': 'Combo Chart'};
@@ -52,7 +54,7 @@ export class ComboChartComponent implements OnInit, OnChanges {
          console.log(`Chart Combo: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
-        parentThis.log(`Chart Combo: The user selected ${JSON.stringify(selectedItem)}`);
+        // console.log(`Chart Combo: The user selected ${JSON.stringify(selectedItem)}`);
         if (parentThis === undefined) {
           console.log(`Chart Combo: The user clicked and this is undefined`);
         } else if (selectedItem) {

@@ -5,7 +5,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
-import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPSYSTEM } from '../_models/visbogroup';
 
 @Component({
   selector: 'app-usernavbar',
@@ -13,8 +13,8 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  combinedPerm: VGPermission = undefined;
-  permSystem: any = VGPSystem;
+  combinedPerm: VGPermission;
+  permSystem = VGPSYSTEM;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit {
     public visbocenterService: VisboCenterService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.combinedPerm = this.visbocenterService.getSysAdminRole();

@@ -6,7 +6,7 @@
               title="Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8.">
               {{ 'pwReset.lbl.newPassword' | translate }} (*)
             </label>
-            <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
+            <input type="password" class="form-control" name="password" [(ngModel)]="user.password" #password="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
             <div *ngIf="!password.valid" class="help-block">{{ 'pwReset.msg.followPolicy' | translate }}</div>
             <div *ngIf="!password.valid" class="help-block">{{ 'pwReset.msg.followRule' | translate }}</div>
         </div>

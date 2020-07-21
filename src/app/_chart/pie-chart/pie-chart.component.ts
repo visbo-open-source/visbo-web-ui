@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -10,33 +10,36 @@ import { GoogleChartService } from '../service/google-chart.service';
 export class PieChartComponent implements OnInit, OnChanges {
 
   @Input() elementID: string;
-  @Input() graphData: any;
-  @Input() graphDataBefore: any;
+  @Input() graphData: [];
+  @Input() graphDataBefore: [];
+  @Input() language: string;
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   @Input() graphLegend: any;
   @Input() graphOptions: any;
   @Input() parentThis: any;
-  @Input() language: string;
-
   private gLib: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
-    // this.parentThis.log(`Google Chart Pie Chart Init elementID ${JSON.stringify(this.elementID)}`);
+    // this.console.log(`Google Chart Pie Chart Init elementID ${JSON.stringify(this.elementID)}`);
     if (!this.elementID || this.elementID === '') {
       this.elementID = 'divPieChart';
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     // console.log(`PIE Chart On Changes`);
     if (this.initialised) {
       this.drawChart();
@@ -72,11 +75,11 @@ export class PieChartComponent implements OnInit, OnChanges {
         console.log(`The user clicked and this is undefined`);
         return;
       }
-      // parentThis.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`);
+      // console.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`);
       if (selectedItem) {
         const label = data.getValue(selectedItem.row, 0);
         const value = data.getValue(selectedItem.row, 1);
-        // parentThis.log(`The user selected Row ${selectedItem.row} ${label} ${value}`)
+        // console.log(`The user selected Row ${selectedItem.row} ${label} ${value}`)
         if (parentThis.chartSelectRow) {
           parentThis.chartSelectRow(selectedItem.row, label, value);
         }

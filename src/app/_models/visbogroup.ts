@@ -11,7 +11,7 @@ export class VGPermission {
   vp: number;
 }
 
-export enum VGPSystem {
+export enum VGPSYSTEM {
     'View' = 1, 'ViewAudit' = 2, 'ViewLog' = 4, 'Modify' = 16, 'ManagePerm' = 32, 'CreateVC' = 256, 'DeleteVC' = 1024
 }
 
@@ -32,6 +32,34 @@ export class VGGroup {
   internal: boolean;
   global: boolean;
   permission: VGPermission;
+  users: [VGUser];
+}
+
+export class VGGroupExpanded {
+  _id: string;
+  name: string;
+  global: boolean;
+  groupType: string;
+  internal: boolean;
+  checkedSystemView: boolean;
+  checkedSystemViewAudit: boolean;
+  checkedSystemViewLog: boolean;
+  checkedSystemModify: boolean;
+  checkedSystemCreateVC: boolean;
+  checkedSystemDeleteVC: boolean;
+  checkedSystemManagePerm: boolean;
+  checkedView: boolean;
+  checkedViewAudit: boolean;
+  checkedModify: boolean;
+  checkedCreateVP: boolean;
+  checkedManagePerm: boolean;
+  checkedVPView: boolean;
+  checkedVPViewRestricted: boolean;
+  checkedVPViewAudit: boolean;
+  checkedVPModify: boolean;
+  checkedCreateVariant: boolean;
+  checkedVPManagePerm: boolean;
+  checkedVPDelete: boolean;
   users: [VGUser];
 }
 

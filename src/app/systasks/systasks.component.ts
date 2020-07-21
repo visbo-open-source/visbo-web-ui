@@ -1,16 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
-import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+import { VisboSetting } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-systasks',
@@ -19,7 +16,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 })
 export class SystasksComponent implements OnInit {
 
-  systemVC: number;
+  systemVC: string;
   vcsetting: VisboSetting[];
   taskIndex: number;
   sortAscending: boolean;
@@ -29,11 +26,10 @@ export class SystasksComponent implements OnInit {
     private visbocenterService: VisboCenterService,
     private visbosettingService: VisboSettingService,
     private messageService: MessageService,
-    private alertService: AlertService,
-    private router: Router
+    private alertService: AlertService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboTasks();
   }
@@ -88,7 +84,7 @@ export class SystasksComponent implements OnInit {
       );
   }
 
-  sortTable(n) {
+  sortTable(n: number): void {
     if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {

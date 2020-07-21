@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPSYSTEM, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -21,9 +20,9 @@ export class SysVisboCentersComponent implements OnInit {
   sysvisbocenter: VisboCenter;
   combinedPerm: VGPermission = undefined;
   deleted = false;
-  permSystem: any = VGPSystem;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permSystem = VGPSYSTEM;
+  permVC = VGPVC;
+  permVP = VGPVP;
   sortAscending: boolean;
   sortColumn: number;
 
@@ -35,16 +34,12 @@ export class SysVisboCentersComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.log(`Init SysVC Deleted: ${this.deleted}`);
     this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboCenters(this.deleted);
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
-  }
-
-  onSelect(visbocenter: VisboCenter): void {
-    this.getVisboCenters(this.deleted);
   }
 
   toggleVisboCenters(): void {
@@ -110,8 +105,12 @@ export class SysVisboCentersComponent implements OnInit {
     this.messageService.add(`VC: Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
     this.visbocenters = this.visbocenters.filter(vc => vc !== visbocenter);
     this.visbocenterService.deleteVisboCenter(visbocenter).subscribe(
+      () => {
+        const message = 'Deleted Visbo Center: ' + visbocenter.name;
+        this.alertService.success(message, true);
+      },
       error => {
-        this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);
+        this.log(`delete VC failed: error: ${JSON.stringify(error)}`);
         if (error.status === 403) {
           this.alertService.error(`Permission Denied: Visbo Center ${name}`);
         } else {
@@ -147,7 +146,7 @@ export class SysVisboCentersComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
-  sortVCTable(n) {
+  sortVCTable(n?:number): void {
     if (!this.visbocenters) {
       return;
     }

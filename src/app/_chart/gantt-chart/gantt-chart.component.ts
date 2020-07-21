@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
 
@@ -9,19 +9,22 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class GanttChartComponent implements OnInit, OnChanges {
 
-  @Input() graphData: any;
-  @Input() graphOptions: any;
-  @Input() parentThis: any;
+  @Input() graphData: [];
   @Input() language: string;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  @Input() graphOptions: any;
+  @Input() parentThis: any;
   private gLib: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
   initialised: boolean;
 
   constructor(
     private gChartService: GoogleChartService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['gantt'], 'language': this.language});
@@ -30,7 +33,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     // console.log(`Google Chart Gantt Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     // console.log(`Gantt Chart On Changes`);
     if (this.initialised) {
       this.drawChart();
@@ -39,29 +42,9 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // this.log(`Google Chart Gantt Chart Draw ${this.graphData.length}`);
-    let chart: any;
-    // let data: any;
-    chart = new this.gLib.visualization.Gantt(document.getElementById('divGanttChart'));
-    // data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const chart = new this.gLib.visualization.Gantt(document.getElementById('divGanttChart'));
 
-    let data: any;
-    data = new this.gLib.visualization.DataTable();
-    data.addColumn('string', this.graphData[0][0]);
-    data.addColumn('string', this.graphData[0][1]);
-    data.addColumn('date', this.graphData[0][2]);
-    data.addColumn('date', this.graphData[0][3]);
-    data.addColumn('number', this.graphData[0][4]);
-    data.addColumn('number', this.graphData[0][5]);
-    data.addColumn('string', this.graphData[0][6]);
-
-    for (let i = 1; i < this.graphData.length; i++) {
-      if (this.graphData[i][2] > 0 && this.graphData[i][3] > this.graphData[i][2]) {
-        data.addRows([
-          [this.graphData[i][0], this.graphData[i][1],
-           new Date(this.graphData[i][2]), new Date(this.graphData[i][3]), null,  this.graphData[i][5] || 0,  null]
-        ]);
-      }
-    }
+    const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     const parentThis = this.parentThis;
     const options = {
       height: 400
@@ -75,11 +58,11 @@ export class GanttChartComponent implements OnInit, OnChanges {
         return;
       }
       if (!list || list.length === 0 ) {
-         parentThis.log(`Chart Gantt: chartGetSelection is undefined`, list || list.length);
+         console.log(`Chart Gantt: chartGetSelection is undefined`, list || list.length);
          parentThis.ganttSelectRow(undefined, undefined);
       } else {
         const selectedItem = list[0];
-        parentThis.log(`Chart Gantt: The user selected ${JSON.stringify(selectedItem)}`);
+        console.log(`Chart Gantt: The user selected ${JSON.stringify(selectedItem)}`);
         const row = selectedItem.row;
         if (row != null && row >= 0) {
           const label = data.getValue(row, 0);

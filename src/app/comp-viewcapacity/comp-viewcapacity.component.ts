@@ -7,20 +7,20 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole, VisboOrgaTreeLeaf, VisboOrganisationListResponse, TreeLeafSelection} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
-import { VisboProjectVersion, VisboCapacity } from '../_models/visboprojectversion';
+import { VisboCapacity } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -40,7 +40,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
-  role: any;
+  role: string;
   roleUID: number;
   ressourceID: string;
   currentLeaf: VisboOrgaTreeLeaf;
@@ -49,23 +49,47 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   currentRefDate: Date;
 
   showUnit: string;
-  parentThis: any;
+  parentThis = this;
 
   orgaTreeData: VisboOrgaTreeLeaf;
 
+  colors = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
 
-  colors: string[] = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
-  series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' },
-    '1': { lineWidth: 2, lineDashStyle: [4, 4], pointShape: 'star' }
-  };
-
-  graphDataComboChart: any[] = [];
-  graphOptionsComboChart: any = undefined;
+  graphDataComboChart = [];
+  graphOptionsComboChart = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+      animation: {startup: true, duration: 200},
+      legend: {position: 'bottom'},
+      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      // curveType: 'function',
+      colors: this.colors,
+      seriesType: 'bars',
+      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
+      isStacked: true,
+      tooltip: {
+        isHtml: true
+      },
+      vAxis: {
+        title: 'Monthly Capacity',
+        // format: "# T\u20AC",
+        format: "###,###.## T\u20AC",
+        minorGridlines: {count: 0, color: 'none'}
+      },
+      hAxis: {
+        format: 'MMM YY',
+        // textStyle: {fontSize: 15},
+        gridlines: {
+          color: '#FFF',
+          count: -1
+        }
+      }
+    };
   currentLang: string;
 
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -78,11 +102,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.role =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
     moment.locale(this.currentLang);
-    this.parentThis = this;
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
     this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
@@ -99,8 +122,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.visboCapacityCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}`);
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
       this.visboCapacityCalc();
     }
@@ -120,7 +143,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
-  visboGetOrganisation() {
+  visboGetOrganisation(): void {
     let vcid: string;
     if (this.vcActive) {
       vcid = this.vcActive._id;
@@ -224,11 +247,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewOrganisationTree(): void {
     this.log(`Show the OrgaTree of the VC `);
     const organisation = this.actOrga;
-    let allRoles;
-    let allRoleNames;
 
-    allRoles = [];
-    allRoleNames = [];
+    const allRoles = [];
+    const allRoleNames = [];
     this.log(`get all roles of the organisation, prepared for direct access`);
     for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
       allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
@@ -266,39 +287,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
       optformat = "# PT";
     }
-    this.graphOptionsComboChart = {
-        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-        width: '100%',
-        // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
-        animation: {startup: true, duration: 200},
-        legend: {position: 'bottom'},
-        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-        // curveType: 'function',
-        colors: this.colors,
-        seriesType: 'bars',
-        series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
-        isStacked: true,
-        tooltip: {
-          isHtml: true
-        },
-        vAxis: {
-          title: 'Monthly Capacity',
-          // format: "# T\u20AC",
-          format: optformat,
-          minorGridlines: {count: 0, color: 'none'}
-        },
-        hAxis: {
-          format: 'MMM YY',
-          // textStyle: {fontSize: 15},
-          gridlines: {
-            color: '#FFF',
-            count: -1
-          }
-        }
-      };
     // this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
-    const graphDataCapacity: any = [];
+    this.graphOptionsComboChart.vAxis.format = optformat;
+
+    const graphDataCapacity = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
       this.graphDataComboChart = [];
       return;
@@ -350,9 +343,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCapacity.length;
-    this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len < 1) {
-
+      this.log(`visboCapacity Empty`);
     }
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
@@ -430,11 +422,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 // find summary Roles
   getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
-    let summaryRoles;
     this.log(`get all summary roles of the organisation roleID ${{roleID}}`);
-    summaryRoles = [];
+    const summaryRoles = [];
 
-    function findSummaryRoles(value: any) {
+    function findSummaryRoles(value: VisboSubRole) {
       // value is the Id of one subrole
       const hroleID = value.key;
       const hrole = allRoles[hroleID];
@@ -496,14 +487,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
-    let topLevelNodes;
-    let topLevel;
+    const topLevelNodes = [];
+    const topLevel = [];
     let i = 1;
 
     this.log(`get all TopNodes of the organisation`);
 
-    topLevelNodes = [];
-    topLevel = [];
     // find all summaryRoles
     const sumRoles = this.getSummaryRoles(allRoles, undefined);
 
@@ -523,7 +512,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
 
-  buildOrgaTree(topLevelNodes: VisboRole[], allRoles: VisboRole[]) {
+  buildOrgaTree(topLevelNodes: VisboRole[], allRoles: VisboRole[]): VisboOrgaTreeLeaf {
 
     class SubRole {
       key: number;
@@ -571,7 +560,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return tree;
   }
 
-  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: TreeLeafSelection) {
+  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: TreeLeafSelection): void {
     leaf.isSelected = value;
     if (!leaf.children || leaf.children.length === 0) {
       return;
@@ -583,7 +572,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
 
-  selectLeaf(leaf: VisboOrgaTreeLeaf) {
+  selectLeaf(leaf: VisboOrgaTreeLeaf): void {
     if (leaf.name !== this.ressourceID ) {
       this.ressourceID = leaf.name;
       this.role = this.ressourceID;
@@ -600,7 +589,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const curLeaf = this.orgaTreeData;
     let found = false;
 
-    function findMappingLeaf(value: any) {
+    function findMappingLeaf(value: VisboOrgaTreeLeaf) {
       // value is the Id of one subrole
       const leaf = value;
       if (leaf.name === roleName) {

@@ -7,6 +7,7 @@ export class VisboSetting {
   name: string;
   type: string;
   userId: string;
+  // eslint-disable-next-line
   value: any;
   timestamp: Date;
 }
@@ -41,16 +42,17 @@ export class VisboCost {
   timestamp: Date;
 }
 
+export class VisboSubRole {
+  key: number;
+  value: number;
+}
+
 export class VisboRole {
   name: string;
   employeeNr: string;
   uid: number;
-  subRoleIDs: Array<{
-    key: number;
-    value: number;
-  }>;
-  // flowers: string[]
-  // flowers: Array<string>;
+  subRoleIDs: VisboSubRole[];
+  // eslint-disable-next-line
   teamIDs: [any];
   isTeam: boolean;
   isTeamParent: boolean;

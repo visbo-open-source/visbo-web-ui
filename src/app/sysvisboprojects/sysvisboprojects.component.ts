@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -11,7 +10,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -26,8 +25,8 @@ export class SysVisboProjectsComponent implements OnInit {
   vcActive: VisboCenter;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   sortAscending: boolean;
   sortColumn: number;
@@ -41,14 +40,10 @@ export class SysVisboProjectsComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // console.log("Init VisboProjects");
     this.getVisboProjects();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
-  }
-
-  onSelect(visboproject: VisboProject): void {
-    this.getVisboProjects();
   }
 
   getVisboProjects(): void {
@@ -114,7 +109,7 @@ export class SysVisboProjectsComponent implements OnInit {
     this.router.navigate(['sysvcDetail/'.concat(visbocenter._id)]);
   }
 
-  sortVPTable(n) {
+  sortVPTable(n: number): void {
     if (!this.visboprojects) { return; }
     if (n !== undefined) {
       if (n !== this.sortColumn) {

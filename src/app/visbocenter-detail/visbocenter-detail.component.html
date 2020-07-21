@@ -243,22 +243,25 @@
 
   <!-- Modal Add/Change VC Group -->
   <div class="modal fade" id="VcGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document" >
+    <div *ngIf="actGroup" class="modal-dialog modal-dialog-centered" role="document" >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 *ngIf="actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleModifyGroup' | translate }}</h5>
-          <h5 *ngIf="!actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleAddGroup' | translate }}</h5>
+          <h5 *ngIf="actGroup._id" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleModifyGroup' | translate }}</h5>
+          <h5 *ngIf="!actGroup._id" class="modal-title" id="VcGroupModalCenterTitle">{{ 'vcDetail.titleAddGroup' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <form name="actGroup" #f2="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f2.submitted && !email.valid }">
+            <div *ngIf="actGroup.internal" class="form-group" [ngClass]="{ 'has-error': f2.submitted }">
               <label for="groupName" class="col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
-              <input *ngIf="!actGroup.internal" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
-              <label *ngIf="actGroup.internal" class="col-form-label">{{actGroup.groupName}}</label>
-              <div *ngIf="f2.submitted && !actGroup.groupName.valid" class="help-block">{{ 'vcDetail.msg.groupNameRequired' | translate }}</div>
+              <label name="groupName" class="col-form-label">{{actGroup.name}}</label>
+            </div>
+            <div *ngIf="!actGroup.internal" class="form-group" [ngClass]="{ 'has-error': f2.submitted }">
+              <label for="groupName" class="col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
+              <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required minlength="3">
+              <div *ngIf="groupName.errors && (groupName.dirty || groupName.touched)" class="help-block">{{ 'vcDetail.msg.groupNameRequired' | translate }}</div>
             </div>
             <!-- VC Permissions -->
             <div>{{ 'perm.titleVCPerm' | translate }}</div>
@@ -284,10 +287,10 @@
             </div>
             <br>
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="global" name="checkGlobal" [(ngModel)]="actGroup.checkGlobal" #checkGlobal="ngModel" >
+                <input type="checkbox" class="custom-control-input" id="global" name="global" [(ngModel)]="actGroup.global" #global="ngModel" >
                 <label class="custom-control-label" for="global">{{ 'perm.vcGlobal' | translate }}</label>
             </div>
-            <div *ngIf="actGroup.checkGlobal" class="mt-2">
+            <div *ngIf="actGroup.global" class="mt-2">
             <!-- VP Permissions -->
               <div>{{ 'perm.titleVPPerm' | translate }}</div>
               <div class="custom-control custom-checkbox">
@@ -315,21 +318,21 @@
                   <label class="custom-control-label" for="permVP6">{{ 'perm.vpDelete' | translate }}</label>
               </div>
             </div>
-            <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="helperUsersPerGroup(actGroup.name)" class="mt-2">
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
-                <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
+                <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.name">
                   <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
-            <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="!helperUsersPerGroup(actGroup.name)" class="mt-2">
               <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
             <div class="modal-footer align-items-end">
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-              <button *ngIf="!(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.actGroup.confirm}}</button>
-              <button *ngIf="(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+              <button *ngIf="!(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
+              <button *ngIf="(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
             </div>
           </form>
         </div>

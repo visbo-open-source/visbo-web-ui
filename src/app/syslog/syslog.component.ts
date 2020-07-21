@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { SysLogService } from '../_services/syslog.service';
-import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
+import { VisboFile } from '../_models/visbofiles';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
-import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -25,7 +23,7 @@ export class SysLogComponent implements OnInit {
   logDataShow: boolean;
   logData: string;
   logLevelSetting: VisboSetting;
-  systemVC: number;
+  systemVC: string;
 
   sortAscending: boolean;
   sortColumn: number;
@@ -35,11 +33,10 @@ export class SysLogComponent implements OnInit {
     private visbosettingService: VisboSettingService,
     private syslogService: SysLogService,
     private messageService: MessageService,
-    private alertService: AlertService,
-    private router: Router
+    private alertService: AlertService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.ageDays = 3;
     this.sortColumn = 2;
@@ -129,8 +126,7 @@ export class SysLogComponent implements OnInit {
     const blob = new Blob([data], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    let a: any;
-    a = document.createElement('a');
+    const a = document.createElement('a');
     document.body.appendChild(a);
     a.href = url;
     a.download = fileName + '.log';
@@ -138,7 +134,7 @@ export class SysLogComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  formatBytes(size, precision) {
+  formatBytes(size: number, precision = 2): string {
     if (0 === size) {
       return '0 Bytes';
     }
@@ -147,7 +143,7 @@ export class SysLogComponent implements OnInit {
     return parseFloat((size / Math.pow(c, f)).toFixed(d)) + ' ' + units[f];
   }
 
-  sortTable(n) {
+  sortTable(n: number): void {
     if (!this.files) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {

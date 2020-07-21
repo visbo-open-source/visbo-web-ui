@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -10,6 +10,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
+import { VGPermission } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 function encodeCSV(source: string): string {
@@ -32,7 +33,7 @@ function encodeCSV(source: string): string {
 export class VisboprojectAuditComponent implements OnInit {
 
   visboproject: VisboProject;
-  combinedPerm: any;
+  combinedPerm: VGPermission;
 
   audit: VisboAudit[];
   auditIndex: number;
@@ -46,7 +47,7 @@ export class VisboprojectAuditComponent implements OnInit {
   today: Date;
   auditType: string;
   auditTypeAction: string;
-  auditTypeList: any[] = [
+  auditTypeList = [
     {name: 'All', action: ''},
     {name: 'Read', action: 'GET'},
     {name: 'Create', action: 'POST'},
@@ -66,7 +67,7 @@ export class VisboprojectAuditComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboProject();
@@ -99,8 +100,7 @@ export class VisboprojectAuditComponent implements OnInit {
 
   getVisboProjectAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    let queryAudit: QueryAuditType;
-    queryAudit = new QueryAuditType;
+    const queryAudit = new QueryAuditType;
     this.log(`Audit getVisboProjectAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditTo) {
@@ -197,8 +197,7 @@ export class VisboprojectAuditComponent implements OnInit {
     const blob = new Blob([data], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    let a: any;
-    a = document.createElement('a');
+    const a = document.createElement('a');
     document.body.appendChild(a);
     a.href = url;
     a.download = 'auditlog-VP.csv';
@@ -216,7 +215,7 @@ export class VisboprojectAuditComponent implements OnInit {
     this.auditIndex = auditIndex;
   }
 
-  helperFormatBytes(a, b = 2): string {
+  helperFormatBytes(a: number, b = 2): string {
     if (0 === a) {
       return '0 B';
     }
@@ -259,17 +258,17 @@ export class VisboprojectAuditComponent implements OnInit {
     return visboGetShortText(text, len);
   }
 
-  toggleDetail() {
+  toggleDetail(): void {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
   }
 
-  isToday(checkDate: string): Boolean {
+  isToday(checkDate: string): boolean {
     // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
     return (new Date(checkDate)) > this.today;
   }
 
-  sortTable(n?: number) {
+  sortTable(n?: number): void {
     if (!this.audit) {
       return;
     }

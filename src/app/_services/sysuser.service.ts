@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
 
-import { VisboUser, VisboUsersResponse } from '../_models/login';
+import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -48,9 +48,10 @@ export class SysUserService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T> (operation = 'operation', result?: T) {
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}, Result ${JSON.stringify(result)}`);
 
       // Let the app keep running by returning an empty result.
       return throwError(error);

@@ -10,7 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectVersion, VPVDeadline} from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
@@ -30,7 +30,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   hierarchyDeadline: VPVDeadline[];       // deadlines of a filtered hierarchy
   filteredDeadline: VPVDeadline[];      // subItemDeadlines filtered by status
   viewGantt: boolean;
-  buttonGantt: "View Gantt";
+  buttonGantt: string;
   filterPath: string[];
 
   filterStatus: number;
@@ -38,7 +38,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   deadlineIndex: number;
 
-  listType: any[] = [
+  listType = [
     {name: 'PFV', ref: 'pfv', localName: ''},
     {name: 'VPV', ref: 'vpv', localName: ''},
     {name: 'All', ref: undefined, localName: ''}
@@ -47,23 +47,46 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   refType = this.listType[0].ref;
   switchType = true;
 
-  parentThis: any;
+  parentThis = this;
 
   statusList: string[];
 
-  colors: string[] = ['#005600', 'green', 'orange', 'red'];
+  colors = ['#005600', 'green', 'orange', 'red'];
 
-  graphAllDataPieChart: any[] = [];
-  graphBeforeAllDataPieChart: any[] = [];
-  graphAllPieLegend: any;
-  graphAllOptionsPieChart: any = undefined;
+  graphAllDataPieChart = [];
+  graphBeforeAllDataPieChart = [];
+  graphAllPieLegend = [
+    ['string', this.translate.instant('compViewDeadline.lbl.status')],
+    ['number', this.translate.instant('compViewDeadline.lbl.count')]
+  ];
+  graphAllOptionsPieChart = {
+      title: 'View Deadlines',
+      titleTextStyle: {color: 'black', fontSize: '16'},
+      tooltip : {
+        trigger: 'none'
+      },
+      // sliceVisibilityThreshold: .025
+      colors: this.colors
+    };
   divAllPieChart = 'divAllDeadLinePieChart';
 
-  graphOptionsDeadlinesGantt: any = undefined;
-  graphDataDeadlinesGantt: any[] = [];
+  graphOptionsDeadlinesGantt = {
+    // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+    width: '100%',
+    // height: 500,
+    timeline: {
+      showRowLabels: false,
+      showBarLabels: true
+    },
+    tooltip: {
+      isHtml: true
+    },
+    animation: {startup: true, duration: 200}
+  };
+  graphDataDeadlinesGantt = [];
 
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   currentLang: string;
 
@@ -81,9 +104,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.parentThis = this;
     this.statusList = [
       this.translate.instant('keyMetrics.chart.statusDeadlineAhead'),
       this.translate.instant('keyMetrics.chart.statusDeadlineInTime'),
@@ -94,17 +116,17 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.buttonGantt = this.translate.instant('compViewDelivery.btn.buttonGanttOn');
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
     this.currentVpvId = this.vpvActive._id;
-    this.visboDeadlineCalc();
+    this.visboDeadlineCalc(false);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`Deadlines on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Deadlines on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
-      this.visboDeadlineCalc();
+      this.visboDeadlineCalc(true);
     }
   }
 
-  visboDeadlineCalc(): void {
+  visboDeadlineCalc(change = false): void {
     if (!this.vpvActive) {
       return;
     }
@@ -125,7 +147,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
           }
-          this.initDeadlines();
+          this.initDeadlines(change);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -139,7 +161,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       );
   }
 
-  initDeadlines(): void {
+  initDeadlines(change: boolean): void {
     if (this.allDeadline === undefined) {
       this.hierarchyDeadline = [];
       return;
@@ -157,7 +179,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         this.switchType = true;
       }
     }
-    this.filterDeadlines(true);
+    this.filterDeadlines(change);
   }
 
   filterDeadlines(change: boolean): void {
@@ -250,25 +272,11 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   visboViewAllDeadlinePie(change: boolean): void {
     // if (!this.filteredDeadline || this.filteredDeadline.length == 0) return;
-    this.graphAllOptionsPieChart = {
-        title: this.translate.instant('compViewDeadline.titleAllDeadlines'),
-        titleTextStyle: {color: 'black', fontSize: '16'},
-        tooltip : {
-          trigger: 'none'
-        },
-        // sliceVisibilityThreshold: .025
-        colors: this.colors
-      };
+    this.graphAllOptionsPieChart.title = this.translate.instant('compViewDeadline.titleAllDeadlines');
 
-    this.graphAllPieLegend = [
-      ['string', this.translate.instant('compViewDeadline.lbl.status')],
-      ['number', this.translate.instant('compViewDeadline.lbl.count')]
-    ];
-
-    const finishedDeadlineStatus: any = [];
+    const finishedDeadlineStatus = [];
     const graphData = [];
     let status;
-    const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
       finishedDeadlineStatus[i] = 0;
     }
@@ -294,38 +302,25 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
   }
 
-  visboViewDeadlineTimeline(): void {
-    this.graphOptionsDeadlinesGantt = {
-      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '100%',
-      // height: 500,
-      timeline: {
-        showRowLabels: false,
-        showBarLabels: true
-      },
-      tooltip: {
-        isHtml: true
-      },
-      animation: {startup: true, duration: 200}
-      // explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01}
-      // colors: this.colors,
-      // hAxis: {
-      //   format: 'MMM YY',
-      //   gridlines: {
-      //     color: '#FFF',
-      //     count: -1
-      //   }
-      // }
-    };
+  getPhaseName(deadline: VPVDeadline): string {
+    if (!deadline) {
+      return undefined;
+    }
+    let phase = deadline.phasePFV || deadline.name;
+    if (phase === '.') {
+      phase = this.vpvActive.name;
+    }
+    return phase;
+  }
 
-    let graphData: any;
-    graphData = [];
+  visboViewDeadlineTimeline(): void {
+    const graphData = [];
     for (let i = 0; i < this.hierarchyDeadline.length; i++) {
       const deadline = this.hierarchyDeadline[i];
       if (deadline.type === "Phase") {
         const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
         const endDate = new Date(deadline.endDateVPV);
-        const phase = deadline.phasePFV === '.' ? this.vpvActive.name : deadline.phasePFV;
+        const phase = this.getPhaseName(deadline);
         const path = this.getFullPath(deadline);
         // filter Gantt Chart by Layer
         if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
@@ -349,8 +344,6 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       'End Date'
     ]);
     graphData.reverse();
-    // calculate the necessary height as it has to be defined fixed, legend + number of lines * height
-    // this.graphOptionsDeadlinesGantt.height = 30 + graphData.length * 40;
     this.graphDataDeadlinesGantt = graphData;
   }
 
@@ -399,7 +392,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.filterDeadlines(false);
   }
 
-  timelineSelectRow(row: number, col: number, strIndex: string): void {
+  timelineSelectRow(row: number): void {
     const phase = this.graphDataDeadlinesGantt[row + 1][1];
     this.log(`timeline Select Row ${row} Phase ${phase}`);
     let index = this.hierarchyDeadline.findIndex(item => item.name === phase);
@@ -454,7 +447,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   getBreadCrumb(): string[] {
     const path = this.getFullPath(this.hierarchyDeadline[0]);
-    const result = path.slice(0, path.length - 1);
+    const result = path.slice(0, path.length);
     if (result.length >= 0) {
       result[0] = this.vpvActive.name;
     }
@@ -462,7 +455,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   showBreadCrumb(): boolean {
-    return this.getFullPath(this.hierarchyDeadline[0]).length > 1;
+    return this.getFullPath(this.hierarchyDeadline[0]).length > 0;
   }
 
   inFuture(ref: string): boolean {
@@ -476,13 +469,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   switchView(): void {
     this.log(`Switchinig to ${this.type}`);
     this.refType = this.listType.find( item => item.name === this.type ).ref;
-    this.visboDeadlineCalc();
+    this.visboDeadlineCalc(false);
   }
 
   toggleGantt(): void {
     this.viewGantt = !this.viewGantt;
     this.buttonGantt = this.viewGantt ? this.translate.instant('compViewDelivery.btn.buttonGanttOff')
-                                      : this.buttonGantt = this.translate.instant('compViewDelivery.btn.buttonGanttOn');
+                                      : this.translate.instant('compViewDelivery.btn.buttonGanttOn');
     if (!this.viewGantt) {
       this.filterPath = this.getFullPath(this.allDeadline[0]);
       this.filterDeadlines(false);
@@ -516,7 +509,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});
   }
 
-  sortDeadlineTable(n?: number) {
+  sortDeadlineTable(n?: number): void {
     if (!this.filteredDeadline) {
       return;
     }

@@ -11,6 +11,7 @@ import { AlertService } from '../_services/alert.service';
 
 export class AlertComponent implements OnDestroy {
     private subscription: Subscription;
+    // eslint-disable-next-line
     message: any;
 
     constructor(private alertService: AlertService) {

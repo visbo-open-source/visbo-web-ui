@@ -1,10 +1,10 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
-import { Observable } from 'rxjs';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs/Rx';
 
 @Injectable()
 export class AlertService {
+  // eslint-disable-next-line
     private subject = new Subject<any>();
     private keepAfterNavigationChange = false;
 
@@ -23,16 +23,16 @@ export class AlertService {
         });
     }
 
-    clear() {
+    clear(): void {
       this.subject.next();
     }
 
-    success(message: string, keepAfterNavigationChange = false) {
+    success(message: string, keepAfterNavigationChange = false): void {
         this.keepAfterNavigationChange = keepAfterNavigationChange;
         this.subject.next({ type: 'success', text: message });
     }
 
-    error(message: string, keepAfterNavigationChange = false) {
+    error(message: string, keepAfterNavigationChange = false): void {
         if (!message) {
           message = 'Unknown Error reaching the Server';
         }
@@ -40,6 +40,7 @@ export class AlertService {
         this.subject.next({ type: 'error', text: message });
     }
 
+    // eslint-disable-next-line
     getMessage(): Observable<any> {
         return this.subject.asObservable();
     }

@@ -6,11 +6,12 @@ import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
+import { VisboAudit, QueryAuditType } from '../_models/visboaudit';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
+import { VGPermission } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 function encodeCSV(source: string): string {
@@ -33,7 +34,7 @@ function encodeCSV(source: string): string {
 export class VisbocenterAuditComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
-  combinedPerm: any;
+  combinedPerm: VGPermission;
   audit: VisboAudit[];
   auditIndex: number;
   auditFrom: Date;
@@ -46,7 +47,7 @@ export class VisbocenterAuditComponent implements OnInit {
   today: Date;
   auditType: string;
   auditTypeAction: string;
-  auditTypeList: any[] = [
+  auditTypeList = [
     {name: 'All', action: ''},
     {name: 'Read', action: 'GET'},
     {name: 'Create', action: 'POST'},
@@ -55,7 +56,7 @@ export class VisbocenterAuditComponent implements OnInit {
   ];
   auditArea: string;
   auditAreaAction: string;
-  auditAreaList: any[] = [
+  auditAreaList = [
     {name: 'All', action: ''},
     {name: 'VC', action: 'vc'},
     {name: 'VP', action: 'vp'}
@@ -74,7 +75,7 @@ export class VisbocenterAuditComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] === true;
     const id = this.route.snapshot.paramMap.get('id');
@@ -108,8 +109,7 @@ export class VisbocenterAuditComponent implements OnInit {
 
   getVisboCenterAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    let queryAudit: QueryAuditType;
-    queryAudit = new QueryAuditType;
+    const queryAudit = new QueryAuditType;
     this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
     // set date values if not set or adopt to end of day in case of to date
 
@@ -209,8 +209,7 @@ export class VisbocenterAuditComponent implements OnInit {
     const blob = new Blob([data], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     this.log(`Open URL ${url}`);
-    let a: any;
-    a = document.createElement('a');
+    const a = document.createElement('a');
     document.body.appendChild(a);
     a.href = url;
     a.download = 'auditlog-VC.csv';
@@ -224,7 +223,7 @@ export class VisbocenterAuditComponent implements OnInit {
     this.auditIndex = auditIndex;
   }
 
-  helperFormatBytes(a, b = 2): string {
+  helperFormatBytes(a: number, b = 2): string {
     if (0 === a) {
       return '0 B';
     }
@@ -283,7 +282,7 @@ export class VisbocenterAuditComponent implements OnInit {
     return new Date(checkDate) > this.today;
   }
 
-  sortTable(n) {
+  sortTable(n: number): void {
     if (!this.audit) {
       return;
     }

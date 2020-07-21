@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
-import { VisboSetting, VisboSettingResponse } from '../_models/visbosetting';
+import { VisboSetting } from '../_models/visbosetting';
 
-import { VGPermission, VGPSystem } from '../_models/visbogroup';
+import { VGPermission, VGPSYSTEM } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -20,9 +18,9 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 })
 export class SysconfigComponent implements OnInit {
 
-    systemVC: number;
+    systemVC: string;
     combinedPerm: VGPermission = undefined;
-    permSystem: any = VGPSystem;
+    permSystem = VGPSYSTEM;
     vcsetting: VisboSetting[];
     editIndex: number;
     sortAscending: boolean;
@@ -32,11 +30,10 @@ export class SysconfigComponent implements OnInit {
     private visbocenterService: VisboCenterService,
     private visbosettingService: VisboSettingService,
     private messageService: MessageService,
-    private alertService: AlertService,
-    private router: Router
+    private alertService: AlertService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboConfig();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
@@ -128,7 +125,7 @@ export class SysconfigComponent implements OnInit {
     return (this.combinedPerm.system & perm) > 0;
   }
 
-  sortTable(n) {
+  sortTable(n?:number): void {
     if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {
