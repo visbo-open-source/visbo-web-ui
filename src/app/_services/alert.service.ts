@@ -1,6 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
-import { Observable, Subject } from 'rxjs/Rx';
+import { Observable } from 'rxjs-compat/Observable';
+import { Subject } from 'rxjs-compat/Subject';
 
 @Injectable()
 export class AlertService {
