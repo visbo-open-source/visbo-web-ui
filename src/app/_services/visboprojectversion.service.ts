@@ -52,7 +52,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(visboprojectversions => this.log(`fetched ${visboprojectversions.length} VisboProjectVersions `)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -143,7 +143,7 @@ export class VisboProjectVersionService {
                   return response.vpf;
                 }),
         tap(visboportfolioversion => this.log(`fetched ${visboportfolioversion.length} VisboPortfolioVersion `)),
-        catchError(this.handleError('getVisboPortfolioVersions', []))
+        catchError(this.handleError<VisboPortfolioVersion[]>('getVisboPortfolioVersions'))
       );
   }
 
@@ -163,7 +163,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(vpv => this.log(`fetched ${vpv.length} VisboPortfolio Project Versions `)),
-        catchError(this.handleError('getVisboPortfoliokeyMetrics', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboPortfoliokeyMetrics'))
       );
   }
 
@@ -185,7 +185,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(vpv => this.log(`fetched ${vpv.length} VisboCenter Project Versions `)),
-        catchError(this.handleError('getVisboCenterProjectkeyMetrics', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboCenterProjectkeyMetrics'))
       );
   }
 
@@ -217,7 +217,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(() => this.log(`fetched CostCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -234,7 +234,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(() => this.log(`fetched DeliveryCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -252,7 +252,7 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(() => this.log(`fetched DeadlineCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -262,7 +262,7 @@ export class VisboProjectVersionService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T> (operation = 'operation') {
     // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
