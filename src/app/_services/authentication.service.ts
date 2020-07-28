@@ -1,11 +1,11 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { Login, VisboUser, VisboUserAddress, VisboUserProfile, LoginResponse, VisboStatusResponse, VisboStatusPWPolicyResponse } from '../_models/login';
+import { Login, VisboUser, VisboUserResponse, LoginResponse, VisboVersion, VisboVersionResponse, VisboStatusPWPolicy, VisboStatusPWPolicyResponse } from '../_models/visbouser';
 import { MessageService } from './message.service';
 
 import * as JWT from 'jwt-decode';
@@ -18,8 +18,8 @@ const httpOptions = {
 export class AuthenticationService {
 
   isLoggedIn = false;
-  logoutTime: Date = undefined;
-  pwPolicy: any = undefined;
+  logoutTime: Date;
+  pwPolicy: string;
 
   constructor(
       private http: HttpClient,
@@ -29,7 +29,7 @@ export class AuthenticationService {
 
     private authUrl = this.env.restUrl.concat('/token/user');  // URL to web api
 
-    logoutCheck() {
+    logoutCheck(): Date {
       if (!this.isLoggedIn) {
         return undefined;
       }
@@ -37,11 +37,10 @@ export class AuthenticationService {
     }
 
 
-    login(username: string, password: string) {
+    login(username: string, password: string): Observable<VisboUser> {
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
-      let newLogin: Login;
-      newLogin = new Login;
+      const newLogin = new Login();
       newLogin.email = username;
       newLogin.password = password;
 
@@ -55,37 +54,38 @@ export class AuthenticationService {
                     localStorage.setItem('currentUser', JSON.stringify(result.user));
                     localStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
-                    let decoded: any;
-                    decoded = JWT(result.token);
-                    // this.log(`Login token expiration:  ${decoded.exp}`);
-                    this.logoutTime = new Date(decoded.exp * 1000);
+                    // eslint-disable-next-line
+                    const decoded: any = JWT(result.token);
+                    if (decoded && decoded.exp) {
+                      // this.log(`Login token expiration:  ${decoded.exp}`);
+                      this.logoutTime = new Date(decoded.exp * 1000);
+                    }
                     this.log(`Login Request logoutTime:  ${this.logoutTime}`);
 
                     return result.user;
                 }
                 return null;
               }),
-              catchError(this.handleError<any>('LoginError'))
+              catchError(this.handleError<VisboUser>('LoginError'))
             );
     }
 
-    logout() {
+    logout(): void {
         // remove user from local storage to log user out
         this.isLoggedIn = false;
         localStorage.clear();
     }
 
-    getActiveUser() {
+    getActiveUser(): VisboUser {
       return JSON.parse(localStorage.getItem('currentUser'));
     }
 
-    pwforgotten(model: any) {
+    pwforgotten(user: VisboUser): Observable<LoginResponse> {
       const url = `${this.authUrl}/pwforgotten`;
-      let newUser: VisboUser;
-      newUser = new VisboUser;
-      newUser.email = model.username;
+      const newUser = new VisboUser();
+      newUser.email = user.email;
 
-      this.log(`Calling HTTP Request: ${url} for: ${model.username} `);
+      this.log(`Calling HTTP Request: ${url} for: ${newUser.email} `);
 
       return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
           .pipe(
@@ -97,16 +97,16 @@ export class AuthenticationService {
                 }
                 return result;
             }),
-            catchError(this.handleError<any>('pwforgotten'))
+            catchError(this.handleError<LoginResponse>('pwforgotten'))
           );
     }
 
-    pwreset(model: any) {
+    pwreset(user: VisboUser, token: string): Observable<LoginResponse> {
       const url = `${this.authUrl}/pwreset`;
+      const body = {token: token, password: user.password}
+      this.log(`Calling HTTP Request: ${url} with: ${token} `);
 
-      this.log(`Calling HTTP Request: ${url} with: ${model.token} `);
-
-      return this.http.post<LoginResponse>(url, model)
+      return this.http.post<LoginResponse>(url, body)
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
@@ -118,16 +118,16 @@ export class AuthenticationService {
                 }
                 return result;
             }),
-            catchError(this.handleError<any>('pwreset'))
+            catchError(this.handleError<LoginResponse>('pwreset'))
           );
     }
 
-    registerconfirm(model: any) {
+    registerconfirm(userId: string, hash: string): Observable<LoginResponse> {
       const url = `${this.authUrl}/confirm`;
+      const body = {_id: userId, hash: hash};
+      this.log(`Calling HTTP Request: ${url} for: ${userId} `);
 
-      this.log(`Calling HTTP Request: ${url} for: ${model._id} `);
-
-      return this.http.post<LoginResponse>(url, model) /* MS Last Option HTTP Headers */
+      return this.http.post<LoginResponse>(url, body) /* MS Last Option HTTP Headers */
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
@@ -137,33 +137,51 @@ export class AuthenticationService {
                 }
                 return result;
             }),
-            catchError(this.handleError<any>('pwreset'))
+            catchError(this.handleError<LoginResponse>('pwreset'))
           );
     }
 
-    createUser(model: any, hash: string) {
+    getUser(id: string, hash: string): Observable<VisboUser> {
       const url = `${this.authUrl}/signup`;
-      let newUser: VisboUser, newUserProfile: VisboUserProfile;
-      newUser = new VisboUser;
-      newUserProfile = new VisboUserProfile;
-      if (model.username) { newUser.email = model.username; }
-      if (model._id) { newUser._id = model._id; }
-      // do not set password before the log statement
-      newUserProfile.firstName = model.firstName;
-      newUserProfile.lastName = model.lastName;
-      newUserProfile.phone = model.phone;
-      newUserProfile.company = model.company;
-      newUser.profile = newUserProfile;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      let params = new HttpParams();
+      if (id) {
+        params = params.append('id', id);
+      }
+      if (hash) {
+        params = params.append('hash', hash);
+      }
+      this.log(`Calling HTTP Request: ${url} for: ${id} hash ${hash}`);
+      return this.http.get<VisboUserResponse>(url, { headers , params })
+          .pipe(
+            map(result => result.user),
+            // tap(result => this.log(`registered ${result.user.email} `)),
+            catchError(this.handleError<VisboUser>('get registerUser'))
+          );
+    }
+
+    createUser(user: VisboUser, hash: string): Observable<VisboUser> {
+      const url = `${this.authUrl}/signup`;
+      // const newUser = new VisboUser;
+      // const newUserProfile = new VisboUserProfile;
+      // if (model.username) { newUser.email = model.username; }
+      // if (model._id) { newUser._id = model._id; }
+      // // do not set password before the log statement
+      // newUserProfile.firstName = model.firstName;
+      // newUserProfile.lastName = model.lastName;
+      // newUserProfile.phone = model.phone;
+      // newUserProfile.company = model.company;
+      // newUser.profile = newUserProfile;
 
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       let params = new HttpParams();
       if (hash) {
         params = params.append('hash', hash);
       }
-      this.log(`Calling HTTP Request: ${url} for: ${newUser.email || newUser._id} hash ${hash} Profile: ${JSON.stringify(newUser)}`);
+      this.log(`Calling HTTP Request: ${url} for: ${user.email || user._id} hash ${hash} Profile: ${JSON.stringify(user.profile)}`);
 
-      newUser.password = model.password;
-      return this.http.post<LoginResponse>(url, newUser, { headers , params })
+      // newUser.password = model.password;
+      return this.http.post<VisboUserResponse>(url, user, { headers , params })
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
@@ -172,39 +190,39 @@ export class AuthenticationService {
                     this.log(`Registration Request Successful:  ${result.user.email}`);
                     return result.user;
                 }
-                return {};
+                return new VisboUser();
             }),
             // tap(result => this.log(`registered ${result.user.email} `)),
-            catchError(this.handleError<any>('registerUser'))
+            catchError(this.handleError<VisboUser>('registerUser'))
           );
     }
 
-    restVersion(): Observable<any> {
+    restVersion(): Observable<VisboVersion> {
       const url = this.env.restUrl.concat('/status');
       this.log(`Calling HTTP Request: ${url}` );
-      return this.http.get<VisboStatusResponse>(url, httpOptions)
+      return this.http.get<VisboVersionResponse>(url, httpOptions)
         .pipe(
           map(response => response.status),
-          tap(status => this.log(`fetched Status  `)),
-          catchError(this.handleError('getStatus', []))
+          tap(() => this.log(`fetched Status  `)),
+          catchError(this.handleError<VisboVersion>('restVersion'))
         );
     }
 
-    initPWPolicy(): Observable<any> {
+    initPWPolicy(): Observable<VisboStatusPWPolicy> {
       const url = this.env.restUrl.concat('/status/pwpolicy');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
         .pipe(
           map(response => {
-              this.pwPolicy = response.value;
+              this.pwPolicy = response.value?.PWPolicy;
               return response.value;
             }),
           tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
-          catchError(this.handleError('initPWPolicy', []))
+          catchError(this.handleError<VisboStatusPWPolicy>('initPWPolicy'))
         );
     }
 
-    getPWPolicy() {
+    getPWPolicy(): string {
       return this.pwPolicy;
     }
 
@@ -215,14 +233,14 @@ export class AuthenticationService {
      * @param result - optional value to return as the observable result
      */
     private handleError<T> (operation = 'operation', result?: T) {
+      // eslint-disable-next-line
       return (error: any): Observable<T> => {
 
         // OPTIONAL send the error to remote logging infrastructure
-        this.log(`${operation} failed: ${JSON.stringify(error)} Status: ${error.status}, StatusText: ${error.statusText}, Message: ${error.message}`);
+        this.log(`${operation} failed: ${JSON.stringify(error)} Status: ${error.status}, StatusText: ${error.statusText}, Message: ${error.message}, Result ${JSON.stringify(result)} `);
 
         // Let the app keep running by returning an empty result.
         return throwError(error);
-        // return new ErrorObservable(error);
         // return of(result as T);
       };
     }

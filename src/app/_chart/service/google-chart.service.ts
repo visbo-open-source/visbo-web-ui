@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
 import { ServiceModule } from './service.module';
 
-declare var google: any;
+// eslint-disable-next-line
+declare let google: any;
 
 @Injectable({
   providedIn: ServiceModule
 })
 export class GoogleChartService {
+  // eslint-disable-next-line
   private google: any;
   constructor() {
     this.google = google;
   }
 
-  getGoogle() {
+  // eslint-disable-next-line
+  getGoogle(): any {
     return this.google;
   }
 }

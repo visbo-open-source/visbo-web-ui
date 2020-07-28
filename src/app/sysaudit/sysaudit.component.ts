@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboAudit, VisboAuditActionType, QueryAuditType } from '../_models/visboaudit';
+import { VisboAudit, QueryAuditType } from '../_models/visboaudit';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboAuditService } from '../_services/visboaudit.service';
 
@@ -43,7 +42,7 @@ export class SysauditComponent implements OnInit {
     today: Date;
     auditType: string;
     auditTypeAction: string;
-    auditTypeList: any[] = [
+    auditTypeList = [
       {name: 'All', action: ''},
       {name: 'Read', action: 'GET'},
       {name: 'Create', action: 'POST'},
@@ -52,7 +51,7 @@ export class SysauditComponent implements OnInit {
     ];
     auditArea: string;
     auditAreaAction: string;
-    auditAreaList: any[] = [
+    auditAreaList = [
       {name: 'Overview', action: 'other'},
       {name: 'System', action: 'sys'},
       {name: 'Visbo Center', action: 'vc'},
@@ -61,16 +60,19 @@ export class SysauditComponent implements OnInit {
     ];
     sysVCId = '';
     chart = false;
-    parentThis: any;
+    parentThis = this;
     chartButton = 'Chart';
-    graphData: any[] = [];
-    graphLegend: any = 'Graph Legend not set';
+    graphData = [];
+    graphLegend = [
+      ['string', 'Action Type'],
+      ['number', 'Count']
+    ];
     graphOptions = {
       'title': 'Audit Activity by Action',
       'sliceVisibilityThreshold': .025
     };
-    graphDataLineChart: any = 'Graph Time Data not set';
-    graphOptionsLineChart: any = {
+    graphDataLineChart = [];
+    graphOptionsLineChart = {
       'title': 'Audit Activity by Time',
       // 'width': '1200',
       'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
@@ -89,8 +91,8 @@ export class SysauditComponent implements OnInit {
       'curveType': 'function',
       'colors': ['blue', 'red', 'green', 'yellow']
     };
-    graphDataColumnChart: any = 'Graph VisboCenter Data not set';
-    graphOptionsColumnChart: any = {
+    graphDataColumnChart = [];
+    graphOptionsColumnChart = {
       'title': 'Audit Activity by User',
       'isStacked': true,
       'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
@@ -105,7 +107,7 @@ export class SysauditComponent implements OnInit {
       private router: Router
     ) { }
 
-    ngOnInit() {
+    ngOnInit(): void {
       // this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
       this.auditCount = 50;
       this.auditType = this.auditTypeList[0].name;
@@ -121,10 +123,8 @@ export class SysauditComponent implements OnInit {
     // }
 
     getVisboAudits(): void {
-      let queryAudit: QueryAuditType;
-      queryAudit = new QueryAuditType;
+      const queryAudit = new QueryAuditType;
 
-      this.parentThis = this;
       // set date values if not set or adopt to end of day in case of to date
       if (this.auditTo) {
         queryAudit.to = new Date(this.auditTo);
@@ -229,8 +229,7 @@ export class SysauditComponent implements OnInit {
       this.log(`sysAudit CSV Len ${data.length} `);
       const blob = new Blob([data], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
-      let a: any;
-      a = document.createElement('a');
+      const a = document.createElement('a');
       document.body.appendChild(a);
       a.href = url;
       a.download = 'auditlog.csv';
@@ -239,19 +238,15 @@ export class SysauditComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     }
 
-    switchChart() {
+    switchChart(): void {
       this.chart = !this.chart;
       this.chartButton = this.chart ? 'List' : 'Chart';
       // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
     }
 
-    groupGraphData() {
-      this.graphLegend = [['string', 'Action Type'],
-                          ['number', 'Count']
-        ];
-      let graphSum: any, graphData: any;
-      graphSum = [];
-      graphData = [];
+    groupGraphData(): void {
+      const graphSum = [];
+      const graphData = [];
       for (const auditElement in this.audit) {
         // this.log(`Group Graph Chart Element ${JSON.stringify(this.audit[auditElement])}`);
         if (this.audit[auditElement].actionDescription) {
@@ -283,14 +278,12 @@ export class SysauditComponent implements OnInit {
       return iDateString;
     }
 
-    groupgraphDataLineChart() {
-      let graphSum: any, graphData: any;
-      graphSum = [];
-      graphData = [];
+    groupgraphDataLineChart(): void {
+      const graphSum = [];
+      const graphData = [];
       for (const auditElement in this.audit) {
         if (this.audit[auditElement].createdAt) {
-          let activityDay: Date;
-          activityDay = new Date(this.audit[auditElement].createdAt);
+          const activityDay = new Date(this.audit[auditElement].createdAt);
           activityDay.setHours(0, 0, 0, 0);
           const activityIndex = Math.trunc(activityDay.getTime() / 1000 / 60 / 60 / 24);
           // this.log(`Group Graph Time Chart Element ${activityIndex} ${activityDay}`);
@@ -312,8 +305,7 @@ export class SysauditComponent implements OnInit {
         graphData.push(graphSum[graphElement]);
       }
       if (graphData.length === 1) {
-        let dayBefore: Date;
-        dayBefore = new Date(graphData[0][0].toISOString());
+        const dayBefore = new Date(graphData[0][0].toISOString());
         dayBefore.setMinutes(dayBefore.getMinutes() - 1);
         graphData.push([dayBefore, 0, 0, 0, 0]);
       }
@@ -325,10 +317,9 @@ export class SysauditComponent implements OnInit {
       this.graphDataLineChart = graphData;
     }
 
-    groupgraphDataColumnChart() {
-      let graphSum: any, graphData: any;
-      graphSum = [];
-      graphData = [];
+    groupgraphDataColumnChart(): void {
+      const graphSum = [];
+      const graphData = [];
       for (const auditElement in this.audit) {
         if (this.audit[auditElement].user && this.audit[auditElement].user.email) {
           const userString = this.audit[auditElement].user.email;
@@ -400,7 +391,7 @@ export class SysauditComponent implements OnInit {
       return auditentry.actionDescription;
     }
 
-    helperFormatBytes(a, b = 2): string {
+    helperFormatBytes(a: number, b = 2): string {
       if (0 === a) {
         return '0 B';
       }
@@ -442,17 +433,17 @@ export class SysauditComponent implements OnInit {
       return visboGetShortText(text, len);
     }
 
-    toggleDetail() {
+    toggleDetail(): void {
       this.log(`Toggle ShowMore`);
       this.showMore = !this.showMore;
     }
 
-    isToday(checkDate: string): Boolean {
+    isToday(checkDate: string): boolean {
       // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
       return new Date(checkDate) > this.today;
     }
 
-    sortTable(n) {
+    sortTable(n?:number): void {
       if (!this.audit) {
         return;
       }

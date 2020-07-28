@@ -10,10 +10,10 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectVersion, VPVCost } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -31,19 +31,43 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   vpvTotalCostBaseLine: number;
   vpvTotalCostCurrent: number;
 
-  parentThis: any;
+  parentThis = this;
 
-  colors: string[] = ['#F7941E', '#BDBDBD', '#458CCB'];
-  series: any =  {
-    '0': { lineWidth: 4, pointShape: 'star' }
-  };
+  colors = ['#F7941E', '#BDBDBD', '#458CCB'];
 
-  graphDataComboChart: any[] = [];
-  graphOptionsComboChart: any = undefined;
+  graphDataComboChart = [];
+  graphOptionsComboChart = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      title: 'Monthly Cost comparison: plan-to-date vs. baseline',
+      animation: {startup: true, duration: 200},
+      legend: {position: 'top'},
+      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      // curveType: 'function',
+      colors: this.colors,
+      seriesType: 'bars',
+      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
+      isStacked: true,
+      tooltip: {
+        isHtml: true
+      },
+      vAxis: {
+        title: 'Monthly Cost',
+        format: "# T\u20AC",
+        minorGridlines: {count: 0, color: 'none'}
+      },
+      hAxis: {
+        format: 'MMM YY',
+        gridlines: {
+          color: '#FFF',
+          count: -1
+        }
+      }
+    };
   currentLang: string;
 
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -54,15 +78,14 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     moment.locale(this.currentLang);
-    this.parentThis = this;
     this.visboCostCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboCostCalc();
     }
@@ -110,37 +133,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   }
 
   visboViewCostOverTime(): void {
-    this.graphOptionsComboChart = {
-        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-        width: '100%',
-        title: 'Monthly Cost comparison: plan-to-date vs. baseline',
-        animation: {startup: true, duration: 200},
-        legend: {position: 'top'},
-        explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-        // curveType: 'function',
-        colors: this.colors,
-        seriesType: 'bars',
-        series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
-        isStacked: true,
-        tooltip: {
-          isHtml: true
-        },
-        vAxis: {
-          title: 'Monthly Cost',
-          format: "# T\u20AC",
-          minorGridlines: {count: 0, color: 'none'}
-        },
-        hAxis: {
-          format: 'MMM YY',
-          gridlines: {
-            color: '#FFF',
-            count: -1
-          }
-        }
-      };
     this.graphOptionsComboChart.title = this.translate.instant('keyMetrics.chart.titleCostOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostOverTime');
-    const graphDataCost: any = [];
+    const graphDataCost = [];
     if (!this.vpvCost) {
       return;
     }
@@ -191,9 +186,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
-    this.log(`visboKeyMetrics len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
+    this.log(`ViewCostOverTime len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
     if (len < 1 ) {
-
+      this.log(`ViewCostOverTime Empty`);
     }
     if (len === 1) {
       graphDataCost.push([

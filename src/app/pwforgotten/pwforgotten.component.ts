@@ -6,7 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Login } from '../_models/login';
+import { VisboUser } from '../_models/visbouser';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -16,7 +16,7 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
   styleUrls: ['./pwforgotten.component.css']
 })
 export class PwforgottenComponent implements OnInit {
-  model: any = {};
+  user: VisboUser;
   loading = false;
 
   constructor(
@@ -28,18 +28,19 @@ export class PwforgottenComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.user = new VisboUser();
     if (this.route.snapshot.queryParams.email) {
-      this.model.username = this.route.snapshot.queryParams.email;
+      this.user.email = this.route.snapshot.queryParams.email;
     }
-    this.log(`Password Forgotten for User ${this.model.username}`);
+    this.log(`Password Forgotten for User ${this.user.email}`);
   }
 
-  pwforgotten() {
+  pwforgotten(): void {
     this.loading = true;
-    this.authenticationService.pwforgotten(this.model)
+    this.authenticationService.pwforgotten(this.user)
       .subscribe(
-        data => {
+        () => {
           this.alertService.success('Password Forgotten Request successful. Please check your Mail to continue.', true);
           this.router.navigate(['login']);
         },

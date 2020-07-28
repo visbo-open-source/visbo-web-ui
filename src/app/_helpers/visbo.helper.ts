@@ -38,6 +38,7 @@ export function visboGetShortText(text: string, len: number, position?: string):
   }
 }
 
+// eslint-disable-next-line
 export function getErrorMessage(error: any): string {
   let result = 'Unknown Error';
   if (error) {

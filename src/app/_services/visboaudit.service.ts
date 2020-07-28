@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
@@ -28,14 +28,28 @@ export class VisboAuditService {
     const url = this.serviceBaseUrl.concat('/audit');
     let params = new HttpParams();
 
-    if (sysadmin) { params = params.append('sysadmin', '1'); }
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
     if (queryAudit) {
-      if (queryAudit.from) { params = params.append('from', queryAudit.from.toISOString()); }
-      if (queryAudit.to) { params = params.append('to', queryAudit.to.toISOString()); }
-      if (queryAudit.text) { params = params.append('text', queryAudit.text); }
-      if (queryAudit.maxcount) { params = params.append('maxcount', queryAudit.maxcount.toString()); }
-      if (queryAudit.actionType) { params = params.append('action', queryAudit.actionType); }
-      if (queryAudit.area) { params = params.append('area', queryAudit.area); }
+      if (queryAudit.from) {
+        params = params.append('from', queryAudit.from.toISOString());
+      }
+      if (queryAudit.to) {
+        params = params.append('to', queryAudit.to.toISOString());
+      }
+      if (queryAudit.text) {
+        params = params.append('text', queryAudit.text);
+      }
+      if (queryAudit.maxcount) {
+        params = params.append('maxcount', queryAudit.maxcount.toString());
+      }
+      if (queryAudit.actionType) {
+        params = params.append('action', queryAudit.actionType);
+      }
+      if (queryAudit.area) {
+        params = params.append('area', queryAudit.area);
+      }
     }
 
     this.log(`Calling HTTP Request: ${url} ${sysadmin ? 'as sysadmin' : ''}`);
@@ -52,15 +66,31 @@ export class VisboAuditService {
     const url = this.serviceBaseUrl.concat('/vc/', vcid, '/audit');
     let params = new HttpParams();
 
-    if (sysadmin) { params = params.append('sysadmin', '1'); }
-    if (deleted) { params = params.append('deleted', '1'); }
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
     if (queryAudit) {
-      if (queryAudit.from) { params = params.append('from', queryAudit.from.toISOString()); }
-      if (queryAudit.to) { params = params.append('to', queryAudit.to.toISOString()); }
-      if (queryAudit.text) { params = params.append('text', queryAudit.text); }
-      if (queryAudit.maxcount) { params = params.append('maxcount', queryAudit.maxcount.toString()); }
-      if (queryAudit.actionType) { params = params.append('action', queryAudit.actionType); }
-      if (queryAudit.area) { params = params.append('area', queryAudit.area); }
+      if (queryAudit.from) {
+        params = params.append('from', queryAudit.from.toISOString());
+      }
+      if (queryAudit.to) {
+        params = params.append('to', queryAudit.to.toISOString());
+      }
+      if (queryAudit.text) {
+        params = params.append('text', queryAudit.text);
+      }
+      if (queryAudit.maxcount) {
+        params = params.append('maxcount', queryAudit.maxcount.toString());
+      }
+      if (queryAudit.actionType) {
+        params = params.append('action', queryAudit.actionType);
+      }
+      if (queryAudit.area) {
+        params = params.append('area', queryAudit.area);
+      }
     }
 
     this.log(`Calling HTTP Request: ${url} for VC ${vcid}`);
@@ -104,9 +134,10 @@ export class VisboAuditService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T> (operation = 'operation', result?: T) {
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status} result: ${JSON.stringify(result)}`);
 
       // Let the app keep running by returning an empty result.
       return throwError(error);

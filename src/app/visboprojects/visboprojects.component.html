@@ -76,8 +76,8 @@
       <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
         <app-comp-viewkeymetrics [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
       </div>
-      <div *ngIf="currentView == 'ProjectBoard' && vpList">
-        <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
+      <div *ngIf="currentView == 'ProjectBoard' && visboprojectversions">
+        <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>
       </div>
     </div>
   </div>

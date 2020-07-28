@@ -1,6 +1,12 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { GoogleChartService } from '../service/google-chart.service';
+
+class Target {
+  targetID: string;
+  x: number;
+  y: number;
+}
 
 @Component({
   selector: 'app-bubble-chart',
@@ -9,11 +15,13 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class BubbleChartComponent implements OnInit, OnChanges {
 
-  private gLib: any;
-  @Input() graphData: any;
+  @Input() graphData: [];
+  @Input() language: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   @Input() graphOptions: any;
   @Input() parentThis: any;
-  @Input() language: string;
+  private gLib: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   initialised: boolean;
 
@@ -21,7 +29,7 @@ export class BubbleChartComponent implements OnInit, OnChanges {
     private gChartService: GoogleChartService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.language) { this.language = 'de'; }
     this.gLib = this.gChartService.getGoogle();
     this.gLib.charts.load('current', {'packages': ['corechart', 'table'], 'language': this.language});
@@ -30,7 +38,7 @@ export class BubbleChartComponent implements OnInit, OnChanges {
     // this.log(`Google Chart Bubble Chart Init ${JSON.stringify(this.graphData)}`);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     // console.log(`Bubble Chart On Changes`);
     if (this.initialised) {
       this.drawChart();
@@ -39,12 +47,11 @@ export class BubbleChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // this.log(`Google Chart Bubble Chart Draw ${this.graphData.length}`);
-    let chart: any, data: any;
-    chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
-    data = new this.gLib.visualization.arrayToDataTable(this.graphData);
+    const chart = new this.gLib.visualization.BubbleChart(document.getElementById('divBubbleChart'));
+    const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     const parentThis = this.parentThis;
 
-    // parentThis.log("Google Chart Bubble Draw/Refresh");
+    // console.log("Google Chart Bubble Draw/Refresh");
     const options = {'title': 'Bubble Chart'};
 
     // The select handler. Call the chart's getSelection() method
@@ -55,19 +62,19 @@ export class BubbleChartComponent implements OnInit, OnChanges {
       } else if (selectedItem) {
         const row = selectedItem.row;
         const label = data.getValue(selectedItem.row, 0);
-        parentThis.log(`Bubble: The user selected Row ${row} ${label}`);
+        // console.log(`Bubble: The user selected Row ${row} ${label}`);
         parentThis.chartSelectRow(row, label);
       }
     }
 
     // The click handler. Call the chart's getSelection() method
-    function clickHandler(targetID: any) {
+    function clickHandler(targetID: Target) {
       if (parentThis === undefined) {
         console.log(`Bubble: The user clicked and this is undefined`);
       } else if (targetID) {
-        parentThis.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
+        console.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
       } else {
-        parentThis.log(`Bubble: The user clicked somewhere`);
+        console.log(`Bubble: The user clicked somewhere`);
       }
     }
 

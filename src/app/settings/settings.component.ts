@@ -1,12 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission } from '../_models/visbogroup';
 
 @Component({
   selector: 'app-settings',
@@ -15,16 +13,15 @@ import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 export class SettingsComponent implements OnInit {
 
   activateMessage: boolean;
-  combinedPerm: VGPermission = undefined;
+  combinedPerm: VGPermission;
 
   constructor(
     private visbocenterService: VisboCenterService,
-    private router: Router,
     private messageService: MessageService,
     private alertService: AlertService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.activateMessage = this.messageService.getstatus();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
     // console.log('Sys Admin Role: ', JSON.stringify(this.combinedPerm));

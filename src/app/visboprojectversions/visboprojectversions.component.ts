@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -12,7 +12,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -30,8 +30,8 @@ export class VisboProjectVersionsComponent implements OnInit {
   sortColumn: number;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -43,14 +43,14 @@ export class VisboProjectVersionsComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // this.getVisboCenters();
     this.getVisboProjectVersions();
   }
 
-  onSelect(visboprojectversion: VisboProjectVersion): void {
-    this.getVisboProjectVersions();
-  }
+  // onSelect(visboprojectversion: VisboProjectVersion): void {
+  //   this.getVisboProjectVersions();
+  // }
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
@@ -131,7 +131,7 @@ export class VisboProjectVersionsComponent implements OnInit {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
-  sortVPVTable(n) {
+  sortVPVTable(n: number): void {
     if (!this.visboprojectversions) {
       return;
     }

@@ -13,6 +13,7 @@ export class JwtInterceptor implements HttpInterceptor {
       private authenticationService: AuthenticationService,
     ) { }
 
+    // eslint-disable-next-line
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // add authorization header with jwt token if available
         const currentToken = JSON.parse(localStorage.getItem('currentToken'));
@@ -33,7 +34,7 @@ export class JwtInterceptor implements HttpInterceptor {
                       this.authenticationService.logout();
                       location.reload();
                   }
-                  const err = error.error.message || error.statusText;
+                  // const err = error.error.message || error.statusText;
                   return throwError(error);
              })
           );

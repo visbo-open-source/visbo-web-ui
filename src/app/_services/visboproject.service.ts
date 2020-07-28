@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboProject, VisboProjectResponse, VisboProjectLockResponse, VPRestrict } from '../_models/visboproject';
-import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
+import { VisboProject, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse } from '../_models/visboproject';
+import { VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
 
@@ -29,7 +29,7 @@ export class VisboProjectService {
 
 
   /** GET VisboProjects from the server if id is specified get only projects of this vcid*/
-  getVisboProjects(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject[]> {
+  getVisboProjects(id: string, sysadmin = false, deleted = false): Observable<VisboProject[]> {
     const url = `${this.vpUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -49,7 +49,7 @@ export class VisboProjectService {
       .pipe(
         map(response => response.vp),
         tap(visboprojects => this.log(`fetched ${visboprojects.length} VisboProjects `)),
-        catchError(this.handleError('getVisboProjects', []))
+        catchError(this.handleError<VisboProject[]>('getVisboProjects'))
       );
   }
 
@@ -70,7 +70,7 @@ export class VisboProjectService {
   }
 
   /** GET VisboProject by id. Will 404 if id not found */
-  getVisboProject(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject> {
+  getVisboProject(id: string, sysadmin = false, deleted = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -95,7 +95,7 @@ export class VisboProjectService {
   }
 
   /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
-  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboProject> {
+  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, sysadmin = false, deleted = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -146,7 +146,7 @@ export class VisboProjectService {
   }
 
   /** DELETE: delete the Visbo Project from the server */
-  deleteVisboProject (visboproject: VisboProject, deleted: boolean = false): Observable<any> {
+  deleteVisboProject (visboproject: VisboProject, deleted = false): Observable<VisboProjectResponse> {
     const id = visboproject._id;
     const url = `${this.vpUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -158,13 +158,13 @@ export class VisboProjectService {
 
     return this.http.delete<VisboProjectResponse>(url, { headers , params })
       .pipe(
-        tap(_ => this.log(`deleted VisboProject id=${id}`)),
-        catchError(this.handleError('deleteVisboProject'))
+        tap(() => this.log(`deleted VisboProject id=${id}`)),
+        catchError(this.handleError<VisboProjectResponse>('deleteVisboProject'))
       );
   }
 
   /** PUT: update the Visbo Project on the server */
-  updateVisboProject (visboproject: VisboProject, deleted: boolean = false): Observable<VisboProject> {
+  updateVisboProject (visboproject: VisboProject, deleted = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${visboproject._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -175,13 +175,13 @@ export class VisboProjectService {
     return this.http.put<VisboProjectResponse>(url, visboproject, { headers , params })
       .pipe(
         map(response => response.vp[0]),
-        tap(_ => this.log(`updated VisboProject id=${visboproject._id} url=${this.vpUrl}`)),
-        catchError(this.handleError<any>('updateVisboProject'))
+        tap(() => this.log(`updated VisboProject id=${visboproject._id} url=${this.vpUrl}`)),
+        catchError(this.handleError<VisboProject>('updateVisboProject'))
       );
   }
 
   // GET VisboProject Users for a specified VP from the server
-  getVPUsers(vpid: string, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
+  getVPUsers(vpid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
     const url = `${this.vpUrl}/${vpid}/group?userlist=1`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -195,40 +195,39 @@ export class VisboProjectService {
     return this.http.get<VGResponse>(url, { headers , params })
       .pipe(
         map(response => {
-          let userGroupMix: VGUserGroupMix;
-          userGroupMix = new VGUserGroupMix();
+          const userGroupMix = new VGUserGroupMix();
           userGroupMix.users = response.users;
           userGroupMix.groups = response.groups;
           return userGroupMix;
         }),
         // tap(users => this.log(`fetched Users & Groups Users `)),
-        catchError(this.handleError('getVisboProjectUsers', []))
+        catchError(this.handleError<VGUserGroupMix>('getVisboProjectUsers'))
       );
   }
 
   /** POST: add a new User to the Visbo Project */
-  addVPUser (email: string, groupId: string, message: string, vpid: string, sysadmin: boolean = false): Observable<VGGroup> {
+  addVPUser (email: string, groupId: string, message: string, vpid: string, sysadmin = false): Observable<VGGroup> {
     const url = `${this.vpUrl}/${vpid}/group/${groupId}/user`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
-    let reqBody: any;
-    reqBody = {};
-    reqBody.email = email;
-    reqBody.message = message;
+    const reqBody = {
+      email: email,
+      message: message
+    };
     this.log(`Calling HTTP Request: ${url} for ${email} `);
     return this.http.post<VGResponse>(url, reqBody, { headers , params })
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo User to Group with id=${group._id}`)),
-        catchError(this.handleError<any>('addVPUser'))
+        catchError(this.handleError<VGGroup>('addVPUser'))
       );
   }
 
   /** DELETE: remove a User from the Visbo Project */
-  deleteVPUser (user: VGUserGroup, vpid: string, sysadmin: boolean = false): Observable<any> {
+  deleteVPUser (user: VGUserGroup, vpid: string, sysadmin = false): Observable<VGGroup> {
     const url = `${this.vpUrl}/${vpid}/group/${user.groupId}/user/${user.userId}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -238,13 +237,14 @@ export class VisboProjectService {
     this.log(`Calling HTTP Request: ${url} for ${user.email} as ${user.groupName} `);
     return this.http.delete<VGResponse>(url, { headers , params })
     .pipe(
-      tap(users => this.log(`deleted Visbo Project User ${user.email}`)),
-      catchError(this.handleError<any>('deleteVisboProjectUser'))
+      map(result => result.groups[0]),
+      tap(() => this.log(`deleted Visbo Project User ${user.email}`)),
+      catchError(this.handleError<VGGroup>('deleteVisboProjectUser'))
     );
   }
 
   /** POST: add a new Group to the Visbo Project */
-  addVPGroup (newGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+  addVPGroup (newGroup: VGGroup, sysadmin = false): Observable<VGGroup> {
     const url = `${this.vpUrl}/${newGroup.vpids[0]}/group`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -256,12 +256,12 @@ export class VisboProjectService {
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo Group with id=${group._id}`)),
-        catchError(this.handleError<any>('addVPGroup'))
+        catchError(this.handleError<VGGroup>('addVPGroup'))
       );
   }
 
   /** PUT: modify a VP Group in the Visbo Project (Change: Name, Global, Permission)*/
-  modifyVPGroup (actGroup: VGGroup, sysadmin: boolean = false): Observable<VGGroup> {
+  modifyVPGroup (actGroup: VGGroup, sysadmin = false): Observable<VGGroup> {
     const url = `${this.vpUrl}/${actGroup.vpids[0]}/group/${actGroup._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -273,12 +273,12 @@ export class VisboProjectService {
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`modified Visbo Group with id=${JSON.stringify(group)}`)),
-        catchError(this.handleError<any>('addVPGroup'))
+        catchError(this.handleError<VGGroup>('addVPGroup'))
       );
   }
 
   /** DELETE: remove a Group from the Visbo Project */
-  deleteVPGroup (group: VGGroup, vpid: string, sysadmin: boolean = false): Observable<any> {
+  deleteVPGroup (group: VGGroup, vpid: string, sysadmin = false): Observable<VGResponse> {
     const url = `${this.vpUrl}/${vpid}/group/${group._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -289,13 +289,13 @@ export class VisboProjectService {
     return this.http.delete<VGResponse>(url, { headers , params })
     .pipe(
       // map(response => response.vc[0].users),
-      tap(groups => this.log(`deleted Visbo Project Group ${group.name}`)),
-      catchError(this.handleError<any>('deleteVisboProjectGroup'))
+      tap(() => this.log(`deleted Visbo Project Group ${group.name}`)),
+      catchError(this.handleError<VGResponse>('deleteVisboProjectGroup'))
     );
   }
 
   /** DELETE: unlock Visbo Project Variant */
-  unlockVP (variantName: string, vpid: string, sysadmin: boolean = false): Observable<any> {
+  unlockVP (variantName: string, vpid: string, sysadmin = false): Observable<VPLock[]> {
     const url = `${this.vpUrl}/${vpid}/lock`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -308,37 +308,37 @@ export class VisboProjectService {
     this.log(`Calling HTTP Request: ${url} Params ${params} `);
     return this.http.delete<VisboProjectLockResponse>(url, { headers , params })
     .pipe(
-      // map(response => response.vc[0].users),
-      tap(lock => this.log(`deleted Visbo Project Lock ${variantName}`)),
-      catchError(this.handleError<any>('deleteVisboProjectLock'))
+      map(response => response.lock),
+      tap(() => this.log(`deleted Visbo Project Lock ${variantName}`)),
+      catchError(this.handleError<VPLock[]>('deleteVisboProjectLock'))
     );
   }
 
   /** DELETE: delete Visbo Project Restriction */
-  deleteRestriction (vpid: string, restrictid: string): Observable<any> {
+  deleteRestriction (vpid: string, restrictid: string): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/restrict/${restrictid}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const params = new HttpParams();
     this.log(`Calling HTTP Request: ${url} Params ${params} `);
     return this.http.delete<VisboProjectResponse>(url, { headers , params })
     .pipe(
-      // map(response => response.vc[0].users),
-      tap(response => this.log(`deleted Visbo Project Restriction ${response.vp[0].name}`)),
-      catchError(this.handleError<any>('deleteVisboProjectRestriction'))
+      map(response => response.vp[0]),
+      tap(vp => this.log(`deleted Visbo Project Restriction in VP ${vp.name}`)),
+      catchError(this.handleError<VisboProject>('deleteVisboProjectRestriction'))
     );
   }
 
   /** Add: add Visbo Project Restriction */
-  addRestriction (vpid: string, restrict: VPRestrict): Observable<any> {
+  addRestriction (vpid: string, restrict: VPRestrict): Observable<VPRestrict> {
     const url = `${this.vpUrl}/${vpid}/restrict`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const params = new HttpParams();
     this.log(`Calling HTTP Request: ${url} Params ${params} `);
-    return this.http.post<VisboProjectResponse>(url, restrict, { headers , params })
+    return this.http.post<VisboRestrictResponse>(url, restrict, { headers , params })
     .pipe(
-      // map(response => response.vc[0].users),
-      tap(response => this.log(`added Visbo Project Restriction ${JSON.stringify(response)}`)),
-      catchError(this.handleError<any>('addVisboProjectRestriction'))
+      map(response => response.restrict[0]),
+      tap(restrict => this.log(`added Visbo Project Restriction ${JSON.stringify(restrict)}`)),
+      catchError(this.handleError<VPRestrict>('addVisboProjectRestriction'))
     );
   }
 
@@ -348,7 +348,8 @@ export class VisboProjectService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T> (operation = 'operation') {
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request failed: ${error.error.message} ${error.status}`);

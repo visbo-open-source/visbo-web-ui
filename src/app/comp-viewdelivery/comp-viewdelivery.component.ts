@@ -10,7 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectVersion, VPVDelivery } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
@@ -41,7 +41,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   statusList: string[];
   deliveryIndex: number;
 
-  listType: any[] = [
+  listType = [
     {name: 'PFV', ref: 'pfv', localName: ''},
     {name: 'VPV', ref: 'vpv', localName: ''},
     {name: 'All', ref: undefined, localName: ''}
@@ -50,25 +50,37 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   refType = this.listType[0].ref;
   switchType = true;
 
-  parentThis: any;
-  colors: string[] = ['#005600', 'green', 'orange', 'red'];
+  parentThis = this;
+  colors = ['#005600', 'green', 'orange', 'red'];
 
-  graphAllDataPieChart: any[] = [];
-  graphAllPieLegend: any;
-  graphAllOptionsPieChart: any = undefined;
+  graphAllDataPieChart = [];
+  graphAllPieLegend = [
+    ['string', this.translate.instant('compViewDelivery.lbl.status')],
+    ['number', this.translate.instant('compViewDelivery.lbl.count')]
+  ];
+  graphAllOptionsPieChart = {
+      title: 'View Delivery Status',
+      titleTextStyle: {color: 'black', fontSize: '16'},
+      // pieSliceText: 'value',
+      pieSliceText: 'percentage',
+      tooltip : {
+        trigger: 'none'
+      },
+      // sliceVisibilityThreshold: .025
+      colors: this.colors
+    };
   divAllPieChart = 'divAllDeliveryPieChart';
 
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   currentLang: string;
 
   sortColumnDelivery: number;
   sortAscendingDelivery: boolean;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.parentThis = this;
     this.statusList = [
       this.translate.instant('keyMetrics.chart.statusDeliveryAhead'),
       this.translate.instant('keyMetrics.chart.statusDeliveryInTime'),
@@ -80,8 +92,8 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     this.visboDeliveryCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboDeliveryCalc();
     }
@@ -208,27 +220,11 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
 
   visboViewAllDeliveryPie(): void {
     // if (!this.filteredDelivery || this.filteredDelivery.length == 0) return;
-    this.graphAllOptionsPieChart = {
-        title: this.translate.instant('compViewDelivery.titleAllDelivery'),
-        titleTextStyle: {color: 'black', fontSize: '16'},
-        // pieSliceText: 'value',
-        pieSliceText: 'percentage',
-        tooltip : {
-          trigger: 'none'
-        },
-        // sliceVisibilityThreshold: .025
-        colors: this.colors
-      };
+    this.graphAllOptionsPieChart.title = this.translate.instant('compViewDelivery.titleAllDelivery');
 
-    this.graphAllPieLegend = [
-      ['string', this.translate.instant('compViewDelivery.lbl.status')],
-      ['number', this.translate.instant('compViewDelivery.lbl.count')]
-    ];
-
-    const finishedDeliveryStatus: any = [];
+    const finishedDeliveryStatus = [];
     const graphData = [];
     let status;
-    const refDate = this.vpvActive.timestamp;
     for (let i = 0; i < this.statusList.length; i++) {
       finishedDeliveryStatus[i] = 0;
     }
@@ -338,7 +334,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     this.router.navigate(['vpRestrict/'.concat(this.vpvActive.vpid)], { queryParams: { id: nameID }});
   }
 
-  sortDeliveryTable(n?: number) {
+  sortDeliveryTable(n?: number): void {
     if (!this.filteredDelivery) {
       return;
     }

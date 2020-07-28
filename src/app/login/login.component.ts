@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, Resolve, ActivatedRoute } from '@angular/router';
-
-import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpParams } from '@angular/common/http';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -9,9 +8,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { Login } from '../_models/login';
 
-import { VGPermission, VGPSystem, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
@@ -19,11 +16,12 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
-  model: any = {};
-  restVersionString: string = undefined;
+  email: string;
+  userpw: string;
+  restVersionString: string;
   loading = false;
   returnUrl: string;
-  returnParams: any = undefined;
+  returnParams: HttpParams;
   userLang = 'en';
 
   constructor(
@@ -36,13 +34,13 @@ export class LoginComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // reset login status
     this.authenticationService.logout();
     // this.restVersion();
 
     if (this.route.snapshot.queryParams.email) {
-      this.model.username = this.route.snapshot.queryParams.email;
+      this.email = this.route.snapshot.queryParams.email;
     }
 
     // get return url from route parameters or default to '/'
@@ -53,18 +51,18 @@ export class LoginComponent implements OnInit {
 
     this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
     this.userLang = this.translate.currentLang;
-    this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
+    this.log(`return url ${this.returnUrl} params ${JSON.stringify(this.returnParams)}`);
     // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
-  restVersion() {
+  restVersion(): void {
     if (this.restVersionString) {
       return;
     }
     this.authenticationService.restVersion()
       .subscribe(
         data => {
-          this.restVersionString = data.version;
+          this.restVersionString = data.version.toISOString();
           this.log(`Version Status check success ${this.restVersionString}`);
         },
         error => {
@@ -74,9 +72,9 @@ export class LoginComponent implements OnInit {
       );
   }
 
-  login() {
+  login(): void {
     this.loading = true;
-    this.authenticationService.login(this.model.username, this.model.password)
+    this.authenticationService.login(this.email, this.userpw)
       .subscribe(
         user => {
           // this.log(`Login Success Result ${JSON.stringify(user)}`);
@@ -92,12 +90,12 @@ export class LoginComponent implements OnInit {
           }
           this.visbocenterService.getSysVisboCenter()
             .subscribe(
-              vc => {
+              () => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
                 this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
               },
               error => {
-                this.log(`No SysVC found: `);
+                this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
                 this.router.navigate(['/'], {replaceUrl: true});
               }
             );
@@ -110,19 +108,19 @@ export class LoginComponent implements OnInit {
       );
   }
 
-  pwforgotten() {
-    const email = (this.model.username || '').trim();
+  pwforgotten(): void {
+    const email = (this.email || '').trim();
     this.log(`Forward to password forgotten ${email} `);
     // MS TODO: Check if user name is an e-Mail Address
     this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
   }
 
-  register() {
+  register(): void {
     this.log('Forward to Register');
     this.router.navigate(['register']);
   }
 
-  relogin() {
+  relogin(): void {
     // called after server respons with 401 'not authenticated'
     this.authenticationService.logout();
 
@@ -131,23 +129,22 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
-  useLanguage(language: string) {
+  useLanguage(language: string): void {
     this.translate.use(language);
 }
 
-  queryStringToJSON(querystring: string) {
+  queryStringToJSON(querystring: string): HttpParams {
     const pairs = (querystring || '').split('&');
-    let result: any;
-    result = {};
+    let result = new HttpParams();
 
     pairs.forEach(function(text) {
       const pair = text.split('=');
       // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
       if (pair[0]) {
-        result[pair[0]] = pair[1] || '';
+        result = result.append(pair[0], pair[1] || '');
       }
     });
-    return JSON.parse(JSON.stringify(result));
+    return result;
   }
 
   /** Log a message with the MessageService */

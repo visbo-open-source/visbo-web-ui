@@ -25,6 +25,13 @@ export class VisboUserStatus {
   lastLoginAt: Date;
   lastLoginFailedAt: Date;
   loginRetries: number;
+  expiresAt: Date;
+}
+
+export class VisboUserInvite {
+  email: string;
+  groupName: string;
+  inviteMessage: string;
 }
 
 export class VisboUser {
@@ -58,17 +65,24 @@ export class VisboUsersResponse {
   user: [VisboUser];
 }
 
-export class VisboStatusResponse {
+export class VisboVersion {
+  version: Date;
+  versionUI: Date;
+}
+
+export class VisboVersionResponse {
   state: string;
   message: string;
-  status: {version: string};
+  status: VisboVersion;
+}
+
+export class VisboStatusPWPolicy {
+  PWPolicy: string;
+  Description: string;
 }
 
 export class VisboStatusPWPolicyResponse {
   state: string;
   message: string;
-  value: {
-    PWPolicy: string,
-    Description: string
-  };
+  value: VisboStatusPWPolicy;
 }

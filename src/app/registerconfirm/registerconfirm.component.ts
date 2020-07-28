@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Event, Router, RoutesRecognized } from '@angular/router';
+import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
 import {TranslateService} from '@ngx-translate/core';
@@ -7,7 +7,6 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Login } from '../_models/login';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -17,7 +16,6 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
   styleUrls: ['./registerconfirm.component.css']
 })
 export class RegisterconfirmComponent implements OnInit {
-  model: any = {};
 
   constructor(
     private messageService: MessageService,
@@ -28,15 +26,15 @@ export class RegisterconfirmComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
-    this.model.hash = this.route.snapshot.queryParams.hash;
-    this.model._id = this.route.snapshot.queryParams.id;
-    this.log(`Init Register Confirm userid ${this.model._id} Token ${this.model.hash}`);
+  ngOnInit(): void {
+    const hash = this.route.snapshot.queryParams.hash;
+    const userId = this.route.snapshot.queryParams.id;
+    this.log(`Init Register Confirm userid ${userId} Token ${hash}`);
 
-    this.authenticationService.registerconfirm(this.model)
+    this.authenticationService.registerconfirm(userId, hash)
       .subscribe(
-        data => {
-          this.log(`Register Confirm Success ${JSON.stringify(data)}`);
+        () => {
+          this.log(`Register Confirm Success`);
           const message = this.translate.instant('registerConfirm.msg.registerSuccess');
           this.alertService.success(message, true);
           this.router.navigate(['login']);

@@ -1,6 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -8,7 +7,7 @@ import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
 import { UserService } from '../_services/user.service';
-import { VisboUser, VisboUserProfile, VisboUserResponse } from '../_models/login';
+import { VisboUser, VisboUserProfile } from '../_models/visbouser';
 import { AuthenticationService } from '../_services/authentication.service';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
@@ -20,8 +19,8 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
 export class UserProfileComponent implements OnInit {
 
   user: VisboUser;
-  model: any = {};
-  modelPw: any = {};
+  oldpw: string;
+  newpw: string;
 
   PWPolicy: string;
   PWPolicyDescription: string;
@@ -37,10 +36,10 @@ export class UserProfileComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getPWPolicy();
+    this.passwordInit();
     this.log('Start init User Get Profile');
-    this.modelPw = {};
     this.getUserProfile();
   }
 
@@ -50,20 +49,7 @@ export class UserProfileComponent implements OnInit {
       .subscribe(
         user => {
           this.user = user;
-          this.model.email = user.email;
-          this.model.updatedAt = user.updatedAt;
-          if (user.profile) {
-            this.model.firstName = user.profile.firstName;
-            this.model.lastName = user.profile.lastName;
-            this.model.company = user.profile.company;
-            this.model.phone = user.profile.phone;
-          }
-          if (user.status) {
-            this.model.registeredAt = user.status.registeredAt;
-            this.model.lastLoginAt = user.status.lastLoginAt;
-            this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
-          }
-
+          if (!this.user.profile) this.user.profile = new VisboUserProfile();
           this.log(`get User Profile success ${user.email}`);
         },
         error => {
@@ -75,29 +61,12 @@ export class UserProfileComponent implements OnInit {
 
   saveUserProfile(): void {
     this.loading = true;
-    this.log(`Save profile info now ${this.model.email}`);
-    if (!this.user.profile) {
-      this.user.profile = new VisboUserProfile;
-    }
-    this.user.profile.firstName = this.model.firstName;
-    this.user.profile.lastName = this.model.lastName;
-    this.user.profile.company = this.model.company;
-    this.user.profile.phone = this.model.phone;
-
+    this.log(`Save profile info now ${this.user.email}`);
     this.userService.updateUserProfile(this.user)
       .subscribe(
         user => {
           this.log(`Save profile success updatedAt ${user.updatedAt}`);
           this.user = user;
-          this.model.email = user.email;
-          this.model.updatedAt = user.updatedAt;
-          this.model.firstName = user.profile.firstName;
-          this.model.lastName = user.profile.lastName;
-          this.model.company = user.profile.company;
-          this.model.phone = user.profile.phone;
-          this.model.registeredAt = user.status.registeredAt;
-          this.model.lastLoginAt = user.status.lastLoginAt;
-          this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
 
           const message = this.translate.instant('profile.msg.updateSuccess');
           this.alertService.success(message, true);
@@ -117,31 +86,18 @@ export class UserProfileComponent implements OnInit {
   }
 
   passwordInit(): void {
-    this.modelPw = {};
+    this.oldpw = '';
+    this.newpw = '';
   }
 
   passwordChange(): void {
-    this.log(`Password Change ${this.model.email} Len Old ${this.modelPw.oldpassword.length} New ${this.modelPw.newpassword.length}`);
-    let model: any;
-    model = {};
-    model.oldpassword = this.modelPw.oldpassword;
-    model.password = this.modelPw.newpassword;
+    this.log(`Password Change ${this.user.email} Len Old ${this.oldpw.length} New ${this.newpw.length}`);
 
-    this.userService.passwordChange(model)
+    this.userService.passwordChange(this.oldpw, this.newpw)
       .subscribe(
         user => {
           this.log(`Change Password success updatedAt ${user.updatedAt}`);
           this.user = user;
-          this.model.email = user.email;
-          this.model.updatedAt = user.updatedAt;
-          this.model.firstName = user.profile.firstName;
-          this.model.lastName = user.profile.lastName;
-          this.model.company = user.profile.company;
-          this.model.phone = user.profile.phone;
-          this.model.registeredAt = user.status.registeredAt;
-          this.model.lastLoginAt = user.status.lastLoginAt;
-          this.model.lastLoginFailedAt = user.status.lastLoginFailedAt;
-
           const message = this.translate.instant('profile.msg.changePWSuccess');
           this.alertService.success(message, true);
         },
@@ -161,7 +117,7 @@ export class UserProfileComponent implements OnInit {
     this.getUserProfile();
   }
 
-  getPWPolicy() {
+  getPWPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(
         data => {

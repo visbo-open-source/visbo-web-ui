@@ -2,18 +2,17 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
-
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VisboUserInvite } from '../_models/visbouser';
+import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -26,17 +25,18 @@ export class VisbocenterDetailComponent implements OnInit {
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
   vgVPUsers: VGProjectUserGroup[];
-  newUserInvite: any = {};
-  actGroup: any = {};
+  newUserInvite = new VisboUserInvite();
+  actGroup: VGGroupExpanded;
+  confirm: string;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
   showProjectUsers: boolean;
 
-  combinedPerm: VGPermission = undefined;
-  combinedUserPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  combinedPerm: VGPermission;
+  combinedUserPerm: VGPermission;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   sortUserColumn = 1;
   sortUserAscending = true;
@@ -55,7 +55,7 @@ export class VisbocenterDetailComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getVisboCenter();
     this.getVisboCenterUsers();
   }
@@ -210,8 +210,7 @@ export class VisbocenterDetailComponent implements OnInit {
       .subscribe(
         group => {
           // Add User to User & Group list
-          let newUserGroup: VGUserGroup;
-          newUserGroup = new VGUserGroup();
+          const newUserGroup = new VGUserGroup();
           newUserGroup.userId = group.users.filter(user => user.email === email)[0].userId;
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
@@ -254,7 +253,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
-  addUserPerm(listUser): void {
+  addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
     }
@@ -290,7 +289,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Group: ${user.groupName} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid)
       .subscribe(
-        users => {
+        () => {
           // this.log(`Remove VisboCenter User result: ${JSON.stringify(result)}`);
           // this.visbocenter.users = users;
           // filter user from vgUsers
@@ -323,7 +322,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  helperVCPerm(newGroup: any): number {
+  helperVCPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedView) { perm += this.permVC.View; }
     if (newGroup.checkedViewAudit) { perm += this.permVC.ViewAudit; }
@@ -334,7 +333,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return perm;
   }
 
-  helperVPPerm(newGroup: any): number {
+  helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPView) { perm += this.permVP.View; }
     if (newGroup.checkedVPViewAudit) { perm += this.permVP.ViewAudit; }
@@ -347,15 +346,15 @@ export class VisbocenterDetailComponent implements OnInit {
   }
 
   initGroup(curGroup: VGGroup): void {
-
+    this.actGroup = new VGGroupExpanded();
     if (curGroup) {
-      this.actGroup.confirm = (curGroup.groupType === 'VC') ? this.translate.instant('vcDetail.btn.save') : this.translate.instant('vcDetail.btn.view');
-      this.actGroup.gid = curGroup._id;
-      this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
-      this.actGroup.groupName = curGroup.name;
+      this.confirm = (curGroup.groupType === 'VC') ? this.translate.instant('vcDetail.btn.save') : this.translate.instant('vcDetail.btn.view');
+      this.actGroup._id = curGroup._id;
+      this.log(`Init Group Set GroupID : ${this.actGroup._id} ID ${curGroup._id}`);
+      this.actGroup.name = curGroup.name;
       this.actGroup.groupType = curGroup.groupType;
       this.actGroup.internal = curGroup.internal;
-      this.actGroup.checkGlobal = curGroup.global;
+      this.actGroup.global = curGroup.global;
       this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0;
       this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0;
       this.actGroup.checkedModify = (curGroup.permission.vc & this.permVC.Modify) > 0;
@@ -369,34 +368,33 @@ export class VisbocenterDetailComponent implements OnInit {
       this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0;
       this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0;
     } else {
-      this.actGroup.confirm = this.translate.instant('vcDetail.btn.addGroup');
-      this.actGroup.gid = undefined;
-      this.actGroup.groupName = '';
+      this.confirm = this.translate.instant('vcDetail.btn.addGroup');
+      this.actGroup._id = undefined;
+      this.actGroup.name = '';
       this.actGroup.groupType = 'VC';
       this.actGroup.internal = false;
-      this.actGroup.checkGlobal = false;
+      this.actGroup.global = false;
       this.actGroup.checkedView = true;
     }
-    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid} Action ${this.actGroup.confirm} `);
+    this.log(`Init Group for Creation / Modification: ${this.actGroup.name} ID ${this.actGroup._id} Action ${this.confirm} `);
   }
 
   addModifyVCGroup(): void {
-    let newGroup: VGGroup;
-    newGroup = new VGGroup;
+    const newGroup = new VGGroup;
 
-    newGroup.name = this.actGroup.groupName.trim();
-    newGroup.global = this.actGroup.checkGlobal;
+    newGroup.name = this.actGroup.name.trim();
+    newGroup.global = this.actGroup.global;
     newGroup.vcid = this.visbocenter._id;
     newGroup.permission = new VGPermission;
     newGroup.permission.vc = this.helperVCPerm(this.actGroup);
     newGroup.permission.vp = this.helperVPPerm(this.actGroup);
 
-    this.log(`Add/Modify VisboCenter Group: Group: ${newGroup.name} New/Modify ${this.actGroup.gid}`);
+    this.log(`Add/Modify VisboCenter Group: Group: ${newGroup.name} New/Modify ${this.actGroup._id}`);
 
-    if (this.actGroup.gid) {
+    if (this.actGroup._id) {
       // modify existing Group
       this.log(`Modify VisboCenter Group: Group: ${newGroup.name} VC: ${newGroup.vcid} Perm: vc ${newGroup.permission.vc} vp ${newGroup.permission.vp}`);
-      newGroup._id = this.actGroup.gid;
+      newGroup._id = this.actGroup._id;
       this.visbocenterService.modifyVCGroup(newGroup)
         .subscribe(
           group => {
@@ -477,7 +475,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  sortUserTable(n?: number) {
+  sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortUserColumn === undefined) {
@@ -502,7 +500,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
-  sortVPUserTable(n?: number) {
+  sortVPUserTable(n?: number): void {
     if (!this.vgVPUsers) {
       return;
     }
@@ -530,7 +528,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
-  sortGroupTable(n?: number) {
+  sortGroupTable(n?: number): void {
     if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortGroupColumn === undefined) {

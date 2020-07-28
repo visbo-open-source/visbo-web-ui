@@ -24,22 +24,24 @@ export class AppComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const langToSet = this.translate.getBrowserLang();
     this.log(`Browser Language: ${langToSet}`);
     // MS TODO: Verify if this really waits
     // load the tranlation file and use later instant access
-    this.translate.use(langToSet).subscribe(() => {
+    this.translate.use(langToSet).subscribe(
+      () => {
         this.log(`Successfully initialized '${langToSet}' language.'`);
         this.localsAvailable = true;
-      }, error => {
+      },
+      () => {
         this.log(`Problem with '${langToSet}' language initialization.'`);
       });
     this.restVersion();
     // this.pwPolicy();
   }
 
-  restVersion() {
+  restVersion(): void {
     this.authenticationService.restVersion()
       .subscribe(
         data => {
@@ -59,10 +61,10 @@ export class AppComponent implements OnInit {
       );
   }
 
-  pwPolicy() {
+  pwPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(
-        data => {
+        () => {
           this.log(`Init PW Policy success`);
         },
         error => {

@@ -12,7 +12,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
@@ -40,8 +40,8 @@ export class VisboProjectViewVPVComponent implements OnInit {
   sortColumn = 1;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -53,7 +53,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
 
     if (this.route.snapshot.queryParams.refDate) {
@@ -131,7 +131,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
     return localA.getTime() === localB.getTime();
   }
 
-  setVpvActive(vpv: any): void {
+  setVpvActive(vpv: VisboProjectVersion): void {
     this.log(`setVpvActive ${vpv._id}`);
     this.vpvActive = vpv;
     if (this.vpvActive && this.vpvActive.timestamp) {
@@ -148,6 +148,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
     this.log(`get getRefDateVersions current ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
     const newRefDate = new Date(this.scrollRefDate);
     let i = 0;
+    let quarter = 0;
     switch (this.refDateInterval) {
       case 'day':
         newRefDate.setHours(0, 0, 0, 0); // beginning of day
@@ -167,7 +168,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
         }
         break;
       case 'quarter':
-        let quarter = Math.trunc(newRefDate.getMonth() / 3);
+        quarter = Math.trunc(newRefDate.getMonth() / 3);
         if (increment > 0) {
           quarter += increment;
         }
@@ -261,7 +262,7 @@ export class VisboProjectViewVPVComponent implements OnInit {
     return visboGetShortText(text, len);
   }
 
-  sortVPVTable(n) {
+  sortVPVTable(n: number): void {
     if (!this.visboprojectversions) {
       return;
     }

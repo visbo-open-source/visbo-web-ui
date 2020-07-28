@@ -89,7 +89,7 @@ import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
-import { GoogleChartModule } from './google-chart/google-chart.module';
+import { GoogleChartModule } from './_chart/google-chart.module';
 
 @NgModule({
   declarations: [
@@ -182,6 +182,6 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
 export class AppModule { }
 
 // required for AOT compilation
-export function HttpLoaderFactory(http: HttpClient) {
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http);
 }

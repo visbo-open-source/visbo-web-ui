@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Event, Router, RoutesRecognized } from '@angular/router';
+import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Login } from '../_models/login';
+import { VisboUser } from '../_models/visbouser';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -18,10 +17,10 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
   styleUrls: ['./pwreset.component.css']
 })
 export class PwresetComponent implements OnInit {
-  model: any = {};
+  user: VisboUser;
 
   loading = false;
-  token = '';
+  token: string;
   PWPolicy: string;
   PWPolicyDescription: string;
 
@@ -34,19 +33,19 @@ export class PwresetComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getPWPolicy();
+    this.user = new VisboUser();
     this.token = this.route.snapshot.queryParams.token;
     this.log(`Init PW Reset Token ${this.token}`);
   }
 
-  pwreset() {
+  pwreset(): void {
     this.loading = true;
-    this.model.token = this.token;
 
-    this.authenticationService.pwreset(this.model)
+    this.authenticationService.pwreset(this.user, this.token)
       .subscribe(
-        data => {
+        () => {
           const message = this.translate.instant('pwReset.msg.pwResetSuccess');
           this.alertService.success(message, true);
           this.router.navigate(['login']);
@@ -54,13 +53,13 @@ export class PwresetComponent implements OnInit {
         error => {
           this.loading = false;
           const message = this.translate.instant('pwReset.msg.pwResetError');
-          this.alertService.error(getErrorMessage(error), true);
+          this.alertService.error(message, true);
           this.log(`Error during Reset Password ${error.error.message}`);
         }
       );
   }
 
-  getPWPolicy() {
+  getPWPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(
         data => {
@@ -77,7 +76,7 @@ export class PwresetComponent implements OnInit {
   }
 
   /** Log a message with the MessageService */
-  private log(message: string) {
+  private log(message: string): void {
     this.messageService.add('PW Reset: ' + message);
   }
 }

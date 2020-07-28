@@ -7,12 +7,10 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboRole} from '../_models/visbosetting';
-import { VisboProject } from '../_models/visboproject';
-import { VisboCenter } from '../_models/visbocenter';
+import { VisboProjectVersion } from '../_models/visboprojectversion';
 
 import * as moment from 'moment';
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { visboCmpString } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -21,15 +19,26 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   @Input() refDate: Date;
-  @Input() vps: any[];
+  @Input() vps: VisboProjectVersion[];
 
   currentRefDate: Date;
   vpFilter: string;
 
-  parentThis: any;
+  parentThis = this;
 
-  graphDataTimeline: any[] = [];
-  graphOptionsTimeline: any = undefined;
+  graphDataTimeline = [];
+  graphOptionsTimeline = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      height: 500,
+      timeline: {
+        showBarLabels: true
+      },
+      tooltip: {
+        isHtml: true
+      },
+      animation: {startup: true, duration: 200}
+    };
   currentLang: string;
 
   constructor(
@@ -40,9 +49,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.parentThis = this;
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
     this.log(`ProjectBoard Init  ${this.refDate.toISOString()} ${this.refDate !== this.currentRefDate} `);
@@ -50,38 +58,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.visboViewBoardOverTime();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()} `);
-    // if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
-      this.visboViewBoardOverTime();
-    // }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()}, Changes ${JSON.stringify(changes)}`);
+    this.visboViewBoardOverTime();
   }
 
   visboViewBoardOverTime(): void {
-    this.graphOptionsTimeline = {
-        // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-        width: '100%',
-        height: 500,
-        timeline: {
-          showBarLabels: true
-        },
-        tooltip: {
-          isHtml: true
-        },
-        animation: {startup: true, duration: 200}
-        // explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01}
-        // curveType: 'function',
-        // colors: this.colors,
-        // hAxis: {
-        //   format: 'MMM YY',
-        //   gridlines: {
-        //     color: '#FFF',
-        //     count: -1
-        //   }
-        // }
-      };
     this.currentRefDate = this.refDate;
-    const graphDataTimeline: any = [];
+    const graphDataTimeline = [];
     if (!this.vps || this.vps.length === 0) {
       this.graphDataTimeline = [];
       return;
@@ -115,8 +99,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
         ]);
-      } else {
-
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
@@ -138,15 +120,15 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.graphDataTimeline = graphDataTimeline;
   }
 
-  createCustomHTMLContent(vp: any): string {
-    const startDate = moment(vp.startDate).format('DD.MM.YY');
-    const endDate = moment(vp.endDate).format('DD.MM.YY');
-    let name = vp.name;
-    if (vp.variantName) {
-      name = name.concat('(' + vp.variantName + ')');
+  createCustomHTMLContent(vpv: VisboProjectVersion): string {
+    const startDate = moment(vpv.startDate).format('DD.MM.YY');
+    const endDate = moment(vpv.endDate).format('DD.MM.YY');
+    let name = vpv.name;
+    if (vpv.variantName) {
+      name = name.concat('(' + vpv.variantName + ')');
     }
     let result = '<div style="padding:5px 5px 5px 5px;">' +
-      '<div><b>' + vp.name + '</b></div>' + '<div>' +
+      '<div><b>' + name + '</b></div>' + '<div>' +
       '<table>';
 
     const bu = this.translate.instant('compViewBoard.lbl.bu');
@@ -155,14 +137,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
 
-    if (vp.businessUnit) {
-      result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + vp.businessUnit + '</b></td>' + '</tr>';
+    if (vpv.businessUnit) {
+      result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + vpv.businessUnit + '</b></td>' + '</tr>';
     }
-    if (vp.leadPerson) {
-      result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + vp.leadPerson + '</b></td>' + '</tr>';
+    if (vpv.leadPerson) {
+      result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + vpv.leadPerson + '</b></td>' + '</tr>';
     }
-    if (vp.VorlagenName) {
-      result = result + '<tr>' + '<td>' + template + ':</td>' + '<td><b>' + vp.VorlagenName + '</b></td>' + '</tr>';
+    if (vpv.VorlagenName) {
+      result = result + '<tr>' + '<td>' + template + ':</td>' + '<td><b>' + vpv.VorlagenName + '</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
@@ -176,9 +158,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const vp = this.vps.find(x => x.name === vpName);
 
     this.log(`Navigate to: ${vp.vpid} ${vp.name}`);
-    let queryParams: any;
-    queryParams = {};
-    this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: queryParams });
+    this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: {} });
   }
 
   getvps(): string {
