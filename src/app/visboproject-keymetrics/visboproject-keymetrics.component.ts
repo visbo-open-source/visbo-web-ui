@@ -521,8 +521,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       }
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
-        this.visboprojectversions[i].keyMetrics.timeDelayFinished || 0,
-        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished || 0
+        this.visboprojectversions[i].keyMetrics.timeDelayFinished,
+        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished
       ]);
     }
     if (keyMetrics.length === 0) {

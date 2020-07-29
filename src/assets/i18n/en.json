@@ -11,10 +11,11 @@
 		},
 		"msg": {
 			"loginSuccess": "You were authenticated successfully. Last Login at {{lastLogin}}",
+			"loginFailure": "Username {{user}} not found or wrong password",
 			"emailRequired": "A correct e-mail address is required!",
 			"pwRequired": "Password is required!"
 		},
-		"title": "Welcome to the VISBO - the project warehouse"
+		"title": "Welcome to VISBO - the project warehouse"
 	},
 	"dashboard": {
 		"topvc": "Top VISBO Centers",
@@ -108,6 +109,7 @@
 			"registerSuccess": "Congratulation, your e-mail address {{email}} is now confirmed. Please login. ",
 			"registerSuccessConfirm": "Congratulation, you registered successfully your e-mail address  {{email}}. Please check your e-Mail for confirmation.",
 			"registerError": "Error durin registration: {{message}}",
+			"confirmDP_TOU": "You have to accept the Terms & Conditioons and the Data Protection Policy",
 			"followPolicy": "New password has to follow the Policy.",
 			"followRule": "Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8."
 		}
@@ -974,7 +976,9 @@
 			"timeStamp": "Time Stamp",
 			"shortcut": "Shortcut",
 			"explanation": "Explanation",
-			"showLegend": "Show shortcut explanation"
+			"showLegend": "Show shortcut explanation",
+			"actualDelay": "Actual Delay",
+			"totalDelay": "Total Delay"
 		},
 		"chart": {
 			"statusDeliveryAhead": "Ahead",
