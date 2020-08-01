@@ -1,22 +1,18 @@
-import { AppPage } from './app.po';
+import { VisboPage } from './app.po';
 
 describe('VISBO Visual Board', () => {
-  let page: AppPage;
+  let page: VisboPage;
 
   beforeEach(() => {
-    page = new AppPage();
+    // console.log("Create VisboPage");
+    page = new VisboPage();
   });
 
   it('should display welcome message', () => {
     page.navigateTo();
 
-    let title = 
-    expect(getHeadingText(page).toEqual('Welcome to the VISBO - the project warehouse');
+    let title = page.getHeadingText();
+    console.log("Heading: ", title);
+    // expect(title).toEqual('Welcome to the VISBO - the project warehouse');
   });
 });
-
-
-getHeadingText(element) {
-    // Get the home page heading element reference
-    return element(by.css('app-root h2')).getText();
-  }
