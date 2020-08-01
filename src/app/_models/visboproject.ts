@@ -43,6 +43,8 @@ export class VisboProject {
   variant: [VPVariant];
   lock: [VPLock];
   restrict: [VPRestrict];
+  // eslint-disable-next-line
+  capacity: any[];
   vc: {
     name: string;
     deletedAt: Date;
@@ -62,4 +64,11 @@ export class VisboProjectLockResponse {
   state: string;
   message: string;
   lock: [VPLock];
+}
+
+export class VisboRestrictResponse {
+  state: string;
+  message: string;
+  restrict: [ VPRestrict ];
+  perm: {system: number, vc: number, vp: number};
 }

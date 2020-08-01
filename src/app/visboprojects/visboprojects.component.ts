@@ -1,21 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject, VPTYPE } from '../_models/visboproject';
-import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboProject } from '../_models/visboproject';
+import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -30,6 +29,8 @@ export class VisboProjectsComponent implements OnInit {
   vcActive: VisboCenter;
 
   visboprojectversions: VisboProjectVersion[];
+  // vpvList: VisboProjectVersion[];
+  vpvWithKM: number;
   vpvRefDate: Date = new Date();
   chart = false;
   modalChart = true;
@@ -38,10 +39,11 @@ export class VisboProjectsComponent implements OnInit {
   sortColumn: number;
 
   currentLang: string;
+  currentView: string;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private messageService: MessageService,
@@ -54,12 +56,15 @@ export class VisboProjectsComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
-    this.log(`Init VP Deleted: ${this.deleted}`);
+    const nextView = this.route.snapshot.queryParams['view'];
+    if (nextView) { this.chart = true; }
+    this.currentView = nextView || 'KeyMetrics';
 
+    this.log(`Init VP View: ${this.currentView} Deleted: ${this.deleted}`);
     this.getVisboProjects(this.deleted);
   }
 
@@ -81,6 +86,20 @@ export class VisboProjectsComponent implements OnInit {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  changeView(nextView: string): void {
+    if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
+      this.currentView = nextView;
+    } else {
+      this.currentView = 'KeyMetrics';
+    }
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = {
+      deleted: this.deleted,
+      view: this.currentView
+    };
+    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+  }
+
   toggleVisboChart(): void {
     this.chart = !this.chart;
     if (this.chart && !this.visboprojectversions) {
@@ -89,6 +108,7 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   toggleVisboProjects(): void {
+    this.chart = false;
     this.deleted = !this.deleted;
     const url = this.route.snapshot.url.join('/');
     this.log(`VP toggleVisboProjects ${this.deleted} URL ${url}`);
@@ -177,6 +197,7 @@ export class VisboProjectsComponent implements OnInit {
       .subscribe(
         visboprojectversions => {
           this.visboprojectversions = visboprojectversions;
+          this.calcVPVList();
           this.log(`get VC Key metrics: Get ${visboprojectversions.length} Project Versions`);
           if (this.visboprojectversions.length === 0) {
             this.chart = false;
@@ -192,6 +213,28 @@ export class VisboProjectsComponent implements OnInit {
           }
         }
       );
+  }
+
+  calcVPVList(): void {
+    if (!this.visboprojectversions?.length) { return; }
+    // this.vpvList = [];
+    this.vpvWithKM = 0;
+    for (let i = 0; i < this.visboprojectversions.length; i++) {
+      const item = this.visboprojectversions[i];
+      // const nextVPV = new VisboProjectVersion();
+      // nextVPV.vpid = item.vpid;
+      // nextVPV.name = item.name;
+      // nextVPV.variantName = item.variantName;
+      // nextVPV.timestamp = new Date(this.visboprojectversions[i].timestamp);
+      // nextVPV.startDate = this.visboprojectversions[i].startDate;
+      item.endDate = item.keyMetrics?.endDateCurrent || item.endDate;
+      // nextVPV.leadPerson = this.visboprojectversions[i].leadPerson;
+      // nextVPV.VorlagenName = this.visboprojectversions[i].VorlagenName;
+      // nextVPV.businessUnit = this.visboprojectversions[i].businessUnit;
+      // nextVPV.status = this.visboprojectversions[i].status;
+      this.vpvWithKM += this.visboprojectversions[i].keyMetrics ? 1 : 0;
+      // this.vpvList.push(nextVPV);
+    }
   }
 
   gotoClickedRow(visboproject: VisboProject): void {
@@ -217,7 +260,7 @@ export class VisboProjectsComponent implements OnInit {
     this.router.navigate(['vcDetail/'.concat(visbocenter._id)]);
   }
 
-  sortVPTable(n) {
+  sortVPTable(n: number): void {
     if (n !== undefined) {
       if (!this.visboprojects) {
         return;
@@ -262,6 +305,7 @@ export class VisboProjectsComponent implements OnInit {
       // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
+
 
   /** Log a message with the MessageService */
   private log(message: string) {

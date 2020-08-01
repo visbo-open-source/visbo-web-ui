@@ -3,7 +3,7 @@ export class VPFItem {
   name: string;
   variantName: string;
   Start: Date;
-  show: Boolean;
+  show: boolean;
   zeile: number;
   reasonToInclude: string;
   reasonToExclude: string;
@@ -22,7 +22,7 @@ export class VisboPortfolioVersion {
   createdAt: Date;
   deleted: {
     deletedAt: Date;
-    byParent: Boolean;
+    byParent: boolean;
   };
   perm: {system: number; vc: number; vp: number; };
 }

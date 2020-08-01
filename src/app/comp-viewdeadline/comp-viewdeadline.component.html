@@ -1,16 +1,29 @@
-<div *ngIf="displayDeadline()" class='well'>
+<div *ngIf="hasDeadlines()" class='well'>
   <div *ngIf="displaySwitch()" class="container">
-    <div class="d-flex justify-content-left">
-      <select class="col-3 form-control mx-1" name="type" [(ngModel)]="type" (change)="switchView()">
+    <div class="d-flex justify-content-center my-1">
+      <button type="button" class="btn btn-md btn-light mx-2" (click)="toggleGantt()">{{ buttonGantt }}</button>
+      <select class="col-3 form-control mx-2" name="type" [(ngModel)]="type" (change)="switchView()">
         <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
       </select>
     </div>
   </div>
 
-  <div *ngIf="!reducedList" class="container">
+  <div *ngIf="fullList && refType != 'vpv'" class="container">
     <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
       <div class="align-center" >
         <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphDataBefore]="graphBeforeAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="viewGantt" class="container">
+    <div *ngIf="showBreadCrumb()" class="mb-2">
+      <span *ngFor="let item of getBreadCrumb(); let pathIndex=index">
+        <a (click)="ganttSelectPath(item, pathIndex)">{{item}}</a> /
+      </span>
+    </div>
+    <div *ngIf="graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
+      <div>
+        <app-timeline-chart [graphData]="graphDataDeadlinesGantt" [graphOptions]="graphOptionsDeadlinesGantt" [parentThis]="parentThis"></app-timeline-chart>
       </div>
     </div>
   </div>
@@ -23,9 +36,9 @@
         <tr>
           <th class="text-left" (click)="sortDeadlineTable(2)">{{ 'compViewDeadline.lbl.planElement' | translate }}</th>
           <th class="d-none d-lg-table-cell" (click)="sortDeadlineTable(3)">{{ 'compViewDeadline.lbl.type' | translate }}</th>
-          <th *ngIf="!reducedList" class="d-none d-xl-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}</th>
+          <th *ngIf="switchType" class="d-none d-xl-table-cell text-right" (click)="sortDeadlineTable(7)">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}</th>
           <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(4)">{{ 'compViewDeadline.lbl.endDateVPV' | translate }}</th>
-          <th *ngIf="!reducedList" class="text-right" (click)="sortDeadlineTable(5)">{{ 'compViewDeadline.lbl.change' | translate }}</th>
+          <th *ngIf="switchType" class="text-right" (click)="sortDeadlineTable(5)">{{ 'compViewDeadline.lbl.change' | translate }}</th>
           <th class="d-none d-md-table-cell text-right" (click)="sortDeadlineTable(6)">{{ 'compViewDeadline.lbl.done' | translate }}</th>
           <th class="d-none d-md-table-cell"><i class="fas fa-lightbulb text-grey"></i></th>
         </tr>
@@ -39,9 +52,9 @@
           <td *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td *ngIf="getStatus(deadlines) === -1" title="{{getFullName(deadlines)}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
           <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
-          <td *ngIf="!reducedList" class="d-none d-xl-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
+          <td *ngIf="switchType" class="d-none d-xl-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
-          <td *ngIf="!reducedList" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
+          <td *ngIf="switchType" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
 
           <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
           <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>

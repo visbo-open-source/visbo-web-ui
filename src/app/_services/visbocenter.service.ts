@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
@@ -17,8 +17,7 @@ const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 export class VisboCenterService  {
   //   private vcUrl = 'vc';  // URL to api on same server
   private vcUrl = this.env.restUrl.concat('/vc');  // URL to web api
-  private combinedPerm: VGPermission = undefined;
-  private systemVC: number = undefined;
+  private combinedPerm: VGPermission;
 
   constructor(
     private http: HttpClient,
@@ -28,7 +27,7 @@ export class VisboCenterService  {
 
 
   /** GET VisboCenters from the server */
-  getVisboCenters(sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter[]> {
+  getVisboCenters(sysadmin = false, deleted = false): Observable<VisboCenter[]> {
     const url = this.vcUrl;
     let params = new HttpParams();
 
@@ -40,7 +39,7 @@ export class VisboCenterService  {
       .pipe(
         map(response => response.vc),
         tap(visbocenters => this.log(`fetched ${visbocenters.length} VisboCenters `)),
-        catchError(this.handleError('getVisboCenters', []))
+        catchError(this.handleError<VisboCenter[]>('getVisboCenters'))
       );
   }
 
@@ -58,23 +57,23 @@ export class VisboCenterService  {
                 if (response.vc && response.vc.length > 0) {
                   response.vc[0].perm = response.perm;
                   this.combinedPerm = response.perm;
-                  sessionStorage.setItem('combinedPerm', JSON.stringify(response.perm));
-                  sessionStorage.setItem('systemVC', response.vc[0]._id);
+                  localStorage.setItem('combinedPerm', JSON.stringify(response.perm));
+                  localStorage.setItem('systemVC', response.vc[0]._id);
                 }
                 return response.vc;
               }),
         tap(visbocenters => {
           this.log(`fetched System VisboCenter user Role is ${visbocenters[0].perm.system || 'None'}`);
         }),
-        catchError(this.handleError('getSysVisboCenters', []))
+        catchError(this.handleError<VisboCenter[]>('getSysVisboCenters'))
       );
   }
 
   /* Role of User in sysadmin */
-  getSysAdminRole() {
-    let result: any;
+  getSysAdminRole(): VGPermission {
+    let result: VGPermission;
     if (this.combinedPerm === undefined) {
-      result = JSON.parse(sessionStorage.getItem('combinedPerm'));
+      result = JSON.parse(localStorage.getItem('combinedPerm'));
     } else {
       result = this.combinedPerm;
     }
@@ -83,13 +82,8 @@ export class VisboCenterService  {
   }
 
   /* VCID of System */
-  getSysVCId() {
-    let result: any;
-    if (this.systemVC === undefined) {
-      result = sessionStorage.getItem('systemVC');
-    } else {
-      result = this.systemVC;
-    }
+  getSysVCId(): string {
+    const result = localStorage.getItem('systemVC');
     this.log(`Sysem VC ID: ${result}`);
 
     return result;
@@ -112,7 +106,7 @@ export class VisboCenterService  {
   // }
 
   /** GET VisboCenter by id. Will 404 if id not found */
-  getVisboCenter(id: string, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+  getVisboCenter(id: string, sysadmin = false, deleted = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -133,6 +127,31 @@ export class VisboCenterService  {
     );
   }
 
+  /** GET Capacity of VisboCenter by id. Will 404 if id not found */
+  getCapacity(id: string, refDate: Date, roleID: string, sysadmin = false, deleted = false): Observable<VisboCenter> {
+    const url = `${this.vcUrl}/${id}/capacity`;
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (roleID) {
+      params = params.append('roleID', roleID);
+    }
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                return response.vc[0];
+              }),
+      tap(visbocenter => this.log(`fetched Capacity for VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
+    );
+  }
+
   /* GET VisboCenters whose name contains search term */
   // searchVisboCenters(term: string): Observable<VisboCenter[]> {
   //   if (!term.trim()) {
@@ -141,7 +160,7 @@ export class VisboCenterService  {
   //   }
   //   return this.http.get<VisboCenter[]>(`api/visbocenters?name=${term}`).pipe(
   //     tap(_ => this.log(`found VisboCenters matching "${term}"`)),
-  //     catchError(this.handleError<VisboCenter[]>('searchVisboCenters', []))
+  //     catchError(this.handleError<VisboCenter[]>('searchVisboCenters'))
   //   );
   // }
 
@@ -163,7 +182,7 @@ export class VisboCenterService  {
 
 
   /** DELETE: delete the Visbo Center from the server */
-  deleteVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
+  deleteVisboCenter (visbocenter: VisboCenter, sysadmin = false, deleted = false): Observable<VisboCenterResponse> {
     const id = visbocenter._id;
     const url = `${this.vcUrl}/${id}`;
     let params = new HttpParams();
@@ -176,14 +195,14 @@ export class VisboCenterService  {
     }
     this.log(`Calling HTTP Request: ${url} `);
 
-    return this.http.delete<VisboCenter>(url, { headers , params }).pipe(
-      tap(response => this.log(`deleted VisboCenter id=${id}`)),
-      catchError(this.handleError<VisboCenter>('deleteVisboCenter'))
+    return this.http.delete<VisboCenterResponse>(url, { headers , params }).pipe(
+      tap(() => this.log(`deleted VisboCenter id=${id}`)),
+      catchError(this.handleError<VisboCenterResponse>('deleteVisboCenter'))
     );
   }
 
   /** PUT: update the Visbo Center on the server */
-  updateVisboCenter (visbocenter: VisboCenter, sysadmin: boolean = false, deleted: boolean = false): Observable<VisboCenter> {
+  updateVisboCenter (visbocenter: VisboCenter, sysadmin = false, deleted = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${visbocenter._id}`;
     let params = new HttpParams();
 
@@ -198,12 +217,12 @@ export class VisboCenterService  {
       .pipe(
         map(response => response.vc[0] ),
         tap(vc => this.log(`updated VisboCenter ${vc.name} with id=${vc._id}`)),
-        catchError(this.handleError<any>('updateVisboCenter'))
+        catchError(this.handleError<VisboCenter>('updateVisboCenter'))
       );
   }
 
   // GET VisboCenter Users for a specified VC from the server
-  getVCUsers(vcid: string, sysadmin: boolean = false, deleted: boolean = false): Observable<any> {
+  getVCUsers(vcid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
     const url = `${this.vcUrl}/${vcid}/group?userlist=1`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -216,15 +235,14 @@ export class VisboCenterService  {
     return this.http.get<VGResponse>(url, { headers , params })
       .pipe(
         map(response => {
-          let userGroupMix: VGUserGroupMix;
-          userGroupMix = new VGUserGroupMix();
+          const userGroupMix = new VGUserGroupMix();
           userGroupMix.users = response.users;
           userGroupMix.groups = response.groups;
           userGroupMix.vpusers = response.vpusers;
           return userGroupMix;
         }),
-        tap(users => this.log(`fetched Users & Groups Users `)),
-        catchError(this.handleError('getVisboCenterUsers', []))
+        tap(() => this.log(`fetched Users & Groups Users `)),
+        catchError(this.handleError<VGUserGroupMix>('getVisboCenterUsers'))
       );
   }
 
@@ -235,21 +253,21 @@ export class VisboCenterService  {
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
-    let reqBody: any;
-    reqBody = {};
-    reqBody.email = email;
-    reqBody.message = message || '';
+    const reqBody = {
+      email: email,
+      message: message || ''
+    };
     this.log(`Calling HTTP Request: ${url} for ${email} `);
     return this.http.post<VGResponse>(url, reqBody, { headers , params })
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo User to Group with id=${group._id}`)),
-        catchError(this.handleError<any>('addVCUser'))
+        catchError(this.handleError<VGGroup>('addVCUser'))
       );
   }
 
   /** DELETE: remove a User from the Visbo Center */
-  deleteVCUser (user: VGUserGroup, vcid: string, sysadmin?: boolean): Observable<any> {
+  deleteVCUser (user: VGUserGroup, vcid: string, sysadmin?: boolean): Observable<VGResponse> {
     const url = `${this.vcUrl}/${vcid}/group/${user.groupId}/user/${user.userId}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -259,8 +277,8 @@ export class VisboCenterService  {
     return this.http.delete<VGResponse>(url, { headers , params })
     .pipe(
       // map(response => response.vc[0].users),
-      tap(users => this.log(`deleted Visbo Center User ${user.email}`)),
-      catchError(this.handleError<any>('deleteVisboCenterUser'))
+      tap(() => this.log(`deleted Visbo Center User ${user.email}`)),
+      catchError(this.handleError<VGResponse>('deleteVisboCenterUser'))
     );
   }
 
@@ -276,7 +294,7 @@ export class VisboCenterService  {
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`added Visbo Group with id=${group._id}`)),
-        catchError(this.handleError<any>('addVCGroup'))
+        catchError(this.handleError<VGGroup>('addVCGroup'))
       );
   }
 
@@ -292,13 +310,13 @@ export class VisboCenterService  {
       .pipe(
         map(response => response.groups[0]),
         tap(group => this.log(`modified Visbo Group with id=${JSON.stringify(group)}`)),
-        catchError(this.handleError<any>('addVCGroup'))
+        catchError(this.handleError<VGGroup>('addVCGroup'))
       );
   }
 
 
   /** DELETE: remove a Group from the Visbo Center */
-  deleteVCGroup (group: VGGroup, sysadmin?: boolean): Observable<any> {
+  deleteVCGroup (group: VGGroup, sysadmin?: boolean): Observable<VGResponse> {
     const url = `${this.vcUrl}/${group.vcid}/group/${group._id}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -308,8 +326,8 @@ export class VisboCenterService  {
     return this.http.delete<VGResponse>(url, { headers , params })
     .pipe(
       // map(response => response.vc[0].users),
-      tap(groups => this.log(`deleted Visbo Center Group ${group.name}`)),
-      catchError(this.handleError<any>('deleteVisboCenterGroup'))
+      tap(() => this.log(`deleted Visbo Center Group ${group.name}`)),
+      catchError(this.handleError<VGResponse>('deleteVisboCenterGroup'))
     );
   }
 
@@ -319,8 +337,9 @@ export class VisboCenterService  {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
-    this.log(`HTTP Request ${operation} failed. Result ${JSON.stringify(result)}`);
+  private handleError<T> (operation = 'operation') {
+    this.log(`HTTP Request ${operation} failed`);
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
       this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);

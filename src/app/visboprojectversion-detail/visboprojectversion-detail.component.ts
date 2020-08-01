@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
 import {TranslateService} from '@ngx-translate/core';
@@ -10,7 +10,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProject } from '../_models/visboproject';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -23,8 +23,8 @@ export class VisboProjectVersionDetailComponent implements OnInit {
   @Input() visboprojectversion: VisboProjectVersion;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
   deleted = false;
 
   constructor(
@@ -38,7 +38,7 @@ export class VisboProjectVersionDetailComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.getVisboProjectVersion();
   }

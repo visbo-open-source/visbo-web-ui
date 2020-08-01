@@ -1,8 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-
-import { FormsModule } from '@angular/forms';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -10,7 +8,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject, VPTYPE, VPRestrict } from '../_models/visboproject';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGGroup, VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
@@ -22,7 +20,7 @@ export class VisboprojectRestrictComponent implements OnInit {
 
   visboproject: VisboProject;
   vgGroups: VGGroup[];
-  actGroup: any = {};
+  actGroup: VGGroup;
   groupIndex: number;
   restrictIndex: number;
   newItemName: string;
@@ -32,8 +30,8 @@ export class VisboprojectRestrictComponent implements OnInit {
 
   combinedPerm: VGPermission = undefined;
   combinedUserPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
   deleted = false;
 
   sortRestrictColumn = 1;
@@ -49,10 +47,10 @@ export class VisboprojectRestrictComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const id = this.route.snapshot.queryParams['id'];
     if (id) {
-      const pathItem = JSON.parse(sessionStorage.getItem('restrict'));
+      const pathItem = JSON.parse(localStorage.getItem('restrict'));
       if (pathItem && pathItem.id === id) {
         this.newItemPath = pathItem.path;
       }
@@ -136,11 +134,11 @@ export class VisboprojectRestrictComponent implements OnInit {
     }
     this.visboprojectService.addRestriction(this.visboproject._id, restrict)
       .subscribe(
-        response => {
-          this.log(`Add VisboProject Restriction result: ${JSON.stringify(response)}`);
-          this.visboproject.restrict.push(response.restrict[0]);
+        newRestriction => {
+          this.log(`Add VisboProject Restriction result: ${JSON.stringify(newRestriction)}`);
+          this.visboproject.restrict.push(newRestriction);
           const message = this.translate.instant('vpRestrict.msg.addRestrictionSuccess');
-          sessionStorage.removeItem('restrict');
+          localStorage.removeItem('restrict');
           this.newItemPath = undefined;
           this.alertService.success(message);
         },
@@ -259,33 +257,8 @@ export class VisboprojectRestrictComponent implements OnInit {
     this.router.navigate(['vpv/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
-  helperVPPerm(newGroup: any): number {
-    let perm = 0;
-    if (newGroup.checkedVPView) {
-      perm += this.permVP.View;
-    }
-    if (newGroup.checkedVPViewAudit) {
-      perm += this.permVP.ViewAudit;
-    }
-    if (newGroup.checkedVPModify) {
-      perm += this.permVP.Modify;
-    }
-    if (newGroup.checkedCreateVariant) {
-      perm += this.permVP.CreateVariant;
-    }
-    if (newGroup.checkedVPManagePerm) {
-      perm += this.permVP.ManagePerm;
-    }
-    if (newGroup.checkedVPDelete) {
-      perm += this.permVP.DeleteVP;
-    }
+  sortRestrictTable(n?: number): void {
 
-    return perm;
-  }
-
-  sortRestrictTable(n?: number) {
-
-    const getGroupName = this.getGroupName;
     if (!this.visboproject && !this.visboproject.restrict) {
       return;
     }

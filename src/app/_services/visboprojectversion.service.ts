@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
-import { VisboProjectVersion, VisboProjectVersionResponse, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VisboProjectVersionResponse } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VisboPortfolioVersionResponse } from '../_models/visboportfolioversion';
 
 import { MessageService } from './message.service';
@@ -54,12 +52,12 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(visboprojectversions => this.log(`fetched ${visboprojectversions.length} VisboProjectVersions `)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
-  getVisboProjectVersion(id: string, deleted: boolean = false): Observable<VisboProjectVersion> {
+  getVisboProjectVersion(id: string, deleted = false): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -69,34 +67,22 @@ export class VisboProjectVersionService {
     this.log(`Calling HTTP Request for a specific entry: ${url} Params ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
-        map(response => {
-                  // TODO: is there a better way to transfer the perm?
-                  response.vpv[0].perm = response.perm;
-                  return response.vpv[0];
-                }),
-        tap(visboprojectversion => this.log(`fetched Specific Version `)),
+        map(
+          response => {
+            // TODO: is there a better way to transfer the perm?
+            response.vpv[0].perm = response.perm;
+            return response.vpv[0];
+          }),
+        tap(
+          () => this.log(`fetched Specific Version `)
+        ),
         catchError(this.handleError<VisboProjectVersion>(`getVisboProjectVersion id=${id}`))
       );
   }
 
-  /* GET VisboProjectVersions whose name contains search term */
-  // searchVisboProjectVersions(term: string): Observable<VisboProjectVersion[]> {
-  //   if (!term.trim()) {
-  //     // if not search term, return empty visboprojectversion array.
-  //     return of([]);
-  //   }
-  //   return this.http.get<VisboProjectVersion[]>(`api/visboprojects?name=${term}`).pipe(
-  //     tap(_ => this.log(`found VisboProjectVersions matching "${term}"`)),
-  //     catchError(this.handleError<VisboProjectVersion[]>('searchVisboProjectVersions', []))
-  //   );
-  // }
-
-  //////// Save methods //////////
-
   /** POST: add a new Visbo Project to the server */
   addVisboProjectVersion (visboprojectversion: VisboProjectVersion): Observable<VisboProjectVersion> {
-    let newVPV: VisboProjectVersion;
-    newVPV = new VisboProjectVersion();
+    const newVPV = new VisboProjectVersion();
     newVPV.name = visboprojectversion.name;
     return this.http.post<VisboProjectVersion>(this.vpvUrl, visboprojectversion, httpOptions)
       .pipe(
@@ -107,7 +93,7 @@ export class VisboProjectVersionService {
   }
 
   /** DELETE: delete the Visbo Project from the server */
-  deleteVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<VisboProjectVersion> {
+  deleteVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted = false): Observable<VisboProjectVersion> {
     const id = visboprojectversion._id;
     const url = `${this.vpvUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -118,13 +104,13 @@ export class VisboProjectVersionService {
     this.log(`Calling HTTP Request Delete: ${url} Params ${params}`);
 
     return this.http.delete<VisboProjectVersion>(url, { headers , params }).pipe(
-      tap(_ => this.log(`deleted VisboProjectVersion id=${id}`)),
+      tap(() => this.log(`deleted VisboProjectVersion id=${id}`)),
       catchError(this.handleError<VisboProjectVersion>('deleteVisboProjectVersion'))
     );
   }
 
   /** PUT: update the Visbo Project on the server */
-  updateVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted: boolean = false): Observable<any> {
+  updateVisboProjectVersion (visboprojectversion: VisboProjectVersion, deleted = false): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${visboprojectversion._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -132,15 +118,16 @@ export class VisboProjectVersionService {
       params = params.append('deleted', '1');
     }
     this.log(`Calling HTTP Request PUT: ${url} Params ${params}`);
-    return this.http.put(url, visboprojectversion, { headers , params })
+    return this.http.put<VisboProjectVersionResponse>(url, visboprojectversion, { headers , params })
       .pipe(
-        tap(_ => this.log(`updated VisboProjectVersion id=${visboprojectversion._id} url=${this.vpvUrl}`)),
-        catchError(this.handleError<any>('updateVisboProjectVersion'))
+        map(result => result.vpv[0]),
+        tap(() => this.log(`updated VisboProjectVersion id=${visboprojectversion._id} url=${this.vpvUrl}`)),
+        catchError(this.handleError<VisboProjectVersion>('updateVisboProjectVersion'))
       );
   }
 
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
-  getVisboPortfolioVersions(id: string, deleted: boolean = false): Observable<VisboPortfolioVersion[]> {
+  getVisboPortfolioVersions(id: string, deleted = false): Observable<VisboPortfolioVersion[]> {
     const url = `${this.vpfUrl}/${id}/portfolio`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -156,12 +143,12 @@ export class VisboProjectVersionService {
                   return response.vpf;
                 }),
         tap(visboportfolioversion => this.log(`fetched ${visboportfolioversion.length} VisboPortfolioVersion `)),
-        catchError(this.handleError('getVisboPortfolioVersions', []))
+        catchError(this.handleError<VisboPortfolioVersion[]>('getVisboPortfolioVersions'))
       );
   }
 
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
-  getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted: boolean = false): Observable<VisboProjectVersion[]> {
+  getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -176,12 +163,12 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(vpv => this.log(`fetched ${vpv.length} VisboPortfolio Project Versions `)),
-        catchError(this.handleError('getVisboPortfoliokeyMetrics', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboPortfoliokeyMetrics'))
       );
   }
 
   /** GET getVisboCenterProjectVersions for all projects of a specific VC */
-  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted: boolean = false): Observable<VisboProjectVersion[]> {
+  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -198,12 +185,12 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => response.vpv),
         tap(vpv => this.log(`fetched ${vpv.length} VisboCenter Project Versions `)),
-        catchError(this.handleError('getVisboCenterProjectkeyMetrics', []))
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboCenterProjectkeyMetrics'))
       );
   }
 
   /** GET VisboProjectVersion by id. Will 404 if id not found */
-  getVisboPortfolioVersion(id: string, deleted: boolean = false): Observable<VisboPortfolioVersion> {
+  getVisboPortfolioVersion(id: string, deleted = false): Observable<VisboPortfolioVersion> {
     const url = `${this.vpfUrl}/${id}/portfolio`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -214,7 +201,7 @@ export class VisboProjectVersionService {
     return this.http.get<VisboPortfolioVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpf[0]),
-        tap(visboportfolioversion => this.log(`fetched Specific Portfolio Version `)),
+        tap(() => this.log(`fetched Specific Portfolio Version `)),
         catchError(this.handleError<VisboPortfolioVersion>(`getVisboPortfolioVersion id=${id}`))
       );
   }
@@ -229,12 +216,12 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(visboprojectversions => this.log(`fetched CostCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        tap(() => this.log(`fetched CostCalc for ${id}`)),
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
-  /** GET CostCalculation from the server for the specified vpv id */
+  /** GET DeliveryCalculation from the server for the specified vpv id */
   getDelivery(id: string, ref: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/delivery`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -246,8 +233,8 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(visboprojectversions => this.log(`fetched DeliveryCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        tap(() => this.log(`fetched DeliveryCalc for ${id}`)),
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -264,8 +251,8 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(visboprojectversions => this.log(`fetched DeadlineCalc for ${id}`)),
-        catchError(this.handleError('getVisboProjectVersions', []))
+        tap(() => this.log(`fetched DeadlineCalc for ${id}`)),
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
@@ -275,7 +262,8 @@ export class VisboProjectVersionService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T> (operation = 'operation') {
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
       // send the error to remote logging infrastructure
@@ -283,8 +271,7 @@ export class VisboProjectVersionService {
 
       // better job of transforming error for user consumption
 
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
+      return throwError(error)
     };
   }
 

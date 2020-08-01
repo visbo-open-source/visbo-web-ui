@@ -1,18 +1,26 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpParams } from '@angular/common/http';
 
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
-import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
+import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+
+class Metric{
+  name: string;
+  metric: string;
+  axis: string;
+  bubble: string;
+  table: string;
+}
 
 @Component({
   selector: 'app-comp-viewkeymetrics',
@@ -36,9 +44,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   currentID: string;
   deleted: boolean;
 
-  colorMetric: any[] = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
+  colorMetric = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
-  metricList: any[];
+  metricList: Metric[];
   metricX = 0;
   metricY = 1;
 
@@ -46,14 +54,67 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   hasKMDelivery = false;
   hasKMDeadline = false;
   hasKMEndDate = false;
+  hasKMDeadlineDelay = false;
 
   vpFilter: string;
   estimateAtCompletion = 0;
   budgetAtCompletion = 0;
   chart = true;
-  parentThis: any;
-  graphBubbleData: any[] = [];
-  graphBubbleOptions: any = undefined;
+  parentThis = this;
+  graphBubbleData = [];
+  graphBubbleOptions = {
+      // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
+      'width': '100%',
+      // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
+      // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
+      'vAxis': {
+        'baseline': 0,
+        'minValue': 20,
+        'maxValue': 200,
+        'direction': -1,
+        'format': "",
+        'title': 'Change in End Date (weeks)',
+        'baselineColor': 'blue'
+      },
+      'hAxis': {
+        'minValue': 20,
+        'maxValue': 200,
+        'baseline': 1,
+        'direction': -1,
+        'format': "# '%'",
+        'title': 'Total Cost',
+        'baselineColor': 'blue'
+      },
+      'sizeAxis': {
+        'minValue': 20,
+        'maxValue': 200
+      },
+      // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
+      'explorer': {
+        'actions': ['dragToZoom', 'rightClickToReset'],
+        'maxZoomIn': .01
+      },
+      'bubble': {
+        'textStyle': {
+          'auraColor': 'none',
+          'fontSize': 13
+        }
+      },
+      'tooltip': {
+        'showColorCode': false
+      },
+      'series': {
+        'Critical': {
+          'color': this.colorMetric[0].color
+        },
+        'Warning': {
+          'color': this.colorMetric[1].color
+        },
+        'Good': {
+          'color': this.colorMetric[2].color
+        }
+      }
+    };
   graphBubbleLabelX: string;
   graphBubbleLabelY: string;
   currentLang: string;
@@ -61,12 +122,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   sortAscending: boolean;
   sortColumn = 6;
 
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.parentThis = this;
     this.log(`Init KeyMetrics`);
     this.metricList = [
       {
@@ -91,6 +151,20 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         table: this.translate.instant('vpfVersion.metric.deadlineTable')
       },
       {
+        name: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayName'),
+        metric: 'DeadlinesFinishedDelay',
+        axis: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayBubble'),
+        table: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayTable')
+      },
+      {
+        name: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayName'),
+        metric: 'DeadlinesUnFinishedDelay',
+        axis: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayAxis'),
+        bubble: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayBubble'),
+        table: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayTable')
+      },
+      {
         name: this.translate.instant('vpfVersion.metric.deliveryName'),
         metric: 'Deliveries',
         axis: this.translate.instant('vpfVersion.metric.deliveryAxis'),
@@ -99,7 +173,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       }
     ];
 
-    const view = JSON.parse(sessionStorage.getItem('KeyMetrics-view'));
+    const view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
     if (view) {
       if (view.xAxis >= 0 && view.xAxis < this.metricList.length) {
         this.metricX = view.xAxis;
@@ -115,8 +189,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.log(`Delivery on Changes  ${this.activeID}`);
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Delivery on Changes  ${this.activeID}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentID !== undefined) {
       this.visboKeyMetricsCalc();
     }
@@ -141,6 +215,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.hasKMCost = false;
     this.hasKMDelivery = false;
     this.hasKMDeadline = false;
+    this.hasKMDeadlineDelay = false;
     this.hasKMEndDate = false;
 
     if (!this.visboprojectversions) {
@@ -157,8 +232,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         || (this.visboprojectversions[i].description || '').toLowerCase().indexOf(vpFilter) >= 0
       ) {
         if (this.visboprojectversions[i].keyMetrics) {
-          let elementKeyMetric: VPVKeyMetricsCalc;
-          elementKeyMetric = new VPVKeyMetricsCalc();
+          const elementKeyMetric = new VPVKeyMetricsCalc();
           elementKeyMetric.name = this.visboprojectversions[i].name;
           elementKeyMetric._id = this.visboprojectversions[i]._id;
           elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
@@ -168,6 +242,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
           this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
           this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 0;
+          this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
           this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
 
           this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
@@ -227,6 +302,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.hasKMCost = true;
       this.hasKMDelivery = true;
       this.hasKMDeadline = true;
+      this.hasKMDeadlineDelay = true;
       this.hasKMEndDate = true;
     }
     if (!this.hasKMCost) {
@@ -247,8 +323,18 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         this.metricList.splice(index, 1);
       }
     }
-    if (!this.hasKMDelivery) {
+    if (!this.hasKMDeadline) {
       index = this.metricList.findIndex(item => item.metric === 'Deadlines');
+      if (index >= 0) {
+        this.metricList.splice(index, 1);
+      }
+    }
+    if (!this.hasKMDeadlineDelay) {
+      index = this.metricList.findIndex(item => item.metric === 'DeadlinesFinishedDelay');
+      if (index >= 0) {
+        this.metricList.splice(index, 1);
+      }
+      index = this.metricList.findIndex(item => item.metric === 'DeadlinesUnFinishedDelay');
       if (index >= 0) {
         this.metricList.splice(index, 1);
       }
@@ -267,10 +353,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  calcPercent(current, baseline) {
+  calcPercent(current: number, baseline: number): number {
     if (baseline === undefined) {
       return undefined;
-    } else if (baseline === 0 && current === 0) {
+    } else if (baseline === 0) {
       return 1;
     } else {
       return (current || 0) / baseline;
@@ -284,7 +370,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     return dateA.toISOString() === dateB.toISOString();
   }
 
-  storeSetting() {
+  storeSetting(): void {
     const view = {
       'updatedAt': (new Date()).toISOString(),
       'objectID': this.currentID,
@@ -293,38 +379,23 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // 'vpvRefDate': vpvRefDate ? vpvRefDate.toISOString() : undefined,
       'vpFilter': this.vpFilter
     };
-    sessionStorage.setItem('KeyMetrics-view', JSON.stringify(view));
+    localStorage.setItem('KeyMetrics-view', JSON.stringify(view));
   }
 
-  toggleVisboChart() {
+  toggleVisboChart(): void {
     this.chart = !this.chart;
   }
 
-  changeChart() {
+  changeChart(): void {
     this.log(`Switch Chart to ${this.metricList[this.metricX].metric} vs  ${this.metricList[this.metricY].metric}`);
     this.storeSetting();
     this.visboKeyMetricsCalc();
   }
 
   visboKeyMetricsCalcBubble(): void {
-    this.graphBubbleOptions = {
-        // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
-        'width': '100%',
-        // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
-        // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
-        'vAxis': {'direction': -1, 'title': 'Change in End Date (weeks)', 'baselineColor': 'blue'},
-        'hAxis': {'baseline': 1, 'direction': -1, 'format': "# '%'", 'title': 'Total Cost', 'baselineColor': 'blue'},
-        // 'sizeAxis': {'minValue': 20, 'maxValue': 200},
-        // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
-        'explorer': {'actions': ['dragToZoom', 'rightClickToReset'], 'maxZoomIn': .01},
-        'bubble': { 'textStyle': { 'auraColor': 'none', 'fontSize': 13 } },
-        'tooltip': { 'showColorCode': false }
-      };
-
     this.graphBubbleAxis(); // set the Axis Description and properties
 
-    let keyMetrics: any;
-    keyMetrics = [];
+    const keyMetrics = [];
     if (!this.visbokeymetrics) {
       return;
     }
@@ -351,6 +422,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           valueX = Math.round(this.visbokeymetrics[i].timeCompletionActual * 100);
           colorValue += valueX >= 100 ? 1 : 0;
           break;
+        case 'DeadlinesFinishedDelay':
+          valueX = this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0;
+          colorValue += valueX <= 0 ? 1 : 0;
+          break;
+        case 'DeadlinesUnFinishedDelay':
+          valueX = this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0;
+          colorValue += valueX <= 0 ? 1 : 0;
+          break;
         case 'Deliveries':
           valueX = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
           colorValue += valueX >= 100 ? 1 : 0;
@@ -368,6 +447,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         case 'Deadlines':
           valueY = Math.round(this.visbokeymetrics[i].timeCompletionActual * 100);
           colorValue += valueY >= 100 ? 1 : 0;
+          break;
+        case 'DeadlinesFinishedDelay':
+          valueY = this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0;
+          colorValue += valueY <= 0 ? 1 : 0;
+          break;
+        case 'DeadlinesUnFinishedDelay':
+          valueY = this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0;
+          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Deliveries':
           valueY = Math.round(this.visbokeymetrics[i].deliveryCompletionActual * 100);
@@ -404,6 +491,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         case 'Deadlines':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].timeCompletionActual - 1) * 100));
           break;
+        case 'DeadlinesFinishedDelay':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0));
+          break;
+        case 'DeadlinesUnFinishedDelay':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0));
+          break;
         case 'Deliveries':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].deliveryCompletionActual - 1) * 100));
           break;
@@ -414,13 +507,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     // maxSize += 100;
     minSize *= 0.8;
     maxSize *= 1.2;
-    if (!this.graphBubbleOptions.sizeAxis) {
-      this.graphBubbleOptions.sizeAxis = {};
-    }
     this.graphBubbleOptions.sizeAxis.minValue = minSize;
     this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
 
-    if (this.metricList[this.metricX].metric === 'EndDate') {
+    if (this.metricList[this.metricX].metric === 'EndDate'
+    || this.metricList[this.metricX].metric === 'DeadlinesFinishedDelay'
+    || this.metricList[this.metricX].metric === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
@@ -442,12 +534,20 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         case 'Deadlines':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].timeCompletionActual - 1) * 100));
           break;
+        case 'DeadlinesFinishedDelay':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].keyMetrics.timeDelayFinished || 0));
+          break;
+        case 'DeadlinesUnFinishedDelay':
+          rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[i].keyMetrics.timeDelayUnFinished || 0));
+          break;
         case 'Deliveries':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].deliveryCompletionActual - 1) * 100));
           break;
       }
     }
-    if (this.metricList[this.metricY].metric === 'EndDate') {
+    if (this.metricList[this.metricY].metric === 'EndDate'
+    || this.metricList[this.metricY].metric === 'DeadlinesFinishedDelay'
+    || this.metricList[this.metricY].metric === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
@@ -461,44 +561,71 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   graphBubbleAxis(): void {
     let metric = this.metricList[this.metricX];
     const weekFormat = '# ' + this.translate.instant('vpfVersion.lbl.weeks');
+    const dayFormat = '# ' + this.translate.instant('vpfVersion.lbl.days');
 
+    this.graphBubbleOptions.hAxis.title = metric.axis;
     switch (metric.metric) {
       case 'Costs':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis.baseline = 100;
+        this.graphBubbleOptions.hAxis.direction = -1;
+        this.graphBubbleOptions.hAxis.format = "# '%'";
         break;
       case 'EndDate':
-        this.graphBubbleOptions.hAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis.baseline = 0;
+        this.graphBubbleOptions.hAxis.direction = -1;
+        this.graphBubbleOptions.hAxis.format = weekFormat;
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis.baseline = 100;
+        this.graphBubbleOptions.hAxis.direction = 1;
+        this.graphBubbleOptions.hAxis.format = "# '%'";
+        break;
+      case 'DeadlinesFinishedDelay':
+      case 'DeadlinesUnFinishedDelay':
+        this.graphBubbleOptions.hAxis.baseline = 0;
+        this.graphBubbleOptions.hAxis.direction = -1;
+        this.graphBubbleOptions.hAxis.format = dayFormat;
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.hAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.hAxis.baseline = 100;
+        this.graphBubbleOptions.hAxis.direction = 1;
+        this.graphBubbleOptions.hAxis.format = "# '%'";
         break;
     }
     this.graphBubbleLabelX = metric.bubble;
 
     metric = this.metricList[this.metricY];
+    this.graphBubbleOptions.vAxis.title = metric.axis;
     switch (metric.metric) {
       case 'Costs':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': -1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis.baseline = 100;
+        this.graphBubbleOptions.vAxis.direction = -1;
+        this.graphBubbleOptions.vAxis.format = "# '%'";
         break;
       case 'EndDate':
-        this.graphBubbleOptions.vAxis = {'baseline': 0, 'direction': -1, 'format': weekFormat, 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis.baseline = 0;
+        this.graphBubbleOptions.vAxis.direction = -1;
+        this.graphBubbleOptions.vAxis.format = weekFormat;
         break;
       case 'Deadlines':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis.baseline = 100;
+        this.graphBubbleOptions.vAxis.direction = 1;
+        this.graphBubbleOptions.vAxis.format = "# '%'";
+        break;
+      case 'DeadlinesFinishedDelay':
+      case 'DeadlinesUnFinishedDelay':
+        this.graphBubbleOptions.vAxis.baseline = 0;
+        this.graphBubbleOptions.vAxis.direction = -1;
+        this.graphBubbleOptions.vAxis.format = dayFormat;
         break;
       case 'Deliveries':
-        this.graphBubbleOptions.vAxis = {'baseline': 100, 'direction': 1, 'format': "# '%'", 'title': metric.axis, 'minValue': -110, 'maxValue': 110, 'baselineColor': 'blue'};
+        this.graphBubbleOptions.vAxis.baseline = 100;
+        this.graphBubbleOptions.vAxis.direction = 1;
+        this.graphBubbleOptions.vAxis.format = "# '%'";
         break;
     }
     this.graphBubbleLabelY = metric.bubble;
 
-    this.graphBubbleOptions.series = {};
-    this.graphBubbleOptions.series.Critical = {color: this.colorMetric[0].color};
-    this.graphBubbleOptions.series.Warning = {color: this.colorMetric[1].color};
-    this.graphBubbleOptions.series.Good = {color: this.colorMetric[2].color};
     // this.log(`Series: ${JSON.stringify(this.graphBubbleOptions.series)}`)
   }
 
@@ -508,16 +635,15 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
-  chartSelectRow(row: number, label: string) {
+  chartSelectRow(row: number, label: string): void {
     // this.log(`Bubble Chart: ${row} ${label}`);
     const vpv = this.visbokeymetrics.find(x => x.name === label);
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
-    let queryParams: any;
-    queryParams = {};
-    if (this.deleted) { queryParams.deleted = this.deleted; }
-    // if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams.refDate = this.vpvRefDate.toISOString(); }
+    let queryParams = new HttpParams();
+    if (this.deleted) { queryParams = queryParams.append('deleted', this.deleted.toString()); }
+    // if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams = queryParams.append('refDate', this.vpvRefDate.toISOString()); }
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
   }
 
@@ -550,7 +676,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  helperDateDiff(from: string, to: string, unit: string) {
+  helperDateDiff(from: string, to: string, unit: string): number {
     const fromDate: Date = new Date(from);
     const toDate: Date = new Date(to);
     let dateDiff = fromDate.getTime() - toDate.getTime();
@@ -564,7 +690,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     return dateDiff;
   }
 
-  sortKeyMetricsTable(n) {
+  sortKeyMetricsTable(n: number): void {
     if (!this.visbokeymetrics) {
       return;
     }
@@ -609,6 +735,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 9) {
       this.visbokeymetrics.sort(function(a, b) {
         return a.keyMetrics.deliverableCompletionBaseLastActual - b.keyMetrics.deliverableCompletionBaseLastActual;
+      });
+    } else if (this.sortColumn === 10) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.keyMetrics.timeDelayFinished || 0) - (b.keyMetrics.timeDelayFinished || 0);
+      });
+    } else if (this.sortColumn === 11) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.keyMetrics.timeDelayUnFinished || 0) - (b.keyMetrics.timeDelayUnFinished || 0);
       });
     }
     if (!this.sortAscending) {

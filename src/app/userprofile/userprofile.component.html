@@ -1,27 +1,27 @@
 <app-usernavbar></app-usernavbar>
 <div class="col-md-8 col-md-offset-2">
-  <h3>{{ 'profile.title' | translate }} {{model.email}}</h3>
+  <h3>{{ 'profile.title' | translate }} {{user.email}}</h3>
   <div>
     <!-- <form name="form" (ngSubmit)="f.form.valid && saveUserProfile()" #f="ngForm" novalidate> -->
     <form name="form" (ngSubmit)="f.form.valid && saveUserProfile()" #f="ngForm" novalidate>
       <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
         <label for="firstName">{{ 'profile.lbl.firstName' | translate }}</label>
-        <input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" #firstName="ngModel" required />
+        <input type="text" class="form-control" name="firstName" [(ngModel)]="user.profile.firstName" #firstName="ngModel" required />
         <div *ngIf="f.submitted && !firstName.valid" class="help-block">{{ 'profile.msg.firstNameRequired' | translate }}</div>
       </div>
       <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
         <label for="lastName">{{ 'profile.lbl.lastName' | translate }}</label>
-        <input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" #lastName="ngModel" required />
+        <input type="text" class="form-control" name="lastName" [(ngModel)]="user.profile.lastName" #lastName="ngModel" required />
         <div *ngIf="f.submitted && !lastName.valid" class="help-block">{{ 'profile.msg.lastNameRequired' | translate }}</div>
       </div>
       <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !company.valid }">
         <label for="company">{{ 'profile.lbl.company' | translate }}</label>
-        <input type="text" class="form-control" name="company" [(ngModel)]="model.company" #company="ngModel" required />
+        <input type="text" class="form-control" name="company" [(ngModel)]="user.profile.company" #company="ngModel" required />
         <div *ngIf="f.submitted && !company.valid" class="help-block">{{ 'profile.msg.companyRequired' | translate }}</div>
       </div>
       <div class="form-group">
         <label for="phone">{{ 'profile.lbl.phone' | translate }}</label>
-        <input type="text" class="form-control" name="phone" [(ngModel)]="model.phone" #phone="ngModel" />
+        <input type="text" class="form-control" name="phone" [(ngModel)]="user.profile.phone" #phone="ngModel" />
       </div>
       <div class="form-group">
         <button class="btn btn-primary">{{ 'profile.btn.save' | translate }}</button>
@@ -33,9 +33,9 @@
       </div>
     </form>
     <div>
-      {{ 'profile.msg.lastLogin' | translate }} {{model.lastLoginAt | date :'dd.MM.yyyy HH:mm:ss'}}
+      {{ 'profile.msg.lastLogin' | translate }} {{user.status.lastLoginAt | date :'dd.MM.yyyy HH:mm:ss'}}
       <br>
-      {{ 'profile.msg.lastFailedLogin' | translate }} {{model.lastLoginFailedAt | date :'dd.MM.yyyy HH:mm:ss'}}
+      {{ 'profile.msg.lastFailedLogin' | translate }} {{user.status.lastLoginFailedAt | date :'dd.MM.yyyy HH:mm:ss'}}
     </div>
   </div>
 </div>
@@ -54,7 +54,7 @@
         <form name="passwordChange" #fpw="ngForm" novalidate>
           <div class="form-group" [ngClass]="{ 'has-error': fpw.submitted && !oldpassword.valid }">
             <label for="oldpassword" class="col-form-label">{{ 'profile.lbl.oldPassword' | translate }}(*):</label>
-            <input type="password" class="form-control" name="oldpassword" [(ngModel)]="modelPw.oldpassword" #oldpassword="ngModel" required autocomplete="password">
+            <input type="password" class="form-control" name="oldpassword" [(ngModel)]="oldpw" #oldpassword="ngModel" required autocomplete="password">
             <div *ngIf="fpw.submitted && !oldpassword.valid" class="help-block">{{ 'profile.msg.oldPWRequired' | translate }}</div>
           </div>
           <div class="form-group" [ngClass]="{ 'has-error': fpw.submitted && !newpassword.valid }">
@@ -62,7 +62,7 @@
               title="{{ 'profile.lbl.PWRule' | translate }}: {{PWPolicyDescription}}">
               {{ 'profile.lbl.newPassword' | translate }}(*):
             </label>
-            <input type="password" class="form-control" name="newpassword" [(ngModel)]="modelPw.newpassword" #newpassword="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
+            <input type="password" class="form-control" name="newpassword" [(ngModel)]="newpw" #newpassword="ngModel" required autocomplete="off" pattern= {{PWPolicy}} >
             <div *ngIf="!newpassword.valid" class="help-block">{{ 'profile.msg.followPolicy' | translate }}</div>
             <div *ngIf="!newpassword.valid" class="help-block">{{PWPolicyDescription}}</div>
           </div>

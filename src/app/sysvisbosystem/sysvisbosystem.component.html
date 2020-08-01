@@ -182,20 +182,20 @@
 <!-- Modal Add/Change VC Group -->
 <div class="modal fade" id="SystemGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document" >
-    <div class="modal-content">
+    <div *ngIf="actGroup" class="modal-content">
       <div class="modal-header">
-        <h5 *ngIf="actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Modify a Group in the Visbo System</h5>
-        <h5 *ngIf="!actGroup.gid" class="modal-title" id="VcGroupModalCenterTitle">Add a new Group to the Visbo System</h5>
+        <h5 *ngIf="actGroup._id" class="modal-title" id="VcGroupModalCenterTitle">Modify a Group in the Visbo System</h5>
+        <h5 *ngIf="!actGroup._id" class="modal-title" id="VcGroupModalCenterTitle">Add a new Group to the Visbo System</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form name="actGroup" #f2="ngForm" novalidate>
-          <div class="form-group" [ngClass]="{ 'has-error': f2.submitted && !email.valid }">
+          <div class="form-group" [ngClass]="{ 'has-error': f2.submitted }">
             <label for="groupName" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
-            <div *ngIf="f2.submitted && !groupName.valid" class="help-block">Group Name is required</div>
+            <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required  minlength="3">
+            <div *ngIf="groupName.errors && (groupName.dirty || groupName.touched)" class="help-block">Group Name is required (Minimum 3)</div>
           </div>
           <!-- System Permissions -->
           <div>Define System Permission</div>
@@ -229,10 +229,10 @@
           </div>
           <br>
           <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="global" name="checkGlobal" [(ngModel)]="actGroup.checkGlobal" #checkGlobal="ngModel" >
+              <input type="checkbox" class="custom-control-input" id="global" name="global" [(ngModel)]="actGroup.global" #global="ngModel" >
               <label class="custom-control-label" for="global">Group has Access to all Visbo Centers / Projects</label>
           </div>
-          <div *ngIf="actGroup.checkGlobal" >
+          <div *ngIf="actGroup.global" >
             <!-- VC Permissions -->
             <div>Define Visbo Center Permission</div>
             <div class="custom-control custom-checkbox">
@@ -283,21 +283,21 @@
             </div>
           </div>
 
-          <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+          <div *ngIf="helperUsersPerGroup(actGroup.name)" class="mt-2">
             <label class="form-control-static">Group Members</label>
             <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
-              <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
+              <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.name">
                 <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
               </div>
             </ng-container>
           </div>
-          <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+          <div *ngIf="!helperUsersPerGroup(actGroup.name)" class="mt-2">
             <label class="form-control-static">No Group Members</label>
           </div>
 
           <div class="modal-footer align-items-end mt-3">
-            <button *ngIf="!(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.actGroup.confirm}}</button>
-            <button *ngIf="(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.actGroup.confirm}}</button>
+            <button *ngIf="!(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.confirm}}</button>
+            <button *ngIf="(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>

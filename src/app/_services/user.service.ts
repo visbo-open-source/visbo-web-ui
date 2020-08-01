@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
 
-import { VisboUser, VisboUserResponse } from '../_models/login';
+import { VisboUser, VisboUserResponse } from '../_models/visbouser';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -27,13 +27,13 @@ export class UserService {
   ) { }
 
   // MS TODO Check correct Observable Type VisboUser instead of any
-  getUserProfile(): Observable<any> {
+  getUserProfile(): Observable<VisboUser> {
     this.log(`Calling HTTP Get Request: ${this.profileUrl}`);
     return this.http.get<VisboUserResponse>(this.profileUrl, httpOptions)
       .pipe(
         map(response => response.user),
         tap(user => this.log(`fetched ${user.email} User Profile `)),
-        catchError(this.handleError('getUserProfile', []))
+        catchError(this.handleError<VisboUser>('getUserProfile'))
       );
   }
 
@@ -43,18 +43,19 @@ export class UserService {
       .pipe(
         map(response => response.user),
         tap(resultUser => this.log(`updated User Profile ${resultUser.email} `)),
-        catchError(this.handleError<any>('updateUserProfile'))
+        catchError(this.handleError<VisboUser>('updateUserProfile'))
       );
   }
 
 
-  passwordChange(model: any): Observable<VisboUser> {
-    this.log(`Calling HTTP Put Request: ${this.pwchangeUrl} Body: ${JSON.stringify(model)}`);
-    return this.http.put<VisboUserResponse>(this.pwchangeUrl, model, httpOptions)
+  passwordChange(oldpw: string, newpw: string): Observable<VisboUser> {
+    this.log(`Calling HTTP Put Request: ${this.pwchangeUrl}`);
+    const pw = {oldpassword: oldpw, password: newpw};
+    return this.http.put<VisboUserResponse>(this.pwchangeUrl, pw, httpOptions)
       .pipe(
         map(response => response.user),
         tap(user => this.log(`Changed User Password ${user.email} `)),
-        catchError(this.handleError<any>('ChangedPassword'))
+        catchError(this.handleError<VisboUser>('ChangedPassword'))
       );
   }
 
@@ -65,9 +66,10 @@ export class UserService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T> (operation = 'operation', result?: T) {
+    // eslint-disable-next-line
     return (error: any): Observable<T> => {
 
-      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
+      this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}, Result ${JSON.stringify(result)}`);
 
       // Let the app keep running by returning an empty result.
       return throwError(error);

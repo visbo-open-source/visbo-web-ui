@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -12,9 +12,9 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersion} from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-viewdeadline',
@@ -45,10 +45,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   scrollRefDate: Date;
 
   combinedPerm: VGPermission = undefined;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.route.snapshot.queryParams.vpvid) {
       this.initVPVID = this.route.snapshot.queryParams.vpvid;
     }
@@ -114,6 +114,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     this.log(`get getRefDateVersions ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
     const newRefDate = new Date(this.scrollRefDate);
     let i = 0;
+    let quarter = 0;
     switch (this.refDateInterval) {
       case 'day':
         newRefDate.setHours(0, 0, 0, 0); // beginning of day
@@ -133,7 +134,7 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
         }
         break;
       case 'quarter':
-        let quarter = Math.trunc(newRefDate.getMonth() / 3);
+        quarter = Math.trunc(newRefDate.getMonth() / 3);
         if (increment > 0) {
           quarter += increment;
         }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -28,11 +27,7 @@ export class VisboCentersComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
-    this.getVisboCenters();
-  }
-
-  onSelect(visbocenter: VisboCenter): void {
+  ngOnInit(): void {
     this.getVisboCenters();
   }
 
@@ -62,7 +57,7 @@ export class VisboCentersComponent implements OnInit {
     this.router.navigate(['vp/' + visbocenter._id]);
   }
 
-  sortVCTable(n) {
+  sortVCTable(n: number): void {
     if (!this.visbocenters) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortColumn === undefined) {

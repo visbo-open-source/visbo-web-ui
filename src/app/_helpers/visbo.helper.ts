@@ -11,6 +11,8 @@ export function visboCmpString(first: string, second: string): number {
 
 export function visboCmpDate(first: Date, second: Date): number {
   let result = 0;
+  if (first === undefined) { first = new Date(-8640000000000000); }
+  if (second === undefined) { second = new Date(-8640000000000000); }
   if (first < second) {
     result = -1;
   } else if (first > second) {
@@ -36,6 +38,7 @@ export function visboGetShortText(text: string, len: number, position?: string):
   }
 }
 
+// eslint-disable-next-line
 export function getErrorMessage(error: any): string {
   let result = 'Unknown Error';
   if (error) {

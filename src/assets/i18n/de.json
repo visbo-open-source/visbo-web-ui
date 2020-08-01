@@ -263,6 +263,9 @@
 		"btn": {
 			"showDeleted": "Gelöschte",
 			"showExisting": "Nicht gelöschte",
+			"viewKeyMetrics": "Projekt Metrik",
+			"viewCapacity": "Auslastung",
+			"viewProjectBoard": "Zeige Projektübersicht",
 			"create": "Neues Projekt",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
@@ -447,7 +450,11 @@
 			"trend": "Trend",
 			"metricCost": "Kosten",
 			"metricDelivery": "Qualität",
-			"metricDeadline": "Zeit",
+			"metricDeadline": "Termin",
+			"metricDeadlineDelay": "Termin Verschiebung",
+			"unitsDelay": "Tage",
+			"finishedDeadlineDelay": "Durchschnittliche Verschiebung bei erreichten Terminen",
+			"unfinishedDeadlineDelay": "Durchschnittliche geplante Verschiebung bei offenen Terminen",
 			"actualCost": "bisherige Erreichung der Kosten",
 			"actualDelivery": "bisherige Erreichung der Lieferungen",
 			"actualDeadline": "bisherige Erreichung der Termine",
@@ -494,6 +501,59 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
+	"ViewCapacity": {
+		"title1": "Auslastung der Organisations-Einheit ",
+		"title2": " angegeben in ",
+		"titleTimeFrom": " für den Zeitraum: von",
+		"titleTimeTo": " bis ",
+		"titleVersion": "Version vom",
+		"yAxisCapaOverTime": "Monatliche Kosten",
+		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
+		"internCapaPT": "interne Kapazität",
+		"totalCapaPT": "gesamte Kapazität",
+		"actualCostPT": "Istkosten",
+		"plannedCostPT": "geplante Kosten",
+		"lbl": {
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
+			"previousPeriod": "Periode vor {{refDate}}",
+			"nextPeriod": "Periode nach {{refDate}}",
+			"vc": "VISBO Center",
+			"pd": "PT",
+			"euro": "Euro"
+		},
+		"btn": {
+			"back": "Zurück",
+			"showUnit": "Einheit:",
+			"ressourceID": "RessourcenID:",
+			"from": "von:",
+			"to": "bis:"
+		},
+		"msg": {
+			"calculating": "Berechnen der Kapzitäten ...",
+			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
+			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
+			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
+			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
+		}
+	},
+	"compViewBoard": {
+		"lbl": {
+			"project": "Projekt",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
+			"timeline": "Projektübersicht",
+			"filter": "Filter"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status der Lieferungen",
 		"titleDetailDelivery": "Status der Lieferung",
@@ -512,6 +572,8 @@
 			"All": "Zeige alle kombiniert"
 		},
 		"btn": {
+			"buttonGanttOn": "Zeige Gantt Chart",
+			"buttonGanttOff": "Ausblenden Gantt Chart",
 			"detail": "Freigaben",
 			"back": "Back"
 		},
@@ -544,11 +606,15 @@
 			"count": "Anzahl",
 			"planElement": "Planelement",
 			"type": "Typ",
+			"percentDone": "Erledigt",
+			"startDatePFV": "Start Phase (Baseline)",
+			"startDateVPV": "Start Phase (Plan)",
 			"endDatePFV": "Termin (Baseline)",
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
 			"done": "Erledigt",
 			"trafficlight": "Ampel",
+			"trafficlightDesc": "Ampel Erklärung",
 			"responsible": "Verantwortlich",
 			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
@@ -670,9 +736,12 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleChange": "Ändern der Kennzahlen",
+		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"lbl": {
+			"nr": "Nummer",
 			"variant": "Variante",
 			"day": "Tag",
+			"days": "Tage",
 			"week": "Woche",
 			"weeks": "Wochen",
 			"month": "Monat",
@@ -689,6 +758,7 @@
 			"yAxis": "Y-Achse",
 			"project": "Projekt",
 			"timestamp": "Zeitstempel",
+			"keyMetrics": "Projekt Metrik",
 			"name": "Name",
 			"bac": "Gesamtkosten (Baseline)",
 			"endDate": "Projektende (Baseline)",
@@ -698,6 +768,10 @@
 		"btn": {
 			"showChart": "Zeige Chart",
 			"showList": "Zeige Liste",
+			"viewKeyMetrics": "Projekt Metrik",
+			"viewCapacity": "Auslastung",
+			"viewList": "Liste",
+			"viewProjectBoard": "Projekttafel",
 			"filter": "Filter",
 			"change": "Ändern",
 			"cancel": "Abbrechen",
@@ -716,6 +790,14 @@
 			"deadlineAxis": "Abweichung bei den Terminen",
 			"deadlineBubble": "Erreichte Termine in %",
 			"deadlineTable": "Erreichte Termine",
+			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
+			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
+			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayTable": "Unerledigte",
 			"deliveryName": "Qualität (Lieferungen)",
 			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
@@ -724,7 +806,8 @@
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte"
 		}
 	},
 	"vcAudit": {
@@ -878,6 +961,13 @@
 		"planADV": "ADV, plan-to-date",
 		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
 
+		"finishedDeadline": "Erledigte Termine",
+		"unfinishedDeadline": "Offene Termine",
+		"finishedDeadlineDelay": "Verzögerung (Erledigte)",
+		"unfinishedDeadlineDelay": "Verzögerung (Unerledigte)",
+		"longFinishedDeadline": "Durchschnittliche Abweichung über alle erledigten Termine gegenüber baseline in Tagen",
+		"longUnfinishedDeadline": "Durchschnittliche Abweichung über alle nicht erledigten Termine gegenüber baseline in Tagen",
+
 		"lbl": {
 			"trafficLight": "Ampel",
 			"info": "Info.",
@@ -904,6 +994,8 @@
 			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",
 			"yAxisDeadlineTrend": "gewichtete Anzahl von Terminen",
 			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
+			"yAxisDeadlineDelayTrend": "durschnittliche Terminabweichung in Tagen",
+			"titleDeadlineDelayTrend": "Historischer Vergleich der Terminabweichungen: erledigt vs. offen",
 			"yAxisCostTrend": "Kosten in T€",
 			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},

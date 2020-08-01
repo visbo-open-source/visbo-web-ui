@@ -1,18 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { ActivatedRoute, Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-
-import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 import { VisboCenter } from '../_models/visbocenter';
-import { VGGroup, VGPermission, VGUser, VGUserGroup, VGPSystem, VGPVC, VGPVP  } from '../_models/visbogroup';
+import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPSYSTEM, VGPVC, VGPVP  } from '../_models/visbogroup';
+import { VisboUserInvite } from '../_models/visbouser';
 import { VisboCenterService } from '../_services/visbocenter.service';
-import { VisboProject } from '../_models/visboproject';
-import { VisboProjectService } from '../_services/visboproject.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbosystem',
@@ -24,18 +21,19 @@ export class SysvisbosystemComponent implements OnInit {
   visbocenter: VisboCenter;
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
-  newUserInvite: any = {};
-  actGroup: any = {};
+  newUserInvite = new VisboUserInvite();
+  actGroup: VGGroupExpanded;
+  confirm: string;
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
 
-  combinedPerm: VGPermission = undefined;
-  combinedUserPerm: VGPermission = undefined;
+  combinedPerm: VGPermission;
+  combinedUserPerm: VGPermission;
 
-  permSystem: any = VGPSystem;
-  permVC: any = VGPVC;
-  permVP: any = VGPVP;
+  permSystem = VGPSYSTEM;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   sortUserColumn = 1;
   sortUserAscending = true;
@@ -45,14 +43,13 @@ export class SysvisbosystemComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
-    private visboprojectService: VisboProjectService,
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
     private alertService: AlertService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // this.log(`Init SysAdmin`);
     this.getSysVisboCenter();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
@@ -185,8 +182,7 @@ export class SysvisbosystemComponent implements OnInit {
       .subscribe(
         group => {
           // Add User to User & Group list
-          let newUserGroup: VGUserGroup;
-          newUserGroup = new VGUserGroup();
+          const newUserGroup = new VGUserGroup();
           newUserGroup.userId = group.users.filter(user => user.email === email)[0].userId;
           newUserGroup.email = email;
           newUserGroup.groupId = group._id;
@@ -225,7 +221,7 @@ export class SysvisbosystemComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
-  addUserPerm(listUser): void {
+  addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
     }
@@ -249,8 +245,8 @@ export class SysvisbosystemComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
-  helperUsersPerGroup(groupName: string): number {
-    const group = this.vgGroups && this.vgGroups.find(x => x.name === groupName);
+  helperUsersPerGroup(name: string): number {
+    const group = this.vgGroups && this.vgGroups.find(x => x.name === name);
     if (group) {
       return group.users.length;
     }
@@ -261,7 +257,7 @@ export class SysvisbosystemComponent implements OnInit {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Group: ${user.groupName} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid, true)
       .subscribe(
-        users => {
+        () => {
           // this.log(`Remove VisboCenter User result: ${JSON.stringify(result)}`);
           // this.visbocenter.users = users;
           // filter user from vgUsers
@@ -292,7 +288,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  helperSystemPerm(newGroup: any): number {
+  helperSystemPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedSystemView) { perm += this.permSystem.View; }
     if (newGroup.checkedSystemViewAudit) { perm += this.permSystem.ViewAudit; }
@@ -305,7 +301,7 @@ export class SysvisbosystemComponent implements OnInit {
     return perm;
   }
 
-  helperVCPerm(newGroup: any): number {
+  helperVCPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedView) { perm += this.permVC.View; }
     if (newGroup.checkedViewAudit) { perm += this.permVC.ViewAudit; }
@@ -316,7 +312,7 @@ export class SysvisbosystemComponent implements OnInit {
     return perm;
   }
 
-  helperVPPerm(newGroup: any): number {
+  helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPView) { perm += this.permVP.View; }
     if (newGroup.checkedVPViewAudit) { perm += this.permVP.ViewAudit; }
@@ -330,11 +326,12 @@ export class SysvisbosystemComponent implements OnInit {
 
   initGroup(curGroup: VGGroup): void {
 
+    this.actGroup = new VGGroupExpanded();
     if (curGroup) {
-      this.actGroup.confirm = 'Modify';
-      this.actGroup.gid = curGroup._id;
-      this.log(`Init Group Set GroupID : ${this.actGroup.gid} ID ${curGroup._id}`);
-      this.actGroup.groupName = curGroup.name;
+      this.confirm = 'Modify';
+      this.actGroup._id = curGroup._id;
+      this.log(`Init Group Set GroupID : ${this.actGroup._id} ID ${curGroup._id}`);
+      this.actGroup.name = curGroup.name;
       this.actGroup.checkedSystemView = (curGroup.permission.system & this.permSystem.View) > 0;
       this.actGroup.checkedSystemViewAudit = (curGroup.permission.system & this.permSystem.ViewAudit) > 0;
       this.actGroup.checkedSystemViewLog = (curGroup.permission.system & this.permSystem.ViewLog) > 0;
@@ -343,7 +340,7 @@ export class SysvisbosystemComponent implements OnInit {
       this.actGroup.checkedSystemDeleteVC = (curGroup.permission.system & this.permSystem.DeleteVC) > 0;
       this.actGroup.checkedSystemManagePerm = (curGroup.permission.system & this.permSystem.ManagePerm) > 0;
 
-      this.actGroup.checkGlobal = curGroup.global;
+      this.actGroup.global = curGroup.global;
 
       this.actGroup.checkedView = (curGroup.permission.vc & this.permVC.View) > 0;
       this.actGroup.checkedViewAudit = (curGroup.permission.vc & this.permVC.ViewAudit) > 0;
@@ -358,22 +355,21 @@ export class SysvisbosystemComponent implements OnInit {
       this.actGroup.checkedVPManagePerm = (curGroup.permission.vp & this.permVP.ManagePerm) > 0;
       this.actGroup.checkedVPDelete = (curGroup.permission.vp & this.permVP.DeleteVP) > 0;
     } else {
-      this.actGroup.confirm = 'Add';
-      this.actGroup.gid = undefined;
-      this.actGroup.groupName = '';
-      this.actGroup.checkGlobal = false;
+      this.actGroup._id = undefined;
+      this.confirm = 'Create';
+      this.actGroup.name = '';
+      this.actGroup.global = false;
       this.actGroup.checkedView = true;
     }
-    this.log(`Init Group for Creation / Modification: ${this.actGroup.groupName} ID ${this.actGroup.gid}`);
+    this.log(`Init Group for Creation / Modification: ${this.actGroup.name} ID ${this.actGroup._id}`);
 
   }
 
   addModifyVCGroup(): void {
-    let newGroup: VGGroup;
-    newGroup = new VGGroup;
+    const newGroup = new VGGroup;
 
-    newGroup.name = this.actGroup.groupName.trim();
-    newGroup.global = this.actGroup.checkGlobal;
+    newGroup.name = this.actGroup.name.trim();
+    newGroup.global = this.actGroup.global;
     newGroup.vcid = this.visbocenter._id;
     newGroup.permission = new VGPermission;
     newGroup.permission.system = this.helperSystemPerm(this.actGroup);
@@ -382,12 +378,12 @@ export class SysvisbosystemComponent implements OnInit {
       newGroup.permission.vp = this.helperVPPerm(this.actGroup);
     }
 
-    this.log(`Add/Modify VisboCenter Group: Group: ${newGroup.name} New/Modify ${this.actGroup.gid} Perm: ${JSON.stringify(newGroup.permission)}`);
+    this.log(`Add/Modify VisboCenter Group: Group: ${newGroup.name} New/Modify ${this.actGroup._id} Perm: ${JSON.stringify(newGroup.permission)}`);
 
-    if (this.actGroup.gid) {
+    if (this.actGroup._id) {
       // modify existing Group
       this.log(`Modify VisboCenter Group: Group: ${newGroup.name} VC: ${newGroup.vcid} Perm: ${JSON.stringify(newGroup.permission)}`);
-      newGroup._id = this.actGroup.gid;
+      newGroup._id = this.actGroup._id;
       this.visbocenterService.modifyVCGroup(newGroup, true)
         .subscribe(
           group => {
@@ -462,7 +458,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
-  sortUserTable(n?: number) {
+  sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortUserColumn === undefined ) {
@@ -487,7 +483,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
   }
 
-  sortGroupTable(n?: number) {
+  sortGroupTable(n?: number): void {
     if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortGroupColumn === undefined) {

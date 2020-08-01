@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable, throwError, of } from 'rxjs'; // only need to import from rxjs
+import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
@@ -9,10 +9,6 @@ import { EnvService } from './env.service';
 import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models/visbofiles';
 
 import { MessageService } from './message.service';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable()
 export class SysLogService {
@@ -39,25 +35,33 @@ export class SysLogService {
       .pipe(
         map(response => response.files),
         tap(files => this.log(`fetched ${files.length} Log Files `)),
-        catchError(this.handleError('getSysLog', []))
+        catchError(this.handleError<VisboFile[]>('getSysLog'))
       );
   }
 
   // /** GET Log File by name. Return 403 when name not found */
+  // eslint-disable-next-line
   getSysLog(folder: string, name: string): Observable<any> {
     const url = `${this.serviceUrl}/file/${folder}/${name}`;
+
     this.log(`Calling HTTP Request for a specific log file: ${url}`);
-    let options: any;
+    // const options = {
+    //   observe: 'body',
+    //   responseType: 'text'
+    // };
+    // eslint-disable-next-line
+    let options: any = undefined;
     options = {};
     options.observe = 'body';
     options.responseType = 'text';
     // options.headers = 'XXX'
     return this.http.get<VisboDownloadResponse>(url, options)
       .pipe(
-        tap( data => this.log(`fetched Log File Response `)),
-        // map(data => this.log(`fetched Log File Response ${JSON.stringify(data)}`)),
-        // tap(stream => this.log(`fetched Log File`)),
-        catchError(this.handleError<VisboFile>(`getSysLog name:${name} `))
+        tap(
+          () => this.log(`fetched Log File Response `)
+        ),
+        // eslint-disable-next-line
+        catchError(this.handleError<any>(`getSysLog name:${name} `))
       );
   }
 
@@ -68,9 +72,10 @@ export class SysLogService {
  * @param result - optional value to return as the observable result
  */
  private handleError<T> (operation = 'operation', result?: T) {
+   // eslint-disable-next-line
    return (error: any): Observable<T> => {
 
-     this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}`);
+     this.log(`HTTP Request ${operation} failed: ${error.error.message} status:${error.status}, Result ${JSON.stringify(result)}`);
 
      // Let the app keep running by returning an empty result.
      return throwError(error);

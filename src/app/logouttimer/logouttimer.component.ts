@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { interval } from 'rxjs';
 
@@ -7,8 +7,6 @@ import {TranslateService} from '@ngx-translate/core';
 import { AuthenticationService } from '../_services/authentication.service';
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
-
-import { getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-logouttimer',
@@ -30,7 +28,7 @@ export class LogoutTimerComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // Get Logout Time from authentication Service
     this.logoutTime = new Date();
     this.logoutTime.setSeconds(this.logoutTime.getSeconds() + 100);
@@ -38,11 +36,11 @@ export class LogoutTimerComponent implements OnInit {
     this.checkLogout();
   }
 
-  checkLogout() {
+  checkLogout(): void {
     // emit value in sequence every 10 second
     const source = interval(10000);
-    const subscribe = source.subscribe(
-        val => {
+    source.subscribe(
+        () => {
           const current = new Date();
           let logoutTime = this.authenticationService.logoutCheck();
           if (!logoutTime) {

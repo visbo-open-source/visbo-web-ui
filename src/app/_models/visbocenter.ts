@@ -5,6 +5,8 @@ export class VisboCenter {
   name: string;
   description: string;
   vpCount: number;
+  // eslint-disable-next-line
+  capacity: any[];
   deletedAt: Date;
   perm: {system: number, vc: number, vp: number};
 }

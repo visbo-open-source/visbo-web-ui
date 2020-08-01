@@ -57,6 +57,8 @@ import { VisboProjectViewDeadlineComponent } from './visboproject-viewdeadline/v
 import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdelivery.component';
 import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
+import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
+import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
 import { VisboCompViewKeyMetricsComponent } from './comp-viewkeymetrics/comp-viewkeymetrics.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 
@@ -87,7 +89,7 @@ import { SysconfigComponent } from './sysconfig/sysconfig.component';
 
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
-import { GoogleChartModule } from './google-chart/google-chart.module';
+import { GoogleChartModule } from './_chart/google-chart.module';
 
 @NgModule({
   declarations: [
@@ -106,6 +108,8 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
     VisboCompViewDeliveryComponent,
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
+    VisboCompViewCapacityComponent,
+    VisboCompViewBoardComponent,
     VisboCompViewKeyMetricsComponent,
     VisboProjectViewDeadlineComponent,
     VisboprojectRestrictComponent,
@@ -178,6 +182,6 @@ import { GoogleChartModule } from './google-chart/google-chart.module';
 export class AppModule { }
 
 // required for AOT compilation
-export function HttpLoaderFactory(http: HttpClient) {
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http);
 }

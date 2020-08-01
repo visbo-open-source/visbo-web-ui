@@ -108,18 +108,18 @@
     <div class="modal-dialog modal-dialog-centered" role="document" >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 *ngIf="actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Modify a Group in the Visbo Center</h5>
-          <h5 *ngIf="!actGroup.gid" class="modal-title" id="VpGroupModalCenterTitle">Add a new Group to the Visbo Center</h5>
+          <h5 *ngIf="actGroup._id" class="modal-title" id="VpGroupModalCenterTitle">Modify a Group in the Visbo Center</h5>
+          <h5 *ngIf="!actGroup._id" class="modal-title" id="VpGroupModalCenterTitle">Add a new Group to the Visbo Center</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <form name="actGroup" #f="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !groupName.valid }">
-              <label for="groupName" class="col-form-label">Name:</label>
-              <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.groupName" #groupName="ngModel" required>
-              <div *ngIf="f.submitted && !groupName.valid" class="help-block">Group Name is required</div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+              <label for="name" class="col-form-label">Name:</label>
+              <input type="text" class="form-control" name="name" [(ngModel)]="actGroup.name" #name="ngModel" required>
+              <div *ngIf="f.submitted && !name.valid" class="help-block">Group Name is required</div>
             </div>
             <!-- VP Permissions -->
             <div>
@@ -150,15 +150,15 @@
               </div>
             </div>
 
-            <div *ngIf="helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="helperUsersPerGroup(actGroup.name)" class="mt-2">
               <label class="form-control-static">Group Members</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
-                <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.groupName">
+                <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.name">
                   <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
-            <div *ngIf="!helperUsersPerGroup(actGroup.groupName)" class="mt-2">
+            <div *ngIf="!helperUsersPerGroup(actGroup.name)" class="mt-2">
               <label class="form-control-static">No Group Members</label>
             </div>
             <div class="form-group">
