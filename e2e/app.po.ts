@@ -8,11 +8,10 @@ export class VisboPage {
       .then(title => console.log("Title: ", title));
 
     // browser.debugger();
-    return;
   }
 
   getHeadingText() {
-    console.log("get Heading Text:", JSON.stringify(element));
+    console.log("get Heading Text");
     return element(by.css('app-root h2')).getText();
   }
 }
