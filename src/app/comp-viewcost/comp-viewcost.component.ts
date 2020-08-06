@@ -62,7 +62,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
           color: '#FFF',
           count: -1
         }
-      }
+      },
+      minorGridlines: {count: 0, color: 'none'}
     };
   currentLang: string;
 
@@ -191,15 +192,11 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.log(`ViewCostOverTime Empty`);
     }
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(graphDataCost[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       graphDataCost.push([
-        new Date(),
-        graphDataCost[len - 1][1],
-        graphDataCost[len - 1][2],
-        graphDataCost[len - 1][3],
-        graphDataCost[len - 1][4],
-        graphDataCost[len - 1][5],
-        graphDataCost[len - 1][6],
-        graphDataCost[len - 1][7]
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     // header will be written in the array at the beginning
