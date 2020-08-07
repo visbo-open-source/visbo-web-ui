@@ -3,3 +3,4 @@ node_modules
 dist/
 package-lock.json
 out-tsc
+e2e/src/params.json

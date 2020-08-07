@@ -10,7 +10,9 @@ const { SpecReporter, StacktraceOption } = require('jasmine-spec-reporter');
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
-    './src/**/*.e2e-spec.ts'
+    './src/**/app.e2e-spec.ts',
+    './src/**/010*.e2e-spec.ts',
+    './src/**/[1-9]*.e2e-spec.ts'
   ],
   capabilities: {
     browserName: 'chrome'
