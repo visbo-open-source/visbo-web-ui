@@ -1,8 +1,6 @@
 import { browser, by, element } from 'protractor';
 import { LoginPage } from './010_login.po';
 
-let paramsMap: any;
-
 describe('VISBO Login', () => {
   let page: LoginPage;
 
@@ -12,10 +10,6 @@ describe('VISBO Login', () => {
     // browser.waitForAngular();
     // browser.ignoreSynchronization = true;
     // console.log("Param:", browser.params?.login?.email)
-    let fs = require("fs");
-    let rawContent = fs.readFileSync(__dirname.concat("/", "params.json"));
-    let paramsMap = JSON.parse(rawContent);
-    console.log("Specific Params: ", "email", paramsMap?.login?.email);
     // // await page.sleep(3000);  // seems not to be enought to wait here for every test
   });
 
@@ -39,9 +33,23 @@ describe('VISBO Login', () => {
     expect(alertMessage.length).toBeGreaterThan(0);
   });
 
+  it('should show login success', async () => {
+    let fs = require("fs");
+    let rawContent = fs.readFileSync(__dirname.concat("/", "params.json"));
+    let paramsMap = JSON.parse(rawContent);
+    let email = paramsMap?.login?.email;
+    let pw = paramsMap?.login?.pw;
+    console.log("Login: ", email, "PW: ", pw);
+    await page.login(paramsMap?.login?.email, paramsMap?.login?.pw);
+    await page.sleep(3000);
+    // var alertMessage = await element(by.css('app-alert')).getText();
+    // console.log("LoginName with wrong username & password done:", alertMessage);
+    // expect(alertMessage.length).toBeGreaterThan(0);
+  });
+
   it('should wait a while to verify', async () => {
     console.log("Wait to finish");
-    // await page.sleep(5000);
+    await page.sleep(5000);
   });
 
 });
