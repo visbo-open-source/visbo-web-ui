@@ -10,7 +10,7 @@ describe('VISBO Visual Board Beginning', () => {
     await page.navigateTo();
     // browser.waitForAngular();
     browser.ignoreSynchronization = true;
-    // await page.sleep(3000);  // seems not to be enought to wait here for every test
+    // await sleep(3000);  // seems not to be enought to wait here for every test
     // console.log("NavigateTo finished");
   });
 

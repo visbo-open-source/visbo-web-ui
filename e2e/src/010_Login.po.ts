@@ -15,32 +15,29 @@ export class LoginPage {
   }
 
   getName = function(name: string): Promise<string> {
-    console.log("Get Value by nameID for:", name);
+    // console.log("Get Value by nameID for:", name);
     var result = element(by.id(name)).getText();
-    console.log("Get Value by nameID Result:", result);
+    // console.log("Get Value by nameID Result:", result);
     return result as Promise<string>;
   }
 
   login = function(email: string, password: string): Promise<unknown> {
-    console.log("Login User:", email);
+    // console.log("Login User:", email);
     this.loginName.sendKeys(email);
-    console.log("Login Username set");
+    // console.log("Login Username set");
     this.loginPW.sendKeys(password);
-    console.log("Login Password set");
+    // console.log("Login Password set");
     this.loginButtonLogin.click();
-    console.log("Login Button clicked");
+    // console.log("Login Button clicked");
     return this as Promise<unknown>
   }
 
   userName = function(email: string) {
-    console.log("Enter Login User:", email);
+    // console.log("Enter Login User:", email);
     element(by.id('loginName')).sendKeys(email);
-    console.log("UserName entered");
+    // console.log("UserName entered");
     element(by.id('loginButtonLogin')).click();
-    console.log("Button Clicked");
+    // console.log("Button Clicked");
   }
 
-  sleep = function (ms): Promise<unknown>  {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 }
