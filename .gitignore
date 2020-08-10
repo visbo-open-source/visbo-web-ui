@@ -6,3 +6,4 @@ test-old/
 package-lock.json
 out-tsc
 e2e/src/params.json
+test/params.json

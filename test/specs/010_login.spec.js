@@ -15,8 +15,15 @@ describe('auth form', function () {
     })
 
     it('should allow access with correct creds', function () {
+      let fs = require("fs");
+      console.log("Dir:", __dirname);
+      let rawContent = fs.readFileSync(__dirname.concat("/../", "params.json"));
+      let paramsMap = JSON.parse(rawContent);
+      let email = paramsMap?.login?.email;
+      let pw = paramsMap?.login?.pw;
+      console.log("Login: ", email);
       LoginPage.open()
-      LoginPage.login('visbotestadmin@seyfried.bayern', 'XXXXX');
+      LoginPage.login(email, pw);
 
       LoginPage.alert.waitForDisplayed();
       // console.log("Alert:", LoginPage.alert);
