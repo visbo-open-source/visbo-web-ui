@@ -9,21 +9,21 @@
       <thead id="VCHead">
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vc.lbl.nr' | translate }}</th>
-          <th (click)="sortVCTable(1)">{{ 'vc.lbl.name' | translate }}</th>
-          <th class="d-none d-sm-table-cell" (click)="sortVCTable(2)">{{ 'vc.lbl.modified' | translate }}</th>
-          <th class="d-none d-md-table-cell" (click)="sortVCTable(3)">{{ 'vc.lbl.projects' | translate }}</th>
-          <th>Detail</th>
+          <th id="VCHeadName" (click)="sortVCTable(1)">{{ 'vc.lbl.name' | translate }}</th>
+          <th id="VCHeadDate" class="d-none d-sm-table-cell" (click)="sortVCTable(2)">{{ 'vc.lbl.modified' | translate }}</th>
+          <th id="VCHeadProjects" class="d-none d-md-table-cell" (click)="sortVCTable(3)">{{ 'vc.lbl.projects' | translate }}</th>
+          <th id="">Detail</th>
         </tr>
       </thead>
       <!--Table body-->
       <tbody id="VCList">
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" > <!-- class="danger"> -->
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
-          <td><a>{{vc.name}}</a></td>
+          <td id="VCListName"><a>{{vc.name}}</a></td>
           <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell">{{vc.vpCount}}</td>
-          <td>
+          <td id="VCListDetail">
             <button class="Detail" title="{{ 'vc.msg.detail' | translate }}"
             (click)="gotoDetail(vc)">i</button>
           </td>

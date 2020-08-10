@@ -1,6 +1,6 @@
 import LoginPage from '../pageobjects/login.page'
 
-describe('auth form', function () {
+describe('login checks', function () {
     it('should deny access with wrong creds', function () {
         LoginPage.open()
         LoginPage.login('foo@visbo.de', 'bar');
