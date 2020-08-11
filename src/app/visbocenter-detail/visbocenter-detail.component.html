@@ -5,26 +5,26 @@
     <form>
       <div class="form-group row">
         <label for="vcName" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
-        <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
-        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
+        <input id="VCName" *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+        <label id="VCName" *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
       </div>
       <div class="form-group row">
         <label for="vcDescription" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.description' | translate }}:</label>
-        <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
-        <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
+        <textarea id="VCDescription" *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+        <label id="VCDescription" *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
       </div>
       <div class="form-group row d-none d-md-block">
         <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vcDetail.lbl.createdUpdated' | translate }}:</label>
-        <label class="col-4 form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-        <label class="col-4 form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <label id="VCCreated" class="col-4 form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <label id="VCUpdated" class="col-4 form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
       </div>
     </form>
     <div *ngIf="getVCPerm() != permVC.View">
       <div class="btn-toolbar" style="">
-        <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
-        <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
-        <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
-        <button *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="showProjectUser()">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
+        <button id="VCDetailAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
+        <button id="VCDetailGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
+        <button id="VCDetailUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
+        <button id="VCDetailProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="showProjectUser()">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
       </div>
 
       <div *ngIf="!showGroups && !showProjectUsers" >
@@ -37,7 +37,7 @@
             </div>
             <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
               <!-- Button trigger modal -->
-              <button type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
+              <button id="VCDetailAddUser" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
                 {{ 'vcDetail.btn.addUser' | translate }}
               </button>
             </div>
@@ -45,7 +45,7 @@
           <div class='panel-body'>
             <table class='table table-hover'>
               <!--Table head-->
-              <thead>
+              <thead id="VCDetailUserHead">
                 <tr>
                   <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
                   <th (click)="sortUserTable(1)">{{ 'vcDetail.lbl.email' | translate }}</th>
@@ -54,7 +54,7 @@
                 </tr>
               </thead>
               <!--Table body-->
-              <tbody>
+              <tbody id="VCDetailUserList">
                 <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                   <td>{{memberIndex+1}}</td>
                   <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
@@ -81,7 +81,7 @@
             </div>
             <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
+              <button id="VCDetailAddGroup" type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VcGroupModalCreate">
                 {{ 'vcDetail.btn.addGroup' | translate }}
               </button>
             </div>
@@ -89,7 +89,7 @@
           <div class='panel-body'>
             <table class='table table-hover'>
               <!--Table head-->
-              <thead>
+              <thead id="VCDetailGroupHead">
                 <tr>
                   <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
                   <th (click)="sortGroupTable(1)">{{ 'vcDetail.lbl.group' | translate }}</th>
@@ -100,19 +100,19 @@
                 </tr>
               </thead>
               <!--Table body-->
-              <tbody>
+              <tbody id="VCDetailGroupList">
                 <tr *ngFor="let member of vgGroups; let memberIndex=index">
                   <td>{{memberIndex+1}}</td>
-                  <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate"><a>{{member.name}}</a></td>
-                  <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
-                  <td *ngIf="member.global">{{ 'vcDetail.lbl.global' | translate }}</td>
-                  <td *ngIf="!member.global"></td>
+                  <td id="VCDetailGroupListName" (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate"><a>{{member.name}}</a></td>
+                  <td id="VCDetailGroupListMembers" (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
+                  <td id="VCDetailGroupListGlobal" *ngIf="member.global">{{ 'vcDetail.lbl.global' | translate }}</td>
+                  <td id="VCDetailGroupListGlobal" *ngIf="!member.global"></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                    <button class="Detail" title="{{ 'vcDetail.msg.removeGroup' | translate }}" (click)='helperRemoveGroup(memberIndex)'
+                    <button id="VCDetailGroupDeleteButton" class="Detail" title="{{ 'vcDetail.msg.removeGroup' | translate }}" (click)='helperRemoveGroup(memberIndex)'
                     data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
                   </td>
                   <td>
-                    <button class="Detail" title="{{ 'vcDetail.msg.detailGroup' | translate }}"
+                    <button id="VCDetailGroupDetailButton" class="Detail" title="{{ 'vcDetail.msg.detailGroup' | translate }}"
                      (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
                   </td>
                 </tr>
@@ -260,7 +260,7 @@
             </div>
             <div *ngIf="!actGroup.internal" class="form-group" [ngClass]="{ 'has-error': f2.submitted }">
               <label for="groupName" class="col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
-              <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required minlength="3">
+              <input id="VCDetailAddGroupName" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required minlength="3">
               <div *ngIf="groupName.errors && (groupName.dirty || groupName.touched)" class="help-block">{{ 'vcDetail.msg.groupNameRequired' | translate }}</div>
             </div>
             <!-- VC Permissions -->
@@ -330,9 +330,9 @@
               <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
             <div class="modal-footer align-items-end">
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-              <button *ngIf="!(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
-              <button *ngIf="(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
+              <button id="VCDetailButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+              <button id="VCDetailGroupConfirm" *ngIf="!(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
+              <button id="VCDetailGroupConfirm" *ngIf="(f2.form.valid && hasVCPerm(permVC.ManagePerm))" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
             </div>
           </form>
         </div>
