@@ -15,10 +15,8 @@ describe('login checks', function () {
     })
 
     it('should allow access with correct creds', function () {
-      let fs = require("fs");
-      console.log("Dir:", __dirname);
-      let rawContent = fs.readFileSync(__dirname.concat("/../", "params.json"));
-      let paramsMap = JSON.parse(rawContent);
+      let param = require("../helper/param");
+      let paramsMap = param.get();
       let email = paramsMap?.login?.email;
       let pw = paramsMap?.login?.pw;
       console.log("Login: ", email);

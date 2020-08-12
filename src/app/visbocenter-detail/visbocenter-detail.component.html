@@ -57,10 +57,10 @@
               <tbody id="VCDetailUserList">
                 <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                   <td>{{memberIndex+1}}</td>
-                  <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
-                  <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
+                  <td id="VCDetailUserName" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
+                  <td id="VCDetailUserGroupName" (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                    <button class="Detail" title="{{ 'vcDetail.lbl.deleteUser' | translate }}" (click)='helperUserIndex(memberIndex)'
+                    <button id="VCDetailDeleteUser" class="Detail" title="{{ 'vcDetail.lbl.deleteUser' | translate }}" (click)='helperUserIndex(memberIndex)'
                     data-toggle="modal" data-target="#VcUserRemove">&times;</button>
                   </td>
                 </tr>
@@ -177,12 +177,12 @@
           <form name="newUserInvite" #f1="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !email.valid }">
               <label for="email" class="col-form-label">{{ 'vcDetail.lbl.email' | translate }}:</label>
-              <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+              <input id="VCDetailAddUserName" type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
               <div *ngIf="f1.submitted && !email.valid" class="help-block">{{ 'vcDetail.msg.emailRequired' | translate }}</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
               <label for="group" class="col-form-label">{{ 'vcDetail.lbl.group' | translate }}:</label>
-              <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
+              <select id="VCDetailAddUserGroupName" class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
                 <option></option>
                 <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
               </select>
@@ -195,8 +195,8 @@
             <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">{{ 'vcDetail.msg.invalidMessage' | translate }}</div>
             <div class="modal-footer align-items-end">
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-              <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vcDetail.btn.invite' | translate }}</button>
-              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">{{ 'vcDetail.btn.invite' | translate }}</button>
+              <button id="VCDetailUserConfirm" *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vcDetail.btn.invite' | translate }}</button>
+              <button id="VCDetailUserConfirm" *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">{{ 'vcDetail.btn.invite' | translate }}</button>
             </div>
           </form>
         </div>
@@ -371,7 +371,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
+          <button id="VCDetailsDeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
