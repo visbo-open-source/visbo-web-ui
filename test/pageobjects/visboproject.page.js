@@ -4,15 +4,15 @@ class VisboCenterPage extends Page {
     /**
      * define elements
      */
-    get vcName () { return $('#VCName') }
-    get vcDesc () { return $('#VCDesc') }
-    get saveVC () { return $('#Save') }
+    get vpName () { return $('#VPName') }
+    get vpDesc () { return $('#VPDesc') }
+    get saveVP () { return $('#Save') }
 
-    get vcHead () { return $('#VCHead') }
+    get vpHead () { return $('#VPHead') }
     get sortName () { return $('#SortName') }
     get sortDate () { return $('#SortDate') }
     get sortProjects () { return $('#SortProjects') }
-    get vcList () { return $('#VCList') }
+    get vpList () { return $('#VPList') }
     get alert () { return $('#app-alert') }
 
     get showUserButton () { return $('#ViewUser') }
@@ -40,17 +40,17 @@ class VisboCenterPage extends Page {
      * define or overwrite page methods
      */
     open () {
-        super.open('/vc');
+        super.open('/vp');
     }
 
-    detail (vcID) {
-        super.open('/vcDetail/'.concat(vcID));
+    detail (vpID) {
+        super.open('/vpDetail/'.concat(vpID));
     }
 
     rename(newName, newDescription) {
-      this.vcName.setValue(newName);
-      this.vcDesc.setValue(newDescription);
-      this.saveVC.click();
+      this.vpName.setValue(newName);
+      this.vpDesc.setValue(newDescription);
+      this.saveVP.click();
       browser.pause(500);
     }
 
@@ -78,7 +78,7 @@ class VisboCenterPage extends Page {
         userEntry = this.userList.$$('tr')[i];
         let userName = userEntry.$('#ColUser').getText();
         let groupName = userEntry.$('#ColGroup').getText();
-        // console.log("VC GroupName", i+1, userName, groupName);
+        // console.log("VP GroupName", i+1, userName, groupName);
         if (userName == deleteUserName && groupName == deleteGroupName) {
           // console.log("User / Group Found", userName, groupName);
           break;
@@ -128,7 +128,7 @@ class VisboCenterPage extends Page {
       for (i = 0; i < len; i++) {
         groupEntry = this.groupList.$$('tr')[i];
         let groupName = groupEntry.$('#ColGroup').getText();
-        // console.log("VC GroupName", i+1, groupName);
+        // console.log("VP GroupName", i+1, groupName);
         if (groupName == deleteGroupName) {
           // console.log("Group Found", groupName);
           break;
