@@ -70,7 +70,7 @@ class VisboCenterPage extends Page {
 
     deleteUser(deleteUserName, deleteGroupName) {
 
-      console.log("Delete User from Group", deleteUserName, deleteGroupName);
+      // console.log("Delete User from Group", deleteUserName, deleteGroupName);
       const len = this.userList.$$('tr').length
       let i = 0;
       let userEntry = undefined;

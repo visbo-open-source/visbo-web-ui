@@ -53,7 +53,7 @@ describe('visbocenter check', function () {
       let vcEntry = vcList.$$('tr')[i];
       let vcName = vcEntry.$('#ColName').getText().valueOf();
       // console.log("VC Names", i+1, vcName, vcLastName, vcName <= vcLastName);
-      expectChai(vcName >= vcLastName).to.be.eql(true, "Wrong Sorting by Name");
+      expectChai(vcName.toLowerCase() >= vcLastName.toLowerCase()).to.be.eql(true, "Wrong Sorting by Name");
       vcLastName = vcName
     }
   })
@@ -77,6 +77,7 @@ describe('visbocenter check', function () {
         break;
       }
     }
+    expectChai(i).to.be.lt(len, `VisboCenter ${vcConfigName} not found`);
     var newUrl = browser.getUrl();
     const match = '/vcDetail/';
     expectChai(newUrl).to.include(match, "Wrong redirect to vcDetail");

@@ -178,11 +178,11 @@
   </div>
 
   <div class="mb-3">
-    <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
-    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
+    <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
+    <button id="Save" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
     <button (click)="goBack()">{{ 'vpDetail.btn.back' | translate }}</button>
-    <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
-    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
+    <button id="DeleteVP" *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
+    <button id="DestroyVP" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
   </div>
 
   <!-- Modal Add VP User -->

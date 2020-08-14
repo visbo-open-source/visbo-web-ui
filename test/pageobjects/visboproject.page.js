@@ -1,6 +1,6 @@
 import Page from './page'
 
-class VisboCenterPage extends Page {
+class VisboProjectPage extends Page {
     /**
      * define elements
      */
@@ -8,10 +8,21 @@ class VisboCenterPage extends Page {
     get vpDesc () { return $('#VPDesc') }
     get saveVP () { return $('#Save') }
 
+    get createVP () { return $('#CreateVP') }
+    get createVPName () { return $('#CreateVPName') }
+    get createVPDesc () { return $('#CreateVPDesc') }
+    get createVPConfirm () { return $('#CreateVPConfirm') }
+
+    get deletedVP () { return $('#DeletedVP') }
+    get unDeletedVP () { return $('#UnDeletedVP') }
+    get deleteVP () { return $('#DeleteVP') }
+    get destroyVP () { return $('#DestroyVP') }
+    get deleteVPConfirm () { return $('#DeleteVPConfirm') }
+
     get vpHead () { return $('#VPHead') }
     get sortName () { return $('#SortName') }
     get sortDate () { return $('#SortDate') }
-    get sortProjects () { return $('#SortProjects') }
+    get sortVersions () { return $('#SortVersions') }
     get vpList () { return $('#VPList') }
     get alert () { return $('#app-alert') }
 
@@ -31,7 +42,6 @@ class VisboCenterPage extends Page {
     get groupList () { return $('#GroupList') }
 
     get addGroupName () { return $('#AddGroupName') }
-    get addGroupGlobal () { return $('#global') }
     get addGroupVPView () { return $('#permVP1') }
     get addGroupConfirm () { return $('#AddGroupConfirm') }
     get deleteGroupConfirm () { return $('#DeleteGroupConfirm') }
@@ -39,12 +49,44 @@ class VisboCenterPage extends Page {
     /**
      * define or overwrite page methods
      */
-    open () {
-        super.open('/vp');
+    open (vcid) {
+      let url = vcid ? '/vp/'.concat(vcid) : '/vp'
+      super.open(url);
     }
 
-    detail (vpID) {
-        super.open('/vpDetail/'.concat(vpID));
+    detail (vpID, deleted) {
+      let url = '/vpDetail/'.concat(vpID);
+      if (deleted) url = url.concat('?deleted=1');
+      super.open(url);
+      browser.pause(500);
+    }
+
+    create(newName, newDescription) {
+      console.log("create", newName, newDescription);
+
+      this.createVP.click();
+      this.createVPName.waitForClickable({ timeoutMsg: 'Field Project Name should show up' });
+      this.createVPName.setValue(newName);
+      this.createVPDesc.setValue(newDescription);
+      this.createVPConfirm.click();
+    }
+
+    delete(vpID) {
+      console.log("delete", vpID);
+
+      this.deleteVP.click();
+      this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
+      this.deleteVPConfirm.click();
+      browser.pause(500);
+    }
+
+    destroy(vpID) {
+      console.log("destroy", vpID);
+
+      this.destroyVP.click();
+      this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
+      this.deleteVPConfirm.click();
+      browser.pause(500);
     }
 
     rename(newName, newDescription) {
@@ -70,7 +112,7 @@ class VisboCenterPage extends Page {
 
     deleteUser(deleteUserName, deleteGroupName) {
 
-      console.log("Delete User from Group", deleteUserName, deleteGroupName);
+      // console.log("Delete User from Group", deleteUserName, deleteGroupName);
       const len = this.userList.$$('tr').length
       let i = 0;
       let userEntry = undefined;
@@ -99,21 +141,13 @@ class VisboCenterPage extends Page {
       return true;
     }
 
-    addGroup(groupName, flagGlobal) {
+    addGroup(groupName) {
       this.addGroupButton.click();
-      // console.log("Add Group", groupName, flagGlobal);
+      // console.log("Add Group", groupName);
 
-      // how can we improve this to wait until the modal is fully operable
-      // $('#AddGroupConfirm').waitForVisible(1000);
-      // $('#AddGroupName').waitForExist({ timeout: 5000 });
-      // $('#AddGroupConfirm').waitForExist({ timeout: 5000 });
-      // browser.pause(500);
       this.addGroupName.waitForClickable({ timeoutMsg: 'Field Group Name should show up' });
       this.addGroupName.setValue(groupName);
-      if (flagGlobal) {
-        this.addGroupGlobal.click();
-        this.addGroupVPView.click();
-      }
+      this.addGroupVPView.click();
       this.addGroupConfirm.click();
       // how can we improve this to wait until the modal is fully operable
       browser.pause(500);
@@ -151,4 +185,4 @@ class VisboCenterPage extends Page {
 
 }
 
-export default new VisboCenterPage()
+export default new VisboProjectPage()
