@@ -106,6 +106,8 @@ export class VisboProjectService {
       params = params.append('deleted', '1');
     }
     if (roleID) {
+      roleID = roleID.replace(/\+/g,'%2B');
+      this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
     }
     if (refDate) {

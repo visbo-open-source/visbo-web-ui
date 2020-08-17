@@ -11,8 +11,9 @@ import { VisboUserInvite } from '../_models/visbouser';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSetting } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -27,11 +28,14 @@ export class VisbocenterDetailComponent implements OnInit {
   vgVPUsers: VGProjectUserGroup[];
   newUserInvite = new VisboUserInvite();
   actGroup: VGGroupExpanded;
+  vcSettings: VisboSetting[];
+  vcSetting: VisboSetting;
+
   confirm: string;
   userIndex: number;
   groupIndex: number;
-  showGroups: boolean;
-  showProjectUsers: boolean;
+  settingIndex: number;
+  showList = 'Users';
 
   combinedPerm: VGPermission;
   combinedUserPerm: VGPermission;
@@ -44,6 +48,8 @@ export class VisbocenterDetailComponent implements OnInit {
   sortVPUserAscending = true;
   sortGroupColumn = 1;
   sortGroupAscending = true;
+  sortSettingColumn = 1;
+  sortSettingAscending = true;
 
   constructor(
     private messageService: MessageService,
@@ -185,13 +191,33 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  toggleUserGroup(): void {
-    this.showProjectUsers = false;
-    this.showGroups = !this.showGroups;
+  switchView(newView: string): void {
+    this.showList = newView;
+    this.log('VisboCenter new View: ' + newView);
   }
 
-  showProjectUser(): void {
-    this.showProjectUsers = true;
+  showSetting(): void {
+    this.showList = 'Settings';
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log('VisboCenter Settings of: ' + id);
+    this.visbocenterService.getVCSettings(id)
+      .subscribe(
+        vcSettings => {
+          this.log(`fetched VC Settings ${vcSettings.length}`);
+          this.vcSettings = vcSettings;
+          this.sortSettingTable();
+        },
+        error => {
+          this.log(`Get VC Settings failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vcDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
   }
 
   addNewVCUser(): void {
@@ -244,6 +270,10 @@ export class VisbocenterDetailComponent implements OnInit {
 
   helperUserIndex(memberIndex: number): void {
     this.userIndex = memberIndex;
+  }
+
+  helperSettingIndex(index: number): void {
+    this.settingIndex = index;
   }
 
   calcCombinedPerm(memberIndex: number): void {
@@ -475,6 +505,88 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  initSetting(index): void {
+    this.vcSetting = this.vcSettings[index];
+  }
+
+  downloadSetting(): void {
+    const setting = this.vcSetting;
+    this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
+    if (setting.type == 'organisation' && setting.value?.allRoles) {
+      let parentUID = [];
+      for (let i = 0; i < setting.value.allRoles.length; i++) {
+        const role = setting.value.allRoles[i];
+        this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
+        for (let j = 0; j < role.subRoleIDs.length; j++) {
+          parentUID[role.subRoleIDs[j].key] = role.uid;
+        }
+      }
+
+      // export as CSV
+      let data = '';
+      const separator = '\t';
+      data = 'sep=' + separator + '\n';  // to force excel to use the separator
+      data = data + 'name' + separator
+            + 'uid' + separator
+            // + 'pid' + separator
+            + 'organisation' + separator
+            + 'isExternal' + separator
+            // + 'isTeam' + separator
+            + 'defaultKapa' + separator
+            + 'tagessatzIntern' + separator
+            + 'tagessatzExtern' + separator
+            + 'aliases' + '\n';
+      for (let i = 0; i < setting.value.allRoles.length; i++) {
+        const role = setting.value.allRoles[i];
+        let parent = '';
+        if (parentUID[role.uid]) {
+          parent = setting.value.allRoles[parentUID[role.uid] - 1].name;
+        }
+        const lineItem = ''
+                    + role.name + separator
+                    + role.uid + separator
+                    // + (parentUID[role.uid] || '') + separator
+                    + parent + separator
+                    + (role.isExternal ? '1' : '0') + separator
+                    // + (role.isTeam ? '1' : '0') + separator
+                    + role.defaultKapa.toString() + separator
+                    + role.tagessatzIntern.toString() + separator
+                    + role.tagessatzExtern.toString() + separator
+                    + (role.aliases || '') + '\n';
+        data = data.concat(lineItem);
+      }
+      this.log(`VC Setting Orga CSV Len ${data.length} `);
+      const blob = new Blob([data], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      this.log(`Open URL ${url}`);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.href = url;
+      const timestamp = new Date(setting.timestamp);
+      const month = (timestamp.getMonth() + 1).toString();
+      var strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
+
+      a.download = `VisboCenterOrganisation_${strTimestamp}.csv`;
+      this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } else {
+      // export as JSON/Text
+      let data = JSON.stringify(setting.value);
+      this.log(`VC Setting JSON Len ${data.length} `);
+      const blob = new Blob([data], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      this.log(`Open URL ${url}`);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.href = url;
+      a.download = `VisboCenterSetting_${setting.name}.json`;
+      this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  }
+
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -553,6 +665,32 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  sortSettingTable(n?: number): void {
+    if (!this.vcSettings) { return; }
+    if (n !== undefined || this.sortSettingColumn === undefined) {
+      if (n !== this.sortSettingColumn) {
+        this.sortSettingColumn = n;
+        this.sortSettingAscending = undefined;
+      }
+      if (this.sortSettingAscending === undefined) {
+        // sort name column ascending, number values desc first
+        this.sortSettingAscending = (n === 1) ? true : false;
+      } else {
+        this.sortSettingAscending = !this.sortSettingAscending;
+      }
+    }
+    if (this.sortSettingColumn === 1) {
+      this.vcSettings.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
+    } else if (this.sortSettingColumn === 2) {
+      this.vcSettings.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+    } else if (this.sortSettingColumn === 3) {
+      this.vcSettings.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    }
+    if (!this.sortSettingAscending) {
+      this.vcSettings.reverse();
+    }
+
+  }
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);

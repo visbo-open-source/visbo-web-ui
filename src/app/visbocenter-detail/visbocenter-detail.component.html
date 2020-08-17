@@ -22,12 +22,13 @@
     <div *ngIf="getVCPerm() != permVC.View">
       <div class="btn-toolbar" style="">
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
-        <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
-        <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
-        <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="showProjectUser()">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
+        <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
+        <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
+        <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('ProjectUsers')">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
+        <button id="ViewSetting" type="button" class="btn btn-md btn-light mx-1" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
       </div>
 
-      <div *ngIf="!showGroups && !showProjectUsers" >
+      <div *ngIf="showList == 'Users'" >
         <div >
           <div class='row'>
             <div class='col'>
@@ -58,7 +59,7 @@
                 <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                   <td>{{memberIndex+1}}</td>
                   <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail"><a>{{member.email}}</a></td>
-                  <td id="ColGroup" (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
+                  <td id="ColGroup" (click)="switchView('Groups')"><a>{{member.groupName}}</a></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
                     <button id="ColDeleteUser" class="Detail" title="{{ 'vcDetail.lbl.deleteUser' | translate }}" (click)='helperUserIndex(memberIndex)'
                     data-toggle="modal" data-target="#VcUserRemove">&times;</button>
@@ -71,7 +72,7 @@
         </div>
       </div>
 
-      <div *ngIf="showGroups && !showProjectUsers" >
+      <div *ngIf="showList == 'Groups'" >
         <div >
           <div class='row'>
             <div class='col'>
@@ -104,7 +105,7 @@
                 <tr *ngFor="let member of vgGroups; let memberIndex=index">
                   <td>{{memberIndex+1}}</td>
                   <td id="ColGroup" (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate"><a>{{member.name}}</a></td>
-                  <td id="ColMembers" (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
+                  <td id="ColMembers" (click)="switchView('Users')"><a>{{member.users.length}}</a></td>
                   <td id="ColGlobal" *ngIf="member.global">{{ 'vcDetail.lbl.global' | translate }}</td>
                   <td id="ColGlobal" *ngIf="!member.global"></td>
                   <td *ngIf="hasVCPerm(permVC.ManagePerm)">
@@ -123,7 +124,7 @@
         </div>
       </div>
 
-      <div *ngIf="showProjectUsers" >
+      <div *ngIf="showList == 'ProjectUsers'" >
         <div >
           <div class='row'>
             <div class='col'>
@@ -152,12 +153,56 @@
                   <td>{{member.groupName}}</td>
                 </tr>
               </tbody>
-              <!--Table body-->
             </table>
           </div>
         </div>
       </div>
     </div>
+
+    <div *ngIf="showList == 'Settings'" >
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h4 class='panel-heading mt-2'>
+                {{ 'vcDetail.titleSettings' | translate }}
+            </h4>
+          </div>
+          <!-- <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+            <button id="AddUser" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcUserModalCreate">
+              {{ 'vcDetail.btn.addUser' | translate }}
+            </button>
+          </div> -->
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead id="SettingHead">
+              <tr>
+                <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+                <th (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+                <th (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
+                <th (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+                <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody id="SettingList">
+              <tr *ngFor="let item of vcSettings; let itemIndex=index">
+                <td>{{itemIndex+1}}</td>
+                <td id="ColSettingName" (click)='initSetting(itemIndex)' data-toggle="modal" data-target="#VcSettingDetail"><a>{{item.name}}</a></td>
+                <td id="ColSettingTimestamp">{{item.timestamp | date : 'MM.yyyy'}}</td>
+                <td id="ColSettingDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+                <td *ngIf="hasVCPerm(permVC.ManagePerm)">
+                  <button id="ColDeleteSetting" class="Detail" title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
+                  data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="mb-3">
       <button id="Save" *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">{{ 'vcDetail.btn.save' | translate }}</button>
       <button class="btn btn-secondary mx-1" (click)="goBack()">{{ 'vcDetail.btn.back' | translate }}</button>
@@ -322,7 +367,7 @@
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
                 <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.name">
-                  <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
+                  <a (click)="switchView('Users')" data-dismiss="modal">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
@@ -450,13 +495,51 @@
           <label class="form-control-static mt-2">{{ 'perm.lblGroupMembership' | translate }}</label>
           <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
             <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
-              <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.groupName }}</a>
+              <a (click)="switchView('Groups')" data-dismiss="modal">{{ member.groupName }}</a>
             </div>
           </ng-container>
 
           <div class="modal-footer align-items-end">
             <button class="btn btn-primary" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal View VCSetting -->
+  <div class="modal fade" id="VcSettingDetail" tabindex="-1" role="dialog" aria-labelledby="VcSettingDetailTitle" aria-hidden="true">
+    <div *ngIf="vcSetting" class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcSettingDetailTitle">{{ 'vcDetail.titleSettings' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="settingDetail">
+            <div class="form-group">
+              <label for="SettingName" class="col-4 col-form-label">{{ 'vcDetail.lbl.settingName' | translate }}:</label>
+              <label id="SettingName" class="col-8 form-control-static">{{ vcSetting.name }} </label>
+            </div>
+            <div class="form-group">
+              <label for="SettingType" class="col-4 col-form-label">{{ 'vcDetail.lbl.settingType' | translate }}:</label>
+              <label id="SettingType" class="col-8 form-control-static">{{ vcSetting.type }} </label>
+            </div>
+            <div class="form-group">
+              <label for="Timestamp" class="col-4 col-form-label">{{ 'vcDetail.lbl.timestamp' | translate }}:</label>
+              <label id="Timestamp" class="col-8 form-control-static">{{ vcSetting.timestamp | date : 'dd.MM.yy' }} </label>
+            </div>
+            <div class="form-group">
+              <label for="updatedAt" class="col-4 col-form-label">{{ 'vcDetail.lbl.updatedAt' | translate }}:</label>
+              <label id="updatedAt" class="col-8 form-control-static">{{ vcSetting.updatedAt | date : 'dd.MM.yy'}} </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+          <button id="SettingDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadSetting()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
-
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
 import { MessageService } from './message.service';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -138,6 +138,8 @@ export class VisboCenterService  {
       params = params.append('deleted', '1');
     }
     if (roleID) {
+      roleID = roleID.replace(/\+/g,'%2B');
+      this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
     }
     this.log(`Calling HTTP Request for a specific entry: ${url}`);
@@ -329,6 +331,25 @@ export class VisboCenterService  {
       tap(() => this.log(`deleted Visbo Center Group ${group.name}`)),
       catchError(this.handleError<VGResponse>('deleteVisboCenterGroup'))
     );
+  }
+
+  // GET VisboCenter Settings for a specified VC from the server
+  getVCSettings(vcid: string, sysadmin = false, deleted = false): Observable<VisboSetting[]> {
+    const url = `${this.vcUrl}/${vcid}/setting`;
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request GET Users: ${url} `);
+    return this.http.get<VisboSettingListResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vcsetting),
+        tap(vcsetting => this.log(`fetched VC Settings`)),
+        catchError(this.handleError<VisboSetting[]>('getVisboCenterSetting'))
+      );
   }
 
   /**
