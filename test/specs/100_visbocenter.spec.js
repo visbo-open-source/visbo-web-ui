@@ -8,9 +8,11 @@ let vcID = '';
 let newGroupName = '';
 let newUserName = '';
 
+let paramsMap;
+
 describe('visbocenter check', function () {
   it('login to system', function () {
-    let paramsMap = param.get();
+    paramsMap = param.get();
     let email = paramsMap?.login?.email;
     let pw = paramsMap?.login?.pw;
     LoginPage.open()
@@ -59,8 +61,7 @@ describe('visbocenter check', function () {
   })
 
   it('should navigate to Details of a specific VC', function () {
-    let paramsMap = param.get();
-    let vcConfigName = paramsMap?.VCBaseName || "Test-MS-VC01";
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
     vcConfigName = vcConfigName.concat("01");
     VisboCenterPage.open();
     // console.log("Show VC");
@@ -120,11 +121,11 @@ describe('visbocenter check', function () {
   it('Add User to Group', function () {
     VisboCenterPage.detail(vcID);
     // console.log("Show VC Details, switch to Group");
-    let paramsMap = param.get();
     newUserName = paramsMap?.userRead;
 
     let message = (new Date()).toISOString();
     message = "Invitation from ".concat(message);
+    message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
     console.log("Add new User Group", newUserName, newGroupName);
     VisboCenterPage.addUser(newUserName, newGroupName, message);
     console.log("Add User Check", newGroupName);

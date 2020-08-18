@@ -4,24 +4,24 @@
   <form>
     <div class="form-group row">
       <label for="vcName" class="col-4 col-md-3 col-form-label">Name:</label>
-      <input *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
-      <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
+      <input id="VCName" *ngIf="hasVCPerm(permVC.Modify)" type="text" name=vcName class="col-sm-8 form-control" [(ngModel)]="visbocenter.name" placeholder="Name">
+      <label id="VCName" *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.name }} </label>
     </div>
     <div class="form-group row">
       <label for="vcDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-      <textarea *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
-      <label *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
+      <textarea id="VCDesc" *ngIf="hasVCPerm(permVC.Modify)" name=vcDescription class="col-8 form-control" [(ngModel)]="visbocenter.description" placeholder="Type in your description"></textarea>
+      <label id="VCDesc" *ngIf="!hasVCPerm(permVC.Modify)" class="col-8 form-control-static">{{ visbocenter.description }} </label>
     </div>
     <div class="form-group row">
       <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
-      <label class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      <label class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label id="VCCreated" class="col form-control-static col-form-label">{{ visbocenter.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label id="VCUpdated" class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
   </form>
   <div class="btn-toolbar" style="">
-    <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mx-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
-    <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-    <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
+    <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mx-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
+    <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+    <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
   </div>
 
   <div *ngIf="!showGroups" >
@@ -34,13 +34,13 @@
         </div>
         <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
           <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
+          <button id="AddUser" type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
         </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover'>
           <!--Table head-->
-          <thead>
+          <thead id="UserHead">
             <tr>
               <th>Nr.</th>
               <th (click)="sortUserTable(1)">e-mail</th>
@@ -49,13 +49,13 @@
             </tr>
           </thead>
           <!--Table body-->
-          <tbody>
+          <tbody id="UserList">
             <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
               <td>{{memberIndex+1}}</td>
-              <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail">{{member.email}}</td>
-              <td>{{member.groupName}}</td>
+              <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VCUserDetail">{{member.email}}</td>
+              <td id="ColGroup">{{member.groupName}}</td>
               <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
-                <button class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
+                <button id="ColDeleteUser" class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
                 data-toggle="modal" data-target="#VcUserRemove">&times;</button>
               </td>
             </tr>
@@ -77,7 +77,7 @@
       <div class='panel-body'>
         <table class='table table-hover'>
           <!--Table head-->
-          <thead>
+          <thead id="GroupHead">
             <tr>
               <th>Nr.</th>
               <th (click)="sortGroupTable(1)">Group</th>
@@ -88,19 +88,19 @@
             </tr>
           </thead>
           <!--Table body-->
-          <tbody>
+          <tbody id="GroupList">
             <tr *ngFor="let member of vgGroups; let memberIndex=index">
               <td>{{memberIndex+1}}</td>
-              <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">{{member.name}}</td>
-              <td>{{member.users.length}}</td>
-              <td *ngIf="member.global">Global</td>
-              <td *ngIf="!member.global"></td>
+              <td id="ColGroup" (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">{{member.name}}</td>
+              <td id="ColMembers">{{member.users.length}}</td>
+              <td id="ColGlobal" *ngIf="member.global">Global</td>
+              <td id="ColGlobal" *ngIf="!member.global"></td>
               <td *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">
-                <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                <button id="ColDeleteGroup" class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
                 data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
               </td>
               <td>
-                <button class="Detail" title="Detail of Group"
+                <button id="ColDetail" class="Detail" title="Detail of Group"
                  (click)='initGroup(member)' data-toggle="modal" data-target="#VcGroupModalCreate">i</button>
               </td>
             </tr>
@@ -110,11 +110,11 @@
       </div>
     </div>
   </div>
-  <button *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
-  <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary mx-1">Restore</button>
-  <button class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
-  <button *ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
-  <button *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
+  <button id="Save" *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
+  <button id="Save" *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary mx-1">Restore</button>
+  <button id="Save" class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
+  <button  id="DeleteVC"*ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
+  <button id="DestroyVC" *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
 
   <!-- Modal Add User -->
   <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">
@@ -130,12 +130,12 @@
           <form name="newUserInvite" #f="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
               <label for="email" class="col-form-label">Name:</label>
-              <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+              <input id="AddUserName" type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
               <div *ngIf="f.submitted && !email.valid" class="help-block">E-mail address is required</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !group.valid }">
               <label for="group" class="col-form-label">Group:</label>
-              <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
+              <select id="AddUserGroupName" class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
                 <option></option>
                 <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
               </select>
@@ -143,14 +143,14 @@
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !inviteMessage.valid }">
               <label for="inviteMessage" class="col-form-label">Message:</label>
-              <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
+              <textarea id="AddUserMessage" class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
             </div>
             <div *ngIf="f.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
             <div class="form-group">
-              <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >Invite</button>
-              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
+              <button id="AddUserConfirm" *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >Invite</button>
+              <button id="AddUserConfirm" *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
               <!-- <button *ngIf="f.form.valid" type="submit" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button> -->
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
+              <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
             </div>
           </form>
         </div>
@@ -174,7 +174,7 @@
           </div>
           <form>
             <div class="form-group">
-              <label for="VcName" class="col-form-label">Visbo Center:</label>
+              <label class="col-form-label">Visbo Center:</label>
               <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
             </div>
             <div class="form-group">
@@ -189,7 +189,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning mx-1" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+          <button id="DeleteUserConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
         </div>
       </div>
     </div>
@@ -210,7 +210,7 @@
           <form name="actGroup" #f="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
               <label for="name" class="col-form-label">Name:</label>
-              <input type="text" class="form-control" name="name" [(ngModel)]="actGroup.name" #name="ngModel" required>
+              <input id="AddGroupName" type="text" class="form-control" name="name" [(ngModel)]="actGroup.name" #name="ngModel" required>
               <div *ngIf="f.submitted && !name.valid" class="help-block">Group Name is required</div>
             </div>
             <!-- VC Permissions -->
@@ -280,9 +280,9 @@
               <label class="form-control-static">No Group Members</label>
             </div>
             <div class="form-group mt-2">
-              <button *ngIf="!(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
-              <button *ngIf="(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
+              <button id="AddGroupConfirm" *ngIf="!(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
+              <button id="AddGroupConfirm" *ngIf="(f.form.valid && !deleted && hasVCPerm(permVC.ManagePerm))" type="submit" class="btn btn-primary mx-1" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
+              <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Cancel</button>
             </div>
           </form>
         </div>
@@ -306,7 +306,7 @@
           </div>
           <form>
             <div class="form-group">
-              <label for="VcName" class="col-form-label">Visbo Center:</label>
+              <label class="col-form-label">Visbo Center:</label>
               <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
             </div>
             <div class="form-group">
@@ -320,8 +320,8 @@
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
+          <button id="DeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
         </div>
       </div>
     </div>
@@ -344,7 +344,7 @@
           </div>
           <form>
             <div class="form-group">
-              <label for="VcName" class="col-form-label">Name:</label>
+              <label class="col-form-label">Name:</label>
               <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
             </div>
             <div class="form-group">
@@ -359,8 +359,8 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
-          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white mx-1" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
-          <button *ngIf="deleted" type="button" class="btn btn-danger text-white mx-1" (click)="delete(visbocenter)" data-dismiss="modal">Destroy</button>
+          <button id="DeleteVCConfirm" *ngIf="!deleted" type="button" class="btn btn-warning text-white mx-1" (click)="delete(visbocenter)" data-dismiss="modal">Delete</button>
+          <button id="DeleteVCConfirm" *ngIf="deleted" type="button" class="btn btn-danger text-white mx-1" (click)="delete(visbocenter)" data-dismiss="modal">Destroy</button>
         </div>
       </div>
     </div>
@@ -444,7 +444,7 @@
           </ng-container>
 
           <div class="form-group mt-2">
-            <button class="btn btn-primary" data-dismiss="modal">Close</button>
+            <button id="ButtonBack" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

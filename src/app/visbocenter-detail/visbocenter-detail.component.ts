@@ -15,6 +15,19 @@ import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
+class OrganisationItem {
+  uid: number;
+  pid: number;
+  level: number;
+  name: string;
+  parent: string;
+  path: string;
+  isExternRole: boolean;
+  defaultKapa: number;
+  tagessatz: number;
+  aliases: string;
+}
+
 @Component({
   selector: 'app-visbocenter-detail',
   templateUrl: './visbocenter-detail.component.html',
@@ -513,14 +526,40 @@ export class VisbocenterDetailComponent implements OnInit {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
-      let parentUID = [];
+      let organisation: OrganisationItem[] = [];
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
+        if (!organisation[role.uid - 1]) {
+          organisation[role.uid - 1] = new OrganisationItem()
+          organisation[role.uid - 1].uid = role.uid;
+          organisation[role.uid - 1].pid = undefined;
+          organisation[role.uid - 1].path = '';
+          organisation[role.uid - 1].level = 0;
+        }
+        organisation[role.uid - 1].name = role.name;
+        organisation[role.uid - 1].isExternRole = role.isExternRole;
+        organisation[role.uid - 1].tagessatz = role.isExternRole ? role.tagessatzExtern : role.tagessatzIntern;
+        organisation[role.uid - 1].aliases = role.aliases;
+
         this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
         for (let j = 0; j < role.subRoleIDs.length; j++) {
-          parentUID[role.subRoleIDs[j].key] = role.uid;
+          let index = Number(role.subRoleIDs[j].key) - 1;
+          if (index < 0) {
+            // something wrong with the numbering
+            break;
+          }
+          if (!organisation[index]) {
+            organisation[index] = new OrganisationItem();
+            organisation[index].uid = index + 1;
+          }
+          organisation[index].pid = role.uid;
+          organisation[index].parent = role.name;
+          organisation[index].path = organisation[role.uid - 1].path.concat('/', organisation[role.uid - 1].name);
+          organisation[index].level = organisation[role.uid - 1].level + 1;
         }
       }
+      organisation.sort(function(a, b) { return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name)); });
+      this.log(`Orga Structure ${JSON.stringify(organisation)}`);
 
       // export as CSV
       let data = '';
@@ -533,25 +572,24 @@ export class VisbocenterDetailComponent implements OnInit {
             + 'isExternal' + separator
             // + 'isTeam' + separator
             + 'defaultKapa' + separator
-            + 'tagessatzIntern' + separator
-            + 'tagessatzExtern' + separator
+            + 'tagessatz' + separator
             + 'aliases' + '\n';
-      for (let i = 0; i < setting.value.allRoles.length; i++) {
-        const role = setting.value.allRoles[i];
-        let parent = '';
-        if (parentUID[role.uid]) {
-          parent = setting.value.allRoles[parentUID[role.uid] - 1].name;
+      for (let i = 0; i < organisation.length; i++) {
+        const role = organisation[i];
+        if (!role) {
+          // organisation could contain holes and they are sorted at the end
+          break;
         }
+        let parent = '';
         const lineItem = ''
-                    + role.name + separator
+                    + role.name.padStart(role.name.length + role.level, ' ') + separator
                     + role.uid + separator
-                    // + (parentUID[role.uid] || '') + separator
-                    + parent + separator
-                    + (role.isExternal ? '1' : '0') + separator
+                    // + (role.pid || '') + separator
+                    + role.parent + separator
+                    + (role.isExternRole ? '1' : '0') + separator
                     // + (role.isTeam ? '1' : '0') + separator
-                    + role.defaultKapa.toString() + separator
-                    + role.tagessatzIntern.toString() + separator
-                    + role.tagessatzExtern.toString() + separator
+                    + (role.defaultKapa || '0') + separator
+                    + role.tagessatz + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }
