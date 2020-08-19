@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { MessageService } from './message.service';
 
@@ -7,9 +7,10 @@ describe('MessageService', () => {
     TestBed.configureTestingModule({
       providers: [MessageService]
     });
+    service = TestBed.get(MessageService); // * inject service instance
   });
 
-  it('should be created', inject([MessageService], (service: MessageService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

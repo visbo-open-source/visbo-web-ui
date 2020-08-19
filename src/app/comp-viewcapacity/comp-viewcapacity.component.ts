@@ -83,7 +83,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         gridlines: {
           color: '#FFF',
           count: -1
-        }
+        },
+        minorGridlines: {count: 0, color: 'none'}
       }
     };
   currentLang: string;
@@ -348,16 +349,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(graphDataCapacity[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       graphDataCapacity.push([
-        new Date(),
-        graphDataCapacity[len - 1][1],
-        graphDataCapacity[len - 1][2],
-        graphDataCapacity[len - 1][3],
-        graphDataCapacity[len - 1][4],
-        graphDataCapacity[len - 1][5],
-        graphDataCapacity[len - 1][6],
-        graphDataCapacity[len - 1][7],
-        graphDataCapacity[len - 1][8]
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     graphDataCapacity.unshift([

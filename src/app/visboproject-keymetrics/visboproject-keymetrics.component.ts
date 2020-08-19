@@ -342,12 +342,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const len = keyMetricsCost.length;
     // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(keyMetricsCost[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetricsCost.push([
-        new Date(),
-        keyMetricsCost[len - 1][1],
-        keyMetricsCost[len - 1][2],
-        keyMetricsCost[len - 1][3],
-        keyMetricsCost[len - 1][4]
+        currentDate, undefined, undefined, undefined, undefined
       ]);
     }
 
@@ -405,12 +404,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const len = keyMetrics.length;
     // this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        new Date(),
-        keyMetrics[len - 1][1],
-        keyMetrics[len - 1][2],
-        keyMetrics[len - 1][3],
-        keyMetrics[len - 1][4]
+        currentDate, undefined, undefined, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Delivery');
@@ -472,12 +470,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const len = keyMetrics.length;
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        new Date(),
-        keyMetrics[len - 1][1],
-        keyMetrics[len - 1][2],
-        keyMetrics[len - 1][3],
-        keyMetrics[len - 1][4]
+        currentDate, undefined, undefined, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Deadline');
@@ -521,8 +518,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       }
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
-        this.visboprojectversions[i].keyMetrics.timeDelayFinished || 0,
-        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished || 0
+        this.visboprojectversions[i].keyMetrics.timeDelayFinished,
+        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished
       ]);
     }
     if (keyMetrics.length === 0) {
@@ -534,10 +531,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const len = keyMetrics.length;
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        new Date(),
-        keyMetrics[len - 1][1],
-        keyMetrics[len - 1][2]
+        currentDate, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
