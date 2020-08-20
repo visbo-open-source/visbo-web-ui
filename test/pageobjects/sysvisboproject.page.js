@@ -1,6 +1,6 @@
 import Page from './page'
 
-class VisboProjectPage extends Page {
+class SysVisboProjectPage extends Page {
     /**
      * define elements
      */
@@ -50,16 +50,16 @@ class VisboProjectPage extends Page {
      * define or overwrite page methods
      */
     open (vcid) {
-      let url = vcid ? '/vp/'.concat(vcid) : '/vp'
+      let url = vcid ? '/sysvp/'.concat(vcid) : '/sysvp'
       super.open(url);
+      browser.pause(500);
     }
 
     detail (vpID, deleted) {
-      let url = '/vpDetail/'.concat(vpID);
+      let url = '/sysvpDetail/'.concat(vpID);
       if (deleted) url = url.concat('?deleted=1');
       super.open(url);
-      this.vpName.waitForDisplayed({ timeoutMsg: 'Project Name in Details should show up' });
-      // browser.pause(500);
+      browser.pause(500);
     }
 
     create(newName, newDescription) {
@@ -186,4 +186,4 @@ class VisboProjectPage extends Page {
 
 }
 
-export default new VisboProjectPage()
+export default new SysVisboProjectPage()

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
@@ -37,7 +39,8 @@ export class SysVisboProjectsComponent implements OnInit {
     private visboprojectService: VisboProjectService,
     private visbocenterService: VisboCenterService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -94,6 +97,10 @@ export class SysVisboProjectsComponent implements OnInit {
           }
         );
     }
+  }
+
+  getVPType(vpType: number): string {
+    return this.translate.instant('vp.type.vpType' + vpType);
   }
 
   gotoClickedRow(visboproject: VisboProject): void {
