@@ -320,24 +320,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
             currentDate,
-            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
+            (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].internCapa_PT || 0),
+            (Math.round(capacity[i].internCapa_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].actualCost_PT || 0),
+            (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].plannedCost_PT || 0),
+            (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true)]);
         } else {
           graphDataCapacity.push([
             currentDate,
-            Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
+            (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0),            
             this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].internCapa || 0),
+            (Math.round(capacity[i].internCapa * 10) / 10 || 0),            
             this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].actualCost || 0),
+            (Math.round(capacity[i].actualCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].plannedCost || 0),
+            (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false)]);
         }
       }
