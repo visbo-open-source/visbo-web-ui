@@ -148,7 +148,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
           }
-          this.initDeadlines(change);
+          this.initDeadlines(change);          
+          this.visboViewAllDeadlinePie(change);
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -303,8 +304,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     for (let i = 0; i < finishedDeadlineStatus.length; i++) {
       graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
     }
-
-    this.graphBeforeAllDataPieChart = change ? this.graphAllDataPieChart : undefined;
+    // show the last PieChart as well
+    // this.graphBeforeAllDataPieChart = change ? this.graphAllDataPieChart : undefined;
     if (nonEmpty) {
       this.graphAllDataPieChart = graphData;
     } else {

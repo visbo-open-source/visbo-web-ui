@@ -31,6 +31,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
       width: '100%',
       height: 500,
+      colors:['#cbb69d','#603913','#c69c6e'],
       timeline: {
         showBarLabels: true
       },
@@ -72,7 +73,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
-
+    
     for (let i = 0; i < this.vps.length; i++) {
       if (this.vpFilter
         && !(this.vps[i].name.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
@@ -99,10 +100,18 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
         ]);
+        // if (this.vps[i].farbe) {
+        //   // ??? UR: 21.08.2020:.farbe wasn't delivered with thw visboProjectService
+        //   this.graphOptionsTimeline.colors.push('#' + this.vps[i].farbe.toString())
+        // } else {
+        //   vpsFarbe = vpsFarbe + 1000;
+        //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
+        // }
+        
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
-
+    
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
