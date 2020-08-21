@@ -295,7 +295,7 @@ export class VisboprojectAuditComponent implements OnInit {
     } else if (this.sortColumn === 2) {
       this.audit.sort(function(a, b) { return visboCmpString(a.user.email.toLowerCase(), b.user.email.toLowerCase()); });
     } else if (this.sortColumn === 3) {
-      this.audit.sort(function(a, b) { return visboCmpString(a.action, b.action); });
+      this.audit.sort(function(a, b) { return visboCmpString(a.actionDescription, b.actionDescription); });
     } else if (this.sortColumn === 4) {
       this.audit.sort(function(a, b) { return visboCmpString(a.url, b.url); });
     } else if (this.sortColumn === 5) {

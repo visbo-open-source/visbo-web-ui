@@ -11,10 +11,11 @@
 		},
 		"msg": {
 			"loginSuccess": "Sie haben sich erfolgreich angemeldet. Letzte Anmeldung am {{lastLogin}}",
+			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
 		},
-		"title": "Willkommen in VISBO - the Project Warehouse"
+		"title": "Willkommen bei VISBO - the Project Warehouse"
 	},
 	"dashboard": {
 		"topvc": "Top VISBO Centers",
@@ -108,6 +109,7 @@
 			"registerSuccess": "Gratulation, Ihre E-Mail Adresse {{email}} ist nun bestätigt. Bitte melden Sie sich an.",
 			"registerSuccessConfirm": "Gratulation, Sie haben ihre E-Mail Adresse {{email}} erfolgreich registriert. Bitte prüfen Sie Ihre E-Mail und bestätigen Sie den Zugriff.",
 			"registerError": "Fehler beim Registrieren: {{message}}",
+			"confirmDP_TOU": "Sie müssen die Nutzungs- und Datenschutzbestimmungen bestätigen",
 			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
 			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
 		}
@@ -974,7 +976,9 @@
 			"timeStamp": "Zeitstempel",
 			"shortcut": "Abkürzung",
 			"explanation": "Bedeutung",
-			"showLegend": "Zeige Definition der Abkürzungen"
+			"showLegend": "Zeige Definition der Abkürzungen",
+			"actualDelay": "Aktuelle Verzögerung",
+			"totalDelay": "Gesamte Verzögerung"
 		},
 		"chart": {
 			"statusDeliveryAhead": "Vorzeitig",

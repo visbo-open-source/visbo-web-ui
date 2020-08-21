@@ -7,13 +7,13 @@
   <form>
     <div class="form-group row">
       <label for="vpName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }}:</label>
-      <input *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
-      <label *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.name }} </label>
+      <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
+      <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.name }} </label>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify) || visboproject.description" class="form-group row">
       <label for="vpDescription" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
-      <textarea *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
-      <label *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.description }} </label>
+      <textarea id="VPDesc" *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
+      <label id="VPDesc" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.description }} </label>
     </div>
     <div class="form-group row">
       <label for="vpType" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.type' | translate }}:</label>
@@ -25,16 +25,16 @@
     </div>
     <div class="form-group row d-none d-md-block">
       <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
-      <label class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      <label class="col-4 form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label id="VPCreated" class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label id="VPCreated" class="col-4 form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
     <div class="btn-toolbar" style ="">
-      <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
-      <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
-      <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
-      <button *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
+      <button id="ViewAudit" *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
+      <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
+      <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
+      <button id="ViewRestrictUser" *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
     </div>
 
     <div *ngIf="!showGroups" >
@@ -47,7 +47,7 @@
           </div>
           <div *ngIf="hasVPPerm(permVP.ManagePerm)" class='col'>
             <!-- Button trigger modal -->
-            <button type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VpUserModalCreate">
+            <button id="AddUser" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VpUserModalCreate">
               {{ 'vpDetail.btn.addUser' | translate }}
             </button>
           </div>
@@ -55,7 +55,7 @@
         <div class='panel-body'>
           <table class='table table-hover'>
             <!--Table head-->
-            <thead>
+            <thead id="UserHead">
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
                 <th (click)="sortUserTable(1)">{{ 'vpDetail.lbl.email' | translate }}</th>
@@ -65,14 +65,14 @@
               </tr>
             </thead>
             <!--Table body-->
-            <tbody>
+            <tbody id="UserList">
               <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
-                <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail"><a>{{member.email}}</a></td>
-                <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
+                <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail"><a>{{member.email}}</a></td>
+                <td id="ColGroup" (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
                 <td class="d-none d-md-table-cell">{{member.groupType == 'VP' ? '' : 'Global'}}</td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
-                  <button class="Detail" title="{{ 'vpDetail.lbl.deleteUser' | translate }}" (click)='helperRemoveUser(memberIndex)'
+                  <button id="ColDeleteUser" class="Detail" title="{{ 'vpDetail.lbl.deleteUser' | translate }}" (click)='helperRemoveUser(memberIndex)'
                   data-toggle="modal" data-target="#VpUserRemove">&times;</button>
                 </td>
                 <td *ngIf="!(!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP')">
@@ -95,7 +95,7 @@
           </div>
           <div *ngIf="hasVPPerm(permVP.ManagePerm)" class='col'>
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VpGroupModalCreate">
+            <button id="AddGroup" type="button" class="btn btn-primary float-right" (click)="initGroup(null)" data-toggle="modal" data-target="#VpGroupModalCreate">
               {{ 'vpDetail.btn.addGroup' | translate }}
             </button>
           </div>
@@ -103,7 +103,7 @@
         <div class='panel-body'>
           <table class='table table-hover'>
             <!--Table head-->
-            <thead>
+            <thead id="GroupHead">
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
                 <th (click)="sortGroupTable(1)">{{ 'vpDetail.lbl.group' | translate }}</th>
@@ -114,21 +114,21 @@
               </tr>
             </thead>
             <!--Table body-->
-            <tbody>
+            <tbody id="GroupList">
               <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
-                <td (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate"><a>{{member.name}}</a></td>
-                <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
-                <td *ngIf="member.global" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.global' | translate }}</td>
-                <td *ngIf="!member.global" class="d-none d-md-table-cell"></td>
+                <td id="ColGroup" (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate"><a>{{member.name}}</a></td>
+                <td id="ColMembers" (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
+                <td id="ColGlobal" *ngIf="member.global" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.global' | translate }}</td>
+                <td id="ColGlobal" *ngIf="!member.global" class="d-none d-md-table-cell"></td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
-                  <button class="Detail" title="{{ 'vpDetail.msg.removeGroup' | translate }}" (click)='helperRemoveGroup(memberIndex)'
+                  <button id="ColDeleteGroup" class="Detail" title="{{ 'vpDetail.msg.removeGroup' | translate }}" (click)='helperRemoveGroup(memberIndex)'
                   data-toggle="modal" data-target="#VpGroupRemove">&times;</button>
                 </td>
                 <td *ngIf="!(!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP')">
                 </td>
                 <td>
-                  <button class="Detail" title="{{ 'vpDetail.msg.detailGroup' | translate }}"
+                  <button id="ColDetail" class="Detail" title="{{ 'vpDetail.msg.detailGroup' | translate }}"
                    (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate">i</button>
                 </td>
               </tr>
@@ -178,11 +178,11 @@
   </div>
 
   <div class="mb-3">
-    <button *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
-    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
+    <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
+    <button id="Save" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
     <button (click)="goBack()">{{ 'vpDetail.btn.back' | translate }}</button>
-    <button *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
-    <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
+    <button id="DeleteVP" *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
+    <button id="DestroyVP" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
   </div>
 
   <!-- Modal Add VP User -->
@@ -199,12 +199,12 @@
           <form name="newUserInvite" #f1="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !email.valid }">
               <label for="email" class="col-form-label">{{ 'vpDetail.lbl.email' | translate }}:</label>
-              <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+              <input id="AddUserName" type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
               <div *ngIf="f1.submitted && !email.valid" class="help-block">{{ 'vpDetail.msg.emailRequired' | translate }}</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
               <label for="group" class="col-form-label">{{ 'vpDetail.lbl.group' | translate }}:</label>
-              <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
+              <select id="AddUserGroupName" class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
                 <option></option>
                 <option *ngFor="let groupItem of vgGroupsInvite">{{groupItem.name}}</option>
               </select>
@@ -212,13 +212,13 @@
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !inviteMessage.valid }">
               <label for="inviteMessage" class="col-form-label">{{ 'vpDetail.lbl.message' | translate }}:</label>
-              <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
+              <textarea id="AddUserMessage" class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
             </div>
             <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">{{ 'vpDetail.msg.invalidMessage' | translate }}</div>
             <div class="modal-footer align-items-end">
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
-              <button *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.invite' | translate }}</button>
-              <button *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPUser()" data-dismiss="modal">{{ 'vpDetail.btn.invite' | translate }}</button>
+              <button id="AddUserConfirm" *ngIf="!(email.valid && group.valid)" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.invite' | translate }}</button>
+              <button id="AddUserConfirm" *ngIf="email.valid && group.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPUser()" data-dismiss="modal">{{ 'vpDetail.btn.invite' | translate }}</button>
             </div>
           </form>
         </div>
@@ -257,7 +257,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
-          <button type="button" class="btn btn-warning" (click)="removeVPUser(vgUsers[userIndex], visboproject._id)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
+          <button id="DeleteUserConfirm" type="button" class="btn btn-warning" (click)="removeVPUser(vgUsers[userIndex], visboproject._id)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
@@ -283,7 +283,7 @@
             </div>
             <div *ngIf="!actGroup.internal" class="form-group" [ngClass]="{ 'has-error': f2.submitted && !groupName.valid }">
               <label for="groupName" class="col-form-label">{{ 'vpDetail.lbl.name' | translate }}:</label>
-              <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required>
+              <input id="AddGroupName" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required>
               <div *ngIf="f2.submitted && !actGroup.name.trim()" class="help-block">{{ 'vpDetail.msg.groupNameRequired' | translate }}</div>
             </div>
             <!-- VP Permissions -->
@@ -329,10 +329,10 @@
               <label class="form-control-static">{{ 'perm.lblNoGroupMembers' | translate }}</label>
             </div>
             <div class="modal-footer align-items-end">
-              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
+              <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
               <div *ngIf="hasVPPerm(permVP.ManagePerm) && !actGroup.global && !deleted" >
-                <button *ngIf="!f2.form.valid" type="submit" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
-                <button *ngIf="f2.form.valid" type="submit" class="btn btn-primary mx-1" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.confirm}}</button>
+                <button id="AddGroupConfirm" *ngIf="!f2.form.valid" type="submit" class="btn btn-primary disabled mx-1" >{{this.confirm}}</button>
+                <button id="AddGroupConfirm" *ngIf="f2.form.valid" type="submit" class="btn btn-primary mx-1" (click)="addModifyVPGroup()" data-dismiss="modal">{{this.confirm}}</button>
               </div>
             </div>
           </form>
@@ -373,7 +373,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
-          <button type="button" class="btn btn-warning" (click)="removeVPGroup(vgGroups[groupIndex], visboproject._id)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
+          <button id="DeleteGroupConfirm" type="button" class="btn btn-warning" (click)="removeVPGroup(vgGroups[groupIndex], visboproject._id)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>
@@ -411,8 +411,8 @@
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
-          <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
-          <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.destroy' | translate }}</button>
+          <button id="DeleteVPConfirm" *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
+          <button id="DeleteVPConfirm" *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.destroy' | translate }}</button>
         </div>
       </div>
     </div>

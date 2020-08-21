@@ -102,7 +102,11 @@ export class LoginComponent implements OnInit {
         },
         error => {
           this.log(`Login Failed: ${error.status} ${error.error.message} `);
-          this.alertService.error(getErrorMessage(error));
+          let message = getErrorMessage(error);
+          if (error.status === 403) {
+            message = this.translate.instant('login.msg.loginFailure', {user: this.email});
+          }
+          this.alertService.error(message);
           this.loading = false;
         }
       );

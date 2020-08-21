@@ -186,8 +186,8 @@
               <th class="text-right" (click)="sortKeyMetricsTable(11)" title="{{ 'keyMetrics.longPD' | translate }}">{{ 'keyMetrics.shortPD' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longDAC' | translate }}">{{ 'keyMetrics.shortDAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">Actual Delay</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">Total Delay</th>
+              <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'keyMetrics.lbl.actualDelay' | translate }}</th>
+              <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.totalDelay' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
           <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
             </tr>
@@ -204,8 +204,8 @@
               <td class="text-right" title="{{ 'keyMetrics.shortPD' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentTotal | number:'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortDAC' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.timeCompletionTotal | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.timeDelayFinished | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.timeDelayUnFinished | number:'1.0-0'}}</td>
+              <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayFinished | number:'1.0-0'}}</td>
+              <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayUnFinished | number:'1.0-0'}}</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
@@ -226,8 +226,6 @@
               <th class="text-right" (click)="sortKeyMetricsTable(20)" title="{{ 'keyMetrics.longPDV' | translate }}">{{ 'keyMetrics.shortPDV' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(26)" title="{{ 'keyMetrics.longEDVC' | translate }}">{{ 'keyMetrics.shortEDVC' | translate }}</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(23)">Actual Delay</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(24)">Total Delay</th>
               <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
           <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
             </tr>
@@ -242,8 +240,6 @@
               <td class="text-right" title="{{ 'keyMetrics.shortPDV' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortDVAC' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionTotal | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableDelayFinished | number:'1.0-0'}}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableDelayUnFinished | number:'1.0-0'}}</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
                 <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
                 <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>

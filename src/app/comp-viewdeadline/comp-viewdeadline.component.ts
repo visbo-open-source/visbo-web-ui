@@ -32,6 +32,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   viewGantt: boolean;
   buttonGantt: string;
   filterPath: string[];
+  filterOldPath: string;
 
   filterStatus: number;
   fullList: boolean;
@@ -188,6 +189,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       return;
     }
     const strFilterPath = this.filterPath.join(' / ');
+    let updatePie = false;
+    if (strFilterPath !== this.filterOldPath) {
+      // update PIE only if Path Changes, reset State Filter if Path Changes to avoid empty lists
+      updatePie = true;
+      this.filterStatus = undefined;
+      this.filterOldPath = strFilterPath;
+    }
 
     this.hierarchyDeadline = [];
     this.filteredDeadline = [];
@@ -204,7 +212,9 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       }
     }
     this.sortDeadlineTable();
-    this.visboViewAllDeadlinePie(change);
+    if (updatePie) {
+      this.visboViewAllDeadlinePie(change);
+    }
     this.visboViewDeadlineTimeline();
   }
 

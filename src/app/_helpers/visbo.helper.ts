@@ -1,11 +1,9 @@
 // use this for calling sort
 export function visboCmpString(first: string, second: string): number {
   let result = 0;
-  if (first < second) {
-    result = -1;
-  } else if (first > second) {
-    result = 1;
-  }
+  first = first || '';
+  second = second || '';
+  result = first.localeCompare(second);
   return result;
 }
 
