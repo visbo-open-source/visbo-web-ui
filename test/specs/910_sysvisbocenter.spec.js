@@ -65,7 +65,7 @@ describe('sysvisbocenter check', function () {
   })
 
   it('should navigate to Details of a specific VC', function () {
-    let vcConfigName = paramsMap?.VCBaseName || "Test-MS-VC";
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
     vcConfigName = vcConfigName.concat("01");
     SysVisboCenterPage.open();
     // console.log("Show VC");
@@ -240,7 +240,7 @@ describe('sysvisbocenter check', function () {
 
   it('should Create a new VC', function () {
     SysVisboCenterPage.open();
-    newVCName = paramsMap?.VCBaseName || "Test-MS-VC";
+    newVCName = paramsMap?.VCBaseName || "Test-XX-VC";
     newVCName = newVCName.concat('-Delete-',(new Date()).toISOString());
     let newVCDesc = 'Description of '.concat(newVCName);
     SysVisboCenterPage.create(newVCName, newVCDesc);

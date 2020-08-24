@@ -33,13 +33,12 @@
           </h5>
         </div>
         <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
-          <!-- Button trigger modal -->
           <button id="AddUser" type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
         </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover'>
-          <!--Table head-->
+
           <thead id="UserHead">
             <tr>
               <th>Nr.</th>
@@ -48,7 +47,7 @@
               <th *ngIf="!deleted && hasVCPerm(permVC.ManagePerm)">Delete</th>
             </tr>
           </thead>
-          <!--Table body-->
+
           <tbody id="UserList">
             <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
               <td>{{memberIndex+1}}</td>
@@ -60,7 +59,7 @@
               </td>
             </tr>
           </tbody>
-          <!--Table body-->
+
         </table>
       </div>
     </div>

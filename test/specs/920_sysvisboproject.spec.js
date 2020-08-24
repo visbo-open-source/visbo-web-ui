@@ -29,7 +29,7 @@ describe('visboproject check', function () {
   })
 
   it('should navigate to VP List of a specific VC', function () {
-    let vcConfigName = paramsMap?.VCBaseName || "Test-MS-VC";
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
     let countProjects = 0;
     vcConfigName = vcConfigName.concat("01");
     SysVisboCenterPage.open();
@@ -56,7 +56,7 @@ describe('visboproject check', function () {
     vcID = newUrl.substr(index, 24);
 
     // Check that the number of Projects matches
-    vpList.waitUntil(function() {
+    SysVisboProjectPage.vpList.waitUntil(function() {
             return SysVisboProjectPage.vpList.$$('tr').length == countProjects;
           },
           {
@@ -142,8 +142,4 @@ describe('visboproject check', function () {
     expectChai(SysVisboProjectPage.userList.$$('tr').length).to.be.at.least(1, "At least one user should be member");
   })
 
-  it('should wait for exit', function () {
-    console.log("Wait for finish");
-    browser.pause(1000);
-  })
 })

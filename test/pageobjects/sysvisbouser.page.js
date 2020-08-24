@@ -1,18 +1,11 @@
 import Page from './page'
 
-class VisboCenterPage extends Page {
+class SysVisboUserPage extends Page {
     /**
      * define elements
      */
-    get vcName () { return $('#VCName') }
-    get vcDesc () { return $('#VCDesc') }
-    get saveVC () { return $('#Save') }
-
-    get vcHead () { return $('#VCHead') }
-    get sortName () { return $('#SortName') }
-    get sortDate () { return $('#SortDate') }
-    get sortProjects () { return $('#SortProjects') }
-    get vcList () { return $('#VCList') }
+    get sortUser () { return $('#SortUser') }
+    get sortGroup () { return $('#SortGroup') }
     get alert () { return $('app-alert') }
 
     get showUserButton () { return $('#ViewUser') }
@@ -40,17 +33,15 @@ class VisboCenterPage extends Page {
      * define or overwrite page methods
      */
     open () {
-        super.open('/vc');
+      super.open('/sysuser');
+      browser.pause(500);
     }
 
-    detail (vcID) {
-        super.open('/vcDetail/'.concat(vcID));
-    }
+    admins () {
+      let url = '/sysadmins/';
+      console.log("sysAdmins:", url);
 
-    rename(newName, newDescription) {
-      this.vcName.setValue(newName);
-      this.vcDesc.setValue(newDescription);
-      this.saveVC.click();
+      super.open(url);
       browser.pause(500);
     }
 
@@ -151,4 +142,4 @@ class VisboCenterPage extends Page {
 
 }
 
-export default new VisboCenterPage()
+export default new SysVisboUserPage()

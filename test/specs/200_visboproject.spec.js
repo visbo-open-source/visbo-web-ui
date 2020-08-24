@@ -102,7 +102,7 @@ describe('visboproject check', function () {
     VisboProjectPage.detail(vpID);
 
     const navBar = $('nav');
-    console.log("Navbar:", navBar.getText());
+    // console.log("Navbar:", navBar.getText());
     expectChai(navBar.isClickable()).to.be.eql(true, "Navbar is Clickable")
 
     // console.log("Show VP Details, switch to Group");
@@ -246,7 +246,7 @@ describe('visboproject check', function () {
   })
 
   it('should navigate to VP List of a specific VC', function () {
-    let vcConfigName = paramsMap?.VCBaseName || "Test-MS-VC";
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
     let countProjects = 0;
     vcConfigName = vcConfigName.concat("01");
     VisboCenterPage.open();

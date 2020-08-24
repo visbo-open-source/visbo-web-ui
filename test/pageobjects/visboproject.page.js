@@ -24,7 +24,7 @@ class VisboProjectPage extends Page {
     get sortDate () { return $('#SortDate') }
     get sortVersions () { return $('#SortVersions') }
     get vpList () { return $('#VPList') }
-    get alert () { return $('#app-alert') }
+    get alert () { return $('app-alert') }
 
     get showUserButton () { return $('#ViewUser') }
     get addUserButton () { return $('#AddUser') }
@@ -52,6 +52,7 @@ class VisboProjectPage extends Page {
     open (vcid) {
       let url = vcid ? '/vp/'.concat(vcid) : '/vp'
       super.open(url);
+      browser.pause(500);
     }
 
     detail (vpID, deleted) {
