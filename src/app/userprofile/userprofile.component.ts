@@ -21,6 +21,7 @@ export class UserProfileComponent implements OnInit {
   user: VisboUser;
   oldpw: string;
   newpw: string;
+  changePW: boolean;
 
   PWPolicy: string;
   PWPolicyDescription: string;
@@ -38,7 +39,7 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPWPolicy();
-    this.passwordInit();
+    // this.passwordInit();
     this.log('Start init User Get Profile');
     this.getUserProfile();
   }
@@ -86,6 +87,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   passwordInit(): void {
+    this.changePW = true;
     this.oldpw = '';
     this.newpw = '';
   }
@@ -93,6 +95,7 @@ export class UserProfileComponent implements OnInit {
   passwordChange(): void {
     this.log(`Password Change ${this.user.email} Len Old ${this.oldpw.length} New ${this.newpw.length}`);
 
+    this.changePW = false;
     this.userService.passwordChange(this.oldpw, this.newpw)
       .subscribe(
         user => {

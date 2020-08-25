@@ -4,7 +4,7 @@ class UserProfilePage extends Page {
     /**
      * define elements
      */
-    get alert () { return $('app-alert') }
+    get alert () { return $('#alertMessage') }
 
     get profileTitle () { return $('#profileTitle') }
     get profileFirstName () { return $('#profileFirstName') }
@@ -29,16 +29,21 @@ class UserProfilePage extends Page {
      */
     open () {
       super.open('/profile');
-      browser.pause(500);
+      browser.pause();
     }
 
     changepw(oldPassword, newPassword) {
       this.buttonChangePW.click();
-      browser.pause(500);
+      // browser.waitForExist(this.passwordOld, 10000);
+      // this.buttonChange.waitForVisible(10000);
+      // this.buttonChange.isEnabled();
+      // this.passwordOld.getValue();
+      // console.log("Modal Title:", $('#UserPasswordChangeModalTitle').getText());
+      browser.pause();
       this.passwordOld.setValue(oldPassword);
       this.passwordNew.setValue(newPassword);
       this.buttonChange.click();
-      browser.pause(500);
+      // browser.pause();
     }
 
 }

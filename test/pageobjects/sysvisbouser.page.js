@@ -34,7 +34,7 @@ class SysVisboUserPage extends Page {
      */
     open () {
       super.open('/sysuser');
-      browser.pause(500);
+      browser.pause();
     }
 
     admins () {
@@ -42,7 +42,7 @@ class SysVisboUserPage extends Page {
       console.log("sysAdmins:", url);
 
       super.open(url);
-      browser.pause(500);
+      browser.pause();
     }
 
     addUser(userName, groupName, message) {
@@ -56,7 +56,7 @@ class SysVisboUserPage extends Page {
 
       this.addUserConfirm.click();
       // how can we improve this to wait until the modal is closed and refreshed
-      browser.pause(500);
+      browser.pause();
     }
 
     deleteUser(deleteUserName, deleteGroupName) {
@@ -86,7 +86,7 @@ class SysVisboUserPage extends Page {
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
       return true;
     }
 
@@ -98,7 +98,7 @@ class SysVisboUserPage extends Page {
       // $('#AddGroupConfirm').waitForVisible(1000);
       // $('#AddGroupName').waitForExist({ timeout: 5000 });
       // $('#AddGroupConfirm').waitForExist({ timeout: 5000 });
-      // browser.pause(500);
+      // browser.pause();
       this.addGroupName.waitForClickable({ timeoutMsg: 'Field Group Name should show up' });
       this.addGroupName.setValue(groupName);
       if (flagGlobal) {
@@ -107,7 +107,7 @@ class SysVisboUserPage extends Page {
       }
       this.addGroupConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
     }
 
     deleteGroup(deleteGroupName) {
@@ -136,7 +136,7 @@ class SysVisboUserPage extends Page {
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
       return true;
     }
 

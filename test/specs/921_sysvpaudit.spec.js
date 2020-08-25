@@ -81,7 +81,7 @@ describe('visbocenter audit check', function () {
       let vpEntry = SysVisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
       let vcName = vpEntry.$('#ColVC').getText();
-      console.log("VP", i+1, vpName, "VC", vcName);
+      // console.log("VP", i+1, vpName, "VC", vcName);
       if (vpName == vpConfigName && vcName == vcConfigName) {
         console.log("go to VP Detail", vpName, ' of ', vcName);
         vpEntry.$('button').click();
@@ -105,13 +105,13 @@ describe('visbocenter audit check', function () {
 
     if (len > 10) { len = 10; }
     let firstCreated = VisboAudit.auditList.$$('tr')[0].$('#ColCreated').getText()
-    console.log("First Entry from: ", firstCreated)
+    // console.log("First Entry from: ", firstCreated)
     // check that the Entry is from today, means it shows only time
     expectChai(firstCreated.search('[0-9][0-9]:[0-9][0-9]:[0-9][0-9]')).to.be.eql(0, "Creation Date not from today");
 
     // go to details of the first element
     VisboAudit.auditList.$$('tr')[0].$('#ColDetail').click();
-    browser.pause(500);
+    browser.pause();
     VisboAudit.buttonMore.click();
 
     let i = 0;

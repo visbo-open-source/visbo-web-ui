@@ -52,7 +52,7 @@ class SysVisboCenterPage extends Page {
      */
     open () {
       super.open('/sysvc');
-      browser.pause(500);
+      browser.pause();
     }
 
     detail (vcID, deleted) {
@@ -61,7 +61,7 @@ class SysVisboCenterPage extends Page {
       console.log("sysvcDetail:", url);
 
       super.open(url);
-      browser.pause(500);
+      browser.pause();
     }
 
     create(newName, newDescription) {
@@ -96,7 +96,7 @@ class SysVisboCenterPage extends Page {
       this.vcName.setValue(newName);
       this.vcDesc.setValue(newDescription);
       this.saveVC.click();
-      browser.pause(500);
+      browser.pause();
     }
 
     addUser(userName, groupName, message) {
@@ -110,7 +110,7 @@ class SysVisboCenterPage extends Page {
 
       this.addUserConfirm.click();
       // how can we improve this to wait until the modal is closed and refreshed
-      browser.pause(500);
+      browser.pause();
     }
 
     deleteUser(deleteUserName, deleteGroupName) {
@@ -140,7 +140,7 @@ class SysVisboCenterPage extends Page {
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
       return true;
     }
 
@@ -152,7 +152,7 @@ class SysVisboCenterPage extends Page {
       // $('#AddGroupConfirm').waitForVisible(1000);
       // $('#AddGroupName').waitForExist({ timeout: 5000 });
       // $('#AddGroupConfirm').waitForExist({ timeout: 5000 });
-      // browser.pause(500);
+      // browser.pause();
       this.addGroupName.waitForClickable({ timeoutMsg: 'Field Group Name should show up' });
       this.addGroupName.setValue(groupName);
       if (flagGlobal) {
@@ -161,7 +161,7 @@ class SysVisboCenterPage extends Page {
       }
       this.addGroupConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
     }
 
     deleteGroup(deleteGroupName) {
@@ -190,7 +190,7 @@ class SysVisboCenterPage extends Page {
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
       // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+      browser.pause();
       return true;
     }
 

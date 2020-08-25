@@ -25,7 +25,7 @@ class VisboAudit extends Page {
     sysAudit () {
       let url = '/sysaudit/';
       super.open(url);
-      browser.pause(500);
+      browser.pause();
     }
 
     vcAudit (vcID, sysadmin) {
@@ -34,7 +34,7 @@ class VisboAudit extends Page {
         url = url.concat('?sysadmin=1')
       }
       super.open(url);
-      browser.pause(500);
+      browser.pause();
     }
 
     vpAudit (vpID, sysadmin) {
@@ -43,7 +43,7 @@ class VisboAudit extends Page {
         url = url.concat('?sysadmin=1')
       }
       super.open(url);
-      browser.pause(500);
+      browser.pause();
     }
 
 }

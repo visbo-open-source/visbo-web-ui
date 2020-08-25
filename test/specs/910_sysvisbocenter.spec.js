@@ -30,7 +30,7 @@ describe('sysvisbocenter check', function () {
     SysVisboCenterPage.open();
     // console.log("Show VC");
     SysVisboCenterPage.sortDate.click();
-    browser.pause(500);
+    browser.pause();
     const vcList = $('#VCList');
     const len = vcList.$$('tr').length;
     let vcLastDate = len > 0 ? convert.convertDate(vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
@@ -43,7 +43,7 @@ describe('sysvisbocenter check', function () {
     }
 
     SysVisboCenterPage.sortProjects.click();
-    browser.pause(500);
+    browser.pause();
     let vcLastProject = len > 0 ? Number(vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
     for (var i = 0; i < len; i++) {
       let vcEntry = vcList.$$('tr')[i];
@@ -53,7 +53,7 @@ describe('sysvisbocenter check', function () {
       vcLastProject = vcProject
     }
     SysVisboCenterPage.sortName.click();
-    browser.pause(500);
+    browser.pause();
     let vcLastName = len > 0 ? vcList.$$('tr')[0].$('#ColName').getText() : undefined;
     for (var i = 0; i < len; i++) {
       let vcEntry = vcList.$$('tr')[i];
@@ -341,7 +341,7 @@ describe('sysvisbocenter check', function () {
     // switch to Deleted to find the VC
     SysVisboCenterPage.deletedVC.click();
 
-    browser.pause(500);
+    browser.pause();
     SysVisboCenterPage.unDeletedVC.waitForDisplayed();
     len = vcList.$$('tr').length;
     console.log("VC List Len:", len);
@@ -379,7 +379,7 @@ describe('sysvisbocenter check', function () {
     SysVisboCenterPage.deletedVC.click();
 
     // Check that the VC is not in the Deleted list
-    browser.pause(500);
+    browser.pause();
     len = vcList.$$('tr').length;
     console.log("VC Deleted List Len:", len);
     i = 0;
