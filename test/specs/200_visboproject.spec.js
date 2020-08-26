@@ -6,6 +6,7 @@ const param = require("../helper/param");
 const expectChai = require('chai').expect;
 
 let vpID = '';
+let vpDeleteID = '';
 let vcID = '';
 let newGroupName = '';
 let newUserName = '';
@@ -98,152 +99,152 @@ describe('visboproject check', function () {
     vpID = newUrl.substr(index, 24);
   })
 
-  // it('Create VP Group', function () {
-  //   VisboProjectPage.detail(vpID);
-  //
-  //   const navBar = $('nav');
-  //   // console.log("Navbar:", navBar.getText());
-  //   expectChai(navBar.isClickable()).to.be.eql(true, "Navbar is Clickable")
-  //
-  //   // console.log("Show VP Details, switch to Group");
-  //   VisboProjectPage.showGroupButton.click();
-  //   newGroupName = 'Delete-'.concat((new Date()).toISOString())
-  //   console.log("Add new Group", newGroupName);
-  //   VisboProjectPage.addGroup(newGroupName);
-  //   // console.log("Add Group Check", newGroupName);
-  //   VisboProjectPage.detail(vpID);
-  //   // console.log("Show VP Details, switch to Group");
-  //   VisboProjectPage.showGroupButton.click();
-  //   const vpGroupList = $('#GroupList')
-  //   const len = vpGroupList.$$('tr').length
-  //   let i = 0;
-  //   let groupEntry = undefined;
-  //   for (i = 0; i < len; i++) {
-  //     groupEntry = vpGroupList.$$('tr')[i];
-  //     let groupName = groupEntry.$('#ColGroup').getText();
-  //     // console.log("VP GroupName", i+1, groupName);
-  //     if (groupName.indexOf(newGroupName) >= 0) {
-  //       // console.log("Group Found", groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
-  //   expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('');
-  //
-  //   // console.log("Navbar:", navBar.getText(), navBar.isClickable());
-  //   // browser.debug();
-  // })
-  //
-  // it('Add User to Group', function () {
-  //   VisboProjectPage.detail(vpID);
-  //   // console.log("Show VP Details, switch to Group");
-  //   newUserName = paramsMap?.userRead;
-  //
-  //   let message = (new Date()).toISOString();
-  //   message = "Invitation from ".concat(message);
-  //   message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
-  //   console.log("Add new User Group", newUserName, newGroupName);
-  //   VisboProjectPage.addUser(newUserName, newGroupName, message);
-  //   console.log("Add User Check", newGroupName);
-  //   const vpUserList = $('#UserList')
-  //   const len = vpUserList.$$('tr').length
-  //   let i = 0;
-  //   expectChai(len).to.be.gt(0, "No Members in VP");
-  //   let userEntry, userName, groupName;
-  //   for (i = 0; i < len; i++) {
-  //     userEntry = vpUserList.$$('tr')[i];
-  //     userName = userEntry.$('#ColUser').getText();
-  //     groupName = userEntry.$('#ColGroup').getText();
-  //     // console.log("VP User Entry", i+1, userName, groupName);
-  //     if (groupName == newGroupName && userName == newUserName) {
-  //       // console.log("Success: User/Group Entry Found", userName, groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
-  //   expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
-  // })
-  //
-  // it('Delete VP User from Group', function () {
-  //
-  //   // console.log("Test Delete Group", newGroupName);
-  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-  //
-  //   VisboProjectPage.detail(vpID);
-  //   // console.log("Show VP Details, switch to Group");
-  //   console.log("Delete User from Group", newUserName, newGroupName);
-  //   let result = VisboProjectPage.deleteUser(newUserName, newGroupName);
-  //   // expect(result).toBe(false);
-  //   console.log("Delete User from Group Result:", result)
-  //   const vpUserList = $('#UserList')
-  //   const len = vpUserList.$$('tr').length
-  //   let i = 0;
-  //   expectChai(len).to.be.gt(0, "No Members in VP");
-  //   let userEntry, userName, groupName;
-  //   for (i = 0; i < len; i++) {
-  //     userEntry = vpUserList.$$('tr')[i];
-  //     userName = userEntry.$('#ColUser').getText();
-  //     groupName = userEntry.$('#ColGroup').getText();
-  //     // console.log("VP User Entry", i+1, userName, groupName);
-  //     if (groupName == newGroupName && userName == newUserName) {
-  //       // console.log("Success: User/Group Entry Found", userName, groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
-  // })
-  //
-  // it('Delete VP Group', function () {
-  //
-  //   // console.log("Test Delete Group", newGroupName);
-  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-  //
-  //   VisboProjectPage.detail(vpID);
-  //   // console.log("Show VP Details, switch to Group with Button", VisboProjectPage.showGroupButton.getText());
-  //   VisboProjectPage.showGroupButton.click();
-  //   // console.log("Delete Group", newGroupName);
-  //   let result = VisboProjectPage.deleteGroup(newGroupName);
-  //   // expect(result).toBe(false);
-  //   console.log("Delete Group Result:", result)
-  //   const vpGroupList = $('#GroupList')
-  //   const len = vpGroupList.$$('tr').length
-  //   expectChai(len).to.be.gt(0, "No Groups in VP");
-  //   let i;
-  //   let groupEntry, groupName;
-  //   for (i = 0; i < len; i++) {
-  //     groupEntry = vpGroupList.$$('tr')[i];
-  //     groupName = groupEntry.$('#ColGroup').getText();
-  //     // console.log("VP GroupName", i+1, groupName);
-  //     if (groupName.indexOf(newGroupName) >= 0) {
-  //       // console.log("Group Found", groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
-  // })
-  //
-  // it('Rename VP and Description', function () {
-  //
-  //   // console.log("Test Delete Group", newGroupName);
-  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-  //
-  //   VisboProjectPage.detail(vpID);
-  //   VisboProjectPage.vpName.waitForDisplayed();
-  //
-  //   let oldName = VisboProjectPage.vpName.getValue();
-  //   let oldDescription = VisboProjectPage.vpDesc.getValue();
-  //   let newName = oldName.concat("_Rename");
-  //   let newDescription = oldDescription.concat("_Rename");
-  //   console.log("Rename VP Property", newName, newDescription);
-  //   VisboProjectPage.rename(newName, newDescription);
-  //   console.log("Rename Done new URL:", browser.getUrl());
-  //
-  //   VisboProjectPage.detail(vpID);
-  //   VisboProjectPage.vpName.waitForDisplayed();
-  //   expectChai(VisboProjectPage.vpName.getValue()).to.be.eql(newName);
-  //   expectChai(VisboProjectPage.vpDesc.getValue()).to.be.eql(newDescription);
-  //   VisboProjectPage.rename(oldName, oldDescription);
-  // })
+  it('Create VP Group', function () {
+    VisboProjectPage.detail(vpID);
+
+    const navBar = $('nav');
+    // console.log("Navbar:", navBar.getText());
+    expectChai(navBar.isClickable()).to.be.eql(true, "Navbar is Clickable")
+
+    // console.log("Show VP Details, switch to Group");
+    VisboProjectPage.showGroupButton.click();
+    newGroupName = 'Delete-'.concat((new Date()).toISOString())
+    console.log("Add new Group", newGroupName);
+    VisboProjectPage.addGroup(newGroupName);
+    // console.log("Add Group Check", newGroupName);
+    VisboProjectPage.detail(vpID);
+    // console.log("Show VP Details, switch to Group");
+    VisboProjectPage.showGroupButton.click();
+    const vpGroupList = $('#GroupList')
+    const len = vpGroupList.$$('tr').length
+    let i = 0;
+    let groupEntry = undefined;
+    for (i = 0; i < len; i++) {
+      groupEntry = vpGroupList.$$('tr')[i];
+      let groupName = groupEntry.$('#ColGroup').getText();
+      // console.log("VP GroupName", i+1, groupName);
+      if (groupName.indexOf(newGroupName) >= 0) {
+        // console.log("Group Found", groupName);
+        break;
+      }
+    }
+    expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
+    expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('');
+
+    // console.log("Navbar:", navBar.getText(), navBar.isClickable());
+    // browser.debug();
+  })
+
+  it('Add User to Group', function () {
+    VisboProjectPage.detail(vpID);
+    // console.log("Show VP Details, switch to Group");
+    newUserName = paramsMap?.userRead;
+
+    let message = (new Date()).toISOString();
+    message = "Invitation from ".concat(message);
+    message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
+    console.log("Add new User Group", newUserName, newGroupName);
+    VisboProjectPage.addUser(newUserName, newGroupName, message);
+    console.log("Add User Check", newGroupName);
+    const vpUserList = $('#UserList')
+    const len = vpUserList.$$('tr').length
+    let i = 0;
+    expectChai(len).to.be.gt(0, "No Members in VP");
+    let userEntry, userName, groupName;
+    for (i = 0; i < len; i++) {
+      userEntry = vpUserList.$$('tr')[i];
+      userName = userEntry.$('#ColUser').getText();
+      groupName = userEntry.$('#ColGroup').getText();
+      // console.log("VP User Entry", i+1, userName, groupName);
+      if (groupName == newGroupName && userName == newUserName) {
+        // console.log("Success: User/Group Entry Found", userName, groupName);
+        break;
+      }
+    }
+    expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
+    expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
+  })
+
+  it('Delete VP User from Group', function () {
+
+    // console.log("Test Delete Group", newGroupName);
+    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+
+    VisboProjectPage.detail(vpID);
+    // console.log("Show VP Details, switch to Group");
+    console.log("Delete User from Group", newUserName, newGroupName);
+    let result = VisboProjectPage.deleteUser(newUserName, newGroupName);
+    // expect(result).toBe(false);
+    console.log("Delete User from Group Result:", result)
+    const vpUserList = $('#UserList')
+    const len = vpUserList.$$('tr').length
+    let i = 0;
+    expectChai(len).to.be.gt(0, "No Members in VP");
+    let userEntry, userName, groupName;
+    for (i = 0; i < len; i++) {
+      userEntry = vpUserList.$$('tr')[i];
+      userName = userEntry.$('#ColUser').getText();
+      groupName = userEntry.$('#ColGroup').getText();
+      // console.log("VP User Entry", i+1, userName, groupName);
+      if (groupName == newGroupName && userName == newUserName) {
+        // console.log("Success: User/Group Entry Found", userName, groupName);
+        break;
+      }
+    }
+    expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
+  })
+
+  it('Delete VP Group', function () {
+
+    // console.log("Test Delete Group", newGroupName);
+    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+
+    VisboProjectPage.detail(vpID);
+    // console.log("Show VP Details, switch to Group with Button", VisboProjectPage.showGroupButton.getText());
+    VisboProjectPage.showGroupButton.click();
+    // console.log("Delete Group", newGroupName);
+    let result = VisboProjectPage.deleteGroup(newGroupName);
+    // expect(result).toBe(false);
+    console.log("Delete Group Result:", result)
+    const vpGroupList = $('#GroupList')
+    const len = vpGroupList.$$('tr').length
+    expectChai(len).to.be.gt(0, "No Groups in VP");
+    let i;
+    let groupEntry, groupName;
+    for (i = 0; i < len; i++) {
+      groupEntry = vpGroupList.$$('tr')[i];
+      groupName = groupEntry.$('#ColGroup').getText();
+      // console.log("VP GroupName", i+1, groupName);
+      if (groupName.indexOf(newGroupName) >= 0) {
+        // console.log("Group Found", groupName);
+        break;
+      }
+    }
+    expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
+  })
+
+  it('Rename VP and Description', function () {
+
+    // console.log("Test Delete Group", newGroupName);
+    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+
+    VisboProjectPage.detail(vpID);
+    VisboProjectPage.vpName.waitForDisplayed();
+
+    let oldName = VisboProjectPage.vpName.getValue();
+    let oldDescription = VisboProjectPage.vpDesc.getValue();
+    let newName = oldName.concat("_Rename");
+    let newDescription = oldDescription.concat("_Rename");
+    console.log("Rename VP Property", newName, newDescription);
+    VisboProjectPage.rename(newName, newDescription);
+    console.log("Rename Done new URL:", browser.getUrl());
+
+    VisboProjectPage.detail(vpID);
+    VisboProjectPage.vpName.waitForDisplayed();
+    expectChai(VisboProjectPage.vpName.getValue()).to.be.eql(newName);
+    expectChai(VisboProjectPage.vpDesc.getValue()).to.be.eql(newDescription);
+    VisboProjectPage.rename(oldName, oldDescription);
+  })
 
   it('should navigate to VP List of a specific VC', function () {
     let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
@@ -330,16 +331,15 @@ describe('visboproject check', function () {
 
   })
 
-  it('should Delete a VP', function () {
+  it('should Delete and Undelete a VP', function () {
     VisboProjectPage.open(vcID);
     expectChai(newVPName).not.eql('', `VisboProject ${newVPName} not defined for Delete`);
 
-    const vpList = $('#VPList');
-    let len = vpList.$$('tr').length;
+    let len = VisboProjectPage.vpList.$$('tr').length;
     // console.log("VP List Len:", len, '\n', vpList.getText());
     let i = 0;
     for (; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
+      let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
       // console.log("VP", i+1, vpName);
       if (vpName == newVPName) {
@@ -354,20 +354,20 @@ describe('visboproject check', function () {
     expectChai(newUrl).to.include(match, "Wrong redirect to vpDetail");
     let index = newUrl.indexOf(match);
     index += match.length;
-    let deleteID = newUrl.substr(index, 24);
+    vpDeleteID = newUrl.substr(index, 24);
 
-    VisboProjectPage.delete(deleteID);
+    VisboProjectPage.delete(vpDeleteID);
     // check that it gets redirected to the VP List of VC
     newUrl = browser.getUrl();
     match = '/vp/'.concat(vcID);
     expectChai(newUrl).to.include(match, "Wrong redirect to vp");
 
     // Check that the Deleted VP is not in the list anymore
-    len = vpList.$$('tr').length;
-    // console.log("VP List Len:", len, '\n', vpList.getText());
+    len = VisboProjectPage.vpList.$$('tr').length;
+    // console.log("VP List Len:", len, '\n', VisboProjectPage.vpList.getText());
     i = 0;
     for (; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
+      let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
       // console.log("VP", i+1, vpName);
       if (vpName == newVPName) {
@@ -380,13 +380,12 @@ describe('visboproject check', function () {
     // switch to Deleted to find the VP
     VisboProjectPage.deletedVP.click();
 
-    browser.pause();
     VisboProjectPage.unDeletedVP.waitForDisplayed();
-    len = vpList.$$('tr').length;
+    len = VisboProjectPage.vpList.$$('tr').length;
     console.log("VP List Len:", len);
     i = 0;
     for (; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
+      let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
       // console.log("VP", i+1, vpName);
       if (vpName == newVPName) {
@@ -399,29 +398,53 @@ describe('visboproject check', function () {
     newUrl = browser.getUrl();
     match = '/vpDetail/';
     expectChai(newUrl).to.include(match, "Wrong redirect to vpDetail");
-    index = newUrl.indexOf(match);
-    index += match.length;
-    deleteID = newUrl.substr(index, 24);
     // Restore deleted VP
     console.log("restore  VP", newVPName);
     VisboProjectPage.saveVP.waitForDisplayed();
     VisboProjectPage.saveVP.click();
+  })
 
-    // delete the restored VP again and destroy it
-    console.log("delete  VP again", newVPName);
-    VisboProjectPage.detail(deleteID);
-    VisboProjectPage.delete(deleteID);
+  it('should Delete and Destroy a VP', function () {
+    expectChai(vpDeleteID).not.eql('', `VisboProject ID ${newVPName} not defined for Delete`);
+    VisboProjectPage.open(vcID);
+    VisboProjectPage.detail(vpDeleteID);
+
+    console.log("Delete VP", vpDeleteID);
+    VisboProjectPage.delete(vpDeleteID);
+    // check that it gets redirected to the VP List of VC
+    let newUrl = browser.getUrl();
+    let match = '/vp/'.concat(vcID);
+    expectChai(newUrl).to.include(match, "Wrong redirect to vp");
+
+    // switch to Deleted to find the VP
+    VisboProjectPage.deletedVP.click();
+    VisboProjectPage.unDeletedVP.waitForDisplayed();
+    let len = VisboProjectPage.vpList.$$('tr').length;
+    console.log("VP List Len:", len);
+    let i = 0;
+    for (; i < len; i++) {
+      let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
+      let vpName = vpEntry.$('#ColName').getText();
+      // console.log("VP", i+1, vpName);
+      if (vpName == newVPName) {
+        console.log("found VP", vpName);
+        vpEntry.$('button').click();
+        break;
+      }
+    }
+    expectChai(i).to.be.lt(len, `VisboProject ${newVPName} not found in Deleted`);
+
     console.log("destroy  VP", newVPName);
-    VisboProjectPage.detail(deleteID, true);
-    VisboProjectPage.destroy(deleteID);
+    VisboProjectPage.detail(vpDeleteID, true);
+    VisboProjectPage.destroy(vpDeleteID);
 
     // Check that the VP is not in the Deleted list
-    browser.pause();
-    len = vpList.$$('tr').length;
+    browser.pause(2000);
+    len = VisboProjectPage.vpList.$$('tr').length;
     console.log("VP Deleted List Len:", len);
     i = 0;
     for (; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
+      let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
       // console.log("VP", i+1, vpName);
       if (vpName == newVPName) {
@@ -431,5 +454,4 @@ describe('visboproject check', function () {
     }
     expectChai(i).to.be.eq(len, `VisboProject ${newVPName} not Destroyed`);
   })
-
 })

@@ -78,17 +78,24 @@ class VisboProjectPage extends Page {
 
       this.deleteVP.click();
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
+      console.log("delete confirm", vpID);
       this.deleteVPConfirm.click();
-      browser.pause();
+      // have to wait, as the server updates it async
+      browser.pause(2000);
     }
 
     destroy(vpID) {
-      console.log("destroy", vpID);
+      // let startDate = new Date();
+      // console.log("destroy", vpID);
 
       this.destroyVP.click();
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
+      // console.log("destroy confirm", vpID);
       this.deleteVPConfirm.click();
-      browser.pause();
+      // let endDate = new Date();
+      // console.log("Destroy took ", endDate.getTime() - startDate.getTime())
+      // have to wait, as the server updates it async
+      browser.pause(2000);
     }
 
     rename(newName, newDescription) {

@@ -78,8 +78,6 @@ class SysVisboProjectPage extends Page {
 
       this.deleteVP.click();
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
-      browser.pause(1000);
-      console.log("delete confirm", vpID);
       this.deleteVPConfirm.click();
       browser.pause(2000);
     }
@@ -90,7 +88,7 @@ class SysVisboProjectPage extends Page {
       this.destroyVP.click();
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
       this.deleteVPConfirm.click();
-      browser.pause();
+      browser.pause(2000);
     }
 
     rename(newName, newDescription) {

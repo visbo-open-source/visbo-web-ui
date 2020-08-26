@@ -24,7 +24,7 @@ class SysVisboCenterPage extends Page {
     get sortDate () { return $('#SortDate') }
     get sortProjects () { return $('#SortProjects') }
     get vcList () { return $('#VCList') }
-    get alert () { return $('app-alert') }
+    get alert () { return $('#alertMessage') }
 
     get showUserButton () { return $('#ViewUser') }
     get addUserButton () { return $('#AddUser') }
