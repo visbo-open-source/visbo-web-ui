@@ -461,7 +461,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
     let parentRole;
 
-    this.log(`get the parentRole of roleID ${{roleID}}`);
+    // this.log(`get the parentRole of roleID ${JSON.stringify(roleID)}`);
     if (allRoles[roleID]) {
 
       let notFound = true;

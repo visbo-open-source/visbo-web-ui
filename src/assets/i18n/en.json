@@ -873,6 +873,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Center Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
@@ -929,6 +930,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Project Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},

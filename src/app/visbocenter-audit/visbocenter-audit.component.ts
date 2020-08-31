@@ -111,6 +111,7 @@ export class VisbocenterAuditComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const queryAudit = new QueryAuditType;
     this.log(`Audit getVisboCenterAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
+    this.alertService.clear();
     // set date values if not set or adopt to end of day in case of to date
 
     if (this.auditTo) {
@@ -144,6 +145,8 @@ export class VisbocenterAuditComponent implements OnInit {
         audit => {
           this.audit = audit;
           this.sortTable(undefined);
+          const message = this.translate.instant('vcAudit.msg.auditSuccess');
+          this.alertService.success(message, true);
           this.log('get Audit success');
         },
         error => {

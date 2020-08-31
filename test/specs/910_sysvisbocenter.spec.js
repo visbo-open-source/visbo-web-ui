@@ -31,12 +31,11 @@ describe('sysvisbocenter check', function () {
   //   SysVisboCenterPage.open();
   //   // console.log("Show VC");
   //   SysVisboCenterPage.sortDate.click();
-  //   browser.pause();
-  //   const vcList = $('#VCList');
-  //   const len = vcList.$$('tr').length;
-  //   let vcLastDate = len > 0 ? convert.convertDate(vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
+  //   browser.pause(600);
+  //   const len = SysVisboCenterPage.vcList.$$('tr').length;
+  //   let vcLastDate = len > 0 ? convert.convertDate(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
   //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = vcList.$$('tr')[i];
+  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
   //     let vcDate = convert.convertDate(vcEntry.$('#ColDate').getText());
   //     // console.log("VC Date", i+1, vcEntry.$('#ColDate').getText(), vcDate, vcLastDate, vcDate.getTime() - vcLastDate.getTime());
   //     expectChai(vcLastDate).to.be.gte(vcDate, "Wrong Sorting by Date");
@@ -44,20 +43,20 @@ describe('sysvisbocenter check', function () {
   //   }
   //
   //   SysVisboCenterPage.sortProjects.click();
-  //   browser.pause();
-  //   let vcLastProject = len > 0 ? Number(vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
+  //   browser.pause(600);
+  //   let vcLastProject = len > 0 ? Number(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
   //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = vcList.$$('tr')[i];
+  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
   //     let vcProject = Number(vcEntry.$('#ColProjects').getText());
   //     // console.log("VC Projects", i+1, vcProject, vcLastProject, vcProject - vcLastProject);
   //     expectChai(vcLastProject).to.be.gte(vcProject, "Wrong Sorting by #Projects");
   //     vcLastProject = vcProject
   //   }
   //   SysVisboCenterPage.sortName.click();
-  //   browser.pause();
-  //   let vcLastName = len > 0 ? vcList.$$('tr')[0].$('#ColName').getText() : undefined;
+  //   browser.pause(600);
+  //   let vcLastName = len > 0 ? SysVisboCenterPage.vcList.$$('tr')[0].$('#ColName').getText() : undefined;
   //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = vcList.$$('tr')[i];
+  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
   //     let vcName = vcEntry.$('#ColName').getText().valueOf();
   //     // console.log("VC Names", i+1, vcName, vcLastName, vcName <= vcLastName);
   //     expectChai(vcName.toLowerCase() >= vcLastName.toLowerCase()).to.be.eql(true, "Wrong Sorting by Name");
@@ -70,11 +69,10 @@ describe('sysvisbocenter check', function () {
   //   vcConfigName = vcConfigName.concat("01");
   //   SysVisboCenterPage.open();
   //   // console.log("Show VC");
-  //   const vcList = $('#VCList');
-  //   const len = vcList.$$('tr').length;
-  //   // console.log("VC List Len:", len, '\n', vcList.getText());
+  //   const len = SysVisboCenterPage.vcList.$$('tr').length;
+  //   // console.log("VC List Len:", len, '\n', SysVisboCenterPage.vcList.getText());
   //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = vcList.$$('tr')[i];
+  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
   //     let vcName = vcEntry.$('#ColName').getText();
   //     // console.log("VC", i+1, vcName);
   //     if (vcName == vcConfigName) {
@@ -238,7 +236,7 @@ describe('sysvisbocenter check', function () {
   // //   expectChai(SysVisboCenterPage.vcDesc.getValue()).to.be.eql(newDescription);
   // //   SysVisboCenterPage.rename(oldName, oldDescription);
   // // })
-  //
+
   it('should Create a new VC', function () {
     SysVisboCenterPage.open();
     newVCName = paramsMap?.VCBaseName || "Test-XX-VC";
@@ -342,7 +340,6 @@ describe('sysvisbocenter check', function () {
     // switch to Deleted to find the VC
     SysVisboCenterPage.deletedVC.click();
 
-    browser.pause();
     SysVisboCenterPage.unDeletedVC.waitForDisplayed();
     len = vcList.$$('tr').length;
     console.log("VC List Len:", len);
@@ -365,31 +362,27 @@ describe('sysvisbocenter check', function () {
     console.log("restore  VC", newVCName);
     SysVisboCenterPage.saveVC.waitForDisplayed();
     SysVisboCenterPage.saveVC.click();
-    browser.pause(2000);
+    SysVisboCenterPage.alert.waitForDisplayed();
 
-    len = vcList.$$('tr').length;
-    console.log("VC List Len:", len);
-    i = 0;
-    for (; i < len; i++) {
-      let vcEntry = vcList.$$('tr')[i];
-      let vcName = vcEntry.$('#ColName').getText();
-      // console.log("VC", i+1, vcName);
-      if (vcName == newVCName) {
-        console.log("found VC", vcName);
-        break;
-      }
-    }
-    expectChai(i).to.be.lt(len, `VisboCenter ${newVCName} not Restored`);
+    expect(SysVisboCenterPage.alert).toHaveTextContaining('updated successfully');
   })
 
   it('should Destroy a VC', function () {
+    expectChai(vcDeleteID).not.eql('', `VisboCenter not defined for Destroy`);
+    console.log("Delete VC", vcDeleteID);
     SysVisboCenterPage.open();
+    SysVisboCenterPage.detail(vcDeleteID, false);
     SysVisboCenterPage.delete(vcDeleteID);
+    // SysVisboCenterPage.alert.waitForDisplayed();
+    // expect(SysVisboCenterPage.alert).toHaveTextContaining('deleted successfully');
 
     // go to details of deleted VC
-    SysVisboCenterPage.detail(deleteID, true);
-    SysVisboCenterPage.destroy(deleteID);
-    expect(SysVisboCenterPage.alert).toHaveTextContaining('successfull');
+    console.log("Destroy VC", vcDeleteID);
+    SysVisboCenterPage.open();
+    SysVisboCenterPage.detail(vcDeleteID, true);
+    SysVisboCenterPage.destroy(vcDeleteID);
+    // SysVisboCenterPage.alert.waitForDisplayed();
+    // expect(SysVisboCenterPage.alert).toHaveTextContaining('deleted successfully');
   })
 
 })

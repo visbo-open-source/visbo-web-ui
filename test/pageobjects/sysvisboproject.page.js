@@ -52,7 +52,7 @@ class SysVisboProjectPage extends Page {
     open (vcid) {
       let url = vcid ? '/sysvp/'.concat(vcid) : '/sysvp'
       super.open(url);
-      browser.pause();
+      this.vpList.waitForDisplayed();
     }
 
     detail (vpID, deleted) {
@@ -60,7 +60,6 @@ class SysVisboProjectPage extends Page {
       if (deleted) url = url.concat('?deleted=1');
       super.open(url);
       this.saveVP.waitForDisplayed()
-      browser.pause();
     }
 
     create(newName, newDescription) {
@@ -92,10 +91,11 @@ class SysVisboProjectPage extends Page {
     }
 
     rename(newName, newDescription) {
+      this.vpName.waitForClickable({ timeoutMsg: 'VP Name Field should show up' });
       this.vpName.setValue(newName);
       this.vpDesc.setValue(newDescription);
       this.saveVP.click();
-      browser.pause();
+      this.saveVP.waitForClickable({ reverse: true, timeoutMsg: 'Save Button should disappear' });
     }
 
     addUser(userName, groupName, message) {
@@ -108,8 +108,8 @@ class SysVisboProjectPage extends Page {
       if (message) this.addUserMessage.setValue(message);
 
       this.addUserConfirm.click();
-      // how can we improve this to wait until the modal is closed and refreshed
-      browser.pause();
+      this.addUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Add User Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteUser(deleteUserName, deleteGroupName) {
@@ -138,8 +138,8 @@ class SysVisboProjectPage extends Page {
 
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.deleteUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Delete User Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 
@@ -151,8 +151,8 @@ class SysVisboProjectPage extends Page {
       this.addGroupName.setValue(groupName);
       this.addGroupVPView.click();
       this.addGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.addGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Add Group Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteGroup(deleteGroupName) {
@@ -180,8 +180,8 @@ class SysVisboProjectPage extends Page {
 
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.deleteGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Delete Group Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 

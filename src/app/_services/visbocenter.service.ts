@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -138,11 +138,12 @@ export class VisboCenterService  {
       params = params.append('deleted', '1');
     }
     if (roleID) {
+      // roleID = encodeURIComponent(roleID);
       roleID = roleID.replace(/\+/g,'%2B');
       this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
     }
-    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    this.log(`Calling Capacity for a VC: ${url} params  ${JSON.stringify(params)}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
       map(response => {
                 // TODO: is there a better way to transfer the perm?

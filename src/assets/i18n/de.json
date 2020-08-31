@@ -873,6 +873,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Center Audit erfolgreich geladen",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Center"
 		}
 	},
@@ -929,6 +930,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Pprojekt Audit erfolgreich geladen",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
 	},

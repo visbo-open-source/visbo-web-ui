@@ -14,7 +14,6 @@ describe('userprofile check', function () {
     LoginPage.open()
     LoginPage.login(email, pw);
 
-    LoginPage.alert.waitForDisplayed();
     let newUrl = browser.getUrl();
     console.log("URL:", newUrl);
 
@@ -73,7 +72,8 @@ describe('userprofile check', function () {
     UserProfilePage.changepw(pw, pw); //Change it without modification
     // UserProfilePage.alert.waitForExist(10000);
     let text = UserProfilePage.alert.getText();
-    console.log("PW Chaneg Alert:", text)
+    console.log("PW Change Alert:", text)
+    expectChai(text).to.include('erfolgreich');
     // expectChai(text.indexOf('erfolgreich')).to.be.gt(0, `Password change failed: ${text}`);
   })
 

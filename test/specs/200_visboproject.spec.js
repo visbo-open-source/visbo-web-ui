@@ -439,7 +439,6 @@ describe('visboproject check', function () {
     VisboProjectPage.destroy(vpDeleteID);
 
     // Check that the VP is not in the Deleted list
-    browser.pause(2000);
     len = VisboProjectPage.vpList.$$('tr').length;
     console.log("VP Deleted List Len:", len);
     i = 0;

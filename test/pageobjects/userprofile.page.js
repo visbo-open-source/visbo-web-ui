@@ -29,21 +29,16 @@ class UserProfilePage extends Page {
      */
     open () {
       super.open('/profile');
-      browser.pause();
+      this.buttonSave.waitForClickable({ timeoutMsg: 'Button Save should show up' });
     }
 
     changepw(oldPassword, newPassword) {
       this.buttonChangePW.click();
-      // browser.waitForExist(this.passwordOld, 10000);
-      // this.buttonChange.waitForVisible(10000);
-      // this.buttonChange.isEnabled();
-      // this.passwordOld.getValue();
       // console.log("Modal Title:", $('#UserPasswordChangeModalTitle').getText());
-      browser.pause();
+      this.passwordOld.waitForClickable({ timeoutMsg: 'Field Old Password should show up' });
       this.passwordOld.setValue(oldPassword);
       this.passwordNew.setValue(newPassword);
       this.buttonChange.click();
-      // browser.pause();
     }
 
 }

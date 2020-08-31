@@ -24,7 +24,7 @@ class VisboProjectPage extends Page {
     get sortDate () { return $('#SortDate') }
     get sortVersions () { return $('#SortVersions') }
     get vpList () { return $('#VPList') }
-    get alert () { return $('app-alert') }
+    get alert () { return $('#alertMessage') }
 
     get showUserButton () { return $('#ViewUser') }
     get addUserButton () { return $('#AddUser') }
@@ -52,7 +52,7 @@ class VisboProjectPage extends Page {
     open (vcid) {
       let url = vcid ? '/vp/'.concat(vcid) : '/vp'
       super.open(url);
-      browser.pause();
+      this.vpList.waitForDisplayed({ timeoutMsg: 'VP List should show up' });
     }
 
     detail (vpID, deleted) {
@@ -60,17 +60,17 @@ class VisboProjectPage extends Page {
       if (deleted) url = url.concat('?deleted=1');
       super.open(url);
       this.vpName.waitForDisplayed({ timeoutMsg: 'Project Name in Details should show up' });
-      // browser.pause();
     }
 
     create(newName, newDescription) {
-      console.log("create", newName, newDescription);
+      console.log("create VP", newName, newDescription);
 
       this.createVP.click();
       this.createVPName.waitForClickable({ timeoutMsg: 'Field Project Name should show up' });
       this.createVPName.setValue(newName);
       this.createVPDesc.setValue(newDescription);
       this.createVPConfirm.click();
+      this.alert.waitForDisplayed();
     }
 
     delete(vpID) {
@@ -80,6 +80,7 @@ class VisboProjectPage extends Page {
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
       console.log("delete confirm", vpID);
       this.deleteVPConfirm.click();
+      this.alert.waitForDisplayed();
       // have to wait, as the server updates it async
       browser.pause(2000);
     }
@@ -92,6 +93,7 @@ class VisboProjectPage extends Page {
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
       // console.log("destroy confirm", vpID);
       this.deleteVPConfirm.click();
+      this.alert.waitForDisplayed();
       // let endDate = new Date();
       // console.log("Destroy took ", endDate.getTime() - startDate.getTime())
       // have to wait, as the server updates it async
@@ -102,7 +104,7 @@ class VisboProjectPage extends Page {
       this.vpName.setValue(newName);
       this.vpDesc.setValue(newDescription);
       this.saveVP.click();
-      browser.pause();
+      this.saveVP.waitForClickable({ reverse: true, timeoutMsg: 'Save Button should disappear' });
     }
 
     addUser(userName, groupName, message) {
@@ -115,8 +117,8 @@ class VisboProjectPage extends Page {
       if (message) this.addUserMessage.setValue(message);
 
       this.addUserConfirm.click();
-      // how can we improve this to wait until the modal is closed and refreshed
-      browser.pause();
+      this.addUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteUser(deleteUserName, deleteGroupName) {
@@ -145,8 +147,8 @@ class VisboProjectPage extends Page {
 
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.deleteUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 
@@ -158,8 +160,8 @@ class VisboProjectPage extends Page {
       this.addGroupName.setValue(groupName);
       this.addGroupVPView.click();
       this.addGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.addGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteGroup(deleteGroupName) {
@@ -187,8 +189,8 @@ class VisboProjectPage extends Page {
 
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause();
+      this.deleteGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 

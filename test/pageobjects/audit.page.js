@@ -5,7 +5,7 @@ class VisboAudit extends Page {
      * define elements
      */
     get sortUser () { return $('#SortUser') }
-    get alert () { return $('app-alert') }
+    get alert () { return $('#alertMessage') }
 
     get auditList () { return $('#AuditList') }
 
@@ -25,7 +25,7 @@ class VisboAudit extends Page {
     sysAudit () {
       let url = '/sysaudit/';
       super.open(url);
-      browser.pause();
+      this.alert.waitForDisplayed();
     }
 
     vcAudit (vcID, sysadmin) {
@@ -34,7 +34,7 @@ class VisboAudit extends Page {
         url = url.concat('?sysadmin=1')
       }
       super.open(url);
-      browser.pause();
+      this.alert.waitForDisplayed();
     }
 
     vpAudit (vpID, sysadmin) {
@@ -43,7 +43,7 @@ class VisboAudit extends Page {
         url = url.concat('?sysadmin=1')
       }
       super.open(url);
-      browser.pause();
+      this.alert.waitForDisplayed();
     }
 
 }

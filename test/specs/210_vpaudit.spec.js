@@ -111,7 +111,7 @@ describe('visbocenter audit check', function () {
 
     // go to details of the first element
     VisboAudit.auditList.$$('tr')[0].$('#ColDetail').click();
-    browser.pause();
+    VisboAudit.buttonMore.waitForClickable({ timeoutMsg: 'More Button should show up' });
     VisboAudit.buttonMore.click();
 
     let i = 0;

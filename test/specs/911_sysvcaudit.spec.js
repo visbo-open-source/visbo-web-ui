@@ -68,7 +68,7 @@ describe('visbocenter audit check', function () {
 
     // go to details of the first element
     VisboAudit.auditList.$$('tr')[0].$('#ColDetail').click();
-    browser.pause();
+    VisboAudit.buttonMore.waitForClickable({ timeoutMsg: 'Audit More Button should show up' });
     VisboAudit.buttonMore.click();
 
     let i = 0;
@@ -86,11 +86,6 @@ describe('visbocenter audit check', function () {
     // // expect(auditEntry.$('#ColGroup').getText()).toBe(newGroupName);
     // // expect(auditEntry.$('#ColGlobal').getText()).toBe('Global');
     // expectChai(auditEntry.$('#ColGlobal').getText()).to.be.eql('Global');
-  })
-
-  it('should wait for exit', function () {
-    console.log("Wait for finish");
-    browser.pause(1000);
   })
 
 })
