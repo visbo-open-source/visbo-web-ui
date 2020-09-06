@@ -298,21 +298,21 @@ export class VisboProjectService {
   }
 
   /** DELETE: unlock Visbo Project Variant */
-  unlockVP (variantName: string, vpid: string, sysadmin = false): Observable<VPLock[]> {
+  unlockVP (variantid: string, vpid: string, sysadmin = false): Observable<VPLock[]> {
     const url = `${this.vpUrl}/${vpid}/lock`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
-    if (variantName) {
-      params = params.append('variantName', variantName);
+    if (variantid) {
+      params = params.append('variantID', variantid);
     }
     this.log(`Calling HTTP Request: ${url} Params ${params} `);
     return this.http.delete<VisboProjectLockResponse>(url, { headers , params })
     .pipe(
       map(response => response.lock),
-      tap(() => this.log(`deleted Visbo Project Lock ${variantName}`)),
+      tap(() => this.log(`deleted Visbo Project Lock for Variant ${variantid}`)),
       catchError(this.handleError<VPLock[]>('deleteVisboProjectLock'))
     );
   }

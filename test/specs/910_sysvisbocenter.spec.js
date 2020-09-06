@@ -27,215 +27,215 @@ describe('sysvisbocenter check', function () {
     expectChai(browser.getUrl()).to.include('/dashboard');
   })
 
-  // it('should show full list of VCs and sorting works', function () {
-  //   SysVisboCenterPage.open();
-  //   // console.log("Show VC");
-  //   SysVisboCenterPage.sortDate.click();
-  //   browser.pause(600);
-  //   const len = SysVisboCenterPage.vcList.$$('tr').length;
-  //   let vcLastDate = len > 0 ? convert.convertDate(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
-  //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
-  //     let vcDate = convert.convertDate(vcEntry.$('#ColDate').getText());
-  //     // console.log("VC Date", i+1, vcEntry.$('#ColDate').getText(), vcDate, vcLastDate, vcDate.getTime() - vcLastDate.getTime());
-  //     expectChai(vcLastDate).to.be.gte(vcDate, "Wrong Sorting by Date");
-  //     vcLastDate = vcDate;
-  //   }
+  it('should show full list of VCs and sorting works', function () {
+    SysVisboCenterPage.open();
+    // console.log("Show VC");
+    SysVisboCenterPage.sortDate.click();
+    browser.pause(600);
+    const len = SysVisboCenterPage.vcList.$$('tr').length;
+    let vcLastDate = len > 0 ? convert.convertDate(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
+    for (var i = 0; i < len; i++) {
+      let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
+      let vcDate = convert.convertDate(vcEntry.$('#ColDate').getText());
+      // console.log("VC Date", i+1, vcEntry.$('#ColDate').getText(), vcDate, vcLastDate, vcDate.getTime() - vcLastDate.getTime());
+      expectChai(vcLastDate).to.be.gte(vcDate, "Wrong Sorting by Date");
+      vcLastDate = vcDate;
+    }
+
+    SysVisboCenterPage.sortProjects.click();
+    browser.pause(600);
+    let vcLastProject = len > 0 ? Number(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
+    for (var i = 0; i < len; i++) {
+      let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
+      let vcProject = Number(vcEntry.$('#ColProjects').getText());
+      // console.log("VC Projects", i+1, vcProject, vcLastProject, vcProject - vcLastProject);
+      expectChai(vcLastProject).to.be.gte(vcProject, "Wrong Sorting by #Projects");
+      vcLastProject = vcProject
+    }
+    SysVisboCenterPage.sortName.click();
+    browser.pause(600);
+    let vcLastName = len > 0 ? SysVisboCenterPage.vcList.$$('tr')[0].$('#ColName').getText() : undefined;
+    for (var i = 0; i < len; i++) {
+      let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
+      let vcName = vcEntry.$('#ColName').getText().valueOf();
+      // console.log("VC Names", i+1, vcName, vcLastName, vcName <= vcLastName);
+      expectChai(vcName.toLowerCase() >= vcLastName.toLowerCase()).to.be.eql(true, "Wrong Sorting by Name");
+      vcLastName = vcName
+    }
+  })
+
+  it('should navigate to Details of a specific VC', function () {
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
+    vcConfigName = vcConfigName.concat("01");
+    SysVisboCenterPage.open();
+    // console.log("Show VC");
+    const len = SysVisboCenterPage.vcList.$$('tr').length;
+    // console.log("VC List Len:", len, '\n', SysVisboCenterPage.vcList.getText());
+    for (var i = 0; i < len; i++) {
+      let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
+      let vcName = vcEntry.$('#ColName').getText();
+      // console.log("VC", i+1, vcName);
+      if (vcName == vcConfigName) {
+        console.log("go to VC Detail", vcName);
+        vcEntry.$('button').click();
+        break;
+      }
+    }
+    expectChai(i).to.be.lt(len, `VisboCenter ${vcConfigName} not found`);
+    var newUrl = browser.getUrl();
+    const match = '/sysvcDetail/';
+    expectChai(newUrl).to.include(match, "Wrong redirect to vcDetail");
+    let index = newUrl.indexOf(match);
+    index += match.length;
+    vcID = newUrl.substr(index, 24);
+    // console.log("VCID:", vcID, newUrl);
+  })
+
+  it('Create VC Group', function () {
+
+    // create new Group not supported in sysVC
+    newGroupName = 'VISBO Center Admin';
+
+    // SysVisboCenterPage.detail(vcID);
+    // // console.log("Show VC Details, switch to Group");
+    // SysVisboCenterPage.showGroupButton.click();
+    // newGroupName = 'Delete-'.concat((new Date()).toISOString())
+    // console.log("Add new Group", newGroupName);
+    // SysVisboCenterPage.addGroup(newGroupName, true);
+    // // console.log("Add Group Check", newGroupName);
+    SysVisboCenterPage.detail(vcID);
+    // console.log("Show VC Details, switch to Group");
+    SysVisboCenterPage.showGroupButton.click();
+    const vcGroupList = $('#GroupList')
+    const len = vcGroupList.$$('tr').length
+    let i = 0;
+    let groupEntry = undefined;
+    for (i = 0; i < len; i++) {
+      groupEntry = vcGroupList.$$('tr')[i];
+      let groupName = groupEntry.$('#ColGroup').getText();
+      // console.log("VC GroupName", i+1, groupName);
+      if (groupName.indexOf(newGroupName) >= 0) {
+        // console.log("Group Found", groupName);
+        break;
+      }
+    }
+    // expect(groupEntry.$('#ColGroup').getText()).toBe(newGroupName);
+    // expect(groupEntry.$('#ColGlobal').getText()).toBe('Global');
+    expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
+    expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('Global');
+  })
+
+  it('Add User to Group', function () {
+    SysVisboCenterPage.detail(vcID);
+    // console.log("Show VC Details, switch to Group");
+    newUserName = paramsMap?.userRead;
+
+    let message = (new Date()).toISOString();
+    message = "Invitation from ".concat(message);
+    message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
+    console.log("Add new User Group", newUserName, newGroupName);
+    SysVisboCenterPage.addUser(newUserName, newGroupName, message);
+    console.log("Add User Check", newGroupName);
+    const vcUserList = $('#UserList')
+    const len = vcUserList.$$('tr').length
+    let i = 0;
+    expectChai(len).to.be.gt(0, "No Members in VC");
+    let userEntry, userName, groupName;
+    for (i = 0; i < len; i++) {
+      userEntry = vcUserList.$$('tr')[i];
+      userName = userEntry.$('#ColUser').getText();
+      groupName = userEntry.$('#ColGroup').getText();
+      // console.log("VC User Entry", i+1, userName, groupName);
+      if (groupName == newGroupName && userName == newUserName) {
+        // console.log("Success: User/Group Entry Found", userName, groupName);
+        break;
+      }
+    }
+    expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
+    expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
+  })
+
+  it('Delete VC User from Group', function () {
+
+    // console.log("Test Delete Group", newGroupName);
+    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+
+    SysVisboCenterPage.detail(vcID);
+    // console.log("Show VC Details, switch to Group");
+    console.log("Delete User from Group", newUserName, newGroupName);
+    let result = SysVisboCenterPage.deleteUser(newUserName, newGroupName);
+    // expect(result).toBe(false);
+    console.log("Delete User from Group Result:", result)
+    const vcUserList = $('#UserList')
+    const len = vcUserList.$$('tr').length
+    let i = 0;
+    expectChai(len).to.be.gt(0, "No Members in VC");
+    let userEntry, userName, groupName;
+    for (i = 0; i < len; i++) {
+      userEntry = vcUserList.$$('tr')[i];
+      userName = userEntry.$('#ColUser').getText();
+      groupName = userEntry.$('#ColGroup').getText();
+      // console.log("VC User Entry", i+1, userName, groupName);
+      if (groupName == newGroupName && userName == newUserName) {
+        // console.log("Success: User/Group Entry Found", userName, groupName);
+        break;
+      }
+    }
+    expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
+  })
+
+  // it('Delete VC Group', function () {
+  //   // Delete Internal Group not supported
+  //   // console.log("Test Delete Group", newGroupName);
+  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
   //
-  //   SysVisboCenterPage.sortProjects.click();
-  //   browser.pause(600);
-  //   let vcLastProject = len > 0 ? Number(SysVisboCenterPage.vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
-  //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
-  //     let vcProject = Number(vcEntry.$('#ColProjects').getText());
-  //     // console.log("VC Projects", i+1, vcProject, vcLastProject, vcProject - vcLastProject);
-  //     expectChai(vcLastProject).to.be.gte(vcProject, "Wrong Sorting by #Projects");
-  //     vcLastProject = vcProject
-  //   }
-  //   SysVisboCenterPage.sortName.click();
-  //   browser.pause(600);
-  //   let vcLastName = len > 0 ? SysVisboCenterPage.vcList.$$('tr')[0].$('#ColName').getText() : undefined;
-  //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
-  //     let vcName = vcEntry.$('#ColName').getText().valueOf();
-  //     // console.log("VC Names", i+1, vcName, vcLastName, vcName <= vcLastName);
-  //     expectChai(vcName.toLowerCase() >= vcLastName.toLowerCase()).to.be.eql(true, "Wrong Sorting by Name");
-  //     vcLastName = vcName
-  //   }
-  // })
-  //
-  // it('should navigate to Details of a specific VC', function () {
-  //   let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
-  //   vcConfigName = vcConfigName.concat("01");
-  //   SysVisboCenterPage.open();
-  //   // console.log("Show VC");
-  //   const len = SysVisboCenterPage.vcList.$$('tr').length;
-  //   // console.log("VC List Len:", len, '\n', SysVisboCenterPage.vcList.getText());
-  //   for (var i = 0; i < len; i++) {
-  //     let vcEntry = SysVisboCenterPage.vcList.$$('tr')[i];
-  //     let vcName = vcEntry.$('#ColName').getText();
-  //     // console.log("VC", i+1, vcName);
-  //     if (vcName == vcConfigName) {
-  //       console.log("go to VC Detail", vcName);
-  //       vcEntry.$('button').click();
-  //       break;
-  //     }
-  //   }
-  //   expectChai(i).to.be.lt(len, `VisboCenter ${vcConfigName} not found`);
-  //   var newUrl = browser.getUrl();
-  //   const match = '/sysvcDetail/';
-  //   expectChai(newUrl).to.include(match, "Wrong redirect to vcDetail");
-  //   let index = newUrl.indexOf(match);
-  //   index += match.length;
-  //   vcID = newUrl.substr(index, 24);
-  //   // console.log("VCID:", vcID, newUrl);
-  // })
-  //
-  // it('Create VC Group', function () {
-  //
-  //   // create new Group not supported in sysVC
-  //   newGroupName = 'VISBO Center Admin';
-  //
-  //   // SysVisboCenterPage.detail(vcID);
-  //   // // console.log("Show VC Details, switch to Group");
-  //   // SysVisboCenterPage.showGroupButton.click();
-  //   // newGroupName = 'Delete-'.concat((new Date()).toISOString())
-  //   // console.log("Add new Group", newGroupName);
-  //   // SysVisboCenterPage.addGroup(newGroupName, true);
-  //   // // console.log("Add Group Check", newGroupName);
   //   SysVisboCenterPage.detail(vcID);
-  //   // console.log("Show VC Details, switch to Group");
+  //   // console.log("Show VC Details, switch to Group with Button", SysVisboCenterPage.showGroupButton.getText());
   //   SysVisboCenterPage.showGroupButton.click();
+  //   // console.log("Delete Group", newGroupName);
+  //   let result = SysVisboCenterPage.deleteGroup(newGroupName);
+  //   // expect(result).toBe(false);
+  //   console.log("Delete Group Result:", result)
   //   const vcGroupList = $('#GroupList')
   //   const len = vcGroupList.$$('tr').length
-  //   let i = 0;
-  //   let groupEntry = undefined;
+  //   expectChai(len).to.be.gt(0, "No Groups in VC");
+  //   let i;
+  //   let groupEntry, groupName;
   //   for (i = 0; i < len; i++) {
   //     groupEntry = vcGroupList.$$('tr')[i];
-  //     let groupName = groupEntry.$('#ColGroup').getText();
+  //     groupName = groupEntry.$('#ColGroup').getText();
   //     // console.log("VC GroupName", i+1, groupName);
   //     if (groupName.indexOf(newGroupName) >= 0) {
   //       // console.log("Group Found", groupName);
   //       break;
   //     }
   //   }
-  //   // expect(groupEntry.$('#ColGroup').getText()).toBe(newGroupName);
-  //   // expect(groupEntry.$('#ColGlobal').getText()).toBe('Global');
-  //   expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
-  //   expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('Global');
+  //   expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
   // })
+
+  // it('Rename VC and Description', function () {
   //
-  // it('Add User to Group', function () {
-  //   SysVisboCenterPage.detail(vcID);
-  //   // console.log("Show VC Details, switch to Group");
-  //   newUserName = paramsMap?.userRead;
-  //
-  //   let message = (new Date()).toISOString();
-  //   message = "Invitation from ".concat(message);
-  //   message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
-  //   console.log("Add new User Group", newUserName, newGroupName);
-  //   SysVisboCenterPage.addUser(newUserName, newGroupName, message);
-  //   console.log("Add User Check", newGroupName);
-  //   const vcUserList = $('#UserList')
-  //   const len = vcUserList.$$('tr').length
-  //   let i = 0;
-  //   expectChai(len).to.be.gt(0, "No Members in VC");
-  //   let userEntry, userName, groupName;
-  //   for (i = 0; i < len; i++) {
-  //     userEntry = vcUserList.$$('tr')[i];
-  //     userName = userEntry.$('#ColUser').getText();
-  //     groupName = userEntry.$('#ColGroup').getText();
-  //     // console.log("VC User Entry", i+1, userName, groupName);
-  //     if (groupName == newGroupName && userName == newUserName) {
-  //       // console.log("Success: User/Group Entry Found", userName, groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
-  //   expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
-  // })
-  //
-  // it('Delete VC User from Group', function () {
-  //
+  //   // Rename and change description not supported, perhaps we should check that they are no input fields
   //   // console.log("Test Delete Group", newGroupName);
   //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
   //
   //   SysVisboCenterPage.detail(vcID);
-  //   // console.log("Show VC Details, switch to Group");
-  //   console.log("Delete User from Group", newUserName, newGroupName);
-  //   let result = SysVisboCenterPage.deleteUser(newUserName, newGroupName);
-  //   // expect(result).toBe(false);
-  //   console.log("Delete User from Group Result:", result)
-  //   const vcUserList = $('#UserList')
-  //   const len = vcUserList.$$('tr').length
-  //   let i = 0;
-  //   expectChai(len).to.be.gt(0, "No Members in VC");
-  //   let userEntry, userName, groupName;
-  //   for (i = 0; i < len; i++) {
-  //     userEntry = vcUserList.$$('tr')[i];
-  //     userName = userEntry.$('#ColUser').getText();
-  //     groupName = userEntry.$('#ColGroup').getText();
-  //     // console.log("VC User Entry", i+1, userName, groupName);
-  //     if (groupName == newGroupName && userName == newUserName) {
-  //       // console.log("Success: User/Group Entry Found", userName, groupName);
-  //       break;
-  //     }
-  //   }
-  //   expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
+  //   SysVisboCenterPage.vcName.waitForDisplayed();
+  //
+  //   let oldName = SysVisboCenterPage.vcName.getValue();
+  //   let oldDescription = SysVisboCenterPage.vcDesc.getValue();
+  //   let newName = oldName.concat("_Rename");
+  //   let newDescription = oldDescription.concat("_Rename");
+  //   console.log("Rename VC Property", newName, newDescription);
+  //   SysVisboCenterPage.rename(newName, newDescription);
+  //   console.log("Rename Done new URL:", browser.getUrl());
+  //
+  //   SysVisboCenterPage.detail(vcID);
+  //   SysVisboCenterPage.vcName.waitForDisplayed();
+  //   expectChai(SysVisboCenterPage.vcName.getValue()).to.be.eql(newName);
+  //   expectChai(SysVisboCenterPage.vcDesc.getValue()).to.be.eql(newDescription);
+  //   SysVisboCenterPage.rename(oldName, oldDescription);
   // })
-  //
-  // // it('Delete VC Group', function () {
-  // //   // Delete Internal Group not supported
-  // //   // console.log("Test Delete Group", newGroupName);
-  // //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-  // //
-  // //   SysVisboCenterPage.detail(vcID);
-  // //   // console.log("Show VC Details, switch to Group with Button", SysVisboCenterPage.showGroupButton.getText());
-  // //   SysVisboCenterPage.showGroupButton.click();
-  // //   // console.log("Delete Group", newGroupName);
-  // //   let result = SysVisboCenterPage.deleteGroup(newGroupName);
-  // //   // expect(result).toBe(false);
-  // //   console.log("Delete Group Result:", result)
-  // //   const vcGroupList = $('#GroupList')
-  // //   const len = vcGroupList.$$('tr').length
-  // //   expectChai(len).to.be.gt(0, "No Groups in VC");
-  // //   let i;
-  // //   let groupEntry, groupName;
-  // //   for (i = 0; i < len; i++) {
-  // //     groupEntry = vcGroupList.$$('tr')[i];
-  // //     groupName = groupEntry.$('#ColGroup').getText();
-  // //     // console.log("VC GroupName", i+1, groupName);
-  // //     if (groupName.indexOf(newGroupName) >= 0) {
-  // //       // console.log("Group Found", groupName);
-  // //       break;
-  // //     }
-  // //   }
-  // //   expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
-  // // })
-  //
-  // // it('Rename VC and Description', function () {
-  // //
-  // //   // Rename and change description not supported, perhaps we should check that they are no input fields
-  // //   // console.log("Test Delete Group", newGroupName);
-  // //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-  // //
-  // //   SysVisboCenterPage.detail(vcID);
-  // //   SysVisboCenterPage.vcName.waitForDisplayed();
-  // //
-  // //   let oldName = SysVisboCenterPage.vcName.getValue();
-  // //   let oldDescription = SysVisboCenterPage.vcDesc.getValue();
-  // //   let newName = oldName.concat("_Rename");
-  // //   let newDescription = oldDescription.concat("_Rename");
-  // //   console.log("Rename VC Property", newName, newDescription);
-  // //   SysVisboCenterPage.rename(newName, newDescription);
-  // //   console.log("Rename Done new URL:", browser.getUrl());
-  // //
-  // //   SysVisboCenterPage.detail(vcID);
-  // //   SysVisboCenterPage.vcName.waitForDisplayed();
-  // //   expectChai(SysVisboCenterPage.vcName.getValue()).to.be.eql(newName);
-  // //   expectChai(SysVisboCenterPage.vcDesc.getValue()).to.be.eql(newDescription);
-  // //   SysVisboCenterPage.rename(oldName, oldDescription);
-  // // })
 
   it('should Create a new VC', function () {
     SysVisboCenterPage.open();
