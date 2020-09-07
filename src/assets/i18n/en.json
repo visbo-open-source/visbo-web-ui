@@ -523,6 +523,7 @@
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",
 		"plannedCostPT": "Planned Cost",
+		"roleName": "Role",
 		"lbl": {
 			"day": "day",
 			"week": "week",

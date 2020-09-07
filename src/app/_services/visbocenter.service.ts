@@ -128,9 +128,12 @@ export class VisboCenterService  {
   }
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
-  getCapacity(id: string, refDate: Date, roleID: string, sysadmin = false, deleted = false): Observable<VisboCenter> {
+  getCapacity(id: string, refDate: Date, roleID: string, hierarchy = false, sysadmin = false, deleted = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
+    }
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
@@ -138,8 +141,6 @@ export class VisboCenterService  {
       params = params.append('deleted', '1');
     }
     if (roleID) {
-      // roleID = encodeURIComponent(roleID);
-      roleID = roleID.replace(/\+/g,'%2B');
       this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
     }

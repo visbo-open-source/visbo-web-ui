@@ -467,7 +467,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         valueX,
         valueY,
         this.colorMetric[colorValue].name,
-        Math.trunc(this.visbokeymetrics[i].keyMetrics.costBaseLastTotal || 1)
+        Math.round(this.visbokeymetrics[i].keyMetrics.costBaseLastTotal || 1)
       ]);
     }
     this.calcRangeAxis();

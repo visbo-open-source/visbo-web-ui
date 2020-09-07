@@ -523,6 +523,7 @@
 		"totalCapaPT": "gesamte Kapazität",
 		"actualCostPT": "Istkosten",
 		"plannedCostPT": "geplante Kosten",
+		"roleName": "Rolle",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
