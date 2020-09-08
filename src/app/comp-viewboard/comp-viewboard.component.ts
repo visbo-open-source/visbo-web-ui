@@ -31,7 +31,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
       width: '100%',
       height: 500,
-      colors:['#cbb69d','#603913','#c69c6e'],
+      // colors:['#cbb69d','#603913','#c69c6e'],
       timeline: {
         showBarLabels: true
       },
