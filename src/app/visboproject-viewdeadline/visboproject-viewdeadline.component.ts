@@ -59,7 +59,23 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   }
 
   dropDownInit(): void {
-    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1}`);
+    const variantID = this.route.snapshot.queryParams['variantID'];
+    let variantName = this.route.snapshot.queryParams['variantName'];
+    if (variantID) {
+      // serach for the variant Name
+      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      }
+    } else if (variantName) {
+      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      } else {
+        variantName = undefined;
+      }
+    }
+    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${variantID}/${variantName}`);
     this.dropDown = [];
     this.dropDownIndex = undefined;
     const len = this.vpActive.variant.length;
@@ -72,6 +88,9 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
     if (this.dropDown.length > 0 ) {
       this.dropDown.splice(0, 0, 'DEFAULT');
       this.dropDownIndex = 0;
+    }
+    if (variantName) {
+      this.dropDownIndex = this.dropDown.findIndex(item => item === variantName);
     }
   }
 
@@ -222,7 +241,10 @@ export class VisboProjectViewDeadlineComponent implements OnInit {
   }
 
   setVpvActive(vpv: VisboProjectVersion): void {
-    this.log(`setVpvActive ${vpv._id}`);
+    this.log(`setVpvActive ${vpv._id} ${vpv.variantName}`);
+    if (this.vpvActive && vpv.variantName !== this.vpvActive.variantName) {
+      this.switchVariant(vpv.variantName);
+    }
     this.vpvActive = vpv;
     if (this.vpvActive && this.vpvActive.timestamp) {
       this.vpvRefDate = this.vpvActive.timestamp;
