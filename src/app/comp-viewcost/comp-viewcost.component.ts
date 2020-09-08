@@ -159,15 +159,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       if (currentDate.getTime() < actualDataUntilTime) {
         graphDataCost.push([
           new Date(cost[i].currentDate),
-<<<<<<< HEAD
           Math.round(cost[i].baseLineCost * 10) / 10 || 0,          
           this.createCustomHTMLContent(cost[i], true),
           Math.round(cost[i].currentCost * 10) / 10  || 0,
-=======
-          Math.round(cost[i].baseLineCost || 0),
-          this.createCustomHTMLContent(cost[i], true),
-          Math.round(cost[i].currentCost || 0),
->>>>>>> development
           this.createCustomHTMLContent(cost[i], true),
           0,
           ''
@@ -175,11 +169,11 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       } else {
         graphDataCost.push([
           new Date(cost[i].currentDate),
-          Math.round(cost[i].baseLineCost || 0),
+          Math.round(cost[i].baseLineCost * 10) / 10 || 0,
           this.createCustomHTMLContent(cost[i], false),
           0,
           '',
-          Math.round(cost[i].currentCost || 0),
+          Math.round(cost[i].currentCost * 10) / 10  || 0,
           this.createCustomHTMLContent(cost[i], false)
         ]);
       }
