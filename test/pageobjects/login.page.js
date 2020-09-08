@@ -13,6 +13,7 @@ class LoginPage extends Page {
         this.username.setValue(email);
         this.password.setValue(password);
         this.loginButton.click();
+        this.alert.waitForDisplayed();
     }
 
     userName(email) {

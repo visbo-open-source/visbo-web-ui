@@ -183,6 +183,7 @@
 		"titleDeleteGroup": "Delete a Group in the VISBO Center",
 		"titleProjectUsers": "VISBO Project Users",
 		"titlePermUser": "Permission for {{name}}",
+		"titleSettings": "Visbo Center Setting",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -201,19 +202,26 @@
 			"global": "Global",
 			"message": "Message",
 			"delete": "Delete",
-			"deleteUser": "Remove User"
+			"deleteUser": "Remove User",
+			"settingName": "Name",
+			"settingType": "Type",
+			"timestamp": "Timestamp",
+			"updatedAt": "Changed",
+			"deleteSetting": "Delete"
 		},
 		"btn": {
 			"viewAudit": "View Audit",
 			"viewGroups": "Show Groups",
 			"viewUsers": "Show Users",
 			"viewProjectUsers": "Show Project Users",
+			"ViewSetting": "Settings",
 			"addUser": "Add User",
 			"addGroup": "Add Group",
 			"invite": "Invite",
 			"save": "Save",
 			"view": "View",
 			"delete": "Delete",
+			"download": "Download",
 			"back": "Go Back",
 			"cancel": "Cancel"
 		},
@@ -515,6 +523,7 @@
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",
 		"plannedCostPT": "Planned Cost",
+		"roleName": "Role",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -865,6 +874,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Center Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
@@ -921,6 +931,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Project Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},

@@ -13,7 +13,7 @@ class VisboCenterPage extends Page {
     get sortDate () { return $('#SortDate') }
     get sortProjects () { return $('#SortProjects') }
     get vcList () { return $('#VCList') }
-    get alert () { return $('#app-alert') }
+    get alert () { return $('#alertMessage') }
 
     get showUserButton () { return $('#ViewUser') }
     get addUserButton () { return $('#AddUser') }
@@ -48,10 +48,14 @@ class VisboCenterPage extends Page {
     }
 
     rename(newName, newDescription) {
+      this.vcName.waitForClickable({ timeoutMsg: 'VC Name should be clickable' });
       this.vcName.setValue(newName);
       this.vcDesc.setValue(newDescription);
       this.saveVC.click();
-      browser.pause(500);
+      this.saveVC.waitForClickable({ reverse: true, timeoutMsg: 'Save Button should disappear' });
+      // console.log("Wait for Alert show up")
+      // // Alert does not show up in case of two fast rename
+      // this.alert.waitForDisplayed();
     }
 
     addUser(userName, groupName, message) {
@@ -64,8 +68,8 @@ class VisboCenterPage extends Page {
       if (message) this.addUserMessage.setValue(message);
 
       this.addUserConfirm.click();
-      // how can we improve this to wait until the modal is closed and refreshed
-      browser.pause(500);
+      this.addUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteUser(deleteUserName, deleteGroupName) {
@@ -94,8 +98,9 @@ class VisboCenterPage extends Page {
 
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+
+      this.deleteUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Delete Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 
@@ -103,11 +108,6 @@ class VisboCenterPage extends Page {
       this.addGroupButton.click();
       // console.log("Add Group", groupName, flagGlobal);
 
-      // how can we improve this to wait until the modal is fully operable
-      // $('#AddGroupConfirm').waitForVisible(1000);
-      // $('#AddGroupName').waitForExist({ timeout: 5000 });
-      // $('#AddGroupConfirm').waitForExist({ timeout: 5000 });
-      // browser.pause(500);
       this.addGroupName.waitForClickable({ timeoutMsg: 'Field Group Name should show up' });
       this.addGroupName.setValue(groupName);
       if (flagGlobal) {
@@ -115,8 +115,9 @@ class VisboCenterPage extends Page {
         this.addGroupVPView.click();
       }
       this.addGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+
+      this.addGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Add Group Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
     }
 
     deleteGroup(deleteGroupName) {
@@ -144,8 +145,9 @@ class VisboCenterPage extends Page {
 
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
-      // how can we improve this to wait until the modal is fully operable
-      browser.pause(500);
+
+      this.deleteGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'Delete Group Confirm Button should disappear' });
+      this.alert.waitForDisplayed();
       return true;
     }
 

@@ -40,9 +40,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
-  role: string;
-  roleUID: number;
-  ressourceID: string;
+  paramRole: string;
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
@@ -104,7 +102,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.role =  this.route.snapshot.queryParams['roleID'];
+    this.paramRole =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
     moment.locale(this.currentLang);
     if (!this.refDate) { this.refDate = new Date(); }
@@ -120,7 +118,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
     this.capacityTo.setDate(1);
     this.visboGetOrganisation();
-    this.visboCapacityCalc();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -163,18 +160,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
               this.actOrga = this.vcorganisation[0].value;
-
-              // if (this.actOrga) {
-              //   const organisation = this.actOrga;
-              //   let allRoles = [];
-              //   this.log(`get all roles of the organisation, prepared for direct access`);
-              //   for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
-              //     allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
-              //   }
-              // }
-
             }
             this.visboViewOrganisationTree();
+            this.visboCapacityCalc();
           },
           error => {
             this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
@@ -194,9 +182,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.visboCapcity = undefined;
 
     if (this.vcActive ) {
-      this.log(`Capacity Calc for VC  ${this.vcActive._id}  role  ${this.role}`);
+      this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.role)
+      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.currentLeaf.uid.toString(), true)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -219,8 +207,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         );
     } else if (this.vpActive && this.vpfActive) {
-      this.log(`Capacity Calc for VP  ${this.vpActive._id} VPF  ${this.vpfActive._id}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.role)
+      this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name}`);
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString())
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -262,20 +250,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`initialize the orgaTreeData with one of the topLevel`);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
     let roleName: string;
-    if (this.role) {
-      if ( isNaN(parseInt(this.role, 10)) ) {
-        roleName = this.role;
+    if (this.paramRole) {
+      if ( isNaN(parseInt(this.paramRole, 10)) ) {
+        roleName = this.paramRole;
       } else {
-        this.roleUID = parseInt(this.role, 10);
-        roleName = allRoles[this.roleUID].name;
+        const roleUID = parseInt(this.paramRole, 10);
+        roleName = allRoles[roleUID].name;
       }
       this.currentLeaf = this.getMappingLeaf(roleName);
     }
-    if (!this.role || !this.currentLeaf) {
+    if (!this.paramRole || !this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
-    this.ressourceID = this.currentLeaf.name;
   }
 
   updateShowUnit(unit: string): void {
@@ -310,20 +297,21 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityTo.setMonth(this.capacityFrom.getMonth() + 12);
     }
 
-    this.log(`ViewCapacityOverTime ressourceID ${this.ressourceID}`);
+    this.log(`ViewCapacityOverTime resource ${this.currentLeaf.name}`);
 
     for (let i = 0; i < capacity.length; i++) {
 
       const currentDate = new Date(capacity[i].month);
       currentDate.setHours(2, 0, 0, 0);
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
+        const roleID = this.currentLeaf.uid;
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
             currentDate,
-            (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], true),
-            (Math.round(capacity[i].internCapa_PT * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], true),
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
+            capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
             (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
             (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
@@ -331,10 +319,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         } else {
           graphDataCapacity.push([
             currentDate,
-            (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0),            
-            this.createCustomHTMLContent(capacity[i], false),
-            (Math.round(capacity[i].internCapa * 10) / 10 || 0),            
-            this.createCustomHTMLContent(capacity[i], false),
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
+            capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
             (Math.round(capacity[i].actualCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false),
             (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
@@ -388,7 +376,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const internCapaPT = this.translate.instant('ViewCapacity.internCapaPT');
     const actualCostPT = this.translate.instant('ViewCapacity.actualCostPT');
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
+    const roleName = this.translate.instant('ViewCapacity.roleName');
 
+    result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
+              capacity.roleName + '</b></td>' + '</tr>';
     if (PT) {
       result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' +
                 (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
@@ -461,7 +452,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
     let parentRole;
 
-    this.log(`get the parentRole of roleID ${{roleID}}`);
+    // this.log(`get the parentRole of roleID ${JSON.stringify(roleID)}`);
     if (allRoles[roleID]) {
 
       let notFound = true;
@@ -569,12 +560,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   selectLeaf(leaf: VisboOrgaTreeLeaf): void {
-    if (leaf.name !== this.ressourceID ) {
-      this.ressourceID = leaf.name;
-      this.role = this.ressourceID;
-      this.visboCapacityCalc();
+    if (leaf.name !== this.currentLeaf.name ) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
+      this.visboCapacityCalc();
     }
     this.setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
     return;

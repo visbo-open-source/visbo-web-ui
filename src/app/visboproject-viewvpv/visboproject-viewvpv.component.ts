@@ -25,6 +25,9 @@ export class VisboProjectViewVPVComponent implements OnInit {
 
   visboprojectversions: VisboProjectVersion[];
 
+  dropDown: string[] = [];
+  dropDownIndex: number;
+
   vpSelected: string;
   vpActive: VisboProject;
   deleted = false;
@@ -72,6 +75,42 @@ export class VisboProjectViewVPVComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  dropDownInit(): void {
+    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1}`);
+    this.dropDown = [];
+    this.dropDownIndex = undefined;
+    if (!this.hasVPPerm(this.permVP.View)) {
+      // do not show Variant Drop Down for Restricted Users
+      return;
+    }
+    const len = this.vpActive.variant.length;
+
+    for (let i = 0; i < len; i++) {
+      if (this.vpActive.variant[i].variantName !== 'pfv' && this.vpActive.variant[i].vpvCount > 0) {
+        this.dropDown.push(this.vpActive.variant[i].variantName);
+      }
+    }
+    if (this.dropDown.length > 0 ) {
+      this.dropDown.splice(0, 0, 'DEFAULT');
+      this.dropDownIndex = 0;
+    }
+  }
+
+  switchVariant(name: string): void {
+    const i = this.dropDown.findIndex(item => item === name);
+    if (i <= 0) {
+      // not found or the main variant
+      this.dropDownIndex = undefined;
+    } else {
+      // Found
+      this.dropDownIndex = i;
+    }
+    this.log(`switch Variant ${name} index ${this.dropDownIndex}`);
+    // fetch the project with Variant
+    this.getVisboProjectVersions();
+    return;
+  }
+
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
@@ -81,10 +120,19 @@ export class VisboProjectViewVPVComponent implements OnInit {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
           visboproject => {
-            this.vpActive = visboproject;
-            this.combinedPerm = visboproject.perm;
-            this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', true)
+            if (!this.vpActive || this.vpActive._id !== visboproject._id) {
+              this.vpActive = visboproject;
+              this.combinedPerm = visboproject.perm;
+              this.dropDownInit();
+            }
+            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';
+            let variantID = '';
+            if (variantName) {
+              const variant = this.vpActive.variant.find(item => item.variantName === variantName);
+              variantID = variant ? variant._id.toString() : '';
+            }
+            this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, true)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;

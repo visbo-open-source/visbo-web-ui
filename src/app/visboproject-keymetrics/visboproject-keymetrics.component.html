@@ -4,10 +4,14 @@
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span>
-          <small class="fas fa-info-circle mx-2 text-info" data-toggle="modal" data-target="#VpvDetails"></small>
+        <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
+        <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
+          <div class="dropdown-menu">
+            <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+          </div>
         </span>
-        <span *ngIf="vpvKeyMetricActive" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
+        <span *ngIf="vpvKeyMetricActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
           <small *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></small>
           <small *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></small>
           <small *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></small>

@@ -2,5 +2,9 @@
   "login": {
     "email": "visbotestadmin@seyfried.bayern",
     "pw": "UNDEFINED"
-  }
+  },
+  "userRead": "visbotest@seyfried.bayern",
+  "inviteMessage": "",
+  "VCBaseName": "Test-XX-VC",
+  "VPBaseName": "Test-XX-VP"
 }

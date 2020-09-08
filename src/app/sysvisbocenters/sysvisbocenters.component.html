@@ -7,34 +7,33 @@
       </h2>
     </div>
     <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='btn-group'>
-        <button *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
-        <button *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
-        <button *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
+        <button id="DeletedVC" *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
+        <button id="UnDeletedVC" *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
+        <button id="CreateVC" *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
     </div>
   </div>
 
   <div class='panel-body'>
     <table class='table table-hover table-sortable'>
-      <!--Table head-->
-      <thead>
+
+      <thead id="VCHead">
         <tr>
           <th class="d-none d-md-table-cell">Nr.</th>
-          <th (click)="sortVCTable(1)">Name</th>
-          <th class="d-none d-sm-table-cell" (click)="sortVCTable(2)">Modified</th>
-          <th class="d-none d-md-table-cell" (click)="sortVCTable(3)"># Projects</th>
+          <th id="SortName" (click)="sortVCTable(1)">Name</th>
+          <th id="SortDate" class="d-none d-sm-table-cell" (click)="sortVCTable(2)">Modified</th>
+          <th id="SortProjects" class="d-none d-md-table-cell" (click)="sortVCTable(3)"># Projects</th>
           <th>Detail</th>
         </tr>
       </thead>
-      <!--Table body-->
-      <tbody>
 
+      <tbody id="VCList">
         <tr *ngFor="let vc of visbocenters; let vcIndex=index" (click)="gotoClickedRow(vc)" >
           <td class="d-none d-md-table-cell">{{vcIndex+1}}</td>
-          <td><a>{{vc.name}}</a></td>
-          <td class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
-          <td class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
-          <td class="d-none d-md-table-cell">{{vc.vpCount}}</td>
-          <td>
+          <td id="ColName"><a>{{vc.name}}</a></td>
+          <td id="ColDate" class="d-none d-md-table-cell">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td id="ColDate" class="d-none d-sm-table-cell d-md-none">{{vc.updatedAt | date :'dd.MM.yy'}}</td>
+          <td id="ColProjects" class="d-none d-md-table-cell">{{vc.vpCount}}</td>
+          <td id="ColDetail">
             <button class="Detail" title="Detail of Visbo Center"
             (click)="gotoDetail(vc)">i</button>
           </td>
@@ -58,17 +57,17 @@
         <form>
           <div class="form-group">
             <label for="vcName" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" #vcName>
+            <input id="CreateVCName" type="text" class="form-control" #vcName>
           </div>
           <div class="form-group">
             <label for="vcDescription" class="col-form-label">Description:</label>
-            <textarea class="form-control" #vcDescription></textarea>
+            <textarea id="CreateVCDesc" class="form-control" #vcDescription></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="add(vcName.value, vcDescription.value); vcName.value=''; vcDescription.value=''" data-dismiss="modal">Save</button>
+        <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="CreateVCConfirm" type="button" class="btn btn-primary" (click)="add(vcName.value, vcDescription.value); vcName.value=''; vcDescription.value=''" data-dismiss="modal">Save</button>
       </div>
     </div>
   </div>
