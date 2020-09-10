@@ -335,25 +335,6 @@ export class VisboCenterService  {
     );
   }
 
-  // GET VisboCenter Settings for a specified VC from the server
-  getVCSettings(vcid: string, sysadmin = false, deleted = false): Observable<VisboSetting[]> {
-    const url = `${this.vcUrl}/${vcid}/setting`;
-    let params = new HttpParams();
-    if (sysadmin) {
-      params = params.append('sysadmin', '1');
-    }
-    if (deleted) {
-      params = params.append('deleted', '1');
-    }
-    this.log(`Calling HTTP Request GET Users: ${url} `);
-    return this.http.get<VisboSettingListResponse>(url, { headers , params })
-      .pipe(
-        map(response => response.vcsetting),
-        tap(vcsetting => this.log(`fetched VC Settings`)),
-        catchError(this.handleError<VisboSetting[]>('getVisboCenterSetting'))
-      );
-  }
-
   /**
    * Handle Http operation that failed.
    * Let the app continue.

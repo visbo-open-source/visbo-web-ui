@@ -184,6 +184,7 @@
 		"titleProjectUsers": "VISBO Projekt Benutzer",
 		"titlePermUser": "Berechtigung für {{name}}",
 		"titleSettings": "Visbo Center Setting",
+		"titleDeleteSettings": "Visbo Center Setting löschen",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -207,7 +208,8 @@
 			"settingType": "Typ",
 			"timestamp": "Zeitstempel",
 			"updatedAt": "Änderung",
-			"deleteSetting": "Löschen"
+			"deleteSetting": "Löschen",
+			"setting": "Name"
 		},
 		"btn": {
 			"viewAudit": "Audit",
@@ -228,6 +230,7 @@
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
 			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Center löschen?",
+			"removeSettingConfirm": "Wollen Sie das Setting wirklich aus dem VISBO Center löschen?",
 			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
 			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
 			"groupNameRequired": "Gruppen Name erforderlich",
@@ -240,6 +243,7 @@
 			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
 			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
 			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"removeSettingSuccess": "Setting {{name}} wurde erfolgreich gelöscht",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermVC": "Keine Berechtigung für VISBO Center {{name}}",
 			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Center {{name}}",
@@ -247,6 +251,7 @@
 			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorRemoveSettingPerm": "Keine Berechtigung Setting {{name}} zu löschen",
 			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!"
 		}
 	},

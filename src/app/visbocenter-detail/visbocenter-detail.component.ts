@@ -11,6 +11,7 @@ import { VisboUserInvite } from '../_models/visbouser';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
@@ -55,6 +56,7 @@ export class VisbocenterDetailComponent implements OnInit {
   permVC = VGPVC;
   permVP = VGPVP;
 
+  today: Date;
   sortUserColumn = 1;
   sortUserAscending = true;
   sortVPUserColumn = 1;
@@ -67,6 +69,7 @@ export class VisbocenterDetailComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
+    private visbosettingService: VisboSettingService,
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
@@ -214,7 +217,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     this.log('VisboCenter Settings of: ' + id);
-    this.visbocenterService.getVCSettings(id)
+    this.visbosettingService.getVCSettings(id)
       .subscribe(
         vcSettings => {
           this.log(`fetched VC Settings ${vcSettings.length}`);
@@ -522,6 +525,30 @@ export class VisbocenterDetailComponent implements OnInit {
     this.vcSetting = this.vcSettings[index];
   }
 
+  removeVCSetting(setting: VisboSetting ): void {
+    this.log(`Remove VisboCenter Setting: ${setting.name}/${setting.type} Timestamp: ${setting.timestamp}`);
+    this.visbosettingService.deleteVCSetting(setting)
+      .subscribe(
+        response => {
+          this.log(`Remove VisboCenter Setting result: ${JSON.stringify(response)}`);
+          // filter user from vgUsers
+          this.vcSettings = this.vcSettings.filter(vcSetting => vcSetting !== setting)
+          const message = this.translate.instant('vcDetail.msg.removeSettingSuccess', {'name': setting.name});
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Remove VisboCenter Setting error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vcDetail.msg.errorRemoveSettingPerm', {'name': setting.name});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during remove VC setting ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   downloadSetting(): void {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
@@ -538,7 +565,7 @@ export class VisbocenterDetailComponent implements OnInit {
         }
         organisation[role.uid - 1].name = role.name;
         organisation[role.uid - 1].isExternRole = role.isExternRole;
-        organisation[role.uid - 1].tagessatz = role.isExternRole ? role.tagessatzExtern : role.tagessatzIntern;
+        organisation[role.uid - 1].tagessatz = role.tagessatzIntern;
         organisation[role.uid - 1].aliases = role.aliases;
 
         this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
@@ -727,8 +754,17 @@ export class VisbocenterDetailComponent implements OnInit {
     if (!this.sortSettingAscending) {
       this.vcSettings.reverse();
     }
-
   }
+
+  isToday(checkDate: string): boolean {
+    if (!this.today) {
+      this.today = new Date();
+      this.today.setHours(0, 0, 0, 0);
+    }
+    // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
+    return new Date(checkDate) >= this.today;
+  }
+
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);
