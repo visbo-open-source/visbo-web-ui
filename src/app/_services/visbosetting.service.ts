@@ -134,9 +134,9 @@ export class VisboSettingService  {
 
 
   /** DELETE: delete the Visbo Center Setting from the server */
-  deleteVCSetting (vcid: string, visbosetting: VisboSetting, sysadmin = false): Observable<VisboSetting> {
+  deleteVCSetting (visbosetting: VisboSetting, sysadmin = false): Observable<VisboSetting> {
     const id = visbosetting._id;
-    const url = `${this.vcUrl}/${vcid}/setting/${id}`;
+    const url = `${this.vcUrl}/${visbosetting.vcid}/setting/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 

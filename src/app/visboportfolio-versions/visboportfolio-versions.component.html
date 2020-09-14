@@ -78,7 +78,7 @@
       </thead>
       <!--Table body-->
       <tbody>
-        <tr *ngFor="let vpItem of vpList; let vpIndex=index" (click)="gotoVP(vpItem.vpid)" >
+        <tr *ngFor="let vpItem of vpList; let vpIndex=index" (click)="gotoVP(vpItem.vpid, vpItem.variantName)" >
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td><a>{{vpItem.name}}</a></td>
           <td>{{vpItem.variantName}}</td>

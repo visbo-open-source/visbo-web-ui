@@ -641,9 +641,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
-    let queryParams = new HttpParams();
-    if (this.deleted) { queryParams = queryParams.append('deleted', this.deleted.toString()); }
-    // if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams = queryParams.append('refDate', this.vpvRefDate.toISOString()); }
+    let queryParams = {};
+    if (this.deleted) { queryParams = {deleted: this.deleted.toString()} }
+
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
   }
 

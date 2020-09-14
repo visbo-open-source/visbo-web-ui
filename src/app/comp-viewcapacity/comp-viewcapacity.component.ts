@@ -41,7 +41,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
-  paramRole: string;
+  paramRoleID: string;
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
@@ -103,7 +103,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.paramRole =  this.route.snapshot.queryParams['roleID'];
+    this.paramRoleID =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
     moment.locale(this.currentLang);
     if (!this.refDate) { this.refDate = new Date(); }
@@ -186,7 +186,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.currentLeaf.uid.toString(), true)
+      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.currentLeaf.uid.toString(), false)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -251,17 +251,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
-    let roleName: string;
-    if (this.paramRole) {
-      if ( isNaN(parseInt(this.paramRole, 10)) ) {
-        roleName = this.paramRole;
-      } else {
-        const roleUID = parseInt(this.paramRole, 10);
-        roleName = allRoles[roleUID].name;
-      }
-      this.currentLeaf = this.getMappingLeaf(roleName);
+    if (this.paramRoleID && !isNaN(Number(this.paramRoleID))) {
+      const roleUID = parseInt(this.paramRoleID, 10);
+      this.currentLeaf = this.getMappingLeaf(allRoles[roleUID]?.name);
     }
-    if (!this.paramRole || !this.currentLeaf) {
+    if (!this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
@@ -615,7 +609,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewCapcity: ' + message);
+    this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 
 }

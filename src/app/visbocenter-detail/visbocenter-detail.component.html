@@ -191,10 +191,11 @@
                 <tr *ngFor="let item of vcSettings; let itemIndex=index">
                   <td>{{itemIndex+1}}</td>
                   <td id="ColSettingName" (click)='initSetting(itemIndex)' data-toggle="modal" data-target="#VcSettingDetail"><a>{{item.name}}</a></td>
-                  <td id="ColSettingTimestamp">{{item.timestamp | date : 'MM.yyyy'}}</td>
-                  <td id="ColSettingDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
-                  <td *ngIf="hasVCPerm(permVC.ManagePerm)">
-                    <button id="ColDeleteSetting" class="Detail" title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
+                  <td id="ColSettingTimestamp">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
+                  <td id="ColSettingDate" *ngIf="isToday(item.updatedAt)">{{item.updatedAt | date : 'HH:mm:ss'}}</td>
+                  <td id="ColSettingDate" *ngIf="!isToday(item.updatedAt)">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+                  <td *ngIf="hasVCPerm(permVC.Modify)">
+                    <button id="ColDeleteSetting" class="Detail" (click)='initSetting(itemIndex)' title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
                     data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
                   </td>
                 </tr>
@@ -542,6 +543,47 @@
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
           <button id="SettingDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadSetting()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Delete Setting -->
+  <div class="modal fade" id="VcSettingRemove" tabindex="-1" role="dialog" aria-labelledby="VcSettingRemoveTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="vcSetting">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcSettingRemoveTitle">{{ 'vcDetail.titleDeleteSetting' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning">{{ 'vcDetail.msg.removeSettingConfirm' | translate }}</label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="SettingName" class="col-4 col-form-label">{{ 'vcDetail.lbl.setting' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcSetting.name }} </label>
+            </div>
+            <div class="form-group">
+              <label for="SettingType" class="col-4 col-form-label">{{ 'vcDetail.lbl.settingType' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcSetting.type }} </label>
+            </div>
+            <div *ngIf="vcSetting.timestamp" class="form-group">
+              <label for="SettingTS" class="col-4 col-form-label">{{ 'vcDetail.lbl.timestamp' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcSetting.timestamp | date : 'dd.MM.yyyy HH:mm' }} </label>
+            </div>
+            <div class="form-group">
+              <label for="SettingUpdated" class="col-4 col-form-label">{{ 'vcDetail.lbl.updatedAt' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcSetting.updatedAt | date : 'dd.MM.yyyy HH:mm' }} </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button id="DeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCSetting(vcSetting)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>

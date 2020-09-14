@@ -5,7 +5,7 @@
           <!-- <span>{{ 'vpfVersion.lbl.show' | translate }} </span> -->
           <span>{{ 'ViewCapacity.title1'  | translate }}</span>
 
-          <span class="dropdown">
+          <span *ngIf="currentLeaf" class="dropdown">
             <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown">
               {{currentLeaf.name}}
             </a>
