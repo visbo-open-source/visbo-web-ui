@@ -20,7 +20,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+
+import { getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -159,7 +160,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
-              this.actOrga = this.vcorganisation[0].value;
+              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });              
+              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
             }
             this.visboViewOrganisationTree();
             this.visboCapacityCalc();
