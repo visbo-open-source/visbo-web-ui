@@ -517,9 +517,9 @@
 		}
 	},
 	"ViewCapacity": {
-		"title1": "Auslastung der Organisations-Einheit ",
+		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
-		"titleTimeFrom": " für den Zeitraum: von",
+		"titleTimeFrom": " Auslastung für den Zeitraum: von",
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Kosten",

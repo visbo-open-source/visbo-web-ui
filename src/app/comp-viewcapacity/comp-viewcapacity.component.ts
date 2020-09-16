@@ -60,7 +60,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       width: '100%',
       // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
       animation: {startup: true, duration: 200},
-      legend: {position: 'bottom'},
+      legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       colors: this.colors,
