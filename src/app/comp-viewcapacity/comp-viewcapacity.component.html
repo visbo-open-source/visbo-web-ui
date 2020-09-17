@@ -55,7 +55,7 @@
   <div *ngIf="displayCapacity() > 0">
     <div *ngIf="graphDataComboChart.length > 2" >
       <div class="row">
-        <div  *ngIf="orgaTreeData" class="col-sm-4 border-right">
+        <div  *ngIf="orgaTreeData" class="col col-md-auto border-right">
           <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.title1'  | translate }}</span>
           <ng-container  *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }"></ng-container>
         </div>      
