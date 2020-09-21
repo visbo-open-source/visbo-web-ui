@@ -57,7 +57,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   graphDataComboChart = [];
   graphOptionsComboChart = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '100%',
+      width: '1500',
+      height: '600',
       // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
       animation: {startup: true, duration: 200},
       legend: {position: 'top'},

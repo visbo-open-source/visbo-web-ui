@@ -17,6 +17,12 @@
 .dropdown-item.tree-item:hover {
     opacity: 1;
 }
+.scroll {
+    background: #fcfdfd;
+    height: 645px;
+    overflow-y: scroll;    
+    padding: 1px;
+    } 
 /* color-designs */
 /* #adb6bb;#d6dee2; */
 /* #dcedf7;#bddaea; */

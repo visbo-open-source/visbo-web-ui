@@ -16,7 +16,7 @@
         <span class="pt-2 mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
 
         <span class="pt-2 mr-auto dropdown">
-          <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" >
+          <a class="pt-2 pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
             {{showUnit | translate}}
           </a>
           <!-- ur: 2020.06.09: commented lines are with underline to show the interaction -->
@@ -52,33 +52,34 @@
     </div> 
   </div>
 
-  <div *ngIf="displayCapacity() > 0">
-    <div *ngIf="graphDataComboChart.length > 2" >
+ <div>
       <div class="row">
-        <div  *ngIf="orgaTreeData" class="col col-md-auto border-right">
-          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.title1'  | translate }}</span>
-          <ng-container  *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }"></ng-container>
-        </div>      
-        <div class="col-sm-8">
-          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.titleCapaOverTime'  | translate }}</span>
-          <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+        <div  *ngIf="orgaTreeData" class="pl-3 col col-md-auto border-right scroll">
+          <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
+          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
+        </div>   
+        <div *ngIf="displayCapacity() > 0" class="col col-sm-8">
+          <div *ngIf="graphDataComboChart.length > 2" >   
+              <span class="pt-4  text-dark font-weight-bold">{{ 'ViewCapacity.titleCapaOverTime'  | translate }}</span>
+              <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+          </div>
+          <div *ngIf="graphDataComboChart.length < 2"  >
+            <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>            
+          </div>
         </div>
-    </div>
-    </div>
-    <div *ngIf="graphDataComboChart.length < 2"  >
-      {{ 'ViewCapacity.msg.noCapacity' | translate }}
-    </div>
-  </div>
-  <!-- here will be shown the text: Keine Kapaität the spinner -->
-  <div *ngIf="displayCapacity() == 0" >
-    {{ 'ViewCapacity.msg.noCapacity' | translate }}
+        <!-- here will be shown the text: No Capacity the spinner -->
+        <div *ngIf="displayCapacity() == 0" >
+          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+        </div>
+        
+      </div>
   </div>
 
 
   <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with click on the item, expandable with brackets -->
   <ng-template #recursiveList let-list let-level="level">
     <div *ngFor="let item of list" style="white-space: nowrap;">
-      <div class="dropdown-item tree-item" (click)="selectLeaf(item)"
+      <div class="dropdown-item tree-item " (click)="selectLeaf(item)"
       [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
         <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
           <a (click)="$event.stopPropagation(); item.showChildren = !item.showChildren;">
