@@ -161,8 +161,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
-              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });              
-              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
+              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+              this.actOrga = this.vcorganisation[this.vcorganisation.length - 1].value;
             }
             this.visboViewOrganisationTree();
             this.visboCapacityCalc();
@@ -335,8 +335,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboCapacity len ${len} ${JSON.stringify(graphDataCapacity[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(graphDataCapacity[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      const currentDate = new Date(graphDataCapacity[0][0]);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCapacity.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);

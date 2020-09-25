@@ -148,7 +148,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
           }
-          this.initDeadlines(change);          
+          this.initDeadlines(change);
           this.visboViewAllDeadlinePie(change);
         },
         error => {

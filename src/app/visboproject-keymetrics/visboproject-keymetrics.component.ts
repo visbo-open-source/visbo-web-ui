@@ -144,12 +144,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     let variantName = this.route.snapshot.queryParams['variantName'];
     if (variantID) {
       // serach for the variant Name
-      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      const index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       }
     } else if (variantName) {
-      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      const index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       } else {
@@ -412,7 +412,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       let currentDate = new Date(keyMetricsCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       keyMetricsCost.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -474,7 +474,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -540,7 +540,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -601,7 +601,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       keyMetrics.push([
         currentDate, undefined, undefined
       ]);
@@ -658,7 +658,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
     if (vpid) {
       if (vpvid) { queryParams.vpvid = vpvid; }
-      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName}
+      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName; }
       this.router.navigate([url.concat(vpid)], { queryParams: queryParams});
     }
   }

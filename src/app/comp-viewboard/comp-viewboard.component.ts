@@ -104,11 +104,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         //   vpsFarbe = vpsFarbe + 1000;
         //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
         // }
-        
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
-    
+
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
@@ -175,9 +174,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   combineName(vpName, variantName): string {
     let result = vpName || '';
-    result = result
+    result = result;
     if (variantName) {
-      result = result.concat(' ( ', variantName, ' ) ')
+      result = result.concat(' ( ', variantName, ' ) ');
     }
     return result;
   }
@@ -187,10 +186,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let result = this.vps.find(x => x.name === name);
     if (!result && name.lastIndexOf(" ) ") === name.length - 3) {
       // variant Part at the end
-      let index = name.lastIndexOf(" ( ");
+      const index = name.lastIndexOf(" ( ");
       const vpName = name.substring(0, index);
       const variantName = name.substring(index + 3, name.length - 3);
-      result = this.vps.find(x => x.name === vpName && x.variantName === variantName)
+      result = this.vps.find(x => x.name === vpName && x.variantName === variantName);
     }
     return result;
   }

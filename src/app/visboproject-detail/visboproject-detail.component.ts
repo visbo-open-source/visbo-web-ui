@@ -521,7 +521,7 @@ export class VisboprojectDetailComponent implements OnInit {
   unlockVP(lockIndex: number ): void {
     const vpid = this.visboproject._id;
     const variantName = this.visboproject.lock[lockIndex].variantName;
-    const variant = this.visboproject.variant.find(item => item.variantName == variantName)
+    const variant = this.visboproject.variant.find(item => item.variantName == variantName);
     const variantID = variant ? variant._id.toString() : '';
     this.log(`Remove VisboProject Lock: ${this.visboproject.name} Variant ${variantName} ${this.visboproject.lock[lockIndex].expiresAt} VPID: ${vpid}`);
     this.visboprojectService.unlockVP(variantID, vpid)

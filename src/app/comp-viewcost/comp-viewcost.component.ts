@@ -159,7 +159,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       if (currentDate.getTime() < actualDataUntilTime) {
         graphDataCost.push([
           new Date(cost[i].currentDate),
-          Math.round(cost[i].baseLineCost * 10) / 10 || 0,          
+          Math.round(cost[i].baseLineCost * 10) / 10 || 0,
           this.createCustomHTMLContent(cost[i], true),
           Math.round(cost[i].currentCost * 10) / 10  || 0,
           this.createCustomHTMLContent(cost[i], true),
@@ -193,8 +193,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(graphDataCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      const currentDate = new Date(graphDataCost[0][0]);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCost.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
