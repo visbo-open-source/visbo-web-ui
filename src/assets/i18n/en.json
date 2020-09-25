@@ -517,9 +517,9 @@
 		}
 	},
 	"ViewCapacity": {
-		"title1": "Capacity Utilisation of Organisation Unit",
+		"title1": "Orga Unit",
 		"title2": " expressed in ",
-		"titleTimeFrom": " Timespam: From",
+		"titleTimeFrom": " Capacity Utilisation - Timespam: From",
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",

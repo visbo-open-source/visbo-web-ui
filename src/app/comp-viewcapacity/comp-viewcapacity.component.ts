@@ -20,7 +20,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+
+import { getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -56,10 +57,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   graphDataComboChart = [];
   graphOptionsComboChart = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '100%',
+      width: '1500',
+      height: '600',
       // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
       animation: {startup: true, duration: 200},
-      legend: {position: 'bottom'},
+      legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       colors: this.colors,
@@ -159,7 +161,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
-              this.actOrga = this.vcorganisation[0].value;
+              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });              
+              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
             }
             this.visboViewOrganisationTree();
             this.visboCapacityCalc();
@@ -302,24 +305,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
             currentDate,
-            capacity[i].roleID == roleID ? Math.round((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0) : undefined,
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
             capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-            capacity[i].roleID == roleID ? Math.round(capacity[i].internCapa_PT || 0) : undefined,
+            capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
             capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-            Math.round(capacity[i].actualCost_PT || 0),
+            (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
-            Math.round(capacity[i].plannedCost_PT || 0),
+            (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true)]);
         } else {
           graphDataCapacity.push([
             currentDate,
-            capacity[i].roleID == roleID ? Math.round((capacity[i].internCapa + capacity[i].externCapa) || 0) : undefined,
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
             capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-            capacity[i].roleID == roleID ? Math.round(capacity[i].internCapa || 0) : undefined,
+            capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
             capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-            Math.round(capacity[i].actualCost || 0),
+            (Math.round(capacity[i].actualCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false),
-            Math.round(capacity[i].plannedCost || 0),
+            (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false)]);
         }
       }
