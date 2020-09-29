@@ -148,7 +148,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
           }
-          this.initDeadlines(change);          
+          this.initDeadlines(change);
           this.visboViewAllDeadlinePie(change);
         },
         error => {
@@ -375,11 +375,11 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight');
     const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc');
 
-    result = result + '<tr>' + '<td width="70%">' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td width="70%">' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td width="70%">' + percentDone + ':</td>' + '<td><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td width="40%">' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td width="40%">' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td width="40%">' + percentDone + ':</td>' + '<td><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
     if (deadline.trafficlight) {
-      result = result + '<tr>' + '<td width="70%">' + trafficlight + ':</td>' + '<td><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td width="40%">' + trafficlight + ':</td>' + '<td><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
     }
     if (deadline.trafficlightDesc) {
       result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';

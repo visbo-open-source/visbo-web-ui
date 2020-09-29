@@ -56,10 +56,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   graphDataComboChart = [];
   graphOptionsComboChart = {
-      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '1500',
+      chartArea:{'left':100,'top':100,width:'100%','height':'80%'},
+      width: '100%',
       height: '600',
-      // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+      title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
       legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
@@ -161,7 +161,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
-              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });              
+              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
               this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
             }
             this.visboViewOrganisationTree();
@@ -272,7 +272,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
       optformat = "# PT";
     }
-    // this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
+    this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
 
@@ -378,18 +378,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
               capacity.roleName + '</b></td>' + '</tr>';
     if (PT) {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     } else {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     }

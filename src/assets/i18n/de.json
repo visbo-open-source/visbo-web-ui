@@ -523,7 +523,7 @@
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Kosten",
-		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
+		"titleCapaOverTime": "Auslastung: Kapazität vs. Projektkosten",
 		"internCapaPT": "interne Kapazität",
 		"totalCapaPT": "gesamte Kapazität",
 		"actualCostPT": "Istkosten",
