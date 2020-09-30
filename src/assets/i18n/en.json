@@ -523,7 +523,7 @@
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",
-		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
+		"titleCapaOverTime":"Workload: Capacity vs. Cost",
 		"internCapaPT": "Internal Capacity ",
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",

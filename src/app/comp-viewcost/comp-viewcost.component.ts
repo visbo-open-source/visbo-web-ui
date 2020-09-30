@@ -228,8 +228,10 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     const planAC = this.translate.instant('keyMetrics.planAC');
     const planETC = this.translate.instant('keyMetrics.planETC');
 
-    result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC) + ':</td>' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + baselinePV + ':</td>'
+                    + '<td align="right"><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC)
+                    + ':</td align="right">' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
   }
