@@ -259,7 +259,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
             elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                               / elementKeyMetric.keyMetrics.costBaseLastActual;
           } else {
-            elementKeyMetric.savingCostTotal = 1;
+            elementKeyMetric.savingCostActual = 1;
           }
 
           // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
