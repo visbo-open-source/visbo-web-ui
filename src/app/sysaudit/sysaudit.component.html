@@ -21,7 +21,7 @@
       <input id="auditText" type="text" class="col-3 col-md-2 form-control" name="auditText" [(ngModel)]="auditText" >
 
       <label for="auditCount" class="col-1 col-form-label">Max:</label>
-      <select class="col-1 form-control mx-1" name="auditCount" [(ngModel)]="auditCount">
+      <select id="auditCount" class="col-1 form-control mx-1" name="auditCount" [(ngModel)]="auditCount">
         <option>50</option>
         <option>100</option>
         <option>500</option>
@@ -29,11 +29,11 @@
       </select>
 
       <!-- <label for="auditArea" class="col-1 col-form-label">Area:</label> -->
-      <select class="col-1 form-control mx-1" id="auditType" name="auditArea" [(ngModel)]="auditArea">
+      <select id="auditArea" class="col-1 form-control mx-1" id="auditType" name="auditArea" [(ngModel)]="auditArea">
         <option *ngFor="let actionItem of auditAreaList">{{actionItem.name}}</option>
       </select>
       <!-- <label for="auditArea" class="col-form-label">Action:</label> -->
-      <select class="col-1 form-control mx-1" id="auditType" name="actiontype" [(ngModel)]="auditType">
+      <select id="auditType" class="col-1 form-control mx-1" id="auditType" name="actiontype" [(ngModel)]="auditType">
         <option *ngFor="let actionItem of auditTypeList">{{actionItem.name}}</option>
       </select>
       <div class='btn-group '>
@@ -60,34 +60,34 @@
   <div *ngIf="!chart" class='container-fluid'>
     <div class='panel-body'>
       <table class='table table-hover table-sortable'>
-        <!--Table head-->
-        <thead>
+
+        <thead id="AuditHead">
           <tr>
-            <th class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
-            <th (click)="sortTable(2)">User</th>
-            <th (click)="sortTable(3)"> Action</th>
-            <th class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(6)"> Duration</th>
-            <th class="d-none d-lg-table-cell" (click)="sortTable(7)"> Size</th>
+            <th id="SortDate" class="d-none d-md-table-cell" (click)="sortTable(1)">Created</th>
+            <th id="SortUser" (click)="sortTable(2)">User</th>
+            <th id="SortAction" (click)="sortTable(3)"> Action</th>
+            <th id="SortInfo" class="d-none d-md-table-cell" (click)="sortTable(4)"> Info</th>
+            <th id="SortResult" class="d-none d-lg-table-cell" (click)="sortTable(5)"> Result</th>
+            <th id="SortDuration" class="d-none d-lg-table-cell" (click)="sortTable(6)"> Duration</th>
+            <th id="SortSize" class="d-none d-lg-table-cell" (click)="sortTable(7)"> Size</th>
             <th>Detail</th>
           </tr>
         </thead>
-        <!--Table body-->
-        <tbody>
+
+        <tbody id="AuditList">
           <tr *ngFor="let auditentry of audit; let auditIndex=index" (click)='helperAuditIndex(auditIndex)'
           data-toggle="modal" data-target="#AuditDetail">
-            <td  *ngIf="isToday(auditentry.createdAt)" class="d-none d-md-table-cell">{{auditentry.createdAt | date :'HH:mm:ss'}}</td>
-            <td  *ngIf="!isToday(auditentry.createdAt)" class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM HH:mm'}}</td>
-            <td *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
-            <td *ngIf="!auditentry.user"> Unknown </td>
-            <td>{{auditentry.actionDescription }}</td>
-            <td class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
-            <td class="d-none d-lg-table-cell" >{{helperResponseText(auditentry) }}</td>
-            <td class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
-            <td class="d-none d-lg-table-cell" >{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }}</td>
+            <td id="ColCreated" *ngIf="isToday(auditentry.createdAt)" class="d-none d-md-table-cell">{{auditentry.createdAt | date :'HH:mm:ss'}}</td>
+            <td id="ColCreated" *ngIf="!isToday(auditentry.createdAt)" class="d-none d-md-table-cell">{{auditentry.createdAt | date :'dd.MM HH:mm'}}</td>
+            <td id="ColUser" *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
+            <td id="ColUser" *ngIf="!auditentry.user"> Unknown </td>
+            <td id="ColAction">{{auditentry.actionDescription }}</td>
+            <td id="ColInfo" class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
+            <td id="ColResult" class="d-none d-lg-table-cell" >{{helperResponseText(auditentry) }}</td>
+            <td id="ColDuration" class="d-none d-lg-table-cell" >{{auditentry.result.time}} ms</td>
+            <td id="ColResult" class="d-none d-lg-table-cell" >{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }}</td>
             <td>
-              <button class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
+              <button id="ColDetail" class="Detail" title="Detail of Visbo Audit" (click)='helperAuditIndex(auditIndex)'
               data-toggle="modal" data-target="#AuditDetail">i</button>
             </td>
           </tr>
@@ -108,27 +108,21 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <!-- <div class="col-10">
-            <button type="button" class="btn btn-secondary" title="Prev Audit Entry" (click)='pageAuditIndex(-1)'>Prev</button>
-          </div>
-          <div class="col-2">
-            <button type="button" class="btn btn-secondary align-self-end" title="Next Audit Entry" (click)='pageAuditIndex(1)'>Next</button>
-          </div> -->
           <div class="col-11">
-            <h3 title="Previous Entry" (click)='pageAuditIndex(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
+            <h3 id="ButtonPrev" title="Previous Entry" (click)='pageAuditIndex(-1)'><a class="px-3 col-1 fas fa-caret-square-left"></a></h3>
           </div>
           <div class="col-1">
-            <h3 title="Next Entry" (click)='pageAuditIndex(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
+            <h3 id="ButtonNext" title="Next Entry" (click)='pageAuditIndex(1)'><a class="px-3 col-1 fas fa-caret-square-right"></a></h3>
           </div>
         </div>
-        <form>
+        <form id="auditEntry">
           <div class="v_compact_t">
             <label class="v_compact_t col-4 form-control-static">Created:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
+            <label id="auditCreated" class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].createdAt | date :'dd.MM.yyyy HH:mm:ss.SSS' }} </label>
             <label class="v_compact_t col-4 form-control-static">User:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
+            <label id="auditUser" class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].user.email }} </label>
             <label class="v_compact_t col-4 form-control-static">Action:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ helperFormatActionDescription(audit[auditIndex]) }} </label>
+            <label id="auditAction" class="v_compact_t col-7 form-control-static">{{ helperFormatActionDescription(audit[auditIndex]) }} </label>
           </div>
           <div *ngIf="audit[auditIndex].actionInfo">
             <label class="v_compact_t col-4 form-control-static">Info:</label>
@@ -136,15 +130,15 @@
           </div>
           <div *ngIf="audit[auditIndex].vc">
             <label class="v_compact_t col-4 form-control-static">Visbo Center:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
+            <label id="auditVC" class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vc.name }} </label>
           </div>
           <div *ngIf="audit[auditIndex].vp">
             <label class="v_compact_t col-4 form-control-static">Visbo Project:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
+            <label id="auditVP" class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vp.name }} ({{ audit[auditIndex].vp.vpid }}) </label>
           </div>
           <div *ngIf="audit[auditIndex].vpv">
             <label class="v_compact_t col-4 form-control-static">Project Version:</label>
-            <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
+            <label id="auditVPV" class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].vpv.name }} ({{ audit[auditIndex].vpv.vpvid }})</label>
           </div>
           <div>
             <label class="v_compact_t col-4 form-control-static">Result:</label>
@@ -185,9 +179,9 @@
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">More</button>
-        <button *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">Less</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button id="ButtonMore" *ngIf="!showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">More</button>
+        <button id="ButtonLess" *ngIf="showMore" type="button" class="btn btn-secondary" (click)="toggleDetail()">Less</button>
+        <button id="ButtonBack" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

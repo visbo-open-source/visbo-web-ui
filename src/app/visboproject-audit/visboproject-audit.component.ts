@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
+import {TranslateService} from '@ngx-translate/core';
+
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboAudit, QueryAuditType } from '../_models/visboaudit';
@@ -64,7 +66,8 @@ export class VisboprojectAuditComponent implements OnInit {
     private alertService: AlertService,
     private location: Location,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -102,6 +105,7 @@ export class VisboprojectAuditComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const queryAudit = new QueryAuditType;
     this.log(`Audit getVisboProjectAudits from ${this.auditFrom} to ${this.auditTo} Text ${this.auditText} AuditType ${this.auditType}`);
+    this.alertService.clear();
     // set date values if not set or adopt to end of day in case of to date
     if (this.auditTo) {
       queryAudit.to = new Date(this.auditTo);
@@ -132,6 +136,8 @@ export class VisboprojectAuditComponent implements OnInit {
         audit => {
           this.audit = audit;
           this.sortTable(undefined);
+          const message = this.translate.instant('vpAudit.msg.auditSuccess');
+          this.alertService.success(message, true);
           this.log(`get Audit success ${this.audit.length} for ${this.visboproject.name}`);
         },
         error => {

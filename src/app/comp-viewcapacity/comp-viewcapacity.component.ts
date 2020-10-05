@@ -20,7 +20,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+
+import { getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcapacity',
@@ -40,9 +41,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
 
-  role: string;
-  roleUID: number;
-  ressourceID: string;
+  paramRoleID: string;
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
@@ -57,11 +56,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   graphDataComboChart = [];
   graphOptionsComboChart = {
-      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      chartArea:{'left':100,'top':100,width:'100%','height':'80%'},
       width: '100%',
-      // title: 'Monthly Capacity comparison: plan-to-date vs. baseline',
+      height: '600',
+      title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
-      legend: {position: 'bottom'},
+      legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       colors: this.colors,
@@ -104,7 +104,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.role =  this.route.snapshot.queryParams['roleID'];
+    this.paramRoleID =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
     moment.locale(this.currentLang);
     if (!this.refDate) { this.refDate = new Date(); }
@@ -120,7 +120,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
     this.capacityTo.setDate(1);
     this.visboGetOrganisation();
-    this.visboCapacityCalc();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -162,19 +161,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Organisation for Len ${vcsetting.length}`);
               this.vcorganisation = vcsetting;
-              this.actOrga = this.vcorganisation[0].value;
-
-              // if (this.actOrga) {
-              //   const organisation = this.actOrga;
-              //   let allRoles = [];
-              //   this.log(`get all roles of the organisation, prepared for direct access`);
-              //   for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
-              //     allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
-              //   }
-              // }
-
+              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
             }
             this.visboViewOrganisationTree();
+            this.visboCapacityCalc();
           },
           error => {
             this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
@@ -194,9 +185,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.visboCapcity = undefined;
 
     if (this.vcActive ) {
-      this.log(`Capacity Calc for VC  ${this.vcActive._id}  role  ${this.role}`);
+      this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.role)
+      this.visbocenterService.getCapacity(this.vcActive._id,  this.refDate, this.currentLeaf.uid.toString(), false)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -219,8 +210,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         );
     } else if (this.vpActive && this.vpfActive) {
-      this.log(`Capacity Calc for VP  ${this.vpActive._id} VPF  ${this.vpfActive._id}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.role)
+      this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name}`);
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString())
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -261,21 +252,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.orgaTreeData = this.buildOrgaTree(topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
-    let roleName: string;
-    if (this.role) {
-      if ( isNaN(parseInt(this.role, 10)) ) {
-        roleName = this.role;
-      } else {
-        this.roleUID = parseInt(this.role, 10);
-        roleName = allRoles[this.roleUID].name;
-      }
-      this.currentLeaf = this.getMappingLeaf(roleName);
+    if (this.paramRoleID && !isNaN(Number(this.paramRoleID))) {
+      const roleUID = parseInt(this.paramRoleID, 10);
+      this.currentLeaf = this.getMappingLeaf(allRoles[roleUID]?.name);
     }
-    if (!this.role || !this.currentLeaf) {
+    if (!this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
-    this.ressourceID = this.currentLeaf.name;
   }
 
   updateShowUnit(unit: string): void {
@@ -288,7 +272,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
       optformat = "# PT";
     }
-    // this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
+    this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
 
@@ -310,34 +294,35 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityTo.setMonth(this.capacityFrom.getMonth() + 12);
     }
 
-    this.log(`ViewCapacityOverTime ressourceID ${this.ressourceID}`);
+    this.log(`ViewCapacityOverTime resource ${this.currentLeaf.name}`);
 
     for (let i = 0; i < capacity.length; i++) {
 
       const currentDate = new Date(capacity[i].month);
       currentDate.setHours(2, 0, 0, 0);
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
+        const roleID = this.currentLeaf.uid;
         if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
           graphDataCapacity.push([
             currentDate,
-            Math.trunc((capacity[i].internCapa_PT + capacity[i].externCapa_PT) || 0),
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
+            capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
+            (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].internCapa_PT || 0),
-            this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].actualCost_PT || 0),
-            this.createCustomHTMLContent(capacity[i], true),
-            Math.trunc(capacity[i].plannedCost_PT || 0),
+            (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], true)]);
         } else {
           graphDataCapacity.push([
             currentDate,
-            Math.trunc((capacity[i].internCapa + capacity[i].externCapa) || 0),
+            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
+            capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
+            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
+            (Math.round(capacity[i].actualCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].internCapa || 0),
-            this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].actualCost || 0),
-            this.createCustomHTMLContent(capacity[i], false),
-            Math.trunc(capacity[i].plannedCost || 0),
+            (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
             this.createCustomHTMLContent(capacity[i], false)]);
         }
       }
@@ -388,20 +373,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const internCapaPT = this.translate.instant('ViewCapacity.internCapaPT');
     const actualCostPT = this.translate.instant('ViewCapacity.actualCostPT');
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
+    const roleName = this.translate.instant('ViewCapacity.roleName');
 
+    result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
+              capacity.roleName + '</b></td>' + '</tr>';
     if (PT) {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     } else {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td><b>' +
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' +
                 (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
     }
@@ -461,7 +449,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
     let parentRole;
 
-    this.log(`get the parentRole of roleID ${{roleID}}`);
+    // this.log(`get the parentRole of roleID ${JSON.stringify(roleID)}`);
     if (allRoles[roleID]) {
 
       let notFound = true;
@@ -569,12 +557,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   selectLeaf(leaf: VisboOrgaTreeLeaf): void {
-    if (leaf.name !== this.ressourceID ) {
-      this.ressourceID = leaf.name;
-      this.role = this.ressourceID;
-      this.visboCapacityCalc();
+    if (leaf.name !== this.currentLeaf.name ) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
+      this.visboCapacityCalc();
     }
     this.setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
     return;
@@ -624,7 +610,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewCapcity: ' + message);
+    this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 
 }

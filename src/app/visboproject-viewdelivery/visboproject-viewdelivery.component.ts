@@ -35,6 +35,9 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
 
   visboprojectversions: VisboProjectVersion[];
 
+  dropDown: string[] = [];
+  dropDownIndex: number;
+
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   initVPVID: string;
@@ -70,6 +73,57 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  dropDownInit(): void {
+    const variantID = this.route.snapshot.queryParams['variantID'];
+    let variantName = this.route.snapshot.queryParams['variantName'];
+    if (variantID) {
+      // serach for the variant Name
+      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      }
+    } else if (variantName) {
+      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      } else {
+        variantName = undefined;
+      }
+    }
+    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${variantID}/${variantName}`);
+    this.dropDown = [];
+    this.dropDownIndex = undefined;
+    const len = this.vpActive.variant.length;
+
+    for (let i = 0; i < len; i++) {
+      if (this.vpActive.variant[i].variantName !== 'pfv' && this.vpActive.variant[i].vpvCount > 0) {
+        this.dropDown.push(this.vpActive.variant[i].variantName);
+      }
+    }
+    if (this.dropDown.length > 0 ) {
+      this.dropDown.splice(0, 0, 'DEFAULT');
+      this.dropDownIndex = 0;
+    }
+    if (variantName) {
+      this.dropDownIndex = this.dropDown.findIndex(item => item === variantName);
+    }
+  }
+
+  switchVariant(name: string): void {
+    const i = this.dropDown.findIndex(item => item === name);
+    if (i <= 0) {
+      // not found or the main variant
+      this.dropDownIndex = undefined;
+    } else {
+      // Found
+      this.dropDownIndex = i;
+    }
+    this.log(`switch Variant ${name} index ${this.dropDownIndex}`);
+    // fetch the project with Variant
+    this.getVisboProjectVersions();
+    return;
+  }
+
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -78,10 +132,19 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
           visboproject => {
-            this.vpActive = visboproject;
-            this.combinedPerm = visboproject.perm;
-            this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', false)
+            if (!this.vpActive || this.vpActive._id !== visboproject._id) {
+              this.vpActive = visboproject;
+              this.combinedPerm = visboproject.perm;
+              this.dropDownInit();
+            }
+            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';
+            let variantID = '';
+            if (variantName) {
+              const variant = this.vpActive.variant.find(item => item.variantName === variantName);
+              variantID = variant ? variant._id.toString() : '';
+            }
+            this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, false)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -186,7 +249,10 @@ export class VisboProjectViewDeliveryComponent implements OnInit {
   }
 
   setVpvActive(vpv: VisboProjectVersion): void {
-    this.log(`setVpvActive ${vpv._id}`);
+    this.log(`setVpvActive ${vpv._id} ${vpv.variantName}`);
+    if (this.vpvActive && vpv.variantName !== this.vpvActive.variantName) {
+      this.switchVariant(vpv.variantName);
+    }
     this.vpvActive = vpv;
     if (this.vpvActive && this.vpvActive.timestamp) {
       this.vpvRefDate = this.vpvActive.timestamp;

@@ -85,8 +85,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     this.visboCostCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
+  ngOnChanges(): void {
+    this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboCostCalc();
     }
@@ -159,9 +159,9 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       if (currentDate.getTime() < actualDataUntilTime) {
         graphDataCost.push([
           new Date(cost[i].currentDate),
-          Math.trunc(cost[i].baseLineCost || 0),
+          Math.round(cost[i].baseLineCost * 10) / 10 || 0,
           this.createCustomHTMLContent(cost[i], true),
-          Math.trunc(cost[i].currentCost || 0),
+          Math.round(cost[i].currentCost * 10) / 10  || 0,
           this.createCustomHTMLContent(cost[i], true),
           0,
           ''
@@ -169,11 +169,11 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       } else {
         graphDataCost.push([
           new Date(cost[i].currentDate),
-          Math.trunc(cost[i].baseLineCost || 0),
+          Math.round(cost[i].baseLineCost * 10) / 10 || 0,
           this.createCustomHTMLContent(cost[i], false),
           0,
           '',
-          Math.trunc(cost[i].currentCost || 0),
+          Math.round(cost[i].currentCost * 10) / 10  || 0,
           this.createCustomHTMLContent(cost[i], false)
         ]);
       }
@@ -187,7 +187,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
-    this.log(`ViewCostOverTime len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
+    // this.log(`ViewCostOverTime len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
     if (len < 1 ) {
       this.log(`ViewCostOverTime Empty`);
     }
@@ -228,8 +228,10 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     const planAC = this.translate.instant('keyMetrics.planAC');
     const planETC = this.translate.instant('keyMetrics.planETC');
 
-    result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC) + ':</td>' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + baselinePV + ':</td>'
+                    + '<td align="right"><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC)
+                    + ':</td align="right">' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
   }
@@ -249,7 +251,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewCost: ' + message);
+    this.messageService.add('CompVisboViewCost: ' + message);
   }
 
 }

@@ -183,6 +183,8 @@
 		"titleDeleteGroup": "Delete a Group in the VISBO Center",
 		"titleProjectUsers": "VISBO Project Users",
 		"titlePermUser": "Permission for {{name}}",
+		"titleSettings": "Visbo Center Setting",
+		"titleDeleteSettings": "Delete Visbo Center Setting",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -201,25 +203,34 @@
 			"global": "Global",
 			"message": "Message",
 			"delete": "Delete",
-			"deleteUser": "Remove User"
+			"deleteUser": "Remove User",
+			"settingName": "Name",
+			"settingType": "Type",
+			"timestamp": "Timestamp",
+			"updatedAt": "Changed",
+			"deleteSetting": "Delete",
+			"setting": "Name"
 		},
 		"btn": {
 			"viewAudit": "View Audit",
 			"viewGroups": "Show Groups",
 			"viewUsers": "Show Users",
 			"viewProjectUsers": "Show Project Users",
+			"ViewSetting": "Settings",
 			"addUser": "Add User",
 			"addGroup": "Add Group",
 			"invite": "Invite",
 			"save": "Save",
 			"view": "View",
 			"delete": "Delete",
+			"download": "Download",
 			"back": "Go Back",
 			"cancel": "Cancel"
 		},
 		"msg": {
 			"removeUserConfirm": "Do you really want to remove this User from the Group?",
 			"removeGroupConfirm": "Do you really want to remove this Group from VISBO Center?",
+			"removeSettingConfirm": "Do you really want to remove this Setting from VISBO Center?",
 			"emailRequired": "A correct e-mail address is required!",
 			"groupRequired": "Group must be defined",
 			"groupNameRequired": "Group Name required",
@@ -232,6 +243,7 @@
 			"changeGroupSuccess": "Group {{name}} was updated successfully",
 			"createGroupSuccess": "Group {{name}} was created successfully",
 			"removeGroupSuccess": "Group {{name}} was deleted successfully",
+			"removeSettingSuccess": "Setting {{name}} was deleted successfully",
 			"errorPerm": "No Permission for this VISBO Center",
 			"errorAddUserPerm": "No Permission to add Users to this VISBO Center",
 			"errorRemoveUserPerm": "No Permission to remove Users {{name}} from Group",
@@ -239,6 +251,7 @@
 			"errorChangeGroupPerm": "No Permission to change Group {{name}}",
 			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
+			"errorRemoveSettingPerm": "No Permission to delete Setting‚ {{name}}",
 			"errorVCConflict": "A VISBO Center with {{name}} does already exist!"
 		}
 	},
@@ -504,17 +517,18 @@
 		}
 	},
 	"ViewCapacity": {
-		"title1": "Capacity Utilisation of Organisation Unit",
+		"title1": "Orga Unit",
 		"title2": " expressed in ",
-		"titleTimeFrom": " Timespam: From",
+		"titleTimeFrom": " Capacity Utilisation - Timespam: From",
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",
-		"titleCapaOverTime":"Capacity over Time of projects: Capacity vs. Actual Cost and Planned Cost",
+		"titleCapaOverTime":"Workload: Capacity vs. Cost",
 		"internCapaPT": "Internal Capacity ",
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",
 		"plannedCostPT": "Planned Cost",
+		"roleName": "Role",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -865,6 +879,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Center Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
@@ -921,6 +936,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Project Audit successfully downloaded",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},

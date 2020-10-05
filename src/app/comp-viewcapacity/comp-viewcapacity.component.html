@@ -1,83 +1,63 @@
-<div class='well'>    
+<div class='well'>
   <div  class='container-fluid'>
-    <div class="row text-dark">
-      <div class="my-1">       
-          <!-- <span>{{ 'vpfVersion.lbl.show' | translate }} </span> -->
-          <span>{{ 'ViewCapacity.title1'  | translate }}</span>
 
-          <span class="dropdown">
-            <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown">
-              {{ressourceID}}
-            </a>            
-            <!-- ur: 2020.06.09: commented lines are with underline to show the interaction -->
-            <!-- <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
-              {{ressourceID}}
-            </a> -->
-            <div class="dropdown-menu" (click)="$event.stopPropagation();">
-              <div *ngIf="orgaTreeData">
-                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }"></ng-container>
-              </div>
-            </div>
-          </span>
-          
-
-          <span>{{ 'ViewCapacity.title2'  | translate }}</span>
-          
-          <span class="dropdown">
-            <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" >
-              {{showUnit | translate}}
-            </a>
-            <!-- ur: 2020.06.09: commented lines are with underline to show the interaction -->
-            <!-- <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
-              {{showUnit | translate}}
-            </a> -->
-            <div class="dropdown-menu">
-              <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.pd')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
-              <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
-            </div>
-          </span>
-      </div>
-    </div>
     <span class="row text-dark">
       <span class="row ml-0">
         <!-- <span> {{ 'vpfVersion.lbl.and' | translate }} </span> -->
         <span class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</span>
         <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">von </label> -->
-        <input id="capacityFrom" type="date" class="form-control mb-4 mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
-        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorFrom">{{capacityFrom}}</a></span>   -->      
+        <input id="capacityFrom" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
+        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorFrom">{{capacityFrom}}</a></span>   -->
         <span class="pt-2">{{ 'ViewCapacity.titleTimeTo'  | translate }}</span>
-        <input id="capacityTo" type="date" class="form-control mb-4 mr-auto border-0 font-weight-bold" style="width:170px" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
-        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorTo">{{capacityTo}}</a></span>    -->    
+        <input id="capacityTo" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
+        <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorTo">{{capacityTo}}</a></span>    -->
         <!-- <span class="pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
+
+        <span class="pt-2 mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
+
+        <span class="pt-2 mr-auto dropdown">
+          <a class="pt-2 pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
+            {{showUnit | translate}}
+          </a>
+          <!-- ur: 2020.06.09: commented lines are with underline to show the interaction -->
+          <!-- <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
+            {{showUnit | translate}}
+          </a> -->
+          <div class="dropdown-menu">
+            <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.pd')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
+            <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
+          </div>
+        </span>
       </span>
     </span>
   </div>
 
-  <div *ngIf="displayCapacity() > 0">
-    <div *ngIf="graphDataComboChart.length > 2" >
-      <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
-    </div>
-    <div *ngIf="graphDataComboChart.length < 2"  >
-      {{ 'ViewCapacity.msg.noCapacity' | translate }}
+  <div class="">
+    <div class="row">
+      <div  *ngIf="orgaTreeData" class="pl-3 col-3 border-right scroll">
+        <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
+        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
+      </div>
+      <div *ngIf="displayCapacity() > 0" class="col-9">
+        <div *ngIf="graphDataComboChart.length > 2" >
+            <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+        </div>
+        <div *ngIf="graphDataComboChart.length < 2"  >
+          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+        </div>
+      </div>
+      <!-- here will be shown the text: No Capacity the spinner -->
+      <div *ngIf="displayCapacity() == 0" >
+        <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+      </div>
     </div>
   </div>
-  <!-- here will be shown the text: Keine Kapaität the spinner -->
-  <div *ngIf="displayCapacity() == 0" >
-    {{ 'ViewCapacity.msg.noCapacity' | translate }}
-  </div> 
-     
 
-  <!-- ur:05.06.2020: Here is the call for the organisation-tree, chooseable with checkboxes, expandable with brackets -->
-  <!-- <ul *ngIf="orgaTreeData" [ngStyle]="{'list-style-type': 'none'}" >
-    <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children }"></ng-container>
-  </ul> -->
-  <!-- End of Call -->
-  
 
   <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with click on the item, expandable with brackets -->
   <ng-template #recursiveList let-list let-level="level">
     <div *ngFor="let item of list" style="white-space: nowrap;">
-      <div class="dropdown-item tree-item" (click)="selectLeaf(item)"
+      <div class="dropdown-item tree-item " (click)="selectLeaf(item)"
       [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
         <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
           <a (click)="$event.stopPropagation(); item.showChildren = !item.showChildren;">
@@ -85,7 +65,7 @@
           </a>
           <span class="ml-sm-1">
             {{item.name}} <!-- {{item.isSelected}} -->
-          </span>  
+          </span>
         </span>
       </div>
       <div *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
@@ -100,5 +80,3 @@
     <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>
   </div>
 </div>
-
-

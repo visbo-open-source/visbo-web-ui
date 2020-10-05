@@ -8,9 +8,11 @@ let vcID = '';
 let newGroupName = '';
 let newUserName = '';
 
+let paramsMap;
+
 describe('visbocenter check', function () {
   it('login to system', function () {
-    let paramsMap = param.get();
+    paramsMap = param.get();
     let email = paramsMap?.login?.email;
     let pw = paramsMap?.login?.pw;
     LoginPage.open()
@@ -27,11 +29,10 @@ describe('visbocenter check', function () {
     VisboCenterPage.open();
     // console.log("Show VC");
     VisboCenterPage.sortDate.click();
-    const vcList = $('#VCList');
-    const len = vcList.$$('tr').length;
-    let vcLastDate = len > 0 ? convert.convertDate(vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
+    const len = VisboCenterPage.vcList.$$('tr').length;
+    let vcLastDate = len > 0 ? convert.convertDate(VisboCenterPage.vcList.$$('tr')[0].$('#ColDate').getText()) : undefined;
     for (var i = 0; i < len; i++) {
-      let vcEntry = vcList.$$('tr')[i];
+      let vcEntry = VisboCenterPage.vcList.$$('tr')[i];
       let vcDate = convert.convertDate(vcEntry.$('#ColDate').getText());
       // console.log("VC Date", i+1, vcEntry.$('#ColDate').getText(), vcDate, vcLastDate, vcDate.getTime() - vcLastDate.getTime());
       expectChai(vcLastDate).to.be.gte(vcDate, "Wrong Sorting by Date");
@@ -39,18 +40,18 @@ describe('visbocenter check', function () {
     }
 
     VisboCenterPage.sortProjects.click();
-    let vcLastProject = len > 0 ? Number(vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
+    let vcLastProject = len > 0 ? Number(VisboCenterPage.vcList.$$('tr')[0].$('#ColProjects').getText()) : 0;
     for (var i = 0; i < len; i++) {
-      let vcEntry = vcList.$$('tr')[i];
+      let vcEntry = VisboCenterPage.vcList.$$('tr')[i];
       let vcProject = Number(vcEntry.$('#ColProjects').getText());
       // console.log("VC Projects", i+1, vcProject, vcLastProject, vcProject - vcLastProject);
       expectChai(vcLastProject).to.be.gte(vcProject, "Wrong Sorting by #Projects");
       vcLastProject = vcProject
     }
     VisboCenterPage.sortName.click();
-    let vcLastName = len > 0 ? vcList.$$('tr')[0].$('#ColName').getText() : undefined;
+    let vcLastName = len > 0 ? VisboCenterPage.vcList.$$('tr')[0].$('#ColName').getText() : undefined;
     for (var i = 0; i < len; i++) {
-      let vcEntry = vcList.$$('tr')[i];
+      let vcEntry = VisboCenterPage.vcList.$$('tr')[i];
       let vcName = vcEntry.$('#ColName').getText().valueOf();
       // console.log("VC Names", i+1, vcName, vcLastName, vcName <= vcLastName);
       expectChai(vcName.toLowerCase() >= vcLastName.toLowerCase()).to.be.eql(true, "Wrong Sorting by Name");
@@ -59,16 +60,14 @@ describe('visbocenter check', function () {
   })
 
   it('should navigate to Details of a specific VC', function () {
-    let paramsMap = param.get();
-    let vcConfigName = paramsMap?.VCBaseName || "Test-MS-VC01";
+    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
     vcConfigName = vcConfigName.concat("01");
     VisboCenterPage.open();
     // console.log("Show VC");
-    const vcList = $('#VCList');
-    const len = vcList.$$('tr').length;
-    // console.log("VC List Len:", len, '\n', vcList.getText());
+    const len = VisboCenterPage.vcList.$$('tr').length;
+    // console.log("VC List Len:", len, '\n', VisboCenterPage.vcList.getText());
     for (var i = 0; i < len; i++) {
-      let vcEntry = vcList.$$('tr')[i];
+      let vcEntry = VisboCenterPage.vcList.$$('tr')[i];
       let vcName = vcEntry.$('#ColName').getText();
       // console.log("VC", i+1, vcName);
       if (vcName == vcConfigName) {
@@ -120,11 +119,11 @@ describe('visbocenter check', function () {
   it('Add User to Group', function () {
     VisboCenterPage.detail(vcID);
     // console.log("Show VC Details, switch to Group");
-    let paramsMap = param.get();
     newUserName = paramsMap?.userRead;
 
     let message = (new Date()).toISOString();
     message = "Invitation from ".concat(message);
+    message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
     console.log("Add new User Group", newUserName, newGroupName);
     VisboCenterPage.addUser(newUserName, newGroupName, message);
     console.log("Add User Check", newGroupName);

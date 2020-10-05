@@ -8,23 +8,23 @@
     <form>
       <div class="form-group row">
         <label for="vpName" class="col-4 col-md-3 col-form-label">Name:</label>
-        <label class="col-8 form-control-static">{{ visboproject.name }} </label>
+        <label id="VPName" class="col-8 form-control-static">{{ visboproject.name }} </label>
       </div>
       <div class="form-group row">
         <label for="vpDescription" class="col-4 col-md-3 col-form-label">Description:</label>
-        <label class="col-8 form-control-static">{{ visboproject.description }} </label>
+        <label id="VPDesc" class="col-8 form-control-static">{{ visboproject.description }} </label>
       </div>
 
       <div class="form-group row">
         <label for="Created" class="col-4 col-md-3 col-form-label">Created / Updated at:</label>
-        <label class="col form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-        <label class="col form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <label id="VPCreated" class="col form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+        <label id="VPUpdated" class="col form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
       </div>
     </form>
     <div class="btn-toolbar" style="">
-      <button *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">View Audit</button>
-      <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-      <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
+      <button id="ViewAudit" *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">View Audit</button>
+      <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+      <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
     </div>
 
     <div *ngIf="!showGroups" >
@@ -39,7 +39,7 @@
         <div class='panel-body'>
           <table class='table table-hover'>
             <!--Table head-->
-            <thead>
+            <thead id="UserHead">
               <tr>
                 <th>Nr.</th>
                 <th (click)="sortUserTable(1)">e-mail</th>
@@ -47,11 +47,11 @@
               </tr>
             </thead>
             <!--Table body-->
-            <tbody>
+            <tbody id="UserList">
               <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
-                <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail">{{member.email}}</td>
-                <td>{{member.groupName}}</td>
+                <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail">{{member.email}}</td>
+                <td id="ColGroup">{{member.groupName}}</td>
               </tr>
             </tbody>
             <!--Table body-->
@@ -72,7 +72,7 @@
         <div class='panel-body'>
           <table class='table table-hover'>
             <!--Table head-->
-            <thead>
+            <thead id="GroupHead">
               <tr>
                 <th>Nr.</th>
                 <th (click)="sortGroupTable(1)">Group</th>
@@ -82,15 +82,15 @@
               </tr>
             </thead>
             <!--Table body-->
-            <tbody>
+            <tbody id="GroupList">
               <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
-                <td>{{member.name}}</td>
-                <td>{{member.users.length}}</td>
-                <td *ngIf="member.global">Global</td>
-                <td *ngIf="!member.global"></td>
+                <td id="ColGroup">{{member.name}}</td>
+                <td id="ColMembers">{{member.users.length}}</td>
+                <td id="ColGlobal" *ngIf="member.global">Global</td>
+                <td id="ColGlobal" *ngIf="!member.global"></td>
                 <td>
-                  <button class="Detail" title="Detail of Group"
+                  <button id="ColDetail" class="Detail" title="Detail of Group"
                    (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate">i</button>
                 </td>
               </tr>

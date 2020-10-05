@@ -8,8 +8,8 @@
     </div>
   </form> -->
   <div class="btn-toolbar" style="">
-    <button *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-    <button *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
+    <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
+    <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
   </div>
   <div *ngIf="!showGroups" >
     <div >
@@ -20,33 +20,33 @@
           </h5>
         </div>
         <div *ngIf="hasSystemPerm(permSystem.ManagePerm)" class='col'>
-          <button type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
+          <button id="AddUser" type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcUserModalCreate">Add User</button>
         </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover'>
-          <!--Table head-->
-          <thead>
+
+          <thead id="UserHead">
             <tr>
               <th>Nr.</th>
-              <th (click)="sortUserTable(1)">e-mail</th>
-              <th (click)="sortUserTable(2)">Group</th>
+              <th id="SortUser" (click)="sortUserTable(1)">e-mail</th>
+              <th id="SortGroup" (click)="sortUserTable(2)">Group</th>
               <th *ngIf="hasSystemPerm(permSystem.ManagePerm)">Delete</th>
             </tr>
           </thead>
-          <!--Table body-->
-          <tbody>
+
+          <tbody id="UserList">
             <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
               <td>{{memberIndex+1}}</td>
-              <td (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#SystemUserDetail"><a>{{member.email}}</a></td>
-              <td (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
+              <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#SystemUserDetail"><a>{{member.email}}</a></td>
+              <td id="ColGroup" (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
               <td *ngIf="hasSystemPerm(permSystem.ManagePerm)">
-                <button class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
+                <button id="ColDeleteUser" class="Detail" title="Remove User" (click)='helperUserIndex(memberIndex)'
                 data-toggle="modal" data-target="#VcUserRemove">&times;</button>
               </td>
             </tr>
           </tbody>
-          <!--Table body-->
+
         </table>
       </div>
     </div>
@@ -60,14 +60,13 @@
           </h5>
         </div>
         <div *ngIf="hasSystemPerm(permSystem.ManagePerm)" class='col'>
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#SystemGroupModalCreate">Add Group</button>
+          <button id="AddGroup" type="button" class="btn btn-primary float-right my-1" (click)="initGroup(null)" data-toggle="modal" data-target="#SystemGroupModalCreate">Add Group</button>
         </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover'>
-          <!--Table head-->
-          <thead>
+
+          <thead id="GroupHead">
             <tr>
               <th>Nr.</th>
               <th (click)="sortGroupTable(1)">Group</th>
@@ -77,25 +76,25 @@
               <th>Info</th>
             </tr>
           </thead>
-          <!--Table body-->
-          <tbody>
+
+          <tbody id="GroupList">
             <tr *ngFor="let member of vgGroups; let memberIndex=index">
               <td>{{memberIndex+1}}</td>
-              <td (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#SystemGroupModalCreate"><a>{{member.name}}</a></td>
-              <td (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
-              <td *ngIf="member.global">Global</td>
-              <td *ngIf="!member.global"></td>
+              <td id="ColGroup" (click)='groupIndex = memberIndex; initGroup(member)' data-toggle="modal" data-target="#SystemGroupModalCreate"><a>{{member.name}}</a></td>
+              <td id="ColMembers" (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
+              <td id="ColGlobal" *ngIf="member.global">Global</td>
+              <td id="ColGlobal" *ngIf="!member.global"></td>
               <td *ngIf="hasSystemPerm(permSystem.ManagePerm)">
-                <button class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
+                <button id="ColDeleteGroup" class="Detail" title="Remove Group" (click)='helperRemoveGroup(memberIndex)'
                 data-toggle="modal" data-target="#VcGroupRemove">&times;</button>
               </td>
               <td>
-                <button class="Detail" title="Detail of Group"
+                <button id="ColDetail" class="Detail" title="Detail of Group"
                  (click)='initGroup(member)' data-toggle="modal" data-target="#SystemGroupModalCreate">i</button>
               </td>
             </tr>
           </tbody>
-          <!--Table body-->
+
         </table>
       </div>
     </div>
@@ -115,12 +114,12 @@
         <form name="newUserInvite" #f1="ngForm" novalidate>
           <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !email.valid }">
             <label for="email" class="col-form-label">Name:</label>
-            <input type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
+            <input id="AddUserName" type="email" class="form-control" name="email" [(ngModel)]="newUserInvite.email" #email="ngModel" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email">
             <div *ngIf="f1.submitted && !email.valid" class="help-block">E-mail address is required</div>
           </div>
           <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !group.valid }">
             <label for="group" class="col-form-label">Group:</label>
-            <select class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
+            <select id="AddUserGroupName" class="form-control" name="group" [(ngModel)]="newUserInvite.groupName" #group="ngModel" required>
               <option></option>
               <option *ngFor="let groupItem of vgGroups">{{groupItem.name}}</option>
             </select>
@@ -128,13 +127,13 @@
           </div>
           <div class="form-group" [ngClass]="{ 'has-error': f1.submitted && !inviteMessage.valid }">
             <label for="inviteMessage" class="col-form-label">Message:</label>
-            <textarea class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
+            <textarea id="AddUserMessage" class="form-control" name="inviteMessage" [(ngModel)]="newUserInvite.inviteMessage" #inviteMessage="ngModel" > </textarea>
           </div>
           <div *ngIf="f1.submitted && !inviteMessage.valid" class="help-block">Error in Message</div>
           <div class="modal-footer align-items-end">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button *ngIf="!(email.valid && group.valid)" type="button" class="btn btn-primary">Invite</button>
-            <button *ngIf="email.valid && group.valid" type="button" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
+            <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button id="AddUserConfirm" *ngIf="!(email.valid && group.valid)" type="button" class="btn btn-primary">Invite</button>
+            <button id="AddUserConfirm" *ngIf="email.valid && group.valid" type="button" class="btn btn-primary" (click)="addNewVCUser()" data-dismiss="modal">Invite</button>
           </div>
         </form>
       </div>
@@ -173,7 +172,7 @@
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
+        <button id="DeleteUserConfirm" type="button" class="btn btn-warning" (click)="removeVCUser(vgUsers[userIndex], visbocenter._id)" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>
@@ -194,7 +193,7 @@
         <form name="actGroup" #f2="ngForm" novalidate>
           <div class="form-group" [ngClass]="{ 'has-error': f2.submitted }">
             <label for="groupName" class="col-form-label">Name:</label>
-            <input type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required  minlength="3">
+            <input id="AddGroupName" type="text" class="form-control" name="groupName" [(ngModel)]="actGroup.name" #groupName="ngModel" required  minlength="3">
             <div *ngIf="groupName.errors && (groupName.dirty || groupName.touched)" class="help-block">Group Name is required (Minimum 3)</div>
           </div>
           <!-- System Permissions -->
@@ -296,9 +295,9 @@
           </div>
 
           <div class="modal-footer align-items-end mt-3">
-            <button *ngIf="!(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.confirm}}</button>
-            <button *ngIf="(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button id="AddGroupConfirm" *ngIf="!(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary disabled" >{{this.confirm}}</button>
+            <button id="AddGroupConfirm" *ngIf="(f2.form.valid && hasSystemPerm(permSystem.ManagePerm))" type="button" class="btn btn-primary" (click)="addModifyVCGroup()" data-dismiss="modal">{{this.confirm}}</button>
+            <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           </div>
         </form>
       </div>
@@ -336,8 +335,8 @@
         </form>
       </div>
       <div class="modal-footer align-items-end">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
+        <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="DeleteGroupConfirm" type="button" class="btn btn-warning" (click)="removeVCGroup(vgGroups[groupIndex])" data-dismiss="modal">Remove</button>
       </div>
     </div>
   </div>
@@ -459,7 +458,7 @@
         </ng-container>
 
         <div class="form-group mt-2">
-          <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button id="ButtonBack" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>

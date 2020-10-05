@@ -1,29 +1,11 @@
 import Page from './page'
 
-class VisboProjectPage extends Page {
+class SysVisboUserPage extends Page {
     /**
      * define elements
      */
-    get vpName () { return $('#VPName') }
-    get vpDesc () { return $('#VPDesc') }
-    get saveVP () { return $('#Save') }
-
-    get createVP () { return $('#CreateVP') }
-    get createVPName () { return $('#CreateVPName') }
-    get createVPDesc () { return $('#CreateVPDesc') }
-    get createVPConfirm () { return $('#CreateVPConfirm') }
-
-    get deletedVP () { return $('#DeletedVP') }
-    get unDeletedVP () { return $('#UnDeletedVP') }
-    get deleteVP () { return $('#DeleteVP') }
-    get destroyVP () { return $('#DestroyVP') }
-    get deleteVPConfirm () { return $('#DeleteVPConfirm') }
-
-    get vpHead () { return $('#VPHead') }
-    get sortName () { return $('#SortName') }
-    get sortDate () { return $('#SortDate') }
-    get sortVersions () { return $('#SortVersions') }
-    get vpList () { return $('#VPList') }
+    get sortUser () { return $('#SortUser') }
+    get sortGroup () { return $('#SortGroup') }
     get alert () { return $('#alertMessage') }
 
     get showUserButton () { return $('#ViewUser') }
@@ -42,6 +24,7 @@ class VisboProjectPage extends Page {
     get groupList () { return $('#GroupList') }
 
     get addGroupName () { return $('#AddGroupName') }
+    get addGroupGlobal () { return $('#global') }
     get addGroupVPView () { return $('#permVP1') }
     get addGroupConfirm () { return $('#AddGroupConfirm') }
     get deleteGroupConfirm () { return $('#DeleteGroupConfirm') }
@@ -49,62 +32,17 @@ class VisboProjectPage extends Page {
     /**
      * define or overwrite page methods
      */
-    open (vcid) {
-      let url = vcid ? '/vp/'.concat(vcid) : '/vp'
+    open () {
+      super.open('/sysuser');
+      this.userList.waitForDisplayed({ timeoutMsg: 'User List should show up' });
+    }
+
+    admins () {
+      let url = '/sysadmins/';
+      console.log("sysAdmins:", url);
+
       super.open(url);
-      this.vpList.waitForDisplayed({ timeoutMsg: 'VP List should show up' });
-    }
-
-    detail (vpID, deleted) {
-      let url = '/vpDetail/'.concat(vpID);
-      if (deleted) url = url.concat('?deleted=1');
-      super.open(url);
-      this.vpName.waitForDisplayed({ timeoutMsg: 'Project Name in Details should show up' });
-    }
-
-    create(newName, newDescription) {
-      console.log("create VP", newName, newDescription);
-
-      this.createVP.click();
-      this.createVPName.waitForClickable({ timeoutMsg: 'Field Project Name should show up' });
-      this.createVPName.setValue(newName);
-      this.createVPDesc.setValue(newDescription);
-      this.createVPConfirm.click();
-      this.alert.waitForDisplayed();
-    }
-
-    delete(vpID) {
-      console.log("delete", vpID);
-
-      this.deleteVP.click();
-      this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
-      console.log("delete confirm", vpID);
-      this.deleteVPConfirm.click();
-      this.alert.waitForDisplayed();
-      // have to wait, as the server updates it async
-      browser.pause(2000);
-    }
-
-    destroy(vpID) {
-      // let startDate = new Date();
-      // console.log("destroy", vpID);
-
-      this.destroyVP.click();
-      this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
-      // console.log("destroy confirm", vpID);
-      this.deleteVPConfirm.click();
-      this.alert.waitForDisplayed();
-      // let endDate = new Date();
-      // console.log("Destroy took ", endDate.getTime() - startDate.getTime())
-      // have to wait, as the server updates it async
-      browser.pause(2000);
-    }
-
-    rename(newName, newDescription) {
-      this.vpName.setValue(newName);
-      this.vpDesc.setValue(newDescription);
-      this.saveVP.click();
-      this.saveVP.waitForClickable({ reverse: true, timeoutMsg: 'Save Button should disappear' });
+      this.userList.waitForDisplayed({ timeoutMsg: 'User List should show up' });
     }
 
     addUser(userName, groupName, message) {
@@ -117,7 +55,6 @@ class VisboProjectPage extends Page {
       if (message) this.addUserMessage.setValue(message);
 
       this.addUserConfirm.click();
-      this.addUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
       this.alert.waitForDisplayed();
     }
 
@@ -131,7 +68,7 @@ class VisboProjectPage extends Page {
         userEntry = this.userList.$$('tr')[i];
         let userName = userEntry.$('#ColUser').getText();
         let groupName = userEntry.$('#ColGroup').getText();
-        // console.log("VP GroupName", i+1, userName, groupName);
+        // console.log("VC GroupName", i+1, userName, groupName);
         if (userName == deleteUserName && groupName == deleteGroupName) {
           // console.log("User / Group Found", userName, groupName);
           break;
@@ -147,20 +84,21 @@ class VisboProjectPage extends Page {
 
       this.deleteUserConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteUserConfirm.click();
-      this.deleteUserConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
       this.alert.waitForDisplayed();
       return true;
     }
 
-    addGroup(groupName) {
+    addGroup(groupName, flagGlobal) {
       this.addGroupButton.click();
-      // console.log("Add Group", groupName);
+      // console.log("Add Group", groupName, flagGlobal);
 
       this.addGroupName.waitForClickable({ timeoutMsg: 'Field Group Name should show up' });
       this.addGroupName.setValue(groupName);
-      this.addGroupVPView.click();
+      if (flagGlobal) {
+        this.addGroupGlobal.click();
+        this.addGroupVPView.click();
+      }
       this.addGroupConfirm.click();
-      this.addGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
       this.alert.waitForDisplayed();
     }
 
@@ -173,7 +111,7 @@ class VisboProjectPage extends Page {
       for (i = 0; i < len; i++) {
         groupEntry = this.groupList.$$('tr')[i];
         let groupName = groupEntry.$('#ColGroup').getText();
-        // console.log("VP GroupName", i+1, groupName);
+        // console.log("VC GroupName", i+1, groupName);
         if (groupName == deleteGroupName) {
           // console.log("Group Found", groupName);
           break;
@@ -189,11 +127,10 @@ class VisboProjectPage extends Page {
 
       this.deleteGroupConfirm.waitForClickable({ timeout: 1000, timeoutMsg: 'Modal delete should show up' });
       this.deleteGroupConfirm.click();
-      this.deleteGroupConfirm.waitForClickable({ reverse: true, timeoutMsg: 'User Add Confirm Button should disappear' });
       this.alert.waitForDisplayed();
       return true;
     }
 
 }
 
-export default new VisboProjectPage()
+export default new SysVisboUserPage()

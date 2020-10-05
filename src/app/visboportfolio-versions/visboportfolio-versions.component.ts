@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 
 import * as moment from 'moment';
 
@@ -20,6 +19,12 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+
+class Params {
+  vpfid: string;
+  refDate: string;
+  view: string;
+}
 
 class DropDown {
   name: string;
@@ -326,9 +331,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
-  gotoVP(id: string): void {
-    this.log(`goto VP ${id}`);
-    this.router.navigate(['vpKeyMetrics//'.concat(id)], {});
+  gotoVP(id: string, variantName: string): void {
+    this.log(`goto VP ${id}/${variantName}`);
+    this.router.navigate(['vpKeyMetrics//'.concat(id)], variantName ? { queryParams: { variantName: variantName }} : {});
   }
 
   gotoVC(visboproject: VisboProject): void {
@@ -359,10 +364,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Change Drop Down ${i} `);
     this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append('vpfid', this.vpfActive._id.toString());
-    queryParams = queryParams.append('refDate', this.vpvRefDate.toISOString());
-    queryParams = queryParams.append('view', this.currentView);
+    let queryParams = new Params();
+    queryParams.vpfid = this.vpfActive._id;
+    queryParams.refDate = this.vpvRefDate.toISOString();
+    queryParams.view = this.currentView;
 
     const url = this.route.snapshot.url.join('/');
     this.log(`GoTo Portfolio Version ${this.vpfActive._id.toString()}`);
