@@ -93,6 +93,11 @@
           </tr>
         </tbody>
       </table>
+      <div *ngIf="audit && audit.length == 0">
+        <h3 class="d-flex justify-content-center">
+          No Audit Entry for the time frame or the filter condition
+        </h3>
+      </div>
     </div>
   </div>
 </div>

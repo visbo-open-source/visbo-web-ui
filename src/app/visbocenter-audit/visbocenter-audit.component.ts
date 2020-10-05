@@ -320,6 +320,8 @@ export class VisbocenterAuditComponent implements OnInit {
       this.audit.sort(function(a, b) { return a.result.time - b.result.time; });
     } else if (this.sortColumn === 7) {
       this.audit.sort(function(a, b) { return (a.result.size || 0) - (b.result.size || 0); });
+    } else if (this.sortColumn === 8) {
+      this.audit.sort(function(a, b) { return visboCmpString(a.vp?.name, b.vp?.name); });
     }
     if (!this.sortAscending) {
       this.audit.reverse();
