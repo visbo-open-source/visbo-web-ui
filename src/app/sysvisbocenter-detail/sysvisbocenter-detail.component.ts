@@ -175,7 +175,11 @@ export class SysvisbocenterDetailComponent implements OnInit {
       .subscribe(
         () => {
           this.alertService.success(`Visbo Center ${visbocenter.name} deleted successfully`, true);
-          this.goBack();
+          if (this.deleted) {
+            this.router.navigate(['sysvc']);
+          } else {
+            this.goBack();
+          }
         },
         error => {
           this.log(`delete VC failed: error: ${error.status} message: ${error.error.message}`);

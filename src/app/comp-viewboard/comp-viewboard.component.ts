@@ -31,6 +31,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
       width: '100%',
       height: 500,
+      // colors:['#cbb69d','#603913','#c69c6e'],
       timeline: {
         showBarLabels: true
       },
@@ -72,7 +73,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
-
+    
     for (let i = 0; i < this.vps.length; i++) {
       if (this.vpFilter
         && !(this.vps[i].name.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
@@ -88,21 +89,26 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       const endDate = this.vps[i].endDate;
       if (startDate && endDate && startDate <= endDate) {
         // we have a start & end date for the project, add it to the Timeline
-        let name = this.vps[i].name;
-        if (this.vps[i].variantName) {
-          name = name.concat(' ( ', this.vps[i].variantName, ' )');
-        }
+
         graphDataTimeline.push([
           (this.vps.length - i).toString(),
-          name,
+          this.combineName(this.vps[i].name, this.vps[i].variantName),
           this.createCustomHTMLContent(this.vps[i]),
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
         ]);
+        // if (this.vps[i].farbe) {
+        //   // ??? UR: 21.08.2020:.farbe wasn't delivered with thw visboProjectService
+        //   this.graphOptionsTimeline.colors.push('#' + this.vps[i].farbe.toString())
+        // } else {
+        //   vpsFarbe = vpsFarbe + 1000;
+        //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
+        // }
+        
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
-
+    
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
@@ -123,12 +129,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   createCustomHTMLContent(vpv: VisboProjectVersion): string {
     const startDate = moment(vpv.startDate).format('DD.MM.YY');
     const endDate = moment(vpv.endDate).format('DD.MM.YY');
-    let name = vpv.name;
-    if (vpv.variantName) {
-      name = name.concat('(' + vpv.variantName + ')');
-    }
+
     let result = '<div style="padding:5px 5px 5px 5px;">' +
-      '<div><b>' + name + '</b></div>' + '<div>' +
+      '<div><b>' + this.combineName(vpv.name, vpv.variantName) + '</b></div>' + '<div>' +
       '<table>';
 
     const bu = this.translate.instant('compViewBoard.lbl.bu');
@@ -152,22 +155,49 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return result;
   }
 
-  timelineSelectRow(row: number, label: string, value: number): void {
-    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} ${value} `);
+  timelineSelectRow(row: number): void {
+    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     const vpName = this.graphDataTimeline[row + 1][1];
-    const vp = this.vps.find(x => x.name === vpName);
+    // vpName can contain variantName split it and check if it fits
+    const vp = this.findProject(vpName);
 
-    this.log(`Navigate to: ${vp.vpid} ${vp.name}`);
-    this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: {} });
+    if (vp) {
+      this.log(`Navigate to: ${vp.vpid} ${vp.name} ${vp.variantName}`);
+      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], vp.variantName ? { queryParams: { variantName: vp.variantName }} : {});
+    } else {
+      this.log(`VP not found: ${vpName}`);
+    }
   }
 
   getvps(): string {
     return JSON.stringify(this.vps);
   }
 
+  combineName(vpName, variantName): string {
+    let result = vpName || '';
+    result = result
+    if (variantName) {
+      result = result.concat(' ( ', variantName, ' ) ')
+    }
+    return result;
+  }
+
+  findProject(name: string): VisboProjectVersion {
+    // name could not contain a variantPart if it does not end with " ) ", and this is not an allowed vp name
+    let result = this.vps.find(x => x.name === name);
+    if (!result && name.lastIndexOf(" ) ") === name.length - 3) {
+      // variant Part at the end
+      let index = name.lastIndexOf(" ( ");
+      const vpName = name.substring(0, index);
+      const variantName = name.substring(index + 3, name.length - 3);
+      result = this.vps.find(x => x.name === vpName && x.variantName === variantName)
+    }
+    return result;
+  }
+
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('VisboViewBoard: ' + message);
+    this.messageService.add('CompVisboViewBoard: ' + message);
   }
 
 }

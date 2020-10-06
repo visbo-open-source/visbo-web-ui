@@ -183,6 +183,8 @@
 		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Center",
 		"titleProjectUsers": "VISBO Projekt Benutzer",
 		"titlePermUser": "Berechtigung für {{name}}",
+		"titleSettings": "Visbo Center Setting",
+		"titleDeleteSettings": "Visbo Center Setting löschen",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -201,25 +203,34 @@
 			"global": "Global",
 			"message": "Nachricht",
 			"delete": "Löschen",
-			"deleteUser": "Benutzer löschen"
+			"deleteUser": "Benutzer löschen",
+			"settingName": "Name",
+			"settingType": "Typ",
+			"timestamp": "Zeitstempel",
+			"updatedAt": "Änderung",
+			"deleteSetting": "Löschen",
+			"setting": "Name"
 		},
 		"btn": {
 			"viewAudit": "Audit",
 			"viewGroups": "Gruppen",
 			"viewUsers": "Benutzer",
 			"viewProjectUsers": "Projekt Benutzer",
+			"ViewSetting": "Settings",
 			"addUser": "Benutzer einladen",
 			"addGroup": "Gruppe hinzufügen",
 			"invite": "Einladen",
 			"save": "Speichern",
 			"view": "Anzeigen",
 			"delete": "Löschen",
+			"download": "Herunterladen",
 			"back": "Zurück",
 			"cancel": "Abbrechen"
 		},
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
 			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Center löschen?",
+			"removeSettingConfirm": "Wollen Sie das Setting wirklich aus dem VISBO Center löschen?",
 			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
 			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
 			"groupNameRequired": "Gruppen Name erforderlich",
@@ -232,6 +243,7 @@
 			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
 			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
 			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
+			"removeSettingSuccess": "Setting {{name}} wurde erfolgreich gelöscht",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermVC": "Keine Berechtigung für VISBO Center {{name}}",
 			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Center {{name}}",
@@ -239,6 +251,7 @@
 			"errorChangeGroupPerm": "Keine Berechtigung Gruppe {{name}} zu ändern",
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
+			"errorRemoveSettingPerm": "Keine Berechtigung Setting {{name}} zu löschen",
 			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!"
 		}
 	},
@@ -504,17 +517,18 @@
 		}
 	},
 	"ViewCapacity": {
-		"title1": "Auslastung der Organisations-Einheit ",
+		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
-		"titleTimeFrom": " für den Zeitraum: von",
+		"titleTimeFrom": " Auslastung für den Zeitraum: von",
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Kosten",
-		"titleCapaOverTime": "Auslastung über die Dauer der Projekte: Kapazität vs. Istkosten und geplante Kosten",
+		"titleCapaOverTime": "Auslastung: Kapazität vs. Projektkosten",
 		"internCapaPT": "interne Kapazität",
 		"totalCapaPT": "gesamte Kapazität",
 		"actualCostPT": "Istkosten",
 		"plannedCostPT": "geplante Kosten",
+		"roleName": "Rolle",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -865,6 +879,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Center Audit erfolgreich geladen",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Center"
 		}
 	},
@@ -921,6 +936,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"auditSuccess": "VISBO Pprojekt Audit erfolgreich geladen",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
 	},

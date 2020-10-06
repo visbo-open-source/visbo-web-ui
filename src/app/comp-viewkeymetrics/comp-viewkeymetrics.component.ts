@@ -259,7 +259,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
             elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                               / elementKeyMetric.keyMetrics.costBaseLastActual;
           } else {
-            elementKeyMetric.savingCostTotal = 1;
+            elementKeyMetric.savingCostActual = 1;
           }
 
           // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
@@ -467,7 +467,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         valueX,
         valueY,
         this.colorMetric[colorValue].name,
-        Math.trunc(this.visbokeymetrics[i].keyMetrics.costBaseLastTotal || 1)
+        Math.round(this.visbokeymetrics[i].keyMetrics.costBaseLastTotal || 1)
       ]);
     }
     this.calcRangeAxis();
@@ -641,9 +641,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
-    let queryParams = new HttpParams();
-    if (this.deleted) { queryParams = queryParams.append('deleted', this.deleted.toString()); }
-    // if (!this.isSameDay(this.vpvRefDate, new Date())) { queryParams = queryParams.append('refDate', this.vpvRefDate.toISOString()); }
+    let queryParams = {};
+    if (this.deleted) { queryParams = {deleted: this.deleted.toString()} }
+
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
   }
 

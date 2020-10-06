@@ -4,6 +4,13 @@
     <div class='col'>
       <h2>
         {{ 'vpViewDeadline.title' | translate }}: <a (click)="gotoVP(vpActive)">{{vpActive.name}}</a>
+        <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
+        <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
+          <div class="dropdown-menu">
+            <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+          </div>
+        </span>
       </h2>
       <h5 *ngIf="vpActive">{{ 'vpViewDeadline.lbl.vc' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>

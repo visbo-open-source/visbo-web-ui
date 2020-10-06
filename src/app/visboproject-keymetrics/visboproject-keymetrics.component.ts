@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -17,6 +16,12 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
+class Params {
+  deleted: string;
+  vpvid: string;
+  variantName: string;
+}
+
 @Component({
   selector: 'app-visboproject-keymetrics',
   templateUrl: './visboproject-keymetrics.component.html'
@@ -25,6 +30,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   visboprojectversions: VisboProjectVersion[];
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
+
+  dropDown: string[] = [];
+  dropDownIndex: number;
 
   vpSelected: string;
   vpActive: VisboProject;
@@ -131,6 +139,57 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  dropDownInit(): void {
+    const variantID = this.route.snapshot.queryParams['variantID'];
+    let variantName = this.route.snapshot.queryParams['variantName'];
+    if (variantID) {
+      // serach for the variant Name
+      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      }
+    } else if (variantName) {
+      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      if (index >= 0) {
+        variantName = this.vpActive.variant[index].variantName;
+      } else {
+        variantName = undefined;
+      }
+    }
+    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${variantID}/${variantName}`);
+    this.dropDown = [];
+    this.dropDownIndex = undefined;
+    const len = this.vpActive.variant.length;
+
+    for (let i = 0; i < len; i++) {
+      if (this.vpActive.variant[i].variantName !== 'pfv' && this.vpActive.variant[i].vpvCount > 0) {
+        this.dropDown.push(this.vpActive.variant[i].variantName);
+      }
+    }
+    if (this.dropDown.length > 0 ) {
+      this.dropDown.splice(0, 0, 'DEFAULT');
+      this.dropDownIndex = 0;
+    }
+    if (variantName) {
+      this.dropDownIndex = this.dropDown.findIndex(item => item === variantName);
+    }
+  }
+
+  switchVariant(name: string): void {
+    const i = this.dropDown.findIndex(item => item === name);
+    if (i <= 0) {
+      // not found or the main variant
+      this.dropDownIndex = undefined;
+    } else {
+      // Found
+      this.dropDownIndex = i;
+    }
+    this.log(`switch Variant ${name} index ${this.dropDownIndex}`);
+    // fetch the project with Variant
+    this.getVisboProjectVersions();
+    return;
+  }
+
   hasKM(km: VPVKeyMetrics, type: string): boolean {
     let result = false;
     if (!km) {
@@ -152,10 +211,19 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
           visboproject => {
-            this.vpActive = visboproject;
-            this.combinedPerm = visboproject.perm;
-            this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, '', true)
+            if (!this.vpActive || this.vpActive._id !== visboproject._id) {
+              this.vpActive = visboproject;
+              this.combinedPerm = visboproject.perm;
+              this.dropDownInit();
+            }
+            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';
+            let variantID = '';
+            if (variantName) {
+              const variant = this.vpActive.variant.find(item => item.variantName === variantName);
+              variantID = variant ? variant._id.toString() : '';
+            }
+            this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, true)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -581,7 +649,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const url = 'vpView/';
     this.log(`goto VP View`);
     let vpid, vpvid;
-    let queryParams = new HttpParams();
+    let queryParams = new Params();
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
       vpvid = this.vpvKeyMetricActive._id;
@@ -589,7 +657,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       vpid = this.vpActive._id;
     }
     if (vpid) {
-      if (vpvid) { queryParams = queryParams.append('vpvid', vpvid); }
+      if (vpvid) { queryParams.vpvid = vpvid; }
+      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName}
       this.router.navigate([url.concat(vpid)], { queryParams: queryParams});
     }
   }
@@ -605,10 +674,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (!vpid && this.vpActive) {
       vpid = this.vpActive._id;
       // no keyMetrics redirect to vpv View and clear history
-      params = {replaceUrl: true};
-      // if ((this.vpActive.perm.vp & (this.permVP.View + this.permVP.ViewRestricted)) == this.permVP.ViewRestricted) {
-        url = 'vpView/';
-      // }
+      params = { replaceUrl: true };
+      url = 'vpView/';
     }
     if (vpid) {
       this.router.navigate([url.concat(vpid)], params);
@@ -616,20 +683,35 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   gotoViewCost(): void {
-    this.log(`goto VPV View Cost ${this.vpvKeyMetricActive.vpid} `);
-    const queryParams = { vpvid: this.vpvKeyMetricActive._id };
-    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
+    this.log(`goto VPV View Cost vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
+
+    let queryParams = new Params();
+    queryParams.vpvid = this.vpvKeyMetricActive._id;
+    if (this.vpvKeyMetricActive.variantName) {
+      queryParams.variantName = this.vpvKeyMetricActive.variantName;
+    }
+    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams });
   }
 
   gotoViewDelivery(): void {
-    this.log(`goto VPV View Delivery ${this.vpvKeyMetricActive.vpid} `);
-    const queryParams = { vpvid: this.vpvKeyMetricActive._id };
+    this.log(`goto VPV View Delivery vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
+
+    let queryParams = new Params();
+    queryParams.vpvid = this.vpvKeyMetricActive._id;
+    if (this.vpvKeyMetricActive.variantName) {
+      queryParams.variantName = this.vpvKeyMetricActive.variantName;
+    }
     this.router.navigate(['vpViewDelivery/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
 
   gotoViewDeadline(): void {
-    this.log(`goto VPV View Deadline ${this.vpvKeyMetricActive.vpid} `);
-    const queryParams = { vpvid: this.vpvKeyMetricActive._id };
+    this.log(`goto VPV View Deadline vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
+
+    let queryParams = new Params();
+    queryParams.vpvid = this.vpvKeyMetricActive._id;
+    if (this.vpvKeyMetricActive.variantName) {
+      queryParams.variantName = this.vpvKeyMetricActive.variantName;
+    }
     this.router.navigate(['vpViewDeadline/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
 
