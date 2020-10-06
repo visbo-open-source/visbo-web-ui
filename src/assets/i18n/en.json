@@ -880,6 +880,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Center Audit successfully downloaded",
+			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
@@ -937,6 +938,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Project Audit successfully downloaded",
+			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},

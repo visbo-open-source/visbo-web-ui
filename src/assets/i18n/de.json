@@ -880,6 +880,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Center Audit erfolgreich geladen",
+			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Center"
 		}
 	},
@@ -937,6 +938,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Pprojekt Audit erfolgreich geladen",
+			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
 	},

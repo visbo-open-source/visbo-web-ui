@@ -75,6 +75,11 @@
           </tr>
         </tbody>
       </table>
+      <div *ngIf="audit && audit.length == 0">
+        <h3 class="d-flex justify-content-center">
+          {{ 'vpAudit.msg.noAudit' | translate }}
+        </h3>
+      </div>
     </div>
   </div>
 </div>

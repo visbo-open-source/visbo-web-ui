@@ -66,6 +66,12 @@
           <span class="ml-sm-1">
             {{item.name}} <!-- {{item.isSelected}} -->
           </span>
+          <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankOver > 0" class="ml-sm-1">
+            <strong class="fas fa-arrow-up" style="color:red"></strong>
+          </span>
+          <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankUnder > 0" class="ml-sm-1">
+            <strong class="fas fa-arrow-down" style="color:green"></strong>
+          </span>
         </span>
       </div>
       <div *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
