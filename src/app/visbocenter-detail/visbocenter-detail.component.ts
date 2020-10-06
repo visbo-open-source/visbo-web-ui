@@ -19,13 +19,17 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 class OrganisationItem {
   uid: number;
   pid: number;
-  level: number;
+  level: number
   name: string;
   parent: string;
   path: string;
+  employeeNr: string;
   isExternRole: boolean;
+  defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
+  entryDate: Date;
+  exitDate: Date;
   aliases: string;
 }
 
@@ -600,6 +604,10 @@ export class VisbocenterDetailComponent implements OnInit {
             // + 'isTeam' + separator
             + 'defaultKapa' + separator
             + 'tagessatz' + separator
+            + 'employeeNr' + separator
+            + 'defaultDayCapa' + separator
+            + 'entryDate' + separator
+            + 'exitDate' + separator
             + 'aliases' + '\n';
       for (let i = 0; i < organisation.length; i++) {
         const role = organisation[i];
@@ -612,11 +620,15 @@ export class VisbocenterDetailComponent implements OnInit {
                     + role.name.padStart(role.name.length + role.level, ' ') + separator
                     + role.uid + separator
                     // + (role.pid || '') + separator
-                    + role.parent + separator
+                    + (role.parent || '') + separator
                     + (role.isExternRole ? '1' : '0') + separator
                     // + (role.isTeam ? '1' : '0') + separator
                     + (role.defaultKapa || '0') + separator
-                    + role.tagessatz + separator
+                    + (role.tagessatz || '0') + separator
+                    + (role.employeeNr || '') + separator
+                    + (role.defaultDayCapa || '0') + separator
+                    + (role.entryDate ? role.entryDate : '') + separator
+                    + (role.exitDate ? role.exitDate : '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }

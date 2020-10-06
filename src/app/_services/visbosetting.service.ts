@@ -40,13 +40,16 @@ export class VisboSettingService  {
   }
 
    /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false): Observable<VisboSetting[]> {
+   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined): Observable<VisboSetting[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
 
     if (sysadmin) {
       params = params.append('sysadmin', '1');
+    }
+    if (refDate != undefined) {
+      params = params.append('refDate', refDate);
     }
     this.log(`Calling HTTP Request: ${url} `);
     return this.http.get<VisboSettingListResponse>(url, { headers , params })
