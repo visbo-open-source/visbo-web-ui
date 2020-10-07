@@ -185,7 +185,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.calcVPList();
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
-          this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
+          if (visboprojectversions.length > 0) {
+            this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
+          }
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -304,6 +306,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         nextVP.VorlagenName = this.visboprojectversions[index].VorlagenName;
         nextVP.businessUnit = this.visboprojectversions[index].businessUnit;
         nextVP.status = this.visboprojectversions[index].status;
+        nextVP.ampelStatus = this.visboprojectversions[index].ampelStatus;
+        nextVP.ampelErlaeuterung = this.visboprojectversions[index].ampelErlaeuterung;
         nextVP.keyMetrics = this.visboprojectversions[index].keyMetrics;
         this.vpvWithKM += this.visboprojectversions[index].keyMetrics ? 1 : 0;
       }
@@ -407,6 +411,11 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     if (this.sortColumn === 4) {
       this.vpList.sort(function(a, b) {
         return (b.keyMetrics ? 1 : -1) - (a.keyMetrics ? 1 : -1);
+      });
+    }
+    if (this.sortColumn === 5) {
+      this.vpList.sort(function(a, b) {
+        return (b.ampelStatus || 0) - (a.ampelStatus || 0);
       });
     }
     if (!this.sortAscending) {

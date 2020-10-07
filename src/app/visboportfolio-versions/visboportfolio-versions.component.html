@@ -73,6 +73,7 @@
           <th (click)="sortTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
           <th (click)="sortTable(2)">{{ 'vpfVersion.lbl.variant' | translate }}</th>
           <th (click)="sortTable(3)">{{ 'vpfVersion.lbl.timestamp' | translate }}</th>
+          <th (click)="sortTable(5)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
           <th (click)="sortTable(4)">{{ 'vpfVersion.lbl.keyMetrics' | translate }}</th>
         </tr>
       </thead>
@@ -83,6 +84,11 @@
           <td><a>{{vpItem.name}}</a></td>
           <td>{{vpItem.variantName}}</td>
           <td>{{vpItem.timestamp | date: 'dd.MM.yy HH:mm'}}</td>
+          <td title="{{vpItem.ampelErlaeuterung}}">
+            <div *ngIf="vpItem.ampelStatus == 1" class="fas fa-lightbulb text-success"></div>
+            <div *ngIf="vpItem.ampelStatus == 2" class="fas fa-lightbulb text-warning"></div>
+            <div *ngIf="vpItem.ampelStatus == 3" class="fas fa-lightbulb text-danger"></div>
+          </td>
           <td><i *ngIf="vpItem.keyMetrics" class="fas fa-check-circle" style="color:green"></i></td>
         </tr>
       </tbody>
