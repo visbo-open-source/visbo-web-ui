@@ -78,7 +78,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
+    this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
     const refDate = this.route.snapshot.queryParams['refDate'];
     const nextView = this.route.snapshot.queryParams['view'];
@@ -260,16 +260,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
   }
 
-  calcPercent(current: number, baseline: number): number {
-    if (baseline === undefined) {
-      return undefined;
-    } else if (baseline === 0 && current === 0) {
-      return 1;
-    } else {
-      return (current || 0) / baseline;
-    }
-  }
-
   isSameDay(dateA: Date, dateB: Date): boolean {
     if (!dateA || !dateB) { return false; }
     dateA.setHours(0, 0, 0, 0);
@@ -376,51 +366,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const url = this.route.snapshot.url.join('/');
     this.log(`GoTo Portfolio Version ${this.vpfActive._id.toString()}`);
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
-  }
-
-  sortTable(n?: number): void {
-    if (!this.vpList) { return; }
-    // change sort order otherwise sort same column same direction
-    if (n !== undefined || this.sortColumn === undefined) {
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
-      }
-      if (this.sortAscending === undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = n === 1 ? true : false;
-      } else {
-        this.sortAscending = !this.sortAscending;
-      }
-    }
-    if (this.sortColumn === 1) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
-      });
-    }
-    if (this.sortColumn === 2) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpString(a.variantName.toLowerCase() || '', b.variantName.toLowerCase() || '');
-      });
-    }
-    if (this.sortColumn === 3) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpDate(a.timestamp, b.timestamp);
-      });
-    }
-    if (this.sortColumn === 4) {
-      this.vpList.sort(function(a, b) {
-        return (b.keyMetrics ? 1 : -1) - (a.keyMetrics ? 1 : -1);
-      });
-    }
-    if (this.sortColumn === 5) {
-      this.vpList.sort(function(a, b) {
-        return (b.ampelStatus || 0) - (a.ampelStatus || 0);
-      });
-    }
-    if (!this.sortAscending) {
-      this.vpList.reverse();
-    }
   }
 
   /** Log a message with the MessageService */

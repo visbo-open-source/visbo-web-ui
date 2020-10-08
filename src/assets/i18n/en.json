@@ -570,6 +570,36 @@
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
 		}
 	},
+	"compViewVPVList": {
+		"lbl": {
+			"project": "Project",
+			"projectView": "View Projects",
+			"bu": "Business Unit",
+			"lead": "Project Manager",
+			"template": "Template",
+			"startDate": "Project start date",
+			"endDate": "Project end date",
+			"nr": "Nr.",
+			"name": "Name",
+			"variant": "Variant",
+			"timestamp": "Timestamp",
+			"endDate": "End of Project",
+			"changeWeeks": "+/- weeks",
+			"percentOfBAC": "% BAC",
+			"percentOfActDeadline": "% PD",
+			"percentOfActDelivery": "% PDV",
+			"filter": "Filter"
+		},
+		"metric": {
+			"endDateTooltip": "Change of End Date in weeks",
+			"costTooltip": "Total Cost at completion (%)",
+			"deadlineTooltip": "Achieved Deadlines in %",
+			"deliveryTooltip": "Achieved Deliveries in %"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status of Deliveries",
 		"titleDetailDelivery": "Status of Delivery",
@@ -754,8 +784,6 @@
 		"titleChange": "Change Key Metric",
 		"titleRessourceChange": "Change Ressource",
 		"lbl": {
-			"nr": "Number",
-			"variant": "Variant",
 			"day": "day",
 			"days": "days",
 			"week": "week",
@@ -777,10 +805,14 @@
 			"keyMetrics": "Project Metric",
 			"name": "Name",
 			"bac": "Total Cost (Baseline)",
-			"endDate": "End Date (Baseline)",
+			"endDate": "End of Project",
 			"deadlines": "Deadlines (Baseline)",
-			"deliveries": "Deliveries (Baseline)"
-		},
+			"deliveries": "Deliveries (Baseline)",
+			"changeWeeks": "+/- Weeks",
+			"percentOfBAC": "% BAC",
+			"percentOfActDeadline": "% PD",
+			"percentOfActDelivery": "% PDV"
+	},
 		"btn": {
 			"showChart": "View Chart",
 			"showList": "View List",
