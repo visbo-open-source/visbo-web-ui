@@ -19,6 +19,47 @@ export function visboCmpDate(first: Date, second: Date): number {
   return result;
 }
 
+export function convertDate(input: Date, format: string, lang: string = 'en'): string {
+  if (format == 'longDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '4-digit',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    );
+  } else if (format == 'fullDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    );
+  } else if (format == 'shortDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: 'short'
+      }
+    );
+  } else {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
+  }
+}
+
 export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';

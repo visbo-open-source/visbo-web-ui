@@ -19,9 +19,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-
-import { getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate, convertDate } from '../_helpers/visbo.helper';
 
 class CapaLoad {
   uid: number;
@@ -117,7 +115,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.paramRoleID =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
-    moment.locale(this.currentLang);
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
     this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
@@ -425,6 +422,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
+    // set number of gridlines to a fixed count to avoid in between gridlines
+    // this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCapacity.length;
     graphDataCapacity.unshift([
       'Month',
       this.translate.instant('ViewCapacity.totalCapaPT'),
@@ -446,7 +445,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(capacity: VisboCapacity, PT: boolean): string {
-    const currentDate = moment(capacity.month).format('MMM YYYY');
+    const currentDate = convertDate(new Date(capacity.month), 'fullDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
       '<table>';

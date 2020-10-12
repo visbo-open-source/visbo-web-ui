@@ -9,8 +9,6 @@ import { VisboAuditService } from '../_services/visboaudit.service';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
 
-import * as moment from 'moment';
-
 function encodeCSV(source: string): string {
   let result: string;
   if (!source) {
@@ -269,13 +267,6 @@ export class SysauditComponent implements OnInit {
       });
       this.graphData = graphData;
       // this.log(`Group Graph Sum Chart Updated`);
-    }
-
-    formatDate(iDate: Date): string {
-      let iDateString = '';
-      iDateString = moment(iDate).format('YYYY-MM-DD');
-      // this.log(`Date Conversion ${iDate}: ${iDateString}`);
-      return iDateString;
     }
 
     groupgraphDataLineChart(): void {

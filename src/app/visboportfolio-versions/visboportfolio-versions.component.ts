@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import * as moment from 'moment';
-
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
@@ -18,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate } from '../_helpers/visbo.helper';
 
 class Params {
   vpfid: string;
@@ -61,9 +59,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     combinedPermVC: VGPermission = undefined;
     permVC = VGPVC;
     permVP = VGPVP;
-
-    sortAscending: boolean;
-    sortColumn: number;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -341,7 +336,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     for (let i = 0; i < len; i++) {
       const timestamp = new Date(this.visboportfolioversions[i].timestamp);
-      let text = 'Version '.concat('from ', moment(timestamp).format('DD.MM.YY'));
+      let text = 'Version '.concat('from ', convertDate(new Date(timestamp), 'fullDate', this.currentLang));
       if (this.visboportfolioversions[i].variantName) {
         text = text.concat(' ( ', this.visboportfolioversions[i].variantName, ' )');
       }

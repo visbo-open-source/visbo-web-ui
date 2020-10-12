@@ -8,9 +8,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
-
-import * as moment from 'moment';
-import { visboCmpString } from '../_helpers/visbo.helper';
+import { VGPermission } from '../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -23,7 +21,6 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
   @Input() vps: VisboProjectVersion[];
   @Input() combinedPerm: VGPermission;
 
-  currentRefDate: Date;
   vpFilter: string;
 
   vpList: VisboProjectVersion[];
@@ -31,6 +28,10 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
   hasCost: Boolean;
 
   currentLang: string;
+
+  sortAscending: boolean;
+  sortColumn: number;
+
 
   constructor(
     private messageService: MessageService,
@@ -42,15 +43,13 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    if (!this.refDate) { this.refDate = new Date(); }
-    this.currentRefDate = this.refDate;
-    this.log(`ProjectVPVList Init  ${this.refDate.toISOString()} ${this.refDate !== this.currentRefDate} `);
+    this.log(`ProjectVPVList Init`);
 
     this.visboViewVPVList();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`ProjectVPVList Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()}, Changes ${JSON.stringify(changes)}`);
+    this.log(`ProjectVPVList Changes ${JSON.stringify(changes)}`);
     this.visboViewVPVList();
   }
 
@@ -58,7 +57,6 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
     this.vpList = [];
     this.hasCost = false;
 
-    this.currentRefDate = this.refDate;
     if (!this.vps || this.vps.length === 0) {
       return;
     }
@@ -107,6 +105,11 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
       result = result.concat(' ( ', variantName, ' ) ')
     }
     return result;
+  }
+
+  gotoVP(id: string, variantName: string): void {
+    this.log(`goto VP ${id}/${variantName}`);
+    this.router.navigate(['vpKeyMetrics//'.concat(id)], variantName ? { queryParams: { variantName: variantName }} : {});
   }
 
   sortTable(n?: number): void {
