@@ -12,8 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewdeadline',
@@ -359,8 +358,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(deadline: VPVDeadline): string {
-    const startDate = moment(deadline.startDateVPV).format('DD.MM.YY');
-    const endDate = moment(deadline.endDateVPV).format('DD.MM.YY');
+    const startDate = convertDate(new Date(deadline.startDateVPV), 'fullDate', this.currentLang);
+    const endDate = convertDate(new Date(deadline.endDateVPV), 'fullDate', this.currentLang);
     let name = deadline.fullName;
     if (name === '.') {
       name = this.vpvActive.name;

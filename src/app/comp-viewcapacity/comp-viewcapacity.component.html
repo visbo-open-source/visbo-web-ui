@@ -3,7 +3,6 @@
 
     <span class="row text-dark">
       <span class="row ml-0">
-        <!-- <span> {{ 'vpfVersion.lbl.and' | translate }} </span> -->
         <span class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</span>
         <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">von </label> -->
         <input id="capacityFrom" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >

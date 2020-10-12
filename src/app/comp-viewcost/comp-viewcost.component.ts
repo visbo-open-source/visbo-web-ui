@@ -12,8 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+import { convertDate, getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -81,7 +80,6 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    moment.locale(this.currentLang);
     this.visboCostCalc();
   }
 
@@ -184,7 +182,6 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.log(`ViewCostOverTime Result empty`);
       graphDataCost.push([new Date(), 0, '', 0, 0]);
     }
-    // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
     // this.log(`ViewCostOverTime len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
@@ -199,6 +196,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
+    this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCost.length;
     // header will be written in the array at the beginning
     graphDataCost.unshift([
       'Timestamp',
@@ -209,7 +207,6 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.translate.instant('keyMetrics.planETC'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-    // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
   }
@@ -219,7 +216,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(cost: VPVCost, actualData: boolean): string {
-    const currentDate = moment(cost.currentDate).format('MMM YYYY');
+    const currentDate = convertDate(new Date(cost.currentDate), 'shortDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
       '<table>';

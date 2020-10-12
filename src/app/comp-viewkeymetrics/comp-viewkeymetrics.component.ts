@@ -130,46 +130,46 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Init KeyMetrics`);
     this.metricList = [
       {
-        name: this.translate.instant('vpfVersion.metric.costName'),
+        name: this.translate.instant('compViewKeyMetric.metric.costName'),
         metric: 'Costs',
-        axis: this.translate.instant('vpfVersion.metric.costAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.costBubble'),
-        table: this.translate.instant('vpfVersion.metric.costTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.costAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.costBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.costTable')
       },
       {
-        name: this.translate.instant('vpfVersion.metric.endDateName'),
+        name: this.translate.instant('compViewKeyMetric.metric.endDateName'),
         metric: 'EndDate',
-        axis: this.translate.instant('vpfVersion.metric.endDateAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.endDateBubble'),
-        table: this.translate.instant('vpfVersion.metric.endDateTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.endDateAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.endDateBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.endDateTable')
       },
       {
-        name: this.translate.instant('vpfVersion.metric.deadlineName'),
+        name: this.translate.instant('compViewKeyMetric.metric.deadlineName'),
         metric: 'Deadlines',
-        axis: this.translate.instant('vpfVersion.metric.deadlineAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deadlineBubble'),
-        table: this.translate.instant('vpfVersion.metric.deadlineTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.deadlineAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.deadlineTable')
       },
       {
-        name: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayName'),
+        name: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayName'),
         metric: 'DeadlinesFinishedDelay',
-        axis: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayBubble'),
-        table: this.translate.instant('vpfVersion.metric.deadlineFinishedDelayTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayTable')
       },
       {
-        name: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayName'),
+        name: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayName'),
         metric: 'DeadlinesUnFinishedDelay',
-        axis: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayBubble'),
-        table: this.translate.instant('vpfVersion.metric.deadlineUnFinishedDelayTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayTable')
       },
       {
-        name: this.translate.instant('vpfVersion.metric.deliveryName'),
+        name: this.translate.instant('compViewKeyMetric.metric.deliveryName'),
         metric: 'Deliveries',
-        axis: this.translate.instant('vpfVersion.metric.deliveryAxis'),
-        bubble: this.translate.instant('vpfVersion.metric.deliveryBubble'),
-        table: this.translate.instant('vpfVersion.metric.deliveryTable')
+        axis: this.translate.instant('compViewKeyMetric.metric.deliveryAxis'),
+        bubble: this.translate.instant('compViewKeyMetric.metric.deliveryBubble'),
+        table: this.translate.instant('compViewKeyMetric.metric.deliveryTable')
       }
     ];
 
@@ -560,8 +560,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   graphBubbleAxis(): void {
     let metric = this.metricList[this.metricX];
-    const weekFormat = '# ' + this.translate.instant('vpfVersion.lbl.weeks');
-    const dayFormat = '# ' + this.translate.instant('vpfVersion.lbl.days');
+    const weekFormat = '# ' + this.translate.instant('compViewKeyMetric.lbl.weeks');
+    const dayFormat = '# ' + this.translate.instant('compViewKeyMetric.lbl.days');
 
     this.graphBubbleOptions.hAxis.title = metric.axis;
     switch (metric.metric) {

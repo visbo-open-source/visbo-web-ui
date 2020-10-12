@@ -280,7 +280,8 @@
 			"showExisting": "Nicht gelöschte",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
-			"viewProjectBoard": "Zeige Projektübersicht",
+			"viewProjectBoard": "Projekttafel",
+			"viewList": "Liste",
 			"create": "Neues Projekt",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
@@ -450,6 +451,7 @@
 			"info": "Info",
 			"startDate": "Projekt Start",
 			"endDate": "Projekt Ende",
+			"savingED": "Änderung",
 			"leadPerson": "Projektverantwortlicher",
 			"description": "Beschreibung/Ziel",
 			"template": "Projektvorlage",
@@ -465,6 +467,7 @@
 			"trend": "Trend",
 			"metricCost": "Kosten",
 			"metricDelivery": "Qualität",
+			"metricEndDate": "Projekt Ende",
 			"metricDeadline": "Termin",
 			"metricDeadlineDelay": "Termin Verschiebung",
 			"unitsDelay": "Tage",
@@ -555,6 +558,68 @@
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
 		}
 	},
+	"compViewKeyMetric": {
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"project": "Projekt",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
+			"timeline": "Projektübersicht",
+			"xAxis": "X-Achse",
+			"yAxis": "Y-Achse",
+			"bac": "Gesamtkosten (Baseline)",
+			"endDate": "Projektende",
+			"deadlines": "Termine (Baseline)",
+			"deliveries": "Lieferungen (Baseline)",
+			"days": "Tage",
+			"weeks": "Wochen",
+			"show": "Anzeige",
+			"and": "und",
+			"from": "vom",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "gefiltert mit",
+			"filter": "Filter Projekte"
+		},
+		"btn": {
+			"showChart": "Zeige Chart",
+			"showList": "Zeige Liste",
+			"change": "Ändern",
+			"cancel": "Abbrechen"
+		},
+		"metric": {
+			"costName": "Gesamtkosten",
+			"costAxis": "Erwartete Gesamtkosten",
+			"costBubble": "Erwartete Gesamtkosten (%)",
+			"costTable": "Erwartete Gesamtkosten",
+			"endDateName": "Termin (Projektende)",
+			"endDateAxis": "Abweichung beim Projektende",
+			"endDateBubble": "Abweichung beim Projektende (Wochen)",
+			"endDateTable": "Änderung Projektende",
+			"deadlineName": "Termin (Deadlines)",
+			"deadlineAxis": "Abweichung bei den Terminen",
+			"deadlineBubble": "Erreichte Termine in %",
+			"deadlineTable": "Erreichte Termine",
+			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
+			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
+			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayTable": "Unerledigte",
+			"deliveryName": "Qualität (Lieferungen)",
+			"deliveryAxis": "Erreichte Lieferungen",
+			"deliveryBubble": "Erreichte Lieferungen in %",
+			"deliveryTable": "Erreichte Lieferungen"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
 	"compViewBoard": {
 		"lbl": {
 			"project": "Projekt",
@@ -565,6 +630,36 @@
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
 			"filter": "Filter"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
+	"compViewVPVList": {
+		"lbl": {
+			"project": "Projekt",
+			"projectView": "Projektübersicht",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
+			"nr": "Nummer",
+			"name": "Name",
+			"variant": "Variante",
+			"timestamp": "Zeitstempel",
+			"endDate": "Projektende",
+			"changeWeeks": "+/- Wochen",
+			"percentOfBAC": "% BAC",
+			"percentOfActDeadline": "% PD",
+			"percentOfActDelivery": "% PDV",
+			"filter": "Filter"
+		},
+		"metric": {
+			"endDateTooltip": "Abweichung beim Projektende (Wochen)",
+			"costTooltip": "Erwartete Gesamtkosten (%)",
+			"deadlineTooltip": "Erreichte Termine in %",
+			"deliveryTooltip": "Erreichte Lieferungen in %"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
@@ -751,73 +846,20 @@
 		"titleSelectVersion": "Auswahl Portfolio Version",
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
-		"titleChange": "Ändern der Kennzahlen",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"lbl": {
-			"nr": "Nummer",
-			"variant": "Variante",
 			"day": "Tag",
-			"days": "Tage",
 			"week": "Woche",
-			"weeks": "Wochen",
 			"month": "Monat",
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"show": "Anzeige",
-			"and": "und",
-			"from": "vom",
-			"planVsBase": "plan-to-date vs. baseline",
-			"filtered": "gefiltert mit",
-			"filter": "Filter Projekte",
-			"xAxis": "X-Achse",
-			"yAxis": "Y-Achse",
-			"project": "Projekt",
-			"timestamp": "Zeitstempel",
-			"keyMetrics": "Projekt Metrik",
-			"name": "Name",
-			"bac": "Gesamtkosten (Baseline)",
-			"endDate": "Projektende (Baseline)",
-			"deadlines": "Termine (Baseline)",
-			"deliveries": "Lieferungen (Baseline)"
+			"nextPeriod": "Periode nach {{refDate}}"
 		},
 		"btn": {
-			"showChart": "Zeige Chart",
-			"showList": "Zeige Liste",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
-			"viewProjectBoard": "Projekttafel",
-			"filter": "Filter",
-			"change": "Ändern",
-			"cancel": "Abbrechen",
-			"back": "Zurück"
-		},
-		"metric": {
-			"costName": "Gesamtkosten",
-			"costAxis": "Erwartete Gesamtkosten",
-			"costBubble": "Erwartete Gesamtkosten (%)",
-			"costTable": "Erwartete Gesamtkosten",
-			"endDateName": "Termin (Projektende)",
-			"endDateAxis": "Abweichung beim Projektende",
-			"endDateBubble": "Abweichung beim Projektende (Wochen)",
-			"endDateTable": "Änderung Projektende",
-			"deadlineName": "Termin (Deadlines)",
-			"deadlineAxis": "Abweichung bei den Terminen",
-			"deadlineBubble": "Erreichte Termine in %",
-			"deadlineTable": "Erreichte Termine",
-			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
-			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
-			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
-			"deadlineFinishedDelayTable": "Erledigte",
-			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
-			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
-			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
-			"deadlineUnFinishedDelayTable": "Unerledigte",
-			"deliveryName": "Qualität (Lieferungen)",
-			"deliveryAxis": "Erreichte Lieferungen",
-			"deliveryBubble": "Erreichte Lieferungen in %",
-			"deliveryTable": "Erreichte Lieferungen"
+			"viewProjectBoard": "Projekttafel"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
@@ -959,6 +1001,11 @@
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
 
+		"shortEED": "EED",
+		"longEED": "Estimated End Date",
+		"shortBED": "BED",
+		"longBED": "Baseline End Date",
+
 		"shortDAC": "DAC",
 		"longDAC": "Number of Deadlines at Completion, according baseline",
 		"shortEDC": "EDC",
@@ -1018,6 +1065,8 @@
 			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
 			"yAxisDeadlineDelayTrend": "durschnittliche Terminabweichung in Tagen",
 			"titleDeadlineDelayTrend": "Historischer Vergleich der Terminabweichungen: erledigt vs. offen",
+			"titleEndDateTrend": "Historische Entwicklung vom Projektende: plan-to-date vs. baseline",
+			"yAxisEndDateTrend": "Projekt Ende",
 			"yAxisCostTrend": "Kosten in T€",
 			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},
