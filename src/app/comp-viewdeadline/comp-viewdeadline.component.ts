@@ -304,6 +304,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
     }
     // show the last PieChart as well
+    this.log("PIE Chart change ", change)
     // this.graphBeforeAllDataPieChart = change ? this.graphAllDataPieChart : undefined;
     if (nonEmpty) {
       this.graphAllDataPieChart = graphData;

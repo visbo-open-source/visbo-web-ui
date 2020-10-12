@@ -188,12 +188,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     let variantName = this.route.snapshot.queryParams['variantName'];
     if (variantID) {
       // serach for the variant Name
-      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      const index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       }
     } else if (variantName) {
-      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      const index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       } else {
@@ -456,7 +456,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetricsCost[0][0]);
+      const currentDate = new Date(keyMetricsCost[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetricsCost.push([
         currentDate, undefined, undefined, undefined, undefined
@@ -526,17 +526,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetricsEndDate[0][0]);
+      const currentDate = new Date(keyMetricsEndDate[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetricsEndDate.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
     }
-    let minDate = new Date(minGetTime);
+    const minDate = new Date(minGetTime);
     minDate.setDate(1);
     minDate.setHours(0,0,0,0);
     minDate.setMonth(minDate.getMonth() - 1);
-    let maxDate = new Date(maxGetTime);
+    const maxDate = new Date(maxGetTime);
     maxDate.setDate(1);
     maxDate.setHours(0,0,0,0);
     maxDate.setMonth(minDate.getMonth() + 3);
@@ -566,8 +566,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       '<div><b>' + timestamp + '</b></div>' + '<div>' +
       '<table>';
 
-    const shortEED = this.translate.instant('keyMetrics.shortEED');
-    const shortBED = this.translate.instant('keyMetrics.shortBED');
     const longEED = this.translate.instant('keyMetrics.longEED');
     const longBED = this.translate.instant('keyMetrics.longBED');
 
@@ -621,7 +619,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
+      const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
@@ -687,7 +685,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
+      const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
@@ -749,7 +747,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
+      const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined
@@ -798,7 +796,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const url = 'vpView/';
     this.log(`goto VP View`);
     let vpid, vpvid;
-    let queryParams = new Params();
+    const queryParams = new Params();
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
       vpvid = this.vpvKeyMetricActive._id;
@@ -834,7 +832,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewCost(): void {
     this.log(`goto VPV View Cost vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -845,7 +843,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDelivery(): void {
     this.log(`goto VPV View Delivery vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -856,17 +854,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDeadline(): void {
     this.log(`goto VPV View Deadline vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
     }
     this.router.navigate(['vpViewDeadline/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
-  }
-
-  diffEndDate(current: Date, base: Date): number {
-    // return diff of Dates in weeks
-    return 4;
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {

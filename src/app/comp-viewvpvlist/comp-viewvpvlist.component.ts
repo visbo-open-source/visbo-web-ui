@@ -25,7 +25,7 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
 
   vpList: VisboProjectVersion[];
   vpvWithKM: number;
-  hasCost: Boolean;
+  hasCost: boolean;
 
   currentLang: string;
 
@@ -93,14 +93,13 @@ export class VisboCompViewVPVListComponent implements OnInit, OnChanges {
   }
 
   calcDateDiff(current: Date, baseline: Date): number {
-    let currentTime = current ? (new Date(current)).getTime() : 0;
-    let baselineTime = baseline ? (new Date(baseline)).getTime() : 0;
+    const currentTime = current ? (new Date(current)).getTime() : 0;
+    const baselineTime = baseline ? (new Date(baseline)).getTime() : 0;
     return Math.round((baselineTime - currentTime) / 1000 / 3600 / 24 / 7 * 10) / 10;
   }
 
-  combineName(vpName, variantName): string {
+  combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
-    result = result
     if (variantName) {
       result = result.concat(' ( ', variantName, ' ) ')
     }
