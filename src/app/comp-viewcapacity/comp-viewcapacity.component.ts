@@ -259,7 +259,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   calcLoad(capacity: VisboCapacity[]): number {
     if (!capacity || capacity.length == 0) {
-      return undefiend;
+      return undefined;
     }
 
     function percentCalc(item: VisboCapacity, from: Date, to: Date): number {
