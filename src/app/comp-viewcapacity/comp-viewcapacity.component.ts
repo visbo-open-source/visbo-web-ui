@@ -257,13 +257,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  calcLoad(capacity: VisboCapacity[]): void {
+  calcLoad(capacity: VisboCapacity[]): number {
     if (!capacity || capacity.length == 0) {
-      return;
+      return undefined;
     }
 
     function percentCalc(item: VisboCapacity, from: Date, to: Date): number {
-      let current = new Date(item.month);
+      const current = new Date(item.month);
       if (current.getTime() < from.getTime() || current.getTime() > to.getTime()) return 0;
       let capa = (item?.internCapa_PT|| 0) + (item?.externCapa_PT || 0);
       const cost = (item?.actualCost_PT|| 0) + (item?.plannedCost_PT || 0);
@@ -271,16 +271,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (cost > 0 && capa === 0) {
         capa = 1;
       }
-      let result = (cost / capa) - 1;
-      return result;
+      return (cost / capa) - 1;
     }
 
     let capaLoad: CapaLoad[] = [];
-    for (var i=0; i < capacity.length; i++) {
-      let capa = percentCalc(capacity[i], this.capacityFrom, this.capacityTo);
+    for (let i=0; i < capacity.length; i++) {
+      const capa = percentCalc(capacity[i], this.capacityFrom, this.capacityTo);
       const roleID = capacity[i].roleID;
       if (!capaLoad[roleID]) {
-        let load = new CapaLoad();
+        const load = new CapaLoad();
         load.uid = roleID;
         load.percentOver = 0;
         load.percentUnder = 0;
@@ -416,7 +415,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboCapacity len ${len}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(graphDataCapacity[0][0]);
+      const currentDate = new Date(graphDataCapacity[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       graphDataCapacity.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
@@ -636,7 +635,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   }
 
-  selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren: Boolean = true): void {
+  selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
     if (leaf.name !== this.currentLeaf.name ) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;

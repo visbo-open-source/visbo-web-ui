@@ -19,7 +19,7 @@ export function visboCmpDate(first: Date, second: Date): number {
   return result;
 }
 
-export function convertDate(input: Date, format: string, lang: string = 'en'): string {
+export function convertDate(input: Date, format: string, lang = 'en'): string {
   if (format == 'longDate') {
     return input.toLocaleDateString(
       lang,

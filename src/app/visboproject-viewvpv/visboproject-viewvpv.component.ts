@@ -80,12 +80,12 @@ export class VisboProjectViewVPVComponent implements OnInit {
     let variantName = this.route.snapshot.queryParams['variantName'];
     if (variantID) {
       // serach for the variant Name
-      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      const index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       }
     } else if (variantName) {
-      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      const index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       } else {
@@ -153,12 +153,16 @@ export class VisboProjectViewVPVComponent implements OnInit {
                   this.visboprojectversions = visboprojectversions;
                   this.sortVPVTable(undefined);
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
-                  let index = 0;
+                  let index = this.visboprojectversions.length > 0 ? 0 : -1;
                   if (this.initVPVID) {
-                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
-                    index = index >= 0 ? index : 0;
+                    const findIndex = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
+                    if (findIndex >= 0) {
+                      index = findIndex;
+                    }
                   }
-                  this.setVpvActive(visboprojectversions[index]);
+                  if (index >= 0) {
+                    this.setVpvActive(visboprojectversions[index]);
+                  }
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);

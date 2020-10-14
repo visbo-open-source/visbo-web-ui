@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -190,7 +190,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(graphDataCost[0][0]);
+      const currentDate = new Date(graphDataCost[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       graphDataCost.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined

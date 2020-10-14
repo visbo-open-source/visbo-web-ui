@@ -465,6 +465,8 @@
 			"total": "Total",
 			"detail": "Detail",
 			"trend": "Trend",
+			"xAxis": "X-Axis",
+			"yAxis": "Y-Axis",
 			"metricCost": "Cost",
 			"metricDelivery": "Quality",
 			"metricEndDate": "Project End",
@@ -775,6 +777,7 @@
 			"delivery": "Show Delivery"
 		},
 		"msg": {
+			"errorNoVersion": "This project has still no versions",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}

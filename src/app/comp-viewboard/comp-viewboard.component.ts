@@ -172,9 +172,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return JSON.stringify(this.vps);
   }
 
-  combineName(vpName, variantName): string {
+  combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
-    result = result
     if (variantName) {
       result = result.concat(' ( ', variantName, ' ) ')
     }
@@ -186,7 +185,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let result = this.vps.find(x => x.name === name);
     if (!result && name.lastIndexOf(" ) ") === name.length - 3) {
       // variant Part at the end
-      let index = name.lastIndexOf(" ( ");
+      const index = name.lastIndexOf(" ( ");
       const vpName = name.substring(0, index);
       const variantName = name.substring(index + 3, name.length - 3);
       result = this.vps.find(x => x.name === vpName && x.variantName === variantName)

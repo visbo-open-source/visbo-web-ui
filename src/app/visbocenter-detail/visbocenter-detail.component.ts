@@ -525,7 +525,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  initSetting(index): void {
+  initSetting(index: number): void {
     this.vcSetting = this.vcSettings[index];
   }
 
@@ -557,7 +557,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
-      let organisation: OrganisationItem[] = [];
+      const organisation: OrganisationItem[] = [];
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
         if (!organisation[role.uid - 1]) {
@@ -574,7 +574,7 @@ export class VisbocenterDetailComponent implements OnInit {
 
         this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
         for (let j = 0; j < role.subRoleIDs.length; j++) {
-          let index = Number(role.subRoleIDs[j].key) - 1;
+          const index = Number(role.subRoleIDs[j].key) - 1;
           if (index < 0) {
             // something wrong with the numbering
             break;
@@ -615,7 +615,6 @@ export class VisbocenterDetailComponent implements OnInit {
           // organisation could contain holes and they are sorted at the end
           break;
         }
-        let parent = '';
         const lineItem = ''
                     + role.name.padStart(role.name.length + role.level, ' ') + separator
                     + role.uid + separator
@@ -641,7 +640,7 @@ export class VisbocenterDetailComponent implements OnInit {
       a.href = url;
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();
-      var strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
+      const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
 
       a.download = `VisboCenterOrganisation_${strTimestamp}.csv`;
       this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
@@ -649,7 +648,7 @@ export class VisbocenterDetailComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     } else {
       // export as JSON/Text
-      let data = JSON.stringify(setting.value);
+      const data = JSON.stringify(setting.value);
       this.log(`VC Setting JSON Len ${data.length} `);
       const blob = new Blob([data], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);

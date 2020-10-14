@@ -70,12 +70,12 @@ export class VisboProjectViewCostComponent implements OnInit {
     let variantName = this.route.snapshot.queryParams['variantName'];
     if (variantID) {
       // serach for the variant Name
-      let index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      const index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       }
     } else if (variantName) {
-      let index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
+      const index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
       if (index >= 0) {
         variantName = this.vpActive.variant[index].variantName;
       } else {

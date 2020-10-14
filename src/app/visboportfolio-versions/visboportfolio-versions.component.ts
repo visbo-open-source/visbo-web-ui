@@ -16,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, convertDate } from '../_helpers/visbo.helper';
 
 class Params {
   vpfid: string;
@@ -353,7 +353,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Change Drop Down ${i} `);
     this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpfid = this.vpfActive._id;
     queryParams.refDate = this.vpvRefDate.toISOString();
     queryParams.view = this.currentView;

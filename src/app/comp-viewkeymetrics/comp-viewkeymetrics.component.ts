@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 
 import {TranslateService} from '@ngx-translate/core';
 

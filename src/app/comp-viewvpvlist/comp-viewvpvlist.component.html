@@ -7,21 +7,21 @@
         <input class="ml-2" type="text" (keyup)="visboViewVPVList()" [(ngModel)]="vpFilter" placeholder="Filter">
       </div>
     </div>
-    <table class='table table-hover table-sortable'>
+    <table *ngIf="vpList.length > 0" class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
         <tr>
           <th class="d-none d-lg-table-cell">{{ 'compViewVPVList.lbl.nr' | translate }}</th>
           <th (click)="sortTable(1)">{{ 'compViewVPVList.lbl.name' | translate }}</th>
-          <th class="d-none d-md-table-cell" (click)="sortTable(2)">{{ 'compViewVPVList.lbl.variant' | translate }}</th>
+          <th *ngIf="hasVariant" class="d-none d-md-table-cell" (click)="sortTable(2)">{{ 'compViewVPVList.lbl.variant' | translate }}</th>
           <th class="d-none d-md-table-cell" (click)="sortTable(3)">{{ 'compViewVPVList.lbl.timestamp' | translate }}</th>
           <th (click)="sortTable(5)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
           <th (click)="sortTable(6)" class="d-none d-xl-table-cell text-right">{{ 'compViewVPVList.lbl.endDate' | translate }}</th>
           <th (click)="sortTable(11)" class="text-right" title="{{ 'compViewVPVList.metric.endDateTooltip' | translate }}">{{ 'compViewVPVList.lbl.changeWeeks' | translate }}</th>
-          <th *ngIf="hasCost" (click)="sortTable(10)" class="d-none d-xl-table-cell text-right" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
-          <th *ngIf="hasCost" (click)="sortTable(7)" class="text-right" title="{{ 'compViewVPVList.metric.costTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfBAC' | translate }}</th>
-          <th (click)="sortTable(8)" class="d-none d-xl-table-cell text-right" title="{{ 'compViewVPVList.metric.deadlineTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfActDeadline' | translate }}</th>
-          <th (click)="sortTable(9)" class="d-none d-xl-table-cell text-right" title="{{ 'compViewVPVList.metric.deliveryTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfActDelivery' | translate }}</th>
+          <th *ngIf="hasCost" (click)="sortTable(10)" class="text-right" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
+          <th *ngIf="hasCost" (click)="sortTable(7)" class="d-none d-xl-table-cell text-right" title="{{ 'compViewVPVList.metric.costTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfBAC' | translate }}</th>
+          <!-- <th (click)="sortTable(8)" class="d-none d-xl-table-cell text-right" title="{{ 'compViewVPVList.metric.deadlineTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfActDeadline' | translate }}</th>
+          <th (click)="sortTable(9)" class="d-none d-xl-table-cell text-right" title="{{ 'compViewVPVList.metric.deliveryTooltip' | translate }}">{{ 'compViewVPVList.lbl.percentOfActDelivery' | translate }}</th> -->
         </tr>
       </thead>
       <!--Table body-->
@@ -29,7 +29,7 @@
         <tr *ngFor="let vpItem of vpList; let vpIndex=index" (click)="gotoVP(vpItem.vpid, vpItem.variantName)" >
           <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td>
           <td><a>{{vpItem.name}}</a></td>
-          <td class="d-none d-md-table-cell">{{vpItem.variantName}}</td>
+          <td *ngIf="hasVariant" class="d-none d-md-table-cell">{{vpItem.variantName}}</td>
           <td class="d-none d-md-table-cell" title="{{vpItem.timestamp | date :'dd.MM.yy HH:MM'}}">{{vpItem.timestamp | date :'dd.MM.yy'}}</td>
           <td title="{{vpItem.ampelErlaeuterung}}">
             <div *ngIf="vpItem.ampelStatus == 1" class="fas fa-lightbulb text-success"></div>
@@ -40,19 +40,35 @@
           <td *ngIf="calcDateDiff(vpItem.keyMetrics?.endDateCurrent, vpItem.keyMetrics?.endDateBaseLast) != 0" class="text-right">{{calcDateDiff(vpItem.keyMetrics?.endDateCurrent, vpItem.keyMetrics?.endDateBaseLast) / 7 | number:'1.1-1'}} W</td>
           <td *ngIf="calcDateDiff(vpItem.keyMetrics?.endDateCurrent, vpItem.keyMetrics?.endDateBaseLast) == 0" class="text-right"></td>
 
-          <td *ngIf="hasCost" class="text-right">{{vpItem.keyMetrics?.costCurrentTotal | number: '1.0-0'}} T€</td>
-          <td *ngIf="hasCost && vpItem.keyMetrics != undefined && vpItem.keyMetrics.costBaseLastTotal >= 0" class="d-none d-xl-table-cell text-right" title="{{vpItem.keyMetrics?.costBaseLastTotal}} T€">{{calcPercent(vpItem.keyMetrics?.costCurrentTotal, vpItem.keyMetrics?.costBaseLastTotal)*100 | number:'1.0-0'}} %</td>
-          <td *ngIf="hasCost && (vpItem.keyMetrics == undefined || vpItem.keyMetrics.costBaseLastTotal == undefined)" class="d-none d-xl-table-cell text-right"></td>
-          <td *ngIf="vpItem.keyMetrics != undefined && vpItem.keyMetrics.timeCompletionBaseLastActual >= 0" class="d-none d-xl-table-cell text-right" title="{{vpItem.keyMetrics?.timeCompletionBaseLastActual}}">{{calcPercent(vpItem.keyMetrics?.timeCompletionCurrentActual, vpItem.keyMetrics?.timeCompletionBaseLastActual)*100 | number:'1.0-0'}} %</td>
+          <td *ngIf="hasCost" class="text-right" title="{{calcPercent(vpItem.keyMetrics?.costCurrentTotal, vpItem.keyMetrics?.costBaseLastTotal)*100 | number:'1.0-0'}} {{ 'compViewVPVList.lbl.percentOfBAC' | translate }}">
+            {{vpItem.keyMetrics?.costCurrentTotal | number: '1.0-0'}} T€
+          </td>
+          <td *ngIf="hasCost && vpItem.keyMetrics?.costBaseLastTotal > 0 && vpItem.keyMetrics.costCurrentTotal <= vpItem.keyMetrics.costBaseLastTotal"
+              class="d-none d-xl-table-cell text-right my_bg_green"
+              title="{{vpItem.keyMetrics?.costBaseLastTotal | number: '1.0-0'}} T€">
+            {{calcPercent(vpItem.keyMetrics?.costCurrentTotal, vpItem.keyMetrics?.costBaseLastTotal)*100 | number:'1.0-0'}} %
+          </td>
+          <td *ngIf="hasCost && vpItem.keyMetrics?.costBaseLastTotal > 0 && vpItem.keyMetrics.costCurrentTotal > vpItem.keyMetrics.costBaseLastTotal && vpItem.keyMetrics.costCurrentTotal <= vpItem.keyMetrics.costBaseLastTotal * 1.05"
+              class="d-none d-xl-table-cell text-right my_bg_yellow"
+              title="{{vpItem.keyMetrics?.costBaseLastTotal | number: '1.0-0'}} T€">
+            {{calcPercent(vpItem.keyMetrics?.costCurrentTotal, vpItem.keyMetrics?.costBaseLastTotal)*100 | number:'1.0-0'}} %
+          </td>
+          <td *ngIf="hasCost && vpItem.keyMetrics?.costBaseLastTotal > 0 && vpItem.keyMetrics.costCurrentTotal > vpItem.keyMetrics.costBaseLastTotal * 1.05"
+              class="d-none d-xl-table-cell text-right my_bg_red"
+              title="{{vpItem.keyMetrics?.costBaseLastTotal | number: '1.0-0'}} T€">
+            {{calcPercent(vpItem.keyMetrics?.costCurrentTotal, vpItem.keyMetrics?.costBaseLastTotal)*100 | number:'1.0-0'}} %
+          </td>
+          <td *ngIf="hasCost && (vpItem.keyMetrics?.costBaseLastTotal == undefined || vpItem.keyMetrics?.costBaseLastTotal == 0)" class="d-none d-xl-table-cell text-right"></td>
+          <!-- <td *ngIf="vpItem.keyMetrics != undefined && vpItem.keyMetrics.timeCompletionBaseLastActual >= 0" class="d-none d-xl-table-cell text-right" title="{{vpItem.keyMetrics?.timeCompletionBaseLastActual}}">{{calcPercent(vpItem.keyMetrics?.timeCompletionCurrentActual, vpItem.keyMetrics?.timeCompletionBaseLastActual)*100 | number:'1.0-0'}} %</td>
           <td *ngIf="vpItem.keyMetrics == undefined || vpItem.keyMetrics.timeCompletionBaseLastActual == undefined" class="d-none d-xl-table-cell text-right"></td>
           <td *ngIf="vpItem.keyMetrics != undefined && vpItem.keyMetrics.deliverableCompletionBaseLastActual >= 0" class="d-none d-xl-table-cell text-right" title="{{vpItem.keyMetrics?.deliverableCompletionBaseLastActual}}">{{calcPercent(vpItem.keyMetrics?.deliverableCompletionCurrentActual, vpItem.keyMetrics?.deliverableCompletionBaseLastActual)*100 | number:'1.0-0'}} %</td>
-          <td *ngIf="vpItem.keyMetrics == undefined || vpItem.keyMetrics.deliverableCompletionBaseLastActual == undefined" class="d-none d-xl-table-cell text-right"></td>
+          <td *ngIf="vpItem.keyMetrics == undefined || vpItem.keyMetrics.deliverableCompletionBaseLastActual == undefined" class="d-none d-xl-table-cell text-right"></td> -->
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h5 *ngIf="vps.length == 0" class="mt-2">
-    {{ 'compViewList.msg.errorNoMatchingProjects' | translate }}
+  <h5 *ngIf="vps.length == 0 || vpList.length == 0" class="mt-2">
+    {{ 'compViewVPVList.msg.errorNoMatchingProjects' | translate }}
   </h5>
 </div>
