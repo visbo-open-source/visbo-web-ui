@@ -153,12 +153,16 @@ export class VisboProjectViewVPVComponent implements OnInit {
                   this.visboprojectversions = visboprojectversions;
                   this.sortVPVTable(undefined);
                   this.log(`get VPV: Get ${visboprojectversions.length} Project Versions`);
-                  let index = 0;
+                  let index = this.visboprojectversions.length > 0 ? 0 : -1;
                   if (this.initVPVID) {
-                    index = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
-                    index = index >= 0 ? index : 0;
+                    const findIndex = this.visboprojectversions.findIndex(vpv => vpv._id === this.initVPVID);
+                    if (findIndex >= 0) {
+                      index = findIndex;
+                    }
                   }
-                  this.setVpvActive(visboprojectversions[index]);
+                  if (index >= 0) {
+                    this.setVpvActive(visboprojectversions[index]);
+                  }
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);

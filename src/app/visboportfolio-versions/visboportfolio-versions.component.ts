@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import * as moment from 'moment';
-
 import {TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
@@ -18,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, convertDate } from '../_helpers/visbo.helper';
 
 class Params {
   vpfid: string;
@@ -62,9 +60,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     permVC = VGPVC;
     permVP = VGPVP;
 
-    sortAscending: boolean;
-    sortColumn: number;
-
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
@@ -78,7 +73,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.metric.costName')}`);
+    this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
     const refDate = this.route.snapshot.queryParams['refDate'];
     const nextView = this.route.snapshot.queryParams['view'];
@@ -185,7 +180,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
           this.visboprojectversions = visboprojectversions;
           this.calcVPList();
           this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
-          this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
+          if (visboprojectversions.length > 0) {
+            this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
+          }
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -258,16 +255,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
   }
 
-  calcPercent(current: number, baseline: number): number {
-    if (baseline === undefined) {
-      return undefined;
-    } else if (baseline === 0 && current === 0) {
-      return 1;
-    } else {
-      return (current || 0) / baseline;
-    }
-  }
-
   isSameDay(dateA: Date, dateB: Date): boolean {
     if (!dateA || !dateB) { return false; }
     dateA.setHours(0, 0, 0, 0);
@@ -304,6 +291,8 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         nextVP.VorlagenName = this.visboprojectversions[index].VorlagenName;
         nextVP.businessUnit = this.visboprojectversions[index].businessUnit;
         nextVP.status = this.visboprojectversions[index].status;
+        nextVP.ampelStatus = this.visboprojectversions[index].ampelStatus;
+        nextVP.ampelErlaeuterung = this.visboprojectversions[index].ampelErlaeuterung;
         nextVP.keyMetrics = this.visboprojectversions[index].keyMetrics;
         this.vpvWithKM += this.visboprojectversions[index].keyMetrics ? 1 : 0;
       }
@@ -347,7 +336,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     for (let i = 0; i < len; i++) {
       const timestamp = new Date(this.visboportfolioversions[i].timestamp);
-      let text = 'Version '.concat('from ', moment(timestamp).format('DD.MM.YY'));
+      let text = 'Version '.concat('from ', convertDate(new Date(timestamp), 'fullDate', this.currentLang));
       if (this.visboportfolioversions[i].variantName) {
         text = text.concat(' ( ', this.visboportfolioversions[i].variantName, ' )');
       }
@@ -364,7 +353,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Change Drop Down ${i} `);
     this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpfid = this.vpfActive._id;
     queryParams.refDate = this.vpvRefDate.toISOString();
     queryParams.view = this.currentView;
@@ -372,46 +361,6 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     const url = this.route.snapshot.url.join('/');
     this.log(`GoTo Portfolio Version ${this.vpfActive._id.toString()}`);
     this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
-  }
-
-  sortTable(n?: number): void {
-    if (!this.vpList) { return; }
-    // change sort order otherwise sort same column same direction
-    if (n !== undefined || this.sortColumn === undefined) {
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
-      }
-      if (this.sortAscending === undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = n === 1 ? true : false;
-      } else {
-        this.sortAscending = !this.sortAscending;
-      }
-    }
-    if (this.sortColumn === 1) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
-      });
-    }
-    if (this.sortColumn === 2) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpString(a.variantName.toLowerCase() || '', b.variantName.toLowerCase() || '');
-      });
-    }
-    if (this.sortColumn === 3) {
-      this.vpList.sort(function(a, b) {
-        return visboCmpDate(a.timestamp, b.timestamp);
-      });
-    }
-    if (this.sortColumn === 4) {
-      this.vpList.sort(function(a, b) {
-        return (b.keyMetrics ? 1 : -1) - (a.keyMetrics ? 1 : -1);
-      });
-    }
-    if (!this.sortAscending) {
-      this.vpList.reverse();
-    }
   }
 
   /** Log a message with the MessageService */

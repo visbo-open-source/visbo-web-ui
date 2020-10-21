@@ -39,11 +39,10 @@
     </div>
     <hr>
   </div>
-
 </div>
 
 <div *ngIf="vpvActive">
-  <div *ngIf="hasVPPerm(permVP.ViewAudit)" class="card">
+  <div *ngIf="hasVPPerm(permVP.ViewAudit) && vpvActive.keyMetrics.costBaseLastTotal > 0" class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
@@ -88,3 +87,8 @@
     </div>
   </div>
 </div>
+<div *ngIf="!vpvActive">
+  <h3>
+    {{ 'vpView.msg.errorNoVersion' | translate }}
+  </h3>
+<div>

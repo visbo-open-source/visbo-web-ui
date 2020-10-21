@@ -19,13 +19,17 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 class OrganisationItem {
   uid: number;
   pid: number;
-  level: number;
+  level: number
   name: string;
   parent: string;
   path: string;
+  employeeNr: string;
   isExternRole: boolean;
+  defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
+  entryDate: Date;
+  exitDate: Date;
   aliases: string;
 }
 
@@ -521,7 +525,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  initSetting(index): void {
+  initSetting(index: number): void {
     this.vcSetting = this.vcSettings[index];
   }
 
@@ -532,7 +536,7 @@ export class VisbocenterDetailComponent implements OnInit {
         response => {
           this.log(`Remove VisboCenter Setting result: ${JSON.stringify(response)}`);
           // filter user from vgUsers
-          this.vcSettings = this.vcSettings.filter(vcSetting => vcSetting !== setting);
+          this.vcSettings = this.vcSettings.filter(vcSetting => vcSetting !== setting)
           const message = this.translate.instant('vcDetail.msg.removeSettingSuccess', {'name': setting.name});
           this.alertService.success(message);
         },
@@ -552,12 +556,12 @@ export class VisbocenterDetailComponent implements OnInit {
   downloadSetting(): void {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
-    if (setting.type === 'organisation' && setting.value?.allRoles) {
-      let organisation: OrganisationItem[] = [];
+    if (setting.type == 'organisation' && setting.value?.allRoles) {
+      const organisation: OrganisationItem[] = [];
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
         if (!organisation[role.uid - 1]) {
-          organisation[role.uid - 1] = new OrganisationItem();
+          organisation[role.uid - 1] = new OrganisationItem()
           organisation[role.uid - 1].uid = role.uid;
           organisation[role.uid - 1].pid = undefined;
           organisation[role.uid - 1].path = '';
@@ -600,6 +604,10 @@ export class VisbocenterDetailComponent implements OnInit {
             // + 'isTeam' + separator
             + 'defaultKapa' + separator
             + 'tagessatz' + separator
+            + 'employeeNr' + separator
+            + 'defaultDayCapa' + separator
+            + 'entryDate' + separator
+            + 'exitDate' + separator
             + 'aliases' + '\n';
       for (let i = 0; i < organisation.length; i++) {
         const role = organisation[i];
@@ -607,16 +615,19 @@ export class VisbocenterDetailComponent implements OnInit {
           // organisation could contain holes and they are sorted at the end
           break;
         }
-        // const parent = '';
         const lineItem = ''
                     + role.name.padStart(role.name.length + role.level, ' ') + separator
                     + role.uid + separator
                     // + (role.pid || '') + separator
-                    + role.parent + separator
+                    + (role.parent || '') + separator
                     + (role.isExternRole ? '1' : '0') + separator
                     // + (role.isTeam ? '1' : '0') + separator
                     + (role.defaultKapa || '0') + separator
-                    + role.tagessatz + separator
+                    + (role.tagessatz || '0') + separator
+                    + (role.employeeNr || '') + separator
+                    + (role.defaultDayCapa || '0') + separator
+                    + (role.entryDate ? role.entryDate : '') + separator
+                    + (role.exitDate ? role.exitDate : '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }

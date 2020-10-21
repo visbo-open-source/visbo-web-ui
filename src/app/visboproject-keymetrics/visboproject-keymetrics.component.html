@@ -66,6 +66,21 @@
                 <button type="button" class="btn" (click)="switchTo('Costs')" title="{{historyButton}}">i</button>
               </a></td>
             </tr>
+            <tr *ngIf="vpvKeyMetricActive.keyMetrics.endDateBaseLast != undefined">
+              <td *ngIf="typeMetricChart == 'EndDate' && history" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricEndDate' | translate }}</a></td>
+              <td *ngIf="!(typeMetricChart == 'EndDate' && history)"><a>{{ 'vpKeyMetric.lbl.metricEndDate' | translate }}</a></td>
+              <td></td>
+              <td><a>
+                <span *ngIf="qualityEndDate == 1" class="fas fa-check-circle" style="color:green"></span>
+                <span *ngIf="qualityEndDate == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
+                <span *ngIf="qualityEndDate == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
+                <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
+              </a></td>
+              <td>
+                <button type="button" class="btn" (click)="switchTo('EndDate')" title="{{historyButton}}">i</button>
+              </td>
+            </tr>
             <tr *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal > 0">
               <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
@@ -136,6 +151,9 @@
         <div *ngIf="typeMetricChart == 'Costs'">
           <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
+        <div *ngIf="typeMetricChart == 'EndDate'">
+          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChartEndDate" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
+        </div>
         <div *ngIf="typeMetricChart == 'Deadlines'">
           <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
         </div>
@@ -176,6 +194,38 @@
                 <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
               </td>
               <td class="text-right"><button type="button" class="btn" title="{{ 'keyMetrics.lbl.detail' | translate }}" (click)="gotoClickedRow(vp)">i</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table *ngIf="typeMetricChart == 'EndDate'" class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(31)" title="{{ 'keyMetrics.longEED' | translate }}">{{ 'keyMetrics.shortEED' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(32)" title="{{ 'keyMetrics.longBED' | translate }}">{{ 'keyMetrics.shortBED' | translate }}</th>
+              <th class="text-right" (click)="sortKeyMetricsTable(33)">{{ 'vpKeyMetric.lbl.savingED' | translate }}</th>
+              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody>
+            <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
+            data-toggle="modal" data-target="#ProjectDetail">
+              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
+              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
+              <td class="text-right">{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</td>
+              <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
+              <td class="text-right">{{vp.savingEndDate | number: '1.0-1'}} W</td>
+              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
+                <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
+                <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
+                <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+              </td>
+              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
             </tr>
           </tbody>
@@ -380,6 +430,16 @@
             <tr>
               <td>{{ 'keyMetrics.shortBAC' | translate }}</td>
               <td>{{ 'keyMetrics.longBAC' | translate }}</td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="typeMetricChart == 'EndDate'">
+            <tr>
+              <td>{{ 'keyMetrics.shortEED' | translate }}</td>
+              <td>{{ 'keyMetrics.longEED' | translate }}</td>
+            </tr>
+            <tr>
+              <td>{{ 'keyMetrics.shortBED' | translate }}</td>
+              <td>{{ 'keyMetrics.longBED' | translate }}</td>
             </tr>
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deadlines'">

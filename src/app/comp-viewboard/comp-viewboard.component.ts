@@ -9,8 +9,7 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 
-import * as moment from 'moment';
-import { visboCmpString } from '../_helpers/visbo.helper';
+import { visboCmpString, convertDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -73,7 +72,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
-    
+
     for (let i = 0; i < this.vps.length; i++) {
       if (this.vpFilter
         && !(this.vps[i].name.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
@@ -104,6 +103,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         //   vpsFarbe = vpsFarbe + 1000;
         //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
         // }
+
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
@@ -126,8 +126,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(vpv: VisboProjectVersion): string {
-    const startDate = moment(vpv.startDate).format('DD.MM.YY');
-    const endDate = moment(vpv.endDate).format('DD.MM.YY');
+    const startDate = convertDate(new Date(vpv.startDate), 'fullDate', this.currentLang);
+    const endDate = convertDate(new Date(vpv.endDate), 'fullDate', this.currentLang);
 
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + this.combineName(vpv.name, vpv.variantName) + '</b></div>' + '<div>' +
@@ -172,11 +172,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return JSON.stringify(this.vps);
   }
 
-  combineName(vpName, variantName): string {
+  combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
-    result = result;
     if (variantName) {
-      result = result.concat(' ( ', variantName, ' ) ');
+      result = result.concat(' ( ', variantName, ' ) ')
     }
     return result;
   }
@@ -189,7 +188,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       const index = name.lastIndexOf(" ( ");
       const vpName = name.substring(0, index);
       const variantName = name.substring(index + 3, name.length - 3);
-      result = this.vps.find(x => x.name === vpName && x.variantName === variantName);
+      result = this.vps.find(x => x.name === vpName && x.variantName === variantName)
     }
     return result;
   }

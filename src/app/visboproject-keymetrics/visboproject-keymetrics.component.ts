@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 class Params {
   deleted: string;
@@ -40,6 +40,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   vpvKeyMetricActive: VPVKeyMetricsCalc;
   qualityCost: number;
   qualityTotalCost: number;
+  qualityEndDate: number;
+  qualityEndDiffWeeks: number;
   qualityDeadlines: number;
   qualityDelivery: number;
   delayActualDeadlines: number;
@@ -59,20 +61,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     {name: 'Total & Actual Cost', metric: 'Costs'},
     {name: 'Delivery Completion', metric: 'Deliveries'},
     {name: 'Reached Deadlines', metric: 'Deadlines'},
-    {name: 'Ahead/Delay Deadlines', metric: 'DeadlinesDelay'}
+    {name: 'Ahead/Delay Deadlines', metric: 'DeadlinesDelay'},
+    {name: 'Project End Date', metric: 'EndDate'}
   ];
   typeMetric: string = this.typeMetricList[0].name;
   typeMetricChart: string = this.typeMetricList[0].metric;
 
-  colors = ['#458CCB', '#F7941E', '#458CCB', '#F7941E', '#996600', '#996600'];
+  colors = [];
+  colorsDefault = ['#458CCB', '#F7941E', '#458CCB', '#F7941E', '#996600', '#996600'];
   colorsDelay = ['#BDBDBD', '#458CCB'];
-  series =  {
-    '0': { lineWidth: 4, pointShape: 'star' },
-    '1': { lineWidth: 4, pointShape: 'triangle'},
-    '2': { lineWidth: 4, pointShape: 'star' , lineDashStyle: [4, 8, 8, 4] },
-    '3': { lineWidth: 4, pointShape: 'triangle' , lineDashStyle: [8, 4, 4, 8]  },
-    '4': { lineWidth: 1, pointShape: 'circle', pointSize: 4 },
-    '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4  }
+  colorsEndDate = ['#458CCB', '#F7941E'];
+  seriesDefault =  {
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: undefined, pointSize: undefined},
+    '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: undefined, pointSize: undefined},
+    '2': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
+    '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined  },
+    '4': { lineWidth: 1, pointShape: 'circle', lineDashStyle: undefined, pointSize: 4 },
+    '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
+  };
+  seriesEndDate =  {
+    '0': { lineWidth: 4, pointShape: 'star' , lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
+    '1': { lineWidth: 4, pointShape: 'triangle' , lineDashStyle: [8, 4, 4, 8], pointSize: undefined }
   };
 
   graphDataLineChart = [];
@@ -83,12 +92,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       animation: {startup: true, duration: 200},
       legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      tooltip: {
+        isHtml: true
+      },
       vAxis: {
         minValue: undefined,
         maxValue: undefined,
         direction: 1,
         title: 'KeyMetrics',
-        minorGridlines: {count: 0, color: 'none'}
+        minorGridlines: {count: 0, color: 'none'},
+        ticks: undefined
       },
       hAxis: {
         format: 'MMM YY',
@@ -99,8 +112,39 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       },
       pointSize: 14,
       curveType: 'function',
-      series: this.series,
-      colors: this.colors
+      series: this.seriesDefault,
+      colors: this.colorsDefault
+    };
+
+  graphOptionsLineChartEndDate = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      title: 'Comparison: plan-to-date vs. baseline',
+      animation: {startup: true, duration: 200},
+      legend: {position: 'top'},
+      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      tooltip: {
+        isHtml: true
+      },
+      vAxis: {
+        minValue: undefined,
+        maxValue: undefined,
+        direction: 1,
+        title: 'KeyMetrics',
+        minorGridlines: {count: 0, color: 'none'},
+        ticks: undefined
+      },
+      hAxis: {
+        format: 'MMM YY',
+        gridlines: {
+          count: -1
+        },
+        minorGridlines: {count: 0, color: 'none'}
+      },
+      pointSize: 14,
+      curveType: 'function',
+      series: this.seriesEndDate,
+      colors: this.colorsEndDate
     };
   currentLang: string;
 
@@ -309,7 +353,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           elementKeyMetric.savingEndDate = this.helperDateDiff(
             (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()),
             (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()), 'w') || 0;
-            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate);
+            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate * 10) / 10;
         }
 
         // Calculate the Delivery Completion
@@ -375,7 +419,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
-    this.graphOptionsLineChart.colors = this.colors;
+    this.graphOptionsLineChart.colors = this.colorsDefault;
+
     const keyMetricsCost = [];
     if (!this.visboprojectversions) {
       return;
@@ -411,8 +456,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetricsCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth() + 1);
+      const currentDate = new Date(keyMetricsCost[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetricsCost.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -430,10 +475,111 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphDataLineChart = keyMetricsCost;
   }
 
+  visboKeyMetricsEndDateOverTime(): void {
+    this.graphOptionsLineChartEndDate.title = this.translate.instant('keyMetrics.chart.titleEndDateTrend');
+    this.graphOptionsLineChartEndDate.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisEndDateTrend');
+    this.graphOptionsLineChartEndDate.colors = this.colorsEndDate;
+
+    const keyMetricsEndDate = [];
+    if (!this.visboprojectversions) {
+      return;
+    }
+    let minGetTime = Number.MAX_VALUE;
+    let maxGetTime = Number.MIN_VALUE;
+
+    for (let i = 0; i < this.visboprojectversions.length; i++) {
+      if (!this.visboprojectversions[i].keyMetrics) {
+        // this.visboprojectversions[i].keyMetrics =  new VPVKeyMetrics;
+        continue;
+      }
+      // skip multiple versions per day
+      if (i < this.visboprojectversions.length - 1
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
+        continue;
+      }
+      // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
+      const endDateCurrent = (new Date(this.visboprojectversions[i].keyMetrics.endDateCurrent)).getTime() || 0;
+      const endDateBaseLast = (new Date(this.visboprojectversions[i].keyMetrics.endDateBaseLast)).getTime() || 0;
+      minGetTime = Math.min(minGetTime, endDateCurrent);
+      minGetTime = Math.min(minGetTime, endDateBaseLast);
+      maxGetTime = Math.max(maxGetTime, endDateCurrent);
+      maxGetTime = Math.max(maxGetTime, endDateBaseLast);
+      const ts = convertDate(new Date(this.visboprojectversions[i].timestamp), 'fullDateTime', this.currentLang);
+      const estimatedED = convertDate(new Date(this.visboprojectversions[i].keyMetrics.endDateCurrent), 'fullDate', this.currentLang);
+      const baselineED = convertDate(new Date(this.visboprojectversions[i].keyMetrics.endDateBaseLast), 'fullDate', this.currentLang);
+      keyMetricsEndDate.push([
+        new Date(this.visboprojectversions[i].timestamp),
+        endDateCurrent,
+        this.createCustomHTMLContent(ts, estimatedED, baselineED),
+        endDateBaseLast,
+        this.createCustomHTMLContent(ts, estimatedED, baselineED)
+      ]);
+    }
+    if (keyMetricsEndDate.length === 0) {
+      this.log(`keyMetricsEndDate empty`);
+      keyMetricsEndDate.push([new Date(), undefined, undefined, undefined, undefined]);
+    }
+    keyMetricsEndDate.sort(function(a, b) { return a[0] - b[0]; });
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = keyMetricsEndDate.length;
+    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      const currentDate = new Date(keyMetricsEndDate[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      keyMetricsEndDate.push([
+        currentDate, undefined, undefined, undefined, undefined
+      ]);
+    }
+    const minDate = new Date(minGetTime);
+    minDate.setDate(1);
+    minDate.setHours(0,0,0,0);
+    minDate.setMonth(minDate.getMonth() - 1);
+    const maxDate = new Date(maxGetTime);
+    maxDate.setDate(1);
+    maxDate.setHours(0,0,0,0);
+    maxDate.setMonth(minDate.getMonth() + 3);
+    minGetTime = minDate.getTime();
+    maxGetTime = maxDate.getTime();
+
+    this.graphOptionsLineChartEndDate.vAxis.ticks = [];
+    while (minDate.getTime() <= maxDate.getTime()) {
+      this.graphOptionsLineChartEndDate.vAxis.ticks.push(
+        {v: minDate.getTime(), f: convertDate(minDate, 'shortDate', this.currentLang)},
+      )
+      minDate.setMonth(minDate.getMonth() + 1);
+    }
+    keyMetricsEndDate.unshift([
+      'Timestamp',
+      this.translate.instant('keyMetrics.shortEED'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.shortBED'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
+    ]);
+    // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsEndDate)}`);
+    this.graphDataLineChart = keyMetricsEndDate;
+  }
+
+  createCustomHTMLContent(timestamp: string, estimatedED: string, baselineED: string): string {
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + timestamp + '</b></div>' + '<div>' +
+      '<table>';
+
+    const longEED = this.translate.instant('keyMetrics.longEED');
+    const longBED = this.translate.instant('keyMetrics.longBED');
+
+    result = result + '<tr>' + '<td>' + longEED + ':</td>' + '<td align="right"><b>' + estimatedED + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + longBED + ':</td>' + '<td align="right"><b>' + baselineED + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
+  }
+
   visboKeyMetricsDeliveriesOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryTrend');
-    this.graphOptionsLineChart.colors = this.colors;
+    this.graphOptionsLineChart.colors = this.colorsDefault;
 
     const keyMetrics = [];
     if (!this.visboprojectversions) {
@@ -473,8 +619,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     // this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth() + 1);
+      const currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -501,7 +647,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   visboKeyMetricsDeadlinesOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
-    this.graphOptionsLineChart.colors = this.colors;
+    this.graphOptionsLineChart.colors = this.colorsDefault;
 
     const keyMetrics = [];
     if (!this.visboprojectversions) {
@@ -539,8 +685,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth() + 1);
+      const currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined, undefined, undefined
       ]);
@@ -569,6 +715,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineDelayTrend');
     this.graphOptionsLineChart.vAxis.direction = -1;
     this.graphOptionsLineChart.colors = this.colorsDelay;
+
     const keyMetrics = [];
     if (!this.visboprojectversions) {
       return;
@@ -600,8 +747,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth() + 1);
+      const currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
         currentDate, undefined, undefined
       ]);
@@ -649,7 +796,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const url = 'vpView/';
     this.log(`goto VP View`);
     let vpid, vpvid;
-    let queryParams = new Params();
+    const queryParams = new Params();
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
       vpvid = this.vpvKeyMetricActive._id;
@@ -658,7 +805,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
     if (vpid) {
       if (vpvid) { queryParams.vpvid = vpvid; }
-      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName; }
+      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName}
       this.router.navigate([url.concat(vpid)], { queryParams: queryParams});
     }
   }
@@ -685,7 +832,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewCost(): void {
     this.log(`goto VPV View Cost vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -696,7 +843,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDelivery(): void {
     this.log(`goto VPV View Delivery vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -707,7 +854,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDeadline(): void {
     this.log(`goto VPV View Deadline vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    let queryParams = new Params();
+    const queryParams = new Params();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -770,6 +917,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.qualityTotalCost = 2;
     } else {
       this.qualityTotalCost = 3;
+    }
+
+    if (keyMetrics.endDateBaseLast) {
+      const currentDate = keyMetrics.endDateCurrent ? new Date(keyMetrics.endDateCurrent) : new Date();
+      const baseDate = new Date(keyMetrics.endDateBaseLast);
+      index = (currentDate.getTime() - baseDate.getTime()) / 1000 / 3600 / 24 / 7;
+      this.qualityEndDiffWeeks = index;
+    } else {
+      index = undefined;
+    }
+    if (index <= 0) {
+      this.qualityEndDate = 1;
+    } else if (index <= 4) {
+      this.qualityEndDate = 2;
+    } else if (index > 4){
+      this.qualityEndDate = 3;
+    } else {
+      this.qualityEndDate = undefined;
     }
 
     if (keyMetrics.timeCompletionBaseLastActual) {
@@ -847,25 +1012,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
 
-  changeChart(): void {
-    this.log(`Switch Chart to ${this.typeMetric} `);
-    this.typeMetricChart = this.typeMetricList.find(x => x.name === this.typeMetric).metric;
-    switch (this.typeMetricChart) {
-      case 'Costs':
-        this.visboKeyMetricsCostOverTime();
-        break;
-      case 'Deadlines':
-        this.visboKeyMetricsDeadlinesOverTime();
-        break;
-      case 'DeadlinesDelay':
-        this.visboKeyMetricsDeadlinesDelayOverTime();
-        break;
-      case 'Deliveries':
-        this.visboKeyMetricsDeliveriesOverTime();
-        break;
-    }
-  }
-
   switchTo(metric: string): void {
     this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
     if (this.typeMetricChart === metric) {
@@ -882,6 +1028,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         case 'Costs':
           this.visboKeyMetricsCostOverTime();
           break;
+        case 'EndDate':
+          this.visboKeyMetricsEndDateOverTime();
+          break;
         case 'Deadlines':
           this.visboKeyMetricsDeadlinesOverTime();
           break;
@@ -890,16 +1039,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
           break;
         case 'Deliveries':
           this.visboKeyMetricsDeliveriesOverTime();
-          break;
-      }
-    } else {
-      // toggle to vpv Detail View
-      switch (metric) {
-        case 'DetailCosts':
-          break;
-        case 'DetailDeadlines':
-          break;
-        case 'DetailDeliveries':
           break;
       }
     }
@@ -1072,7 +1211,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 11) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.timeCompletionActual > b.timeCompletionActual) {
@@ -1083,7 +1221,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 12) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.timeCompletionBaseLastTotal > b.keyMetrics.timeCompletionBaseLastTotal) {
@@ -1094,7 +1231,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 13) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.timeDelayFinished > b.keyMetrics.timeDelayFinished) {
@@ -1105,7 +1241,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 14) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.timeDelayUnFinished > b.keyMetrics.timeDelayUnFinished) {
@@ -1116,7 +1251,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 20) {
-      // sort by keyMetrics Status
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.deliveryCompletionActual > b.deliveryCompletionActual) {
@@ -1127,7 +1261,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 21) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableCompletionCurrentActual > b.keyMetrics.deliverableCompletionCurrentActual) {
@@ -1138,7 +1271,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 22) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableCompletionCurrentTotal > b.keyMetrics.deliverableCompletionCurrentTotal) {
@@ -1149,7 +1281,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 23) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableDelayFinished > b.keyMetrics.deliverableDelayFinished) {
@@ -1160,7 +1291,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 24) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableDelayUnFinished > b.keyMetrics.deliverableDelayUnFinished) {
@@ -1171,7 +1301,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 25) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableCompletionBaseLastTotal > b.keyMetrics.deliverableCompletionBaseLastTotal) {
@@ -1182,7 +1311,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 26) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.deliverableCompletionBaseLastActual > b.keyMetrics.deliverableCompletionBaseLastActual) {
@@ -1192,8 +1320,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         }
         return result;
       });
+    } else if (this.sortColumn === 31) {
+      this.visbokeymetrics.sort(function(a, b) {
+        let result = 0;
+        if (a.keyMetrics.endDateCurrent > b.keyMetrics.endDateCurrent) {
+          result = 1;
+        } else if (a.keyMetrics.endDateCurrent < b.keyMetrics.endDateCurrent) {
+          result = -1;
+        }
+        return result;
+      });
     } else if (this.sortColumn === 32) {
-      // sort by keyMetrics endDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.keyMetrics.endDateBaseLast > b.keyMetrics.endDateBaseLast) {
@@ -1204,7 +1341,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         return result;
       });
     } else if (this.sortColumn === 33) {
-      // sort by keyMetrics saving EndDate
       this.visbokeymetrics.sort(function(a, b) {
         let result = 0;
         if (a.savingEndDate > b.savingEndDate) {

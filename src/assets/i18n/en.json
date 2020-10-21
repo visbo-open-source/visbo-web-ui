@@ -280,7 +280,8 @@
 			"showExisting": "Show existing",
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
-			"viewProjectBoard": "View Projectboard",
+			"viewProjectBoard": "Project Board",
+			"viewList": "List",
 			"create": "New project",
 			"save": "Save",
 			"cancel": "Cancel"
@@ -450,6 +451,7 @@
 			"info": "Info",
 			"startDate": "Start of Project",
 			"endDate": "End of Project",
+			"savingED": "Change",
 			"leadPerson": "Lead Person",
 			"description": "Description/Goal",
 			"template": "Project Template",
@@ -463,8 +465,11 @@
 			"total": "Total",
 			"detail": "Detail",
 			"trend": "Trend",
+			"xAxis": "X-Axis",
+			"yAxis": "Y-Axis",
 			"metricCost": "Cost",
 			"metricDelivery": "Quality",
+			"metricEndDate": "Project End",
 			"metricDeadline": "Deadline",
 			"metricDeadlineDelay": "Deadline Delay",
 			"unitsDelay": "Days",
@@ -555,6 +560,68 @@
 			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
 		}
 	},
+	"compViewKeyMetric": {
+		"titleChange": "Change Key Metric",
+		"lbl": {
+			"project": "Project",
+			"bu": "Business Unit",
+			"lead": "Projektmanager",
+			"template": "Template",
+			"startDate": "Project start date",
+			"endDate": "Project end date",
+			"timeline": "Timeline",
+			"xAxis": "X-Axis",
+			"yAxis": "Y-Axis",
+			"bac": "Total Cost (Baseline)",
+			"endDate": "End of Project",
+			"deadlines": "Deadlines (Baseline)",
+			"deliveries": "Deliveries (Baseline)",
+			"days": "days",
+			"weeks": "weeks",
+			"show": "Show",
+			"and": "and",
+			"from": "from",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "filtered with",
+			"filter": "Filter Projects"
+		},
+		"btn": {
+			"showChart": "View Chart",
+			"showList": "View List",
+			"change": "Change",
+			"cancel": "Cancel"
+		},
+		"metric": {
+			"costName": "Total Cost",
+			"costAxis": "Total Cost at completion",
+			"costBubble": "Total Cost at completion (%)",
+			"costTable": "Total Cost at completion",
+			"endDateName": "Time (End Date)",
+			"endDateAxis": "Deviation in End Date",
+			"endDateBubble": "Change of End Date in weeks",
+			"endDateTable": "Change of End Date",
+			"deadlineName": "Time (Deadlines)",
+			"deadlineAxis": "Deviation in achieved Deadlines",
+			"deadlineBubble": "Achieved Deadlines in %",
+			"deadlineTable": "Achieved Deadlines",
+			"deadlineFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deadlineFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deadlineFinishedDelayBubble": "Deviation in finished Deadlines",
+			"deadlineFinishedDelayTable": "finished Deadlines",
+			"deadlineUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deadlineUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deadlineUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
+			"deadlineUnFinishedDelayTable": "unfinished Deadlines",
+			"deliveryName": "Quality (Deliveries)",
+			"deliveryAxis": "Achieved Deliveries",
+			"deliveryBubble": "Achieved Deliveries in %",
+			"deliveryTable": "Achieved Deliveries"
+		},
+		"msg": {
+			"noVersions": "No Project Versions related to this Date",
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
@@ -565,6 +632,36 @@
 			"endDate": "Project end date",
 			"timeline": "Timeline",
 			"filter": "Filter"
+		},
+		"msg": {
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
+	"compViewVPVList": {
+		"lbl": {
+			"project": "Project",
+			"projectView": "View Projects",
+			"bu": "Business Unit",
+			"lead": "Project Manager",
+			"template": "Template",
+			"startDate": "Project start date",
+			"endDate": "Project end date",
+			"nr": "Nr.",
+			"name": "Name",
+			"variant": "Variant",
+			"timestamp": "Timestamp",
+			"endDate": "End of Project",
+			"changeWeeks": "+/- weeks",
+			"percentOfBAC": "% BAC",
+			"percentOfActDeadline": "% PD",
+			"percentOfActDelivery": "% PDV",
+			"filter": "Filter"
+		},
+		"metric": {
+			"endDateTooltip": "Change of End Date in weeks",
+			"costTooltip": "Total Cost at completion (%)",
+			"deadlineTooltip": "Achieved Deadlines in %",
+			"deliveryTooltip": "Achieved Deliveries in %"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
@@ -680,6 +777,7 @@
 			"delivery": "Show Delivery"
 		},
 		"msg": {
+			"errorNoVersion": "This project has still no versions",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
@@ -751,73 +849,20 @@
 		"titleSelectVersion": "Select Portfolio Version",
 		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
-		"titleChange": "Change Key Metric",
 		"titleRessourceChange": "Change Ressource",
 		"lbl": {
-			"nr": "Number",
-			"variant": "Variant",
 			"day": "day",
-			"days": "days",
 			"week": "week",
-			"weeks": "weeks",
 			"month": "month",
 			"quarter": "quarter",
 			"previousPeriod": "Periode before {{refDate}}",
-			"nextPeriod": "Periode after {{refDate}}",
-			"show": "Show",
-			"and": "and",
-			"from": "from",
-			"planVsBase": "plan-to-date vs. baseline",
-			"filtered": "filtered with",
-			"filter": "Filter Projects",
-			"xAxis": "X-Axis",
-			"yAxis": "Y-Axis",
-			"project": "Project",
-			"timestamp": "Timestamp",
-			"keyMetrics": "Project Metric",
-			"name": "Name",
-			"bac": "Total Cost (Baseline)",
-			"endDate": "End Date (Baseline)",
-			"deadlines": "Deadlines (Baseline)",
-			"deliveries": "Deliveries (Baseline)"
+			"nextPeriod": "Periode after {{refDate}}"
 		},
 		"btn": {
-			"showChart": "View Chart",
-			"showList": "View List",
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewList": "List",
-			"viewProjectBoard": "Project Board",
-			"filter": "Filter",
-			"change": "Change",
-			"cancel": "Cancel",
-			"back": "Back"
-		},
-		"metric": {
-			"costName": "Total Cost",
-			"costAxis": "Total Cost at completion",
-			"costBubble": "Total Cost at completion (%)",
-			"costTable": "Total Cost at completion",
-			"endDateName": "Time (End Date)",
-			"endDateAxis": "Deviation in End Date",
-			"endDateBubble": "Change of End Date in weeks",
-			"endDateTable": "Change of End Date",
-			"deadlineName": "Time (Deadlines)",
-			"deadlineAxis": "Deviation in achieved Deadlines",
-			"deadlineBubble": "Achieved Deadlines in %",
-			"deadlineTable": "Achieved Deadlines",
-			"deadlineFinishedDelayName": "Time (Finished Deadline Achievement)",
-			"deadlineFinishedDelayAxis": "Average Deviation in finished Deadlines",
-			"deadlineFinishedDelayBubble": "Deviation in finished Deadlines",
-			"deadlineFinishedDelayTable": "finished Deadlines",
-			"deadlineUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
-			"deadlineUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
-			"deadlineUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
-			"deadlineUnFinishedDelayTable": "unfinished Deadlines",
-			"deliveryName": "Quality (Deliveries)",
-			"deliveryAxis": "Achieved Deliveries",
-			"deliveryBubble": "Achieved Deliveries in %",
-			"deliveryTable": "Achieved Deliveries"
+			"viewProjectBoard": "Project Board"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
@@ -880,6 +925,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Center Audit successfully downloaded",
+			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
@@ -937,6 +983,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Project Audit successfully downloaded",
+			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},
@@ -956,6 +1003,11 @@
 		"shortETC": "ETC",
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortEED": "EED",
+		"longEED": "Estimated End Date",
+		"shortBED": "BED",
+		"longBED": "Baseline End Date",
 
 		"shortDAC": "DAC",
 		"longDAC": "Number of Deadlines at Completion, according baseline",
@@ -1016,6 +1068,8 @@
 			"titleDeadlineTrend": "Historical Deadline comparison: plan-to-date vs. baseline",
 			"yAxisDeadlineDelayTrend": "average ahead/delay of deadlines",
 			"titleDeadlineDelayTrend": "Historical Deadline achievement comparison: finished vc unfinished",
+			"titleEndDateTrend": "Historical development project end date: plan-to-date vs. baseline",
+			"yAxisEndDateTrend": "End of Project",
 			"yAxisCostTrend": "Cost in T€",
 			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
