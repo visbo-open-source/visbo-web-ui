@@ -539,7 +539,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const maxDate = new Date(maxGetTime);
     maxDate.setDate(1);
     maxDate.setHours(0,0,0,0);
-    maxDate.setMonth(minDate.getMonth() + 3);
+    maxDate.setMonth(maxDate.getMonth() + 2);
     minGetTime = minDate.getTime();
     maxGetTime = maxDate.getTime();
 

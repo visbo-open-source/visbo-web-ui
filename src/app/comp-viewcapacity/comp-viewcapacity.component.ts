@@ -56,6 +56,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   currentRefDate: Date;
 
   showUnit: string;
+  showUnitText: string;
+  refPFV: false;
   parentThis = this;
 
   orgaTreeData: VisboOrgaTreeLeaf;
@@ -117,7 +119,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
-    this.showUnit = this.translate.instant('ViewCapacity.lbl.pd');
+    if (this.showUnit == 'PD') {
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd')
+    } else {
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
+    }
     if (!this.capacityFrom) {
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
@@ -197,7 +203,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), true)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -210,9 +216,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapcityChild = visbocenter.capacity.filter(item => item.roleID != this.currentLeaf.uid.toString());
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
-              this.calcLoad(this.visboCapcity);
+              this.calcLoad(this.visboCapcity, this.refPFV);
             }
-            this.calcLoad(this.visboCapcityChild);
+            this.calcLoad(this.visboCapcityChild, this.refPFV);
             this.visboViewCapacityOverTime();
           },
           error => {
@@ -227,7 +233,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), true)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -239,9 +245,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapcityChild = vp.capacity.filter(item => item.roleID != this.currentLeaf.uid.toString());
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
-              this.calcLoad(this.visboCapcity);
+              this.calcLoad(this.visboCapcity, this.refPFV);
             }
-            this.calcLoad(this.visboCapcityChild);
+            this.calcLoad(this.visboCapcityChild, this.refPFV);
             this.visboViewCapacityOverTime();
           },
           error => {
@@ -257,16 +263,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  calcLoad(capacity: VisboCapacity[]): number {
+  calcLoad(capacity: VisboCapacity[], refPFV = false): number {
     if (!capacity || capacity.length == 0) {
       return undefined;
     }
 
-    function percentCalc(item: VisboCapacity, from: Date, to: Date): number {
+    function percentCalc(item: VisboCapacity, from: Date, to: Date, refPFV = false): number {
       const current = new Date(item.month);
-      if (current.getTime() < from.getTime() || current.getTime() > to.getTime()) return 0;
-      let capa = (item?.internCapa_PT|| 0) + (item?.externCapa_PT || 0);
-      const cost = (item?.actualCost_PT|| 0) + (item?.plannedCost_PT || 0);
+      if (current.getTime() < from.getTime() || current.getTime() > to.getTime()) {
+        return 0;
+      }
+      let capa = 0, cost = 0;
+      if (refPFV) {
+        capa = (item?.baselineCost_PT|| 0);
+      } else {
+        capa = (item?.internCapa_PT|| 0) + (item?.externCapa_PT || 0);
+      }
+      cost = (item?.actualCost_PT|| 0) + (item?.plannedCost_PT || 0);
 
       if (cost > 0 && capa === 0) {
         capa = 1;
@@ -276,7 +289,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     let capaLoad: CapaLoad[] = [];
     for (let i=0; i < capacity.length; i++) {
-      const capa = percentCalc(capacity[i], this.capacityFrom, this.capacityTo);
+      const capa = percentCalc(capacity[i], this.capacityFrom, this.capacityTo, refPFV);
       const roleID = capacity[i].roleID;
       if (!capaLoad[roleID]) {
         const load = new CapaLoad();
@@ -343,14 +356,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   updateShowUnit(unit: string): void {
-    this.showUnit = this.translate.instant(unit);
+    this.showUnit = unit;
+    if (unit === 'PD') {
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd')
+    } else {
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
+    }
     this.visboViewCapacityOverTime();
+  }
+
+  updateRef(): void {
+    this.log(`Show Ref change: ${status} to ${this.refPFV}`);
+    this.visboCapacityCalc();
   }
 
   visboViewCapacityOverTime(): void {
     let optformat = "###,###.## T\u20AC";
-    if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
-      optformat = "# PT";
+    if (this.showUnit === 'PD') {
+      optformat = "# " + this.translate.instant('ViewCapacity.lbl.pd');
     }
     this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
@@ -382,28 +405,60 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       currentDate.setHours(2, 0, 0, 0);
       if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         const roleID = this.currentLeaf.uid;
-        if (this.showUnit === this.translate.instant('ViewCapacity.lbl.pd')) {
-          graphDataCapacity.push([
-            currentDate,
-            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
-            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-            capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
-            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-            (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], true),
-            (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], true)]);
+        if (this.refPFV) {
+          // capa Values compared against baseline Values
+          if (this.showUnit === 'PD') {
+            graphDataCapacity.push([
+              currentDate,
+              capacity[i].roleID == roleID ? Math.round((capacity[i].baselineCost_PT * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true, this.refPFV) : undefined,
+              capacity[i].roleID == roleID ? 0 : undefined,
+              capacity[i].roleID == roleID ? 0 : undefined,
+              (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], true, this.refPFV),
+              (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], true, this.refPFV)
+            ]);
+          } else {
+            graphDataCapacity.push([
+              currentDate,
+              capacity[i].roleID == roleID ? Math.round((capacity[i].baselineCost * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false, this.refPFV) : undefined,
+              capacity[i].roleID == roleID ? 0 : undefined,
+              capacity[i].roleID == roleID ? 0 : undefined,
+              (Math.round(capacity[i].actualCost * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], false, this.refPFV),
+              (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], false, this.refPFV)
+            ]);
+          }
         } else {
-          graphDataCapacity.push([
-            currentDate,
-            capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
-            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-            capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
-            capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-            (Math.round(capacity[i].actualCost * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], false),
-            (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
-            this.createCustomHTMLContent(capacity[i], false)]);
+          // capa Values compared against resources of organisation
+          if (this.showUnit === 'PD') {
+            graphDataCapacity.push([
+              currentDate,
+              capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
+              capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
+              (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], true),
+              (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], true)
+            ]);
+          } else {
+            graphDataCapacity.push([
+              currentDate,
+              capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
+              capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
+              (Math.round(capacity[i].actualCost * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], false),
+              (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
+              this.createCustomHTMLContent(capacity[i], false)
+            ]);
+          }
         }
       }
     }
@@ -443,7 +498,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`chart Select Row ${row} ${label} ${value} `);
   }
 
-  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean): string {
+  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean, refPFV = false): string {
     const currentDate = convertDate(new Date(capacity.month), 'fullDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
@@ -455,24 +510,40 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
     const roleName = this.translate.instant('ViewCapacity.roleName');
 
+    let internCapa: string, externCapa: string, totalCapa: string, actualCost: string, plannedCost: string;
+    if (PT) {
+      actualCost = capacity.actualCost_PT.toFixed(0);
+      plannedCost = capacity.plannedCost_PT.toFixed(0);
+      if (refPFV) {
+        internCapa = capacity.baselineCost_PT.toFixed(0);
+        externCapa = '0';
+        totalCapa = (capacity.baselineCost_PT + 0).toFixed(0);
+      } else {
+        internCapa = capacity.internCapa_PT.toFixed(0);
+        externCapa = capacity.externCapa_PT.toFixed(0);
+        totalCapa = (capacity.internCapa_PT + capacity.externCapa_PT).toFixed(0);
+      }
+    } else {
+      actualCost = capacity.actualCost.toFixed(1);
+      plannedCost = capacity.plannedCost.toFixed(1);
+      if (refPFV) {
+        internCapa = capacity.baselineCost.toFixed(1);
+        externCapa = '0.0';
+        totalCapa = (capacity.baselineCost + 0).toFixed(1);
+      } else {
+        internCapa = capacity.internCapa.toFixed(1);
+        externCapa = capacity.externCapa.toFixed(1);
+        totalCapa = (capacity.internCapa + capacity.externCapa).toFixed(1);
+      }
+    }
+
     result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
               capacity.roleName + '</b></td>' + '</tr>';
-    if (PT) {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' +
-                (Math.round((capacity.internCapa_PT + capacity.externCapa_PT) * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.actualCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.plannedCost_PT * 10) / 10).toFixed(0) + ' PT</b></td>' + '</tr>';
-      result = result + '</table>' + '</div>' + '</div>';
-    } else {
-      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round((capacity.internCapa + capacity.externCapa) * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + (Math.round(capacity.internCapa * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' +
-                (Math.round(capacity.actualCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' +
-                (Math.round(capacity.plannedCost * 10) / 10).toFixed(1) + '  T\u20AC</b></td>' + '</tr>';
-      result = result + '</table>' + '</div>' + '</div>';
-    }
+    result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + ' PT</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + ' PT</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + ' PT</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + ' PT</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
     return result;
   }
 

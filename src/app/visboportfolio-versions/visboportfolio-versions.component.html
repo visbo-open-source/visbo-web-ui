@@ -41,9 +41,9 @@
     <div class="row">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
         <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
-        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
       </div>
       <div class="col-3 mt-2 text-warning text-right" *ngIf="isVersionMismatch()">
           {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvWithKM, 'total': vpList.length} }}
@@ -58,14 +58,14 @@
   </div>
   <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions">
     <hr>
-    <app-comp-viewkeymetrics [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+    <app-comp-viewkeymetrics [bubbleMode]="true" [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+  </div>
+  <div *ngIf="currentView == 'List' && vpList">
+    <hr>
+    <app-comp-viewkeymetrics [bubbleMode]="false" [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
   </div>
   <div *ngIf="currentView == 'ProjectBoard' && vpList">
     <hr>
     <app-comp-viewboard [vps]="vpList" [refDate]="vpvRefDate" ></app-comp-viewboard>
-  </div>
-  <div *ngIf="currentView == 'List' && vpList">
-    <hr>
-    <app-comp-viewvpvlist [vps]="vpList" [combinedPerm]="combinedPerm" ></app-comp-viewvpvlist>
   </div>
 </div>
