@@ -543,7 +543,8 @@
 			"nextPeriod": "Periode nach {{refDate}}",
 			"vc": "VISBO Center",
 			"pd": "PT",
-			"euro": "Euro"
+			"euro": "Euro",
+			"refPFV": "Vergleich mit Beauftragung"
 		},
 		"btn": {
 			"back": "Zurück",
@@ -563,7 +564,10 @@
 	"compViewKeyMetric": {
 		"titleChange": "Ändern der Kennzahlen",
 		"lbl": {
+			"nr": "Nr.",
 			"project": "Projekt",
+			"variant": "Variant",
+			"timestamp": "Zeitstempel",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
 			"template": "Vorlage",
@@ -632,36 +636,6 @@
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
 			"filter": "Filter"
-		},
-		"msg": {
-			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
-		}
-	},
-	"compViewVPVList": {
-		"lbl": {
-			"project": "Projekt",
-			"projectView": "Projektübersicht",
-			"bu": "Business Unit",
-			"lead": "Projektleiter",
-			"template": "Vorlage",
-			"startDate": "Projektstart",
-			"endDate": "Projektende",
-			"nr": "Nummer",
-			"name": "Name",
-			"variant": "Variante",
-			"timestamp": "Zeitstempel",
-			"endDate": "Projektende",
-			"changeWeeks": "+/- Wochen",
-			"percentOfBAC": "% BAC",
-			"percentOfActDeadline": "% PD",
-			"percentOfActDelivery": "% PDV",
-			"filter": "Filter"
-		},
-		"metric": {
-			"endDateTooltip": "Abweichung beim Projektende (Wochen)",
-			"costTooltip": "Erwartete Gesamtkosten (%)",
-			"deadlineTooltip": "Erreichte Termine in %",
-			"deliveryTooltip": "Erreichte Lieferungen in %"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"

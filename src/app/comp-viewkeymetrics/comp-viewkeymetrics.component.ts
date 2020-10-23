@@ -37,6 +37,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   @Input() activeID: string; // either VP ID of Portfolio or VC ID
   @Input() visboprojectversions: VisboProjectVersion[];
+  @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
 
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
@@ -54,6 +55,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   hasKMDeadline = false;
   hasKMEndDate = false;
   hasKMDeadlineDelay = false;
+  hasVariant: boolean;
 
   vpFilter: string;
   estimateAtCompletion = 0;
@@ -185,6 +187,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         // this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
       }
     }
+    if (this.chart != this.bubbleMode) {
+      this.toggleVisboChart();
+    }
     this.visboKeyMetricsCalc();
   }
 
@@ -216,6 +221,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.hasKMDeadline = false;
     this.hasKMDeadlineDelay = false;
     this.hasKMEndDate = false;
+    this.hasVariant = false;
 
     if (!this.visboprojectversions) {
       return;
@@ -233,6 +239,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         if (this.visboprojectversions[i].keyMetrics) {
           const elementKeyMetric = new VPVKeyMetricsCalc();
           elementKeyMetric.name = this.visboprojectversions[i].name;
+          elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
+          elementKeyMetric.ampelStatus = this.visboprojectversions[i].ampelStatus;
+          elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[i].ampelErlaeuterung;
           elementKeyMetric._id = this.visboprojectversions[i]._id;
           elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
           elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
@@ -287,6 +296,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           elementKeyMetric.deliveryCompletionActual =
             this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
           this.visbokeymetrics.push(elementKeyMetric);
+        }
+        if (this.visboprojectversions[i].variantName) {
+          this.hasVariant = true;
         }
       }
     }
@@ -389,6 +401,18 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Switch Chart to ${this.metricList[this.metricX].metric} vs  ${this.metricList[this.metricY].metric}`);
     this.storeSetting();
     this.visboKeyMetricsCalc();
+  }
+
+  calcLevel(value: number, type: string) {
+    let result = 0;
+    if (type == "percentOver") {
+      result = value <= 1 ? 1 : value > 1.05 ? 3 : 2;
+    } else if (type == "percentUnder") {
+      result = value >= 1 ? 1 : value < 0.8 ? 3 : 2;
+    } else if (type == "delay") {
+      result = value <= 0 ? 1 : value > 4 ? 3 : 2;
+    }
+    return result;
   }
 
   visboKeyMetricsCalcBubble(): void {
@@ -704,6 +728,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       } else {
         this.sortAscending = !this.sortAscending;
       }
+    } else {
+      this.sortColumn = 1;
+      this.sortAscending = true;
     }
     if (this.sortColumn === 1) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
@@ -720,30 +747,29 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 5) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics.endDateBaseLast, b.keyMetrics.endDateBaseLast); });
     } else if (this.sortColumn === 6) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return a.timeCompletionActual - b.timeCompletionActual;
-      });
+      this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 7) {
       this.visbokeymetrics.sort(function(a, b) {
         return a.keyMetrics.timeCompletionBaseLastActual - b.keyMetrics.timeCompletionBaseLastActual;
       });
     } else if (this.sortColumn === 8) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return a.deliveryCompletionActual - b.deliveryCompletionActual;
-      });
+      this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
     } else if (this.sortColumn === 9) {
       this.visbokeymetrics.sort(function(a, b) {
         return a.keyMetrics.deliverableCompletionBaseLastActual - b.keyMetrics.deliverableCompletionBaseLastActual;
       });
     } else if (this.sortColumn === 10) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics.timeDelayFinished || 0) - (b.keyMetrics.timeDelayFinished || 0);
-      });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics.timeDelayFinished || 0) - (b.keyMetrics.timeDelayFinished || 0); });
     } else if (this.sortColumn === 11) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics.timeDelayUnFinished || 0) - (b.keyMetrics.timeDelayUnFinished || 0);
-      });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics.timeDelayUnFinished || 0) - (b.keyMetrics.timeDelayUnFinished || 0);});
+    } else if (this.sortColumn === 12) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
+    } else if (this.sortColumn === 13) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+    } else if (this.sortColumn === 14) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
     }
+
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
     }

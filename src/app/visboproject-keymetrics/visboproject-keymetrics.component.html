@@ -11,11 +11,9 @@
             <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
           </div>
         </span>
-        <span *ngIf="vpvKeyMetricActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-          <small *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></small>
-          <small *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></small>
-          <small *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></small>
-        </span>
+        <small *ngIf="vpvKeyMetricActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
+          <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvKeyMetricActive.ampelStatus} " ></ng-container>
+        </small>
       </h2>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
         <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
@@ -39,8 +37,6 @@
               <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
               <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
               <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
-              <!-- <th class="d-none d-md-table-cell">Ahead/Delay</th> -->
-              <!-- <th>{{ 'vpKeyMetric.lbl.detail' | translate }}</th> -->
               <th class="d-none d-md-table-cell">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
             </tr>
           </thead>
@@ -50,15 +46,11 @@
               <td *ngIf="typeMetricChart == 'Costs' && history" (click)="gotoViewCost()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="gotoViewCost()"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
               <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="gotoViewCost()"><a>
-                <span *ngIf="qualityCost == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
               </a></td>
               <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="gotoViewCost()"><a>
-                <span *ngIf="qualityTotalCost == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityTotalCost == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityTotalCost == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
               </a></td>
               <!-- <td></td> -->
@@ -71,9 +63,7 @@
               <td *ngIf="!(typeMetricChart == 'EndDate' && history)"><a>{{ 'vpKeyMetric.lbl.metricEndDate' | translate }}</a></td>
               <td></td>
               <td><a>
-                <span *ngIf="qualityEndDate == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityEndDate == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityEndDate == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
                 <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
                 <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
               </a></td>
@@ -85,9 +75,7 @@
               <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
               <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}"><a>
-                <span *ngIf="qualityDeadlines == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityDeadlines == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityDeadlines == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDeadlines} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.timeCompletionActual | number:'1.0-0'}} %) </span>
               </a></td>
               <td (click)="gotoViewDeadline()"><a>
@@ -103,15 +91,11 @@
               <td *ngIf="typeMetricChart == 'DeadlinesDelay' && history" (click)="gotoViewDeadline()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'DeadlinesDelay' && history)" (click)="gotoViewDeadline()"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
               <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.finishedDeadlineDelay' | translate }}"><a>
-                <span *ngIf="delayActualDeadlines == 1" title="Finished Deadlines" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayActualDeadlines == 2" title="Finished Deadlines" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayActualDeadlines == 3" title="Finished Deadlines" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: delayActualDeadlines} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.timeDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
               </a></td>
               <td (click)="gotoViewDeadline()" title="{{ 'vpKeyMetric.lbl.unfinishedDeadlineDelay' | translate }}"><a>
-                <span *ngIf="delayTotalDeadlines == 1" title="Status Total Deadline" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="delayTotalDeadlines == 2" title="Status Total Deadline" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="delayTotalDeadlines == 3" title="Status Total Deadline" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDeadlines} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
               </a></td>
               <td>
@@ -122,9 +106,7 @@
               <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="gotoViewDelivery()" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
               <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="gotoViewDelivery()"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
               <td (click)="gotoViewDelivery()" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}"><a>
-                <span *ngIf="qualityDelivery == 1" class="fas fa-check-circle" style="color:green"></span>
-                <span *ngIf="qualityDelivery == 2" class="fas fa-exclamation-triangle" style="color:orange"></span>
-                <span *ngIf="qualityDelivery == 3" class="fas fa-exclamation-circle" style="color:red"></span>
+                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDelivery} " ></ng-container>
                 <span> {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} %) </span>
               </a></td>
               <td (click)="gotoViewDelivery()"><a>
@@ -189,9 +171,7 @@
               <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
               <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
               <td class="text-right"><button type="button" class="btn" title="{{ 'keyMetrics.lbl.detail' | translate }}" (click)="gotoClickedRow(vp)">i</button>
               </td>
@@ -221,9 +201,7 @@
               <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
               <td class="text-right">{{vp.savingEndDate | number: '1.0-1'}} W</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
               <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
@@ -252,8 +230,6 @@
             data-toggle="modal" data-target="#ProjectDetail">
               <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
               <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <!-- <td class="text-right">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td> -->
               <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentActual | number :'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortPD' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
               <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentTotal | number:'1.0-1'}}</td>
@@ -261,9 +237,7 @@
               <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayFinished | number:'1.0-0'}}</td>
               <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayUnFinished | number:'1.0-0'}}</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
               <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
@@ -295,9 +269,7 @@
               <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-1'}}</td>
               <td class="text-right" title="{{ 'keyMetrics.shortDVAC' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionTotal | number:'1.0-0'}} %</td>
               <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <span *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                <span *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                <span *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
               <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
               </td>
@@ -309,6 +281,14 @@
     </div>
   </div>
 </div>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>
+
+<ng-template #trafficLight let-level="level">
+  <i class="fas fa-lightbulb" [ngClass]="{'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+</ng-template>
 
 <!-- Modal Show Project Version Info -->
 <div *ngIf="vpvKeyMetricActive" class="modal fade" id="VpvDetails" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
@@ -354,9 +334,7 @@
               <tr>
                 <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
                 <td title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 1" class="fas fa-lightbulb text-success"></span>
-                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 2" class="fas fa-lightbulb text-warning"></span>
-                  <span *ngIf="vpvKeyMetricActive.ampelStatus == 3" class="fas fa-lightbulb text-danger"></span>
+                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvKeyMetricActive.ampelStatus} " ></ng-container>
                 </td>
                 <td class="d-none d-md-table-cell" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
                   {{ getShortText(vpvKeyMetricActive.ampelErlaeuterung, 40) }}

@@ -95,12 +95,15 @@ export class VisboProjectService {
   }
 
   /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
-  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, hierarchy = false, sysadmin = false, deleted = false): Observable<VisboProject> {
+  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, hierarchy = false, pfv = false, sysadmin = false, deleted = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (hierarchy) { 
+    if (hierarchy) {
       params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
     }
     if (sysadmin) {
       params = params.append('sysadmin', '1');

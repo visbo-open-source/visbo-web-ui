@@ -560,33 +560,40 @@ export class VisbocenterDetailComponent implements OnInit {
       const organisation: OrganisationItem[] = [];
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        if (!organisation[role.uid - 1]) {
-          organisation[role.uid - 1] = new OrganisationItem()
-          organisation[role.uid - 1].uid = role.uid;
-          organisation[role.uid - 1].pid = undefined;
-          organisation[role.uid - 1].path = '';
-          organisation[role.uid - 1].level = 0;
+        if (role.isTeamParent || role.isTeam) {
+          // skip team entries for the moment
+          continue;
         }
-        organisation[role.uid - 1].name = role.name;
-        organisation[role.uid - 1].isExternRole = role.isExternRole;
-        organisation[role.uid - 1].tagessatz = role.tagessatzIntern;
-        organisation[role.uid - 1].aliases = role.aliases;
+        if (!organisation[role.uid]) {
+          organisation[role.uid] = new OrganisationItem()
+          organisation[role.uid].uid = role.uid;
+          organisation[role.uid].pid = undefined;
+          organisation[role.uid].path = '';
+          organisation[role.uid].level = 0;
+        }
+        organisation[role.uid].name = role.name;
+        organisation[role.uid].isExternRole = role.isExternRole;
+        organisation[role.uid].tagessatz = role.tagessatzIntern;
+        organisation[role.uid].aliases = role.aliases;
 
-        this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
+        this.log(`Add Orga Unit ${role.uid} ${role.name} Children ${role.subRoleIDs.length}`);
         for (let j = 0; j < role.subRoleIDs.length; j++) {
-          const index = Number(role.subRoleIDs[j].key) - 1;
+          const index = Number(role.subRoleIDs[j].key);
           if (index < 0) {
+            this.log(`Inconsistent Org Structure Role ${role.uid} SubRole ${role.subRoleIDs[j].key}`);
             // something wrong with the numbering
             break;
           }
           if (!organisation[index]) {
             organisation[index] = new OrganisationItem();
-            organisation[index].uid = index + 1;
+            organisation[index].uid = index;
+          } else {
+            this.log(`SubRole already exists ${role.uid} SubRole ${index}`);
           }
           organisation[index].pid = role.uid;
           organisation[index].parent = role.name;
-          organisation[index].path = organisation[role.uid - 1].path.concat('/', organisation[role.uid - 1].name);
-          organisation[index].level = organisation[role.uid - 1].level + 1;
+          organisation[index].path = organisation[role.uid].path.concat('/', organisation[role.uid].name);
+          organisation[index].level = organisation[role.uid].level + 1;
         }
       }
       organisation.sort(function(a, b) { return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name)); });
@@ -595,7 +602,7 @@ export class VisbocenterDetailComponent implements OnInit {
       // export as CSV
       let data = '';
       const separator = '\t';
-      data = 'sep=' + separator + '\n';  // to force excel to use the separator
+      // data = 'sep=' + separator + '\n';  // to force excel to use the separator
       data = data + 'name' + separator
             + 'uid' + separator
             // + 'pid' + separator
@@ -632,7 +639,8 @@ export class VisbocenterDetailComponent implements OnInit {
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
-      const blob = new Blob([data], { type: 'text/plain' });
+      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
+      const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       this.log(`Open URL ${url}`);
       const a = document.createElement('a');
