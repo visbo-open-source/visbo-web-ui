@@ -12,12 +12,6 @@
           <!-- <span *ngIf="vpFilter" class="font-weight-bold"> <a data-toggle="modal" data-target="#VpfMetricSelector"> {{vpFilter}}</a></span> -->
           <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
       </div>
-      <div class="col-1">
-        <h5 class="text-right">
-          <i *ngIf="!chart" (click)="toggleVisboChart()" class="mb-0 fa fa-signal" aria-hidden="true"></i>
-          <i *ngIf="chart" (click)="toggleVisboChart()" class="mb-0 fa fa-list" aria-hidden="true"></i>
-        </h5>
-      </div>
     </div>
   </div>
   <div *ngIf="visbokeymetrics.length > 0" class='container-fluid'>
