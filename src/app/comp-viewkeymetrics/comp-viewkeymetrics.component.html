@@ -7,10 +7,15 @@
           <span> {{ 'compViewKeyMetric.lbl.and' | translate }} </span>
           <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric('Y')}}</a></span>
           <span> {{ 'compViewKeyMetric.lbl.planVsBase' | translate }}</span>
-          <span *ngIf="vpFilter != undefined">, {{ 'compViewKeyMetric.lbl.filtered' | translate }}</span>
-          <input *ngIf="vpFilter != undefined" class="ml-2" type="text" (keyup)="visboKeyMetricsCalc()" [(ngModel)]="vpFilter" placeholder="Filter">
-          <!-- <span *ngIf="vpFilter" class="font-weight-bold"> <a data-toggle="modal" data-target="#VpfMetricSelector"> {{vpFilter}}</a></span> -->
           <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="visbokeymetrics.length > 0" class='container-fluid'>
+    <div class="row text-dark">
+      <div class="my-1 pl-0 col-11">
+        <span> {{ 'compViewKeyMetric.lbl.filter' | translate }}:</span>
+        <input class="ml-2" type="text" (keyup)="visboKeyMetricsCalc()" [(ngModel)]="vpFilter" placeholder="Filter">
       </div>
     </div>
   </div>
@@ -60,20 +65,33 @@
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
               <td class="d-none d-xl-table-cell" title="{{vp.timestamp | date :'dd.MM.yy HH:MM'}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>
               <td title="{{vp.ampelErlaeuterung}}">
-                <div *ngIf="vp.ampelStatus == 1" class="fas fa-lightbulb text-success"></div>
-                <div *ngIf="vp.ampelStatus == 2" class="fas fa-lightbulb text-warning"></div>
-                <div *ngIf="vp.ampelStatus == 3" class="fas fa-lightbulb text-danger"></div>
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
-              <td *ngIf="selectedMetric('Costs')" class="text-right">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
-              <td *ngIf="selectedMetric('Costs')" class="text-right" title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€">{{vp.savingCostTotal*100 | number:'1.0-0'}} %</td>
-              <td *ngIf="selectedMetric('EndDate')" class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
-              <td *ngIf="selectedMetric('EndDate')" class="text-right" title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}">{{vp.savingEndDate | number:'1.0-0' }} weeks</td>
-              <td *ngIf="selectedMetric('Deadlines')" class="text-right">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
-              <td *ngIf="selectedMetric('Deadlines')" class="text-right" title="{{vp.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}">{{vp.timeCompletionActual*100 | number:'1.0-0'}} %</td>
+              <td *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('Costs')" class="text-right"
+                      title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostTotal, 'percentOver')} " ></ng-container>
+                {{vp.savingCostTotal*100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
+              <td *ngIf="selectedMetric('EndDate')" class="text-right"
+                      title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingEndDate, 'delay')} " ></ng-container>
+                {{vp.savingEndDate | number:'1.0-0' }} weeks
+              </td>
+              <td *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('Deadlines')" class="text-right"
+                      title="{{vp.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.timeCompletionActual, 'percentUnder')} " ></ng-container>
+                {{vp.timeCompletionActual*100 | number:'1.0-0'}} %
+              </td>
               <td *ngIf="selectedMetric('DeadlinesUnFinishedDelay')" class="text-right">{{vp.keyMetrics.timeDelayUnFinished || 0 | number:'1.0-0'}} {{ 'compViewKeyMetric.lbl.days' | translate }}</td>
               <td *ngIf="selectedMetric('DeadlinesFinishedDelay')" class="text-right">{{vp.keyMetrics.timeDelayFinished || 0 | number:'1.0-0'}} {{ 'compViewKeyMetric.lbl.days' | translate }}</td>
-              <td *ngIf="selectedMetric('Deliveries')" class="text-right">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
-              <td *ngIf="selectedMetric('Deliveries')" class="text-right" title="{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %</td>
+              <td *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('Deliveries')" class="text-right"
+                      title="{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.deliveryCompletionActual, 'percentUnder')} " ></ng-container>
+                {{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %</td>
             </tr>
           </tbody>
         </table>
@@ -86,6 +104,14 @@
     </h3>
   </div>
 </div>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>
+
+<ng-template #trafficLight let-level="level">
+  <i class="fas fa-lightbulb" [ngClass]="{'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+</ng-template>
 
 <!-- Modal Change Key metrics -->
 <div class="modal fade" id="VpfMetricSelector" tabindex="-1" role="dialog" aria-labelledby="VpfMetricSelectorTitle" aria-hidden="true">
@@ -110,10 +136,6 @@
             <select class="form-control" id="YLabel" name="metricY" [(ngModel)]="metricY">
               <option *ngFor="let metricItem of metricList; let metricIndex=index" value="{{metricIndex}}">{{metricItem.name}}</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label for="Filter" class="col-form-label">{{ 'compViewKeyMetric.lbl.filter' | translate }}:</label>
-            <input class="form-control"  (keyup)="visboKeyMetricsCalc()" title="Filter by Project Name/Template/Description, Business Unit, Lead Person" id="Filter" name="vpFilter" [(ngModel)]="vpFilter">
           </div>
           <div class="modal-footer align-items-end">
             <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewKeyMetric.btn.cancel' | translate }}</button>

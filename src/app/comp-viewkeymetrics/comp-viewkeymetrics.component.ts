@@ -57,7 +57,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   hasKMDeadlineDelay = false;
   hasVariant: boolean;
 
-
   vpFilter: string;
   estimateAtCompletion = 0;
   budgetAtCompletion = 0;
@@ -404,6 +403,18 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
+  calcLevel(value: number, type: string) {
+    let result = 0;
+    if (type == "percentOver") {
+      result = value <= 1 ? 1 : value > 1.05 ? 3 : 2;
+    } else if (type == "percentUnder") {
+      result = value >= 1 ? 1 : value < 0.8 ? 3 : 2;
+    } else if (type == "delay") {
+      result = value <= 0 ? 1 : value > 4 ? 3 : 2;
+    }
+    return result;
+  }
+
   visboKeyMetricsCalcBubble(): void {
     this.graphBubbleAxis(); // set the Axis Description and properties
 
@@ -717,6 +728,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       } else {
         this.sortAscending = !this.sortAscending;
       }
+    } else {
+      this.sortColumn = 1;
+      this.sortAscending = true;
     }
     if (this.sortColumn === 1) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
