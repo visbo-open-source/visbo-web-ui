@@ -74,10 +74,10 @@
         <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
       </div>
       <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
-        <app-comp-viewkeymetrics [bubbleMode]="true" [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+        <app-comp-viewbubble [bubbleMode]="true" [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
       </div>
       <div *ngIf="currentView == 'List' && visboprojectversions">
-        <app-comp-viewkeymetrics [bubbleMode]="false" [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+        <app-comp-viewbubble [bubbleMode]="false" [activeID]="vcActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
       </div>
       <div *ngIf="currentView == 'ProjectBoard' && visboprojectversions">
         <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>

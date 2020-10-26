@@ -563,10 +563,11 @@
 			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
 		}
 	},
-	"compViewKeyMetric": {
+	"compViewBubble": {
 		"titleChange": "Ändern der Kennzahlen",
 		"lbl": {
 			"nr": "Nr.",
+			"nrProjects": "Anzahl Projekte",
 			"project": "Projekt",
 			"variant": "Variant",
 			"timestamp": "Zeitstempel",

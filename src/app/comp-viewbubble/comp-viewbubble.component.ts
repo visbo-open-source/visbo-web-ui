@@ -22,10 +22,10 @@ class Metric{
 }
 
 @Component({
-  selector: 'app-comp-viewkeymetrics',
-  templateUrl: './comp-viewkeymetrics.component.html'
+  selector: 'app-comp-viewbubble',
+  templateUrl: './comp-viewbubble.component.html'
 })
-export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
+export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   constructor(
     private messageService: MessageService,
@@ -131,46 +131,46 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Init KeyMetrics`);
     this.metricList = [
       {
-        name: this.translate.instant('compViewKeyMetric.metric.costName'),
+        name: this.translate.instant('compViewBubble.metric.costName'),
         metric: 'Costs',
-        axis: this.translate.instant('compViewKeyMetric.metric.costAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.costBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.costTable')
+        axis: this.translate.instant('compViewBubble.metric.costAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.costBubble'),
+        table: this.translate.instant('compViewBubble.metric.costTable')
       },
       {
-        name: this.translate.instant('compViewKeyMetric.metric.endDateName'),
+        name: this.translate.instant('compViewBubble.metric.endDateName'),
         metric: 'EndDate',
-        axis: this.translate.instant('compViewKeyMetric.metric.endDateAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.endDateBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.endDateTable')
+        axis: this.translate.instant('compViewBubble.metric.endDateAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.endDateBubble'),
+        table: this.translate.instant('compViewBubble.metric.endDateTable')
       },
       {
-        name: this.translate.instant('compViewKeyMetric.metric.deadlineName'),
+        name: this.translate.instant('compViewBubble.metric.deadlineName'),
         metric: 'Deadlines',
-        axis: this.translate.instant('compViewKeyMetric.metric.deadlineAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.deadlineTable')
+        axis: this.translate.instant('compViewBubble.metric.deadlineAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deadlineBubble'),
+        table: this.translate.instant('compViewBubble.metric.deadlineTable')
       },
       {
-        name: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayName'),
+        name: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayName'),
         metric: 'DeadlinesFinishedDelay',
-        axis: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.deadlineFinishedDelayTable')
+        axis: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayBubble'),
+        table: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayTable')
       },
       {
-        name: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayName'),
+        name: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayName'),
         metric: 'DeadlinesUnFinishedDelay',
-        axis: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.deadlineUnFinishedDelayTable')
+        axis: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayBubble'),
+        table: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayTable')
       },
       {
-        name: this.translate.instant('compViewKeyMetric.metric.deliveryName'),
+        name: this.translate.instant('compViewBubble.metric.deliveryName'),
         metric: 'Deliveries',
-        axis: this.translate.instant('compViewKeyMetric.metric.deliveryAxis'),
-        bubble: this.translate.instant('compViewKeyMetric.metric.deliveryBubble'),
-        table: this.translate.instant('compViewKeyMetric.metric.deliveryTable')
+        axis: this.translate.instant('compViewBubble.metric.deliveryAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deliveryBubble'),
+        table: this.translate.instant('compViewBubble.metric.deliveryTable')
       }
     ];
 
@@ -422,7 +422,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visbokeymetrics) {
       return;
     }
-    if (this.visbokeymetrics.length > 20) {
+    if (this.visbokeymetrics.length > 10) {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
     }
     keyMetrics.push(['ID', this.graphBubbleLabelX, this.graphBubbleLabelY, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
@@ -583,8 +583,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   graphBubbleAxis(): void {
     let metric = this.metricList[this.metricX];
-    const weekFormat = '# ' + this.translate.instant('compViewKeyMetric.lbl.weeks');
-    const dayFormat = '# ' + this.translate.instant('compViewKeyMetric.lbl.days');
+    const weekFormat = '# ' + this.translate.instant('compViewBubble.lbl.weeks');
+    const dayFormat = '# ' + this.translate.instant('compViewBubble.lbl.days');
 
     this.graphBubbleOptions.hAxis.title = metric.axis;
     switch (metric.metric) {

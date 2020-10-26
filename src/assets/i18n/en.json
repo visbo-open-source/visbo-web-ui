@@ -563,10 +563,11 @@
 			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
 		}
 	},
-	"compViewKeyMetric": {
+	"compViewBubble": {
 		"titleChange": "Change Key Metric",
 		"lbl": {
 			"nr": "Nr.",
+			"nrProjects": "Number of projects",
 			"project": "Project",
 			"variant": "Variant",
 			"timestamp": "Timestamp",
