@@ -78,10 +78,6 @@
     </i>
   </ng-template>
 
-  <ng-template #indicator let-level="level">
-    <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
-  </ng-template>
-
   <ng-template #trafficLight let-level="level">
     <i class="fas fa-lightbulb" [ngClass]="{'d-none': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
   </ng-template>

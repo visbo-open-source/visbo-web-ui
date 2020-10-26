@@ -492,7 +492,9 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
-			"vpView": "Show Project Information",
+			"vpView": "Details",
+			"vpCapacity": "Capacity",
+			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
 			"back": "Back"
 		},

@@ -699,6 +699,16 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  getLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      percentCalc = plan/baseline;
+    }
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
+  }
+
   helperDateDiff(from: string, to: string, unit: string): number {
     const fromDate: Date = new Date(from);
     const toDate: Date = new Date(to);

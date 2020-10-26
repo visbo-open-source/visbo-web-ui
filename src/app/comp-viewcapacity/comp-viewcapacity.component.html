@@ -25,7 +25,7 @@
         </span>
       </span>
     </div>
-    <div class="form-check">
+    <div *ngIf="!vpvActive" class="form-check">
       <input type="checkbox" class="form-check-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV" [ngModelOptions]="{standalone: true}">
       <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
     </div>

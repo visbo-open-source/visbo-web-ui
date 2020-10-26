@@ -21,10 +21,22 @@
     </div>
   </div>
   <div *ngIf="vpvKeyMetricActive">
-    <div class="btn-group row my-2">
+    <!-- <div class="btn-group row my-2">
       <button class="btn btn-primary mx-2" (click)="gotoVpView()">{{ 'vpKeyMetric.btn.vpView' | translate }}</button>
+      <button class="btn btn-secondary mx-2" (click)="switchCapacity()">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
+    </div> -->
+    <div class="row">
+      <div class="col-9 btn-toolbar" style="padding: unset;">
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='switchCapacity(false)'>{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='switchCapacity(true)'>{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='gotoVpView()'>{{ 'vpKeyMetric.btn.vpView' | translate }}</button>
+      </div>
     </div>
-    <form>
+    <div *ngIf="viewCapacity && vpvKeyMetricActive">
+      <hr>
+      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    </div>
+    <form *ngIf="!viewCapacity">
       <div class="container">
         <div class="row">
           <label for="vpName" class="col-3 col-md-2">{{ 'vpKeyMetric.lbl.status' | translate }}:</label>
@@ -122,7 +134,7 @@
         </table>
       </div>
     </form>
-    <div *ngIf="history">
+    <div *ngIf="history && !viewCapacity">
       <hr>
       <div class="btn-group row">
         <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
@@ -276,7 +288,6 @@
             </tr>
           </tbody>
         </table>
-
       </div>
     </div>
   </div>

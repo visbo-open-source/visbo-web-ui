@@ -11,10 +11,11 @@ import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRol
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
-import { VisboCapacity } from '../_models/visboprojectversion';
+import { VisboCapacity, VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
+import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -39,6 +40,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
+  @Input() vpvActive: VisboProjectVersion;
   @Input() vcOrganisation: VisboSettingListResponse;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
@@ -57,7 +59,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   showUnit: string;
   showUnitText: string;
-  refPFV: false;
+  refPFV = false;
   parentThis = this;
 
   orgaTreeData: VisboOrgaTreeLeaf;
@@ -106,6 +108,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   constructor(
     private visbocenterService: VisboCenterService,
     private visboprojectService: VisboProjectService,
+    private visboprojectversionService: VisboProjectVersionService,
     private visbosettingService: VisboSettingService,
     private messageService: MessageService,
     private alertService: AlertService,
@@ -139,10 +142,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`Capacity Changes  ${this.refDate} ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
+    this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
       this.visboCapacityCalc();
     }
+    // else if (changes.vpvActive) {
+    //   this.visboCapacityCalc();
+    // }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -243,6 +249,37 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store Capacity for Len ${vp.capacity.length}`);
               this.visboCapcity = vp.capacity.filter(item => item.roleID == this.currentLeaf.uid.toString());
               this.visboCapcityChild = vp.capacity.filter(item => item.roleID != this.currentLeaf.uid.toString());
+            }
+            if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
+              this.calcLoad(this.visboCapcity, this.refPFV);
+            }
+            this.calcLoad(this.visboCapcityChild, this.refPFV);
+            this.visboViewCapacityOverTime();
+          },
+          error => {
+            this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpvActive) {
+      this.refPFV = true;
+      this.log(`Capacity Calc for VPV ${this.vpvActive.vpid} role ${this.currentLeaf.name}`);
+      this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), true, this.refPFV)
+        .subscribe(
+          listVPV => {
+            if (!listVPV || listVPV.length != 1 || !listVPV[0].capacity || listVPV[0].capacity.length === 0) {
+              this.log(`get VPF Calc: Reset Capacity to empty `);
+              this.visboCapcity = [];
+            } else {
+              const vpv = listVPV[0];
+              this.log(`Store Capacity for Len ${vpv.capacity.length}`);
+              this.visboCapcity = vpv.capacity.filter(item => item.roleID == this.currentLeaf.uid);
+              this.visboCapcityChild = vpv.capacity.filter(item => item.roleID != this.currentLeaf.uid);
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
               this.calcLoad(this.visboCapcity, this.refPFV);

@@ -10,9 +10,7 @@
         ({{ 'keyMetrics.longBAC' | translate }})
         {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
       </span>
-      <span *ngIf="vpvTotalCostCurrent <= vpvTotalCostBaseLine"><strong class="fas fa-check-circle" style="color:green"></strong></span>
-      <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine && vpvTotalCostCurrent <= vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-triangle" style="color:orange"></strong></span>
-      <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-circle" style="color:red"></strong></span>
+      <ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine)}"></ng-container>
     </div>
   </div>
 
@@ -21,6 +19,10 @@
   </div>
   <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
 </div>
+
+<ng-template #indicator let-level="level">
+  <strong><i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i></strong>
+</ng-template>
 
 <!-- Modal Show Shortcut explanation -->
 <div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
