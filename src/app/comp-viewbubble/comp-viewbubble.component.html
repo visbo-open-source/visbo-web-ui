@@ -27,14 +27,8 @@
       <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">{{ 'compViewBubble.metric.costName' | translate }}</h5>
       <div class="card-body p-2">
-        <div class="row">
-          <div class="col col-sm-8">
-            {{ 'compViewBubble.lbl.nrProjects' | translate }}
-          </div>
-          <div class="col col-sm-4 text-right">
-            {{visbokeymetrics.length}}
-          </div>
-        </div>
+        <ng-container *ngTemplateOutlet="cardRow; context:{label: 'compViewBubble.lbl.nrProjects', title: '', value: visbokeymetrics.length }"></ng-container>
+        <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'keyMetrics.shortEAC', title: ''keyMetrics.longEAC'', value: estimateAtCompletion }"></ng-container> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
             {{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }})
@@ -134,6 +128,17 @@
     </h3>
   </div>
 </div>
+
+<ng-template #cardRow let-label="label" let-title="title" let-value="value">
+  <div class="row">
+    <div class="col col-sm-8" title="{{title | translate}}">
+      {{label | translate }}
+    </div>
+    <div class="col col-sm-4 text-right">
+      {{value}}
+    </div>
+  </div>
+</ng-template>
 
 <ng-template #indicator let-level="level">
   <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
