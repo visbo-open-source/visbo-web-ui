@@ -740,7 +740,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     leaf.children.forEach((child) => {
       this.setTreeLeafSelection(child, value === TreeLeafSelection.SELECTED ? TreeLeafSelection.PARENT_SELECTED : value);
     });
-
   }
 
   selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
@@ -772,8 +771,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // value is the Id of one subrole
       const leaf = value;
       if (leaf.name === roleName) {
-        if (leaf && leaf.children && leaf.children.length > 0) {  leaf.showChildren = true;
-         }
+        if (leaf && leaf.children && leaf.children.length > 0) {
+          leaf.showChildren = true;
+        }
         resultLeaf = leaf;
         found = true;
       } else {

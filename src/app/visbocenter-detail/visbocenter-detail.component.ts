@@ -593,7 +593,12 @@ export class VisbocenterDetailComponent implements OnInit {
         }
         organisation[role.uid].name = role.name;
         organisation[role.uid].isExternRole = role.isExternRole;
+        organisation[role.uid].defaultKapa = role.defaultKapa;
         organisation[role.uid].tagessatz = role.tagessatzIntern;
+        organisation[role.uid].employeeNr = role.employeeNr;
+        organisation[role.uid].defaultDayCapa = role.defaultDayCapa;
+        organisation[role.uid].entryDate = role.entryDate;
+        organisation[role.uid].exitDate = role.exitDate;
         organisation[role.uid].aliases = role.aliases;
 
         // this.log(`Add Orga Unit ${role.uid} ${role.name} Children ${role.subRoleIDs.length}`);
@@ -653,8 +658,8 @@ export class VisbocenterDetailComponent implements OnInit {
                     + (role.tagessatz || '0') + separator
                     + (role.employeeNr || '') + separator
                     + (role.defaultDayCapa || '0') + separator
-                    + (role.entryDate ? role.entryDate : '') + separator
-                    + (role.exitDate ? role.exitDate : '') + separator
+                    + (role.entryDate || '') + separator
+                    + (role.exitDate || '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }
