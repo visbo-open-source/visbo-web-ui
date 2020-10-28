@@ -553,6 +553,28 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  calcFullPath(uid: number, organisation: OrganisationItem[]): void {
+    if (!organisation || !(uid >= 0)) {
+      return;
+    }
+    let path = '';
+    let index = uid;
+    let level = -1;
+    if (organisation[index]) {
+      const pid = organisation[index] && organisation[index].pid;
+      if (pid >= 0) {
+        organisation[index].parent = organisation[pid] && organisation[pid].name;
+      }
+    }
+    while (index >= 0 && organisation[index]) {
+      path = '/'.concat(organisation[index].name, path);
+      index = organisation[index].pid;
+      level += 1;
+    }
+    organisation[uid].path = path;
+    organisation[uid].level = level;
+  }
+
   downloadSetting(): void {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
@@ -560,36 +582,41 @@ export class VisbocenterDetailComponent implements OnInit {
       const organisation: OrganisationItem[] = [];
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        if (!organisation[role.uid - 1]) {
-          organisation[role.uid - 1] = new OrganisationItem()
-          organisation[role.uid - 1].uid = role.uid;
-          organisation[role.uid - 1].pid = undefined;
-          organisation[role.uid - 1].path = '';
-          organisation[role.uid - 1].level = 0;
+        if (role.isTeamParent || role.isTeam) {
+          // skip team entries for the moment
+          continue;
         }
-        organisation[role.uid - 1].name = role.name;
-        organisation[role.uid - 1].isExternRole = role.isExternRole;
-        organisation[role.uid - 1].tagessatz = role.tagessatzIntern;
-        organisation[role.uid - 1].aliases = role.aliases;
+        if (!organisation[role.uid]) {
+          organisation[role.uid] = new OrganisationItem()
+          organisation[role.uid].uid = role.uid;
+          organisation[role.uid].pid = undefined;
+        }
+        organisation[role.uid].name = role.name;
+        organisation[role.uid].isExternRole = role.isExternRole;
+        organisation[role.uid].tagessatz = role.tagessatzIntern;
+        organisation[role.uid].aliases = role.aliases;
 
-        this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
+        // this.log(`Add Orga Unit ${role.uid} ${role.name} Children ${role.subRoleIDs.length}`);
         for (let j = 0; j < role.subRoleIDs.length; j++) {
-          const index = Number(role.subRoleIDs[j].key) - 1;
+          const index = Number(role.subRoleIDs[j].key);
           if (index < 0) {
+            this.log(`Inconsistent Org Structure Role ${role.uid} SubRole ${role.subRoleIDs[j].key}`);
             // something wrong with the numbering
             break;
           }
           if (!organisation[index]) {
+            // added by subrole
             organisation[index] = new OrganisationItem();
-            organisation[index].uid = index + 1;
+            organisation[index].uid = index;
+          } else {
+            this.log(`SubRole already exists ${role.uid} SubRole ${index}`);
           }
           organisation[index].pid = role.uid;
-          organisation[index].parent = role.name;
-          organisation[index].path = organisation[role.uid - 1].path.concat('/', organisation[role.uid - 1].name);
-          organisation[index].level = organisation[role.uid - 1].level + 1;
         }
       }
-      organisation.sort(function(a, b) { return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name)); });
+      organisation.forEach(item => this.calcFullPath(item.uid, organisation));
+
+      organisation.sort(function(a, b) { return visboCmpString(a.path, b.path); });
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
 
       // export as CSV
@@ -616,7 +643,7 @@ export class VisbocenterDetailComponent implements OnInit {
           break;
         }
         const lineItem = ''
-                    + role.name.padStart(role.name.length + role.level, ' ') + separator
+                    + role.name.padStart(role.name.length + role.level, '_') + separator
                     + role.uid + separator
                     // + (role.pid || '') + separator
                     + (role.parent || '') + separator
@@ -632,7 +659,8 @@ export class VisbocenterDetailComponent implements OnInit {
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
-      const blob = new Blob([data], { type: 'text/plain' });
+      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
+      const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       this.log(`Open URL ${url}`);
       const a = document.createElement('a');

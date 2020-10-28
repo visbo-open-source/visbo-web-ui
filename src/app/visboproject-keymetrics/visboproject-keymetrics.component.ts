@@ -50,6 +50,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayTotalDelivery: number;
   delayEndDate: number;
 
+  viewCapacity = false;
   vpvRefDate: Date;
   chartButton: string;
   chart = true;
@@ -217,6 +218,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (variantName) {
       this.dropDownIndex = this.dropDown.findIndex(item => item === variantName);
     }
+  }
+
+  switchCapacity(newState: boolean): void {
+    this.viewCapacity = newState;
   }
 
   switchVariant(name: string): void {
@@ -539,7 +544,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     const maxDate = new Date(maxGetTime);
     maxDate.setDate(1);
     maxDate.setHours(0,0,0,0);
-    maxDate.setMonth(minDate.getMonth() + 3);
+    maxDate.setMonth(maxDate.getMonth() + 2);
     minGetTime = minDate.getTime();
     maxGetTime = maxDate.getTime();
 

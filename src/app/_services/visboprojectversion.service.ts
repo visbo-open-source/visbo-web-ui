@@ -206,7 +206,32 @@ export class VisboProjectVersionService {
       );
   }
 
-  /** GET CostCalculation from the server for the specified vpv id */
+  /** GET Capacity Calculation from the server for the specified vpv id */
+  getCapacity(id: string, roleID: string, hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/capacity`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
+    }
+    if (roleID) {
+      this.log(`Calling RoleID: ${roleID}`);
+      params = params.append('roleID', roleID);
+    }
+
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(() => this.log(`fetched Capacity Calculation for ${id}`)),
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
+      );
+  }
+
+  /** GET Cost Calculation from the server for the specified vpv id */
   getCost(id: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/cost`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -216,12 +241,12 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(() => this.log(`fetched CostCalc for ${id}`)),
+        tap(() => this.log(`fetched Cost Calc for ${id}`)),
         catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
 
-  /** GET DeliveryCalculation from the server for the specified vpv id */
+  /** GET Delivery Calculation from the server for the specified vpv id */
   getDelivery(id: string, ref: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/delivery`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -233,7 +258,7 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(() => this.log(`fetched DeliveryCalc for ${id}`)),
+        tap(() => this.log(`fetched Delivery Calc for ${id}`)),
         catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
@@ -251,7 +276,7 @@ export class VisboProjectVersionService {
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(() => this.log(`fetched DeadlineCalc for ${id}`)),
+        tap(() => this.log(`fetched Deadline Calc for ${id}`)),
         catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }

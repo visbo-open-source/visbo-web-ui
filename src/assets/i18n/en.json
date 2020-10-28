@@ -492,7 +492,9 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
-			"vpView": "Show Project Information",
+			"vpView": "Details",
+			"vpCapacity": "Capacity",
+			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
 			"back": "Back"
 		},
@@ -543,7 +545,8 @@
 			"nextPeriod": "Next Period after {{refDate}}",
 			"vc": "VISBO Center",
 			"pd": "PD",
-			"euro": "Euro"
+			"euro": "Euro",
+			"refPFV": "Compare against Order"
 		},
 		"btn": {
 			"back": "Back",
@@ -560,10 +563,14 @@
 			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
 		}
 	},
-	"compViewKeyMetric": {
+	"compViewBubble": {
 		"titleChange": "Change Key Metric",
 		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Number of projects",
 			"project": "Project",
+			"variant": "Variant",
+			"timestamp": "Timestamp",
 			"bu": "Business Unit",
 			"lead": "Projektmanager",
 			"template": "Template",
@@ -632,36 +639,6 @@
 			"endDate": "Project end date",
 			"timeline": "Timeline",
 			"filter": "Filter"
-		},
-		"msg": {
-			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
-		}
-	},
-	"compViewVPVList": {
-		"lbl": {
-			"project": "Project",
-			"projectView": "View Projects",
-			"bu": "Business Unit",
-			"lead": "Project Manager",
-			"template": "Template",
-			"startDate": "Project start date",
-			"endDate": "Project end date",
-			"nr": "Nr.",
-			"name": "Name",
-			"variant": "Variant",
-			"timestamp": "Timestamp",
-			"endDate": "End of Project",
-			"changeWeeks": "+/- weeks",
-			"percentOfBAC": "% BAC",
-			"percentOfActDeadline": "% PD",
-			"percentOfActDelivery": "% PDV",
-			"filter": "Filter"
-		},
-		"metric": {
-			"endDateTooltip": "Change of End Date in weeks",
-			"costTooltip": "Total Cost at completion (%)",
-			"deadlineTooltip": "Achieved Deadlines in %",
-			"deliveryTooltip": "Achieved Deliveries in %"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"

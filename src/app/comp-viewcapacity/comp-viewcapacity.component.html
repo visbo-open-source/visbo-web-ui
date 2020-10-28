@@ -1,8 +1,8 @@
 <div class='well'>
-  <div  class='container-fluid'>
+  <div  class='container-fluid mb-2'>
 
-    <span class="row text-dark">
-      <span class="row ml-0">
+    <div class="row text-dark">
+      <span class="row ml-1">
         <span class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</span>
         <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">von </label> -->
         <input id="capacityFrom" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="visboViewCapacityOverTime()" >
@@ -14,21 +14,21 @@
 
         <span class="pt-2 mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
 
-        <span class="pt-2 mr-auto dropdown">
+        <span class="pt-2 dropdown">
           <a class="pt-2 pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
-            {{showUnit | translate}}
+            {{showUnitText}}
           </a>
-          <!-- ur: 2020.06.09: commented lines are with underline to show the interaction -->
-          <!-- <a class="font-weight-bold dropdown-toggle" data-toggle="dropdown" style="border-bottom: 1px dashed darkgrey !important">
-            {{showUnit | translate}}
-          </a> -->
           <div class="dropdown-menu">
-            <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.pd')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
-            <a class="dropdown-item" (click)="updateShowUnit('ViewCapacity.lbl.euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
+            <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
+            <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
           </div>
         </span>
       </span>
-    </span>
+    </div>
+    <div *ngIf="!vpvActive" class="form-check">
+      <input type="checkbox" class="form-check-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV" [ngModelOptions]="{standalone: true}">
+      <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
+    </div>
   </div>
 
   <div class="">

@@ -16,7 +16,6 @@
   </div>
 
   <div class='panel-body'>
-    <!-- <div> Timestamp {{vpvActive.timestamp}}</div> -->
     <table class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
@@ -32,11 +31,9 @@
       <!--Table body-->
       <tbody>
         <tr *ngFor="let delivery of filteredDelivery; let deliveryIndex=index" (click)='helperDelivery(deliveryIndex)' data-toggle="modal" data-target="#detailDelivery">
-          <td *ngIf="getStatus(delivery) === 0" class="font-weight-bold my_darkgreen" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-          <td *ngIf="getStatus(delivery) === 1" class="font-weight-bold my_green" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-          <td *ngIf="getStatus(delivery) === 2" class="font-weight-bold my_orange" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-          <td *ngIf="getStatus(delivery) === 3" class="font-weight-bold my_red" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
-          <td *ngIf="getStatus(delivery) === -1" title="{{delivery.description}}">{{getShortText(delivery.description, 100)}}</td>
+          <td title="{{delivery.description}}">
+            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatus(delivery), text: getShortText(delivery.description, 100)} " ></ng-container>
+          </td>
           <td class="d-none d-md-table-cell" title="{{getFullName(delivery)}}">{{getShortText(getFullName(delivery), 50, 'right')}}</td>
           <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-lg-table-cell text-right">{{delivery.endDateVPV | date :'dd.MM.yy'}}</td>
@@ -46,9 +43,25 @@
           <td *ngIf="!(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
         </tr>
       </tbody>
-      <!--Table body-->
     </table>
   </div>
+
+  <ng-template #fontStyle let-level="level" let-text="text">
+    <i [ngClass]="{
+      'font-weight-normal': level == -1,
+      'font-weight-bold': level >= 0,
+      'my_darkgreen': level == 0,
+      'my_green': level == 1,
+      'my_orange': level == 2,
+      'my_red': level == 3}
+      ">
+      {{text}}
+    </i>
+  </ng-template>
+
+  <ng-template #trafficLight let-level="level">
+    <i class="fas fa-lightbulb" [ngClass]="{'d-none': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+  </ng-template>
 
   <!-- Modal Show Delivery Detail -->
   <div class="modal fade" id="detailDelivery" tabindex="-1" role="dialog" aria-labelledby="Detail Delivery" aria-hidden="true">

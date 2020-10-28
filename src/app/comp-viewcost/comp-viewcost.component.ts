@@ -236,6 +236,16 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     return result;
   }
 
+  getLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      percentCalc = plan/baseline;
+    }
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
+  }
+
   displayCost(): boolean {
     let result = false;
     if (this.vpvActive                                // the vpv is already available
