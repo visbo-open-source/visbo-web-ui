@@ -26,32 +26,115 @@
       <thead>
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vpv.lbl.nr' | translate }}</th>
-          <!-- <th>Name</th> -->
           <th (click)="sortVPVTable(1)">{{ 'vpv.lbl.timestamp' | translate }}</th>
-          <th class="d-none d-md-table-cell">{{ 'vpv.lbl.status' | translate }}</th>
-          <th (click)="sortVPVTable(2)" class="d-none d-md-table-cell">{{ 'vpv.lbl.endDate' | translate }}</th>
+          <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.status' | translate }}</th>
+          <th (click)="sortVPVTable(2)" class="d-none d-lg-table-cell">{{ 'vpv.lbl.endDate' | translate }}</th>
           <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>
           <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>
-          <!-- <th>Info</th> -->
+          <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.locked' | translate }}</th>
+          <th *ngIf="hasVPPerm(permVP.DeleteVP)">{{ 'vpv.lbl.delete' | translate }}</th>
         </tr>
       </thead>
       <!--Table body-->
       <tbody>
-        <tr *ngFor="let vpv of visboprojectversions; let vpvIndex=index" (click)="gotoClickedRow(vpv)">
+        <tr *ngFor="let vpv of visboprojectversions; let vpvIndex=index">
           <td class="d-none d-md-table-cell">{{vpvIndex+1}}</td>
-          <td class="d-none d-md-table-cell">{{vpv.timestamp | date :'dd.MM.yyyy HH:mm'}}</td>
-          <td class="d-none d-sm-table-cell d-md-none">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
-          <td class="d-none d-md-table-cell">{{vpv.status}}</td>
-          <td class="d-none d-md-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
-          <td *ngIf="hasVPPerm(permVP.ViewAudit)">{{vpv.ampelStatus}}</td>
-          <td class="d-none d-md-table-cell">{{vpv.variantName}}</td>
-          <!-- <td>
-            <button class="Detail" title="Detail of Visbo Project Version"
-            (click)="gotoDetail(vpv)">i</button>
-          </td> -->
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" title="{{vpv.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">{{vpv.status}}</td>
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
+          <td *ngIf="hasVPPerm(permVP.ViewAudit)">
+            <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpv.ampelStatus} " ></ng-container>
+          </td>
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-md-table-cell">{{vpv.variantName}}</td>
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">
+            <span>{{checkLocked(vpv)}}</span>
+          </td>
+          <td>
+            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true)" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteUser' | translate }}" (click)='helperSetVPV(vpvIndex)'
+            data-toggle="modal" data-target="#VpvDelete">&times;</button>
+          </td>
         </tr>
       </tbody>
       <!--Table body-->
     </table>
+  </div>
+</div>
+
+<ng-template #trafficLight let-level="level">
+  <i [ngClass]="{'fas fa-lightbulb': level >= 0, 'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+</ng-template>
+
+<div *ngIf="visboprojectversion" class="modal fade" id="VpvDetails" tabindex="-1" role="dialog" aria-labelledby="Details Project Version" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VpvDeleteTitle">{{ 'vpv.titleDetailVPV' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="VpvName" class="col-sm-4 col-form-label">{{ 'vpv.lbl.name' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.name }} </label>
+          </div>
+          <div class="form-group row">
+            <label for="VpvVersions" class="col-sm-4 col-form-label">{{ 'vpv.lbl.timestamp' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+          </div>
+          <div class="form-group row">
+            <label for="VpvUpdated" class="col-sm-4 col-form-label">{{ 'vpv.lbl.updatedAt' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+          </div>
+          <div *ngIf="visboprojectversion.variantName" class="form-group row">
+            <label for="VpvVariant" class="col-sm-4 col-form-label">{{ 'vpv.lbl.variantName' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.variantName }} </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpv.btn.back' | translate }}</button>
+        <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="restore()" class="btn btn-primary" data-dismiss="modal">{{ 'vpv.btn.restore' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="visboprojectversion" class="modal fade" id="VpvDelete" tabindex="-1" role="dialog" aria-labelledby="Delete Project Version" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="VpvDeleteTitle">{{ 'vpv.titleDeleteVPV' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label *ngIf="!deleted" class="bg-warning">{{ 'vpv.msg.confirmDelete' | translate }}</label>
+          <label *ngIf="deleted" class="bg-danger text-white">{{ 'vpv.msg.confirmDestroy' | translate }}</label>
+        </div>
+        <form>
+          <div class="form-group row">
+            <label for="VpvName" class="col-sm-4 col-form-label">{{ 'vpv.lbl.name' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.name }} </label>
+          </div>
+          <div class="form-group row">
+            <label for="VpvVersions" class="col-sm-4 col-form-label">{{ 'vpv.lbl.timestamp' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+          </div>
+          <div class="form-group row">
+            <label for="VpvVersions" class="col-sm-4 col-form-label">{{ 'vpv.lbl.updatedAt' | translate }}:</label>
+            <label class="col-sm-8 form-control-static">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpv.btn.cancel' | translate }}</button>
+        <button *ngIf="!deleted" type="button" class="btn btn-warning text-white" (click)="delete(visboprojectversion)" data-dismiss="modal">{{ 'vpv.btn.delete' | translate }}</button>
+        <button *ngIf="deleted" type="button" class="btn btn-danger text-white" (click)="delete(visboprojectversion)" data-dismiss="modal">{{ 'vpv.btn.destroy' | translate }}</button>
+      </div>
+    </div>
   </div>
 </div>

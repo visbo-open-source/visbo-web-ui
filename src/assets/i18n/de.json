@@ -762,50 +762,29 @@
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
+		"titleDetailVPV": "Information über Version",
+		"titleDeleteVPV": "Löschen der Projekt Version",
 		"lbl": {
 			"nr": "Nr.",
+			"name": "Name",
+			"variantName": "Variante",
 			"timestamp": "Zeitstempel",
+			"updatedAt": "Verändert am",
 			"status": "Status",
 			"endDate": "Projektende",
 			"trafficlight": "Ampel",
 			"budget": "Budget",
 			"variant": "Variante",
+			"locked": "Sperre",
+			"delete": "Löschen",
 			"vc": "VISBO Center"
 		},
 		"btn": {
 			"deleted": "Gelöschte",
 			"undeleted": "Nicht gelöschte",
-			"back": "Zurück"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpvDetails": {
-		"title": "Details zur Projekt Version",
-		"titleDeleteVPV": "Löschen der Projekt Version",
-		"lbl": {
-			"name": "Name",
-			"description": "Beschreibung",
-			"createdUpdated": "Erstellt/Verändert am",
-			"timestamp": "Zeitstempel von",
-			"variant": "Variante",
-			"keyMetric": "Kennzahl",
-			"detail": "Detail",
-			"kmCost": "Vergleich der Kosten",
-			"kmCostDetail": "Zeige monatliche Kosten",
-			"kmDelivery": "Vergleich der Lieferungen",
-			"kmDeliveryDetail": "Zeige alle Lieferungen",
-			"kmDeadline": "Vergleich der Termine",
-			"kmDeadlineDetail": "Zeige alle Termine"
-		},
-		"btn": {
-			"restore": "Wiederherstellen",
 			"delete": "Löschen",
 			"destroy": "Vernichten",
-			"deleted": "Gelöschte",
-			"undeleted": "Nicht gelöschte",
+			"restore": "Wiederherstellen",
 			"cancel": "Abbrechen",
 			"back": "Zurück"
 		},
@@ -815,6 +794,7 @@
 			"errorPerm": "Keine Berechtigung für diese VISBO Projekt Version",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorLocked": "Projekt {{name}} ist von einem anderen Benutzer gesperrt.",
 			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}

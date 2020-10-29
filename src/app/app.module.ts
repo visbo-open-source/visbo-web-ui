@@ -65,7 +65,6 @@ import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproj
 // Visbo Project Versions
 import { VisboProjectVersionService } from './_services/visboprojectversion.service';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
-import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
 // Visbo Portfolio Versions
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
@@ -114,7 +113,6 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboProjectViewDeadlineComponent,
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
-    VisboProjectVersionDetailComponent,
     VisboPortfolioVersionsComponent,
     MessagesComponent,
     LogoutTimerComponent,
