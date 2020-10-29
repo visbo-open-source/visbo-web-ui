@@ -658,12 +658,12 @@ export class VisbocenterDetailComponent implements OnInit {
                     + (role.parent || '') + separator
                     + (role.isExternRole ? '1' : '') + separator
                     // + (role.isTeam ? '1' : '0') + separator
-                    + (role.defaultKapa || '') + separator
-                    + (role.tagessatz || '') + separator
+                    + (role.defaultKapa.toLocaleString() || '') + separator
+                    + (role.tagessatz.toLocaleString() || '') + separator
                     + (role.employeeNr || '') + separator
-                    + (role.defaultDayCapa || '') + separator
-                    + (role.entryDate || '') + separator
-                    + (role.exitDate || '') + separator
+                    + (role.defaultDayCapa.toLocaleString() || '') + separator
+                    + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
+                    + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }
