@@ -60,6 +60,12 @@ export class VisboProjectResponse {
   perm: {system: number, vc: number, vp: number};
 }
 
+export class VPVariantResponse {
+  state: string;
+  message: string;
+  variant: [ VPVariant ];
+}
+
 export class VisboProjectLockResponse {
   state: string;
   message: string;

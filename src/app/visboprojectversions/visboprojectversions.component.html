@@ -50,7 +50,7 @@
             <span>{{checkLocked(vpv)}}</span>
           </td>
           <td>
-            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true)" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteUser' | translate }}" (click)='helperSetVPV(vpvIndex)'
+            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true)" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteVersion' | translate }}" (click)='helperSetVPV(vpvIndex)'
             data-toggle="modal" data-target="#VpvDelete">&times;</button>
           </td>
         </tr>

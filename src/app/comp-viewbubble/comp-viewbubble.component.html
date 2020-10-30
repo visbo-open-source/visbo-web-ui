@@ -1,6 +1,6 @@
 <div *ngIf="visbokeymetrics" class='well'>
-  <div class="row">
-    <div class="col-sm-12 col-lg-8">
+  <div class="row row-cols-1 row-cols-lg-2">
+    <div class="col col-sm-12 col-lg-8">
       <div class='container-fluid'>
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-lg-4 col-sm-6 card align-right px-0">
+    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
       <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">{{ 'compViewBubble.metric.costName' | translate }}</h5>
       <div class="card-body p-2">

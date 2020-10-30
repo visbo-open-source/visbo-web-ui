@@ -7,10 +7,10 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
-import { VisboUserInvite } from '../_models/visbouser';
+import { VisboUser, VisboUserInvite } from '../_models/visbouser';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
-import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-detail',
@@ -21,6 +21,7 @@ export class VisboprojectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
   newUserInvite = new VisboUserInvite();
+  newVariant: string;
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
   vgGroupsInvite: VGGroup[];
@@ -28,8 +29,10 @@ export class VisboprojectDetailComponent implements OnInit {
   confirm: string;
   userIndex: number;
   groupIndex: number;
-  showGroups: boolean;
+  variantIndex: number;
+  actView = 'User';
 
+  currentUser: VisboUser;
   combinedPerm: VGPermission = undefined;
   combinedUserPerm: VGPermission = undefined;
   permVC = VGPVC;
@@ -40,6 +43,8 @@ export class VisboprojectDetailComponent implements OnInit {
   sortUserAscending = true;
   sortGroupColumn = 1;
   sortGroupAscending = true;
+  sortVariantColumn = 1;
+  sortVariantAscending = true;
 
   constructor(
     private messageService: MessageService,
@@ -53,6 +58,7 @@ export class VisboprojectDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.getVisboProject();
     this.getVisboProjectUsers();
   }
@@ -115,8 +121,8 @@ export class VisboprojectDetailComponent implements OnInit {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
-  toggleUserGroup(): void {
-    this.showGroups = !this.showGroups;
+  toggleView(newView: string): void {
+    this.actView = newView;
   }
 
   getVisboProjectUsers(): void {
@@ -277,6 +283,36 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  addNewVPVariant(): void {
+    if (!this.newVariant || !this.newVariant.trim()) {
+      // ignore empty variant
+      return;
+    }
+    this.newVariant = this.newVariant.trim();
+    this.visboprojectService.createVariant(this.newVariant, this.visboproject._id )
+      .subscribe(
+        variant => {
+          // Add Variant to list
+          this.visboproject.variant.push(variant);
+          const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Create Variant error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -309,6 +345,10 @@ export class VisboprojectDetailComponent implements OnInit {
 
   helperRemoveGroup(memberIndex: number): void {
     this.groupIndex = memberIndex;
+  }
+
+  helperRemoveVariant(variantIndex: number): void {
+    this.variantIndex = variantIndex;
   }
 
   helperUsersPerGroup(groupId: string): number {
@@ -347,6 +387,31 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during remove User from VP user ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  removeVariant(index: number, vp: VisboProject): void {
+    this.log(`Remove VisboProject Variant: ${vp.variant[index].variantName} VP: ${vp._id}`);
+    this.visboprojectService.deleteVariant(vp.variant[index]._id, vp._id)
+      .subscribe(
+        () => {
+          const message = this.translate.instant('vpDetail.msg.removeVariantSuccess', {'name': vp.variant[index].variantName});
+          this.visboproject.variant.splice(index, 1);
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Remove VisboProject Variant error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantPerm', {'name': vp.variant[index].variantName});
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantConflict', {'name': vp.variant[index].variantName});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during remove Variant from VP ${error.error.message}`); // log to console instead
             this.alertService.error(getErrorMessage(error));
           }
         }
@@ -518,6 +583,16 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  getLockStatus(variantIndex: number): number {
+    let result = 0;
+    const variantName = this.visboproject.variant[variantIndex].variantName;
+    const lock = this.visboproject.lock.find(item => item.variantName == variantName)
+    if (lock) {
+      result = lock.email == this.currentUser.email ? 1 : 2;
+    }
+    return result;
+  }
+
   unlockVP(lockIndex: number ): void {
     const vpid = this.visboproject._id;
     const variantName = this.visboproject.lock[lockIndex].variantName;
@@ -611,6 +686,39 @@ export class VisboprojectDetailComponent implements OnInit {
     }
     if (!this.sortGroupAscending) {
       this.vgGroups.reverse();
+    }
+  }
+
+  sortVariantTable(n?: number): void {
+
+    if (!this.visboproject.variant) {
+      return;
+    }
+    let variant = this.visboproject.variant
+    // change sort order otherwise sort same column same direction
+    if (n !== undefined || this.sortVariantColumn === undefined) {
+      if (n !== this.sortVariantColumn) {
+        this.sortVariantColumn = n;
+        this.sortVariantAscending = undefined;
+      }
+      if (this.sortVariantAscending === undefined) {
+        // sort name column ascending, number values desc first
+        this.sortVariantAscending = (n === 1 || n === 2) ? true : false;
+      } else {
+        this.sortVariantAscending = !this.sortVariantAscending;
+      }
+    }
+    if (this.sortVariantColumn === 1) {
+      variant.sort(function(a, b) { return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase()); });
+    } else if (this.sortVariantColumn === 2) {
+      variant.sort(function(a, b) { return visboCmpString(a.email.toLowerCase(), b.email.toLowerCase()); });
+    } else if (this.sortVariantColumn === 3) {
+      variant.sort(function(a, b) { return visboCmpDate(a.createdAt, b.createdAt); });
+    } else if (this.sortVariantColumn === 4) {
+      variant.sort(function(a, b) { return b.vpvCount - a.vpvCount; });
+    }
+    if (!this.sortVariantAscending) {
+      variant.reverse();
     }
   }
 

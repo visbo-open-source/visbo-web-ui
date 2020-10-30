@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboProject, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse } from '../_models/visboproject';
+import { VisboProject, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse, VPVariant, VPVariantResponse } from '../_models/visboproject';
 import { VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
@@ -346,6 +346,40 @@ export class VisboProjectService {
       map(response => response.restrict[0]),
       tap(restrict => this.log(`added Visbo Project Restriction ${JSON.stringify(restrict)}`)),
       catchError(this.handleError<VPRestrict>('addVisboProjectRestriction'))
+    );
+  }
+
+  /** POST: add a new Variant to the Visbo Project */
+  createVariant (name: string, vpid: string, sysadmin = false): Observable<VPVariant> {
+    const url = `${this.vpUrl}/${vpid}/variant`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    const reqBody = {
+      variantName: name
+    };
+    this.log(`Calling HTTP Request: ${url} for ${name} `);
+    return this.http.post<VPVariantResponse>(url, reqBody, { headers , params })
+      .pipe(
+        map(response => response.variant[0]),
+        tap(variant => this.log(`added VP Variant with id=${variant._id}`)),
+        catchError(this.handleError<VPVariant>('createVariant'))
+      );
+  }
+
+  /** DELETE: delete Visbo Project Variant */
+  deleteVariant (variantID: string, vpid: string): Observable<VisboProject> {
+    const url = `${this.vpUrl}/${vpid}/variant/${variantID}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const params = new HttpParams();
+    this.log(`Calling HTTP Request: ${url} Params ${params} `);
+    return this.http.delete<VisboProjectResponse>(url, { headers , params })
+    .pipe(
+      map(response => response.vp[0]),
+      tap(vp => this.log(`deleted Visbo Project Variant in VP ${vp.name}`)),
+      catchError(this.handleError<VisboProject>('deleteVisboProjectVariant'))
     );
   }
 
