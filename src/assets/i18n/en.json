@@ -535,6 +535,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"noCost": "No Cost Information about the project",
 			"errorPerm": "Permission denied for this project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
@@ -842,7 +843,7 @@
 			"noVersions": "No Project Versions related to this Date",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
-			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects"
+			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
 		}
 	},
 	"vcAudit": {

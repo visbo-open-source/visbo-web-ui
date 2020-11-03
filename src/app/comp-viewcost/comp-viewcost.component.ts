@@ -243,15 +243,18 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     else return 3;
   }
 
-  displayCost(): boolean {
+  vpHasCost(type: string): boolean {
     let result = false;
-    if (this.vpvActive                                // the vpv is already available
-    && this.hasVPPerm(this.permVP.ViewAudit)          // user has audit permission
-    && this.vpvCost && this.vpvCost.length > 0) {     // vpv contains cost data
-      result = true;
+    if (!this.vpvActive) {
+      return result
     }
-    if (this.vpvTotalCostBaseLine === 0 && this.vpvTotalCostCurrent === 0) {
-      result = false;
+    if (type == 'keyMetric') {
+      result = this.vpvActive.keyMetrics &&
+                (this.vpvActive.keyMetrics.costBaseLastTotal > 0 || this.vpvActive.keyMetrics.costCurrentTotal > 0)
+    } else {
+      if (this.vpvCost && this.vpvCost.length > 0) {     // vpv contains cost data
+        result = true;
+      }
     }
     return result;
   }

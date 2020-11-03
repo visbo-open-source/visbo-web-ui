@@ -46,7 +46,7 @@
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
       <div class="col-3 mt-2 text-warning text-right" *ngIf="isVersionMismatch()">
-          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvWithKM, 'total': vpList.length} }}
+          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
       </div>
     </div>
   </div>

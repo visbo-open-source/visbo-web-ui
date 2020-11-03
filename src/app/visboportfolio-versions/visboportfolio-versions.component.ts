@@ -38,7 +38,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
     visboportfolioversions: VisboPortfolioVersion[];
     visboprojectversions: VisboProjectVersion[];
-    vpvWithKM: number;
+    vpvCount: number;
 
     dropDown: DropDown[] = [];
     dropDownSelected: string;
@@ -264,9 +264,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   isVersionMismatch(): boolean {
     let result = false;
-    if (this.currentView === 'KeyMetrics'
-      && this.vpList
-      && this.vpvWithKM !== this.vpList.length) {
+    if (!this.vpList || !this.vpfActive || !this.vpfActive.allItems) { return result; }
+
+    if (this.vpfActive.allItems.length !== this.vpvCount) {
         result = true;
       }
     return result;
@@ -275,7 +275,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   calcVPList(): void {
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.vpList = [];
-    this.vpvWithKM = 0;
+    this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive.allItems.length; i++) {
       const nextVP = new VisboProjectVersion();
       const item = this.vpfActive.allItems[i];
@@ -294,7 +294,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         nextVP.ampelStatus = this.visboprojectversions[index].ampelStatus;
         nextVP.ampelErlaeuterung = this.visboprojectversions[index].ampelErlaeuterung;
         nextVP.keyMetrics = this.visboprojectversions[index].keyMetrics;
-        this.vpvWithKM += this.visboprojectversions[index].keyMetrics ? 1 : 0;
+        this.vpvCount += 1;
       }
       this.vpList.push(nextVP);
     }

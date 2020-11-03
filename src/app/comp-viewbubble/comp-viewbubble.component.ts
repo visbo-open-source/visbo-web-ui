@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetricsCalc, VPVKeyMetrics } from '../_models/visboprojectversion';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -49,6 +49,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   metricList: Metric[];
   metricX = 0;
   metricY = 1;
+  metricListFiltered = false;
 
   hasKMCost = false;
   hasKMDelivery = false;
@@ -56,6 +57,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   hasKMEndDate = false;
   hasKMDeadlineDelay = false;
   hasVariant: boolean;
+  countKM: number;
 
   vpFilter: string;
   estimateAtCompletion = 0;
@@ -213,6 +215,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.currentID = this.activeID;
 
     this.visbokeymetrics = [];
+    this.countKM = 0;
     this.budgetAtCompletion = 0;
     this.estimateAtCompletion = 0;
 
@@ -236,15 +239,16 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         || (this.visboprojectversions[i].leadPerson || '').toLowerCase().indexOf(vpFilter) >= 0
         || (this.visboprojectversions[i].description || '').toLowerCase().indexOf(vpFilter) >= 0
       ) {
+        const elementKeyMetric = new VPVKeyMetricsCalc();
+        elementKeyMetric.name = this.visboprojectversions[i].name;
+        elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
+        elementKeyMetric.ampelStatus = this.visboprojectversions[i].ampelStatus;
+        elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[i].ampelErlaeuterung;
+        elementKeyMetric._id = this.visboprojectversions[i]._id;
+        elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
+        elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
         if (this.visboprojectversions[i].keyMetrics) {
-          const elementKeyMetric = new VPVKeyMetricsCalc();
-          elementKeyMetric.name = this.visboprojectversions[i].name;
-          elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
-          elementKeyMetric.ampelStatus = this.visboprojectversions[i].ampelStatus;
-          elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[i].ampelErlaeuterung;
-          elementKeyMetric._id = this.visboprojectversions[i]._id;
-          elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
-          elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
+          this.countKM += 1;
           elementKeyMetric.keyMetrics = this.visboprojectversions[i].keyMetrics;
 
           this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
@@ -295,8 +299,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
             this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
           elementKeyMetric.deliveryCompletionActual =
             this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
-          this.visbokeymetrics.push(elementKeyMetric);
         }
+        this.visbokeymetrics.push(elementKeyMetric);
         if (this.visboprojectversions[i].variantName) {
           this.hasVariant = true;
         }
@@ -309,6 +313,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   thinDownMetricList(): void {
     let index: number;
+    if (this.metricListFiltered) {
+      // filter the metric list only once in the beginning, but not during filtering projects
+      return;
+    }
     if (!this.visbokeymetrics || this.visbokeymetrics.length === 0) {
       this.hasKMCost = true;
       this.hasKMDelivery = true;
@@ -362,6 +370,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         this.metricY = this.metricX === 0 ? 1 : 0;
       }
     }
+    this.metricListFiltered = true;
   }
 
   calcPercent(current: number, baseline: number): number {
@@ -427,6 +436,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     keyMetrics.push(['ID', this.graphBubbleLabelX, this.graphBubbleLabelY, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (let i = 0; i < this.visbokeymetrics.length; i++) {
+      if (!this.visbokeymetrics[i].keyMetrics) {
+        continue;
+      }
       // var colorValue = (this.visbokeymetrics[i].savingCostTotal <= 1 ? 1 : 0) +
       //                   (this.visbokeymetrics[i].savingEndDate <= 0 ? 1 : 0);
       let colorValue = 0;
@@ -502,6 +514,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     let minSize = Infinity, maxSize = 0;
 
     for (let i = 0; i < this.visbokeymetrics.length; i++) {
+      if (!this.visbokeymetrics[i].keyMetrics) {
+        continue;
+      }
       minSize = Math.min(minSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal);
       maxSize = Math.max(maxSize, this.visbokeymetrics[i].keyMetrics.costBaseLastTotal);
       switch (this.metricList[this.metricX].metric) {
@@ -547,6 +562,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
     rangeAxis = 0;
     for (let i = 0; i < this.visbokeymetrics.length; i++) {
+      if (!this.visbokeymetrics[i].keyMetrics) {
+        continue;
+      }
       switch (this.metricList[this.metricY].metric) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[i].savingCostTotal - 1) * 100));
