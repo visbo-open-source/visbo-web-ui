@@ -19,7 +19,7 @@
       <label for="vpType" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.type' | translate }}:</label>
       <label name=vpType class="col form-control-static col-form-label">{{ getVPType(visboproject.vpType) }} </label>
     </div>
-    <div *ngIf="hasVPPerm(permVP.Modify)" class="form-group row">
+    <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
       <label name=vpVersion class="col form-control-static col-form-label"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
     </div>
@@ -32,12 +32,14 @@
   <div *ngIf="getVPPerm() != permVP.View">
     <div class="btn-toolbar" style ="">
       <button id="ViewAudit" *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
-      <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
-      <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mr-1" (click)="toggleUserGroup()">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
+      <button id="ViewGroup" *ngIf="actView != 'Group'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Group')">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
+      <button id="ViewUser" *ngIf="actView != 'User'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
       <button id="ViewRestrictUser" *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
+      <button id="ViewVariant" *ngIf="actView != 'Variant' && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Variant')">{{ 'vpDetail.btn.viewVariant' | translate }}</button>
+      <button id="ViewLock" *ngIf="actView != 'Lock' && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>
     </div>
 
-    <div *ngIf="!showGroups" >
+    <div *ngIf="actView == 'User'" >
       <div >
         <div class='row'>
           <div class='col'>
@@ -69,7 +71,7 @@
               <tr *ngFor="let member of vgUsers; let memberIndex=index"> <!-- class="danger"> -->
                 <td>{{memberIndex+1}}</td>
                 <td id="ColUser" (click)='calcCombinedPerm(memberIndex)' data-toggle="modal" data-target="#VPUserDetail"><a>{{member.email}}</a></td>
-                <td id="ColGroup" (click)="toggleUserGroup()"><a>{{member.groupName}}</a></td>
+                <td id="ColGroup" (click)="toggleView('Group')"><a>{{member.groupName}}</a></td>
                 <td class="d-none d-md-table-cell">{{member.groupType == 'VP' ? '' : 'Global'}}</td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
                   <button id="ColDeleteUser" class="Detail" title="{{ 'vpDetail.lbl.deleteUser' | translate }}" (click)='helperRemoveUser(memberIndex)'
@@ -85,7 +87,7 @@
       </div>
     </div>
 
-    <div *ngIf="showGroups" >
+    <div *ngIf="actView == 'Group'" >
       <div>
         <div class='row'>
           <div class='col'>
@@ -118,7 +120,7 @@
               <tr *ngFor="let member of vgGroups; let memberIndex=index">
                 <td>{{memberIndex+1}}</td>
                 <td id="ColGroup" (click)='initGroup(member)' data-toggle="modal" data-target="#VpGroupModalCreate"><a>{{member.name}}</a></td>
-                <td id="ColMembers" (click)="toggleUserGroup()"><a>{{member.users.length}}</a></td>
+                <td id="ColMembers" (click)="toggleView('User')"><a>{{member.users.length}}</a></td>
                 <td id="ColGlobal" *ngIf="member.global" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.global' | translate }}</td>
                 <td id="ColGlobal" *ngIf="!member.global" class="d-none d-md-table-cell"></td>
                 <td *ngIf="!deleted && hasVPPerm(permVP.ManagePerm) && member.groupType == 'VP'">
@@ -139,9 +141,71 @@
       </div>
     </div>
 
+    <div *ngIf="actView == 'Variant'" >
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading mt-3'>
+                {{ 'vpDetail.titleVariants' | translate }}
+            </h5>
+          </div>
+          <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class='col'>
+            <!-- Button trigger modal -->
+            <button id="AddVariant" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VpVariantModalCreate">
+              {{ 'vpDetail.btn.addVariant' | translate }}
+            </button>
+          </div>
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover'>
+            <!--Table head-->
+            <thead id="VariantHead">
+              <tr>
+                <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
+                <th (click)="sortVariantTable(1)">{{ 'vpDetail.lbl.variant' | translate }}</th>
+                <th (click)="sortVariantTable(2)">{{ 'vpDetail.lbl.email' | translate }}</th>
+                <th (click)="sortVariantTable(3)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.createdAt' | translate }}</th>
+                <th (click)="sortVariantTable(4)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.versions' | translate }}</th>
+                <th class="d-none d-md-table-cell">{{ 'vpDetail.lbl.lock' | translate }}</th>
+                <th *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)">{{ 'vpDetail.lbl.delete' | translate }}</th>
+              </tr>
+            </thead>
+            <!--Table body-->
+            <tbody id="VariantList">
+              <tr *ngFor="let variant of visboproject.variant; let variantIndex=index">
+                <td>{{variantIndex+1}}</td>
+                <td id="ColName">{{variant.variantName}}</td>
+                <td id="ColEmail">{{variant.email}}</td>
+                <td class="d-none d-md-table-cell" title="{{ variant.createdAt | date :'dd.MM.yyyy HH:mm:ss'}}">{{variant.createdAt | date :'dd.MM.yy'}}</td>
+                <td class="d-none d-md-table-cell">{{variant.vpvCount}}</td>
+                <td class="d-none d-md-table-cell">
+                  <ng-container *ngTemplateOutlet="lockIndicator; context:{level: getLockStatus(variantIndex)}"></ng-container>
+                </td>
+                <td>
+                  <button  *ngIf="!variant.vpvCount && hasVPPerm(permVP.Modify) && getLockStatus(variantIndex) <= 1" id="ColDeleteVariant" class="Detail"
+                    title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
+                    data-toggle="modal" data-target="#VpVariantRemove">&times;
+                  </button>
+                  <button  *ngIf="!variant.vpvCount && !hasVPPerm(permVP.Modify) && hasVPPerm(permVP.CreateVariant) && getLockStatus(variantIndex) <= 1 && variant.email == currentUser.email" id="ColDeleteVariant" class="Detail"
+                    title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
+                    data-toggle="modal" data-target="#VpVariantRemove">&times;
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <!--Table body-->
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #lockIndicator let-level="level">
+      <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-ban text-danger': level == 2}"></i>
+    </ng-template>
+
     <!-- Show Locks -->
-    <div *ngIf="visboproject.lock.length >0 && hasVPPerm(permVP.Modify)">
-      <div class='row'>
+    <div *ngIf="actView == 'Lock'">
+      <div class='row mt-2'>
         <div class='col'>
           <h5 class='panel-heading'>
             {{ 'vpDetail.titleProjectLocks' | translate }}
@@ -321,7 +385,7 @@
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
                 <div class="col-8 ml-3" *ngIf="member.groupId == actGroup._id">
-                  <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
+                  <a (click)="toggleView('User')" data-dismiss="modal">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
@@ -469,13 +533,78 @@
           <label class="form-control-static mt-2">{{ 'perm.lblGroupMembership' | translate }}</label>
           <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
             <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
-              <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.groupName }}</a>
+              <a (click)="toggleView('Group')" data-dismiss="modal">{{ member.groupName }}</a>
             </div>
           </ng-container>
 
           <div class="modal-footer align-items-end">
             <button class="btn btn-primary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Add VP Variant -->
+  <div class="modal fade" id="VpVariantModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpVariantModalCreateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VpVariantModalCreateTitle">{{ 'vpDetail.titleAddVariant' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="newVariant" #f3="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f3.submitted && !variant.valid }">
+              <label for="variant" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+              <input id="AddVariant" type="text" class="form-control" name="variant" [(ngModel)]="newVariant" #variant="ngModel" required>
+              <div *ngIf="f3.submitted && !variant.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+            </div>
+            <div class="modal-footer align-items-end">
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
+              <button id="AddVariantConfirm" *ngIf="!variant.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.createVariant' | translate }}</button>
+              <button id="AddVariantConfirm" *ngIf="variant.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Delete Variant -->
+  <div class="modal fade" id="VpVariantRemove" tabindex="-1" role="dialog" aria-labelledby="Remove Variant" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="variantIndex >= 0 && variantIndex < visboproject.variant.length">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VpVariantRemoveTitle">{{ 'vpDetail.titleRemoveVariant' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning">{{ 'vpDetail.msg.removeVariantConfirm' | translate }}</label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.vp' | translate }}:</label>
+              <label class="col-sm-8 form-control-static">{{ visboproject.name }} </label>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+              <label class="col-sm-8 form-control-static">{{ visboproject.variant[variantIndex].variantName }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.user' | translate }}:</label>
+              <label class="col-sm-8 form-control-static">{{ visboproject.variant[variantIndex].email }}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
+          <button id="DeleteVariantConfirm" type="button" class="btn btn-warning" (click)="removeVariant(variantIndex, visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>

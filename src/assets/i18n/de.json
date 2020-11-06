@@ -301,9 +301,11 @@
 		"titleUsers": "VISBO Projekt Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
-		"titleGroups": "VISBO Center Gruppen",
+		"titleGroups": "VISBO Projekt Gruppen",
+		"titleVariants": "VISBO Projekt Varianten",
 		"titleViewGroup": "Anzeigen einer Gruppe im VISBO Projekt",
 		"titleAddGroup": "Anlegen einer neuen Gruppe im VISBO Projekt",
+		"titleAddVariant": "Anlegen einer neuen Variante im VISBO Projekt",
 		"titleModifyGroup": "Ändern einer Gruppe im VISBO Projekt",
 		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Projekt",
 		"titleDeleteProject": "VISBO Projekt löschen",
@@ -311,6 +313,7 @@
 		"titlePermUser": "Berechtigung für {{name}}",
 		"titleProjectRestrict": "VISBO Projekt Freigaben",
 		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
+		"titleRemoveVariant": "Löschen einer Variante im VISBO Projekt",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -330,12 +333,14 @@
 			"global": "Global",
 			"message": "Nachricht",
 			"expires": "Läuft ab",
+			"lock": "Sperre",
 			"variant": "Variante",
 			"versions": "Versionen",
 			"ofTotal": "of total",
 			"unlock": "Entsperren",
 			"delete": "Löschen",
 			"deleteUser": "Benutzer löschen",
+			"deleteVariant": "Variante löschen",
 			"restrictpath": "Planelement",
 			"restrictgroup": "Gruppe",
 			"inclChildren": "hierarchisch",
@@ -352,9 +357,13 @@
 			"viewAudit": "Audit",
 			"viewGroups": "Gruppen",
 			"viewUsers": "Benutzer",
+			"viewVariant": "Varianten",
+			"viewLock": "Sperren",
 			"addUser": "Benutzer einladen",
 			"addGroup": "Gruppe hinzufügen",
+			"addVariant": "Variante anlegen",
 			"invite": "Einladen",
+			"createVariant": "Anlegen",
 			"save": "Speichern",
 			"restore": "Wiederherstellen",
 			"destroy": "Vernichten!",
@@ -367,11 +376,13 @@
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
 			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Projekt löschen?",
+			"removeVariantConfirm": "Wollen Sie die Variante wirklich aus dem VISBO Projekt löschen?",
 			"removeProjectConfirm": "Wollen Sie das VISBO Projekt wirklich löschen?",
 			"destroyProjectConfirm": "Wollen Sie das VISBO Projekt wirklich endgültig löschen?",
 			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
 			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
 			"groupNameRequired": "Gruppen Name erforderlich",
+			"variantRequired": "Varianten Name erforderlich",
 			"invalidMessage": "Fehlerhafter Inhalt",
 			"removeGroup": "Gruppe löschen",
 			"detailGroup": "Details zur Gruppe",
@@ -383,6 +394,8 @@
 			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
 			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
 			"removeLockSuccess": "Sperre wurde erfolgreich aufgehoben",
+			"createVariantSuccess": "Variante {{name}} wurde zum VISBO Projekt hinzugefügt",
+			"removeVariantSuccess": "Variante {{name}} wurde erfolgreich gelöscht",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
 			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Projekt {{name}}",
@@ -391,7 +404,10 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
-			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!"
+			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!",
+			"errorRemoveVariantPerm": "Keine Berechtigung Variante {{name}} zu löschen",
+			"errorRemoveVariantConflict": "Beim Löschen der Variante {{name}} ist ein Fehler aufgetreten",
+			"errorVariantConflict": "Eine Variante mit dem Namen {{name}} existiert bereits!"
 		}
 	},
 	"vpRestrict": {
@@ -519,6 +535,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"noCost": "Keine Kosteninformation für dieses Projekt",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
@@ -762,50 +779,30 @@
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
+		"titleDetailVPV": "Information über Version",
+		"titleDeleteVPV": "Löschen der Projekt Version",
 		"lbl": {
 			"nr": "Nr.",
+			"name": "Name",
+			"variantName": "Variante",
 			"timestamp": "Zeitstempel",
+			"updatedAt": "Verändert am",
 			"status": "Status",
 			"endDate": "Projektende",
 			"trafficlight": "Ampel",
 			"budget": "Budget",
 			"variant": "Variante",
+			"locked": "Sperre",
+			"delete": "Löschen",
+			"deleteVersion": "Version löschen",
 			"vc": "VISBO Center"
 		},
 		"btn": {
 			"deleted": "Gelöschte",
 			"undeleted": "Nicht gelöschte",
-			"back": "Zurück"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpvDetails": {
-		"title": "Details zur Projekt Version",
-		"titleDeleteVPV": "Löschen der Projekt Version",
-		"lbl": {
-			"name": "Name",
-			"description": "Beschreibung",
-			"createdUpdated": "Erstellt/Verändert am",
-			"timestamp": "Zeitstempel von",
-			"variant": "Variante",
-			"keyMetric": "Kennzahl",
-			"detail": "Detail",
-			"kmCost": "Vergleich der Kosten",
-			"kmCostDetail": "Zeige monatliche Kosten",
-			"kmDelivery": "Vergleich der Lieferungen",
-			"kmDeliveryDetail": "Zeige alle Lieferungen",
-			"kmDeadline": "Vergleich der Termine",
-			"kmDeadlineDetail": "Zeige alle Termine"
-		},
-		"btn": {
-			"restore": "Wiederherstellen",
 			"delete": "Löschen",
 			"destroy": "Vernichten",
-			"deleted": "Gelöschte",
-			"undeleted": "Nicht gelöschte",
+			"restore": "Wiederherstellen",
 			"cancel": "Abbrechen",
 			"back": "Zurück"
 		},
@@ -815,6 +812,7 @@
 			"errorPerm": "Keine Berechtigung für diese VISBO Projekt Version",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorLocked": "Projekt {{name}} ist von einem anderen Benutzer gesperrt.",
 			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}
@@ -845,7 +843,7 @@
 			"noVersions": "Keine Projekte zu diesen Kriterien",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
-			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte"
+			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte sichtbar"
 		}
 	},
 	"vcAudit": {

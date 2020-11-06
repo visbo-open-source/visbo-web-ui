@@ -1,5 +1,5 @@
-<div *ngIf="displayCost()" class='well'>
-  <div class="col">
+<div *ngIf="hasVPPerm(this.permVP.ViewAudit)" class='well'>
+  <div *ngIf="vpHasCost('keyMetric')" class="col">
     <div class="row text-dark">
       <span class="mr-2">
         {{ 'keyMetrics.shortEAC' | translate }}
@@ -16,6 +16,12 @@
 
   <div *ngIf="graphDataComboChart.length > 0" >
     <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+  </div>
+
+  <div *ngIf="!vpHasCost('cost')">
+    <h3 class="d-flex justify-content-center">
+      {{ 'vpViewCost.msg.noCost' | translate }}
+    </h3>
   </div>
   <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
 </div>

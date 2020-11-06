@@ -17,7 +17,6 @@ import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-au
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
-import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
 import { VisboProjectViewVPVComponent } from './visboproject-viewvpv/visboproject-viewvpv.component';
@@ -65,7 +64,6 @@ const routes: Routes = [
   { path: 'vpRestrict/:id', component: VisboprojectRestrictComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
-  { path: 'vpvDetail/:id', component: VisboProjectVersionDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpf/:id', component: VisboPortfolioVersionsComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },

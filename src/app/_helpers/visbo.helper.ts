@@ -87,10 +87,12 @@ export function getErrorMessage(error: any): string {
       console.log(`Rest Server not reachable: ${error.status} ${error.statusText}, Message ${error.message}`);
     } else {
       console.log(`Rest Error Status: ${error.status} ${error.statusText}, Message ${error.message}, Name: ${error.error.name || ''}`);
-      if (error.statusText) {
-        result = error.statusText;
+      if (error.error && error.error.message) {
+        result = error.error.message;
       } else if (error.message) {
         result = error.message;
+      } else if (error.statusText) {
+        result = error.statusText;
       }
     }
   }

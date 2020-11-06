@@ -144,10 +144,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
-      this.visboCapacityCalc();
+      this.getCapacity();
     }
     // else if (changes.vpvActive) {
-    //   this.visboCapacityCalc();
+    //   this.getCapacity();
     // }
   }
 
@@ -187,7 +187,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
             }
             this.visboViewOrganisationTree();
-            this.visboCapacityCalc();
+            this.getCapacity();
           },
           error => {
             this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
@@ -203,7 +203,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  visboCapacityCalc(): void {
+  getCapacity(): void {
     this.visboCapcity = undefined;
 
     if (this.vcActive ) {
@@ -404,7 +404,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateRef(): void {
     this.log(`Show Ref change: ${status} to ${this.refPFV}`);
-    this.visboCapacityCalc();
+    this.capaLoad = []; // reset the load indicators
+    this.getCapacity();
   }
 
   visboViewCapacityOverTime(): void {
@@ -746,7 +747,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (leaf.name !== this.currentLeaf.name ) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
-      this.visboCapacityCalc();
+      this.getCapacity();
     }
     if (showChildren) {
       leaf.showChildren = true;
@@ -788,10 +789,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
-  }
-
-  changeOrga(): void {
-    // this.visboCapacityCalc();
   }
 
   parseDate(dateString: string): Date {

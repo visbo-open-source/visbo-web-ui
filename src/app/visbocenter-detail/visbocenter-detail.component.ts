@@ -597,8 +597,12 @@ export class VisbocenterDetailComponent implements OnInit {
         organisation[role.uid].tagessatz = role.tagessatzIntern;
         organisation[role.uid].employeeNr = role.employeeNr;
         organisation[role.uid].defaultDayCapa = role.defaultDayCapa;
-        organisation[role.uid].entryDate = role.entryDate;
-        organisation[role.uid].exitDate = role.exitDate;
+        if (role.entryDate > "0001-01-01T00:00:00Z") {
+          organisation[role.uid].entryDate = role.entryDate;
+        }
+        if (role.exitDate < "2200-11-30T23:00:00Z") {
+          organisation[role.uid].exitDate = role.exitDate;
+        }
         organisation[role.uid].aliases = role.aliases;
 
         // this.log(`Add Orga Unit ${role.uid} ${role.name} Children ${role.subRoleIDs.length}`);
@@ -648,26 +652,24 @@ export class VisbocenterDetailComponent implements OnInit {
           break;
         }
         const lineItem = ''
-                    + role.name.padStart(role.name.length + role.level, ' ') + separator
+                    + '"' + role.name.padStart(role.name.length + role.level, ' ') + '"'+ separator
                     + role.uid + separator
                     // + (role.pid || '') + separator
                     + (role.parent || '') + separator
-                    + (role.isExternRole ? '1' : '0') + separator
+                    + (role.isExternRole ? '1' : '') + separator
                     // + (role.isTeam ? '1' : '0') + separator
-                    + (role.defaultKapa || '0') + separator
-                    + (role.tagessatz || '0') + separator
+                    + (role.defaultKapa.toLocaleString() || '') + separator
+                    + (role.tagessatz.toLocaleString() || '') + separator
                     + (role.employeeNr || '') + separator
-                    + (role.defaultDayCapa || '0') + separator
-                    + (role.entryDate || '') + separator
-                    + (role.exitDate || '') + separator
+                    + (role.defaultDayCapa.toLocaleString() || '') + separator
+                    + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
+                    + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
-      data = '\ufeff' + data;
-      //const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
-      const blob = new Blob([data], { type: 'text/csv;charset=ISO-8859-1' });
-      //const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
+      const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       this.log(`Open URL ${url}`);
       const a = document.createElement('a');

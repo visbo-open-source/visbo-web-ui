@@ -146,6 +146,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
           } else {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
+            // check if we got the PFV Values and if not set the refType to vpv
+            if (this.refType != 'vpv') {
+              if (this.allDeadline && !this.allDeadline[0].fullPathPFV) {
+                this.refType = 'vpv'
+                this.switchType = false;
+              }
+            }
           }
           this.initDeadlines(change);
           this.visboViewAllDeadlinePie(change);
@@ -169,16 +176,12 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
 
     this.filterPath = this.getFullPath(this.allDeadline[0]);
-    this.switchType = (this.refType === 'vpv');
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
       this.allDeadline[i].status = this.statusList[this.getStatus(this.allDeadline[i])];
       this.allDeadline[i].statusID = this.getStatus(this.allDeadline[i]);
       // check if the user can switch between pfv & vpv
-      if (this.switchType ||  this.allDeadline[i].endDatePFV) {
-        this.switchType = true;
-      }
     }
     this.filterDeadlines(change);
   }
