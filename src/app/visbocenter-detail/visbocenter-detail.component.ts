@@ -17,9 +17,12 @@ import { VisboSetting } from '../_models/visbosetting';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 class OrganisationItem {
+  calcid: number;
   uid: number;
   pid: number;
-  level: number
+  type: number;
+  isTeam: boolean;
+  level: number;
   name: string;
   parent: string;
   path: string;
@@ -30,6 +33,7 @@ class OrganisationItem {
   tagessatz: number;
   entryDate: Date;
   exitDate: Date;
+  percent: number;
   aliases: string;
 }
 
@@ -553,12 +557,12 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  calcFullPath(uid: number, organisation: OrganisationItem[]): void {
-    if (!organisation || !(uid >= 0)) {
+  calcFullPath(id: number, organisation: OrganisationItem[]): void {
+    if (!organisation || !(id >= 0)) {
       return;
     }
     let path = '';
-    let index = uid;
+    let index = id;
     let level = -1;
     if (organisation[index]) {
       const pid = organisation[index] && organisation[index].pid;
@@ -571,8 +575,8 @@ export class VisbocenterDetailComponent implements OnInit {
       index = organisation[index].pid;
       level += 1;
     }
-    organisation[uid].path = path;
-    organisation[uid].level = level;
+    organisation[id].path = path;
+    organisation[id].level = level;
   }
 
   downloadSetting(): void {
@@ -580,52 +584,145 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
       const organisation: OrganisationItem[] = [];
-      for (let i = 0; i < setting.value.allRoles.length; i++) {
+      for (let i = 0; setting.value.allRoles && i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        if (role.isTeamParent || role.isTeam) {
-          // skip team entries for the moment
-          continue;
+        const id = role.uid;
+        if (!organisation[id]) {
+          organisation[id] = new OrganisationItem()
+          organisation[id].uid = id;
+          organisation[id].calcid = id;
+          organisation[id].pid = undefined;
         }
-        if (!organisation[role.uid]) {
-          organisation[role.uid] = new OrganisationItem()
-          organisation[role.uid].uid = role.uid;
-          organisation[role.uid].pid = undefined;
-        }
-        organisation[role.uid].name = role.name;
-        organisation[role.uid].isExternRole = role.isExternRole;
-        organisation[role.uid].defaultKapa = role.defaultKapa;
-        organisation[role.uid].tagessatz = role.tagessatzIntern;
-        organisation[role.uid].employeeNr = role.employeeNr;
-        organisation[role.uid].defaultDayCapa = role.defaultDayCapa;
+        organisation[id].name = role.name;
+        organisation[id].isExternRole = role.isExternRole;
+        organisation[id].defaultKapa = role.defaultKapa;
+        organisation[id].tagessatz = role.tagessatzIntern;
+        organisation[id].employeeNr = role.employeeNr;
+        organisation[id].defaultDayCapa = role.defaultDayCapa;
         if (role.entryDate > "0001-01-01T00:00:00Z") {
-          organisation[role.uid].entryDate = role.entryDate;
+          organisation[id].entryDate = role.entryDate;
         }
         if (role.exitDate < "2200-11-30T23:00:00Z") {
-          organisation[role.uid].exitDate = role.exitDate;
+          organisation[id].exitDate = role.exitDate;
         }
-        organisation[role.uid].aliases = role.aliases;
+        organisation[id].aliases = role.aliases;
 
-        // this.log(`Add Orga Unit ${role.uid} ${role.name} Children ${role.subRoleIDs.length}`);
-        for (let j = 0; j < role.subRoleIDs.length; j++) {
-          const index = Number(role.subRoleIDs[j].key);
+        // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
+        if (role.isTeam) {
+          this.log("Skip Handling of Team Members");
+          organisation[id].type = 2;
+          organisation[id].isTeam = true;
+        } else {
+          organisation[id].type = 1;
+          for (let j = 0; j < role.subRoleIDs.length; j++) {
+            const index = Number(role.subRoleIDs[j].key);
+            if (index < 0) {
+              this.log(`Inconsistent Org Structure Role ${id} SubRole ${role.subRoleIDs[j].key}`);
+              // something wrong with the numbering
+              break;
+            }
+            if (!organisation[index]) {
+              // added by subrole
+              organisation[index] = new OrganisationItem();
+              organisation[index].uid = index;
+              organisation[index].calcid = index;
+            } else {
+              this.log(`SubRole already exists ${id} SubRole ${index}`);
+            }
+            organisation[index].pid = id;
+          }
+        }
+      }
+
+      // build team members Information by duplicating users with their percentage
+      let maxid = 0;
+      setting.value.allRoles.forEach(element => { if (element.uid > maxid) maxid = element.uid; } );
+      this.log(`MaxID ${maxid}`);
+      for (let i = 0; i < setting.value.allRoles.length; i++) {
+        const role = setting.value.allRoles[i];
+        const id = role.uid;
+        if (role.isTeam && role.subRoleIDs && role.subRoleIDs.length > 0) {
+          for (let j = 0; j < role.subRoleIDs.length; j++) {
+            const index = role.subRoleIDs[j].key;
+            if (!organisation[index] || organisation[index].isTeam) {
+              // nothing to do
+              continue;
+            }
+            const userRole = organisation[index];
+            // now it is a user, add a new entry
+            maxid += 1;
+            organisation[maxid] = new OrganisationItem();
+            organisation[maxid].uid = index;
+            organisation[maxid].calcid = maxid;
+            organisation[maxid].type = 2;
+            organisation[maxid].pid = role.uid;
+            organisation[maxid].name = userRole.name;
+            organisation[maxid].parent = role.name;
+            if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
+            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole; }
+            if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
+            if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
+            if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
+            if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
+            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
+            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
+            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
+          }
+        }
+      }
+      organisation.forEach(item => this.calcFullPath(item.calcid, organisation));
+      organisation.sort(function(a, b) {
+        if (a.type != b.type) {
+          return a.type - b.type;
+        } else {
+          return visboCmpString(a.path, b.path);
+        }
+      });
+
+      // build cost Information hierarchy
+      const listCost: OrganisationItem[] = [];
+      for (let i = 0; setting.value.allCosts && i < setting.value.allCosts.length; i++) {
+        const cost = setting.value.allCosts[i];
+        const id = cost.uid;
+        if (!listCost[id]) {
+          listCost[id] = new OrganisationItem()
+          listCost[id].uid = id;
+          listCost[id].calcid = id;
+          listCost[id].pid = undefined;
+        }
+        listCost[id].name = cost.name;
+
+        listCost[id].type = 3;
+        for (let j = 0; cost.subCostIDs && j < cost.subCostIDs.length; j++) {
+          const index = Number(cost.subCostIDs[j].key);
           if (index < 0) {
-            this.log(`Inconsistent Org Structure Role ${role.uid} SubRole ${role.subRoleIDs[j].key}`);
+            this.log(`Inconsistent Org Structure Cost ${id} SubCost ${cost.subCostIDs[j].key}`);
             // something wrong with the numbering
             break;
           }
-          if (!organisation[index]) {
-            // added by subrole
-            organisation[index] = new OrganisationItem();
-            organisation[index].uid = index;
+          if (!listCost[index]) {
+            // added by subCost
+            listCost[index] = new OrganisationItem();
+            listCost[index].uid = index;
+            listCost[index].calcid = index;
           } else {
-            this.log(`SubRole already exists ${role.uid} SubRole ${index}`);
+            this.log(`listCost already exists ${id} listCost ${index}`);
           }
-          organisation[index].pid = role.uid;
+          listCost[index].pid = id;
         }
       }
-      organisation.forEach(item => this.calcFullPath(item.uid, organisation));
 
-      organisation.sort(function(a, b) { return visboCmpString(a.path, b.path); });
+      listCost.forEach(item => this.calcFullPath(item.calcid, listCost));
+      listCost.sort(function(a, b) {
+        if (a.type != b.type) {
+          return a.type - b.type;
+        } else {
+          return visboCmpString(a.path, b.path);
+        }
+      });
+      // add the list to the orga list
+      listCost.forEach(item => organisation.push(item));
+
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
 
       // export as CSV
@@ -634,36 +731,38 @@ export class VisbocenterDetailComponent implements OnInit {
       data = 'sep=' + separator + '\n';  // to force excel to use the separator
       data = data + 'name' + separator
             + 'uid' + separator
-            // + 'pid' + separator
+            + 'type' + separator
             + 'organisation' + separator
             + 'isExternal' + separator
-            // + 'isTeam' + separator
+            + 'isTeam' + separator
             + 'defaultKapa' + separator
             + 'tagessatz' + separator
             + 'employeeNr' + separator
             + 'defaultDayCapa' + separator
             + 'entryDate' + separator
             + 'exitDate' + separator
+            + 'percent' + separator
             + 'aliases' + '\n';
       for (let i = 0; i < organisation.length; i++) {
         const role = organisation[i];
         if (!role) {
           // organisation could contain holes and they are sorted at the end
-          break;
+          continue;
         }
         const lineItem = ''
                     + '"' + role.name.padStart(role.name.length + role.level, ' ') + '"'+ separator
                     + role.uid + separator
-                    // + (role.pid || '') + separator
+                    + (role.type || '') + separator
                     + (role.parent || '') + separator
                     + (role.isExternRole ? '1' : '') + separator
-                    // + (role.isTeam ? '1' : '0') + separator
-                    + (role.defaultKapa.toLocaleString() || '') + separator
-                    + (role.tagessatz.toLocaleString() || '') + separator
+                    + (role.isTeam ? '1' : '') + separator
+                    + (role.defaultKapa || '').toLocaleString() + separator
+                    + (role.tagessatz || '').toLocaleString() + separator
                     + (role.employeeNr || '') + separator
-                    + (role.defaultDayCapa.toLocaleString() || '') + separator
+                    + (role.defaultDayCapa || '').toLocaleString() + separator
                     + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
                     + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
+                    + (role.percent ? role.percent.toLocaleString() : '') + separator
                     + (role.aliases || '') + '\n';
         data = data.concat(lineItem);
       }
