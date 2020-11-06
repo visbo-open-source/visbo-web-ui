@@ -648,7 +648,7 @@ export class VisbocenterDetailComponent implements OnInit {
           break;
         }
         const lineItem = ''
-                    + role.name.padStart(role.name.length + role.level, '_') + separator
+                    + role.name.padStart(role.name.length + role.level, ' ') + separator
                     + role.uid + separator
                     // + (role.pid || '') + separator
                     + (role.parent || '') + separator
@@ -664,8 +664,10 @@ export class VisbocenterDetailComponent implements OnInit {
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
-      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
-      const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+      data = '\ufeff' + data;
+      //const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
+      const blob = new Blob([data], { type: 'text/csv;charset=ISO-8859-1' });
+      //const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       this.log(`Open URL ${url}`);
       const a = document.createElement('a');
