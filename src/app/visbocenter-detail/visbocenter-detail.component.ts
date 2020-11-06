@@ -763,7 +763,7 @@ export class VisbocenterDetailComponent implements OnInit {
                     + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
                     + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
                     + (role.percent ? role.percent.toLocaleString() : '') + separator
-                    + (role.aliases || '') + '\n';
+                    + (role.aliases.join("#") || '') + '\n';
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
