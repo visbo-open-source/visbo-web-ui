@@ -8,7 +8,8 @@ import { EnvService } from './env.service';
 import { Login, VisboUser, VisboUserResponse, LoginResponse, VisboVersion, VisboVersionResponse, VisboStatusPWPolicy, VisboStatusPWPolicyResponse } from '../_models/visbouser';
 import { MessageService } from './message.service';
 
-import * as JWT from 'jwt-decode';
+// import * as JWT from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -55,7 +56,7 @@ export class AuthenticationService {
                     localStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
                     // eslint-disable-next-line
-                    const decoded: any = JWT(result.token);
+                    const decoded: any = jwt_decode(result.token);
                     if (decoded && decoded.exp) {
                       // this.log(`Login token expiration:  ${decoded.exp}`);
                       this.logoutTime = new Date(decoded.exp * 1000);
