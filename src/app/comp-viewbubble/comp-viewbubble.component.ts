@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetricsCalc, VPVKeyMetrics } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -412,7 +412,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
-  calcLevel(value: number, type: string) {
+  calcLevel(value: number, type: string): number {
     let result = 0;
     if (type == "percentOver") {
       result = value <= 1 ? 1 : value > 1.05 ? 3 : 2;

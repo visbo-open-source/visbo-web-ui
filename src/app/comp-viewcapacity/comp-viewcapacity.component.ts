@@ -548,17 +548,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
     const roleName = this.translate.instant('ViewCapacity.roleName');
 
-    let internCapa: string, externCapa: string, totalCapa: string, actualCost: string, plannedCost: string;
+    let internCapa: string, totalCapa: string, actualCost: string, plannedCost: string;
     if (PT) {
       actualCost = capacity.actualCost_PT.toFixed(0);
       plannedCost = capacity.plannedCost_PT.toFixed(0);
       if (refPFV) {
         internCapa = capacity.baselineCost_PT.toFixed(0);
-        externCapa = '0';
-        totalCapa = (capacity.baselineCost_PT + 0).toFixed(0);
+        totalCapa = (capacity.baselineCost_PT).toFixed(0);
       } else {
         internCapa = capacity.internCapa_PT.toFixed(0);
-        externCapa = capacity.externCapa_PT.toFixed(0);
         totalCapa = (capacity.internCapa_PT + capacity.externCapa_PT).toFixed(0);
       }
     } else {
@@ -566,11 +564,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       plannedCost = capacity.plannedCost.toFixed(1);
       if (refPFV) {
         internCapa = capacity.baselineCost.toFixed(1);
-        externCapa = '0.0';
-        totalCapa = (capacity.baselineCost + 0).toFixed(1);
+        totalCapa = (capacity.baselineCost).toFixed(1);
       } else {
         internCapa = capacity.internCapa.toFixed(1);
-        externCapa = capacity.externCapa.toFixed(1);
         totalCapa = (capacity.internCapa + capacity.externCapa).toFixed(1);
       }
     }

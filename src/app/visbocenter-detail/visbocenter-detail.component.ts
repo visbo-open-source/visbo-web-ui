@@ -642,7 +642,6 @@ export class VisbocenterDetailComponent implements OnInit {
       this.log(`MaxID ${maxid}`);
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        const id = role.uid;
         if (role.isTeam && role.subRoleIDs && role.subRoleIDs.length > 0) {
           for (let j = 0; j < role.subRoleIDs.length; j++) {
             const index = role.subRoleIDs[j].key;

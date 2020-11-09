@@ -694,7 +694,7 @@ export class VisboprojectDetailComponent implements OnInit {
     if (!this.visboproject.variant) {
       return;
     }
-    let variant = this.visboproject.variant
+    const variant = this.visboproject.variant
     // change sort order otherwise sort same column same direction
     if (n !== undefined || this.sortVariantColumn === undefined) {
       if (n !== this.sortVariantColumn) {
