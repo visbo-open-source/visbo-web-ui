@@ -135,7 +135,7 @@ export class LoginComponent implements OnInit {
 
   useLanguage(language: string): void {
     this.translate.use(language);
-}
+  }
 
   queryStringToJSON(querystring: string): HttpParams {
     const pairs = (querystring || '').split('&');
