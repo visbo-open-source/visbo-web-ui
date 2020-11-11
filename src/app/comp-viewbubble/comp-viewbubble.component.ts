@@ -318,11 +318,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       return;
     }
     if (!this.visbokeymetrics || this.visbokeymetrics.length === 0) {
-      this.hasKMCost = true;
-      this.hasKMDelivery = true;
-      this.hasKMDeadline = true;
-      this.hasKMDeadlineDelay = true;
-      this.hasKMEndDate = true;
+      this.hasKMCost = false;
+      this.hasKMDelivery = false;
+      this.hasKMDeadline = false;
+      this.hasKMDeadlineDelay = false;
+      this.hasKMEndDate = false;
     }
     if (!this.hasKMCost) {
       index = this.metricList.findIndex(item => item.metric === 'Costs');
@@ -360,14 +360,16 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     if (this.metricList.length < 2) {
       this.chart = false;
-      // MS TODO: Handle the issue that none or only one axis could be calculated
+      // set the X & Y Axis to values that are available
+      this.metricX = this.metricList.length === 1 ? 0 : undefined;
+      this.metricY = undefined;
     } else {
       // set the X & Y Axis to values that are available
       if (this.metricX >= this.metricList.length) {
-        this.metricX = this.metricY === 0 ? 1 : 0;
+        this.metricX = this.metricX === 0 ? 1 : 0;
       }
       if (this.metricY >= this.metricList.length) {
-        this.metricY = this.metricX === 0 ? 1 : 0;
+        this.metricY = this.metricY === 0 ? 1 : 0;
       }
     }
     this.metricListFiltered = true;
@@ -444,7 +446,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       let colorValue = 0;
       let valueX: number;
       let valueY: number;
-      switch (this.metricList[this.metricX].metric) {
+      switch (this.getMetric('X')) {
         case 'Costs':
           valueX = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
           colorValue += valueX <= 100 ? 1 : 0;
@@ -470,7 +472,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
-      switch (this.metricList[this.metricY].metric) {
+      switch (this.getMetric('Y')) {
         case 'Costs':
           valueY = Math.round(this.visbokeymetrics[i].savingCostTotal * 100);
           colorValue += valueY <= 100 ? 1 : 0;
@@ -548,9 +550,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.sizeAxis.minValue = minSize;
     this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
 
-    if (this.metricList[this.metricX].metric === 'EndDate'
-    || this.metricList[this.metricX].metric === 'DeadlinesFinishedDelay'
-    || this.metricList[this.metricX].metric === 'DeadlinesUnFinishedDelay') {
+    if (this.getMetric('X') === 'EndDate'
+    || this.getMetric('X') === 'DeadlinesFinishedDelay'
+    || this.getMetric('X') === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
@@ -600,6 +602,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   graphBubbleAxis(): void {
+    if (!this.chart) {
+      return;
+    }
     let metric = this.metricList[this.metricX];
     const weekFormat = '# ' + this.translate.instant('compViewBubble.lbl.weeks');
     const dayFormat = '# ' + this.translate.instant('compViewBubble.lbl.days');
@@ -689,19 +694,19 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   selectedMetric(metric: string): boolean {
-    if (this.metricList[this.metricX].metric === metric
-    || this.metricList[this.metricY].metric === metric) {
-      return true;
-    } else {
-      return false;
+    let result = false;
+    if (this.getMetric('X') === metric
+    || this.getMetric('Y') === metric) {
+      result = true;
     }
+    return result;
   }
 
   getMetric(axis: string): string {
     let result: string;
-    if (axis === 'X') {
+    if (axis === 'X' && this.metricX < this.metricList.length) {
       result = this.metricList[this.metricX].name;
-    } else if (axis === 'Y') {
+    } else if (axis === 'Y' && this.metricY < this.metricList.length) {
       result = this.metricList[this.metricY].name;
     }
     result = result || 'UNKNOWN';
