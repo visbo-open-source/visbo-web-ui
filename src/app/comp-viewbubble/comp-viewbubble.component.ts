@@ -588,9 +588,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           break;
       }
     }
-    if (this.metricList[this.metricY].metric === 'EndDate'
-    || this.metricList[this.metricY].metric === 'DeadlinesFinishedDelay'
-    || this.metricList[this.metricY].metric === 'DeadlinesUnFinishedDelay') {
+    if (this.getMetric('Y') === 'EndDate'
+    || this.getMetric('Y') === 'DeadlinesFinishedDelay'
+    || this.getMetric('Y') === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
