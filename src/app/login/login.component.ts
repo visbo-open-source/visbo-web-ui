@@ -35,6 +35,12 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const oauth = this.route.snapshot.queryParams.oauth;
+
+    if (oauth) {
+      this.log(`oAuth Success `);
+    }
+
     // reset login status
     this.authenticationService.logout();
     // this.restVersion();
@@ -110,6 +116,11 @@ export class LoginComponent implements OnInit {
           this.loading = false;
         }
       );
+  }
+
+  loginGoogle(): string {
+    const url = this.authenticationService.loginGoogle();
+    return url;
   }
 
   pwforgotten(): void {

@@ -71,6 +71,25 @@ export class AuthenticationService {
             );
     }
 
+    loginGoogle(): string {
+      const url = `${this.authUrl}/logingoogle`;
+      return url;
+    }
+
+    oauthconfirm(hash: string): void {
+      // MS TODO: we need to get the full blown real user
+      localStorage.setItem('currentUser',
+        JSON.stringify({
+          "profile":{"company":"Privat","firstName":"Markus (G)","lastName":"Seyfried"},
+          "status":{"registeredAt":"2020-11-10T16:20:32.620Z","lastLoginAt":"2020-11-10T18:10:31.694Z","loginRetries":0},
+          "_id":"5b60762decb6077f42ba27d2","email":"markus.seyfried@gmail.com",
+          "createdAt":"2018-07-31T14:46:05.138Z","updatedAt":"2020-11-10T18:22:39.469Z","__v":3,
+          "userAgents":[]
+        })
+      );
+      localStorage.setItem('currentToken', JSON.stringify(hash));
+    }
+
     logout(): void {
         // remove user from local storage to log user out
         this.isLoggedIn = false;
@@ -88,7 +107,7 @@ export class AuthenticationService {
 
       this.log(`Calling HTTP Request: ${url} for: ${newUser.email} `);
 
-      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
+      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP */
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
