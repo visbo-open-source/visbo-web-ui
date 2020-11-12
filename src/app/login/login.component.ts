@@ -8,6 +8,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
   email: string;
   userpw: string;
   restVersionString: string;
+  setting: VisboSetting[];
   loading = false;
   returnUrl: string;
   returnParams: HttpParams;
@@ -35,15 +37,9 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const oauth = this.route.snapshot.queryParams.oauth;
-
-    if (oauth) {
-      this.log(`oAuth Success `);
-    }
-
     // reset login status
     this.authenticationService.logout();
-    // this.restVersion();
+    this.getSetting();
 
     if (this.route.snapshot.queryParams.email) {
       this.email = this.route.snapshot.queryParams.email;
@@ -235,6 +231,31 @@ export class LoginComponent implements OnInit {
       }
     });
     return result;
+  }
+
+  hasSetting(name: string): string {
+    let result = undefined;
+    if (name && this.setting) {
+      const setting = this.setting.find(item => item.name == name);
+      if (setting) {
+        result = setting.value;
+      }
+    }
+    return result;
+  }
+  
+  getSetting(): void {
+    this.authenticationService.getSetting()
+      .subscribe(
+        setting => {
+          this.log(`ReST Server Setting success ${JSON.stringify(setting)}`);
+          this.setting = setting;
+        },
+        error => {
+          this.log(`Init Settings Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(getErrorMessage(error));
+        }
+      );
   }
 
   /** Log a message with the MessageService */

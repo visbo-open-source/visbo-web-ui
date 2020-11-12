@@ -6,6 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { Login, VisboUser, VisboUserResponse, LoginResponse, VisboVersion, VisboVersionResponse, VisboStatusPWPolicy, VisboStatusPWPolicyResponse } from '../_models/visbouser';
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
+
 import { MessageService } from './message.service';
 
 // import * as JWT from 'jwt-decode';
@@ -250,6 +252,17 @@ export class AuthenticationService {
             }),
           tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
           catchError(this.handleError<VisboStatusPWPolicy>('initPWPolicy'))
+        );
+    }
+
+    getSetting(): Observable<VisboSetting[]> {
+      const url = this.env.restUrl.concat('/status/setting');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboSettingListResponse>(url, httpOptions)
+        .pipe(
+          map(response => response.vcsetting ),
+          tap(value => this.log(`fetched Setting ${JSON.stringify(value)}`)),
+          catchError(this.handleError<VisboSetting[]>('initSetting'))
         );
     }
 
