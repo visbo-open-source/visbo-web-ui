@@ -37,7 +37,6 @@ export class AuthenticationService {
       return this.logoutTime;
     }
 
-
     login(username: string, password: string): Observable<VisboUser> {
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
@@ -71,23 +70,35 @@ export class AuthenticationService {
             );
     }
 
-    loginGoogle(): string {
-      const url = `${this.authUrl}/logingoogle`;
-      return url;
-    }
+    loginGoogle(): Observable<VisboUser> {
+      const url = `${this.authUrl}/googleLogin`;
+      this.log(`Calling HTTP Request: ${url}`);
 
-    oauthconfirm(hash: string): void {
-      // MS TODO: we need to get the full blown real user
-      localStorage.setItem('currentUser',
-        JSON.stringify({
-          "profile":{"company":"Privat","firstName":"Markus (G)","lastName":"Seyfried"},
-          "status":{"registeredAt":"2020-11-10T16:20:32.620Z","lastLoginAt":"2020-11-10T18:10:31.694Z","loginRetries":0},
-          "_id":"5b60762decb6077f42ba27d2","email":"markus.seyfried@gmail.com",
-          "createdAt":"2018-07-31T14:46:05.138Z","updatedAt":"2020-11-10T18:22:39.469Z","__v":3,
-          "userAgents":[]
-        })
-      );
-      localStorage.setItem('currentToken', JSON.stringify(hash));
+      return this.http.get<LoginResponse>(url)
+        .pipe(
+          map(result => {
+            console.log(`google Login :  ${JSON.stringify(result)}`);
+            // login successful if there's a jwt token in the response
+            if (result && result.token) {
+              this.log(`Login Request Successful:  ${result.user.email}`);
+              // store user details and jwt token in local storage to keep user logged in between page refreshes
+              localStorage.setItem('currentUser', JSON.stringify(result.user));
+              localStorage.setItem('currentToken', JSON.stringify(result.token));
+              this.isLoggedIn = true;
+              // eslint-disable-next-line
+              const decoded: any = jwt_decode(result.token);
+              if (decoded && decoded.exp) {
+                // this.log(`Login token expiration:  ${decoded.exp}`);
+                this.logoutTime = new Date(decoded.exp * 1000);
+              }
+              this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+
+              return result.user;
+            }
+            return null;
+          }),
+          catchError(this.handleError<VisboUser>('LoginError'))
+        );
     }
 
     logout(): void {
