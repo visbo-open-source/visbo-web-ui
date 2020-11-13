@@ -155,44 +155,44 @@ export class LoginComponent implements OnInit {
         }
       );
   }
-
-  authLoginGoogle(): void {
-    this.authenticationService.login(this.email, this.userpw)
-      .subscribe(
-        user => {
-          // this.log(`Login Success Result ${JSON.stringify(user)}`);
-          if (user.status && user.status.expiresAt) {
-            const expiration = new Date(user.status.expiresAt);
-            this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
-            const message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
-            this.alertService.error(message, true);
-          } else {
-            const lastLogin = new Date(user.status.lastLoginAt);
-            const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
-            this.alertService.success(message, true);
-          }
-          this.visbocenterService.getSysVisboCenter()
-            .subscribe(
-              () => {
-                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
-              },
-              error => {
-                this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
-                this.router.navigate(['/'], {replaceUrl: true});
-              }
-            );
-        },
-        error => {
-          this.log(`Login Failed: ${error.status} ${error.error.message} `);
-          let message = getErrorMessage(error);
-          if (error.status === 403) {
-            message = this.translate.instant('login.msg.loginFailure', {user: this.email});
-          }
-          this.alertService.error(message);
-          this.loading = false;
-        }
-      );  }
+  
+  // authLoginGoogle(): void {
+  //   this.authenticationService.login(this.email, this.userpw)
+  //     .subscribe(
+  //       user => {
+  //         // this.log(`Login Success Result ${JSON.stringify(user)}`);
+  //         if (user.status && user.status.expiresAt) {
+  //           const expiration = new Date(user.status.expiresAt);
+  //           this.log(`Login Success BUT EXPIRATION at: ${expiration.toLocaleString()}`);
+  //           const message = this.translate.instant('autologout.msg.pwExpires', {expiresAt: expiration.toLocaleString()});
+  //           this.alertService.error(message, true);
+  //         } else {
+  //           const lastLogin = new Date(user.status.lastLoginAt);
+  //           const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+  //           this.alertService.success(message, true);
+  //         }
+  //         this.visbocenterService.getSysVisboCenter()
+  //           .subscribe(
+  //             () => {
+  //               this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
+  //               this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
+  //             },
+  //             error => {
+  //               this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
+  //               this.router.navigate(['/'], {replaceUrl: true});
+  //             }
+  //           );
+  //       },
+  //       error => {
+  //         this.log(`Login Failed: ${error.status} ${error.error.message} `);
+  //         let message = getErrorMessage(error);
+  //         if (error.status === 403) {
+  //           message = this.translate.instant('login.msg.loginFailure', {user: this.email});
+  //         }
+  //         this.alertService.error(message);
+  //         this.loading = false;
+  //       }
+  //     );  }
 
   pwforgotten(): void {
     const email = (this.email || '').trim();
@@ -243,7 +243,7 @@ export class LoginComponent implements OnInit {
     }
     return result;
   }
-  
+
   getSetting(): void {
     this.authenticationService.getSetting()
       .subscribe(
