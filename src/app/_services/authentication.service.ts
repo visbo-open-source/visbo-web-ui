@@ -39,6 +39,7 @@ export class AuthenticationService {
       return this.logoutTime;
     }
 
+
     login(username: string, password: string): Observable<VisboUser> {
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
@@ -72,11 +73,16 @@ export class AuthenticationService {
             );
     }
 
+    loginGoogleUrl(): string {
+      const url = `${this.authUrl}/logingoogle`;
+      return url;
+    }
+
     loginGoogle(): Observable<VisboUser> {
-      const url = `${this.authUrl}/googleLogin`;
+      const url = `${this.authUrl}/logingoogle`;
       this.log(`Calling HTTP Request: ${url}`);
 
-      return this.http.get<LoginResponse>(url)
+      return this.http.post<LoginResponse>(url, {})
         .pipe(
           map(result => {
             console.log(`google Login :  ${JSON.stringify(result)}`);
@@ -101,6 +107,20 @@ export class AuthenticationService {
           }),
           catchError(this.handleError<VisboUser>('LoginError'))
         );
+    }
+
+    oauthconfirm(hash: string): void {
+      // MS TODO: we need to get the full blown real user
+      localStorage.setItem('currentUser',
+        JSON.stringify({
+          "profile":{"company":"Privat","firstName":"Markus (G)","lastName":"Seyfried"},
+          "status":{"registeredAt":"2020-11-10T16:20:32.620Z","lastLoginAt":"2020-11-10T18:10:31.694Z","loginRetries":0},
+          "_id":"5b60762decb6077f42ba27d2","email":"markus.seyfried@gmail.com",
+          "createdAt":"2018-07-31T14:46:05.138Z","updatedAt":"2020-11-10T18:22:39.469Z","__v":3,
+          "userAgents":[]
+        })
+      );
+      localStorage.setItem('currentToken', JSON.stringify(hash));
     }
 
     logout(): void {

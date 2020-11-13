@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
+import { OauthconfirmComponent } from './oauthconfirm/oauthconfirm.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
 import { PwresetComponent } from './pwreset/pwreset.component';
@@ -45,6 +46,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'registerconfirm', component: RegisterconfirmComponent },
+  { path: 'oauthconfirm', component: OauthconfirmComponent },
   { path: 'register/:id', component: RegisterComponent },
   { path: 'pwforgotten', component: PwforgottenComponent },
   { path: 'pwreset', component: PwresetComponent },
