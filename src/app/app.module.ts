@@ -20,6 +20,7 @@ import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { RegisterComponent } from './register/register.component';
 import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
+import { OauthconfirmComponent } from './oauthconfirm/oauthconfirm.component';
 import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
 import { PwresetComponent } from './pwreset/pwreset.component';
 
@@ -123,6 +124,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     LoginComponent,
     RegisterComponent,
     RegisterconfirmComponent,
+    OauthconfirmComponent,
     PwforgottenComponent,
     PwresetComponent,
     SysNavbarComponent,
