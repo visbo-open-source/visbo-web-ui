@@ -20,7 +20,6 @@ export class LoginComponent implements OnInit {
   email: string;
   userpw: string;
   restVersionString: string;
-  setting: VisboSetting[];
   loading = false;
   returnUrl: string;
   returnParams: HttpParams;
