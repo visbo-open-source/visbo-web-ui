@@ -1,7 +1,7 @@
 <div *ngIf="visbokeymetrics" class='well'>
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
-      <div class='container-fluid'>
+      <div *ngIf="metricList.length >= 2" class='container-fluid'>
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <div *ngIf="chart==false || !countKM" class='mt-3 container-fluid'>
+    <div *ngIf="chart==false" class='mt-3 container-fluid'>
       <div class='panel-body'>
         <table class='table table-hover table-sortable'>
           <thead>

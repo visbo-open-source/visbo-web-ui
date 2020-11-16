@@ -6,6 +6,7 @@
 		},
 		"btn": {
 			"login": "Login",
+			"loginGoogle": "Login with Google",
 			"pwForgotten": "Password forgotten?",
 			"register": "Register"
 		},

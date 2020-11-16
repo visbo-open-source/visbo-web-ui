@@ -8,6 +8,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -22,6 +23,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   returnUrl: string;
   returnParams: HttpParams;
+  setting: VisboSetting[];
   userLang = 'en';
 
   constructor(
@@ -37,7 +39,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     // reset login status
     this.authenticationService.logout();
-    // this.restVersion();
+    this.getSetting();
 
     if (this.route.snapshot.queryParams.email) {
       this.email = this.route.snapshot.queryParams.email;
@@ -112,6 +114,47 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  loginGoogleUrl(): string {
+    const url = this.authenticationService.loginGoogleUrl();
+    return url;
+  }
+
+  loginGoogle(): void {
+    this.loading = true;
+    console.log(`GoogleLogin Start `);
+    this.authenticationService.loginGoogle()
+      .subscribe(
+        user => {
+          console.log(`Google Login Success ${this.returnUrl} Role ${JSON.stringify(user)} `);
+          this.log(`Google Login Success Result ${JSON.stringify(user)}`);
+          const lastLogin = new Date(user.status.lastLoginAt);
+          const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+          this.alertService.success(message, true);
+
+          this.visbocenterService.getSysVisboCenter()
+            .subscribe(
+              () => {
+                this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
+              },
+              error => {
+                this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
+                this.router.navigate(['/'], {replaceUrl: true});
+              }
+            );
+        },
+        error => {
+          this.log(`Google Login Failed: ${error.status} ${error.error.message} `);
+          let message = getErrorMessage(error);
+          if (error.status === 403) {
+            message = this.translate.instant('login.msg.loginFailure', {user: this.email});
+          }
+          this.alertService.error(message);
+          this.loading = false;
+        }
+      );
+  }
+
   pwforgotten(): void {
     const email = (this.email || '').trim();
     this.log(`Forward to password forgotten ${email} `);
@@ -135,7 +178,7 @@ export class LoginComponent implements OnInit {
 
   useLanguage(language: string): void {
     this.translate.use(language);
-}
+  }
 
   queryStringToJSON(querystring: string): HttpParams {
     const pairs = (querystring || '').split('&');
@@ -149,6 +192,31 @@ export class LoginComponent implements OnInit {
       }
     });
     return result;
+  }
+
+  hasSetting(name: string): string {
+    let result = undefined;
+    if (name && this.setting) {
+      const setting = this.setting.find(item => item.name == name);
+      if (setting) {
+        result = setting.value;
+      }
+    }
+    return result;
+  }
+
+  getSetting(): void {
+    this.authenticationService.getSetting()
+      .subscribe(
+        setting => {
+          this.log(`ReST Server Setting success ${JSON.stringify(setting)}`);
+          this.setting = setting;
+        },
+        error => {
+          this.log(`Init Settings Failed: ${error.status} ${error.error.message} `);
+          this.alertService.error(getErrorMessage(error));
+        }
+      );
   }
 
   /** Log a message with the MessageService */

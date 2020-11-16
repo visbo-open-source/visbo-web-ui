@@ -34,7 +34,7 @@ class OrganisationItem {
   entryDate: Date;
   exitDate: Date;
   percent: number;
-  aliases: string;
+  aliases: [string];
 }
 
 @Component({
@@ -614,21 +614,23 @@ export class VisbocenterDetailComponent implements OnInit {
           organisation[id].isTeam = true;
         } else {
           organisation[id].type = 1;
-          for (let j = 0; j < role.subRoleIDs.length; j++) {
-            const index = Number(role.subRoleIDs[j].key);
-            if (index < 0) {
-              this.log(`Inconsistent Org Structure Role ${id} SubRole ${role.subRoleIDs[j].key}`);
-              // something wrong with the numbering
-              break;
-            }
-            if (!organisation[index]) {
-              // added by subrole
-              organisation[index] = new OrganisationItem();
-              organisation[index].uid = index;
-              organisation[index].calcid = index;
-            } else {
-              this.log(`SubRole already exists ${id} SubRole ${index}`);
-            }
+        }
+        for (let j = 0; j < role.subRoleIDs.length; j++) {
+          const index = Number(role.subRoleIDs[j].key);
+          if (index < 0) {
+            this.log(`Inconsistent Org Structure Role ${id} SubRole ${role.subRoleIDs[j].key}`);
+            // something wrong with the numbering
+            break;
+          }
+          if (!organisation[index]) {
+            // added by subrole
+            organisation[index] = new OrganisationItem();
+            organisation[index].uid = index;
+            organisation[index].calcid = index;
+          } else {
+            this.log(`SubRole already exists ${id} SubRole ${index}`);
+          }
+          if (!organisation[index].pid) {
             organisation[index].pid = id;
           }
         }
@@ -640,7 +642,6 @@ export class VisbocenterDetailComponent implements OnInit {
       this.log(`MaxID ${maxid}`);
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        const id = role.uid;
         if (role.isTeam && role.subRoleIDs && role.subRoleIDs.length > 0) {
           for (let j = 0; j < role.subRoleIDs.length; j++) {
             const index = role.subRoleIDs[j].key;
@@ -763,7 +764,7 @@ export class VisbocenterDetailComponent implements OnInit {
                     + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
                     + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
                     + (role.percent ? role.percent.toLocaleString() : '') + separator
-                    + (role.aliases.join("#") || '') + '\n';
+                    + (role.aliases && role.aliases.length > 0 ? role.aliases.join("#") : '') + '\n';
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
