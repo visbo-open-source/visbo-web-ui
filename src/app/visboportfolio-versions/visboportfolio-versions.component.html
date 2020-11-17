@@ -25,7 +25,7 @@
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM'}}</div>
       </h3>
-      <div class="col-4">
+      <div class="col-4 hidden-print">
         <div class="row">
           <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(-1)'></span>
           <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">

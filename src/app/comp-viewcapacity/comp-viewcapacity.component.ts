@@ -57,6 +57,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   capacityTo: Date;
   currentRefDate: Date;
 
+  sumCost = 0;
+  sumBudget = 0;
+
   showUnit: string;
   showUnitText: string;
   refPFV = false;
@@ -87,6 +90,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       vAxis: {
         title: 'Monthly Capacity',
         // format: "# T\u20AC",
+        // minValue: 0,
         format: "###,###.## T\u20AC",
         minorGridlines: {count: 0, color: 'none'}
       },
@@ -436,6 +440,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     this.log(`ViewCapacityOverTime resource ${this.currentLeaf.name}`);
+    this.sumCost = 0;
+    this.sumBudget = 0;
 
     for (let i = 0; i < capacity.length; i++) {
 
@@ -446,54 +452,76 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (this.refPFV) {
           // capa Values compared against baseline Values
           if (this.showUnit === 'PD') {
+            const budget = Math.round(capacity[i].baselineCost_PT * 10) / 10 || 0;
+            const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
+            const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
+            this.sumCost += actualCost + plannedCost;
+            this.sumBudget += budget;
             graphDataCapacity.push([
               currentDate,
-              capacity[i].roleID == roleID ? Math.round((capacity[i].baselineCost_PT * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? budget : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true, this.refPFV) : undefined,
               capacity[i].roleID == roleID ? 0 : undefined,
               capacity[i].roleID == roleID ? 0 : undefined,
-              (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
+              actualCost,
               this.createCustomHTMLContent(capacity[i], true, this.refPFV),
-              (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
+              plannedCost,
               this.createCustomHTMLContent(capacity[i], true, this.refPFV)
             ]);
           } else {
+            const budget = Math.round((capacity[i].baselineCost * 10) / 10 || 0);
+            const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
+            const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0);
+            this.sumCost += actualCost + plannedCost;
+            this.sumBudget += budget;
             graphDataCapacity.push([
               currentDate,
-              capacity[i].roleID == roleID ? Math.round((capacity[i].baselineCost * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? budget : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false, this.refPFV) : undefined,
               capacity[i].roleID == roleID ? 0 : undefined,
               capacity[i].roleID == roleID ? 0 : undefined,
-              (Math.round(capacity[i].actualCost * 10) / 10 || 0),
+              actualCost,
               this.createCustomHTMLContent(capacity[i], false, this.refPFV),
-              (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
+              plannedCost,
               this.createCustomHTMLContent(capacity[i], false, this.refPFV)
             ]);
           }
         } else {
           // capa Values compared against resources of organisation
           if (this.showUnit === 'PD') {
+            const budgetIntern = Math.round(capacity[i].internCapa_PT * 10) / 10 || 0;
+            const budgetExtern = Math.round(capacity[i].externCapa_PT * 10) / 10 || 0;
+            const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
+            const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
+            this.sumCost += actualCost + plannedCost;
+            this.sumBudget += budgetIntern + budgetExtern;
             graphDataCapacity.push([
               currentDate,
-              capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa_PT + capacity[i].externCapa_PT)) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? (budgetIntern + budgetExtern) : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-              capacity[i].roleID == roleID ? (Math.round((capacity[i].internCapa_PT ) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? budgetIntern : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true) : undefined,
-              (Math.round(capacity[i].actualCost_PT * 10) / 10 || 0),
+              actualCost,
               this.createCustomHTMLContent(capacity[i], true),
-              (Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0),
+              plannedCost,
               this.createCustomHTMLContent(capacity[i], true)
             ]);
           } else {
+            const budgetIntern = Math.round((capacity[i].internCapa * 10) / 10 || 0);
+            const budgetExtern = Math.round((capacity[i].externCapa * 10) / 10 || 0);
+            const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
+            const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0)
+            this.sumCost += actualCost + plannedCost;
+            this.sumBudget += budgetIntern + budgetExtern;
             graphDataCapacity.push([
               currentDate,
-              capacity[i].roleID == roleID ? (Math.round(((capacity[i].internCapa + capacity[i].externCapa)) * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? (budgetIntern + budgetExtern) : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-              capacity[i].roleID == roleID ? (Math.round(capacity[i].internCapa * 10) / 10 || 0) : undefined,
+              capacity[i].roleID == roleID ? budgetIntern : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], false) : undefined,
-              (Math.round(capacity[i].actualCost * 10) / 10 || 0),
+              actualCost,
               this.createCustomHTMLContent(capacity[i], false),
-              (Math.round(capacity[i].plannedCost * 10) / 10 || 0),
+              plannedCost,
               this.createCustomHTMLContent(capacity[i], false)
             ]);
           }
@@ -587,6 +615,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       result = this.visboCapcity.length;
     }
     return result;
+  }
+
+  getLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      percentCalc = plan/baseline;
+    }
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
   }
 
 // find summary Roles
