@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -12,8 +12,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+import { convertDate, getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -80,8 +79,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.currentLang = this.translate.currentLang;
-    moment.locale(this.currentLang);
+    this.currentLang = this.translate.currentLang;   
     this.visboCostCalc();
   }
 
@@ -219,7 +217,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(cost: VPVCost, actualData: boolean): string {
-    const currentDate = moment(cost.currentDate).format('MMM YYYY');
+    const currentDate = convertDate(new Date(cost.currentDate), 'shortDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
       '<table>';
