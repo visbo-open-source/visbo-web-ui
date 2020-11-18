@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -40,6 +41,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   reducedList: boolean;
   statusList: string[];
   deliveryIndex: number;
+  timeoutID: number;
 
   listType = [
     {name: 'PFV', ref: 'pfv', localName: ''},
@@ -97,6 +99,14 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboDeliveryCalc();
     }
+  }
+
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewAllDeliveryPie();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   visboDeliveryCalc(): void {

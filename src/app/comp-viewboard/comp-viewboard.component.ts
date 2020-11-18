@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -22,6 +23,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   currentRefDate: Date;
   vpFilter: string;
+  timeoutID: number;
 
   parentThis = this;
 
@@ -61,6 +63,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()}, Changes ${JSON.stringify(changes)}`);
     this.visboViewBoardOverTime();
+  }
+
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewBoardOverTime();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   visboViewBoardOverTime(): void {

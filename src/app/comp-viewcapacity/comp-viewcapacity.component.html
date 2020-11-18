@@ -1,4 +1,4 @@
-<div class='well'>
+<div class='well' (resized)="onResized($event)">
   <div  class='container-fluid mb-2'>
 
     <div class="row row-cols-1 row-cols-lg-2">
@@ -32,7 +32,7 @@
           <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
         </div>
       </div>
-      <div *ngIf="visboCapcity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+      <div *ngIf="visboCapcity && visboCapcity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
         <!-- <h5 class="card-title">Special title treatment</h5> -->
         <h5 class="card-header p-2">
           <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>

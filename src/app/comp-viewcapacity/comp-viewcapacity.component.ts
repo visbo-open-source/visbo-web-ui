@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -50,6 +51,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   vcorganisation: VisboSetting[];
   actOrga: VisboOrganisation;
   capaLoad: CapaLoad[];
+  timeoutID: number;
 
   paramRoleID: string;
   currentLeaf: VisboOrgaTreeLeaf;
@@ -153,6 +155,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // else if (changes.vpvActive) {
     //   this.getCapacity();
     // }
+  }
+
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewCapacityOverTime();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -577,7 +587,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const roleName = this.translate.instant('ViewCapacity.roleName');
 
     let internCapa: string, totalCapa: string, actualCost: string, plannedCost: string;
+    let unit: string;
     if (PT) {
+      unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
       actualCost = capacity.actualCost_PT.toFixed(0);
       plannedCost = capacity.plannedCost_PT.toFixed(0);
       if (refPFV) {
@@ -588,6 +600,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         totalCapa = (capacity.internCapa_PT + capacity.externCapa_PT).toFixed(0);
       }
     } else {
+      unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
       actualCost = capacity.actualCost.toFixed(1);
       plannedCost = capacity.plannedCost.toFixed(1);
       if (refPFV) {
@@ -601,10 +614,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
               capacity.roleName + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + ' PT</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + ' PT</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + ' PT</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + ' PT</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + unit + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + unit + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + unit + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + unit + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
   }

@@ -5,6 +5,7 @@ import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { AngularResizedEventModule } from 'angular-resize-event';
 
 // import ngx-translate and the http loader
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
@@ -143,6 +144,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
+    AngularResizedEventModule,
     // AngularFontAwesomeModule,
     // MaterialModule,
     HttpClientModule,

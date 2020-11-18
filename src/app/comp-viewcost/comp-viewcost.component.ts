@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -31,6 +32,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   vpvTotalCostCurrent: number;
 
   parentThis = this;
+  timeoutID: number;
 
   colors = ['#F7941E', '#BDBDBD', '#458CCB'];
 
@@ -79,7 +81,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.currentLang = this.translate.currentLang;   
+    this.currentLang = this.translate.currentLang;
     this.visboCostCalc();
   }
 
@@ -88,6 +90,14 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboCostCalc();
     }
+  }
+
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboCostCalc();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   hasVPPerm(perm: number): boolean {

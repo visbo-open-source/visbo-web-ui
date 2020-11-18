@@ -1,4 +1,4 @@
-<div *ngIf="hasDeadlines()" class='well'>
+<div *ngIf="hasDeadlines()" class='well' (resized)="onResized($event)">
   <div *ngIf="displaySwitch()" class="container">
     <div class="d-flex justify-content-center my-1">
       <button type="button" class="btn btn-md btn-light mx-2" (click)="toggleGantt()">{{ buttonGantt }}</button>

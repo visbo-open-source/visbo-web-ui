@@ -3,6 +3,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import {TranslateService} from '@ngx-translate/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -35,6 +36,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   filterStatus: number;
   fullList: boolean;
+  timeoutID: number;
 
   deadlineIndex: number;
 
@@ -122,8 +124,17 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Deadlines on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
-      this.visboDeadlineCalc(true);
+      this.visboDeadlineCalc(false);
     }
+  }
+
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewAllDeadlinePie(false);
+      this.visboViewDeadlineTimeline();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   visboDeadlineCalc(change = false): void {

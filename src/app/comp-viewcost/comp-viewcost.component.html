@@ -1,4 +1,4 @@
-<div *ngIf="hasVPPerm(this.permVP.ViewAudit)" class='well'>
+<div *ngIf="hasVPPerm(this.permVP.ViewAudit)" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
       <div class="row text-dark">

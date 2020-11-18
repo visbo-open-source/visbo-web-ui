@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -43,6 +44,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   currentID: string;
   deleted: boolean;
+  timeoutID: number;
 
   colorMetric = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
@@ -200,6 +202,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
   }
 
+  onResized(event: ResizedEvent) {
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboKeyMetricsCalc();
+      this.timeoutID = undefined;
+    }, 500);
+  }
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
