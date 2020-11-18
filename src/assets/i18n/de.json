@@ -523,6 +523,7 @@
 	"vpViewCost": {
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version vom",
+		"titleBox": "Gesamtkosten",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -542,6 +543,7 @@
 		}
 	},
 	"ViewCapacity": {
+		"titleBox": "Summe der Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
 		"titleTimeFrom": " Auslastung für den Zeitraum: von",
@@ -555,13 +557,10 @@
 		"plannedCostPT": "geplante Kosten",
 		"roleName": "Rolle",
 		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center",
+			"totalCost": "Gesamtkosten",
+			"totalCapa": "gesamte Kapazität",
+			"totalCostPT": "Gesamtaufwand",
+			"totalCapaPT": "gesamte Kapzität",
 			"pd": "PT",
 			"euro": "Euro",
 			"refPFV": "Vergleich mit Beauftragung"

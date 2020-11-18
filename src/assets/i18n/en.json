@@ -523,6 +523,7 @@
 	"vpViewCost": {
 		"title": "Monthly Cost for",
 		"titleVersion": "Version of",
+		"titleBox": "Total Cost",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -542,6 +543,7 @@
 		}
 	},
 	"ViewCapacity": {
+		"titleBox": "Sum of Capacity for Timerange",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " Capacity Utilisation - Timespam: From",
@@ -555,13 +557,10 @@
 		"plannedCostPT": "Planned Cost",
 		"roleName": "Role",
 		"lbl": {
-			"day": "day",
-			"week": "week",
-			"month": "month",
-			"quarter": "quarter",
-			"previousPeriod": "Previous Period before {{refDate}}",
-			"nextPeriod": "Next Period after {{refDate}}",
-			"vc": "VISBO Center",
+			"totalCost": "Total Cost",
+			"totalCapa": "Total Capacity",
+			"totalCostPT": "Total Workload",
+			"totalCapaPT": "Total Capacity",
 			"pd": "PD",
 			"euro": "Euro",
 			"refPFV": "Compare against Order"
