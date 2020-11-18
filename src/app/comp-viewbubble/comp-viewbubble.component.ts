@@ -13,7 +13,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
-class Metric{
+class Metric {
   name: string;
   metric: string;
   axis: string;
@@ -252,7 +252,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
           this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
           this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 0;
-          this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
+          this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
+                                    || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
           this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
 
           this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
@@ -682,7 +683,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
     this.storeSetting();
     let queryParams = {};
-    if (this.deleted) { queryParams = {deleted: this.deleted.toString()} }
+    if (this.deleted) { queryParams = {deleted: this.deleted.toString()}; }
 
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
   }

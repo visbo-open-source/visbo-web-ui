@@ -79,7 +79,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.currentLang = this.translate.currentLang;
+    this.currentLang = this.translate.currentLang;   
     this.visboCostCalc();
   }
 
@@ -182,6 +182,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.log(`ViewCostOverTime Result empty`);
       graphDataCost.push([new Date(), 0, '', 0, 0]);
     }
+    // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
     const len = graphDataCost.length;
     // this.log(`ViewCostOverTime len ${len} ${JSON.stringify(graphDataCost[len - 1])}`);
@@ -191,12 +192,11 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       const currentDate = new Date(graphDataCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCost.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
-    this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCost.length;
     // header will be written in the array at the beginning
     graphDataCost.unshift([
       'Timestamp',
@@ -207,6 +207,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.translate.instant('keyMetrics.planETC'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
+    // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
   }
