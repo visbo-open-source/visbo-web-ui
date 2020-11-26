@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   restVersionString: string;
   loading = false;
   returnUrl: string;
-  returnParams: HttpParams;
+  returnParams: string;
   setting: VisboSetting[];
   userLang = 'en';
 
@@ -49,11 +49,11 @@ export class LoginComponent implements OnInit {
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     const parts = returnUrl.split('?');
     this.returnUrl = parts[0];
-    this.returnParams = this.queryStringToJSON(parts[1]);
+    this.returnParams = parts[1];
 
     this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
     this.userLang = this.translate.currentLang;
-    this.log(`return url ${this.returnUrl} params ${JSON.stringify(this.returnParams)}`);
+    this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
     // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }
 
@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit {
             .subscribe(
               () => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.queryStringToJSON(this.returnParams)});
               },
               error => {
                 this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
@@ -135,7 +135,7 @@ export class LoginComponent implements OnInit {
             .subscribe(
               () => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.returnParams});
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.queryStringToJSON(this.returnParams)});
               },
               error => {
                 this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
@@ -180,15 +180,29 @@ export class LoginComponent implements OnInit {
     this.translate.use(language);
   }
 
-  queryStringToJSON(querystring: string): HttpParams {
+  // queryStringToJSON(querystring: string): HttpParams {
+  //   const pairs = (querystring || '').split('&');
+  //   let result = new HttpParams();
+  //
+  //   pairs.forEach(function(text) {
+  //     const pair = text.split('=');
+  //     // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
+  //     if (pair[0]) {
+  //       result = result.append(pair[0], pair[1] || '');
+  //     }
+  //   });
+  //   return result;
+  // }
+
+  queryStringToJSON(querystring: string): any {
     const pairs = (querystring || '').split('&');
-    let result = new HttpParams();
+    let result = {};
 
     pairs.forEach(function(text) {
       const pair = text.split('=');
       // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
       if (pair[0]) {
-        result = result.append(pair[0], pair[1] || '');
+        result[pair[0]] = pair[1] || '';
       }
     });
     return result;
