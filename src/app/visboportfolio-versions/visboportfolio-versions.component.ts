@@ -22,6 +22,7 @@ class Params {
   vpfid: string;
   refDate: string;
   view: string;
+  filter: string;
 }
 
 class DropDown {
@@ -43,6 +44,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     dropDown: DropDown[] = [];
     dropDownSelected: string;
     dropDownValue: number;
+    views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
 
     vpSelected: string;
     vpActive: VisboProject;
@@ -52,8 +54,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     vpfid: string;
     deleted = false;
     currentLang: string;
-    currentView: string;
     vpList: VisboProjectVersion[];
+
+    pageParams = new Params();
 
     combinedPerm: VGPermission = undefined;
     combinedPermVC: VGPermission = undefined;
@@ -75,11 +78,14 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
+    // MS TODO: Delete old Data and migrate all to pageParams
     const refDate = this.route.snapshot.queryParams['refDate'];
-    const nextView = this.route.snapshot.queryParams['view'];
-    this.vpfid = this.route.snapshot.queryParams['vpfid'];
+    const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
+    this.vpfid = vpfid;
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
-    this.currentView = nextView || 'KeyMetrics';
+    this.changeView(nextView, refDate ? this.vpvRefDate : undefined, filter, vpfid);
 
     this.getVisboProject();
   }
@@ -237,22 +243,29 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     }
     this.log(`get getRefDateVersions ${newRefDate.toISOString()}`);
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
+    this.changeView(undefined, this.vpvRefDate, undefined);
     this.getVisboPortfolioKeyMetrics();
   }
 
-  changeView(nextView: string): void {
-    if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
-      this.currentView = nextView;
-    } else {
-      this.currentView = 'KeyMetrics';
+  changeView(nextView: string, refDate: Date = undefined, filter:string = undefined, vpfid:string = undefined): void {
+    if (nextView) {
+      if (this.views.findIndex(item => item === nextView) < 0) {
+        nextView = this.views[0];
+      }
+      this.pageParams.view = nextView;
     }
+    if (filter) {
+      this.pageParams.filter = filter.trim();
+    }
+    if (refDate) {
+      this.pageParams.refDate = refDate.toISOString();
+    }
+    if (vpfid) {
+      this.pageParams.vpfid = vpfid;
+    }
+
     const url = this.route.snapshot.url.join('/');
-    const queryParams = {
-      refDate: this.vpvRefDate?.toISOString(),
-      vpfid: this.vpfActive?._id,
-      view: this.currentView
-    };
-    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+    this.router.navigate([url], { queryParams: this.pageParams, replaceUrl: true });
   }
 
   isSameDay(dateA: Date, dateB: Date): boolean {
@@ -302,15 +315,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   getNextVersion(direction: number): void {
     this.getRefDateVersions(direction);
-    const url = this.route.snapshot.url.join('/');
-    const queryParams = {
-      refDate: this.vpvRefDate.toISOString(),
-      vpfid: this.vpfActive._id,
-      view: this.currentView
-    };
-    // this.visboprojectversions = [];
-    this.log(`GoTo Next Version ${JSON.stringify(queryParams)}`);
-    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+    this.changeView(undefined, this.vpvRefDate);
   }
 
   // get the details of the project
@@ -322,7 +327,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
 
   gotoVP(id: string, variantName: string): void {
     this.log(`goto VP ${id}/${variantName}`);
-    this.router.navigate(['vpKeyMetrics//'.concat(id)], variantName ? { queryParams: { variantName: variantName }} : {});
+    this.router.navigate(['vpKeyMetrics/'.concat(id)], variantName ? { queryParams: { variantName: variantName }} : {});
   }
 
   gotoVC(visboproject: VisboProject): void {
@@ -353,14 +358,9 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.log(`Change Drop Down ${i} `);
     this.vpfActive = this.visboportfolioversions[i];
     this.getVisboPortfolioKeyMetrics();
-    const queryParams = new Params();
-    queryParams.vpfid = this.vpfActive._id;
-    queryParams.refDate = this.vpvRefDate.toISOString();
-    queryParams.view = this.currentView;
 
-    const url = this.route.snapshot.url.join('/');
-    this.log(`GoTo Portfolio Version ${this.vpfActive._id.toString()}`);
-    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+    // MS TODO: do we have to reset the refDate???
+    this.changeView(undefined, undefined, undefined, this.vpfActive._id)
   }
 
   /** Log a message with the MessageService */

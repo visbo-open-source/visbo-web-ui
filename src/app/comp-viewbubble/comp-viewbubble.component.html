@@ -17,7 +17,7 @@
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
-            <input class="ml-2" type="text" (keyup)="visboKeyMetricsCalc()" [(ngModel)]="vpFilter" placeholder="Filter">
+            <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="vpFilter" placeholder="Filter">
           </div>
         </div>
       </div>

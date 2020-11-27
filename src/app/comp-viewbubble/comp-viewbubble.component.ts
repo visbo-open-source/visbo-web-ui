@@ -36,13 +36,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  @Input() activeID: string; // either VP ID of Portfolio or VC ID
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() bubbleMode: boolean;
+  @Input() filter: string;
   @Input() combinedPerm: VGPermission;
 
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
-  currentID: string;
+  activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
   timeoutID: number;
 
@@ -130,6 +130,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.activeID = this.route.snapshot.paramMap.get('id');
     this.log(`Init KeyMetrics`);
     this.metricList = [
       {
@@ -184,10 +185,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       if (view.yAxis >= 0 && view.yAxis < this.metricList.length) {
         this.metricY = view.yAxis;
       }
-      if (view.objectID === this.currentID) {
+      if (view.objectID === this.activeID) {
         this.vpFilter = view.vpFilter || undefined;
         // this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
       }
+    }
+    if (this.filter) {
+      this.vpFilter = this.filter
     }
     if (this.chart != this.bubbleMode) {
       this.toggleVisboChart();
@@ -197,7 +201,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Delivery on Changes  ${this.activeID}, Changes: ${JSON.stringify(changes)}`);
-    if (this.currentID !== undefined) {
+    if (this.activeID !== undefined) {
       this.visboKeyMetricsCalc();
     }
   }
@@ -217,9 +221,25 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  filterKeyBoardEvent(event: any) {
+    let keyCode = event.keyCode;
+    if (keyCode == 13) {    // return key
+      this.storeSetting();
+      // add parameter to URL
+      const url = this.route.snapshot.url.join('/');
+      this.router.navigate([url],
+        {
+          queryParams: { filter: this.vpFilter },
+          replaceUrl: true,
+          // preserve the existing query params in the route
+          queryParamsHandling: 'merge'
+      });
+    }
+    this.visboKeyMetricsCalc();
+  }
+
   visboKeyMetricsCalc(): void {
     // Calculate the keyMetrics Values to show in Chart and List
-    this.currentID = this.activeID;
 
     this.visbokeymetrics = [];
     this.countKM = 0;
@@ -401,14 +421,23 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   storeSetting(): void {
-    const view = {
-      'updatedAt': (new Date()).toISOString(),
-      'objectID': this.currentID,
-      'xAxis': this.metricX,
-      'yAxis': this.metricY,
-      // 'vpvRefDate': vpvRefDate ? vpvRefDate.toISOString() : undefined,
-      'vpFilter': this.vpFilter
-    };
+    let view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
+    if (!view) {
+      view = {
+        updatedAt: undefined,
+        objectID: undefined,
+        xAxis: undefined,
+        yAxis: undefined,
+        vpFilter: undefined
+      }
+    }
+    view.updatedAt = (new Date()).toISOString();
+    view.objectID = this.activeID;
+    view.xAxis = this.metricX;
+    view.yAxis = this.metricY;
+    // view.vpvRefDate = vpvRefDate ? vpvRefDate.toISOString() : undefined;
+    view.vpFilter = this.vpFilter;
+
     localStorage.setItem('KeyMetrics-view', JSON.stringify(view));
   }
 

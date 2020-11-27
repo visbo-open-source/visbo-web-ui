@@ -21,18 +21,18 @@
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block">{{ 'vpViewDeadline.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM'}}</div>
+        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
       <div class="col-6">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM'}}" (click)='getPrevVersion()'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM.'}}" (click)='getPrevVersion()'></span>
           <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpViewDeadline.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpViewDeadline.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpViewDeadline.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpViewDeadline.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM'}}" (click)='getNextVersion()'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM.'}}" (click)='getNextVersion()'></span>
         </div>
       </div>
     </div>

@@ -23,22 +23,22 @@
     <div class="row">
       <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM'}}</div>
+        <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM.'}}</div>
       </h3>
-      <div class="col-4">
+      <div class="col-4 d-print-none">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(-1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(-1)'></span>
           <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpfVersion.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpfVersion.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpfVersion.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpfVersion.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(1)'></span>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row d-print-none">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
@@ -52,20 +52,20 @@
   </div>
 
 
-  <div *ngIf="currentView == 'Capacity' && vpActive && vpfActive">
+  <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive">
     <hr>
     <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
-  <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions">
+  <div *ngIf="pageParams.view == 'KeyMetrics' && visboprojectversions">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="true" [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [filter]="pageParams.filter" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="currentView == 'List' && vpList">
+  <div *ngIf="pageParams.view == 'List' && vpList">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="false" [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [filter]="pageParams.filter" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="currentView == 'ProjectBoard' && vpList">
+  <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
     <hr>
-    <app-comp-viewboard [vps]="vpList" [refDate]="vpvRefDate" ></app-comp-viewboard>
+    <app-comp-viewboard [vps]="vpList" [filter]="pageParams.filter" [refDate]="vpvRefDate" ></app-comp-viewboard>
   </div>
 </div>
