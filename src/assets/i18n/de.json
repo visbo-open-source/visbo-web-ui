@@ -616,10 +616,14 @@
 			"cancel": "Abbrechen"
 		},
 		"metric": {
-			"costName": "Gesamtkosten",
+			"costName": "Kosten (gesamt)",
 			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
+			"costActualName": "Kosten (aktuell)",
+			"costActualAxis": "aktuelle Kosten",
+			"costActualBubble": "aktuelle Kosten (%)",
+			"costActualTable": "aktuelle Kosten",
 			"endDateName": "Termin (Projektende)",
 			"endDateAxis": "Abweichung beim Projektende",
 			"endDateBubble": "Abweichung beim Projektende (Wochen)",

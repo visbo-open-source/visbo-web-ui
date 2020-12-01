@@ -616,10 +616,14 @@
 			"cancel": "Cancel"
 		},
 		"metric": {
-			"costName": "Total Cost",
+			"costName": "Cost (total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
+			"costActualName": "Cost (actual)",
+			"costActualAxis": "Actual Cost",
+			"costActualBubble": "Actual Cost (%)",
+			"costActualTable": "Actual Cost",
 			"endDateName": "Time (End Date)",
 			"endDateAxis": "Deviation in End Date",
 			"endDateBubble": "Change of End Date in weeks",

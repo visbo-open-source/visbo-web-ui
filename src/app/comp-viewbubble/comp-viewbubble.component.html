@@ -1,13 +1,13 @@
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
-      <div *ngIf="metricList.length >= 2" class='container-fluid'>
+      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2" class='container-fluid'>
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-0 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric('X')}}</a></span>
+              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
               <span> {{ 'compViewBubble.lbl.and' | translate }} </span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric('Y')}}</a></span>
+              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricY).name}}</a></span>
               <span> {{ 'compViewBubble.lbl.planVsBase' | translate }}</span>
               <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
           </div>
@@ -17,7 +17,7 @@
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
-            <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="vpFilter" placeholder="Filter">
+            <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
           </div>
         </div>
       </div>
@@ -80,15 +80,15 @@
               <th class="d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
               <th *ngIf="selectedMetric('Costs')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
-              <th *ngIf="selectedMetric('Costs')" class="text-right" (click)="sortKeyMetricsTable(2)">{{metricLabel('Costs', 'table')}}</th>
+              <th *ngIf="selectedMetric('Costs')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Costs').table}}</th>
               <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }}</th>
-              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{metricLabel('EndDate', 'table')}}</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{getMetric('EndDate').table}}</th>
               <th *ngIf="selectedMetric('Deadlines')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'compViewBubble.lbl.deadlines' | translate }}</th>
-              <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">{{metricLabel('Deadlines', 'table')}}</th>
-              <th *ngIf="selectedMetric('DeadlinesUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{metricLabel('DeadlinesUnFinishedDelay', 'table')}}</th>
-              <th *ngIf="selectedMetric('DeadlinesFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{metricLabel('DeadlinesFinishedDelay', 'table')}}</th>
+              <th *ngIf="selectedMetric('Deadlines')" class="text-right" (click)="sortKeyMetricsTable(6)">{{getMetric('Deadlines').table}}</th>
+              <th *ngIf="selectedMetric('DeadlinesUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlinesUnFinishedDelay').table}}</th>
+              <th *ngIf="selectedMetric('DeadlinesFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlinesFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('Deliveries')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }}</th>
-              <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">{{metricLabel('Deliveries', 'table')}}</th>
+              <th *ngIf="selectedMetric('Deliveries')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Deliveries').table}}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -190,17 +190,17 @@
           <div class="form-group">
             <label for="XLabel" class="col-form-label">{{ 'compViewBubble.lbl.xAxis' | translate }}:</label>
             <select class="form-control" id="XLabel" name="metricX" [(ngModel)]="metricX">
-              <option *ngFor="let metricItem of metricList; let metricIndex=index" value="{{metricIndex}}">{{metricItem.name}}</option>
+              <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
             </select>
           </div>
           <div class="form-group">
             <label for="YLabel" class="col-form-label">{{ 'compViewBubble.lbl.yAxis' | translate }}:</label>
             <select class="form-control" id="YLabel" name="metricY" [(ngModel)]="metricY">
-              <option *ngFor="let metricItem of metricList; let metricIndex=index" value="{{metricIndex}}">{{metricItem.name}}</option>
+              <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
             </select>
           </div>
           <div class="modal-footer align-items-end">
-            <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewBubble.btn.cancel' | translate }}</button>
+            <!-- <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewBubble.btn.cancel' | translate }}</button> -->
             <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewBubble.btn.change' | translate }}</button>
           </div>
         </form>

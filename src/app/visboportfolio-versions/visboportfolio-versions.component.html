@@ -58,14 +58,14 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && visboprojectversions">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [filter]="pageParams.filter" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'List' && vpList">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [filter]="pageParams.filter" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
     <hr>
-    <app-comp-viewboard [vps]="vpList" [filter]="pageParams.filter" [refDate]="vpvRefDate" ></app-comp-viewboard>
+    <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
   </div>
 </div>

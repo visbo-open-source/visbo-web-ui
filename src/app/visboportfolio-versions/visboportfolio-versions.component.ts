@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -88,6 +88,10 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.changeView(nextView, refDate ? this.vpvRefDate : undefined, filter, vpfid);
 
     this.getVisboProject();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Portfolio Changes ${JSON.stringify(changes)}`);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -253,19 +257,42 @@ export class VisboPortfolioVersionsComponent implements OnInit {
         nextView = this.views[0];
       }
       this.pageParams.view = nextView;
+      this.updateUrlParam('view', nextView);
     }
     if (filter) {
       this.pageParams.filter = filter.trim();
+      this.updateUrlParam('filter', filter.trim());
     }
     if (refDate) {
       this.pageParams.refDate = refDate.toISOString();
+      this.updateUrlParam('refDate', refDate.toISOString());
     }
     if (vpfid) {
       this.pageParams.vpfid = vpfid;
+      this.updateUrlParam('vpfid', vpfid);
     }
+  }
 
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    this.router.navigate([url], { queryParams: this.pageParams, replaceUrl: true });
+    let queryParams = new Params();
+    if (type == 'filter') {
+      queryParams.filter = value;
+    } else if (type == 'vpfid') {
+      queryParams.vpfid = value;
+    } else if (type == 'refDate') {
+      queryParams.refDate = value;
+    } else if (type == 'view') {
+      queryParams.view = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   isSameDay(dateA: Date, dateB: Date): boolean {

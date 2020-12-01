@@ -22,6 +22,15 @@ class Metric {
   table: string;
 }
 
+class Params {
+  vpfid: string;
+  refDate: string;
+  view: string;
+  filter: string;
+  metricX: string;
+  metricY: string;
+}
+
 @Component({
   selector: 'app-comp-viewbubble',
   templateUrl: './comp-viewbubble.component.html'
@@ -38,9 +47,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() bubbleMode: boolean;
-  @Input() filter: string;
   @Input() combinedPerm: VGPermission;
 
+  refDate: Date;
+  filter: string;
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
@@ -49,9 +59,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   colorMetric = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
   metricList: Metric[];
-  metricX = 0;
-  metricY = 1;
-  metricListFiltered = false;
+  metricX: string;
+  metricY: string;
+  metricListFiltered: Metric[];
+  metricListSorted: Metric[];
 
   hasKMCost = false;
   hasKMDelivery = false;
@@ -61,7 +72,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   hasVariant: boolean;
   countKM: number;
 
-  vpFilter: string;
   estimateAtCompletion = 0;
   budgetAtCompletion = 0;
   chart = true;
@@ -130,7 +140,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.activeID = this.route.snapshot.paramMap.get('id');
     this.log(`Init KeyMetrics`);
     this.metricList = [
       {
@@ -146,6 +155,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         axis: this.translate.instant('compViewBubble.metric.endDateAxis'),
         bubble: this.translate.instant('compViewBubble.metric.endDateBubble'),
         table: this.translate.instant('compViewBubble.metric.endDateTable')
+      },
+      {
+        name: this.translate.instant('compViewBubble.metric.costActualName'),
+        metric: 'ActualCosts',
+        axis: this.translate.instant('compViewBubble.metric.costActualAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.costActualBubble'),
+        table: this.translate.instant('compViewBubble.metric.costActualTable')
       },
       {
         name: this.translate.instant('compViewBubble.metric.deadlineName'),
@@ -177,22 +193,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
     ];
 
-    const view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
-    if (view) {
-      if (view.xAxis >= 0 && view.xAxis < this.metricList.length) {
-        this.metricX = view.xAxis;
-      }
-      if (view.yAxis >= 0 && view.yAxis < this.metricList.length) {
-        this.metricY = view.yAxis;
-      }
-      if (view.objectID === this.activeID) {
-        this.vpFilter = view.vpFilter || undefined;
-        // this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
-      }
-    }
-    if (this.filter) {
-      this.vpFilter = this.filter
-    }
+    this.initSetting();
     if (this.chart != this.bubbleMode) {
       this.toggleVisboChart();
     }
@@ -201,7 +202,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Delivery on Changes  ${this.activeID}, Changes: ${JSON.stringify(changes)}`);
-    if (this.activeID !== undefined) {
+    // change event happens before init, ignore
+    if (this.metricList) {
+      this.initSetting();
       this.visboKeyMetricsCalc();
     }
   }
@@ -214,6 +217,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }, 500);
   }
 
+  initSetting(): void {
+    this.activeID = this.route.snapshot.paramMap.get('id');
+    const refDate = this.route.snapshot.queryParams['refDate'];
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const metricX = this.route.snapshot.queryParams['metricX'] || undefined;
+    let metricY = this.route.snapshot.queryParams['metricY'] || undefined;
+    if (metricX === metricY) { metricY = undefined; }
+
+    this.metricX = this.getMetric(metricX, metricY, false).metric;
+    this.metricY = this.getMetric(metricY, this.metricX, false).metric;
+    this.refDate = refDate ? new Date(refDate) : new Date();
+    this.filter = filter;
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -223,19 +240,29 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   filterKeyBoardEvent(event: any) {
     let keyCode = event.keyCode;
-    if (keyCode == 13) {    // return key
-      this.storeSetting();
-      // add parameter to URL
-      const url = this.route.snapshot.url.join('/');
-      this.router.navigate([url],
-        {
-          queryParams: { filter: this.vpFilter },
-          replaceUrl: true,
-          // preserve the existing query params in the route
-          queryParamsHandling: 'merge'
-      });
-    }
+    // if (keyCode == 13) {    // return key
+      this.updateUrlParam('filter', this.filter)
+    // }
     this.visboKeyMetricsCalc();
+  }
+
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    let queryParams = new Params();
+    if (type == 'filter') {
+      queryParams.filter = value;
+    } else if (type == 'metricX' || type == 'metricY') {
+      queryParams.metricX = this.metricX;
+      queryParams.metricY = this.metricY;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   visboKeyMetricsCalc(): void {
@@ -257,14 +284,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       return;
     }
     // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
-    const vpFilter = (this.vpFilter || '').toLowerCase();
+    const filter = (this.filter || '').toLowerCase();
     for (let item = 0; item < this.visboprojectversions.length; item++) {
-      if (!vpFilter
-        || this.visboprojectversions[item].name.toLowerCase().indexOf(vpFilter) >= 0
-        || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(vpFilter) >= 0
-        || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(vpFilter) >= 0
-        || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(vpFilter) >= 0
-        || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(vpFilter) >= 0
+      if (!filter
+        || this.visboprojectversions[item].name.toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
       ) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
         elementKeyMetric.name = this.visboprojectversions[item].name;
@@ -341,66 +368,65 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   thinDownMetricList(): void {
     let index: number;
+
     if (this.metricListFiltered) {
       // filter the metric list only once in the beginning, but not during filtering projects
       return;
     }
-    if (!this.visbokeymetrics || this.visbokeymetrics.length === 0) {
-      this.hasKMCost = false;
-      this.hasKMDelivery = false;
-      this.hasKMDeadline = false;
-      this.hasKMDeadlineDelay = false;
-      this.hasKMEndDate = false;
+    this.metricListFiltered = [];
+    if (this.hasKMCost) {
+      let item = this.metricList.find(item => item.metric === 'Costs');
+      this.metricListFiltered.push(item);
+      item = this.metricList.find(item => item.metric === 'ActualCosts');
+      this.metricListFiltered.push(item);
     }
-    if (!this.hasKMCost) {
-      index = this.metricList.findIndex(item => item.metric === 'Costs');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
+    if (this.hasKMEndDate) {
+      const item = this.metricList.find(item => item.metric === 'EndDate');
+      this.metricListFiltered.push(item);
     }
-    if (!this.hasKMEndDate) {
-      index = this.metricList.findIndex(item => item.metric === 'EndDate');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
+    if (this.hasKMDelivery) {
+      const item = this.metricList.find(item => item.metric === 'Deliveries');
+      this.metricListFiltered.push(item);
     }
-    if (!this.hasKMDelivery) {
-      index = this.metricList.findIndex(item => item.metric === 'Deliveries');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
-    }
-    if (!this.hasKMDeadline) {
-      index = this.metricList.findIndex(item => item.metric === 'Deadlines');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
+    if (this.hasKMDeadline) {
+      const item = this.metricList.find(item => item.metric === 'Deadlines');
+      this.metricListFiltered.push(item);
     }
     if (!this.hasKMDeadlineDelay) {
-      index = this.metricList.findIndex(item => item.metric === 'DeadlinesFinishedDelay');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
-      index = this.metricList.findIndex(item => item.metric === 'DeadlinesUnFinishedDelay');
-      if (index >= 0) {
-        this.metricList.splice(index, 1);
-      }
+      let item = this.metricList && this.metricList.find(item => item.metric === 'DeadlinesFinishedDelay');
+      this.metricListFiltered.push(item);
+      item = this.metricList && this.metricList.find(item => item.metric === 'DeadlinesUnFinishedDelay');
+      this.metricListFiltered.push(item);
     }
-    if (this.metricList.length < 2) {
+
+    if (this.metricListFiltered.length < 2) {
       this.chart = false;
       // set the X & Y Axis to values that are available
-      this.metricX = this.metricList.length === 1 ? 0 : undefined;
-      this.metricY = undefined;
-    } else {
-      // set the X & Y Axis to values that are available
-      if (this.metricX >= this.metricList.length) {
-        this.metricX = this.metricX === 0 ? 1 : 0;
-      }
-      if (this.metricY >= this.metricList.length) {
-        this.metricY = this.metricY === 0 ? 1 : 0;
-      }
     }
-    this.metricListFiltered = true;
+
+    this.metricListSorted = [];
+    this.metricListFiltered.forEach(item => this.metricListSorted.push(item))
+    this.metricListSorted.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+
+    // set the X & Y Axis to values that are available
+    this.metricX = this.getMetric(this.metricX, this.metricY, true).metric;
+    this.metricY = this.getMetric(this.metricY, this.metricX, true).metric;
+  }
+
+  // getMetrics returns always a metric
+  getMetric(name: string, exclude: string = undefined, filtered = false): Metric {
+    const list = filtered ? this.metricListFiltered : this.metricList;
+    if (!list) {
+      return this.metricList[0];
+    }
+    let metric = list.find(item => item.metric === name && item.metric !== exclude);
+    if (!metric) {
+      metric = list.find(item => item.metric !== exclude);
+    }
+    if (!metric) {
+      metric = list[0];
+    }
+    return metric;
   }
 
   calcPercent(current: number, baseline: number): number {
@@ -420,34 +446,15 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return dateA.toISOString() === dateB.toISOString();
   }
 
-  storeSetting(): void {
-    let view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
-    if (!view) {
-      view = {
-        updatedAt: undefined,
-        objectID: undefined,
-        xAxis: undefined,
-        yAxis: undefined,
-        vpFilter: undefined
-      }
-    }
-    view.updatedAt = (new Date()).toISOString();
-    view.objectID = this.activeID;
-    view.xAxis = this.metricX;
-    view.yAxis = this.metricY;
-    // view.vpvRefDate = vpvRefDate ? vpvRefDate.toISOString() : undefined;
-    view.vpFilter = this.vpFilter;
-
-    localStorage.setItem('KeyMetrics-view', JSON.stringify(view));
-  }
-
   toggleVisboChart(): void {
     this.chart = !this.chart;
   }
 
   changeChart(): void {
-    this.log(`Switch Chart to ${this.getMetric('X', 'metric')} vs  ${this.getMetric('Y', 'metric')}`);
-    this.storeSetting();
+    this.log(`Switch Chart to ${this.metricX} vs  ${this.metricY}`);
+    this.metricY = this.getMetric(this.metricY, this.metricX, false).metric;
+    this.updateUrlParam('metricX', undefined);
+
     this.visboKeyMetricsCalc();
   }
 
@@ -473,7 +480,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (this.visbokeymetrics.length > 10) {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
     }
-    keyMetrics.push(['ID', this.getMetric('X', 'bubble'), this.getMetric('Y', 'bubble'), 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
+    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].keyMetrics) {
         continue;
@@ -483,9 +490,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       let colorValue = 0;
       let valueX: number;
       let valueY: number;
-      switch (this.getMetric('X', 'metric')) {
+      switch (this.metricX) {
         case 'Costs':
           valueX = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
+          colorValue += valueX <= 100 ? 1 : 0;
+          break;
+        case 'ActualCosts':
+          valueX = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
           colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'EndDate':
@@ -509,9 +520,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
-      switch (this.getMetric('Y', 'metric')) {
+      switch (this.metricY) {
         case 'Costs':
           valueY = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
+          colorValue += valueY <= 100 ? 1 : 0;
+          break;
+        case 'ActualCosts':
+          valueY = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
           colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'EndDate':
@@ -558,9 +573,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       minSize = Math.min(minSize, this.visbokeymetrics[item].keyMetrics.costBaseLastTotal);
       maxSize = Math.max(maxSize, this.visbokeymetrics[item].keyMetrics.costBaseLastTotal);
-      switch (this.getMetric('X', 'metric')) {
+      switch (this.metricX) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
+          break;
+        case 'ActualCosts':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate));
@@ -587,9 +605,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.sizeAxis.minValue = minSize;
     this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
 
-    if (this.getMetric('X', 'metric') === 'EndDate'
-    || this.getMetric('X', 'metric') === 'DeadlinesFinishedDelay'
-    || this.getMetric('X', 'metric') === 'DeadlinesUnFinishedDelay') {
+    if (this.metricX === 'EndDate'
+    || this.metricX === 'DeadlinesFinishedDelay'
+    || this.metricX === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
@@ -604,9 +622,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       if (!this.visbokeymetrics[item].keyMetrics) {
         continue;
       }
-      switch (this.getMetric('Y', 'metric')) {
+      switch (this.metricY) {
         case 'Costs':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
+          break;
+        case 'ActualCosts':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate));
@@ -625,9 +646,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           break;
       }
     }
-    if (this.getMetric('Y', 'metric') === 'EndDate'
-    || this.getMetric('Y', 'metric') === 'DeadlinesFinishedDelay'
-    || this.getMetric('Y', 'metric') === 'DeadlinesUnFinishedDelay') {
+    if (this.metricY === 'EndDate'
+    || this.metricY === 'DeadlinesFinishedDelay'
+    || this.metricY === 'DeadlinesUnFinishedDelay') {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
@@ -645,9 +666,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const weekFormat = '# ' + this.translate.instant('compViewBubble.lbl.weeks');
     const dayFormat = '# ' + this.translate.instant('compViewBubble.lbl.days');
 
-    this.graphBubbleOptions.hAxis.title = this.getMetric('X', 'axis');
-    switch (this.getMetric('X', 'metric')) {
+    this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
+    switch (this.metricX) {
       case 'Costs':
+        this.graphBubbleOptions.hAxis.baseline = 100;
+        this.graphBubbleOptions.hAxis.direction = -1;
+        this.graphBubbleOptions.hAxis.format = "# '%'";
+        break;
+      case 'ActualCosts':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# '%'";
@@ -675,9 +701,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         break;
     }
 
-    this.graphBubbleOptions.vAxis.title = this.getMetric('Y', 'axis');
-    switch (this.getMetric('Y', 'metric')) {
+    this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
+    switch (this.metricY) {
       case 'Costs':
+        this.graphBubbleOptions.vAxis.baseline = 100;
+        this.graphBubbleOptions.vAxis.direction = -1;
+        this.graphBubbleOptions.vAxis.format = "# '%'";
+        break;
+      case 'ActualCosts':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# '%'";
@@ -710,7 +741,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
     this.log(`goto VP ${vpv.name} (${vpv.vpid}) Deleted? ${this.deleted}`);
-    this.storeSetting();
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
@@ -719,7 +749,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const vpv = this.visbokeymetrics.find(x => x.name === label);
 
     this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
-    this.storeSetting();
     let queryParams = {};
     if (this.deleted) { queryParams = {deleted: this.deleted.toString()}; }
 
@@ -728,29 +757,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   selectedMetric(metric: string): boolean {
     let result = false;
-    if (this.getMetric('X', 'metric') === metric
-    || this.getMetric('Y', 'metric') === metric) {
+    if (this.metricX === metric
+    || this.metricY === metric) {
       result = true;
-    }
-    return result;
-  }
-
-  getMetric(axis: string, label = 'name'): string {
-    let result: string;
-    if (axis === 'X' && this.metricX < this.metricList.length) {
-      result = this.metricList[this.metricX][label];
-    } else if (axis === 'Y' && this.metricY < this.metricList.length) {
-      result = this.metricList[this.metricY][label];
-    }
-    result = result || 'UNKNOWN';
-    return result;
-  }
-
-  metricLabel(metric: string, label: string): string {
-    const newMetric = this.metricList.find(item => item.metric === metric);
-    let result = 'UNKNOWN';
-    if (newMetric) {
-      result = newMetric[label];
     }
     return result;
   }

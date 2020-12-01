@@ -12,19 +12,24 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 
 import { visboCmpString, convertDate } from '../_helpers/visbo.helper';
 
+class Params {
+  vpfid: string;
+  refDate: string;
+  view: string;
+  filter: string;
+}
+
 @Component({
   selector: 'app-comp-viewboard',
   templateUrl: './comp-viewboard.component.html'
 })
 export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
-  @Input() refDate: Date;
   @Input() vps: VisboProjectVersion[];
-  @Input() filter: string;
 
+  refDate: Date;
+  filter: string;
   activeID: string; // either VP ID of Portfolio or VC ID
-  currentRefDate: Date;
-  vpFilter: string;
   timeoutID: number;
 
   parentThis = this;
@@ -55,13 +60,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    this.log(`ProjectBoard Init  ${this.refDate.toISOString()} ${this.refDate !== this.currentRefDate} `);
+    this.log(`ProjectBoard Init  ${this.refDate.toISOString()} `);
     this.initSetting();
     this.visboViewBoardOverTime();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()}, Changes ${JSON.stringify(changes)}`);
+    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()}, Changes ${JSON.stringify(changes)}`);
     this.initSetting();
     this.visboViewBoardOverTime();
   }
@@ -76,53 +81,39 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   initSetting(): void {
     this.activeID = this.route.snapshot.paramMap.get('id');
-    if (!this.refDate) { this.refDate = new Date(); }
-    const view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
-    if (view) {
-      if (view.objectID === this.activeID) {
-        this.vpFilter = view.vpFilter || undefined;
-        // this.vpvRefDate = view.vpvRefDate ? new Date(view.vpvRefDate) : new Date();
-      }
-    }
-    if (this.filter) { this.vpFilter = this.filter; }
-    this.currentRefDate = this.refDate;
-  }
+    const refDate = this.route.snapshot.queryParams['refDate'];
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
 
-  storeSetting(): void {
-    let view = JSON.parse(localStorage.getItem('KeyMetrics-view'));
-    if (!view) {
-      view = {
-        updatedAt: undefined,
-        objectID: undefined,
-        vpFilter: undefined
-      }
-    }
-    view.updatedAt = (new Date()).toISOString();
-    if (this.activeID) view.objectID = this.activeID;
-    view.vpFilter = this.vpFilter;
-
-    localStorage.setItem('KeyMetrics-view', JSON.stringify(view));
+    this.refDate = refDate ? new Date(refDate) : new Date();
+    this.filter = filter;
   }
 
   filterKeyBoardEvent(event: any) {
-    let keyCode = event.keyCode;
-    if (keyCode == 13) {    // return key
-      this.storeSetting();
+    let keyCode = event ? event.keyCode : 0;
+    // if (keyCode == 13) {    // only return key
       // add parameter to URL
-      const url = this.route.snapshot.url.join('/');
-      this.router.navigate([url],
-        {
-          queryParams: { filter: this.vpFilter },
-          replaceUrl: true,
-          // preserve the existing query params in the route
-          queryParamsHandling: 'merge'
-      });
-    }
+      this.updateUrlParam('filter', this.filter)
+    // }
     this.visboViewBoardOverTime();
   }
 
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    let queryParams = new Params();
+    if (type == 'filter') {
+      queryParams.filter = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
+  }
+
   visboViewBoardOverTime(): void {
-    this.currentRefDate = this.refDate;
     const graphDataTimeline = [];
     if (!this.vps || this.vps.length === 0) {
       this.graphDataTimeline = [];
@@ -131,12 +122,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
 
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     for (let i = 0; i < this.vps.length; i++) {
-      if (this.vpFilter
-        && !(this.vps[i].name.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].businessUnit?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].leadPerson?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].VorlagenName?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
+      if (filter
+        && !(this.vps[i].name.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].businessUnit?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter
@@ -214,7 +206,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   timelineSelectRow(row: number): void {
     this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
-    this.storeSetting();
     const vpName = this.graphDataTimeline[row + 1][1];
     // vpName can contain variantName split it and check if it fits
     const vp = this.findProject(vpName);
