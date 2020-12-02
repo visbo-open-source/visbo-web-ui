@@ -249,38 +249,29 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         nextView = this.views[0];
       }
       this.pageParams.view = nextView;
-      this.updateUrlParam('view', nextView);
     }
     if (filter) {
       this.pageParams.filter = filter.trim();
-      this.updateUrlParam('filter', filter.trim());
     }
     if (refDate && !visboIsToday(refDate)) {
       this.pageParams.refDate = refDate.toISOString();
-      this.updateUrlParam('refDate', refDate.toISOString());
-    } else {
-      this.updateUrlParam('refDate', null);
     }
     if (vpfid) {
       this.pageParams.vpfid = vpfid;
-      this.updateUrlParam('vpfid', vpfid);
     }
+    this.updateUrlParam();
+
   }
 
-  updateUrlParam(type: string, value: string): void {
+  updateUrlParam(): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    if (value === undefined) { value = null; }
     const queryParams = new VPFParams();
-    if (type === 'filter') {
-      queryParams.filter = value;
-    } else if (type === 'vpfid') {
-      queryParams.vpfid = value;
-    } else if (type === 'refDate') {
-      queryParams.refDate = value;
-    } else if (type === 'view') {
-      queryParams.view = value;
-    }
+    queryParams.filter = this.pageParams.filter || null;
+    queryParams.vpfid = this.pageParams.vpfid || null;
+    queryParams.vpfid = this.pageParams.vpfid || null;
+    queryParams.refDate = this.pageParams.refDate || null;
+    queryParams.view = this.pageParams.view || null;
     this.router.navigate([url], {
       queryParams: queryParams,
       // no navigation back to old status, but to the page before
