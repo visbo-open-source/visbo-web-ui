@@ -24,23 +24,22 @@
   <div *ngIf="vpvKeyMetricActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block">{{ 'vpView.titleVersion' | translate }}: {{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-none d-lg-block" title="{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">V.: {{ vpvKeyMetricActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
       <div class="col-6">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{scrollRefDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
-            <option value="day">{{ 'vpView.lbl.day' | translate }}</option>
-            <option value="week">{{ 'vpView.lbl.week' | translate }}</option>
-            <option value="month">{{ 'vpView.lbl.month' | translate }}</option>
-            <option value="quarter">{{ 'vpView.lbl.quarter' | translate }}</option>
+            <option value="day">{{ 'vpKeyMetric.lbl.day' | translate }}</option>
+            <option value="week">{{ 'vpKeyMetric.lbl.week' | translate }}</option>
+            <option value="month">{{ 'vpKeyMetric.lbl.month' | translate }}</option>
+            <option value="quarter">{{ 'vpKeyMetric.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{scrollRefDate | date :'dd.MM.'}}" (click)='getNextVersion(+1)'></span>
+          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(+1)'></span>
         </div>
       </div>
     </div>
-    <hr>
   </div>
 
   <div class="container-fluid" *ngIf="vpvKeyMetricActive">
@@ -51,16 +50,12 @@
         <button type="button" class="btn btn-md btn-light mr-1" (click)='gotoVpView()'>{{ 'vpKeyMetric.btn.vpView' | translate }}</button>
       </div>
     </div>
+    <hr>
     <div *ngIf="viewCapacity && vpvKeyMetricActive">
-      <hr>
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <form *ngIf="!viewCapacity">
       <div class="container">
-        <div class="row">
-          <label for="vpName" class="col-3 col-md-2">{{ 'vpKeyMetric.lbl.status' | translate }}:</label>
-          <dt class="col-8">{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy HH:mm'}} </dt>
-        </div>
         <table *ngIf="vpvKeyMetricActive" class='table table-hover table-sortable'>
           <!--Table head-->
           <thead>

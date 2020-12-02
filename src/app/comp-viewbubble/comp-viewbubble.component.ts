@@ -546,7 +546,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
 
       keyMetrics.push([
-        this.visbokeymetrics[item].name,
+        this.combineName(this.visbokeymetrics[item].name, this.visbokeymetrics[item].variantName),
         valueX,
         valueY,
         this.colorMetric[colorValue].name,
@@ -753,9 +753,21 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
 
   chartSelectRow(row: number, label: string): void {
-    // this.log(`Bubble Chart: ${row} ${label}`);
-    const vpv = this.visbokeymetrics.find(x => x.name === label);
-    this.gotoClickedRow(vpv);
+    this.log(`Bubble Chart: ${row} ${label} ${this.visbokeymetrics[row].name}`);
+    let vpv = this.visbokeymetrics.find(x => x.name === label);
+    if (!vpv) {
+      // label contains a variantName
+      const index = label.lastIndexOf(' ( ');
+      if (index) {
+        const name = label.substr(0, index);
+        vpv = this.visbokeymetrics.find(x => x.name === name);
+      }
+    }
+    if (vpv) {
+      this.gotoClickedRow(vpv);
+    } else {
+      this.log(`VP not found ${label}`)
+    }
   }
 
   selectedMetric(metric: string): boolean {
@@ -775,6 +787,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (percentCalc <= 1) return 1;
     else if (percentCalc <= 1.05) return 2;
     else return 3;
+  }
+
+  combineName(vpName: string, variantName: string): string {
+    let result = vpName || '';
+    if (variantName) {
+      result = result.concat(' ( ', variantName, ' ) ')
+    }
+    return result;
   }
 
   helperDateDiff(from: string, to: string, unit: string): number {

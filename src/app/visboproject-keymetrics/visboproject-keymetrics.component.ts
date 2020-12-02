@@ -48,7 +48,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   viewCapacity = false;
   refDate: Date;
-  scrollRefDate = new Date();
   refDateInterval = 'month';
   chartButton: string;
   chart = true;
@@ -826,14 +825,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions current ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
-    const newRefDate = new Date(this.scrollRefDate);
+    this.log(`get getRefDateVersions current ${this.refDate} ${increment} ${this.refDateInterval}`);
+    const newRefDate = new Date(this.refDate);
     let i = 0;
     let quarter = 0;
     switch (this.refDateInterval) {
       case 'day':
         newRefDate.setHours(0, 0, 0, 0); // beginning of day
-        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+        if (increment > 0 || newRefDate.getTime() === this.refDate.getTime()) {
           newRefDate.setDate(newRefDate.getDate() + increment);
         }
         break;
@@ -844,7 +843,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       case 'month':
         newRefDate.setHours(0, 0, 0, 0); // beginning of day
         newRefDate.setDate(1);
-        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+        if (increment > 0 || newRefDate.getTime() === this.refDate.getTime()) {
           newRefDate.setMonth(newRefDate.getMonth() + increment);
         }
         break;
@@ -856,25 +855,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
         newRefDate.setMonth(quarter * 3);
         newRefDate.setDate(1);
         newRefDate.setHours(0, 0, 0, 0);
-        if (newRefDate.getTime() === this.scrollRefDate.getTime()) {
+        if (newRefDate.getTime() === this.refDate.getTime()) {
           newRefDate.setMonth(newRefDate.getMonth() + increment * 3);
         }
         break;
     }
-    this.log(`get getRefDateVersions new ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
-    this.scrollRefDate = newRefDate;
+    this.log(`get getRefDateVersions new ${newRefDate.toISOString()} ${this.refDate.toISOString()}`);
+    this.refDate = newRefDate;
     let newVersionIndex;
     if (increment > 0) {
       const refDate = new Date(this.visbokeymetrics[0].timestamp);
       if (newRefDate.getTime() >= refDate.getTime()) {
         newVersionIndex = 0;
-        this.scrollRefDate.setTime(refDate.getTime());
+        this.refDate.setTime(refDate.getTime());
       }
     } else {
       const refDate = new Date(this.visbokeymetrics[this.visbokeymetrics.length - 1].timestamp);
       if (newRefDate.getTime() <= refDate.getTime()) {
         newVersionIndex = this.visbokeymetrics.length - 1;
-        this.scrollRefDate.setTime(refDate.getTime());
+        this.refDate.setTime(refDate.getTime());
       }
     }
     if (newVersionIndex === undefined) {
@@ -894,7 +893,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   getNextVersion(direction: number): void {
     this.getRefDateVersions(direction);
-    this.updateUrlParam('refDate', this.scrollRefDate.toISOString());
+    this.updateUrlParam('refDate', this.refDate.toISOString());
   }
 
   gotoVpView(): void {

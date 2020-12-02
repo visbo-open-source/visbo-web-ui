@@ -16,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, convertDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, convertDate, visboIsToday } from '../_helpers/visbo.helper';
 
 class DropDown {
   name: string;
@@ -255,9 +255,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.pageParams.filter = filter.trim();
       this.updateUrlParam('filter', filter.trim());
     }
-    if (refDate) {
+    if (refDate && !visboIsToday(refDate)) {
       this.pageParams.refDate = refDate.toISOString();
       this.updateUrlParam('refDate', refDate.toISOString());
+    } else {
+      this.updateUrlParam('refDate', null);
     }
     if (vpfid) {
       this.pageParams.vpfid = vpfid;

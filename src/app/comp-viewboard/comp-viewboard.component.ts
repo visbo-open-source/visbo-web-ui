@@ -10,8 +10,9 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VPFParams } from '../_models/visboportfolioversion';
+import { VPParams } from '../_models/visboproject';
 
-import { visboCmpString, convertDate } from '../_helpers/visbo.helper';
+import { visboCmpString, convertDate, visboIsToday } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -209,7 +210,12 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     if (vp) {
       this.log(`Navigate to: ${vp.vpid} ${vp.name} ${vp.variantName}`);
-      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], vp.variantName ? { queryParams: { variantName: vp.variantName }} : {});
+      const queryParams = new VPParams();
+      queryParams.variantName = vp.variantName || null;
+      if (this.refDate && !visboIsToday(this.refDate)) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: queryParams });
     } else {
       this.log(`VP not found: ${vpName}`);
     }
