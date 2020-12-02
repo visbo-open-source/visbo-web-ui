@@ -9,11 +9,12 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
-import { Params } from '../_models/visboportfolioversion';
+import { VPFParams } from '../_models/visboportfolioversion';
+import { VPParams } from '../_models/visboproject';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday } from '../_helpers/visbo.helper';
 
 class Metric {
   name: string;
@@ -243,7 +244,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    const queryParams = new Params();
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
     } else if (type == 'metricX' || type == 'metricY') {
@@ -733,18 +735,27 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
     this.log(`goto VP ${vpv.name} (${vpv.vpid}) Deleted? ${this.deleted}`);
-    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+    const queryParams = new VPParams();
+    if (this.deleted) {
+      queryParams.deleted = '1';
+    }
+    if (vpv.variantName) {
+      queryParams.variantName = vpv.variantName;
+    }
+    if (this.refDate && !visboIsToday(this.refDate)) {
+      queryParams.refDate = this.refDate.toISOString();
+    }
+
+    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], {
+      queryParams: queryParams
+    });
   }
+
 
   chartSelectRow(row: number, label: string): void {
     // this.log(`Bubble Chart: ${row} ${label}`);
     const vpv = this.visbokeymetrics.find(x => x.name === label);
-
-    this.log(`Navigate to: ${vpv.vpid} ${vpv.name}`);
-    let queryParams = {};
-    if (this.deleted) { queryParams = {deleted: this.deleted.toString()}; }
-
-    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: queryParams });
+    this.gotoClickedRow(vpv);
   }
 
   selectedMetric(metric: string): boolean {

@@ -13,7 +13,7 @@ import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
 import { VisboCapacity, VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion, Params } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -455,7 +455,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    const queryParams = new Params();
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
     if (type == 'roleID') {
       queryParams.roleID = Number(value);
     } else if (type == 'from' || type == 'to') {

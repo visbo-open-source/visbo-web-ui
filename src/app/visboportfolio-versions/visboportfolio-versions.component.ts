@@ -11,7 +11,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion, Params } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -44,12 +44,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpfActive: VisboPortfolioVersion;
     vpvRefDate: Date = new Date();
     refDateInterval = 'month';
+    scrollRefDate: Date;
     vpfid: string;
     deleted = false;
     currentLang: string;
     vpList: VisboProjectVersion[];
 
-    pageParams = new Params();
+    pageParams = new VPFParams();
 
     combinedPerm: VGPermission = undefined;
     combinedPermVC: VGPermission = undefined;
@@ -267,14 +268,15 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    const queryParams = new Params();
-    if (type == 'filter') {
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
+    if (type === 'filter') {
       queryParams.filter = value;
-    } else if (type == 'vpfid') {
+    } else if (type === 'vpfid') {
       queryParams.vpfid = value;
-    } else if (type == 'refDate') {
+    } else if (type === 'refDate') {
       queryParams.refDate = value;
-    } else if (type == 'view') {
+    } else if (type === 'view') {
       queryParams.view = value;
     }
     this.router.navigate([url], {
@@ -341,11 +343,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const deleted = visboproject.deletedAt ? true : false;
     this.log(`goto Detail for VP ${visboproject._id}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
-  }
-
-  gotoVP(id: string, variantName: string): void {
-    this.log(`goto VP ${id}/${variantName}`);
-    this.router.navigate(['vpKeyMetrics/'.concat(id)], variantName ? { queryParams: { variantName: variantName }} : {});
   }
 
   gotoVC(visboproject: VisboProject): void {

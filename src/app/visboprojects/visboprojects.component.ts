@@ -11,7 +11,7 @@ import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
-import { Params } from '../_models/visboportfolioversion';
+import { VPFParams } from '../_models/visboportfolioversion';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
@@ -110,7 +110,8 @@ export class VisboProjectsComponent implements OnInit {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    const queryParams = new Params();
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
     } else if (type == 'refDate') {

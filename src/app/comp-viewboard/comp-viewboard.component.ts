@@ -9,15 +9,9 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
+import { VPFParams } from '../_models/visboportfolioversion';
 
 import { visboCmpString, convertDate } from '../_helpers/visbo.helper';
-
-class Params {
-  vpfid: string;
-  refDate: string;
-  view: string;
-  filter: string;
-}
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -102,7 +96,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    const queryParams = new Params();
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
     }

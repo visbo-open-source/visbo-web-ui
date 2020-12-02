@@ -71,6 +71,16 @@ export function validateDate(dateString: string, allowEmpty: boolean): string {
 	return dateValue.toISOString();
 }
 
+export function visboIsToday(refDate: Date): boolean {
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+  if (refDate && refDate.getTime() >= current.getTime()) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';

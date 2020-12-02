@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, VPParams } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
@@ -15,12 +15,6 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
-
-class Params {
-  deleted: string;
-  vpvid: string;
-  variantName: string;
-}
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -36,6 +30,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   vpSelected: string;
   vpActive: VisboProject;
+  variantID: string;
+  variantName: string;
   deleted = false;
   vpvKeyMetricActive: VPVKeyMetricsCalc;
   qualityCost: number;
@@ -51,7 +47,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayEndDate: number;
 
   viewCapacity = false;
-  vpvRefDate: Date;
+  refDate: Date;
+  scrollRefDate = new Date();
+  refDateInterval = 'month';
   chartButton: string;
   chart = true;
   history = false;
@@ -168,12 +166,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.variantID = this.route.snapshot.queryParams['variantID'];
+    this.variantName = this.route.snapshot.queryParams['variantName'];
+    if (this.route.snapshot.queryParams.refDate) {
+      this.refDate = new Date(this.route.snapshot.queryParams['refDate']);
+    }
+
     this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
     this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
 
-    if (this.route.snapshot.queryParams.refDate) {
-      this.vpvRefDate = new Date(this.route.snapshot.queryParams.refDate);
-    }
     this.getVisboProjectVersions();
   }
 
@@ -185,23 +186,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   }
 
   dropDownInit(): void {
-    const variantID = this.route.snapshot.queryParams['variantID'];
-    let variantName = this.route.snapshot.queryParams['variantName'];
-    if (variantID) {
+    if (this.variantID) {
       // serach for the variant Name
-      const index = this.vpActive.variant.findIndex(item => item._id.toString() === variantID);
+      const index = this.vpActive.variant.findIndex(item => item._id.toString() === this.variantID);
       if (index >= 0) {
-        variantName = this.vpActive.variant[index].variantName;
-      }
-    } else if (variantName) {
-      const index = this.vpActive.variant.findIndex(item => item.variantName === variantName);
-      if (index >= 0) {
-        variantName = this.vpActive.variant[index].variantName;
+        this.variantName = this.vpActive.variant[index].variantName;
       } else {
-        variantName = undefined;
+        this.variantID = undefined;
+      }
+    } else if (this.variantName) {
+      const index = this.vpActive.variant.findIndex(item => item.variantName === this.variantName);
+      if (index >= 0) {
+        this.variantName = this.vpActive.variant[index].variantName;
+        this.variantID = this.vpActive.variant[index]._id;
+      } else {
+        this.variantName = undefined;
       }
     }
-    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${variantID}/${variantName}`);
+    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${this.variantID}/${this.variantName}`);
     this.dropDown = [];
     this.dropDownIndex = undefined;
     const len = this.vpActive.variant.length;
@@ -215,8 +217,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.dropDown.splice(0, 0, 'DEFAULT');
       this.dropDownIndex = 0;
     }
-    if (variantName) {
-      this.dropDownIndex = this.dropDown.findIndex(item => item === variantName);
+    if (this.variantName) {
+      this.dropDownIndex = this.dropDown.findIndex(item => item === this.variantName);
     }
   }
 
@@ -234,9 +236,36 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.dropDownIndex = i;
     }
     this.log(`switch Variant ${name} index ${this.dropDownIndex}`);
+
+    if (this.dropDownIndex >= 0) {
+      const variant = this.vpActive.variant.find(item => item.variantName == name);
+      this.updateUrlParam('variantID', variant && variant._id);
+    } else {
+      this.updateUrlParam('variantID', null);
+    }
     // fetch the project with Variant
     this.getVisboProjectVersions();
     return;
+  }
+
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new VPParams();
+    if (type == 'variantID') {
+      queryParams.variantID = value;
+      queryParams.variantName = null;
+    } else if (type == 'refDate') {
+      queryParams.refDate = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   hasKM(km: VPVKeyMetrics, type: string): boolean {
@@ -397,9 +426,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       this.sortKeyMetricsTable(undefined);
       let i = 0;
       // search the coresponding version for refDate
-      if (this.vpvRefDate) {
+      if (this.refDate) {
         for (; i < this.visbokeymetrics.length; i++) {
-          if (this.vpvRefDate.toISOString() >= (new Date(this.visbokeymetrics[i].timestamp)).toISOString() ) {
+          if (this.refDate.toISOString() >= (new Date(this.visbokeymetrics[i].timestamp)).toISOString() ) {
             break;
           }
         }
@@ -796,12 +825,83 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     return rangeAxis;
   }
 
+  getRefDateVersions(increment: number): void {
+    this.log(`get getRefDateVersions current ${this.scrollRefDate} ${increment} ${this.refDateInterval}`);
+    const newRefDate = new Date(this.scrollRefDate);
+    let i = 0;
+    let quarter = 0;
+    switch (this.refDateInterval) {
+      case 'day':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setDate(newRefDate.getDate() + increment);
+        }
+        break;
+      case 'week':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        newRefDate.setDate(newRefDate.getDate() + increment * 7);
+        break;
+      case 'month':
+        newRefDate.setHours(0, 0, 0, 0); // beginning of day
+        newRefDate.setDate(1);
+        if (increment > 0 || newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment);
+        }
+        break;
+      case 'quarter':
+        quarter = Math.trunc(newRefDate.getMonth() / 3);
+        if (increment > 0) {
+          quarter += increment;
+        }
+        newRefDate.setMonth(quarter * 3);
+        newRefDate.setDate(1);
+        newRefDate.setHours(0, 0, 0, 0);
+        if (newRefDate.getTime() === this.scrollRefDate.getTime()) {
+          newRefDate.setMonth(newRefDate.getMonth() + increment * 3);
+        }
+        break;
+    }
+    this.log(`get getRefDateVersions new ${newRefDate.toISOString()} ${this.scrollRefDate.toISOString()}`);
+    this.scrollRefDate = newRefDate;
+    let newVersionIndex;
+    if (increment > 0) {
+      const refDate = new Date(this.visbokeymetrics[0].timestamp);
+      if (newRefDate.getTime() >= refDate.getTime()) {
+        newVersionIndex = 0;
+        this.scrollRefDate.setTime(refDate.getTime());
+      }
+    } else {
+      const refDate = new Date(this.visbokeymetrics[this.visbokeymetrics.length - 1].timestamp);
+      if (newRefDate.getTime() <= refDate.getTime()) {
+        newVersionIndex = this.visbokeymetrics.length - 1;
+        this.scrollRefDate.setTime(refDate.getTime());
+      }
+    }
+    if (newVersionIndex === undefined) {
+      this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
+      for (i = 0; i < this.visbokeymetrics.length; i++) {
+        const cmpDate = new Date(this.visbokeymetrics[i].timestamp);
+        // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
+        if (cmpDate.getTime() <= newRefDate.getTime()) {
+          break;
+        }
+      }
+      newVersionIndex = i;
+    }
+    this.log(`get getRefDateVersions vpv timestamp ${this.visbokeymetrics[newVersionIndex].timestamp}`);
+    this.setVpvActive(this.visbokeymetrics[newVersionIndex]);
+  }
+
+  getNextVersion(direction: number): void {
+    this.getRefDateVersions(direction);
+    this.updateUrlParam('refDate', this.scrollRefDate.toISOString());
+  }
 
   gotoVpView(): void {
     const url = 'vpView/';
     this.log(`goto VP View`);
     let vpid, vpvid;
-    const queryParams = new Params();
+    const queryParams = new VPParams();
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
       vpvid = this.vpvKeyMetricActive._id;
@@ -837,7 +937,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewCost(): void {
     this.log(`goto VPV View Cost vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    const queryParams = new Params();
+    const queryParams = new VPParams();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -848,7 +948,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDelivery(): void {
     this.log(`goto VPV View Delivery vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    const queryParams = new Params();
+    const queryParams = new VPParams();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;
@@ -859,7 +959,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoViewDeadline(): void {
     this.log(`goto VPV View Deadline vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
 
-    const queryParams = new Params();
+    const queryParams = new VPParams();
     queryParams.vpvid = this.vpvKeyMetricActive._id;
     if (this.vpvKeyMetricActive.variantName) {
       queryParams.variantName = this.vpvKeyMetricActive.variantName;

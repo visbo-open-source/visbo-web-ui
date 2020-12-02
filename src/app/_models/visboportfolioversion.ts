@@ -34,7 +34,7 @@ export class VisboPortfolioVersionResponse {
   perm: {system: number; vc: number; vp: number; };
 }
 
-export class Params {
+export class VPFParams {
   vpfid: string;
   refDate: string;
   view: string;

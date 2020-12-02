@@ -78,3 +78,17 @@ export class VisboRestrictResponse {
   restrict: [ VPRestrict ];
   perm: {system: number, vc: number, vp: number};
 }
+
+export class VPParams {
+  variantID: string;
+  variantName: string;
+  vpvid: string;
+  deleted: string;
+  refDate: string;
+  view: string;
+  filter: string;
+  roleID: number;
+  showDays: string;
+  from: string;
+  to: string;
+}
