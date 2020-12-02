@@ -8,8 +8,6 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 
-import { getErrorMessage } from '../_helpers/visbo.helper';
-
 @Component({
   selector: 'app-oauthconfirm',
   templateUrl: './oauthconfirm.component.html',

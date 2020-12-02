@@ -92,7 +92,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
   }
 
-  onResized(event: ResizedEvent) {
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboCostCalc();

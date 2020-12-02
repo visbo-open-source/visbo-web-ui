@@ -13,7 +13,7 @@ import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
 import { VisboCapacity, VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, Params } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -21,7 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate, convertDate, validateDate } from '../_helpers/visbo.helper';
 
 class CapaLoad {
   uid: number;
@@ -53,7 +53,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   capaLoad: CapaLoad[];
   timeoutID: number;
 
-  paramRoleID: string;
+  roleID: number;
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
@@ -124,8 +124,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.paramRoleID =  this.route.snapshot.queryParams['roleID'];
     this.currentLang = this.translate.currentLang;
+    this.initSetting();
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
     if (this.showUnit == 'PD') {
@@ -133,15 +133,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
     }
-    if (!this.capacityFrom) {
-      this.capacityFrom = new Date();
-      this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
-      this.capacityFrom.setDate(1);
-      this.capacityFrom.setHours(0, 0, 0, 0);
-    }
-    this.capacityTo = new Date();
-    this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
-    this.capacityTo.setDate(1);
     this.capaLoad = [];
 
     this.visboGetOrganisation();
@@ -150,6 +141,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
+      this.initSetting();
       this.getCapacity();
     }
     // else if (changes.vpvActive) {
@@ -157,12 +149,44 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // }
   }
 
-  onResized(event: ResizedEvent) {
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
       this.timeoutID = undefined;
     }, 500);
+  }
+
+  initSetting(): void {
+    this.roleID = this.route.snapshot.queryParams['roleID'];
+    const pfv = this.route.snapshot.queryParams['pfv'];
+    this.refPFV = pfv && Number(pfv) ? true : false;
+    const unit = this.route.snapshot.queryParams['showDays']
+    this.showUnit = unit && unit == 'PD' ? 'PD' : undefined;
+
+    const from = this.route.snapshot.queryParams['from'];
+    const to = this.route.snapshot.queryParams['to'];
+
+    if (from && validateDate(from, false)) {
+      this.capacityFrom = new Date(validateDate(from, false));
+    } else {
+      this.capacityFrom = new Date();
+      this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
+    }
+    this.capacityFrom.setDate(1);
+    this.capacityFrom.setHours(0, 0, 0, 0);
+
+    if (to && validateDate(to, false)) {
+      this.capacityTo = new Date(validateDate(to, false));
+    } else {
+      this.capacityTo = new Date();
+      this.capacityTo.setMonth(this.capacityFrom.getMonth() + 9);
+    }
+    this.capacityTo.setDate(1);
+    this.capacityTo.setHours(0, 0, 0, 0);
+
+    this.log(`Capacity From / To ${this.capacityFrom} / ${this.capacityTo}`);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -396,9 +420,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.orgaTreeData = this.buildOrgaTree(this.topLevelNodes, allRoles);
     this.log(`initialize the orgaTreeData with one of the topLevel`);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
-    if (this.paramRoleID && !isNaN(Number(this.paramRoleID))) {
-      const roleUID = parseInt(this.paramRoleID, 10);
-      this.currentLeaf = this.getMappingLeaf(allRoles[roleUID]?.name);
+    if (this.roleID >= 0 && this.roleID < allRoles.length) {
+      this.currentLeaf = this.getMappingLeaf(allRoles[this.roleID].name);
     }
     if (!this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
@@ -408,6 +431,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateShowUnit(unit: string): void {
     this.showUnit = unit;
+    this.updateUrlParam('showDays', unit)
     if (unit === 'PD') {
       this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd')
     } else {
@@ -416,10 +440,39 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.visboViewCapacityOverTime();
   }
 
+  updateDateRange(): void {
+    this.updateUrlParam('from', undefined)
+    this.visboViewCapacityOverTime();
+  }
+
   updateRef(): void {
     this.log(`Show Ref change: ${status} to ${this.refPFV}`);
+    this.updateUrlParam('pfv', this.refPFV ? '1' : '0');
     this.capaLoad = []; // reset the load indicators
     this.getCapacity();
+  }
+
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = new Params();
+    if (type == 'roleID') {
+      queryParams.roleID = Number(value);
+    } else if (type == 'from' || type == 'to') {
+      queryParams.from = this.capacityFrom.toISOString();
+      queryParams.to = this.capacityTo.toISOString();
+    } else if (type == 'showDays') {
+      queryParams.showDays = value;
+    } else if (type == 'pfv') {
+      queryParams.pfv = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   visboViewCapacityOverTime(): void {
@@ -590,25 +643,25 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     let unit: string;
     if (PT) {
       unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
-      actualCost = capacity.actualCost_PT.toFixed(0);
-      plannedCost = capacity.plannedCost_PT.toFixed(0);
+      actualCost = (capacity.actualCost_PT || 0).toFixed(0);
+      plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);
       if (refPFV) {
-        internCapa = capacity.baselineCost_PT.toFixed(0);
-        totalCapa = (capacity.baselineCost_PT).toFixed(0);
+        internCapa = (capacity.baselineCost_PT || 0).toFixed(0);
+        totalCapa = (capacity.baselineCost_PT || 0).toFixed(0);
       } else {
-        internCapa = capacity.internCapa_PT.toFixed(0);
-        totalCapa = (capacity.internCapa_PT + capacity.externCapa_PT).toFixed(0);
+        internCapa = (capacity.internCapa_PT || 0).toFixed(0);
+        totalCapa = ((capacity.internCapa_PT || 0) + (capacity.externCapa_PT || 0)).toFixed(0);
       }
     } else {
       unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
-      actualCost = capacity.actualCost.toFixed(1);
-      plannedCost = capacity.plannedCost.toFixed(1);
+      actualCost = (capacity.actualCost || 0).toFixed(1);
+      plannedCost = (capacity.plannedCost || 0).toFixed(1);
       if (refPFV) {
-        internCapa = capacity.baselineCost.toFixed(1);
-        totalCapa = (capacity.baselineCost).toFixed(1);
+        internCapa = (capacity.baselineCost || 0).toFixed(1);
+        totalCapa = (capacity.baselineCost || 0).toFixed(1);
       } else {
-        internCapa = capacity.internCapa.toFixed(1);
-        totalCapa = (capacity.internCapa + capacity.externCapa).toFixed(1);
+        internCapa = (capacity.internCapa || 0).toFixed(1);
+        totalCapa = ((capacity.internCapa || 0) + (capacity.externCapa || 0)).toFixed(1);
       }
     }
 
@@ -794,6 +847,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (leaf.name !== this.currentLeaf.name ) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
+      this.updateUrlParam('roleID', leaf.uid.toString())
       this.getCapacity();
     }
     if (showChildren) {
@@ -808,7 +862,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.selectLeaf(leaf, leaf.showChildren);
     return;
   }
-
 
   getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
     let resultLeaf;

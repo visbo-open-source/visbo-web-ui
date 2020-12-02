@@ -71,7 +71,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.visboViewBoardOverTime();
   }
 
-  onResized(event: ResizedEvent) {
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewBoardOverTime();
@@ -88,8 +89,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.filter = filter;
   }
 
-  filterKeyBoardEvent(event: any) {
-    let keyCode = event ? event.keyCode : 0;
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    // const keyCode = event ? event.keyCode : 0;
     // if (keyCode == 13) {    // only return key
       // add parameter to URL
       this.updateUrlParam('filter', this.filter)
@@ -100,7 +102,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    let queryParams = new Params();
+    const queryParams = new Params();
     if (type == 'filter') {
       queryParams.filter = value;
     }

@@ -11,6 +11,7 @@ import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
+import { Params } from '../_models/visboportfolioversion';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
@@ -86,18 +87,17 @@ export class VisboProjectsComponent implements OnInit {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
-  changeView(nextView: string): void {
+  changeView(nextView: string, filter: string = undefined): void {
     if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
       this.currentView = nextView;
     } else {
       this.currentView = 'KeyMetrics';
     }
-    const url = this.route.snapshot.url.join('/');
-    const queryParams = {
-      deleted: this.deleted,
-      view: this.currentView
-    };
-    this.router.navigate([url], { queryParams: queryParams, replaceUrl: true });
+    this.updateUrlParam('view', this.currentView);
+
+    if (filter) {
+      this.updateUrlParam('filter', filter.trim());
+    }
   }
 
   toggleVisboChart(): void {
@@ -105,6 +105,26 @@ export class VisboProjectsComponent implements OnInit {
     if (this.chart && !this.visboprojectversions) {
       this.getVisboProjectKeyMetrics();
     }
+  }
+
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    const queryParams = new Params();
+    if (type == 'filter') {
+      queryParams.filter = value;
+    } else if (type == 'refDate') {
+      queryParams.refDate = value;
+    } else if (type == 'view') {
+      queryParams.view = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   toggleVisboProjects(): void {

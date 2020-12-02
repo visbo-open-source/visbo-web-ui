@@ -60,6 +60,17 @@ export function convertDate(input: Date, format: string, lang = 'en'): string {
   }
 }
 
+export function validateDate(dateString: string, allowEmpty: boolean): string {
+	if (!allowEmpty && !dateString) {
+		return undefined;
+	}
+	const dateValue = dateString ? new Date(dateString) : new Date();
+	if (!dateValue) {
+		return undefined;
+	}
+	return dateValue.toISOString();
+}
+
 export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';

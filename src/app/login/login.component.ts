@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 
 import {TranslateService} from '@ngx-translate/core';
 
@@ -194,9 +193,10 @@ export class LoginComponent implements OnInit {
   //   return result;
   // }
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   queryStringToJSON(querystring: string): any {
     const pairs = (querystring || '').split('&');
-    let result = {};
+    const result = {};
 
     pairs.forEach(function(text) {
       const pair = text.split('=');

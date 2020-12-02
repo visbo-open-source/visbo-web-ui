@@ -33,3 +33,17 @@ export class VisboPortfolioVersionResponse {
   vpf: [ VisboPortfolioVersion ];
   perm: {system: number; vc: number; vp: number; };
 }
+
+export class Params {
+  vpfid: string;
+  refDate: string;
+  view: string;
+  filter: string;
+  metricX: string;
+  metricY: string;
+  roleID: number;
+  showDays: string;
+  from: string;
+  to: string;
+  pfv: string;
+}

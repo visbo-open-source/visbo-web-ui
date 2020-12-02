@@ -9,6 +9,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { Params } from '../_models/visboportfolioversion';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -20,15 +21,6 @@ class Metric {
   axis: string;
   bubble: string;
   table: string;
-}
-
-class Params {
-  vpfid: string;
-  refDate: string;
-  view: string;
-  filter: string;
-  metricX: string;
-  metricY: string;
 }
 
 @Component({
@@ -209,7 +201,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
   }
 
-  onResized(event: ResizedEvent) {
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboKeyMetricsCalc();
@@ -238,8 +231,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
-  filterKeyBoardEvent(event: any) {
-    let keyCode = event.keyCode;
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    // let keyCode = event.keyCode;
     // if (keyCode == 13) {    // return key
       this.updateUrlParam('filter', this.filter)
     // }
@@ -249,7 +243,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    let queryParams = new Params();
+    const queryParams = new Params();
     if (type == 'filter') {
       queryParams.filter = value;
     } else if (type == 'metricX' || type == 'metricY') {
@@ -367,8 +361,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   thinDownMetricList(): void {
-    let index: number;
-
     if (this.metricListFiltered) {
       // filter the metric list only once in the beginning, but not during filtering projects
       return;

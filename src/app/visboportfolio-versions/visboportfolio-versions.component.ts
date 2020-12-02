@@ -11,19 +11,12 @@ import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, Params } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, convertDate } from '../_helpers/visbo.helper';
-
-class Params {
-  vpfid: string;
-  refDate: string;
-  view: string;
-  filter: string;
-}
 
 class DropDown {
   name: string;
@@ -35,7 +28,7 @@ class DropDown {
   selector: 'app-visboportfolio-versions',
   templateUrl: './visboportfolio-versions.component.html'
 })
-export class VisboPortfolioVersionsComponent implements OnInit {
+export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     visboportfolioversions: VisboPortfolioVersion[];
     visboprojectversions: VisboProjectVersion[];
@@ -78,14 +71,12 @@ export class VisboPortfolioVersionsComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
-    // MS TODO: Delete old Data and migrate all to pageParams
     const refDate = this.route.snapshot.queryParams['refDate'];
     const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
-    const filter = this.route.snapshot.queryParams['filter'] || undefined;
     const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
     this.vpfid = vpfid;
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
-    this.changeView(nextView, refDate ? this.vpvRefDate : undefined, filter, vpfid);
+    this.changeView(nextView, refDate ? this.vpvRefDate : undefined, undefined, vpfid);
 
     this.getVisboProject();
   }
@@ -276,7 +267,7 @@ export class VisboPortfolioVersionsComponent implements OnInit {
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
-    let queryParams = new Params();
+    const queryParams = new Params();
     if (type == 'filter') {
       queryParams.filter = value;
     } else if (type == 'vpfid') {
