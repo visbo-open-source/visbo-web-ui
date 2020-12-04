@@ -514,6 +514,7 @@
 		},
 		"btn": {
 			"vpView": "Details",
+			"vpViewAll": "Alle",
 			"vpCapacity": "Kapazität",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
@@ -524,19 +525,10 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewCost": {
+	"compViewCost": {
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version vom",
 		"titleBox": "Gesamtkosten",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
 		"btn": {
 			"back": "Zurück"
 		},
@@ -696,23 +688,6 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewDelivery": {
-		"title": "Lieferungen für",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
 	"compViewDeadline": {
 		"titleAllDeadlines": "Status der Termine",
 		"titleDetailDeadline": "Details zum Termin",
@@ -741,46 +716,6 @@
 			"back": "Back"
 		},
 		"msg": {
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpViewDeadline": {
-		"title": "Termine für",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpView": {
-		"title": "Information über",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"btn": {
-			"cost": "Kosten anzeigen",
-			"deadline": "Termine anzeigen",
-			"delivery": "Lieferungen anzeigen"
-		},
-		"msg": {
-			"errorNoVersion": "Dieses Projekt hat noch keine Versionen",
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},

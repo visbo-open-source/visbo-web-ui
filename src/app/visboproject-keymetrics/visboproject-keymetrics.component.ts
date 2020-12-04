@@ -46,7 +46,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayTotalDelivery: number;
   delayEndDate: number;
 
+  currentView = 'KeyMetrics';
   viewCapacity = false;
+  viewCost = true;
   refDate: Date;
   refDateInterval = 'month';
   chartButton: string;
@@ -55,6 +57,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   historyButton: string;
   parentThis = this;
 
+  allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
   typeMetricList = [
     {name: 'Total & Actual Cost', metric: 'Costs'},
     {name: 'Delivery Completion', metric: 'Deliveries'},
@@ -221,8 +224,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
   }
 
-  switchCapacity(newState: boolean): void {
-    this.viewCapacity = newState;
+  switchView(newView: string): void {
+    newView = this.allViews.find(item => item === newView);
+    if (!newView) { newView = this.allViews[0]; }
+    this.currentView = newView;
   }
 
   switchVariant(name: string): void {
@@ -272,7 +277,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (!km) {
       return result;
     }
-    if (type === 'DeadlinesDelay') {
+    if (type == 'Costs') {
+      result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
+    } else if (type == 'Deadlines') {
+      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+    } else if (type == 'EndDate') {
+      result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
+    } else if (type === 'DeadlinesDelay') {
+      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+    } else if (type == 'Deliveries') {
+      result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
+    } else if (type === 'DeliveriesDelay') {
       result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
     }
     return result;
@@ -896,24 +911,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.updateUrlParam('refDate', this.refDate.toISOString());
   }
 
-  gotoVpView(): void {
-    const url = 'vpView/';
-    this.log(`goto VP View`);
-    let vpid, vpvid;
-    const queryParams = new VPParams();
-    if (this.vpvKeyMetricActive) {
-      vpid = this.vpvKeyMetricActive.vpid;
-      vpvid = this.vpvKeyMetricActive._id;
-    } else if (this.vpActive) {
-      vpid = this.vpActive._id;
-    }
-    if (vpid) {
-      if (vpvid) { queryParams.vpvid = vpvid; }
-      if (this.vpvKeyMetricActive.variantName) { queryParams.variantName = this.vpvKeyMetricActive.variantName}
-      this.router.navigate([url.concat(vpid)], { queryParams: queryParams});
-    }
-  }
-
   gotoVisboProjectVersions(): void {
     this.log(`goto VPV All Versions`);
     let vpid;
@@ -921,49 +918,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
     }
-    let url = 'vpv/';
+    const url = 'vpv/';
     if (!vpid && this.vpActive) {
       vpid = this.vpActive._id;
-      // no keyMetrics redirect to vpv View and clear history
-      params = { replaceUrl: true };
-      url = 'vpView/';
     }
     if (vpid) {
       this.router.navigate([url.concat(vpid)], params);
     }
-  }
-
-  gotoViewCost(): void {
-    this.log(`goto VPV View Cost vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
-
-    const queryParams = new VPParams();
-    queryParams.vpvid = this.vpvKeyMetricActive._id;
-    if (this.vpvKeyMetricActive.variantName) {
-      queryParams.variantName = this.vpvKeyMetricActive.variantName;
-    }
-    this.router.navigate(['vpViewCost/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams });
-  }
-
-  gotoViewDelivery(): void {
-    this.log(`goto VPV View Delivery vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
-
-    const queryParams = new VPParams();
-    queryParams.vpvid = this.vpvKeyMetricActive._id;
-    if (this.vpvKeyMetricActive.variantName) {
-      queryParams.variantName = this.vpvKeyMetricActive.variantName;
-    }
-    this.router.navigate(['vpViewDelivery/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
-  }
-
-  gotoViewDeadline(): void {
-    this.log(`goto VPV View Deadline vp ${this.vpvKeyMetricActive.vpid} vpv ${this.vpvKeyMetricActive._id} variant ${this.vpvKeyMetricActive.variantName}`);
-
-    const queryParams = new VPParams();
-    queryParams.vpvid = this.vpvKeyMetricActive._id;
-    if (this.vpvKeyMetricActive.variantName) {
-      queryParams.variantName = this.vpvKeyMetricActive.variantName;
-    }
-    this.router.navigate(['vpViewDeadline/'.concat(this.vpvKeyMetricActive.vpid)], { queryParams: queryParams});
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
@@ -977,11 +938,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.router.navigate(['/'], {});
   }
 
-  listSelectRow(vpv: VPVKeyMetricsCalc): void {
-    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    this.setVpvActive(vpv);
-  }
-
   chartSelectRow(row: number, col: number, label: string): void {
     const len = this.graphDataLineChart.length;
     this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
@@ -991,6 +947,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     if (indexVPV < 0) { indexVPV = 0; }
     this.setVpvActive(this.visbokeymetrics[indexVPV]);
     this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
+  }
+
+  listSelectRow(vpv: VPVKeyMetricsCalc): void {
+    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
+    this.setVpvActive(vpv);
   }
 
   setVpvActive(vpv: VPVKeyMetricsCalc): void {

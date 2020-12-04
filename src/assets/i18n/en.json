@@ -514,6 +514,7 @@
 		},
 		"btn": {
 			"vpView": "Details",
+			"vpViewAll": "All",
 			"vpCapacity": "Capacity",
 			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
@@ -524,19 +525,10 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
-	"vpViewCost": {
+	"compViewCost": {
 		"title": "Monthly Cost for",
 		"titleVersion": "Version of",
 		"titleBox": "Total Cost",
-		"lbl": {
-			"day": "day",
-			"week": "week",
-			"month": "month",
-			"quarter": "quarter",
-			"previousPeriod": "Previous Period before {{refDate}}",
-			"nextPeriod": "Next Period after {{refDate}}",
-			"vc": "VISBO Center"
-		},
 		"btn": {
 			"back": "Back"
 		},
@@ -696,23 +688,6 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
-	"vpViewDelivery": {
-		"title": "Deliveries for",
-		"titleVersion": "Version of",
-		"lbl": {
-			"day": "day",
-			"week": "week",
-			"month": "month",
-			"quarter": "quarter",
-			"previousPeriod": "Previous Period before {{refDate}}",
-			"nextPeriod": "Next Period after {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Permission denied for this VISBO Project",
-			"errorPermVersion": "Permission denied for project versions {{name}}"
-		}
-	},
 	"compViewDeadline": {
 		"titleAllDeadlines": "Status of Deadline",
 		"titleDetailDeadline": "Details about Deadline",
@@ -741,46 +716,6 @@
 			"back": "Back"
 		},
 		"msg": {
-			"errorPermVersion": "Permission denied for project versions {{name}}"
-		}
-	},
-	"vpViewDeadline": {
-		"title": "Deadlines for",
-		"titleVersion": "Version of",
-		"lbl": {
-			"day": "day",
-			"week": "week",
-			"month": "month",
-			"quarter": "quarter",
-			"previousPeriod": "Previous Period before {{refDate}}",
-			"nextPeriod": "Next Period after {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Permission denied for this VISBO Project",
-			"errorPermVersion": "Permission denied for project versions {{name}}"
-		}
-	},
-	"vpView": {
-		"title": "Information about",
-		"titleVersion": "Version of",
-		"lbl": {
-			"day": "day",
-			"week": "week",
-			"month": "month",
-			"quarter": "quarter",
-			"previousPeriod": "Previous Period before {{refDate}}",
-			"nextPeriod": "Next Period after {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"btn": {
-			"cost": "Show Cost",
-			"deadline": "Show Deadline",
-			"delivery": "Show Delivery"
-		},
-		"msg": {
-			"errorNoVersion": "This project has still no versions",
-			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},

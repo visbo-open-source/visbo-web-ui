@@ -52,10 +52,6 @@ import { VisboProjectsComponent } from './visboprojects/visboprojects.component'
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-audit.component';
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
-import { VisboProjectViewVPVComponent } from './visboproject-viewvpv/visboproject-viewvpv.component';
-import { VisboProjectViewCostComponent } from './visboproject-viewcost/visboproject-viewcost.component';
-import { VisboProjectViewDeliveryComponent } from './visboproject-viewdelivery/visboproject-viewdelivery.component';
-import { VisboProjectViewDeadlineComponent } from './visboproject-viewdeadline/visboproject-viewdeadline.component';
 import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdelivery.component';
 import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
@@ -103,16 +99,12 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboprojectDetailComponent,
     VisboprojectAuditComponent,
     VisboProjectKeyMetricsComponent,
-    VisboProjectViewVPVComponent,
-    VisboProjectViewCostComponent,
-    VisboProjectViewDeliveryComponent,
     VisboCompViewDeliveryComponent,
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
     VisboCompViewCapacityComponent,
     VisboCompViewBoardComponent,
     VisboCompViewBubbleComponent,
-    VisboProjectViewDeadlineComponent,
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,

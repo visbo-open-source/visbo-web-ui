@@ -133,7 +133,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            const message = this.translate.instant('compViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(getErrorMessage(error));
