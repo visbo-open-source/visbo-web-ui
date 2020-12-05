@@ -65,6 +65,10 @@
     </div>
     <hr>
 
+    <div *ngIf="currentView == 'KeyMetrics' || currentViewKM">
+      <app-comp-viewkeymetrics [visboprojectversions]="visboprojectversions" [vpvKeyMetricActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
+    </div>
+
     <div *ngIf="currentView == 'Capacity'">
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
