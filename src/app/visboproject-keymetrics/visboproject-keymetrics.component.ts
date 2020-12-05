@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -47,9 +47,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   delayEndDate: number;
 
   currentView = 'KeyMetrics';
-  viewCapacity = false;
-  viewCost = true;
-  refDate: Date;
+  currentViewKM = false;
+  refDate = new Date();
   refDateInterval = 'month';
   chartButton: string;
   chart = true;
@@ -170,6 +169,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
+    const view = this.route.snapshot.queryParams['view'];
+    if (this.allViews.find(item => item === view)) {
+      this.currentView = view;
+    }
+
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams['refDate']);
     }
@@ -178,6 +182,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
 
     this.getVisboProjectVersions();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -224,10 +232,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
     }
   }
 
-  switchView(newView: string): void {
+  switchView(newView: string, withKM = false): void {
     newView = this.allViews.find(item => item === newView);
     if (!newView) { newView = this.allViews[0]; }
     this.currentView = newView;
+    this.currentViewKM  = withKM;
+    this.updateUrlParam('view', newView);
   }
 
   switchVariant(name: string): void {
@@ -243,13 +253,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
 
     if (this.dropDownIndex >= 0) {
       const variant = this.vpActive.variant.find(item => item.variantName == name);
+      if (variant) {
+        this.variantName = variant.variantName;
+        this.variantID = variant._id;
+      } else {
+        this.variantName = undefined;
+        this.variantID = undefined;
+      }
       this.updateUrlParam('variantID', variant && variant._id);
     } else {
+      this.variantName = undefined;
+      this.variantID = undefined;
       this.updateUrlParam('variantID', null);
     }
     // fetch the project with Variant
     this.getVisboProjectVersions();
     return;
+  }
+
+  isActiveVariant(variantName: string): boolean {
+    let result = false;
+    if (this.variantName == undefined && variantName == 'DEFAULT') { result = true; }
+    if (this.variantName === variantName) { result = true; }
+    return result;
   }
 
   updateUrlParam(type: string, value: string): void {
@@ -262,6 +288,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
       queryParams.variantName = null;
     } else if (type == 'refDate') {
       queryParams.refDate = value;
+    } else if (type == 'view') {
+      queryParams.view = value;
     }
     this.router.navigate([url], {
       queryParams: queryParams,
@@ -914,7 +942,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit {
   gotoVisboProjectVersions(): void {
     this.log(`goto VPV All Versions`);
     let vpid;
-    let params = {};
+    const params = {};
     if (this.vpvKeyMetricActive) {
       vpid = this.vpvKeyMetricActive.vpid;
     }
