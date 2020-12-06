@@ -25,14 +25,13 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   @Input() vpvKeyMetricActive: VPVKeyMetricsCalc;
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() combinedPerm: VGPermission;
-  @Output() switchViewChild: EventEmitter<String> = new EventEmitter<String>(); //creating an output event
+  @Output() switchViewChild: EventEmitter<VPParams> = new EventEmitter<VPParams>(); //creating an output event
 
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
 
   allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
   currentView = 'KeyMetrics';
   currentViewKM = false;
-  currentVpvId: string;
 
   qualityCost: number;
   qualityTotalCost: number;
@@ -62,7 +61,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     {name: 'Project End Date', metric: 'EndDate'}
   ];
   typeMetric: string = this.typeMetricList[0].name;
-  typeMetricChart: string = this.typeMetricList[0].metric;
+  typeMetricChart: string;
 
   colors = [];
   colorsDefault = ['#458CCB', '#F7941E', '#458CCB', '#F7941E', '#996600', '#996600'];
@@ -165,12 +164,19 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
     this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
+    this.initSettings();
     this.visboKeyMetricsCalc();
   }
 
   ngOnChanges(): void {
     this.log(`KeyMetrics Changes  ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-    if (this.currentVpvId !== undefined && this.vpvKeyMetricActive._id !== this.currentVpvId) {
+    this.initSettings();
+    this.visboKeyMetricsCalc();
+  }
+
+  initSettings(): void {
+    if (this.route.snapshot.queryParams.refDate) {
+      this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
   }
 
@@ -290,41 +296,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
       }
       this.setVpvActive(this.visbokeymetrics[i]);
-      this.visboKeyMetricsCostOverTime();
     } else {
       this.gotoVisboProjectVersions();
-    }
-  }
-
-  switchTo(metric: string): void {
-    this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
-    if (this.typeMetricChart === metric) {
-      this.showHistory(!this.history);
-      return;
-    }
-    const newTypeMetric = this.typeMetricList.find(x => x.metric === metric).name;
-    // toggle between drop down views
-    if (newTypeMetric) {
-      this.typeMetricChart = metric;
-      this.typeMetric = newTypeMetric;
-      this.showHistory(true);
-      switch (metric) {
-        case 'Costs':
-          this.visboKeyMetricsCostOverTime();
-          break;
-        case 'EndDate':
-          this.visboKeyMetricsEndDateOverTime();
-          break;
-        case 'Deadlines':
-          this.visboKeyMetricsDeadlinesOverTime();
-          break;
-        case 'DeadlinesDelay':
-          this.visboKeyMetricsDeadlinesDelayOverTime();
-          break;
-        case 'Deliveries':
-          this.visboKeyMetricsDeliveriesOverTime();
-          break;
-      }
     }
   }
 
@@ -722,15 +695,54 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   showHistory(newValue: boolean): void {
     this.history = newValue;
     this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
+
   }
 
   switchView(newView: string, withKM = false): void {
     newView = this.allViews.find(item => item === newView);
-    if (!newView) { newView = this.allViews[0]; }
+    if (newView) {
+      this.typeMetricChart = newView;
+    } else {
+      newView = this.allViews[0];
+    }
     this.currentView = newView;
     this.currentViewKM  = withKM;
+    this.showHistory(false);
     this.updateUrlParam('view', newView);
-    this.switchViewChild.emit(newView); //emmiting the event.
+  }
+
+  switchTo(metric: string): void {
+    this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
+    this.currentView = 'KeyMetrics';
+    // this.switchViewChild.emit(this.currentView); //emmiting the event.
+    if (this.typeMetricChart === metric) {
+      this.showHistory(!this.history);
+      return;
+    }
+    const newTypeMetric = this.typeMetricList.find(x => x.metric === metric).name;
+    // toggle between drop down views
+    if (newTypeMetric) {
+      this.typeMetricChart = metric;
+      this.typeMetric = newTypeMetric;
+      this.showHistory(true);
+      switch (metric) {
+        case 'Costs':
+          this.visboKeyMetricsCostOverTime();
+          break;
+        case 'EndDate':
+          this.visboKeyMetricsEndDateOverTime();
+          break;
+        case 'Deadlines':
+          this.visboKeyMetricsDeadlinesOverTime();
+          break;
+        case 'DeadlinesDelay':
+          this.visboKeyMetricsDeadlinesDelayOverTime();
+          break;
+        case 'Deliveries':
+          this.visboKeyMetricsDeliveriesOverTime();
+          break;
+      }
+    }
   }
 
   gotoVisboProjectVersions(): void {
@@ -753,14 +765,17 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     const queryParams = new VPParams();
     if (type == 'view') {
       queryParams.view = value;
+    } else if (type == 'refDate') {
+      queryParams.refDate = value;
     }
-    this.router.navigate([url], {
-      queryParams: queryParams,
-      // no navigation back to old status, but to the page before
-      replaceUrl: true,
-      // preserve the existing query params in the route
-      queryParamsHandling: 'merge'
-    });
+    this.switchViewChild.emit(queryParams); //emmiting the event.
+    // this.router.navigate([url], {
+    //   queryParams: queryParams,
+    //   // no navigation back to old status, but to the page before
+    //   replaceUrl: true,
+    //   // preserve the existing query params in the route
+    //   queryParamsHandling: 'merge'
+    // });
   }
 
   gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
@@ -775,16 +790,17 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     // find version with timestamp
     let indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() === refDate.toISOString());
     if (indexVPV < 0) { indexVPV = 0; }
-    this.setVpvActive(this.visbokeymetrics[indexVPV]);
+    this.setVpvActive(this.visbokeymetrics[indexVPV], true);
     this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 
   listSelectRow(vpv: VPVKeyMetricsCalc): void {
     this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    this.setVpvActive(vpv);
+    this.setVpvActive(vpv, true);
   }
 
-  setVpvActive(vpv: VPVKeyMetricsCalc): void {
+  setVpvActive(vpv: VPVKeyMetricsCalc, updateParent = false): void {
+    if (!vpv) { return; }
     const keyMetrics = vpv.keyMetrics;
     let index: number;
     // ur:25.02.2020: ohne Relativierung
@@ -795,7 +811,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     const delay1 = 7;
     this.vpvKeyMetricActive = vpv;
     this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-
+    if (updateParent) this.updateUrlParam('refDate', vpv.timestamp.toString());
     index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1);
     if (index < 1 + level1) {
       this.qualityCost = 1;

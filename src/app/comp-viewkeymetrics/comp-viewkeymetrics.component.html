@@ -15,7 +15,7 @@
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Costs')">
           <td (click)="switchView('Costs', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'Costs' && history,
+                selected: typeMetricChart == 'Costs',
                 text: 'vpKeyMetric.lbl.metricCost' | translate } " >
             </ng-container></a>
           </td>
@@ -34,9 +34,9 @@
         </tr>
 
         <tr *ngIf="vpvKeyMetricActive.keyMetrics.endDateBaseLast != undefined">
-          <td>
+          <td (click)="switchTo('EndDate')">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'EndDate' && history,
+                selected: typeMetricChart == 'EndDate',
                 text: 'vpKeyMetric.lbl.metricEndDate' | translate } " >
             </ng-container></a>
           </td>
@@ -54,7 +54,7 @@
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deadlines')">
           <td (click)="switchView('Deadlines', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'Deadlines' && history,
+                selected: typeMetricChart == 'Deadlines',
                 text: 'vpKeyMetric.lbl.metricDeadline' | translate } " >
             </ng-container></a>
           </td>
@@ -75,7 +75,7 @@
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
           <td (click)="switchView('Deadlines', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'DeadlinesDelay' && history,
+                selected: typeMetricChart == 'DeadlinesDelay',
                 text: 'vpKeyMetric.lbl.metricDeadlineDelay' | translate } " >
             </ng-container></a>
           </td>
@@ -94,7 +94,7 @@
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deliveries')">
           <td (click)="switchView('Deliveries', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'Deliveries' && history,
+                selected: typeMetricChart == 'Deliveries',
                 text: 'vpKeyMetric.lbl.metricDelivery' | translate } " >
             </ng-container></a>
           </td>
@@ -115,6 +115,7 @@
     </table>
   </div>
 </form>
+<hr>
 
 <ng-template #indicator let-level="level">
   <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
@@ -129,7 +130,6 @@
 </ng-template>
 
 <div *ngIf="history && currentView == 'KeyMetrics'">
-  <hr>
   <div class="btn-group row">
     <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
     <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>

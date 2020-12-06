@@ -34,118 +34,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   variantName: string;
   deleted = false;
   vpvKeyMetricActive: VPVKeyMetricsCalc;
-  qualityCost: number;
-  qualityTotalCost: number;
-  qualityEndDate: number;
-  qualityEndDiffWeeks: number;
-  qualityDeadlines: number;
-  qualityDelivery: number;
-  delayActualDeadlines: number;
-  delayTotalDeadlines: number;
-  delayActualDelivery: number;
-  delayTotalDelivery: number;
-  delayEndDate: number;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
   refDate = new Date();
   refDateInterval = 'month';
-  chartButton: string;
-  chart = true;
-  history = false;
-  historyButton: string;
-  parentThis = this;
 
   allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
-  typeMetricList = [
-    {name: 'Total & Actual Cost', metric: 'Costs'},
-    {name: 'Delivery Completion', metric: 'Deliveries'},
-    {name: 'Reached Deadlines', metric: 'Deadlines'},
-    {name: 'Ahead/Delay Deadlines', metric: 'DeadlinesDelay'},
-    {name: 'Project End Date', metric: 'EndDate'}
-  ];
-  typeMetric: string = this.typeMetricList[0].name;
-  typeMetricChart: string = this.typeMetricList[0].metric;
+  delayEndDate: number;
 
-  colors = [];
-  colorsDefault = ['#458CCB', '#F7941E', '#458CCB', '#F7941E', '#996600', '#996600'];
-  colorsDelay = ['#BDBDBD', '#458CCB'];
-  colorsEndDate = ['#458CCB', '#F7941E'];
-  seriesDefault =  {
-    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: undefined, pointSize: undefined},
-    '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: undefined, pointSize: undefined},
-    '2': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
-    '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined  },
-    '4': { lineWidth: 1, pointShape: 'circle', lineDashStyle: undefined, pointSize: 4 },
-    '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
-  };
-  seriesEndDate =  {
-    '0': { lineWidth: 4, pointShape: 'star' , lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
-    '1': { lineWidth: 4, pointShape: 'triangle' , lineDashStyle: [8, 4, 4, 8], pointSize: undefined }
-  };
-
-  graphDataLineChart = [];
-  graphOptionsLineChart = {
-      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '100%',
-      title: 'Comparison: plan-to-date vs. baseline',
-      animation: {startup: true, duration: 200},
-      legend: {position: 'top'},
-      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-      tooltip: {
-        isHtml: true
-      },
-      vAxis: {
-        minValue: undefined,
-        maxValue: undefined,
-        direction: 1,
-        title: 'KeyMetrics',
-        minorGridlines: {count: 0, color: 'none'},
-        ticks: undefined
-      },
-      hAxis: {
-        format: 'MMM YY',
-        gridlines: {
-          count: -1
-        },
-        minorGridlines: {count: 0, color: 'none'}
-      },
-      pointSize: 14,
-      curveType: 'function',
-      series: this.seriesDefault,
-      colors: this.colorsDefault
-    };
-
-  graphOptionsLineChartEndDate = {
-      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-      width: '100%',
-      title: 'Comparison: plan-to-date vs. baseline',
-      animation: {startup: true, duration: 200},
-      legend: {position: 'top'},
-      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
-      tooltip: {
-        isHtml: true
-      },
-      vAxis: {
-        minValue: undefined,
-        maxValue: undefined,
-        direction: 1,
-        title: 'KeyMetrics',
-        minorGridlines: {count: 0, color: 'none'},
-        ticks: undefined
-      },
-      hAxis: {
-        format: 'MMM YY',
-        gridlines: {
-          count: -1
-        },
-        minorGridlines: {count: 0, color: 'none'}
-      },
-      pointSize: 14,
-      curveType: 'function',
-      series: this.seriesEndDate,
-      colors: this.colorsEndDate
-    };
   currentLang: string;
 
   sortAscending = false;
@@ -175,11 +72,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     if (this.route.snapshot.queryParams.refDate) {
-      this.refDate = new Date(this.route.snapshot.queryParams['refDate']);
+      this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
-
-    this.chartButton = this.translate.instant('vpKeyMetric.lbl.viewList');
-    this.historyButton = this.translate.instant('vpKeyMetric.lbl.showTrend');
 
     this.getVisboProjectVersions();
   }
@@ -232,8 +126,30 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  switchViewParent(newView: string): void {
-    this.switchView(newView, true);
+  switchViewParent(newParam: VPParams): void {
+    if (!newParam) return;
+    if (newParam.view) {
+      this.switchView(newParam.view, true);
+    } else if (newParam.refDate) {
+      this.findVPV(new Date(newParam.refDate));
+    }
+  }
+
+  findVPV(refDate: Date): void {
+    if (this.visbokeymetrics.length > 0) {
+      let i = 0;
+      // search the coresponding version for refDate
+      if (refDate) {
+        for (; i < this.visbokeymetrics.length; i++) {
+          if (refDate.toISOString() >= (new Date(this.visbokeymetrics[i].timestamp)).toISOString() ) {
+            break;
+          }
+        }
+        if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
+      }
+      // this.setVpvActive(this.visbokeymetrics[i]);
+      this.vpvKeyMetricActive = this.visbokeymetrics[i];
+    }
   }
 
   switchView(newView: string, withKM = false): void {
@@ -328,7 +244,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
-    const chartFlag = this.chart;
 
     this.log(`get VP name if ID is used ${id}`);
     if (id) {
@@ -355,11 +270,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
 
                   this.visboKeyMetricsCalc();
-                  if (visboprojectversions[0].keyMetrics) {
-                    this.chart = chartFlag;
-                  } else {
-                    this.chart = false;
-                  }
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -387,7 +297,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   visboKeyMetricsCalc(): void {
-    // Calculate the keyMetrics Values to show in Chart and List
+    // Calculate the keyMetrics Values
     this.visbokeymetrics = [];
 
     if (!this.visboprojectversions) {
@@ -469,7 +379,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.log(`calc keyMetrics Result LEN ${this.visbokeymetrics.length}`);
     if (this.visbokeymetrics.length > 0) {
-      this.sortKeyMetricsTable(undefined);
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
       let i = 0;
       // search the coresponding version for refDate
       if (this.refDate) {
@@ -481,7 +391,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
       }
       this.setVpvActive(this.visbokeymetrics[i]);
-      this.visboKeyMetricsCostOverTime();
     } else {
       this.gotoVisboProjectVersions();
     }
@@ -494,381 +403,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     localB.setHours(0, 0, 0, 0);
     // return false;
     return localA.getTime() === localB.getTime();
-  }
-
-  visboKeyMetricsCostOverTime(): void {
-    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
-    this.graphOptionsLineChart.colors = this.colorsDefault;
-
-    const keyMetricsCost = [];
-    if (!this.visboprojectversions) {
-      return;
-    }
-
-    for (let i = 0; i < this.visboprojectversions.length; i++) {
-      if (!this.visboprojectversions[i].keyMetrics) {
-        // this.visboprojectversions[i].keyMetrics =  new VPVKeyMetrics;
-        continue;
-      }
-      // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
-        continue;
-      }
-      // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
-      keyMetricsCost.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
-      ]);
-    }
-    if (keyMetricsCost.length === 0) {
-      this.log(`keyMetricsCost empty`);
-      keyMetricsCost.push([new Date(), 0, 0, 0, 0]);
-    }
-    keyMetricsCost.sort(function(a, b) { return a[0] - b[0]; });
-    // we need at least 2 items for Line Chart and show the current status for today
-    const len = keyMetricsCost.length;
-    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-    if (len === 1) {
-      // add an additional month as one month could not be displayed, but do not deliver values for it
-      const currentDate = new Date(keyMetricsCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetricsCost.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
-    }
-
-    keyMetricsCost.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortAC'),
-      this.translate.instant('keyMetrics.shortPV'),
-      this.translate.instant('keyMetrics.shortEAC'),
-      this.translate.instant('keyMetrics.shortBAC')
-    ]);
-    keyMetricsCost.reverse();
-    // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsCost)}`);
-    this.graphDataLineChart = keyMetricsCost;
-  }
-
-  visboKeyMetricsEndDateOverTime(): void {
-    this.graphOptionsLineChartEndDate.title = this.translate.instant('keyMetrics.chart.titleEndDateTrend');
-    this.graphOptionsLineChartEndDate.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisEndDateTrend');
-    this.graphOptionsLineChartEndDate.colors = this.colorsEndDate;
-
-    const keyMetricsEndDate = [];
-    if (!this.visboprojectversions) {
-      return;
-    }
-    let minGetTime = Number.MAX_VALUE;
-    let maxGetTime = Number.MIN_VALUE;
-
-    for (let i = 0; i < this.visboprojectversions.length; i++) {
-      if (!this.visboprojectversions[i].keyMetrics) {
-        // this.visboprojectversions[i].keyMetrics =  new VPVKeyMetrics;
-        continue;
-      }
-      // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
-        continue;
-      }
-      // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
-      const endDateCurrent = (new Date(this.visboprojectversions[i].keyMetrics.endDateCurrent)).getTime() || 0;
-      const endDateBaseLast = (new Date(this.visboprojectversions[i].keyMetrics.endDateBaseLast)).getTime() || 0;
-      minGetTime = Math.min(minGetTime, endDateCurrent);
-      minGetTime = Math.min(minGetTime, endDateBaseLast);
-      maxGetTime = Math.max(maxGetTime, endDateCurrent);
-      maxGetTime = Math.max(maxGetTime, endDateBaseLast);
-      const ts = convertDate(new Date(this.visboprojectversions[i].timestamp), 'fullDateTime', this.currentLang);
-      const estimatedED = convertDate(new Date(this.visboprojectversions[i].keyMetrics.endDateCurrent), 'fullDate', this.currentLang);
-      const baselineED = convertDate(new Date(this.visboprojectversions[i].keyMetrics.endDateBaseLast), 'fullDate', this.currentLang);
-      keyMetricsEndDate.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        endDateCurrent,
-        this.createCustomHTMLContent(ts, estimatedED, baselineED),
-        endDateBaseLast,
-        this.createCustomHTMLContent(ts, estimatedED, baselineED)
-      ]);
-    }
-    if (keyMetricsEndDate.length === 0) {
-      this.log(`keyMetricsEndDate empty`);
-      keyMetricsEndDate.push([new Date(), undefined, undefined, undefined, undefined]);
-    }
-    keyMetricsEndDate.sort(function(a, b) { return a[0] - b[0]; });
-    // we need at least 2 items for Line Chart and show the current status for today
-    const len = keyMetricsEndDate.length;
-    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-    if (len === 1) {
-      // add an additional month as one month could not be displayed, but do not deliver values for it
-      const currentDate = new Date(keyMetricsEndDate[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetricsEndDate.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
-    }
-    const minDate = new Date(minGetTime);
-    minDate.setDate(1);
-    minDate.setHours(0,0,0,0);
-    minDate.setMonth(minDate.getMonth() - 1);
-    const maxDate = new Date(maxGetTime);
-    maxDate.setDate(1);
-    maxDate.setHours(0,0,0,0);
-    maxDate.setMonth(maxDate.getMonth() + 2);
-    minGetTime = minDate.getTime();
-    maxGetTime = maxDate.getTime();
-
-    this.graphOptionsLineChartEndDate.vAxis.ticks = [];
-    while (minDate.getTime() <= maxDate.getTime()) {
-      this.graphOptionsLineChartEndDate.vAxis.ticks.push(
-        {v: minDate.getTime(), f: convertDate(minDate, 'shortDate', this.currentLang)},
-      )
-      minDate.setMonth(minDate.getMonth() + 1);
-    }
-    keyMetricsEndDate.unshift([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortEED'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      this.translate.instant('keyMetrics.shortBED'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}}
-    ]);
-    // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsEndDate)}`);
-    this.graphDataLineChart = keyMetricsEndDate;
-  }
-
-  createCustomHTMLContent(timestamp: string, estimatedED: string, baselineED: string): string {
-    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
-      '<div><b>' + timestamp + '</b></div>' + '<div>' +
-      '<table>';
-
-    const longEED = this.translate.instant('keyMetrics.longEED');
-    const longBED = this.translate.instant('keyMetrics.longBED');
-
-    result = result + '<tr>' + '<td>' + longEED + ':</td>' + '<td align="right"><b>' + estimatedED + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + longBED + ':</td>' + '<td align="right"><b>' + baselineED + '</b></td>' + '</tr>';
-    result = result + '</table>' + '</div>' + '</div>';
-
-    return result;
-  }
-
-  visboKeyMetricsDeliveriesOverTime(): void {
-    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryTrend');
-    this.graphOptionsLineChart.colors = this.colorsDefault;
-
-    const keyMetrics = [];
-    if (!this.visboprojectversions) {
-      return;
-    }
-
-    for (let i = 0; i < this.visboprojectversions.length; i++) {
-      if (!this.visboprojectversions[i].keyMetrics) {
-        continue;
-      }
-      // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-        continue;
-      }
-      keyMetrics.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastActual || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentTotal || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100) / 100
-        // ,
-        // this.visboprojectversions[i].keyMetrics.deliverableDelayFinished || 0,
-        // this.visboprojectversions[i].keyMetrics.deliverableDelayUnFinished || 0
-      ]);
-      // this.log(`visboKeyMetrics push ${JSON.stringify(keyMetrics[keyMetrics.length-1])}`);
-    }
-    if (keyMetrics.length === 0) {
-      this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0
-            // , 0, 0
-        ]);
-    }
-    keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
-    // we need at least 2 items for Line Chart and show the current status for today
-    const len = keyMetrics.length;
-    // this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-    if (len === 1) {
-      // add an additional month as one month could not be displayed, but do not deliver values for it
-      const currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetrics.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
-    }
-    const maxValue = this.calcRangeAxis(keyMetrics, 'Delivery');
-    this.graphOptionsLineChart.vAxis.maxValue = maxValue;
-    this.graphOptionsLineChart.vAxis.minValue = -maxValue;
-
-    keyMetrics.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortADV'),
-      this.translate.instant('keyMetrics.shortPDV'),
-      this.translate.instant('keyMetrics.shortEDVC'),
-      this.translate.instant('keyMetrics.shortDVAC')
-      // ,
-      // this.translate.instant('keyMetrics.shortDelayFinished'),
-      // this.translate.instant('keyMetrics.shortDelayUnFinished')
-    ]);
-    keyMetrics.reverse();
-    this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(this.graphOptionsLineChart)}`);
-    this.graphDataLineChart = keyMetrics;
-  }
-
-  visboKeyMetricsDeadlinesOverTime(): void {
-    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
-    this.graphOptionsLineChart.colors = this.colorsDefault;
-
-    const keyMetrics = [];
-    if (!this.visboprojectversions) {
-      return;
-    }
-
-    for (let i = 0; i < this.visboprojectversions.length; i++) {
-      if (!this.visboprojectversions[i].keyMetrics) {
-        continue;
-      }
-      // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
-        continue;
-      }
-      keyMetrics.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100
-        // ,
-        // this.visboprojectversions[i].keyMetrics.timeDelayFinished || 0,
-        // this.visboprojectversions[i].keyMetrics.timeDelayUnFinished || 0
-      ]);
-    }
-    if (keyMetrics.length === 0) {
-      this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0]);
-    }
-    keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
-    // we need at least 2 items for Line Chart and show the current status for today
-    const len = keyMetrics.length;
-    this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-    if (len === 1) {
-      // add an additional month as one month could not be displayed, but do not deliver values for it
-      const currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetrics.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
-    }
-    const maxValue = this.calcRangeAxis(keyMetrics, 'Deadline');
-    this.graphOptionsLineChart.vAxis.maxValue = maxValue;
-    this.graphOptionsLineChart.vAxis.minValue = -maxValue;
-
-    keyMetrics.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortAD'),
-      this.translate.instant('keyMetrics.shortPD'),
-      this.translate.instant('keyMetrics.shortEDC'),
-      this.translate.instant('keyMetrics.shortDAC')
-      // ,
-      // this.translate.instant('keyMetrics.shortDeadlineDelayFinished'),
-      // this.translate.instant('keyMetrics.shortDeadlineDelayUnFinished')
-    ]);
-    keyMetrics.reverse();
-    // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
-    this.graphDataLineChart = keyMetrics;
-  }
-
-  visboKeyMetricsDeadlinesDelayOverTime(): void {
-    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineDelayTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineDelayTrend');
-    this.graphOptionsLineChart.vAxis.direction = -1;
-    this.graphOptionsLineChart.colors = this.colorsDelay;
-
-    const keyMetrics = [];
-    if (!this.visboprojectversions) {
-      return;
-    }
-
-    for (let i = 0; i < this.visboprojectversions.length; i++) {
-      if (!this.visboprojectversions[i].keyMetrics) {
-        continue;
-      }
-      // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
-        continue;
-      }
-      keyMetrics.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        this.visboprojectversions[i].keyMetrics.timeDelayFinished,
-        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished
-      ]);
-    }
-    if (keyMetrics.length === 0) {
-      this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0 ]);
-    }
-    keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
-    // we need at least 2 items for Line Chart and show the current status for today
-    const len = keyMetrics.length;
-    this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-    if (len === 1) {
-      // add an additional month as one month could not be displayed, but do not deliver values for it
-      const currentDate = new Date(keyMetrics[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetrics.push([
-        currentDate, undefined, undefined
-      ]);
-    }
-    const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
-    this.graphOptionsLineChart.vAxis.maxValue = maxValue;
-    this.graphOptionsLineChart.vAxis.minValue = -maxValue;
-
-    keyMetrics.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.finishedDeadlineDelay'),
-      this.translate.instant('keyMetrics.unfinishedDeadlineDelay')
-    ]);
-    keyMetrics.reverse();
-    // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
-    this.graphDataLineChart = keyMetrics;
-  }
-
-  // eslint-disable-next-line
-  calcRangeAxis(keyMetrics: any[], type: string): number {
-    let rangeAxis = 0;
-    // let minDelayRange = 50;
-
-    rangeAxis = 0;
-    for (let i = 0; i < keyMetrics.length; i++) {
-      switch (type) {
-        // case 'Delay':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][5]), Math.abs(keyMetrics[i][6]), minDelayRange);
-        //   break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(keyMetrics[i][1]));
-          break;
-      }
-    }
-    rangeAxis *= 1.1;
-    this.log(`RangeAxis for ${type}: ${rangeAxis}`);
-    return rangeAxis;
   }
 
   getRefDateVersions(increment: number): void {
@@ -959,146 +493,19 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
-    this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
-    this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
-  }
-
   gotoRoot(): void {
     this.log(`goto Root as no id is specified`);
     this.router.navigate(['/'], {});
   }
 
-  chartSelectRow(row: number, col: number, label: string): void {
-    const len = this.graphDataLineChart.length;
-    this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
-    const refDate = new Date(label);
-    // find version with timestamp
-    let indexVPV = this.visbokeymetrics.findIndex(x => x.timestamp.toString() === refDate.toISOString());
-    if (indexVPV < 0) { indexVPV = 0; }
-    this.setVpvActive(this.visbokeymetrics[indexVPV]);
-    this.log(`Line Chart: User selected ${row} ${col} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-  }
-
-  listSelectRow(vpv: VPVKeyMetricsCalc): void {
-    this.log(`List: User selected ${vpv._id} ${vpv.name}`);
-    this.setVpvActive(vpv);
-  }
-
   setVpvActive(vpv: VPVKeyMetricsCalc): void {
     const keyMetrics = vpv.keyMetrics;
     let index: number;
-    // ur:25.02.2020: ohne Relativierung
-    // const level1 = 0.05;
-    // const level2 = 0.15;
-    const level1 = 0.001;
-    const level2 = 0.05;
-    const delay1 = 7;
     this.vpvKeyMetricActive = vpv;
-    this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-
-    index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1);
-    if (index < 1 + level1) {
-      this.qualityCost = 1;
-    } else if (index < 1 + level2) {
-      this.qualityCost = 2;
-    } else {
-      this.qualityCost = 3;
-    }
-
-    index = keyMetrics.costCurrentTotal / (keyMetrics.costBaseLastTotal || 1);
-    if (index < 1 + level1) {
-      this.qualityTotalCost = 1;
-    } else if (index < 1 + level2) {
-      this.qualityTotalCost = 2;
-    } else {
-      this.qualityTotalCost = 3;
-    }
-
-    if (keyMetrics.endDateBaseLast) {
-      const currentDate = keyMetrics.endDateCurrent ? new Date(keyMetrics.endDateCurrent) : new Date();
-      const baseDate = new Date(keyMetrics.endDateBaseLast);
-      index = (currentDate.getTime() - baseDate.getTime()) / 1000 / 3600 / 24 / 7;
-      this.qualityEndDiffWeeks = index;
-    } else {
-      index = undefined;
-    }
-    if (index <= 0) {
-      this.qualityEndDate = 1;
-    } else if (index <= 4) {
-      this.qualityEndDate = 2;
-    } else if (index > 4){
-      this.qualityEndDate = 3;
-    } else {
-      this.qualityEndDate = undefined;
-    }
-
-    if (keyMetrics.timeCompletionBaseLastActual) {
-      index = keyMetrics.timeCompletionCurrentActual / keyMetrics.timeCompletionBaseLastActual;
-    } else {
-      index = 1;
-    }
-    if (index > 1 - level1) {
-      this.qualityDeadlines = 1;
-    } else if (index > 1 - level2) {
-      this.qualityDeadlines = 2;
-    } else {
-      this.qualityDeadlines = 3;
-    }
-
-    if (keyMetrics.deliverableCompletionBaseLastActual) {
-      index = keyMetrics.deliverableCompletionCurrentActual / keyMetrics.deliverableCompletionBaseLastActual;
-    } else {
-      index = 1;
-    }
-    if (index > 1 - level1) {
-      this.qualityDelivery = 1;
-    } else if (index > 1 - level2) {
-      this.qualityDelivery = 2;
-    } else {
-      this.qualityDelivery = 3;
-    }
-
-    index = keyMetrics.deliverableDelayFinished || 0;
-    if (index <= 0) {
-      this.delayActualDelivery = 1;
-    } else if (index > delay1) {
-      this.delayActualDelivery = 2;
-    } else {
-      this.delayActualDelivery = 3;
-    }
-
-    index = keyMetrics.deliverableDelayUnFinished || 0;
-    if (index <= 0) {
-      this.delayTotalDelivery = 1;
-    } else if (index > delay1) {
-      this.delayTotalDelivery = 2;
-    } else {
-      this.delayTotalDelivery = 3;
-    }
-
-    index = keyMetrics.timeDelayFinished || 0;
-    if (index <= 0) {
-      this.delayActualDeadlines = 1;
-    } else if (index <= delay1) {
-      this.delayActualDeadlines = 2;
-    } else {
-      this.delayActualDeadlines = 3;
-    }
-
-    index = keyMetrics.timeDelayUnFinished || 0;
-    if (index <= 0) {
-      this.delayTotalDeadlines = 1;
-    } else if (index <= delay1) {
-      this.delayTotalDeadlines = 2;
-    } else {
-      this.delayTotalDeadlines = 3;
-    }
 
     index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
     this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
-    this.log(`Quality End Date ${keyMetrics.endDateCurrent} Cost ${this.qualityCost} Del. ${this.qualityDelivery} Dead. ${this.qualityDeadlines} EndDate ${this.delayEndDate}, Delay Deadlines ${this.delayActualDeadlines} / ${this.delayTotalDeadlines} Delay Deliveries ${this.delayActualDelivery} / ${this.delayTotalDelivery} `);
+    this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
   }
 
   gotoVPDetail(visboproject: VisboProject): void {
@@ -1107,50 +514,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
-  }
-
-  switchTo(metric: string): void {
-    this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
-    if (this.typeMetricChart === metric) {
-      this.showHistory(!this.history);
-      return;
-    }
-    const newTypeMetric = this.typeMetricList.find(x => x.metric === metric).name;
-    // toggle between drop down views
-    if (newTypeMetric) {
-      this.typeMetricChart = metric;
-      this.typeMetric = newTypeMetric;
-      this.showHistory(true);
-      switch (metric) {
-        case 'Costs':
-          this.visboKeyMetricsCostOverTime();
-          break;
-        case 'EndDate':
-          this.visboKeyMetricsEndDateOverTime();
-          break;
-        case 'Deadlines':
-          this.visboKeyMetricsDeadlinesOverTime();
-          break;
-        case 'DeadlinesDelay':
-          this.visboKeyMetricsDeadlinesDelayOverTime();
-          break;
-        case 'Deliveries':
-          this.visboKeyMetricsDeliveriesOverTime();
-          break;
-      }
-    }
-  }
-
-  switchChart(): void {
-    this.chart = !this.chart;
-    this.chartButton = this.chart
-      ? this.translate.instant('vpKeyMetric.lbl.viewList')
-      : this.translate.instant('vpKeyMetric.lbl.viewChart');
-  }
-
-  showHistory(newValue: boolean): void {
-    this.history = newValue;
-    this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
   }
 
   helperDateDiff(from: string, to: string, unit: string): number {
@@ -1205,251 +568,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
-    }
-  }
-
-  sortKeyMetricsTable(n?: number): void {
-    if (!this.visbokeymetrics) {
-      return;
-    }
-    if (n !== undefined) {
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
-      }
-      if (this.sortAscending === undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = ( n === 1 ) ? true : false;
-      } else {
-        this.sortAscending = !this.sortAscending;
-      }
-    } else {
-      this.sortColumn = 1;
-      this.sortAscending = false;
-    }
-
-    this.log(`Sort Key Metrics: Col ${n} Asc ${this.sortAscending}`);
-
-    if (this.sortColumn === 1) {
-      // sort by Timestamp
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.timestamp > b.timestamp) {
-          result = 1;
-        } else if (a.timestamp < b.timestamp) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 2) {
-      // sort by keyMetrics Saving Cost Actual
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.savingCostActual > b.savingCostActual) {
-          result = 1;
-        } else if (a.savingCostActual < b.savingCostActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 3) {
-      // sort by keyMetrics Saving Cost Total
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.savingCostTotal > b.savingCostTotal) {
-          result = 1;
-        } else if (a.savingCostTotal < b.savingCostTotal) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 4) {
-      // sort by keyMetrics Base Line Cost Actual
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.costBaseLastActual > b.keyMetrics.costBaseLastActual) {
-          result = 1;
-        } else if (a.keyMetrics.costBaseLastActual < b.keyMetrics.costBaseLastActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 5) {
-      // sort by keyMetrics Base Line Cost Total
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.costBaseLastTotal > b.keyMetrics.costBaseLastTotal) {
-          result = 1;
-        } else if (a.keyMetrics.costBaseLastTotal < b.keyMetrics.costBaseLastTotal) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 6) {
-      // sort by keyMetrics Traffic Light
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.ampelStatus > b.ampelStatus) {
-          result = 1;
-        } else if (a.ampelStatus < b.ampelStatus) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 10) {
-      // sort by keyMetrics Status
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.timeCompletionCurrentActual > b.keyMetrics.timeCompletionCurrentActual) {
-          result = 1;
-        } else if (a.keyMetrics.timeCompletionCurrentActual < b.keyMetrics.timeCompletionCurrentActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 11) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.timeCompletionActual > b.timeCompletionActual) {
-          result = 1;
-        } else if (a.timeCompletionActual < b.timeCompletionActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 12) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.timeCompletionBaseLastTotal > b.keyMetrics.timeCompletionBaseLastTotal) {
-          result = 1;
-        } else if (a.keyMetrics.timeCompletionBaseLastTotal < b.keyMetrics.timeCompletionBaseLastTotal) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 13) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.timeDelayFinished > b.keyMetrics.timeDelayFinished) {
-          result = 1;
-        } else if (a.keyMetrics.timeDelayFinished < b.keyMetrics.timeDelayFinished) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 14) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.timeDelayUnFinished > b.keyMetrics.timeDelayUnFinished) {
-          result = 1;
-        } else if (a.keyMetrics.timeDelayUnFinished < b.keyMetrics.timeDelayUnFinished) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 20) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.deliveryCompletionActual > b.deliveryCompletionActual) {
-          result = 1;
-        } else if (a.deliveryCompletionActual < b.deliveryCompletionActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 21) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableCompletionCurrentActual > b.keyMetrics.deliverableCompletionCurrentActual) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableCompletionCurrentActual < b.keyMetrics.deliverableCompletionCurrentActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 22) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableCompletionCurrentTotal > b.keyMetrics.deliverableCompletionCurrentTotal) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableCompletionCurrentTotal < b.keyMetrics.deliverableCompletionCurrentTotal) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 23) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableDelayFinished > b.keyMetrics.deliverableDelayFinished) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableDelayFinished < b.keyMetrics.deliverableDelayFinished) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 24) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableDelayUnFinished > b.keyMetrics.deliverableDelayUnFinished) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableDelayUnFinished < b.keyMetrics.deliverableDelayUnFinished) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 25) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableCompletionBaseLastTotal > b.keyMetrics.deliverableCompletionBaseLastTotal) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableCompletionBaseLastTotal < b.keyMetrics.deliverableCompletionBaseLastTotal) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 26) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.deliverableCompletionBaseLastActual > b.keyMetrics.deliverableCompletionBaseLastActual) {
-          result = 1;
-        } else if (a.keyMetrics.deliverableCompletionBaseLastActual < b.keyMetrics.deliverableCompletionBaseLastActual) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 31) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.endDateCurrent > b.keyMetrics.endDateCurrent) {
-          result = 1;
-        } else if (a.keyMetrics.endDateCurrent < b.keyMetrics.endDateCurrent) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 32) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.keyMetrics.endDateBaseLast > b.keyMetrics.endDateBaseLast) {
-          result = 1;
-        } else if (a.keyMetrics.endDateBaseLast < b.keyMetrics.endDateBaseLast) {
-          result = -1;
-        }
-        return result;
-      });
-    } else if (this.sortColumn === 33) {
-      this.visbokeymetrics.sort(function(a, b) {
-        let result = 0;
-        if (a.savingEndDate > b.savingEndDate) {
-          result = 1;
-        } else if (a.savingEndDate < b.savingEndDate) {
-          result = -1;
-        }
-        return result;
-      });
-    }
-    if (!this.sortAscending) {
-      this.visbokeymetrics.reverse();
     }
   }
 
