@@ -113,6 +113,9 @@
         </tr>
       </tbody>
     </table>
+    <h3 *ngIf="!vpvKeyMetricActive">
+      {{ 'vpKeyMetric.msg.noKeyMetric' | translate }}
+    </h3>
   </div>
 </form>
 <hr>
