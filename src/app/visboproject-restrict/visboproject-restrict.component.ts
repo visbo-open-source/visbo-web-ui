@@ -83,6 +83,13 @@ export class VisboprojectRestrictComponent implements OnInit {
       );
   }
 
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;

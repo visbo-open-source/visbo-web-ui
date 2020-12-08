@@ -90,6 +90,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
   }
 
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
+  }
+
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;

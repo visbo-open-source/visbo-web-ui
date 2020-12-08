@@ -18,7 +18,8 @@
         </small>
       </h2>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
-        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
       </h5>
     </div>
   </div>

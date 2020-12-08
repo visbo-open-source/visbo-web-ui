@@ -7,6 +7,7 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -18,6 +19,10 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
 export class DashboardComponent implements OnInit {
   visbocenters: VisboCenter[] = [];
   visboprojects: VisboProject[] = [];
+
+  combinedPerm: VGPermission = undefined;
+  permVC = VGPVC;
+  permVP = VGPVP;
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -59,6 +64,13 @@ export class DashboardComponent implements OnInit {
           this.alertService.error(getErrorMessage(error));
         }
       );
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
   }
 
   gotoClickedVc(visbocenter: VisboCenter): void {
