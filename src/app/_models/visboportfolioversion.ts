@@ -42,7 +42,7 @@ export class VPFParams {
   metricX: string;
   metricY: string;
   roleID: number;
-  showDays: string;
+  unit: string;
   from: string;
   to: string;
   pfv: string;

@@ -48,7 +48,7 @@
     <div class="row">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
-        <button *ngIf="hasVPPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
         <div class="btn-group">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpView' | translate }}

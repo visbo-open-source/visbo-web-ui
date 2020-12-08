@@ -540,7 +540,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleBox": "Summe der Kapazitäten im Zeitraum",
+		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
 		"titleTimeFrom": " Auslastung für den Zeitraum: von",
@@ -574,7 +574,7 @@
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
-			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
+			"errorPermOrganisation": "Kein Zugriff auf die Organisation vom VISBO Center {{name}}"
 		}
 	},
 	"compViewBubble": {

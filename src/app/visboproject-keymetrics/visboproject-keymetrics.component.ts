@@ -65,7 +65,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
-    const view = this.route.snapshot.queryParams['view'];
+    let view = this.route.snapshot.queryParams['view'];
+    if (!view) {
+      const baseUrl = this.route.snapshot.url[0]
+      switch (baseUrl.toString()) {
+        case 'vpViewCost': view = 'Costs'; break;
+        case 'vpViewDeadlines': view = 'Deadlines'; break;
+        case 'vpViewDeliveries': view = 'Deliveries'; break;
+        case 'vpView': view = 'All'; break;
+      }
+    }
     if (this.allViews.find(item => item === view)) {
       this.currentView = view;
     }

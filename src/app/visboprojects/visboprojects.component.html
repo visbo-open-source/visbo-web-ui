@@ -26,7 +26,7 @@
       <div *ngIf="chart" class="btn-toolbar" >
           <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
           <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("List")'>{{ 'vp.btn.viewList' | translate }}</button>
-          <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
+          <button *ngIf="hasVCPerm(permVC.ViewAudit + permVC.Modify)" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
           <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vp.btn.viewProjectBoard' | translate }}</button>
       </div>
     </div>
