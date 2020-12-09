@@ -8,7 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection, VisboOrganisationListResponse} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -242,6 +242,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getCapacity(): void {
+    // pk:20201109: const tmpLeaf = this.currentLeaf;
     this.visboCapcity = undefined;
 
     if (this.vcActive ) {
@@ -426,8 +427,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (!this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
-    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
+    this.expandParentTree(this.currentLeaf);
+    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);       
   }
+
 
   updateShowUnit(unit: string): void {
     this.showUnit = unit;
@@ -798,26 +801,29 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const tree = new VisboOrgaTreeLeaf();
     tree.uid = 0;
     tree.name = 'root';
+    tree.parent = null;
     tree.children = [];
     tree.showChildren = true;
 
-    function makeLeaf(value: SubRole): VisboOrgaTreeLeaf {
+    function makeLeaf(value: SubRole, parent:VisboOrgaTreeLeaf): VisboOrgaTreeLeaf {
       const leaf = new VisboOrgaTreeLeaf();
       const hroleID = value.key;
       const hrole = allRoles[hroleID];
       const hroleName = hrole?.name;
       leaf.children = [];
       leaf.uid = hroleID;
-      leaf.name = hroleName;
+      leaf.name = hroleName;  
+      leaf.parent = parent;    
       const children = hrole.subRoleIDs;
       children.forEach(function(child) {
-        leaf.children.push(makeLeaf(child));
+        leaf.children.push(makeLeaf(child, leaf));
       });
       return leaf;
     }
 
     for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
       const topLevelLeaf = new VisboOrgaTreeLeaf();
+      topLevelLeaf.parent = tree;
       topLevelLeaf.children = [];
       topLevelLeaf.uid = topLevelNodes[i].uid;
       topLevelLeaf.name = topLevelNodes[i].name;
@@ -826,7 +832,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
         const sRoles = topLevelNodes[i].subRoleIDs;
         sRoles.forEach(function(sRole) {
-          topLevelLeaf.children.push(makeLeaf(sRole));
+          topLevelLeaf.children.push(makeLeaf(sRole, topLevelLeaf));
         });
       }
       tree.children.push(topLevelLeaf);
@@ -863,6 +869,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.selectLeaf(leaf, leaf.showChildren);
     return;
   }
+  
+  expandParentTree(leaf:VisboOrgaTreeLeaf) {
+    if (leaf.parent === null) return;    
+    leaf.parent.showChildren = true;
+    this.expandParentTree(leaf.parent);
+  }
 
   getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
     let resultLeaf;
@@ -891,6 +903,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     return resultLeaf;
   }
+
+  openCorrespondingLeaf(roleName: string, leaf: VisboOrgaTreeLeaf) {
+    let interleaf = this.getMappingLeaf(roleName);
+    let parentRole = this.getParentOfRole(interleaf.uid, allRoles, sumRoles)
+
+    
+  }
+
 
   parseDate(dateString: string): Date {
      if (dateString) {
