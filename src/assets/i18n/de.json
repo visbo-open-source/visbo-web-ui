@@ -1,5 +1,6 @@
 {
 	"login": {
+		"title": "VISBO Anmeldung",
 		"lbl": {
 			"email": "Ihre E-Mail Adresse",
 			"password": "Passwort"
@@ -15,10 +16,10 @@
 			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
-		},
-		"title": "Willkommen bei VISBO - the Project Warehouse"
+		}
 	},
 	"dashboard": {
+		"title": "Übersicht",
 		"topvc": "Top VISBO Centers",
 		"noVC": "Kein Zugriff auf ein VISBO Center",
 		"topvp": "Top VISBO Projekte",
@@ -126,6 +127,7 @@
 		}
 	},
 	"profile": {
+		"titleShort": "Benutzer Profil",
 		"title": "Profil Information für:",
 		"titleChangePW": "Passwort ändern",
 		"lbl": {
@@ -175,6 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
+		"titleName": "VISBO Center {{name}}",
 		"titleUsers": "VISBO Center Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Center",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
@@ -258,6 +261,7 @@
 	},
 	"vp": {
 		"title": "Projekte",
+		"titleName": "Projekte in {{name}}",
 		"titleVC": "Projekte in",
 		"noVP": "Kein VISBO Projekt",
 		"titleCreate": "Ein neues Projekt anlegen",
@@ -298,6 +302,7 @@
 	},
 	"vpDetail": {
 		"title": "VISBO Projekt",
+		"titleName": "Projekt {{name}}",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Projekt Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
@@ -459,6 +464,7 @@
 	},
 	"vpKeyMetric": {
 		"title": "Projekt-Kennzahlen für",
+		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
 		"lbl": {
@@ -763,6 +769,7 @@
 	},
 	"vpfVersion": {
 		"title": "Projekte aus Portfolio",
+		"titleName": "Portfolio {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Auswahl Portfolio Version",

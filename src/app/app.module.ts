@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -152,6 +152,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     GoogleChartModule
   ],
   providers: [
+    Title,
     AuthGuard,
     AlertService,
     AuthenticationService,

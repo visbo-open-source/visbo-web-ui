@@ -3,7 +3,7 @@ import { MessageService } from './_services/message.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { AlertService } from './_services/alert.service';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { getErrorMessage } from './_helpers/visbo.helper';
 
 @Component({

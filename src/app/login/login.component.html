@@ -2,7 +2,7 @@
   <h2>{{ 'login.title' | translate }}</h2>
   <br>
   <div class="d-flex flex-row-reverse">
-    <select class="col-1" name="userLang" [(ngModel)]="userLang" (change)="useLanguage(userLang)">
+    <select class="col-1" name="currentLang" [(ngModel)]="currentLang" (change)="useLanguage(currentLang)">
       <option value="en">{{ 'language.en' | translate }}</option>
       <option value="de">{{ 'language.de' | translate }}</option>
     </select>

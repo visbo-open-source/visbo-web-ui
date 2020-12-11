@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { Router, ActivatedRoute } from '@angular/router';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -23,7 +25,7 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   returnParams: string;
   setting: VisboSetting[];
-  userLang = 'en';
+  currentLang = 'en';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,13 +34,17 @@ export class LoginComponent implements OnInit {
     private authenticationService: AuthenticationService,
     private visbocenterService: VisboCenterService,
     private alertService: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
     // reset login status
     this.authenticationService.logout();
     this.getSetting();
+    this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
+    this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('login.title'));
 
     if (this.route.snapshot.queryParams.email) {
       this.email = this.route.snapshot.queryParams.email;
@@ -50,8 +56,6 @@ export class LoginComponent implements OnInit {
     this.returnUrl = parts[0];
     this.returnParams = parts[1];
 
-    this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
-    this.userLang = this.translate.currentLang;
     this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
     // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
   }

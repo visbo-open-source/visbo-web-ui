@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -58,7 +59,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
@@ -267,6 +269,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             if (!this.vpActive || this.vpActive._id !== visboproject._id) {
               this.vpActive = visboproject;
               this.combinedPerm = visboproject.perm;
+              this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
               this.dropDownInit();
             }
             const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -65,11 +66,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('vpfVersion.title'));
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
     const refDate = this.route.snapshot.queryParams['refDate'];
@@ -111,6 +114,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.vpActive = visboproject;
           this.deleted = visboproject.deletedAt ? true : false;
           this.combinedPerm = visboproject.perm;
+          this.titleService.setTitle(this.translate.instant('vpfVersion.titleName', {name: visboproject.name}));
           this.getVisboPortfolioVersions();
           this.getVisboCenter();
         },

@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -24,10 +28,13 @@ export class VisboCentersComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle(this.translate.instant('vc.title'));
     this.getVisboCenters();
   }
 

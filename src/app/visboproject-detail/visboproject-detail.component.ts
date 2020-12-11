@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -53,7 +55,8 @@ export class VisboprojectDetailComponent implements OnInit {
     private location: Location,
     private router: Router,
     private alertService: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
@@ -72,6 +75,7 @@ export class VisboprojectDetailComponent implements OnInit {
         visboproject => {
           this.visboproject = visboproject;
           this.combinedPerm = visboproject.perm;
+          this.titleService.setTitle(this.translate.instant('vpDetail.titleName', {name: visboproject.name}));
           this.log(`Get VisboProject for VP ${id} Perm ${JSON.stringify(this.combinedPerm)} `);
         },
         error => {

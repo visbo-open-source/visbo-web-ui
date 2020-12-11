@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -54,11 +55,14 @@ export class VisboProjectsComponent implements OnInit {
     private visboprojectversionService: VisboProjectVersionService,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('vp.title'));
+
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     const nextView = this.route.snapshot.queryParams['view'];
@@ -148,6 +152,7 @@ export class VisboProjectsComponent implements OnInit {
           visbocenters => {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
+            this.titleService.setTitle(this.translate.instant('vp.titleName', {name: this.vcActive.name}));
             this.visboprojectService.getVisboProjects(id, false, deleted)
               .subscribe(
                 visboprojects => {

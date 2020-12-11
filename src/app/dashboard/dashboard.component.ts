@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -20,6 +24,8 @@ export class DashboardComponent implements OnInit {
   visbocenters: VisboCenter[] = [];
   visboprojects: VisboProject[] = [];
 
+  currentLang: string;
+
   combinedPerm: VGPermission = undefined;
   permVC = VGPVC;
   permVP = VGPVP;
@@ -30,10 +36,15 @@ export class DashboardComponent implements OnInit {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('dashboard.title'));
+
     this.getVisboCenters();
     this.getVisboProjects();
   }
