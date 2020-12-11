@@ -902,15 +902,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
-  }
-
-  openCorrespondingLeaf(roleName: string, leaf: VisboOrgaTreeLeaf) {
-    let interleaf = this.getMappingLeaf(roleName);
-    let parentRole = this.getParentOfRole(interleaf.uid, allRoles, sumRoles)
-
-    
-  }
-
+  }  
 
   parseDate(dateString: string): Date {
      if (dateString) {
