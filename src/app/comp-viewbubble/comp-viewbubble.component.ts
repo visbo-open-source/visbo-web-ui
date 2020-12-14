@@ -62,6 +62,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   hasKMDeadline = false;
   hasKMEndDate = false;
   hasKMDeadlineDelay = false;
+  hasKMDeliveryDelay = false;
   hasVariant: boolean;
   countKM: number;
 
@@ -183,6 +184,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         axis: this.translate.instant('compViewBubble.metric.deliveryAxis'),
         bubble: this.translate.instant('compViewBubble.metric.deliveryBubble'),
         table: this.translate.instant('compViewBubble.metric.deliveryTable')
+      },
+      {
+        name: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayName'),
+        metric: 'DeliveryFinishedDelay',
+        axis: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayBubble'),
+        table: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayTable')
+      },
+      {
+        name: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayName'),
+        metric: 'DeliveryUnFinishedDelay',
+        axis: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayBubble'),
+        table: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayTable')
       }
     ];
 
@@ -273,6 +288,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.hasKMDelivery = false;
     this.hasKMDeadline = false;
     this.hasKMDeadlineDelay = false;
+    this.hasKMDeliveryDelay = false;
     this.hasKMEndDate = false;
     this.hasVariant = false;
 
@@ -306,6 +322,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 0;
           this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
                                     || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
+          this.hasKMDeliveryDelay = this.hasKMDeliveryDelay || elementKeyMetric.keyMetrics.deliverableDelayFinished != undefined
+                                    || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
           this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
 
           this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
@@ -386,10 +404,16 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       const item = this.metricList.find(item => item.metric === 'Deadlines');
       this.metricListFiltered.push(item);
     }
-    if (!this.hasKMDeadlineDelay) {
+    if (this.hasKMDeadlineDelay) {
       let item = this.metricList && this.metricList.find(item => item.metric === 'DeadlinesFinishedDelay');
       this.metricListFiltered.push(item);
       item = this.metricList && this.metricList.find(item => item.metric === 'DeadlinesUnFinishedDelay');
+      this.metricListFiltered.push(item);
+    }
+    if (this.hasKMDeliveryDelay) {
+      let item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryFinishedDelay');
+      this.metricListFiltered.push(item);
+      item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryUnFinishedDelay');
       this.metricListFiltered.push(item);
     }
 

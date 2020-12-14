@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProject } from '../_models/visboproject';
@@ -50,18 +50,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     deleted = false;
     currentLang: string;
     vpList: VisboProjectVersion[];
+    hasOrga = false;
 
     pageParams = new VPFParams();
 
     combinedPerm: VGPermission = undefined;
-    combinedPermVC: VGPermission = undefined;
     permVC = VGPVC;
     permVP = VGPVP;
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
-    private visbocenterService: VisboCenterService,
+    private visbosettingService: VisboSettingService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -98,9 +98,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     if ((this.combinedPerm?.vc & perm) > 0) {
       result = true;
     }
-    if ((this.combinedPermVC?.vc & perm) > 0) {
-      result = true;
-    }
     return result;
   }
 
@@ -116,7 +113,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpfVersion.titleName', {name: visboproject.name}));
           this.getVisboPortfolioVersions();
-          this.getVisboCenter();
+          this.getVisboCenterOrga();
         },
         error => {
           this.log(`get Portfolio VP failed: error: ${error.status} message: ${error.error.message}`);
@@ -129,19 +126,22 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
   }
 
-  getVisboCenter(): void {
-    if (this.vpActive) {
-      // MS TODO: add silent parameter to get an empty item instead of access denied
-      this.log(`get VC Permission for VCID ${this.vpActive.vcid}`);
-      this.visbocenterService.getVisboCenter(this.vpActive.vcid)
+  getVisboCenterOrga(): void {
+    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      // check if Orga is available
+      this.log(`get VC Orga ${this.vpActive.vcid}`);
+      this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
         .subscribe(
-          visbocenter => {
-            this.combinedPermVC = visbocenter.perm;
+          vcsettings => {
+            this.hasOrga = vcsettings.length > 0;
           },
           error => {
-            this.log(`get VisboCenter failed: error: ${error.status} message: ${error.error.message}`);
-            this.combinedPermVC = new VGPermission();
-            this.combinedPermVC.vc = 0;
+            if (error.status === 403) {
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
         });
     }
   }
@@ -257,8 +257,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     if (filter) {
       this.pageParams.filter = filter.trim();
     }
-    if (refDate && !visboIsToday(refDate)) {
-      this.pageParams.refDate = refDate.toISOString();
+    if (refDate) {
+      if (visboIsToday(refDate)) {
+        this.pageParams.refDate = undefined;
+      } else {
+        this.pageParams.refDate = refDate.toISOString();
+      }
     }
     if (vpfid) {
       this.pageParams.vpfid = vpfid;

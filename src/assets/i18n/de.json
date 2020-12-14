@@ -646,7 +646,15 @@
 			"deliveryName": "Qualität (Lieferungen)",
 			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
-			"deliveryTable": "Erreichte Lieferungen"
+			"deliveryTable": "Erreichte Lieferungen",
+			"deliveryFinishedDelayName": "Abweichung bei Lieferungen (erledigte)",
+			"deliveryFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayBubble": "Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayTable": "Erledigte",
+			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
+			"deliveryUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayTable": "Unerledigte"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",

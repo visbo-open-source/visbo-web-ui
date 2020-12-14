@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
+import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProject, VPParams } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
@@ -15,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -42,6 +43,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
   delayEndDate: number;
+  hasOrga = false;
 
   currentLang: string;
 
@@ -55,6 +57,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
+    private visbosettingService: VisboSettingService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -271,6 +274,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.combinedPerm = visboproject.perm;
               this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
               this.dropDownInit();
+              this.getVisboCenterOrga();
             }
             const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';
             let variantID = '';
@@ -364,7 +368,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       const refDate = new Date(this.visboprojectversions[0].timestamp);
       if (newRefDate.getTime() >= refDate.getTime()) {
         newVersionIndex = 0;
-        this.refDate.setTime(refDate.getTime());
+        this.refDate = new Date();
       }
     } else {
       const refDate = new Date(this.visboprojectversions[this.visboprojectversions.length - 1].timestamp);
@@ -390,12 +394,36 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getNextVersion(direction: number): void {
     this.getRefDateVersions(direction);
-    this.updateUrlParam('refDate', this.refDate.toISOString());
+    if (visboIsToday(this.refDate)) {
+      this.updateUrlParam('refDate', undefined);
+    } else {
+      this.updateUrlParam('refDate', this.refDate.toISOString());
+    }
   }
 
   gotoRoot(): void {
     this.log(`goto Root as no id is specified`);
     this.router.navigate(['/'], {});
+  }
+
+  getVisboCenterOrga(): void {
+    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      // check if Orga is available
+      this.log(`get VC Orga ${this.vpActive.vcid}`);
+      this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
+        .subscribe(
+          vcsettings => {
+            this.hasOrga = vcsettings.length > 0;
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
   }
 
   setVpvActive(vpv: VisboProjectVersion): void {

@@ -646,7 +646,15 @@
 			"deliveryName": "Quality (Deliveries)",
 			"deliveryAxis": "Achieved Deliveries",
 			"deliveryBubble": "Achieved Deliveries in %",
-			"deliveryTable": "Achieved Deliveries"
+			"deliveryTable": "Achieved Deliveries",
+			"deliveryFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deliveryFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deliveryFinishedDelayBubble": "Deviation in finished Deadlines",
+			"deliveryFinishedDelayTable": "finished Deadlines",
+			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
