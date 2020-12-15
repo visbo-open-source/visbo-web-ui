@@ -488,6 +488,8 @@
 			"total": "Total",
 			"detail": "Detail",
 			"trend": "Trend",
+			"finished": "State: finished",
+			"unfinished": "State: unfinished",
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
 			"metricCost": "Cost",

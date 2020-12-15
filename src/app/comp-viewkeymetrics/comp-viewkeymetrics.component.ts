@@ -59,6 +59,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     {name: 'Delivery Completion', metric: 'Deliveries'},
     {name: 'Reached Deadlines', metric: 'Deadlines'},
     {name: 'Ahead/Delay Deadlines', metric: 'DeadlinesDelay'},
+    {name: 'Ahead/Delay Deliveries', metric: 'DeliveriesDelay'},
     {name: 'Project End Date', metric: 'EndDate'}
   ];
   typeMetric: string = this.typeMetricList[0].name;
@@ -193,11 +194,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlinesDelay') {
-      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
     } else if (type == 'Deliveries') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveriesDelay') {
-      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
     }
     return result;
   }
@@ -565,9 +566,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100) / 100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100) / 100,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100
-        // ,
-        // this.visboprojectversions[i].keyMetrics.timeDelayFinished || 0,
-        // this.visboprojectversions[i].keyMetrics.timeDelayUnFinished || 0
       ]);
     }
     if (keyMetrics.length === 0) {
@@ -662,6 +660,64 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphDataLineChart = keyMetrics;
   }
 
+
+    visboKeyMetricsDeliveriesDelayOverTime(): void {
+      this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryDelayTrend');
+      this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryDelayTrend');
+      this.graphOptionsLineChart.vAxis.direction = -1;
+      this.graphOptionsLineChart.colors = this.colorsDelay;
+
+      const keyMetrics = [];
+      if (!this.visboprojectversions) {
+        return;
+      }
+
+      for (let i = 0; i < this.visboprojectversions.length; i++) {
+        if (!this.visboprojectversions[i].keyMetrics) {
+          continue;
+        }
+        // skip multiple versions per day
+        if (i < this.visboprojectversions.length - 1
+        && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+          this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
+          continue;
+        }
+        keyMetrics.push([
+          new Date(this.visboprojectversions[i].timestamp),
+          this.visboprojectversions[i].keyMetrics.deliverableDelayFinished,
+          this.visboprojectversions[i].keyMetrics.deliverableDelayUnFinished
+        ]);
+      }
+      if (keyMetrics.length === 0) {
+        this.log(`visboKeyMetrics empty`);
+        keyMetrics.push([new Date(), 0, 0 ]);
+      }
+      keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
+      // we need at least 2 items for Line Chart and show the current status for today
+      const len = keyMetrics.length;
+      this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
+      if (len === 1) {
+        // add an additional month as one month could not be displayed, but do not deliver values for it
+        const currentDate = new Date(keyMetrics[0][0]);
+        currentDate.setMonth(currentDate.getMonth()+1);
+        keyMetrics.push([
+          currentDate, undefined, undefined
+        ]);
+      }
+      const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
+      this.graphOptionsLineChart.vAxis.maxValue = maxValue;
+      this.graphOptionsLineChart.vAxis.minValue = -maxValue;
+
+      keyMetrics.push([
+        'Timestamp',
+        this.translate.instant('keyMetrics.finishedDeliveryDelay'),
+        this.translate.instant('keyMetrics.unfinishedDeliveryDelay')
+      ]);
+      keyMetrics.reverse();
+      // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
+      this.graphDataLineChart = keyMetrics;
+    }
+
   // eslint-disable-next-line
   calcRangeAxis(keyMetrics: any[], type: string): number {
     let rangeAxis = 0;
@@ -740,6 +796,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           break;
         case 'DeadlinesDelay':
           this.visboKeyMetricsDeadlinesDelayOverTime();
+          break;
+        case 'DeliveriesDelay':
+          this.visboKeyMetricsDeliveriesDelayOverTime();
           break;
         case 'Deliveries':
           this.visboKeyMetricsDeliveriesOverTime();

@@ -72,25 +72,6 @@
           </td>
         </tr>
 
-        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
-          <td (click)="switchView('Deadlines', true)">
-            <a><ng-container *ngTemplateOutlet="highlight; context:{
-                selected: typeMetricChart == 'DeadlinesDelay',
-                text: 'vpKeyMetric.lbl.metricDeadlineDelay' | translate } " >
-            </ng-container></a>
-          </td>
-          <td (click)="switchView('Deadlines', true)" title="{{ 'vpKeyMetric.lbl.finishedDeadlineDelay' | translate }}"><a>
-            <ng-container *ngTemplateOutlet="indicator; context:{level: delayActualDeadlines} " ></ng-container>
-            <span> {{vpvKeyMetricActive.keyMetrics.timeDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
-          </a></td>
-          <td (click)="switchView('Deadlines', true)" title="{{ 'vpKeyMetric.lbl.unfinishedDeadlineDelay' | translate }}"><a>
-            <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDeadlines} " ></ng-container>
-            <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
-          </a></td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('DeadlinesDelay')" title="{{historyButton}}">i</button>
-          </td>
-        </tr>
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deliveries')">
           <td (click)="switchView('Deliveries', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
@@ -109,6 +90,60 @@
           </a></td>
           <td>
             <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
+          <th></th>
+          <th>{{ 'vpKeyMetric.lbl.finished' | translate }}</th>
+          <th>{{ 'vpKeyMetric.lbl.unfinished' | translate }}</th>
+          <th></th>
+        </tr>
+        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
+          <td (click)="switchView('Deadlines', true)">
+            <a><ng-container *ngTemplateOutlet="highlight; context:{
+                selected: typeMetricChart == 'DeadlinesDelay',
+                text: 'vpKeyMetric.lbl.metricDeadlineDelay' | translate } " >
+            </ng-container></a>
+          </td>
+          <td (click)="switchView('Deadlines', true)" title="{{ 'vpKeyMetric.lbl.finishedDeadlineDelay' | translate }}"><a>
+            <div *ngIf="vpvKeyMetricActive.keyMetrics.timeDelayFinished != undefined">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: delayActualDeadlines} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.timeDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
+            </div>
+          </a></td>
+          <td (click)="switchView('Deadlines', true)" title="{{ 'vpKeyMetric.lbl.unfinishedDeadlineDelay' | translate }}"><a>
+            <div *ngIf="vpvKeyMetricActive.keyMetrics.timeDelayUnFinished != undefined">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDeadlines} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
+            </div>
+          </a></td>
+          <td>
+            <button type="button" class="btn" (click)="switchTo('DeadlinesDelay')" title="{{historyButton}}">i</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveriesDelay')">
+          <td (click)="switchView('Deliveries', true)">
+            <a><ng-container *ngTemplateOutlet="highlight; context:{
+                selected: typeMetricChart == 'DeliveriesDelay',
+                text: 'vpKeyMetric.lbl.metricDeliveryDelay' | translate } " >
+            </ng-container></a>
+          </td>
+          <td (click)="switchView('Deliveries', true)" title="{{ 'vpKeyMetric.lbl.finishedDeliveryDelay' | translate }}"><a>
+            <div *ngIf="vpvKeyMetricActive.keyMetrics.timeDelayFinished != undefined">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: delayActualDelivery} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.deliverableDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
+            </div>
+          </a></td>
+          <td (click)="switchView('Deadlines', true)" title="{{ 'vpKeyMetric.lbl.unfinishedDeliveryDelay' | translate }}"><a>
+            <div *ngIf="vpvKeyMetricActive.keyMetrics.timeDelayUnFinished != undefined">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDelivery} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.deliverableDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
+            </div>
+          </a></td>
+          <td>
+            <button type="button" class="btn" (click)="switchTo('DeliveriesDelay')" title="{{historyButton}}">i</button>
           </td>
         </tr>
       </tbody>

@@ -488,6 +488,8 @@
 			"total": "Gesamt",
 			"detail": "Detail",
 			"trend": "Trend",
+			"finished": "Status: erledigt",
+			"unfinished": "Status: offen",
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
 			"metricCost": "Kosten",
