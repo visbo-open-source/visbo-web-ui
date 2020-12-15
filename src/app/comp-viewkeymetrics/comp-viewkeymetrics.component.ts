@@ -30,7 +30,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   vpvKeyMetricActive: VPVKeyMetricsCalc;
 
-  allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
+  allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   currentView = 'KeyMetrics';
   currentViewKM = false;
 
@@ -38,10 +38,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   qualityTotalCost: number;
   qualityEndDate: number;
   qualityEndDiffWeeks: number;
-  qualityDeadlines: number;
+  qualityDeadline: number;
   qualityDelivery: number;
-  delayActualDeadlines: number;
-  delayTotalDeadlines: number;
+  delayActualDeadline: number;
+  delayTotalDeadline: number;
   delayActualDelivery: number;
   delayTotalDelivery: number;
   delayEndDate: number;
@@ -55,11 +55,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   parentThis = this;
 
   typeMetricList = [
-    {name: 'Total & Actual Cost', metric: 'Costs'},
-    {name: 'Delivery Completion', metric: 'Deliveries'},
-    {name: 'Reached Deadlines', metric: 'Deadlines'},
-    {name: 'Ahead/Delay Deadlines', metric: 'DeadlinesDelay'},
-    {name: 'Ahead/Delay Deliveries', metric: 'DeliveriesDelay'},
+    {name: 'Total & Actual Cost', metric: 'Cost'},
+    {name: 'Delivery Completion', metric: 'Delivery'},
+    {name: 'Reached Deadlines', metric: 'Deadline'},
+    {name: 'Ahead/Delay Deadlines', metric: 'DeadlineDelay'},
+    {name: 'Ahead/Delay Deliveries', metric: 'DeliveryDelay'},
     {name: 'Project End Date', metric: 'EndDate'}
   ];
   typeMetric: string = this.typeMetricList[0].name;
@@ -187,17 +187,17 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!km) {
       return false;
     }
-    if (type == 'Costs') {
+    if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
-    } else if (type == 'Deadlines') {
+    } else if (type == 'Deadline') {
       result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
-    } else if (type === 'DeadlinesDelay') {
+    } else if (type === 'DeadlineDelay') {
       result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
-    } else if (type == 'Deliveries') {
+    } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
-    } else if (type === 'DeliveriesDelay') {
+    } else if (type === 'DeliveryDelay') {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
     }
     return result;
@@ -472,7 +472,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  visboKeyMetricsDeliveriesOverTime(): void {
+  visboKeyMetricsDeliveryOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryTrend');
     this.graphOptionsLineChart.colors = this.colorsDefault;
@@ -540,7 +540,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphDataLineChart = keyMetrics;
   }
 
-  visboKeyMetricsDeadlinesOverTime(): void {
+  visboKeyMetricsDeadlineOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
     this.graphOptionsLineChart.colors = this.colorsDefault;
@@ -603,7 +603,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphDataLineChart = keyMetrics;
   }
 
-  visboKeyMetricsDeadlinesDelayOverTime(): void {
+  visboKeyMetricsDeadlineDelayOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineDelayTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineDelayTrend');
     this.graphOptionsLineChart.vAxis.direction = -1;
@@ -661,7 +661,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
 
-    visboKeyMetricsDeliveriesDelayOverTime(): void {
+    visboKeyMetricsDeliveryDelayOverTime(): void {
       this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryDelayTrend');
       this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryDelayTrend');
       this.graphOptionsLineChart.vAxis.direction = -1;
@@ -785,23 +785,23 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.typeMetric = newTypeMetric;
       this.showHistory(true);
       switch (metric) {
-        case 'Costs':
+        case 'Cost':
           this.visboKeyMetricsCostOverTime();
           break;
         case 'EndDate':
           this.visboKeyMetricsEndDateOverTime();
           break;
-        case 'Deadlines':
-          this.visboKeyMetricsDeadlinesOverTime();
+        case 'Deadline':
+          this.visboKeyMetricsDeadlineOverTime();
           break;
-        case 'DeadlinesDelay':
-          this.visboKeyMetricsDeadlinesDelayOverTime();
+        case 'DeadlineDelay':
+          this.visboKeyMetricsDeadlineDelayOverTime();
           break;
-        case 'DeliveriesDelay':
-          this.visboKeyMetricsDeliveriesDelayOverTime();
+        case 'DeliveryDelay':
+          this.visboKeyMetricsDeliveryDelayOverTime();
           break;
-        case 'Deliveries':
-          this.visboKeyMetricsDeliveriesOverTime();
+        case 'Delivery':
+          this.visboKeyMetricsDeliveryOverTime();
           break;
       }
     }
@@ -917,11 +917,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       index = 1;
     }
     if (index > 1 - level1) {
-      this.qualityDeadlines = 1;
+      this.qualityDeadline = 1;
     } else if (index > 1 - level2) {
-      this.qualityDeadlines = 2;
+      this.qualityDeadline = 2;
     } else {
-      this.qualityDeadlines = 3;
+      this.qualityDeadline = 3;
     }
 
     if (keyMetrics.deliverableCompletionBaseLastActual) {
@@ -957,25 +957,25 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     index = keyMetrics.timeDelayFinished || 0;
     if (index <= 0) {
-      this.delayActualDeadlines = 1;
+      this.delayActualDeadline = 1;
     } else if (index <= delay1) {
-      this.delayActualDeadlines = 2;
+      this.delayActualDeadline = 2;
     } else {
-      this.delayActualDeadlines = 3;
+      this.delayActualDeadline = 3;
     }
 
     index = keyMetrics.timeDelayUnFinished || 0;
     if (index <= 0) {
-      this.delayTotalDeadlines = 1;
+      this.delayTotalDeadline = 1;
     } else if (index <= delay1) {
-      this.delayTotalDeadlines = 2;
+      this.delayTotalDeadline = 2;
     } else {
-      this.delayTotalDeadlines = 3;
+      this.delayTotalDeadline = 3;
     }
 
     index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
     this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
-    this.log(`Quality End Date ${keyMetrics.endDateCurrent} Cost ${this.qualityCost} Del. ${this.qualityDelivery} Dead. ${this.qualityDeadlines} EndDate ${this.delayEndDate}, Delay Deadlines ${this.delayActualDeadlines} / ${this.delayTotalDeadlines} Delay Deliveries ${this.delayActualDelivery} / ${this.delayTotalDelivery} `);
+    this.log(`Quality End Date ${keyMetrics.endDateCurrent} Cost ${this.qualityCost} Del. ${this.qualityDelivery} Dead. ${this.qualityDeadline} EndDate ${this.delayEndDate}, Delay Deadline ${this.delayActualDeadline} / ${this.delayTotalDeadline} Delay Delivery ${this.delayActualDelivery} / ${this.delayTotalDelivery} `);
   }
 
   helperDateDiff(from: string, to: string, unit: string): number {

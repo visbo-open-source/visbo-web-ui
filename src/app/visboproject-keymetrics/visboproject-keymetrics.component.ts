@@ -41,7 +41,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   refDate = new Date();
   refDateInterval = 'month';
 
-  allViews = ['KeyMetrics', 'Capacity', 'Costs', 'Deadlines', 'Deliveries', 'All'];
+  allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
   hasOrga = false;
 
@@ -74,9 +74,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!view) {
       const baseUrl = this.route.snapshot.url[0]
       switch (baseUrl.toString()) {
-        case 'vpViewCost': view = 'Costs'; break;
-        case 'vpViewDeadlines': view = 'Deadlines'; break;
-        case 'vpViewDeliveries': view = 'Deliveries'; break;
+        case 'vpViewCost': view = 'Cost'; break;
+        case 'vpViewDeadlines': view = 'Deadline'; break;
+        case 'vpViewDeliveries': view = 'Delivery'; break;
         case 'vpView': view = 'All'; break;
       }
     }
@@ -244,17 +244,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!km) {
       return true;
     }
-    if (type == 'Costs') {
+    if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
-    } else if (type == 'Deadlines') {
+    } else if (type == 'Deadline') {
       result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
-    } else if (type === 'DeadlinesDelay') {
+    } else if (type === 'DeadlineDelay') {
       result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
-    } else if (type == 'Deliveries') {
+    } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
-    } else if (type === 'DeliveriesDelay') {
+    } else if (type === 'DeliveryDelay') {
       result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
     }
     return result;

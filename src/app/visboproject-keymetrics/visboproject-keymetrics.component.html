@@ -56,9 +56,9 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Costs') && hasOrga" class="dropdown-item" (click)="switchView('Costs')">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadlines')"  class="dropdown-item" (click)="switchView('Deadlines')">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deliveries')"  class="dropdown-item" (click)="switchView('Deliveries')">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost')">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline')">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery')">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -74,20 +74,20 @@
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
 
-    <div *ngIf="currentView == 'Costs'">
+    <div *ngIf="currentView == 'Cost'">
       <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
     </div>
 
-    <div *ngIf="currentView == 'Deadlines'">
+    <div *ngIf="currentView == 'Deadline'">
       <app-comp-viewdeadline [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
     </div>
 
-    <div *ngIf="currentView == 'Deliveries'">
+    <div *ngIf="currentView == 'Delivery'">
       <app-comp-viewdelivery [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdelivery>
     </div>
 
     <div *ngIf="currentView == 'All'">
-      <div *ngIf="hasVPPerm(permVP.ViewAudit) && hasKM(vpvActive.keyMetrics, 'Costs') && hasOrga" class="card">
+      <div *ngIf="hasVPPerm(permVP.ViewAudit) && hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="card">
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
@@ -102,7 +102,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Deadlines')" class="card">
+      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')" class="card">
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -117,7 +117,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Deliveries')" class="card">
+      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')" class="card">
         <div class="card-header" id="headingTwo">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
