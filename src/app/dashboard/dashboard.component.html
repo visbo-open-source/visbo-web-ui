@@ -2,7 +2,7 @@
   <app-usernavbar></app-usernavbar>
 </div>
 
-<div *ngIf="visbocenters" class="container-fluit" >
+<div *ngIf="visbocenters && visbocenters.length > 0" class="container-fluit" >
   <div class='panel-heading'>
     <h2>{{ 'dashboard.topvc' | translate }}</h2>
   </div>
@@ -38,7 +38,7 @@
         <div class="card" style="width: 18rem;">
           <div class="card-body d-flex flex-column">
             <h3 class="card-title" (click)="gotoClickedVp(vp)"><a>{{vp.name}}</a></h3>
-            <h6 class="card-subtitle mb-2 text-black" (click)="gotoClickedVpVc(vp)"><a>{{vp.vc.name}}</a></h6>
+            <h6 class="card-subtitle mb-2 text-black">{{vp.vc.name}}</h6>
             <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
             <p class="card-text">{{vp.description}}</p>
             <!-- <p class="card-subtitle">{{vp.users.length}} Users</p> -->

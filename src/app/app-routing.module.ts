@@ -54,6 +54,11 @@ const routes: Routes = [
   { path: 'vp/:id', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vpDetail/:id', component: VisboprojectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpAudit/:id', component: VisboprojectAuditComponent, canActivate: [AuthGuard]  },
+// old URLs showing individual pages
+  { path: 'vpViewCost/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewDeadlines/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewDeliveries/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpView/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
   { path: 'vpKeyMetrics/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
   { path: 'vpRestrict/:id', component: VisboprojectRestrictComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
@@ -71,7 +76,8 @@ const routes: Routes = [
   { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: 'systasks', component: SystasksComponent, canActivate: [AuthGuard] },
   { path: 'sysconfig', component: SysconfigComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard'}
 ];
 
 @NgModule({

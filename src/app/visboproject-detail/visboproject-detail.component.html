@@ -2,7 +2,8 @@
 <div *ngIf="visboproject">
   <h3>{{ 'vpDetail.title' | translate }}: <a (click)="gotoVP(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
   <h5>{{ 'vpDetail.titleVC' | translate }}:
-    <a (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
+    <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
+    <span *ngIf="!hasVCPerm(permVC.View)">{{ visboproject.vc.name }}</span>
   </h5>
   <form>
     <div class="form-group row">

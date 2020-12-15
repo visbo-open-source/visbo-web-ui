@@ -6,26 +6,29 @@
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
         <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
           <div class="dropdown-menu">
-            <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+            <div *ngFor="let item of dropDown">
+              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+            </div>
           </div>
         </span>
-        <small *ngIf="vpvKeyMetricActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-          <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvKeyMetricActive.ampelStatus} " ></ng-container>
+        <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
+          <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
         </small>
       </h2>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
-        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
       </h5>
     </div>
   </div>
 
-  <div *ngIf="vpvKeyMetricActive">
+  <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block" title="{{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvKeyMetricActive.timestamp | date :'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">V.: {{ vpvKeyMetricActive.timestamp | date :'dd.MM.'}}</div>
+        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
       <div class="col-6">
         <div class="row">
@@ -42,20 +45,20 @@
     </div>
   </div>
 
-  <div class="container-fluid" *ngIf="vpvKeyMetricActive">
+  <div class="container-fluid" *ngIf="vpvActive">
     <div class="row">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
-        <button *ngIf="hasVPPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
         <div class="btn-group">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpView' | translate }}
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <a *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Costs')" class="dropdown-item" (click)="switchView('Costs')">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
-            <a *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deadlines')"  class="dropdown-item" (click)="switchView('Deadlines')">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
-            <a *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deliveries')"  class="dropdown-item" (click)="switchView('Deliveries')">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost')">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline')">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery')">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -63,24 +66,28 @@
     </div>
     <hr>
 
+    <div *ngIf="currentView == 'KeyMetrics' || currentViewKM">
+      <app-comp-viewkeymetrics [visboprojectversions]="visboprojectversions" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
+    </div>
+
     <div *ngIf="currentView == 'Capacity'">
-      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
 
-    <div *ngIf="currentView == 'Costs'">
-      <app-comp-viewcost [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
+    <div *ngIf="currentView == 'Cost'">
+      <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
     </div>
 
-    <div *ngIf="currentView == 'Deadlines'">
-      <app-comp-viewdeadline [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
+    <div *ngIf="currentView == 'Deadline'">
+      <app-comp-viewdeadline [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
     </div>
 
-    <div *ngIf="currentView == 'Deliveries'">
-      <app-comp-viewdelivery [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewdelivery>
+    <div *ngIf="currentView == 'Delivery'">
+      <app-comp-viewdelivery [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdelivery>
     </div>
 
     <div *ngIf="currentView == 'All'">
-      <div *ngIf="hasVPPerm(permVP.ViewAudit) && hasKM(vpvKeyMetricActive.keyMetrics, 'Costs')" class="card">
+      <div *ngIf="hasVPPerm(permVP.ViewAudit) && hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="card">
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
@@ -91,11 +98,11 @@
 
         <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
           <div class="card-body">
-            <app-comp-viewcost [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
+            <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
           </div>
         </div>
       </div>
-      <div *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deadlines')" class="card">
+      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')" class="card">
         <div class="card-header" id="headingOne">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -106,11 +113,11 @@
 
         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
           <div class="card-body">
-            <app-comp-viewdeadline [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
+            <app-comp-viewdeadline [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdeadline>
           </div>
         </div>
       </div>
-      <div *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deliveries')" class="card">
+      <div *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')" class="card">
         <div class="card-header" id="headingTwo">
           <h5 class="mb-0">
             <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
@@ -120,262 +127,12 @@
         </div>
         <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
           <div class="card-body">
-            <app-comp-viewdelivery [vpvActive]="vpvKeyMetricActive" [combinedPerm]="combinedPerm"></app-comp-viewdelivery>
+            <app-comp-viewdelivery [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewdelivery>
           </div>
         </div>
       </div>
     </div>
 
-    <form *ngIf="currentView == 'KeyMetrics'">
-      <div class="container">
-        <table *ngIf="vpvKeyMetricActive" class='table table-hover table-sortable'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
-              <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
-              <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
-              <th class="d-none d-md-table-cell">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Costs')">
-              <td *ngIf="typeMetricChart == 'Costs' && history" (click)="switchView('Costs')" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'Costs' && history)" (click)="switchView('Costs')"><a>{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a></td>
-              <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="switchView('Costs')"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
-              </a></td>
-              <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="switchView('Costs')"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
-              </a></td>
-              <!-- <td></td> -->
-              <td><a>
-                <button type="button" class="btn" (click)="switchTo('Costs')" title="{{historyButton}}">i</button>
-              </a></td>
-            </tr>
-            <tr *ngIf="vpvKeyMetricActive.keyMetrics.endDateBaseLast != undefined">
-              <td *ngIf="typeMetricChart == 'EndDate' && history" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricEndDate' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'EndDate' && history)"><a>{{ 'vpKeyMetric.lbl.metricEndDate' | translate }}</a></td>
-              <td></td>
-              <td><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
-                <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
-                <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
-              </a></td>
-              <td>
-                <button type="button" class="btn" (click)="switchTo('EndDate')" title="{{historyButton}}">i</button>
-              </td>
-            </tr>
-            <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deadlines')">
-              <td *ngIf="typeMetricChart == 'Deadlines' && history" (click)="switchView('Deadlines')" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'Deadlines' && history)" (click)="switchView('Deadlines')"><a>{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a></td>
-              <td (click)="switchView('Deadlines')" title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDeadlines} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.timeCompletionActual | number:'1.0-0'}} %) </span>
-              </a></td>
-              <td (click)="switchView('Deadlines')"><a>
-                <span>{{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}} </span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
-              </a></td>
-              <td>
-                <button type="button" class="btn" (click)="switchTo('Deadlines')" title="{{historyButton}}">i</button>
-              </td>
-            </tr>
-            <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')">
-              <td *ngIf="typeMetricChart == 'DeadlinesDelay' && history" (click)="switchView('Deadlines')" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'DeadlinesDelay' && history)" (click)="switchView('Deadlines')"><a>{{ 'vpKeyMetric.lbl.metricDeadlineDelay' | translate }}</a></td>
-              <td (click)="switchView('Deadlines')" title="{{ 'vpKeyMetric.lbl.finishedDeadlineDelay' | translate }}"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: delayActualDeadlines} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.timeDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
-              </a></td>
-              <td (click)="switchView('Deadlines')" title="{{ 'vpKeyMetric.lbl.unfinishedDeadlineDelay' | translate }}"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDeadlines} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
-              </a></td>
-              <td>
-                <button type="button" class="btn" (click)="switchTo('DeadlinesDelay')" title="{{historyButton}}">i</button>
-              </td>
-            </tr>
-            <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'Deliveries')">
-              <td *ngIf="typeMetricChart == 'Deliveries' && history" (click)="switchView('Deliveries')" class="font-weight-bold"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
-              <td *ngIf="!(typeMetricChart == 'Deliveries' && history)" (click)="switchView('Deliveries')"><a>{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a></td>
-              <td (click)="switchView('Deliveries')" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}"><a>
-                <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDelivery} " ></ng-container>
-                <span> {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}} ({{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} %) </span>
-              </a></td>
-              <td (click)="switchView('Deliveries')"><a>
-                <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-                <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
-              </a></td>
-              <td>
-                <button type="button" class="btn" (click)="switchTo('Deliveries')" title="{{historyButton}}">i</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </form>
-    <div *ngIf="history && currentView == 'KeyMetrics'">
-      <hr>
-      <div class="btn-group row">
-        <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
-        <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
-        <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
-      </div>
-      <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
-        <div *ngIf="typeMetricChart == 'Costs'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-        </div>
-        <div *ngIf="typeMetricChart == 'EndDate'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChartEndDate" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-        </div>
-        <div *ngIf="typeMetricChart == 'Deadlines'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-        </div>
-        <div *ngIf="typeMetricChart == 'DeadlinesDelay'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-        </div>
-        <div *ngIf="typeMetricChart == 'Deliveries'">
-          <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-        </div>
-      </div>
-      <div *ngIf="!chart && graphDataLineChart.length > 0" >
-        <table *ngIf="typeMetricChart == 'Costs'" class='table table-hover table-sortable'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(2)" title="{{ 'keyMetrics.longAC' | translate }}">{{ 'keyMetrics.shortAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(4)" title="{{ 'keyMetrics.longPV' | translate }}">{{ 'keyMetrics.relativPV' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(3)" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="{{ 'keyMetrics.longBAC' | translate }}">{{ 'keyMetrics.baselineBAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
-              <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
-            data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}} k€</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
-              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
-              </td>
-              <td class="text-right"><button type="button" class="btn" title="{{ 'keyMetrics.lbl.detail' | translate }}" (click)="gotoClickedRow(vp)">i</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table *ngIf="typeMetricChart == 'EndDate'" class='table table-hover table-sortable'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(31)" title="{{ 'keyMetrics.longEED' | translate }}">{{ 'keyMetrics.shortEED' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(32)" title="{{ 'keyMetrics.longBED' | translate }}">{{ 'keyMetrics.shortBED' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(33)">{{ 'vpKeyMetric.lbl.savingED' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
-          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
-            data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td class="text-right">{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</td>
-              <td class="text-right">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yyyy'}}</td>
-              <td class="text-right">{{vp.savingEndDate | number: '1.0-1'}} W</td>
-              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
-              </td>
-              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table *ngIf="typeMetricChart == 'Deadlines' || typeMetricChart == 'DeadlinesDelay'" class='table table-hover table-sortable'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(10)" title="{{ 'keyMetrics.longAD' | translate }}">{{ 'keyMetrics.shortAD' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(11)" title="{{ 'keyMetrics.longPD' | translate }}">{{ 'keyMetrics.shortPD' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longDAC' | translate }}">{{ 'keyMetrics.shortDAC' | translate }}</th>
-              <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'keyMetrics.lbl.actualDelay' | translate }}</th>
-              <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.totalDelay' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
-          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
-            data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentActual | number :'1.0-1'}}</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortPD' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}">{{vp.timeCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.timeCompletionCurrentTotal | number:'1.0-1'}}</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortDAC' | translate }}: {{vp.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.timeCompletionTotal | number:'1.0-0'}} %</td>
-              <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayFinished | number:'1.0-0'}}</td>
-              <td *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlinesDelay')" class="text-right">{{vp.keyMetrics.timeDelayUnFinished | number:'1.0-0'}}</td>
-              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
-              </td>
-              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table *ngIf="typeMetricChart == 'Deliveries'" class='table table-hover table-sortable'>
-          <!--Table head-->
-          <thead>
-            <tr>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(21)" title="{{ 'keyMetrics.longADV' | translate }}">{{ 'keyMetrics.shortADV' | translate }}</th>
-              <th class="text-right" (click)="sortKeyMetricsTable(20)" title="{{ 'keyMetrics.longPDV' | translate }}">{{ 'keyMetrics.shortPDV' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(26)" title="{{ 'keyMetrics.longEDVC' | translate }}">{{ 'keyMetrics.shortEDVC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
-              <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
-          <th class="text-right d-none d-lg-table-cell">{{ 'keyMetrics.lbl.info' | translate }}</th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody>
-            <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
-            data-toggle="modal" data-target="#ProjectDetail">
-              <td *ngIf="vp.timestamp == vpvKeyMetricActive.timestamp" class="font-weight-bold">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td *ngIf="vp.timestamp != vpvKeyMetricActive.timestamp">{{vp.timestamp | date :'dd.MM.yyyy HH:mm' }}</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentActual |number :'1.0-1'}}</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortPDV' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">{{vp.deliveryCompletionActual | number:'1.0-0'}} %</td>
-              <td class="text-right">{{vp.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-1'}}</td>
-              <td class="text-right" title="{{ 'keyMetrics.shortDVAC' | translate }}: {{vp.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}">{{vp.deliveryCompletionTotal | number:'1.0-0'}} %</td>
-              <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
-              </td>
-              <td class="text-right"><button type="button" class="btn" (click)="gotoClickedRow(vp)">i</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -387,19 +144,23 @@
   <i class="fas fa-lightbulb" [ngClass]="{'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
 </ng-template>
 
+<ng-template #highlight let-selected="selected" let-text="text">
+  <span [ngClass]="{'font-weight-bold': selected == true, 'font-weight-normal': selected == false}">{{text}}</span>
+</ng-template>
+
 <!-- Modal Show Project Version Info -->
-<div *ngIf="vpvKeyMetricActive" class="modal fade" id="VpvDetails" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
+<div *ngIf="vpvActive" class="modal fade" id="VpvDetails" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvKeyMetricActive.timestamp | date :'dd.MM.yy HH:mm'}} </h5>
+        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvActive.timestamp | date :'dd.MM.yy HH:mm'}} </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form name="VpvDetailsForm">
-          <table *ngIf="vpvKeyMetricActive" class='table table-hover'>
+          <table *ngIf="vpvActive" class='table table-hover'>
             <!--Table head-->
             <thead>
               <tr>
@@ -410,9 +171,9 @@
             </thead>
             <!--Table body-->
             <tbody>
-              <tr *ngIf="vpvKeyMetricActive.startDate">
+              <tr *ngIf="vpvActive.startDate">
                 <td>{{ 'vpKeyMetric.lbl.startDate' | translate }}</td>
-                <td>{{ vpvKeyMetricActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td>{{ vpvActive.startDate | date :'dd.MM.yyyy'}}</td>
                 <td class="d-none d-md-table-cell"></td>
               </tr>
               <tr>
@@ -420,7 +181,7 @@
                 <td>
                   <span *ngIf="delayEndDate > 0" class="fas fa-exclamation-circle" style="color:red"></span>
                   <span *ngIf="delayEndDate <= 0" class="fas fa-check-circle" style="color:green"></span>
-                  <span> {{ vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
+                  <span> {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
                 </td>
                 <td class="d-none d-md-table-cell">
                   <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} {{ 'vpKeyMetric.lbl.weeksDelay' | translate }}</span>
@@ -430,38 +191,38 @@
               </tr>
               <tr>
                 <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
-                <td title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvKeyMetricActive.ampelStatus} " ></ng-container>
+                <td title="{{ vpvActive.ampelErlaeuterung }}">
+                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
                 </td>
-                <td class="d-none d-md-table-cell" title="{{ vpvKeyMetricActive.ampelErlaeuterung }}">
-                  {{ getShortText(vpvKeyMetricActive.ampelErlaeuterung, 40) }}
+                <td class="d-none d-md-table-cell" title="{{ vpvActive.ampelErlaeuterung }}">
+                  {{ getShortText(vpvActive.ampelErlaeuterung, 40) }}
                 </td>
               </tr>
-              <tr *ngIf="vpvKeyMetricActive.leadPerson">
+              <tr *ngIf="vpvActive.leadPerson">
                 <td>{{ 'vpKeyMetric.lbl.leadPerson' | translate }}</td>
-                <td title="{{ vpvKeyMetricActive.leadPerson }}">
-                  {{ getShortText(vpvKeyMetricActive.leadPerson, 20) }}
+                <td title="{{ vpvActive.leadPerson }}">
+                  {{ getShortText(vpvActive.leadPerson, 20) }}
                 </td>
                 <td></td>
               </tr>
-              <tr *ngIf="vpvKeyMetricActive.description">
+              <tr *ngIf="vpvActive.description">
                 <td>{{ 'vpKeyMetric.lbl.description' | translate }}</td>
-                <td title="{{ vpvKeyMetricActive.description }}">
-                  {{ getShortText(vpvKeyMetricActive.description, 20) }}
+                <td title="{{ vpvActive.description }}">
+                  {{ getShortText(vpvActive.description, 20) }}
                 </td>
                 <td></td>
               </tr>
-              <tr *ngIf="vpvKeyMetricActive.VorlagenName">
+              <tr *ngIf="vpvActive.VorlagenName">
                 <td>{{ 'vpKeyMetric.lbl.template' | translate }}</td>
-                <td title="{{ vpvKeyMetricActive.VorlagenName }}">
-                  {{ getShortText(vpvKeyMetricActive.VorlagenName, 20) }}
+                <td title="{{ vpvActive.VorlagenName }}">
+                  {{ getShortText(vpvActive.VorlagenName, 20) }}
                 </td>
                 <td></td>
               </tr>
-              <tr *ngIf="vpvKeyMetricActive.businessUnit">
+              <tr *ngIf="vpvActive.businessUnit">
                 <td>{{ 'vpKeyMetric.lbl.bu' | translate }}</td>
-                <td title="{{ vpvKeyMetricActive.businessUnit }}">
-                  {{ getShortText(vpvKeyMetricActive.businessUnit, 20) }}
+                <td title="{{ vpvActive.businessUnit }}">
+                  {{ getShortText(vpvActive.businessUnit, 20) }}
                 </td>
                 <td></td>
               </tr>
@@ -472,104 +233,6 @@
             <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
           </div>
         </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Show Shortcut explanation -->
-<div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <table class='table'>
-          <thead>
-            <tr>
-              <th>{{ 'keyMetrics.lbl.shortcut' | translate }}</th>
-              <th>{{ 'keyMetrics.lbl.explanation' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody *ngIf="typeMetricChart == 'Costs'">
-            <tr>
-              <td>{{ 'keyMetrics.shortAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longAC' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortPV' | translate }}</td>
-              <td>{{ 'keyMetrics.longPV' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortEAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longEAC' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortBAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longBAC' | translate }}</td>
-            </tr>
-          </tbody>
-          <tbody *ngIf="typeMetricChart == 'EndDate'">
-            <tr>
-              <td>{{ 'keyMetrics.shortEED' | translate }}</td>
-              <td>{{ 'keyMetrics.longEED' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortBED' | translate }}</td>
-              <td>{{ 'keyMetrics.longBED' | translate }}</td>
-            </tr>
-          </tbody>
-          <tbody *ngIf="typeMetricChart == 'Deadlines'">
-            <tr>
-              <td>{{ 'keyMetrics.shortAD' | translate }}</td>
-              <td>{{ 'keyMetrics.longAD' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortPD' | translate }}</td>
-              <td>{{ 'keyMetrics.longPD' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortEDC' | translate }}</td>
-              <td>{{ 'keyMetrics.longEDC' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortDAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longDAC' | translate }}</td>
-            </tr>
-          </tbody>
-
-          <tbody *ngIf="typeMetricChart == 'DeadlinesDelay'">
-            <tr>
-              <td>{{ 'keyMetrics.finishedDeadline' | translate }}</td>
-              <td>{{ 'keyMetrics.longFinishedDeadline' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.unfinishedDeadline' | translate }}</td>
-              <td>{{ 'keyMetrics.longUnfinishedDeadline' | translate }}</td>
-            </tr>
-          </tbody>
-
-          <tbody *ngIf="typeMetricChart == 'Deliveries'">
-            <tr>
-              <td>{{ 'keyMetrics.shortADV' | translate }}</td>
-              <td>{{ 'keyMetrics.longADV' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortPDV' | translate }}</td>
-              <td>{{ 'keyMetrics.longPDV' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortEDVC' | translate }}</td>
-              <td>{{ 'keyMetrics.longEDVC' | translate }}</td>
-            </tr>
-            <tr>
-              <td>{{ 'keyMetrics.shortDVAC' | translate }}</td>
-              <td>{{ 'keyMetrics.longDVAC' | translate }}</td>
-            </tr>
-          </tbody>
-
-        </table>
-        <div class="modal-footer align-items-end">
-          <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
-        </div>
       </div>
     </div>
   </div>

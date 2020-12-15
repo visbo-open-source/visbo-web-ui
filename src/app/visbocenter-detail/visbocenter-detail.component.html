@@ -25,14 +25,14 @@
         <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
         <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('ProjectUsers')">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
-        <button id="ViewSetting" type="button" class="btn btn-md btn-light mx-1" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
+        <button id="ViewSetting" *ngIf="hasVCPerm(permVC.Modify)" type="button" class="btn btn-md btn-light mx-1" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
       </div>
     </div>
-    <div *ngIf="getVCPerm() == permVC.View">
+    <!-- <div *ngIf="getVCPerm() == permVC.View">
       <div class="btn-toolbar" style="">
         <button id="ViewSetting" type="button" class="btn btn-md btn-light mx-1 mb-2" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
       </div>
-    </div>
+    </div> -->
     <div *ngIf="getVCPerm() != permVC.View">
       <div *ngIf="showList == 'Users'" >
         <div class='row'>

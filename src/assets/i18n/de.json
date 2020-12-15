@@ -1,5 +1,6 @@
 {
 	"login": {
+		"title": "VISBO Anmeldung",
 		"lbl": {
 			"email": "Ihre E-Mail Adresse",
 			"password": "Passwort"
@@ -15,10 +16,10 @@
 			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
-		},
-		"title": "Willkommen bei VISBO - the Project Warehouse"
+		}
 	},
 	"dashboard": {
+		"title": "Übersicht",
 		"topvc": "Top VISBO Centers",
 		"noVC": "Kein Zugriff auf ein VISBO Center",
 		"topvp": "Top VISBO Projekte",
@@ -126,6 +127,7 @@
 		}
 	},
 	"profile": {
+		"titleShort": "Benutzer Profil",
 		"title": "Profil Information für:",
 		"titleChangePW": "Passwort ändern",
 		"lbl": {
@@ -175,6 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
+		"titleName": "VISBO Center {{name}}",
 		"titleUsers": "VISBO Center Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Center",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
@@ -258,6 +261,7 @@
 	},
 	"vp": {
 		"title": "Projekte",
+		"titleName": "Projekte in {{name}}",
 		"titleVC": "Projekte in",
 		"noVP": "Kein VISBO Projekt",
 		"titleCreate": "Ein neues Projekt anlegen",
@@ -298,6 +302,7 @@
 	},
 	"vpDetail": {
 		"title": "VISBO Projekt",
+		"titleName": "Projekt {{name}}",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Projekt Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
@@ -459,6 +464,7 @@
 	},
 	"vpKeyMetric": {
 		"title": "Projekt-Kennzahlen für",
+		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
 		"lbl": {
@@ -482,6 +488,8 @@
 			"total": "Gesamt",
 			"detail": "Detail",
 			"trend": "Trend",
+			"finished": "Status: erledigt",
+			"unfinished": "Status: offen",
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
 			"metricCost": "Kosten",
@@ -521,6 +529,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
@@ -539,7 +548,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleBox": "Summe der Kapazitäten im Zeitraum",
+		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
 		"titleTimeFrom": " Auslastung für den Zeitraum: von",
@@ -573,7 +582,7 @@
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
-			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
+			"errorPermOrganisation": "Kein Zugriff auf die Organisation vom VISBO Center {{name}}"
 		}
 	},
 	"compViewBubble": {
@@ -639,7 +648,15 @@
 			"deliveryName": "Qualität (Lieferungen)",
 			"deliveryAxis": "Erreichte Lieferungen",
 			"deliveryBubble": "Erreichte Lieferungen in %",
-			"deliveryTable": "Erreichte Lieferungen"
+			"deliveryTable": "Erreichte Lieferungen",
+			"deliveryFinishedDelayName": "Abweichung bei Lieferungen (erledigte)",
+			"deliveryFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayBubble": "Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayTable": "Erledigte",
+			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
+			"deliveryUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayTable": "Unerledigte"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
@@ -762,6 +779,7 @@
 	},
 	"vpfVersion": {
 		"title": "Projekte aus Portfolio",
+		"titleName": "Portfolio {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Auswahl Portfolio Version",

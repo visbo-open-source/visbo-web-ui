@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VisboCompViewBubbleComponent } from './comp-keyMetrics.component';
+import { VisboCompViewBubbleComponent } from './comp-viewbubble.component';
 
 describe('VisboCompViewBubbleComponent', () => {
   let component: VisboCompViewBubbleComponent;

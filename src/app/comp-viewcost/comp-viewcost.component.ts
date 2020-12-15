@@ -3,7 +3,7 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -36,6 +36,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   colors = ['#F7941E', '#BDBDBD', '#458CCB'];
 
+  chartActive: Date;
   graphDataComboChart = [];
   graphOptionsComboChart = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
@@ -87,6 +88,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.chartActive = undefined;
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboCostCalc();
     }
@@ -94,6 +96,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   onResized(event: ResizedEvent): void {
     if (!event) { this.log('No event in Resize'); }
+    let diff = 0;
+    if (this.chartActive) {
+      diff = (new Date()).getTime() - this.chartActive.getTime()
+    }
+    if (diff < 1000) {
+      return;
+    }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboCostCalc();
@@ -221,6 +230,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
+    this.chartActive = new Date();
   }
 
   chartSelectRow(row: number, label: string, value: number): void {

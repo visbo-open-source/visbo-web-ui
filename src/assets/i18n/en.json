@@ -1,5 +1,6 @@
 {
 	"login": {
+		"title": "VISBO Login",
 		"lbl": {
 			"email": "Your e-mail",
 			"password": "Your Password"
@@ -15,10 +16,10 @@
 			"loginFailure": "Username {{user}} not found or wrong password",
 			"emailRequired": "A correct e-mail address is required!",
 			"pwRequired": "Password is required!"
-		},
-		"title": "Welcome to VISBO - the project warehouse"
+		}
 	},
 	"dashboard": {
+		"title": "Dashboard",
 		"topvc": "Top VISBO Centers",
 		"noVC": "No access to a VISBO Center",
 		"topvp": "Top VISBO Projects",
@@ -126,6 +127,7 @@
 		}
 	},
 	"profile": {
+		"titleShort": "User Profile",
 		"title": "Profile Information for:",
 		"titleChangePW": "Change Password",
 		"lbl": {
@@ -175,6 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
+		"titleName": "VISBO Center {{name}}",
 		"titleUsers": "VISBO Center Users",
 		"titleAddUser": "Add a new User to the VISBO Center",
 		"titleRemoveUser": "Remove a User from a Group",
@@ -258,6 +261,7 @@
 	},
 	"vp": {
 		"title": "Projects",
+		"titleName": "Projects in {{name}}",
 		"titleVC": "Projects in",
 		"noVP": "No VISBO Project",
 		"titleCreate": "Create a new VISBO Project",
@@ -293,11 +297,12 @@
 			"errorPermVC": "Permission denied for this VISBO Center",
 			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project",
-			"noVP": "You do not have access to a VISBO Projekt."
+			"noVP": "You do not have access to a VISBO Project."
 		}
 	},
 	"vpDetail": {
 		"title": "VISBO Project",
+		"titleName": "Project {{name}}",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Project Users",
 		"titleAddUser": "Add a new User to the VISBO Project",
@@ -313,7 +318,7 @@
 		"titleProjectLocks": "VISBO Project Locks",
 		"titlePermUser": "Permission for {{name}}",
 		"titleProjectRestrict": "VISBO Project Restrictions",
-		"titleRemoveRestriction": "Delete a Restriction from the VISBO Projekt",
+		"titleRemoveRestriction": "Delete a Restriction from the VISBO Project",
 		"titleRemoveVariant": "Delete a Variant in the VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
@@ -416,7 +421,7 @@
 		"titleVC": "VISBO Center",
 		"titleProjectRestrict": "VISBO Project Restrictions",
 		"titleAddRestriction": "Add a Restriction to the VISBO Project",
-		"titleRemoveRestriction": "Delete a Restriction from the VISBO Projekt",
+		"titleRemoveRestriction": "Delete a Restriction from the VISBO Project",
 		"lbl": {
 			"name": "Name",
 			"vc": "VISBO Center",
@@ -458,7 +463,8 @@
 		}
 	},
 	"vpKeyMetric": {
-		"title": "Projekt Key Metrics for",
+		"title": "Project Key Metrics for",
+		"titleName": "Project {{name}}",
 		"titleVersion": "Version of",
 		"titleDetailVersion": "Details about Version",
 		"lbl": {
@@ -482,6 +488,8 @@
 			"total": "Total",
 			"detail": "Detail",
 			"trend": "Trend",
+			"finished": "State: finished",
+			"unfinished": "State: unfinished",
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
 			"metricCost": "Cost",
@@ -521,6 +529,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
@@ -539,7 +548,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleBox": "Sum of Capacity for Timerange",
+		"titleBox": "Capacity per Month in Timerange",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " Capacity Utilisation - Timespam: From",
@@ -573,7 +582,7 @@
 			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
 			"errorPermCapacity": "Permission denied for this VISBO Capacity ",
-			"errorPermOrganisation": "Permission denied for the organisation of this VISBO Center "
+			"errorPermOrganisation": "No Access to the organisation of VISBO Center {{name}}"
 		}
 	},
 	"compViewBubble": {
@@ -585,7 +594,7 @@
 			"variant": "Variant",
 			"timestamp": "Timestamp",
 			"bu": "Business Unit",
-			"lead": "Projektmanager",
+			"lead": "Project Manager",
 			"template": "Template",
 			"startDate": "Project start date",
 			"endDate": "Project end date",
@@ -639,7 +648,15 @@
 			"deliveryName": "Quality (Deliveries)",
 			"deliveryAxis": "Achieved Deliveries",
 			"deliveryBubble": "Achieved Deliveries in %",
-			"deliveryTable": "Achieved Deliveries"
+			"deliveryTable": "Achieved Deliveries",
+			"deliveryFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deliveryFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deliveryFinishedDelayBubble": "Deviation in finished Deadlines",
+			"deliveryFinishedDelayTable": "finished Deadlines",
+			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
@@ -650,7 +667,7 @@
 		"lbl": {
 			"project": "Project",
 			"bu": "Business Unit",
-			"lead": "Projektmanager",
+			"lead": "Project Manager",
 			"template": "Template",
 			"startDate": "Project start date",
 			"endDate": "Project end date",
@@ -707,9 +724,9 @@
 			"trafficlightDesc": "Traffic light description",
 			"responsible": "Responsible",
 			"vp": "VISBO Project",
-			"VPV": "Zeige alle vom Projekt",
-			"PFV": "Zeige alle vom Auftrag",
-			"All": "Zeige alle kombiniert"
+			"VPV": "View all from Project",
+			"PFV": "View all from Baseline",
+			"All": "View all combined"
 		},
 		"btn": {
 			"detail": "Restrictions",
@@ -762,6 +779,7 @@
 	},
 	"vpfVersion": {
 		"title": "Projects from Portfolio",
+		"titleName": "Portfolio {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Select Portfolio Version",
@@ -784,8 +802,8 @@
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
-			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorPermVP": "No Permission for this Proects",
+			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
 			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
 		}
 	},

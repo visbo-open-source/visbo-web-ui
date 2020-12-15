@@ -3,7 +3,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -52,6 +52,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   actOrga: VisboOrganisation;
   capaLoad: CapaLoad[];
   timeoutID: number;
+  hasCost: boolean;
 
   roleID: number;
   currentLeaf: VisboOrgaTreeLeaf;
@@ -72,6 +73,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   colors = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
 
+  chartActive: Date;
   graphDataComboChart = [];
   graphOptionsComboChart = {
       chartArea:{'left':100,'top':100,width:'100%','height':'80%'},
@@ -151,6 +153,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   onResized(event: ResizedEvent): void {
     if (!event) { this.log('No event in Resize'); }
+    let diff = 0;
+    if (this.chartActive) {
+      diff = (new Date()).getTime() - this.chartActive.getTime()
+    }
+    if (diff < 1000) {
+      return;
+    }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
@@ -159,11 +168,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   initSetting(): void {
+    this.chartActive = undefined;
     this.roleID = this.route.snapshot.queryParams['roleID'];
     const pfv = this.route.snapshot.queryParams['pfv'];
     this.refPFV = pfv && Number(pfv) ? true : false;
-    const unit = this.route.snapshot.queryParams['showDays']
-    this.showUnit = unit && unit == 'PD' ? 'PD' : undefined;
+    const unit = this.route.snapshot.queryParams['unit'];
+    this.initShowUnit(unit);
 
     const from = this.route.snapshot.queryParams['from'];
     const to = this.route.snapshot.queryParams['to'];
@@ -230,14 +240,20 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           error => {
             this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              const message = this.translate.instant('ViewCapacity.msg.errorPermOrganisation', {'name': this.vcActive.name});
-              this.alertService.error(message);
+              let name: string;
+              if (this.vpActive) {
+                name = this.vpActive.name;
+              } else if (this.vcActive) {
+                name = this.vcActive.name;
+              }
+              const message = this.translate.instant('ViewCapacity.msg.errorPermOrganisation', {'name': name});
+              this.log(`Alert: ${message}`);
+              this.alertService.error(message, true);
             } else {
-              this.alertService.error(getErrorMessage(error));
+              this.alertService.error(getErrorMessage(error), true);
             }
           }
         );
-
     }
   }
 
@@ -270,9 +286,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             this.log(`get VC Capacity failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
               const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vcActive.name});
-              this.alertService.error(message);
+              this.alertService.error(message, true);
             } else {
-              this.alertService.error(getErrorMessage(error));
+              this.alertService.error(getErrorMessage(error), true);
             }
           }
         );
@@ -299,9 +315,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
             if (error.status === 403) {
               const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
-              this.alertService.error(message);
+              this.alertService.error(message, true);
             } else {
-              this.alertService.error(getErrorMessage(error));
+              this.alertService.error(getErrorMessage(error), true);
             }
           }
         );
@@ -330,19 +346,30 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
             if (error.status === 403) {
               const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
-              this.alertService.error(message);
+              this.alertService.error(message, true);
             } else {
-              this.alertService.error(getErrorMessage(error));
+              this.alertService.error(getErrorMessage(error), true);
             }
           }
         );
     }
   }
 
+  checkCostAvailable(capacity: VisboCapacity[]): void {
+    let result = false;
+    if (capacity && capacity.length > 0) {
+      result = capacity[0].actualCost != undefined ||
+                capacity[0].plannedCost != undefined ||
+                capacity[0].baselineCost != undefined;
+    }
+    this.hasCost = result;
+  }
+
   calcLoad(capacity: VisboCapacity[], refPFV = false): number {
     if (!capacity || capacity.length == 0) {
       return undefined;
     }
+    this.checkCostAvailable(capacity);
 
     function percentCalc(item: VisboCapacity, from: Date, to: Date, refPFV = false): number {
       const current = new Date(item.month);
@@ -432,14 +459,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
 
-  updateShowUnit(unit: string): void {
+  initShowUnit(unit: string): void {
+    unit = 'PD' ? 'PD' : undefined;
     this.showUnit = unit;
-    this.updateUrlParam('showDays', unit)
+    this.updateUrlParam('unit', unit == 'PD' ? '1' : '0')
     if (unit === 'PD') {
       this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd')
     } else {
       this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
     }
+  }
+
+  updateShowUnit(unit: string): void {
+    this.initShowUnit(unit);
     this.visboViewCapacityOverTime();
   }
 
@@ -465,8 +497,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (type == 'from' || type == 'to') {
       queryParams.from = this.capacityFrom.toISOString();
       queryParams.to = this.capacityTo.toISOString();
-    } else if (type == 'showDays') {
-      queryParams.showDays = value;
+    } else if (type == 'unit') {
+      queryParams.unit = value;
     } else if (type == 'pfv') {
       queryParams.pfv = value;
     }
@@ -625,6 +657,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCapacity;
+    this.chartActive = new Date();
   }
 
   chartSelectRow(row: number, label: string, value: number): void {

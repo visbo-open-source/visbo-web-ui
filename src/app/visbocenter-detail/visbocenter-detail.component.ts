@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -82,7 +84,8 @@ export class VisbocenterDetailComponent implements OnInit {
     private location: Location,
     private router: Router,
     private alertService: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
@@ -100,6 +103,7 @@ export class VisbocenterDetailComponent implements OnInit {
         visbocenter => {
           this.visbocenter = visbocenter;
           this.combinedPerm = visbocenter.perm;
+          this.titleService.setTitle(this.translate.instant('vcDetail.titleName', {name: visbocenter.name}));
           this.log(`VisboCenter initialised ${this.visbocenter._id} Perm ${JSON.stringify(this.combinedPerm)} `);
         },
         error => {
