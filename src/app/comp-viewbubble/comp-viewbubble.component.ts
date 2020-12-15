@@ -582,11 +582,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   calcRangeAxis(): void {
     let rangeAxis = 0;
     let minSize = Infinity, maxSize = 0;
-    let rangeAxisSync = false;
-    if ((this.metricX == 'DeadlineFinishedDelay' || this.metricX == 'DeadlineUnFinishedDelay')
-    && (this.metricY == 'DeadlineFinishedDelay' || this.metricY == 'DeadlineUnFinishedDelay')) {
-      rangeAxisSync = true;
-    }
 
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].keyMetrics) {
@@ -677,14 +672,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       rangeAxis *= 1.1;
       this.graphBubbleOptions.vAxis.minValue = 100 - rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = 100 + rangeAxis;
-    }
-    if (rangeAxisSync) {
-      // use the same min/max for both Axis
-      rangeAxis = Math.max(rangeAxis, this.graphBubbleOptions.hAxis.maxValue);
-      this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
-      this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
     }
   }
 
