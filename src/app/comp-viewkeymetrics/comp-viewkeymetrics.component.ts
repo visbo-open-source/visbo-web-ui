@@ -804,6 +804,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VPVKeyMetricsCalc, updateParent = false): void {
     if (!vpv) { return; }
+    this.refDate = vpv.timestamp;
     const keyMetrics = vpv.keyMetrics;
     let index: number;
     // ur:25.02.2020: ohne Relativierung
@@ -973,6 +974,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costBaseLastTotal - b.keyMetrics?.costBaseLastTotal; });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
+    } else if (this.sortColumn === 7) {
+      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costCurrentActual - b.keyMetrics?.costCurrentActual; });
+    } else if (this.sortColumn === 8) {
+      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costCurrentTotal - b.keyMetrics?.costCurrentTotal; });
     } else if (this.sortColumn === 10) {
       this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.timeCompletionCurrentActual - b.keyMetrics?.timeCompletionCurrentActual; });
     } else if (this.sortColumn === 11) {
