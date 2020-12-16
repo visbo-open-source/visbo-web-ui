@@ -291,7 +291,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // search the coresponding version for refDate
       if (this.refDate) {
         for (; i < this.visbokeymetrics.length; i++) {
-          if (this.refDate.toISOString() >= (new Date(this.visbokeymetrics[i].timestamp)).toISOString() ) {
+          if (visboCmpDate(this.refDate, this.visbokeymetrics[i].timestamp) >= 0) {
             break;
           }
         }
@@ -840,11 +840,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     // });
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
-    this.log(`goto VPV Detail for VP ${visboprojectversion.name}`);
-    this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
-  }
-
   chartSelectRow(row: number, col: number, label: string): void {
     const len = this.graphDataLineChart.length;
     this.log(`Line Chart: User selected row ${row} col ${col} Label ${label} Len ${len}`);
@@ -863,7 +858,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VPVKeyMetricsCalc, updateParent = false): void {
     if (!vpv) { return; }
-    this.refDate = vpv.timestamp;
+    this.refDate = new Date(vpv.timestamp);
     const keyMetrics = vpv.keyMetrics;
     let index: number;
     // ur:25.02.2020: ohne Relativierung
