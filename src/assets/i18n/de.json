@@ -507,6 +507,9 @@
 			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
 			"totalDeadline": "geplante Erreichung der Gesamttermine",
 			"inPlan": "im Plan",
+			"timeLag": "Verschiebung",
+			"missing": "fehlen",
+			"of": "von",
 			"view": "Anzeigen",
 			"day": "Tag",
 			"week": "Woche",
@@ -971,8 +974,8 @@
 
 		"finishedDeadline": "Erledigte Termine",
 		"unfinishedDeadline": "Offene Termine",
-		"finishedDeadlineDelay": "Verzögerung (Erledigte)",
-		"unfinishedDeadlineDelay": "Verzögerung (Unerledigte)",
+		"finishedDeadlineDelay": "Verschiebung (Erledigte)",
+		"unfinishedDeadlineDelay": "Verschiebung (Unerledigte)",
 		"longFinishedDeadline": "Durchschnittliche Abweichung über alle erledigten Termine gegenüber baseline in Tagen",
 		"longUnfinishedDeadline": "Durchschnittliche Abweichung über alle nicht erledigten Termine gegenüber baseline in Tagen",
 
@@ -983,8 +986,8 @@
 			"shortcut": "Abkürzung",
 			"explanation": "Bedeutung",
 			"showLegend": "Zeige Definition der Abkürzungen",
-			"actualDelay": "Aktuelle Verzögerung",
-			"totalDelay": "Gesamte Verzögerung"
+			"actualDelay": "Aktuelle Verschiebung",
+			"totalDelay": "Gesamte Verschiebung"
 		},
 		"chart": {
 			"statusDeliveryAhead": "Vorzeitig",

@@ -40,6 +40,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   currentViewKM = false;
   refDate = new Date();
   refDateInterval = 'month';
+  statusDirection: number;
 
   allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
@@ -168,6 +169,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         if (i >= this.visboprojectversions.length) { i = this.visboprojectversions.length - 1; }
       }
       this.vpvActive = this.visboprojectversions[i];
+      this.evaluateDirection(i);
+    }
+  }
+
+  evaluateDirection(index: number): void {
+    if (index <= 0) {
+      this.statusDirection = 1;
+    } else if (index >= this.visboprojectversions.length - 1) {
+      this.statusDirection = -1;
+    } else {
+      this.statusDirection = 0;
     }
   }
 
@@ -390,6 +402,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.log(`get getRefDateVersions vpv timestamp ${this.visboprojectversions[newVersionIndex].timestamp}`);
     this.setVpvActive(this.visboprojectversions[newVersionIndex]);
+    this.evaluateDirection(newVersionIndex);
   }
 
   getNextVersion(direction: number): void {

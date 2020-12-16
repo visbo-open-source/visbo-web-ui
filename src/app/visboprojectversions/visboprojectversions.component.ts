@@ -191,12 +191,6 @@ export class VisboProjectVersionsComponent implements OnInit {
       );
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
-    this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
-    this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
-  }
-
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }

@@ -32,14 +32,14 @@
       </h4>
       <div class="col-6">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
+          <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpKeyMetric.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpKeyMetric.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpKeyMetric.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpKeyMetric.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(+1)'></span>
+          <span *ngIf="statusDirection <= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(+1)'></span>
         </div>
       </div>
     </div>
