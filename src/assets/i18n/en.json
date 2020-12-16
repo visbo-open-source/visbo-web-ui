@@ -560,7 +560,9 @@
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",
 		"plannedCostPT": "Planned Cost",
-		"roleName": "Role",
+		"roleName": "Role",		
+		"budgetPT": "Baseline",
+		"budgetBase": "",		
 		"lbl": {
 			"totalCost": "Total Cost",
 			"totalCapa": "Total Capacity",

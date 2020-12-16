@@ -561,6 +561,8 @@
 		"actualCostPT": "Istkosten",
 		"plannedCostPT": "geplante Kosten",
 		"roleName": "Rolle",
+		"budgetPT": "Baseline",
+		"budgetBase": "",
 		"lbl": {
 			"totalCost": "Gesamtkosten",
 			"totalCapa": "gesamte Kapazität",
