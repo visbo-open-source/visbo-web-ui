@@ -174,7 +174,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   evaluateDirection(index: number): void {
-    if (index <= 0) {
+    if (this.visboprojectversions.length === 1) {
+      this.statusDirection = undefined;
+    } else if (index <= 0) {
       this.statusDirection = 1;
     } else if (index >= this.visboprojectversions.length - 1) {
       this.statusDirection = -1;

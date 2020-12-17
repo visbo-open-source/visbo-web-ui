@@ -33,7 +33,7 @@
       <div class="col-6">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
-          <select class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
+          <select *ngIf="statusDirection != undefined" class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpKeyMetric.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpKeyMetric.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpKeyMetric.lbl.month' | translate }}</option>

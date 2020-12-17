@@ -19,15 +19,20 @@
                 text: 'vpKeyMetric.lbl.metricCost' | translate } " >
             </ng-container></a>
           </td>
-          <td title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}" (click)="switchView('Cost', true)"><a>
-            <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
-            <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
-          </a></td>
-          <td title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}" (click)="switchView('Cost', true)"><a>
-            <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
-            <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
-          </a></td>
-          <!-- <td></td> -->
+          <td (click)="switchView('Cost', true)"
+              title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastActual |  number:'1.0-0' }} T€">
+            <a>
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
+            </a>
+          </td>
+          <td (click)="switchView('Cost', true)"
+              title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€">
+            <a>
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
+            </a>
+          </td>
           <td><a>
             <button type="button" class="btn" (click)="switchTo('Cost')" title="{{historyButton}}">i</button>
           </a></td>
@@ -41,11 +46,13 @@
             </ng-container></a>
           </td>
           <td></td>
-          <td><a>
-            <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
-            <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
-            <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
-          </a></td>
+          <td title="{{ 'vpKeyMetric.lbl.baselineEndDate' | translate }}: {{vpvKeyMetricActive.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}">
+            <a (click)="switchTo('EndDate')">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
+              <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
+              <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
+            </a>
+          </td>
           <td>
             <button type="button" class="btn" (click)="switchTo('EndDate')" title="{{historyButton}}">i</button>
           </td>

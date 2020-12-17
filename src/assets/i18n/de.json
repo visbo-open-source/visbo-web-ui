@@ -506,6 +506,7 @@
 			"totalCost": "geplante Erreichung der Gesamtkosten",
 			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
 			"totalDeadline": "geplante Erreichung der Gesamttermine",
+			"baselineEndDate": "Projekt Ende (beauftragt)",
 			"inPlan": "im Plan",
 			"timeLag": "Verschiebung",
 			"missing": "fehlen",
