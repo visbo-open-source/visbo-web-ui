@@ -5,31 +5,39 @@
       <div class="col col-sm-12 col-lg-8">
         <div class="row text-dark">
           <span class="row ml-1">
-            <span class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</span>
-            <!-- <label for="capacityFrom" class="mb-2 mr-sm-2">von </label> -->
-            <input id="capacityFrom" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
-            <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorFrom">{{capacityFrom}}</a></span>   -->
-            <span class="pt-2">{{ 'ViewCapacity.titleTimeTo'  | translate }}</span>
-            <input id="capacityTo" type="date" class="form-control  mr-auto border-0 font-weight-bold" style="width:170px" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="updateDateRange()" >
-            <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorTo">{{capacityTo}}</a></span>    -->
-            <!-- <span class="pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
-
-            <span *ngIf="hasCost" class="pt-2 mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
-
-            <span *ngIf="hasCost" class="pt-2 dropdown">
-              <a class="pt-2 pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
-                {{showUnitText}}
-              </a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
-                <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
-              </div>
+            <span >
+              <label class="pt-2 mr-2">{{ 'ViewCapacity.titleCapacity' | translate }}</label>
             </span>
+            <span>
+              <label class="pt-2">{{ 'ViewCapacity.titleTimeFrom'  | translate }}</label>
+              <input id="capacityFrom" type="date" class="pt-2 ml-4 mr-2 border-0 font-weight-bold" style="width:170px" name="capacityFrom" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
+              <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorFrom">{{capacityFrom}}</a></span>   -->
+            </span>
+            <span>
+              <label class="pt-2">{{ 'ViewCapacity.titleTimeTo'  | translate }}</label>
+              <input id="capacityTo" type="date" class="pt-2 ml-4 mr-2 border-0 font-weight-bold" style="width:170px" name="capacityTo" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="updateDateRange()" >
+              <!-- <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfTimeSelectorTo">{{capacityTo}}</a></span>    -->
+              <!-- <span class="pt-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span> -->
+            </span>
+            <div class="pt-2">
+              <span *ngIf="hasCost" class="pt-2 mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
+              <span *ngIf="hasCost" class="pt-2 mr-auto dropdown">
+                <a class="pt-2 pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
+                  {{showUnitText}}
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
+                  <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
+                </div>
+              </span>
+            </div>         
           </span>
-        </div>
-        <div *ngIf="!vpvActive" class="form-check">
-          <input type="checkbox" class="form-check-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV" [ngModelOptions]="{standalone: true}">
-          <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
+          <div *ngIf="!vpvActive" class="ml-1 pt-3 pb-2 form-check">
+            <span >
+              <input type="checkbox" class="form-check-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV" [ngModelOptions]="{standalone: true}">
+              <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
+            </span>
+          </div>
         </div>
       </div>
       <div *ngIf="visboCapcity && visboCapcity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
