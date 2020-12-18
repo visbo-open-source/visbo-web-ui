@@ -174,7 +174,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   evaluateDirection(index: number): void {
-    if (index <= 0) {
+    if (this.visboprojectversions.length === 1) {
+      this.statusDirection = undefined;
+    } else if (index <= 0) {
       this.statusDirection = 1;
     } else if (index >= this.visboprojectversions.length - 1) {
       this.statusDirection = -1;
@@ -440,10 +442,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   setVpvActive(vpv: VisboProjectVersion): void {
-    const keyMetrics = vpv.keyMetrics;    
-    this.vpvActive = vpv;
-
+    const keyMetrics = vpv.keyMetrics;
     const index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+
+    this.vpvActive = vpv;
     this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }

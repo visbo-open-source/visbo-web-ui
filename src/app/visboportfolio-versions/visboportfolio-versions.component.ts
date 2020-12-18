@@ -45,6 +45,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpfActive: VisboPortfolioVersion;
     vpvRefDate: Date = new Date();
     refDateInterval = 'month';
+    statusDirection: number;
     scrollRefDate: Date;
     vpfid: string;
     deleted = false;
@@ -189,6 +190,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           if (visboprojectversions.length > 0) {
             this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
           }
+          this.evaluateDirection();
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -245,6 +247,26 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
     this.changeView(undefined, this.vpvRefDate, undefined);
     this.getVisboPortfolioKeyMetrics();
+  }
+
+  evaluateDirection(): void {
+    if (this.visboprojectversions.length === 0) {
+      if (this.isSameDay(this.vpvRefDate, new Date())) {
+        // no Versions for this Portfolio at all
+        this.statusDirection = undefined;
+      } else {
+        // no Versions before this timestamp
+        this.statusDirection = -1;
+      }
+    } else {
+      if (this.isSameDay(this.vpvRefDate, new Date())) {
+        // refDate Today and Versions available, page into past
+        this.statusDirection = 1;
+      } else {
+        // refDate not Today and Versions available, page in both directions
+        this.statusDirection = 0;
+      }
+    }
   }
 
   changeView(nextView: string, refDate: Date = undefined, filter:string = undefined, vpfid:string = undefined): void {

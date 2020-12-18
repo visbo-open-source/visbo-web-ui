@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection, VisboOrganisationListResponse} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -22,7 +22,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpDate, convertDate, validateDate } from '../_helpers/visbo.helper';
-// ur wg eslint: import { stringify } from '@angular/compiler/src/util';
+import { stringify } from '@angular/compiler/src/util';
 
 class CapaLoad {
   uid: number;
@@ -461,7 +461,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   initShowUnit(unit: string): void {
-    unit == 'PD' ? 'PD' : undefined;
+    unit = unit == 'PD' ? 'PD' : undefined;
     this.showUnit = unit;
     this.updateUrlParam('unit', unit == 'PD' ? '1' : '0')
     if (unit === 'PD') {
@@ -703,7 +703,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
     const roleName = this.translate.instant('ViewCapacity.roleName');
     const budgetPT = this.translate.instant('ViewCapacity.budgetPT');
-    // const budgetBase = this.translate.instant('ViewCapacity.budgetBase');
+    const budgetBase = this.translate.instant('ViewCapacity.budgetBase');
 
     let internCapa: string, totalCapa: string, actualCost: string, plannedCost: string, budget: string;
     let unit: string;
@@ -959,7 +959,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return;
   }
   
-  expandParentTree(leaf:VisboOrgaTreeLeaf): void {
+  expandParentTree(leaf:VisboOrgaTreeLeaf) {
     if (leaf.parent === null) return;    
     leaf.parent.showChildren = true;
     this.expandParentTree(leaf.parent);

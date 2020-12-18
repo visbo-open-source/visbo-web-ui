@@ -506,6 +506,7 @@
 			"totalCost": "planned achievement of total cost",
 			"totalDelivery": "planned achievement of total deliveries",
 			"totalDeadline": "planned achievement of total deadlines",
+			"baselineEndDate": "Project End (baseline)",
 			"inPlan": "in Plan",
 			"timeLag": "time lag",
 			"missing": "missing",
