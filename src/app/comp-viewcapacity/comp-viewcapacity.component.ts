@@ -457,7 +457,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   initShowUnit(unit: string): void {
-    unit = 'PD' ? 'PD' : undefined;
+    unit = unit == 'PD' ? 'PD' : undefined;
     this.showUnit = unit;
     this.updateUrlParam('unit', unit == 'PD' ? '1' : '0')
     if (unit === 'PD') {

@@ -40,7 +40,7 @@ export class VisboSettingService  {
   }
 
    /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short: boolean = false): Observable<VisboSetting[]> {
+   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short = false): Observable<VisboSetting[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -51,7 +51,7 @@ export class VisboSettingService  {
     if (refDate != undefined) {
       params = params.append('refDate', refDate);
     }
-    this.log(`Calling HTTP Request: ${url} `);
+    this.log(`Calling HTTP Request: ${url} ${short}`);
     return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
         map(response => response.vcsetting),

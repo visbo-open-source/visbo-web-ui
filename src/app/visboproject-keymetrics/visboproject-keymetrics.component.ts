@@ -11,12 +11,12 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProject, VPParams } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -443,10 +443,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
-    let index: number;
-    this.vpvActive = vpv;
+    const index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
 
-    index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    this.vpvActive = vpv;
     this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }

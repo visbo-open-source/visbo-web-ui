@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -14,7 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { convertDate, getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
+import { convertDate, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewkeymetrics',
@@ -660,63 +659,62 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphDataLineChart = keyMetrics;
   }
 
+  visboKeyMetricsDeliveryDelayOverTime(): void {
+    this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryDelayTrend');
+    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryDelayTrend');
+    this.graphOptionsLineChart.vAxis.direction = -1;
+    this.graphOptionsLineChart.colors = this.colorsDelay;
 
-    visboKeyMetricsDeliveryDelayOverTime(): void {
-      this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryDelayTrend');
-      this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryDelayTrend');
-      this.graphOptionsLineChart.vAxis.direction = -1;
-      this.graphOptionsLineChart.colors = this.colorsDelay;
-
-      const keyMetrics = [];
-      if (!this.visboprojectversions) {
-        return;
-      }
-
-      for (let i = 0; i < this.visboprojectversions.length; i++) {
-        if (!this.visboprojectversions[i].keyMetrics) {
-          continue;
-        }
-        // skip multiple versions per day
-        if (i < this.visboprojectversions.length - 1
-        && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
-          this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
-          continue;
-        }
-        keyMetrics.push([
-          new Date(this.visboprojectversions[i].timestamp),
-          this.visboprojectversions[i].keyMetrics.deliverableDelayFinished,
-          this.visboprojectversions[i].keyMetrics.deliverableDelayUnFinished
-        ]);
-      }
-      if (keyMetrics.length === 0) {
-        this.log(`visboKeyMetrics empty`);
-        keyMetrics.push([new Date(), 0, 0 ]);
-      }
-      keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
-      // we need at least 2 items for Line Chart and show the current status for today
-      const len = keyMetrics.length;
-      this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
-      if (len === 1) {
-        // add an additional month as one month could not be displayed, but do not deliver values for it
-        const currentDate = new Date(keyMetrics[0][0]);
-        currentDate.setMonth(currentDate.getMonth()+1);
-        keyMetrics.push([
-          currentDate, undefined, undefined
-        ]);
-      }
-      const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
-      this.graphOptionsLineChart.vAxis.maxValue = maxValue;
-      this.graphOptionsLineChart.vAxis.minValue = -maxValue;
-
-      keyMetrics.push([
-        'Timestamp',
-        this.translate.instant('keyMetrics.finishedDeliveryDelay'),
-        this.translate.instant('keyMetrics.unfinishedDeliveryDelay')
-      ]);
-      keyMetrics.reverse();
-      // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
-      this.graphDataLineChart = keyMetrics;
+    const keyMetrics = [];
+    if (!this.visboprojectversions) {
+      return;
     }
+
+    for (let i = 0; i < this.visboprojectversions.length; i++) {
+      if (!this.visboprojectversions[i].keyMetrics) {
+        continue;
+      }
+      // skip multiple versions per day
+      if (i < this.visboprojectversions.length - 1
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
+        continue;
+      }
+      keyMetrics.push([
+        new Date(this.visboprojectversions[i].timestamp),
+        this.visboprojectversions[i].keyMetrics.deliverableDelayFinished,
+        this.visboprojectversions[i].keyMetrics.deliverableDelayUnFinished
+      ]);
+    }
+    if (keyMetrics.length === 0) {
+      this.log(`visboKeyMetrics empty`);
+      keyMetrics.push([new Date(), 0, 0 ]);
+    }
+    keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = keyMetrics.length;
+    this.log(`visboKeyMetrics duplicate ${len - 1} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      const currentDate = new Date(keyMetrics[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      keyMetrics.push([
+        currentDate, undefined, undefined
+      ]);
+    }
+    const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
+    this.graphOptionsLineChart.vAxis.maxValue = maxValue;
+    this.graphOptionsLineChart.vAxis.minValue = -maxValue;
+
+    keyMetrics.push([
+      'Timestamp',
+      this.translate.instant('keyMetrics.finishedDeliveryDelay'),
+      this.translate.instant('keyMetrics.unfinishedDeliveryDelay')
+    ]);
+    keyMetrics.reverse();
+    // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
+    this.graphDataLineChart = keyMetrics;
+  }
 
   // eslint-disable-next-line
   calcRangeAxis(keyMetrics: any[], type: string): number {
@@ -822,7 +820,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
-    const url = this.route.snapshot.url.join('/');
     if (value === undefined) { value = null; }
     const queryParams = new VPParams();
     if (type == 'view') {
@@ -831,13 +828,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       queryParams.refDate = value;
     }
     this.switchViewChild.emit(queryParams); //emmiting the event.
-    // this.router.navigate([url], {
-    //   queryParams: queryParams,
-    //   // no navigation back to old status, but to the page before
-    //   replaceUrl: true,
-    //   // preserve the existing query params in the route
-    //   queryParamsHandling: 'merge'
-    // });
   }
 
   chartSelectRow(row: number, col: number, label: string): void {
