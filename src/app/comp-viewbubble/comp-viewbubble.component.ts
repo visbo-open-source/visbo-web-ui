@@ -680,7 +680,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       return;
     }
     const weekFormat = '# ' + this.translate.instant('compViewBubble.lbl.weeks');
-    const dayFormat = '# ' + this.translate.instant('compViewBubble.lbl.days');
+    // ur wg eslint: const dayFormat = '# ' + this.translate.instant('compViewBubble.lbl.days');
 
     this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {

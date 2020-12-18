@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { ResizedEvent } from 'angular-resize-event';
+// ur wg eslint: import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -14,7 +14,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { convertDate, getErrorMessage, visboCmpDate } from '../_helpers/visbo.helper';
+import { convertDate, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewkeymetrics',
