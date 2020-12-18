@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection} from '../_models/visbosetting';
+import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection, VisboOrganisationListResponse} from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -22,6 +22,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpDate, convertDate, validateDate } from '../_helpers/visbo.helper';
+import { stringify } from '@angular/compiler/src/util';
 
 class CapaLoad {
   uid: number;
@@ -58,7 +59,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
-  currentRefDate: Date;
+  currentRefDate: Date;  
 
   sumCost = 0;
   sumBudget = 0;
@@ -70,11 +71,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
-
-  colors = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
-
+  colors= ['#F7941E', '#BDBDBD', '#458CCB'];
+    
   chartActive: Date;
-  graphDataComboChart = [];
+  graphDataComboChart = [];  
   graphOptionsComboChart = {
       chartArea:{'left':100,'top':100,width:'100%','height':'80%'},
       width: '100%',
@@ -86,7 +86,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // curveType: 'function',
       colors: this.colors,
       seriesType: 'bars',
-      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
+      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},      
+      //series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
       isStacked: true,
       tooltip: {
         isHtml: true
@@ -258,6 +259,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getCapacity(): void {
+    // pk:20201109: const tmpLeaf = this.currentLeaf;
     this.visboCapcity = undefined;
 
     if (this.vcActive ) {
@@ -453,8 +455,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (!this.currentLeaf) {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
-    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
+    this.expandParentTree(this.currentLeaf);
+    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);       
   }
+
 
   initShowUnit(unit: string): void {
     unit = unit == 'PD' ? 'PD' : undefined;
@@ -516,7 +520,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart.title = this.translate.instant('ViewCapacity.titleCapaOverTime');
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
-
+    if (this.refPFV) {
+      this.colors = ['#F7941E', '#FDFDFD' ,'#BDBDBD', '#458CCB'];
+    } else {
+      this.colors = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
+    }
+    this.graphOptionsComboChart.colors = this.colors;
+    if (this.refPFV) {
+      this.graphOptionsComboChart.series = {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 0,lineDashStyle: [4, 4], pointSize: 0}};
+    } else {
+      this.graphOptionsComboChart.series ={0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}};     
+    }
+   
     const graphDataCapacity = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
       this.graphDataComboChart = [];
@@ -640,17 +655,32 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     // set number of gridlines to a fixed count to avoid in between gridlines
     // this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCapacity.length;
-    graphDataCapacity.unshift([
-      'Month',
-      this.translate.instant('ViewCapacity.totalCapaPT'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      this.translate.instant('ViewCapacity.internCapaPT'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      this.translate.instant('ViewCapacity.actualCostPT'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      this.translate.instant('ViewCapacity.plannedCostPT'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}}
-    ]);
+    if (this.refPFV) {
+      graphDataCapacity.unshift([
+        'Month',
+        this.translate.instant('ViewCapacity.budgetPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.budgetBase'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.actualCostPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.plannedCostPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      ]);
+    } else {
+      graphDataCapacity.unshift([
+        'Month',
+        this.translate.instant('ViewCapacity.totalCapaPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.internCapaPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.actualCostPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.plannedCostPT'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      ]);
+    }
+
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCapacity;
@@ -672,41 +702,70 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const actualCostPT = this.translate.instant('ViewCapacity.actualCostPT');
     const plannedCostPT = this.translate.instant('ViewCapacity.plannedCostPT');
     const roleName = this.translate.instant('ViewCapacity.roleName');
+    const budgetPT = this.translate.instant('ViewCapacity.budgetPT');
+    const budgetBase = this.translate.instant('ViewCapacity.budgetBase');
 
-    let internCapa: string, totalCapa: string, actualCost: string, plannedCost: string;
+    let internCapa: string, totalCapa: string, actualCost: string, plannedCost: string, budget: string;
     let unit: string;
-    if (PT) {
-      unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
-      actualCost = (capacity.actualCost_PT || 0).toFixed(0);
-      plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);
-      if (refPFV) {
+
+    if (refPFV) {
+      if (PT) {
+        unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
+        actualCost = (capacity.actualCost_PT || 0).toFixed(0);
+        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);        
         internCapa = (capacity.baselineCost_PT || 0).toFixed(0);
-        totalCapa = (capacity.baselineCost_PT || 0).toFixed(0);
+        budget = (capacity.baselineCost_PT || 0).toFixed(0);       
       } else {
+        unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
+        actualCost = (capacity.actualCost || 0).toFixed(1);
+        plannedCost = (capacity.plannedCost || 0).toFixed(1);
+        internCapa = (capacity.baselineCost || 0).toFixed(1);
+        budget = (capacity.baselineCost || 0).toFixed(1);
+      } 
+
+      result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
+      capacity.roleName + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + budgetPT + ':</td>' + '<td align="right"><b>' + budget + unit + '</b></td>' + '</tr>';
+      // result = result + '<tr>' + '<td>' + budgetBase + ':</td>' + '<td align="right"><b>' + internCapa + unit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + unit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + unit + '</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+      return result;
+
+    } else {
+      if (PT) {
+        unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
+        actualCost = (capacity.actualCost_PT || 0).toFixed(0);
+        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);             
         internCapa = (capacity.internCapa_PT || 0).toFixed(0);
         totalCapa = ((capacity.internCapa_PT || 0) + (capacity.externCapa_PT || 0)).toFixed(0);
-      }
-    } else {
-      unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
-      actualCost = (capacity.actualCost || 0).toFixed(1);
-      plannedCost = (capacity.plannedCost || 0).toFixed(1);
-      if (refPFV) {
-        internCapa = (capacity.baselineCost || 0).toFixed(1);
-        totalCapa = (capacity.baselineCost || 0).toFixed(1);
+    
       } else {
+        unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
+        actualCost = (capacity.actualCost || 0).toFixed(1);
+        plannedCost = (capacity.plannedCost || 0).toFixed(1);       
         internCapa = (capacity.internCapa || 0).toFixed(1);
         totalCapa = ((capacity.internCapa || 0) + (capacity.externCapa || 0)).toFixed(1);
-      }
+        }  
+      result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
+      capacity.roleName + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + unit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + unit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + unit + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + unit + '</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+      return result;
     }
 
-    result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
-              capacity.roleName + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + unit + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + unit + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + unit + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + unit + '</b></td>' + '</tr>';
-    result = result + '</table>' + '</div>' + '</div>';
-    return result;
+
+    // result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
+    //           capacity.roleName + '</b></td>' + '</tr>';
+    // result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + unit + '</b></td>' + '</tr>';
+    // result = result + '<tr>' + '<td>' + internCapaPT + ':</td>' + '<td align="right"><b>' + internCapa + unit + '</b></td>' + '</tr>';
+    // result = result + '<tr>' + '<td>' + actualCostPT + ':</td>' + '<td align="right"><b>' + actualCost + unit + '</b></td>' + '</tr>';
+    // result = result + '<tr>' + '<td>' + plannedCostPT + ':</td>' + '<td align="right"><b>' + plannedCost + unit + '</b></td>' + '</tr>';
+    // result = result + '</table>' + '</div>' + '</div>';
+    // return result;
   }
 
   displayCapacity(): number {
@@ -831,26 +890,29 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const tree = new VisboOrgaTreeLeaf();
     tree.uid = 0;
     tree.name = 'root';
+    tree.parent = null;
     tree.children = [];
     tree.showChildren = true;
 
-    function makeLeaf(value: SubRole): VisboOrgaTreeLeaf {
+    function makeLeaf(value: SubRole, parent:VisboOrgaTreeLeaf): VisboOrgaTreeLeaf {
       const leaf = new VisboOrgaTreeLeaf();
       const hroleID = value.key;
       const hrole = allRoles[hroleID];
       const hroleName = hrole?.name;
       leaf.children = [];
       leaf.uid = hroleID;
-      leaf.name = hroleName;
+      leaf.name = hroleName;  
+      leaf.parent = parent;    
       const children = hrole.subRoleIDs;
       children.forEach(function(child) {
-        leaf.children.push(makeLeaf(child));
+        leaf.children.push(makeLeaf(child, leaf));
       });
       return leaf;
     }
 
     for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
       const topLevelLeaf = new VisboOrgaTreeLeaf();
+      topLevelLeaf.parent = tree;
       topLevelLeaf.children = [];
       topLevelLeaf.uid = topLevelNodes[i].uid;
       topLevelLeaf.name = topLevelNodes[i].name;
@@ -859,7 +921,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
         const sRoles = topLevelNodes[i].subRoleIDs;
         sRoles.forEach(function(sRole) {
-          topLevelLeaf.children.push(makeLeaf(sRole));
+          topLevelLeaf.children.push(makeLeaf(sRole, topLevelLeaf));
         });
       }
       tree.children.push(topLevelLeaf);
@@ -896,6 +958,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.selectLeaf(leaf, leaf.showChildren);
     return;
   }
+  
+  expandParentTree(leaf:VisboOrgaTreeLeaf) {
+    if (leaf.parent === null) return;    
+    leaf.parent.showChildren = true;
+    this.expandParentTree(leaf.parent);
+  }
 
   getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
     let resultLeaf;
@@ -923,7 +991,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
-  }
+  }  
 
   parseDate(dateString: string): Date {
      if (dateString) {
