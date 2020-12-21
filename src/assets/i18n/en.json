@@ -551,11 +551,12 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
-	"ViewCapacity": {
+	"ViewCapacity": {				
+		"titleCapacity": "Capacity Utilisation - Timespam:",
 		"titleBox": "Capacity per Month in Timerange",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
-		"titleTimeFrom": " Capacity Utilisation - Timespam: From",
+		"titleTimeFrom": " From",
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",

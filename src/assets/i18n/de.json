@@ -551,11 +551,12 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"ViewCapacity": {
+	"ViewCapacity": {		
+		"titleCapacity": "Auslastung für den Zeitraum:",
 		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
-		"titleTimeFrom": " Auslastung für den Zeitraum: von",
+		"titleTimeFrom": " von",
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Aufwände",
