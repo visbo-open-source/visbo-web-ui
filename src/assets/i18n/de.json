@@ -177,7 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
-		"titleName": "VISBO Center {{name}}",
+		"titleName": "VISBO Center {{name}} Detail",
 		"titleUsers": "VISBO Center Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Center",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
@@ -302,7 +302,7 @@
 	},
 	"vpDetail": {
 		"title": "VISBO Projekt",
-		"titleName": "Projekt {{name}}",
+		"titleName": "Projekt {{name}} Detail",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Projekt Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
@@ -558,7 +558,7 @@
 		"titleTimeFrom": " Auslastung für den Zeitraum: von",
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
-		"yAxisCapaOverTime": "Monatliche Kosten",
+		"yAxisCapaOverTime": "Monatliche Aufwände",
 		"titleCapaOverTime": "Auslastung: Kapazität vs. Projektkosten",
 		"internCapaPT": "interne Kapazität",
 		"totalCapaPT": "gesamte Kapazität",
@@ -587,8 +587,8 @@
 			"calculating": "Berechnen der Kapzitäten ...",
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
-			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
-			"errorPermOrganisation": "Kein Zugriff auf die Organisation vom VISBO Center {{name}}"
+			"errorPermCapacity": "Keine Berechtigung für Kapazität von {{name}}",
+			"errorPermOrganisation": "Keine Organisation im VISBO Center {{name}}"
 		}
 	},
 	"compViewBubble": {

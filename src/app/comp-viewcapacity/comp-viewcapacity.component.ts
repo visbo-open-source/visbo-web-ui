@@ -136,6 +136,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
     }
+    this.log(`Capacity Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     this.capaLoad = [];
 
     this.visboGetOrganisation();
@@ -147,9 +148,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.initSetting();
       this.getCapacity();
     }
-    // else if (changes.vpvActive) {
-    //   this.getCapacity();
-    // }
   }
 
   onResized(event: ResizedEvent): void {
@@ -161,6 +159,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (diff < 1000) {
       return;
     }
+    if (Math.abs(event.newHeight - event.oldHeight) < 5 && Math.abs(event.newWidth - event.oldWidth) < 5) {
+      return;
+    }
+    this.log(`Capacity Resize ${diff}`);
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
@@ -247,7 +249,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               } else if (this.vcActive) {
                 name = this.vcActive.name;
               }
-              const message = this.translate.instant('ViewCapacity.msg.errorPermOrganisation', {'name': name});
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': name});
               this.log(`Alert: ${message}`);
               this.alertService.error(message, true);
             } else {
@@ -286,7 +288,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           error => {
             this.log(`get VC Capacity failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
-              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vcActive.name});
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermOrganisation', {'name': this.vcActive.name});
               this.alertService.error(message, true);
             } else {
               this.alertService.error(getErrorMessage(error), true);
@@ -315,7 +320,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           error => {
             this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
             if (error.status === 403) {
-              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': this.vpActive.name});
               this.alertService.error(message, true);
             } else {
               this.alertService.error(getErrorMessage(error), true);
@@ -346,7 +351,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           error => {
             this.log(`get VPF Capacity failed: error: ${error.status} message: ${error.error && error.error.message}`);
             if (error.status === 403) {
-              const message = this.translate.instant('ViewCapacity.msg.errorPermVersion', {'name': this.vpActive.name});
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': this.vpActive.name});
               this.alertService.error(message, true);
             } else {
               this.alertService.error(getErrorMessage(error), true);
@@ -414,7 +419,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (markCount < 3) {
       markCount = Math.min(3, capaLoad.length);
     }
-    this.log(`Calculated CapaLoad ${capaLoad.length} Mark ${markCount}`);
+    // this.log(`Calculated CapaLoad ${capaLoad.length} Mark ${markCount}`);
 
     capaLoad.sort(function(a, b) { return b.percentOver - a.percentOver; });
     for (let i=0; i < markCount; i++) {
@@ -430,7 +435,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     for (let i=0; i < capaLoad.length; i++) {
       this.capaLoad[capaLoad[i].uid] = capaLoad[i];
     }
-    this.log(`Calculated Overall CapaLoad ${this.capaLoad.length}`);
+    // this.log(`Calculated Overall CapaLoad ${this.capaLoad.length}`);
   }
 
   visboViewOrganisationTree(): void {
@@ -644,7 +649,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (len < 1) {
       this.log(`visboCapacity Empty`);
     }
-    this.log(`visboCapacity len ${len}`);
+    // this.log(`visboCapacity len ${len}`);
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       const currentDate = new Date(graphDataCapacity[0][0]);

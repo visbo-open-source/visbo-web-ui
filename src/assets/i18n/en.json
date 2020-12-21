@@ -177,7 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
-		"titleName": "VISBO Center {{name}}",
+		"titleName": "VISBO Center {{name}} Detail",
 		"titleUsers": "VISBO Center Users",
 		"titleAddUser": "Add a new User to the VISBO Center",
 		"titleRemoveUser": "Remove a User from a Group",
@@ -302,7 +302,7 @@
 	},
 	"vpDetail": {
 		"title": "VISBO Project",
-		"titleName": "Project {{name}}",
+		"titleName": "Project {{name}} Details",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Project Users",
 		"titleAddUser": "Add a new User to the VISBO Project",
@@ -587,8 +587,8 @@
 			"calculating": "Calculating Capacity ...",
 			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
-			"errorPermCapacity": "Permission denied for this VISBO Capacity ",
-			"errorPermOrganisation": "No Access to the organisation of VISBO Center {{name}}"
+			"errorPermCapacity": "Permission denied for  {{name}} Capacity",
+			"errorPermOrganisation": "No organisation in VISBO Center {{name}}"
 		}
 	},
 	"compViewBubble": {

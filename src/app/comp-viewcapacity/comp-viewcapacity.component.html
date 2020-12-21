@@ -38,18 +38,8 @@
           <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
           {{ 'ViewCapacity.titleBox' | translate }}</h5>
         <div class="card-body p-2">
-          <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'ViewCapacity.lbl.nrProjects', title: '', value: visboprojectversions.length }"></ng-container> -->
-          <!-- <div class="row">
-            <div class="col col-sm-8">
-              {{ 'ViewCapacity.lbl.nrProjects' | translate }}
-            </div>
-            <div class="col col-sm-4 text-right">
-              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
-              {{countKM}} / {{visbokeymetrics.length}}
-            </div>
-          </div> -->
           <div class="row">
-            <div class="col col-sm-8">
+            <div class="col col-sm-6">
               <div *ngIf="showUnit != 'PD'">
                 {{ 'ViewCapacity.lbl.totalCost' | translate }}
               </div>
@@ -57,7 +47,7 @@
                 {{ 'ViewCapacity.lbl.totalCostPT' | translate }}
               </div>
             </div>
-            <div class="col col-sm-4 text-right">
+            <div class="col col-sm-6 text-right">
               <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
               {{sumCost | number:'1.0-0'}}
               <span *ngIf="showUnit != 'PD'">T€</span>
@@ -65,10 +55,10 @@
             </div>
           </div>
           <div class="row">
-            <div class="col col-sm-8" title="{{ 'keyMetrics.longBAC' | translate }}">
+            <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
               {{ 'ViewCapacity.lbl.totalCapa' | translate }}
             </div>
-            <div class="col col-sm-4 text-right">
+            <div class="col col-sm-6 text-right">
               {{sumBudget | number:'1.0-0'}}
               <span *ngIf="showUnit != 'PD'">T€</span>
               <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacity.lbl.pd' | translate }}</span>

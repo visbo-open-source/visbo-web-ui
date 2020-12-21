@@ -43,7 +43,7 @@
             <p class="card-text">{{vp.description}}</p>
             <!-- <p class="card-subtitle">{{vp.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
-              <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpvCount}} {{'dashboard.versions' | translate}}</button>
+              <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpfCount || vp.vpvCount}} {{'dashboard.versions' | translate}}</button>
               <button type="button" class="mx-1 btn btn-secondary" (click)="gotoClickedVpDetail(vp)">{{'dashboard.detail' | translate}}</button>
             </div>
           </div> <!-- end of card-body -->
