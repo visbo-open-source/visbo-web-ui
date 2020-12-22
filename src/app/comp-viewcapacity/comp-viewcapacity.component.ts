@@ -59,7 +59,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
-  currentRefDate: Date;  
+  currentRefDate: Date;
 
   sumCost = 0;
   sumBudget = 0;
@@ -72,9 +72,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
   colors= ['#F7941E', '#BDBDBD', '#458CCB'];
-    
+
   chartActive: Date;
-  graphDataComboChart = [];  
+  graphDataComboChart = [];
   graphOptionsComboChart = {
       chartArea:{'left':100,'top':100,width:'100%','height':'80%'},
       width: '100%',
@@ -86,7 +86,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // curveType: 'function',
       colors: this.colors,
       seriesType: 'bars',
-      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},      
+      series: {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}},
       //series: {0: {type: 'line', lineWidth: 4, pointSize: 0}},
       isStacked: true,
       tooltip: {
@@ -159,10 +159,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (diff < 1000) {
       return;
     }
-    if (Math.abs(event.newHeight - event.oldHeight) < 5 && Math.abs(event.newWidth - event.oldWidth) < 5) {
+    // check only width for redraw chart
+    if (Math.abs(event.newWidth - event.oldWidth) < 5) {
       return;
     }
-    this.log(`Capacity Resize ${diff}`);
+    this.log(`Capacity Resize ${diff} ${Math.abs(event.newHeight - event.oldHeight)} ${Math.abs(event.newWidth - event.oldWidth)}`);
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
@@ -461,7 +462,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.currentLeaf = this.orgaTreeData.children[0];
     }
     this.expandParentTree(this.currentLeaf);
-    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);       
+    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
   }
 
 
@@ -534,9 +535,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.refPFV) {
       this.graphOptionsComboChart.series = {0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 0,lineDashStyle: [4, 4], pointSize: 0}};
     } else {
-      this.graphOptionsComboChart.series ={0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}};     
+      this.graphOptionsComboChart.series ={0: {type: 'line', lineWidth: 4, pointSize: 0}, 1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}};
     }
-   
+
     const graphDataCapacity = [];
     if (!this.visboCapcity || this.visboCapcity.length === 0) {
       this.graphDataComboChart = [];
@@ -717,16 +718,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (PT) {
         unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
         actualCost = (capacity.actualCost_PT || 0).toFixed(0);
-        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);        
+        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);
         internCapa = (capacity.baselineCost_PT || 0).toFixed(0);
-        budget = (capacity.baselineCost_PT || 0).toFixed(0);       
+        budget = (capacity.baselineCost_PT || 0).toFixed(0);
       } else {
         unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
         actualCost = (capacity.actualCost || 0).toFixed(1);
         plannedCost = (capacity.plannedCost || 0).toFixed(1);
         internCapa = (capacity.baselineCost || 0).toFixed(1);
         budget = (capacity.baselineCost || 0).toFixed(1);
-      } 
+      }
 
       result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
       capacity.roleName + '</b></td>' + '</tr>';
@@ -741,17 +742,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (PT) {
         unit = ' ' + this.translate.instant('ViewCapacity.lbl.pd');
         actualCost = (capacity.actualCost_PT || 0).toFixed(0);
-        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);             
+        plannedCost = (capacity.plannedCost_PT || 0).toFixed(0);
         internCapa = (capacity.internCapa_PT || 0).toFixed(0);
         totalCapa = ((capacity.internCapa_PT || 0) + (capacity.externCapa_PT || 0)).toFixed(0);
-    
+
       } else {
         unit = ' ' + this.translate.instant('ViewCapacity.lbl.euro');
         actualCost = (capacity.actualCost || 0).toFixed(1);
-        plannedCost = (capacity.plannedCost || 0).toFixed(1);       
+        plannedCost = (capacity.plannedCost || 0).toFixed(1);
         internCapa = (capacity.internCapa || 0).toFixed(1);
         totalCapa = ((capacity.internCapa || 0) + (capacity.externCapa || 0)).toFixed(1);
-        }  
+        }
       result = result + '<tr>' + '<td>' + roleName + ':</td>' + '<td><b>' +
       capacity.roleName + '</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' + totalCapaPT + ':</td>' + '<td align="right"><b>' + totalCapa + unit + '</b></td>' + '</tr>';
@@ -906,8 +907,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       const hroleName = hrole?.name;
       leaf.children = [];
       leaf.uid = hroleID;
-      leaf.name = hroleName;  
-      leaf.parent = parent;    
+      leaf.name = hroleName;
+      leaf.parent = parent;
       const children = hrole.subRoleIDs;
       children.forEach(function(child) {
         leaf.children.push(makeLeaf(child, leaf));
@@ -963,9 +964,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.selectLeaf(leaf, leaf.showChildren);
     return;
   }
-  
+
   expandParentTree(leaf:VisboOrgaTreeLeaf): void {
-    if (leaf.parent === null) return;    
+    if (leaf.parent === null) return;
     leaf.parent.showChildren = true;
     this.expandParentTree(leaf.parent);
   }
@@ -996,7 +997,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
-  }  
+  }
 
   parseDate(dateString: string): Date {
      if (dateString) {
@@ -1011,6 +1012,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
+    // console.log('CompVisboViewCapcity: ' + message);
     this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 

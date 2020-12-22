@@ -3,8 +3,8 @@
 
     <div class="row row-cols-1 row-cols-lg-2">
       <div class="col col-sm-12 col-lg-8">
-        <div class="row text-dark">
-          <span class="row ml-1">
+        <div class="text-dark">
+          <div class="row ml-1">
             <span >
               <label class="pt-2 mr-2">{{ 'ViewCapacity.titleCapacity' | translate }}</label>
             </span>
@@ -30,9 +30,9 @@
                   <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
                 </div>
               </span>
-            </div>         
-          </span>
-          <div *ngIf="!vpvActive" class="ml-1 pt-3 pb-2 form-check">
+            </div>
+          </div>
+          <div *ngIf="!vpvActive" class="row ml-1 pt-3 pb-2 form-check">
             <span >
               <input type="checkbox" class="form-check-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV" [ngModelOptions]="{standalone: true}">
               <label class="form-check-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
