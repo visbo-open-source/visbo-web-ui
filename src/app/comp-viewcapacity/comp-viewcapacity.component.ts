@@ -697,8 +697,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`chart Select Row ${row} ${label} ${value} `);
   }
 
-  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean, refPFV = false): string {
-    const currentDate = convertDate(new Date(capacity.month), 'fullDate', this.currentLang);
+  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean, refPFV = false): string {    
+    const currentDate = convertDate(new Date(capacity.month), 'shortDate', this.currentLang);
+    //const currentDate = convertDate(new Date(capacity.month), 'fullDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
       '<table>';
