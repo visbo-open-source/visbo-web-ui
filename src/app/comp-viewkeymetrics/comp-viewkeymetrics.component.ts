@@ -101,7 +101,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         ticks: undefined
       },
       hAxis: {
-        format: 'MMM YY',
+        format: 'MMM yy',
         gridlines: {
           count: -1
         },
@@ -132,7 +132,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         ticks: undefined
       },
       hAxis: {
-        format: 'MMM YY',
+        format: 'MMM yy',
         gridlines: {
           count: -1
         },
