@@ -59,7 +59,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         minorGridlines: {count: 0, color: 'none'}
       },
       hAxis: {
-        format: 'MMM YY',
+        format: 'MMM yy',
         gridlines: {
           color: '#FFF',
           count: -1
