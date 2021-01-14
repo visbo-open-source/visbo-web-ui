@@ -273,7 +273,8 @@
 			"versions": "# Versionen",
 			"vc": "VISBO Center",
 			"detail": "Detail",
-			"description": "Beschreibung"
+			"description": "Beschreibung",
+			"type": "Typ"
 		},
 		"type": {
 			"vpType0": "Projekt",
@@ -287,12 +288,12 @@
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",
 			"viewList": "Liste",
-			"create": "Neues Projekt",
+			"create": "Hinzufügen",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
 		},
 		"msg": {
-			"createSuccess": "VISBO Projekt {{name}} wurde erfolgreich angelegt",
+			"createSuccess": "VISBO {{vpType}} {{name}} wurde erfolgreich angelegt",
 			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
@@ -551,7 +552,7 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"ViewCapacity": {		
+	"ViewCapacity": {
 		"titleCapacity": "Auslastung für den Zeitraum:",
 		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
@@ -793,24 +794,32 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
+		"titleVPList": "Projekt Liste für {{name}}",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
 			"month": "Monat",
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}"
+			"nextPeriod": "Periode nach {{refDate}}",
+			"isChecked": "Ausgewählt"
 		},
 		"btn": {
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
-			"viewProjectBoard": "Projekttafel"
+			"editPFList": "Portfolio Liste ändern",
+			"viewProjectBoard": "Projekttafel",
+			"save": "Speichern",
+			"back": "Zurück"
 		},
 		"msg": {
+			"createVPFSuccess": "Portfolio {{name}}: Liste wurde erfolgreich gespeichert",
+			"noProjectList": "Dieses Portfolio hat keine Projektliste",
 			"noVersions": "Keine Projekte zu diesen Kriterien",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorVPFPerm": "Keine Berechtigung für VISBO Portfolio {{name}} Liste",
 			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte sichtbar"
 		}
 	},

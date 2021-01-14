@@ -1,11 +1,11 @@
 <app-usernavbar></app-usernavbar>
 <div class='well'>
-  <div *ngIf="vpActive && vpfActive" class='row'>
+  <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="vpfActive.variantName" class="ml-1"> ({{vpfActive.variantName}})</span>
+        <span *ngIf="vpfActive && vpfActive.variantName" class="ml-1"> ({{vpfActive.variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
           <div class="dropdown-menu">
@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div *ngIf="vpfActive" class="container-fluid">
     <div class="row">
       <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
@@ -40,18 +40,26 @@
       </div>
     </div>
     <div class="row d-print-none">
-      <div class="col-9 btn-toolbar" style="padding: unset;">
+      <div class="col btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
-      <div class="col-3 mt-2 text-warning text-right" *ngIf="isVersionMismatch()">
-          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
+      <div class="align-items-end btn-toolbar" style="padding: unset;">
+        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFLIst">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
       </div>
     </div>
+    <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
+        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
+    </div>
   </div>
-
+  <div *ngIf="!vpfActive" class="container-fluid text-danger">
+    {{ 'vpfVersion.msg.noProjectList' | translate }}
+    <div *ngIf="hasVPPerm(permVP.Modify)" class="btn-toolbar my-3" style="padding: unset;">
+      <button type="button" class="btn btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFLIst">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+    </div>
+  </div>
 
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive">
     <hr>
@@ -69,4 +77,51 @@
     <hr>
     <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
   </div>
+
+  <!-- Modal Edit VPF List -->
+  <div *ngIf="vpActive" class="modal fade" id="VPFLIst" tabindex="-1" role="dialog" aria-labelledby="VPFLIstTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VPFLIstTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpActive.name} }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="permVP0" name="checkedViewRestricted" >
+            <label class="custom-control-label" for="permVP1">{{ 'perm.vpViewRestricted' | translate }}</label>
+          </div> -->
+          <!-- VP List -->
+          <table *ngIf="vpCheckListAll.length > 0" class='table table-hover table-sortable'>
+            <thead id="VPHead">
+              <tr>
+                <th id="SorChecked" (click)="sortVPTable(3)">{{ 'vpfVersion.lbl.isChecked' | translate }}</th>
+                <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
+                <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
+              </tr>
+            </thead>
+
+            <tbody id="VPList">
+              <tr *ngFor="let item of vpCheckListAll">
+                <td id="ColChecked">
+                  <input type="checkbox" [(ngModel)]="item.isChecked">
+                </td>
+                <td id="ColName"><a>{{item.vp.name}}</a></td>
+                <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
+              </tr>
+            </tbody>
+
+          </table>
+
+          <div class="modal-footer align-items-end">
+            <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+            <button id="Save" type="submit" class="btn btn-primary mx-1" (click)="updateVPF()" data-dismiss="modal">{{ 'vpfVersion.btn.save' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

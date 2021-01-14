@@ -31,6 +31,7 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
+  vpType = 0;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -194,17 +195,20 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  addproject(name: string, vcid: string, desc: string): void {
+  addproject(name: string, vcid: string, desc: string, type: number): void {
     name = name.trim();
     this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} `);
     if (!name) { return; }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid } as VisboProject).subscribe(
+    if (type != 1 && type != 2) { type = 0 }
+    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid, vpType: type } as VisboProject).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        const message = this.translate.instant('vp.msg.createSuccess', {name: vp.name});
-        this.alertService.success(message);
+        const vpType = this.translate.instant('vp.type.vpType'.concat(type.toString()));
+        const message = this.translate.instant('vp.msg.createSuccess', {name: vp.name, vpType: vpType});
+        this.alertService.success(message, true);
+        this.gotoClickedRow(vp);
       },
       error => {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
@@ -219,6 +223,7 @@ export class VisboProjectsComponent implements OnInit {
         }
       }
     );
+    this.vpType = 0;
   }
 
   getVisboProjectKeyMetrics(): void {
