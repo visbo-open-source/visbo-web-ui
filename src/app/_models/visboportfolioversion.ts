@@ -20,6 +20,10 @@ export class VisboPortfolioVersion {
   sortList: [string];
   updatedAt: Date;
   createdAt: Date;
+  updatedFrom: {
+    userId: string;
+    email: string;
+  };
   deleted: {
     deletedAt: Date;
     byParent: boolean;

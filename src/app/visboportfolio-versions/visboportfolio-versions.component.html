@@ -97,7 +97,10 @@
           <table *ngIf="vpCheckListAll.length > 0" class='table table-hover table-sortable'>
             <thead id="VPHead">
               <tr>
-                <th id="SorChecked" (click)="sortVPTable(3)">{{ 'vpfVersion.lbl.isChecked' | translate }}</th>
+                <th id="SorChecked">
+                  <input type="checkbox" [(ngModel)]="isGlobalChecked" (change)="globalChecked()">
+                  <span (click)="sortVPTable(3)"> {{ 'vpfVersion.lbl.isChecked' | translate }}</span>
+                </th>
                 <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
                 <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
               </tr>

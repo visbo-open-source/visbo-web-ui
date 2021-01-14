@@ -7,6 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
+import { AuthenticationService } from '../_services/authentication.service';
+
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
@@ -60,6 +62,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     hasOrga = false;
 
     pageParams = new VPFParams();
+    isGlobalChecked = false;
 
     sortAscending: boolean;
     sortColumn: number;
@@ -75,6 +78,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private authenticationService: AuthenticationService,
     private router: Router,
     private translate: TranslateService,
     private titleService: Title
@@ -277,6 +281,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   initVPF(visboprojects: VisboProject[]): void {
+    this.isGlobalChecked = false;
     this.vpCheckListAll = [];
     visboprojects.forEach(item => {
       if (item.vpType == 0) {
@@ -302,6 +307,16 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  globalChecked(): void {
+    this.log(`Switch Global Check ${this.isGlobalChecked}`);
+    let vpCheckListAll = [];
+    this.vpCheckListAll.forEach(item => {
+      item.isChecked = this.isGlobalChecked;
+      vpCheckListAll.push(item);
+    });
+    this.vpCheckListAll = vpCheckListAll;
+  }
+
   updateVPF(): void {
     this.log(`init VPF Item List`);
     let newVPF = new VisboPortfolioVersion();
@@ -319,32 +334,67 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         newVPF.allItems.push(entry);
       }
     });
+    var updateVPF = false;
     if (this.vpfActive) {
+      let user = this.authenticationService.getActiveUser();
       this.log(`update VPF List ${this.vpCheckListAll.length}`);
       newVPF.variantName = this.vpfActive.variantName;
-    }
-    this.log(`create VPF List ${this.vpCheckListAll.length}`);
-    this.visboprojectversionService.addVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
-      vpf => {
-        console.log("add VPF %s with ID %s to VC %s VPF Len %s", vpf.name, vpf._id, vpf.vcid, vpf.allItems.length);
-        const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
-        this.alertService.success(message, true);
-        // Extend VPF List
-        this.visboportfolioversions.push(vpf);
-        this.vpfActive = vpf;
-        this.dropDownInit();
-        this.getVisboPortfolioKeyMetrics();
-      },
-      error => {
-        this.log(`add VPF failed: error: ${error.status} messages: ${error.error.message}`);
-        if (error.status === 403) {
-          const message = this.translate.instant('vpfVersion.msg.errorVPFPerm', {name: name});
-          this.alertService.error(message);
-        } else {
-          this.alertService.error(getErrorMessage(error));
-        }
+      let today = new Date();
+      today.setHours(0,0,0,0);
+      if (user && user._id == this.vpfActive.updatedFrom?.userId
+      && (this.vpfActive.timestamp && this.vpfActive.timestamp.getTime() > today.getTime())) {
+        newVPF._id =this.vpfActive._id;
+        updateVPF = true;
       }
-    );
+    }
+    if (updateVPF) {
+      this.log(`update VPF List ${this.vpCheckListAll.length}`);
+      this.visboprojectversionService.updateVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
+        vpf => {
+          console.log("update VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
+          const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
+          this.alertService.success(message, true);
+          // Update VPF List
+          let index = this.visboportfolioversions.findIndex(item => item._id == vpf._id);
+          if (index >= 0) {
+            this.vpfActive = vpf;
+            this.getVisboPortfolioKeyMetrics();
+          }
+        },
+        error => {
+          this.log(`add VPF failed: error: ${error.status} messages: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpfVersion.msg.errorVPFPerm', {name: name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+    } else {
+      this.log(`create VPF List ${this.vpCheckListAll.length}`);
+      this.visboprojectversionService.addVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
+        vpf => {
+          console.log("add VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
+          const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
+          this.alertService.success(message, true);
+          // Extend VPF List
+          this.visboportfolioversions.push(vpf);
+          this.vpfActive = vpf;
+          this.dropDownInit();
+          this.getVisboPortfolioKeyMetrics();
+        },
+        error => {
+          this.log(`add VPF failed: error: ${error.status} messages: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpfVersion.msg.errorVPFPerm', {name: name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+    }
   }
 
   evaluateDirection(): void {
