@@ -5,9 +5,8 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="vpfActive && vpfActive.variantName" class="ml-1"> ({{vpfActive.variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, true)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
           </div>
@@ -89,6 +88,15 @@
           </button>
         </div>
         <div class="modal-body">
+
+          <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
+            {{ 'vpfVersion.lbl.variant' | translate }}:
+            <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{dropDownVariantSelected}}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchVariant(item.version)">{{ item.name }}</a>
+            </div>
+          </div>
+
           <!-- <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" id="permVP0" name="checkedViewRestricted" >
             <label class="custom-control-label" for="permVP1">{{ 'perm.vpViewRestricted' | translate }}</label>

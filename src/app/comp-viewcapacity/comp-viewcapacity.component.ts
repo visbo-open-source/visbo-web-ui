@@ -47,6 +47,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
+  lastTimestampVPF: Date;
   visboCapcity: VisboCapacity[];
   visboCapcityChild: VisboCapacity[];
   vcorganisation: VisboSetting[];
@@ -138,13 +139,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     this.log(`Capacity Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     this.capaLoad = [];
+    this.lastTimestampVPF = this.vpfActive.timestamp;
 
     this.visboGetOrganisation();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
-    if (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime()) {
+    // refresh calculation if refDate has changed or the timestamp of the VPF has changed
+    if ((this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())
+    || (this.lastTimestampVPF !== this.vpfActive.timestamp)
+    ) {
       this.initSetting();
       this.getCapacity();
     }
@@ -564,7 +569,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
       const currentDate = new Date(capacity[i].month);
       currentDate.setHours(2, 0, 0, 0);
-      if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {  
+      if ((currentDate >= this.capacityFrom && currentDate <= this.capacityTo)) {
         const roleID = this.currentLeaf.uid;
         if (this.refPFV) {
           // capa Values compared against baseline Values
@@ -575,7 +580,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             this.sumCost += actualCost + plannedCost;
             this.sumBudget += budget;
             graphDataCapacity.push([
-              currentDate,              
+              currentDate,
               capacity[i].roleID == roleID ? budget : undefined,
               capacity[i].roleID == roleID ? this.createCustomHTMLContent(capacity[i], true, this.refPFV) : undefined,
               capacity[i].roleID == roleID ? 0 : undefined,
@@ -654,7 +659,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       const currentDate = new Date(graphDataCapacity[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1); 
+      currentDate.setMonth(currentDate.getMonth()+1);
       graphDataCapacity.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
@@ -697,7 +702,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`chart Select Row ${row} ${label} ${value} `);
   }
 
-  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean, refPFV = false): string {    
+  createCustomHTMLContent(capacity: VisboCapacity, PT: boolean, refPFV = false): string {
     const currentDate = convertDate(new Date(capacity.month), 'shortDate', this.currentLang);
     //const currentDate = convertDate(new Date(capacity.month), 'fullDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +

@@ -45,6 +45,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     dropDown: DropDown[] = [];
     dropDownSelected: string;
     dropDownValue: number;
+
+    dropDownVariant: DropDown[] = [];
+    dropDownVariantSelected: string;
+    dropDownVariantValue: number;
+
     views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
 
     vpSelected: string;
@@ -334,17 +339,20 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         newVPF.allItems.push(entry);
       }
     });
+    newVPF.variantName = this.dropDownVariantSelected;
     var updateVPF = false;
     if (this.vpfActive) {
       let user = this.authenticationService.getActiveUser();
       this.log(`update VPF List ${this.vpCheckListAll.length}`);
-      newVPF.variantName = this.vpfActive.variantName;
       let today = new Date();
       today.setHours(0,0,0,0);
+      let actual = this.vpfActive.timestamp ? new Date(this.vpfActive.timestamp) : undefined;
       if (user && user._id == this.vpfActive.updatedFrom?.userId
-      && (this.vpfActive.timestamp && this.vpfActive.timestamp.getTime() > today.getTime())) {
-        newVPF._id =this.vpfActive._id;
-        updateVPF = true;
+      && (actual && actual.getTime() > today.getTime())) {
+        if (this.dropDownVariantSelected == this.vpfActive.variantName) {
+          newVPF._id = this.vpfActive._id;
+          updateVPF = true;
+        }
       }
     }
     if (updateVPF) {
@@ -395,6 +403,14 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         }
       );
     }
+  }
+
+  getVariantName(vpf: VisboPortfolioVersion, style = false): void {
+    let result = this.vpfActive ? this.vpfActive.variantName : '';
+    if (result.length & style) {
+      result = '('.concat(result, ')');
+    }
+    return result;
   }
 
   evaluateDirection(): void {
@@ -537,7 +553,36 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     if (len > 0 ) {
       this.dropDownSelected = this.dropDown[0].name;
     }
-    // this.log(`Init Drop Down List Finished ${this.dropDown.length} Selected ${this.dropDownSelected}`);
+    this.dropDownVariantInit();
+  }
+
+  dropDownVariantInit(): void {
+    this.log(`Init Variant Drop Down List ${this.vpActive.variant.length}`);
+    this.dropDownVariant = [];
+    let index = 1;
+
+    this.vpActive.variant.forEach(item => {
+      this.dropDownVariant.push({name: item.variantName, version: index++, timestamp: undefined });
+    });
+    // this.dropDownVariant.sort(function (a, b) { visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
+    this.dropDownVariant.splice(0, 0, {name: 'Default', version: 0, timestamp: undefined });
+    index = 0;
+    if (this.vpfActive.variantName) {
+      const i = this.dropDownVariant.findIndex(item => item.name === this.vpfActive.variantName);
+      if (i >= 0) {
+          index = i;
+      }
+    } else {
+      this.dropDownVariantSelected = this.dropDownVariant[index].name;
+    }
+  }
+
+  switchVariant(i: number): void {
+    this.log(`Change Variant Drop Down ${i} `);
+    if (i >= 0 && i < this.dropDownVariant.length) {
+      this.dropDownVariantValue = i;
+      this.dropDownVariantSelected = this.dropDownVariant[i].name;
+    }
   }
 
   switchPFVersion(i: number): void {

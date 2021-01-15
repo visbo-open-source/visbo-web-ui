@@ -802,6 +802,7 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
+			"variant": "Variante",
 			"isChecked": "Ausgewählt"
 		},
 		"btn": {
