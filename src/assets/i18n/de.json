@@ -471,6 +471,7 @@
 		"lbl": {
 			"project": "Projekt",
 			"name": "Name",
+			"defaultVariant": "Standard",
 			"value": "Wert",
 			"info": "Info",
 			"startDate": "Projekt Start",
@@ -802,7 +803,11 @@
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
+			"name": "Projekt",
 			"variant": "Variante",
+			"modified": "Änderung",
+			"filter": "Filter Projekte",
+			"defaultVariant": "Standard",
 			"isChecked": "Ausgewählt"
 		},
 		"btn": {

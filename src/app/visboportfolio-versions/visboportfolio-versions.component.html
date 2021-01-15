@@ -6,7 +6,7 @@
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, true)}}</a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
           </div>
@@ -88,34 +88,35 @@
           </button>
         </div>
         <div class="modal-body">
-
-          <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
-            {{ 'vpfVersion.lbl.variant' | translate }}:
-            <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{dropDownVariantSelected}}</a>
-            <div class="dropdown-menu">
-              <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchVariant(item.version)">{{ item.name }}</a>
+          <div class="d-flex">
+            <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
+              {{ 'vpfVersion.lbl.variant' | translate }}:
+              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
+              <div class="dropdown-menu">
+                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
+              </div>
+            </div>
+            <div class="ml-auto">
+              <span> {{ 'vpfVersion.lbl.filter' | translate }}:</span>
+              <input class="mb-2 ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+              <a class="ml-2" (click)="filterVPList(true)"><i class="far fa-times-circle"></i></a>
             </div>
           </div>
-
-          <!-- <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="permVP0" name="checkedViewRestricted" >
-            <label class="custom-control-label" for="permVP1">{{ 'perm.vpViewRestricted' | translate }}</label>
-          </div> -->
           <!-- VP List -->
-          <table *ngIf="vpCheckListAll.length > 0" class='table table-hover table-sortable'>
+          <table *ngIf="vpCheckListFiltered.length > 0" class='table table-hover table-sortable'>
             <thead id="VPHead">
               <tr>
                 <th id="SorChecked">
                   <input type="checkbox" [(ngModel)]="isGlobalChecked" (change)="globalChecked()">
                   <span (click)="sortVPTable(3)"> {{ 'vpfVersion.lbl.isChecked' | translate }}</span>
                 </th>
-                <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
-                <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
+                <th id="SortName" (click)="sortVPTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
+                <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vpfVersion.lbl.modified' | translate }}</th>
               </tr>
             </thead>
 
             <tbody id="VPList">
-              <tr *ngFor="let item of vpCheckListAll">
+              <tr *ngFor="let item of vpCheckListFiltered">
                 <td id="ColChecked">
                   <input type="checkbox" [(ngModel)]="item.isChecked">
                 </td>
