@@ -2,6 +2,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -153,6 +154,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
   ],
   providers: [
     Title,
+    DatePipe,
     AuthGuard,
     AlertService,
     AuthenticationService,

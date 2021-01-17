@@ -46,7 +46,7 @@
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
       <div class="align-items-end btn-toolbar" style="padding: unset;">
-        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFLIst">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
       </div>
     </div>
     <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
@@ -56,7 +56,7 @@
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
     {{ 'vpfVersion.msg.noProjectList' | translate }}
     <div *ngIf="hasVPPerm(permVP.Modify)" class="btn-toolbar my-3" style="padding: unset;">
-      <button type="button" class="btn btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFLIst">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+      <button type="button" class="btn btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
     </div>
   </div>
 
@@ -78,11 +78,11 @@
   </div>
 
   <!-- Modal Edit VPF List -->
-  <div *ngIf="vpActive" class="modal fade" id="VPFLIst" tabindex="-1" role="dialog" aria-labelledby="VPFLIstTitle" aria-hidden="true">
+  <div *ngIf="vpActive" class="modal fade" id="VPFList" tabindex="-1" role="dialog" aria-labelledby="VPFListTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VPFLIstTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpActive.name} }}</h5>
+          <h5 class="modal-title" id="VPFListTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpActive.name, 'from': (vpfActive ? vpfActive.timestamp : vpActive.updatedAt) | date: 'dd.MM.yyyy'} }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -93,7 +93,7 @@
               {{ 'vpfVersion.lbl.variant' | translate }}:
               <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
               <div class="dropdown-menu">
-                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
+                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchEditVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
               </div>
             </div>
             <div class="ml-auto">
@@ -124,13 +124,57 @@
                 <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
               </tr>
             </tbody>
-
           </table>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button *ngIf="hasVPPerm(permVP.DeleteVP)" id="Delete" type="submit" class="btn btn-warning mx-1" data-dismiss="modal" data-toggle="modal" id="DeleteVPFListID" data-target="#DeleteVPFList">{{ 'vpfVersion.btn.delete' | translate }}</button>
+          <button id="Save" type="submit" class="btn btn-primary mx-1" (click)="updateVPF()" data-dismiss="modal">{{ 'vpfVersion.btn.save' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <div class="modal-footer align-items-end">
-            <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
-            <button id="Save" type="submit" class="btn btn-primary mx-1" (click)="updateVPF()" data-dismiss="modal">{{ 'vpfVersion.btn.save' | translate }}</button>
+  <!-- Modal Delete VPF List Confirm -->
+  <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" tabindex="-1" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="DeleteVPFListTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpfActive.name, 'from': vpfActive.timestamp | date: 'dd.MM.yyyy' } }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning text-dark">{{ 'vpfVersion.msg.removeVPFConfirm' | translate }}</label>
           </div>
+          <form>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.name' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.name }} </label>
+            </div>
+            <div *ngIf="vpfActive.variantName" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.variant' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.variantName }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.from' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.timestamp | date: 'dd.MM.yyyy' }} </label>
+            </div>
+            <div *ngIf="vpfActive.allItems.length > 0" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.nrOfItems' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.allItems.length }}</label>
+            </div>
+            <div *ngIf="vpfActive.updatedFrom" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.user' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.updatedFrom.email }}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button *ngIf="hasVPPerm(permVP.DeleteVP)" id="Delete" type="submit" class="btn btn-warning mx-1" (click)="deleteVPF(vpfActive)" data-dismiss="modal">{{ 'vpfVersion.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>

@@ -795,7 +795,7 @@
 		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
 		"titleRessourceChange": "Change Ressource",
-		"titleVPList": "Project list for {{name}}",
+		"titleVPList": "Project list for {{name}} from {{from}}",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -806,8 +806,11 @@
 			"name": "Project",
 			"variant": "Variant",
 			"modified": "Modified",
-			"filter": "Filter Projects",
+			"filter": "Filter",
 			"defaultVariant": "Standard",
+			"nrOfItems": "Nr. of Projects",
+			"user": "Created by",
+			"from": "From",
 			"isChecked": "Selected"
 		},
 		"btn": {
@@ -817,12 +820,15 @@
 			"editPFList": "Edit Portfolio List",
 			"viewProjectBoard": "Project Board",
 			"save": "Save",
+			"delete": "Delete",
 			"back": "Back"
 		},
 		"msg": {
 			"createVPFSuccess": "Portfolio {{name}}: List was saved successfully",
+			"removeVPFSuccess": "Portfolio {{name}}: List from {{from}} was deleted successfully",
 			"noProjectList": "This portfolio does not have a project list",
 			"noVersions": "No Project Versions related to this Date",
+			"removeVPFConfirm": "Do you really want to remove this Portfolio Project List?",
 			"errorPermVP": "No Permission for this Proects",
 			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
 			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List",

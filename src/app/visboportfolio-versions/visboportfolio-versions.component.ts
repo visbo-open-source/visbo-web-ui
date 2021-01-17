@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -86,6 +87,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     private authenticationService: AuthenticationService,
     private router: Router,
     private translate: TranslateService,
+    private datePipe: DatePipe,
     private titleService: Title
   ) { }
 
@@ -286,6 +288,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   initVPF(visboprojects: VisboProject[]): void {
+    this.dropDownVariantSelected = this.vpfActive.variantName;
     this.isGlobalChecked = false;
     this.vpCheckListAll = [];
     visboprojects.forEach(item => {
@@ -423,6 +426,38 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
+  deleteVPF(vpf: VisboPortfolioVersion): void {
+    this.log(`Remove VisboPortfolioVersion: ${vpf.name} from:  ${vpf.timestamp}`);
+    this.visboprojectversionService.deleteVisboPortfolioVersion(vpf)
+      .subscribe(
+        () => {
+          const from = this.datePipe.transform(vpf.timestamp, 'dd.MM.yy');
+          // const from = vpf.timestamp.toISOString();
+          const message = this.translate.instant('vpfVersion.msg.removeVPFSuccess', {'name': vpf.name, 'from': from });
+          let index = this.visboportfolioversions.findIndex(item => item._id == vpf._id);
+          this.visboportfolioversions.splice(index, 1);
+          if (index >= this.visboportfolioversions.length) {
+            index = this.visboportfolioversions.length - 1;
+          }
+          if (index >= 0) {
+            this.dropDownInit()
+            this.switchPFVersion(index);
+          }
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Remove VisboPortfolioVersion error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpfVersion.msg.errorPerm', {'name': vpf.name});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during VisboPortfolioVersion ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   getVariantName(vpf: VisboPortfolioVersion, replace = false, style = false): string {
     let result = '';
     if (vpf) {
@@ -433,7 +468,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     if (result == '' && replace) {
       result = this.translate.instant('vpfVersion.lbl.defaultVariant');
     }
-    if (style) {
+    if (result && style) {
       result = '('.concat(result, ')');
     }
     return result;
@@ -602,7 +637,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.dropDownVariantSelected = this.dropDownVariant[index].name;
   }
 
-  switchVariant(i: number): void {
+  switchEditVariant(i: number): void {
     this.log(`Change Variant Drop Down ${i} `);
     if (i >= 0 && i < this.dropDownVariant.length) {
       this.dropDownVariantSelected = this.dropDownVariant[i].name;
@@ -612,6 +647,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   switchPFVersion(i: number): void {
     this.log(`Change Drop Down ${i} `);
     this.vpfActive = this.visboportfolioversions[i];
+    this.dropDownVariantSelected = this.vpfActive.variantName;
     this.getVisboPortfolioKeyMetrics();
 
     // MS TODO: do we have to reset the refDate???

@@ -795,7 +795,7 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
-		"titleVPList": "Projekt Liste für {{name}}",
+		"titleVPList": "Projekt Liste für {{name}} vom {{from}}",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -806,8 +806,11 @@
 			"name": "Projekt",
 			"variant": "Variante",
 			"modified": "Änderung",
-			"filter": "Filter Projekte",
+			"filter": "Filter",
 			"defaultVariant": "Standard",
+			"nrOfItems": "Anzahl Projekte",
+			"user": "Erstellt von",
+			"from": "Vom",
 			"isChecked": "Ausgewählt"
 		},
 		"btn": {
@@ -817,12 +820,15 @@
 			"editPFList": "Portfolio Liste ändern",
 			"viewProjectBoard": "Projekttafel",
 			"save": "Speichern",
+			"delete": "Löschen",
 			"back": "Zurück"
 		},
 		"msg": {
 			"createVPFSuccess": "Portfolio {{name}}: Liste wurde erfolgreich gespeichert",
+			"removeVPFSuccess": "Portfolio {{name}}: Liste vom {{from}} wurde erfolgreich gelöscht",
 			"noProjectList": "Dieses Portfolio hat keine Projektliste",
 			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"removeVPFConfirm": "Wollen Sie die Portfolio Liste wirklich löschen?",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"errorVPFPerm": "Keine Berechtigung für VISBO Portfolio {{name}} Liste",

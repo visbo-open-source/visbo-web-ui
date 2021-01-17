@@ -176,6 +176,24 @@ export class VisboProjectVersionService {
       );
   }
 
+  /** DELETE: delete VISBO Portfolio Version from the server */
+  deleteVisboPortfolioVersion (vpf: VisboPortfolioVersion, deleted = false): Observable<VisboPortfolioVersion> {
+    const id = vpf._id;
+    const vpid = vpf.vpid;
+    const url = `${this.vpfUrl}/${vpid}/portfolio/${id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request Delete: ${url} Params ${params}`);
+
+    return this.http.delete<VisboPortfolioVersion>(url, { headers , params }).pipe(
+      tap(() => this.log(`deleted VisboPortfolioVersion id=${id}`)),
+      catchError(this.handleError<VisboPortfolioVersion>('deleteVisboPortfolioVersion'))
+    );
+  }
+
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
   getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
