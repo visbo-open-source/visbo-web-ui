@@ -13,6 +13,7 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
+import { VisboUser } from '../_models/visbouser';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
@@ -30,6 +31,8 @@ class DropDown {
 
 class vpCheckItem {
   isChecked: boolean;
+  variantName: string;
+  hasVariants: boolean;
   vp: VisboProject;
 }
 
@@ -51,6 +54,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
 
+    user: VisboUser;
     vpSelected: string;
     vpActive: VisboProject;
     vpfActive: VisboPortfolioVersion;
@@ -93,6 +97,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.user = this.authenticationService.getActiveUser();
     this.titleService.setTitle(this.translate.instant('vpfVersion.title'));
     this.log(`Init VPF with Transaltion: ${this.translate.instant('vpfVersion.title')}`);
 
@@ -294,8 +299,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     visboprojects.forEach(item => {
       if (item.vpType == 0) {
         let entry = new vpCheckItem();
-        entry.isChecked = this.isVPFMember(item);
+        const vpfMember = this.getVPFMember(item);
+        if (vpfMember) {
+          entry.isChecked = true;
+          entry.variantName = vpfMember.variantName;
+        } else {
+          entry.isChecked = false;
+          entry.variantName = '';
+        }
         entry.vp = item;
+        if (this.getVariants(item).length > 0) {
+          entry.hasVariants = true;
+        }
         this.vpCheckListAll.push(entry);
       }
     });
@@ -305,13 +320,22 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.filterVPList();
   }
 
-  isVPFMember(vp: VisboProject): boolean {
-    let result = false;
+  getVariants(vp: VisboProject): string[] {
+    let result = [];
+    if (vp && vp.variant) {
+      vp.variant.forEach(item => {
+        if (item.variantName != 'pfv' && item.vpvCount > 0) {
+          result.push(item.variantName);
+        }
+      });
+      result.sort(function (a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+    }
+    return result;
+  }
+  getVPFMember(vp: VisboProject): VPFItem {
+    let result: VPFItem;
     if (this.vpfActive && this.vpfActive.allItems) {
-      const entry = this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
-      if (entry) {
-        result = true;
-      }
+      result = this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
     }
     return result;
   }
@@ -334,13 +358,36 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     let list = [];
     const filter = this.filter ? this.filter.toLowerCase() : undefined;
     this.vpCheckListAll.forEach( item => {
-      if (!filter || (item.vp.name.toLowerCase().indexOf(filter) >= 0)) {
+      if (!filter
+      || (item.vp.name.toLowerCase().indexOf(filter) >= 0)
+      || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(filter) >= 0) >= 0) {
         if (!item.isChecked) { allOn = false; }
         list.push(item);
       }
     });
     this.vpCheckListFiltered = list;
     this.isGlobalChecked = allOn;
+  }
+
+  checkUpdateVPF(): boolean {
+    let result = false;
+    if (this.vpfActive
+    && this.vpfActive.variantName == this.dropDownVariantSelected
+    && this.user._id == this.vpfActive.updatedFrom?.userId
+    && visboIsToday(new Date(this.vpfActive.timestamp))) {
+        result = true;
+    }
+    return result;
+  }
+
+  saveVPFString(): string {
+    let result: string;
+    if (this.checkUpdateVPF()) {
+      result = this.translate.instant('vpfVersion.btn.update');
+    } else {
+      result = this.translate.instant('vpfVersion.btn.create');
+    }
+    return result;
   }
 
   updateVPF(): void {
@@ -354,30 +401,16 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         let entry = new VPFItem();
         entry.vpid = item.vp._id;
         entry.name = item.vp.name;
-        entry.variantName = '';
+        entry.variantName = item.variantName;
         entry.show = true;
         entry.zeile = ++zeile;
         newVPF.allItems.push(entry);
       }
     });
     newVPF.variantName = this.dropDownVariantSelected;
-    var updateVPF = false;
-    if (this.vpfActive) {
-      let user = this.authenticationService.getActiveUser();
+    if (this.checkUpdateVPF()) {
       this.log(`update VPF List ${this.vpCheckListAll.length}`);
-      let today = new Date();
-      today.setHours(0,0,0,0);
-      let actual = this.vpfActive.timestamp ? new Date(this.vpfActive.timestamp) : undefined;
-      if (user && user._id == this.vpfActive.updatedFrom?.userId
-      && (actual && actual.getTime() > today.getTime())) {
-        if (this.dropDownVariantSelected == this.vpfActive.variantName) {
-          newVPF._id = this.vpfActive._id;
-          updateVPF = true;
-        }
-      }
-    }
-    if (updateVPF) {
-      this.log(`update VPF List ${this.vpCheckListAll.length}`);
+      newVPF._id = this.vpfActive._id;
       this.visboprojectversionService.updateVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
         vpf => {
           console.log("update VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);

@@ -819,7 +819,8 @@
 			"viewList": "List",
 			"editPFList": "Edit Portfolio List",
 			"viewProjectBoard": "Project Board",
-			"save": "Save",
+			"update": "Change",
+			"create": "Create",
 			"delete": "Delete",
 			"back": "Back"
 		},

@@ -819,7 +819,8 @@
 			"viewList": "Liste",
 			"editPFList": "Portfolio Liste ändern",
 			"viewProjectBoard": "Projekttafel",
-			"save": "Speichern",
+			"update": "Aktualisieren",
+			"create": "Anlegen",
 			"delete": "Löschen",
 			"back": "Zurück"
 		},
