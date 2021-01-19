@@ -457,13 +457,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
   }
 
-  isSameDay(dateA: Date, dateB: Date): boolean {
-    if (!dateA || !dateB) { return false; }
-    dateA.setHours(0, 0, 0, 0);
-    dateB.setHours(0, 0, 0, 0);
-    return dateA.toISOString() === dateB.toISOString();
-  }
-
   toggleVisboChart(): void {
     this.chart = !this.chart;
   }

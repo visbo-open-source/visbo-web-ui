@@ -251,7 +251,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   evaluateDirection(): void {
     if (this.visboprojectversions.length === 0) {
-      if (this.isSameDay(this.vpvRefDate, new Date())) {
+      if (visboIsSameDay(this.vpvRefDate, new Date())) {
         // no Versions for this Portfolio at all
         this.statusDirection = undefined;
       } else {
@@ -259,7 +259,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         this.statusDirection = -1;
       }
     } else {
-      if (this.isSameDay(this.vpvRefDate, new Date())) {
+      if (visboIsSameDay(this.vpvRefDate, new Date())) {
         // refDate Today and Versions available, page into past
         this.statusDirection = 1;
       } else {
@@ -309,13 +309,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       // preserve the existing query params in the route
       queryParamsHandling: 'merge'
     });
-  }
-
-  isSameDay(dateA: Date, dateB: Date): boolean {
-    if (!dateA || !dateB) { return false; }
-    dateA.setHours(0, 0, 0, 0);
-    dateB.setHours(0, 0, 0, 0);
-    return dateA.toISOString() === dateB.toISOString();
   }
 
   isVersionMismatch(): boolean {
