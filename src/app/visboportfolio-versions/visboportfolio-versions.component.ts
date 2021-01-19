@@ -17,7 +17,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, convertDate, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, convertDate, visboIsToday, visboIsSameDay } from '../_helpers/visbo.helper';
 
 class DropDown {
   name: string;
