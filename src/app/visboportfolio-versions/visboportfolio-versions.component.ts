@@ -152,7 +152,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
   }
 
-  getAllProjects(vp): void {
+  getAllProjects(vp: VisboProject): void {
     if (!vp && !vp.vcid) {
       this.log("No Portfolio found");
       return;
@@ -298,7 +298,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpCheckListAll = [];
     visboprojects.forEach(item => {
       if (item.vpType == 0) {
-        let entry = new vpCheckItem();
+        const entry = new vpCheckItem();
         const vpfMember = this.getVPFMember(item);
         if (vpfMember) {
           entry.isChecked = true;
@@ -321,7 +321,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   getVariants(vp: VisboProject): string[] {
-    let result = [];
+    const result = [];
     if (vp && vp.variant) {
       vp.variant.forEach(item => {
         if (item.variantName != 'pfv' && item.vpvCount > 0) {
@@ -355,7 +355,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   filterVPList(clear = false): void {
     if (clear) { this.filter = undefined; }
     let allOn = true;
-    let list = [];
+    const list = [];
     const filter = this.filter ? this.filter.toLowerCase() : undefined;
     this.vpCheckListAll.forEach( item => {
       if (!filter
@@ -392,13 +392,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   updateVPF(): void {
     this.log(`init VPF Item List`);
-    let newVPF = new VisboPortfolioVersion();
+    const newVPF = new VisboPortfolioVersion();
     newVPF.allItems = [new VPFItem()];
     newVPF.allItems.pop();
     let zeile = 0;
     this.vpCheckListAll.forEach(item => {
       if (item.isChecked) {
-        let entry = new VPFItem();
+        const entry = new VPFItem();
         entry.vpid = item.vp._id;
         entry.name = item.vp.name;
         entry.variantName = item.variantName;
@@ -417,8 +417,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
           this.alertService.success(message, true);
           // Update VPF List
-          let index = this.visboportfolioversions.findIndex(item => item._id == vpf._id);
-          if (index >= 0) {
+          if (this.visboportfolioversions.findIndex(item => item._id == vpf._id) >= 0) {
             this.vpfActive = vpf;
             this.getVisboPortfolioKeyMetrics();
           }
@@ -724,6 +723,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string): void {
     this.messageService.add('VisboPortfolioVersion: ' + message);
-    console.log('VisboPortfolioVersion: ' + message)
+    // console.log('VisboPortfolioVersion: ' + message)
   }
 }

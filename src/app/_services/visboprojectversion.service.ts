@@ -154,7 +154,7 @@ export class VisboProjectVersionService {
   addVisboPortfolioVersion(vp: VisboProject, vpf: VisboPortfolioVersion): Observable<VisboPortfolioVersion> {
     const url = `${this.vpfUrl}/${vp._id}/portfolio`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let params = new HttpParams();
+    const params = new HttpParams();
     return this.http.post<VisboPortfolioVersionResponse>(url, vpf, { headers , params })
       .pipe(
         map(response => response.vpf[0]),
@@ -167,7 +167,7 @@ export class VisboProjectVersionService {
   updateVisboPortfolioVersion(vp: VisboProject, vpf: VisboPortfolioVersion): Observable<VisboPortfolioVersion> {
     const url = `${this.vpfUrl}/${vp._id}/portfolio/${vpf._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let params = new HttpParams();
+    const params = new HttpParams();
     return this.http.put<VisboPortfolioVersionResponse>(url, vpf, { headers , params })
       .pipe(
         map(response => response.vpf[0]),

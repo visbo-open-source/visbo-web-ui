@@ -139,7 +139,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     this.log(`Capacity Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     this.capaLoad = [];
-    this.lastTimestampVPF = this.vpfActive.timestamp;
+    if (this.vpfActive) {
+      this.lastTimestampVPF = this.vpfActive.timestamp;
+    } else if (this.vpvActive) {
+      this.lastTimestampVPF = this.vpvActive.timestamp;
+    }
 
     this.visboGetOrganisation();
   }
@@ -148,7 +152,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}, Changes: ${JSON.stringify(changes)}`);
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if ((this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())
-    || (this.lastTimestampVPF !== this.vpfActive.timestamp)
+    || (this.vpfActive && this.lastTimestampVPF !== this.vpfActive.timestamp)
     ) {
       this.initSetting();
       this.getCapacity();
@@ -304,7 +308,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             }
           }
         );
-    } else if (this.vpActive && this.vpfActive) {
+    } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name}`);
       this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV)
         .subscribe(

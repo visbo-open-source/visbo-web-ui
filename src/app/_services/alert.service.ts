@@ -18,7 +18,7 @@ export class AlertService {
                     this.keepAfterNavigationChange = false;
                 } else {
                     // clear alert
-                    console.log("alert clear");
+                    // console.log("alert clear");
                     this.subject.next();
                 }
             }

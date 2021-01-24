@@ -103,6 +103,7 @@ export class SysauditComponent implements OnInit {
       'isStacked': true,
       'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
     };
+    const listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux']
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -364,7 +365,7 @@ export class SysauditComponent implements OnInit {
     }
 
     getUserAgent(userAgent: string): string {
-      let searchList = ['VISBO Projectboard', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
+      const searchList = ['VISBO Projectboard', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
       let result = 'Unknown';
       for (let i = 0; i < searchList.length; i++) {
         if (userAgent.indexOf(searchList[i]) >= 0) {
@@ -375,11 +376,10 @@ export class SysauditComponent implements OnInit {
       return result;
     }
 
-    getOSAgent(userAgent: string): string {
-      let searchList = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux']
-      let result = searchList.length;
-      for (let i = 0; i < searchList.length; i++) {
-        if (userAgent.indexOf(searchList[i]) >= 0) {
+    getOSAgent(userAgent: string): number {
+      let result = this.listOS.length;
+      for (let i = 0; i < this.listOS.length; i++) {
+        if (userAgent.indexOf(this.listOS[i]) >= 0) {
           result = i;
           break;
         }
@@ -406,11 +406,11 @@ export class SysauditComponent implements OnInit {
       }
 
       graphData.sort(function(a, b) {
-        const firstSum = a[1] + a[2] + a[3] + a[4] + a[5];
-        const secondSum = b[1] + b[2] + b[3] + b[4] + b[5];
+        const firstSum = a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + a[7];
+        const secondSum = b[1] + b[2] + b[3] + b[4] + b[5] + b[6] + b[7];
         return firstSum - secondSum;
       });
-      graphData.push(['UserAgent', 'Windows', 'Mac', 'iPhone', 'iPad', 'Android', 'Linux', 'Other', { role: 'annotation' } ]);
+      graphData.push(['UserAgent', this.listOS[0], this.listOS[1], this.listOS[2], this.listOS[3], this.listOS[4], this.listOS[5], this.listOS[6], { role: 'annotation' } ]);
       graphData.reverse();
       this.graphDataBrowserChart = graphData;
     }
