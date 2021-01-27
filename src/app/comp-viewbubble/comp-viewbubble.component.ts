@@ -304,6 +304,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
       ) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
         elementKeyMetric.name = this.visboprojectversions[item].name;
@@ -455,13 +456,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else {
       return (current || 0) / baseline;
     }
-  }
-
-  isSameDay(dateA: Date, dateB: Date): boolean {
-    if (!dateA || !dateB) { return false; }
-    dateA.setHours(0, 0, 0, 0);
-    dateB.setHours(0, 0, 0, 0);
-    return dateA.toISOString() === dateB.toISOString();
   }
 
   toggleVisboChart(): void {

@@ -21,7 +21,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday, visboIsSameDay } from '../_helpers/visbo.helper';
 
 class DropDown {
   name: string;
@@ -293,7 +293,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   initVPF(visboprojects: VisboProject[]): void {
-    this.dropDownVariantSelected = this.vpfActive.variantName;
+    this.dropDownVariantSelected = this.vpfActive ? this.vpfActive.variantName : '';
     this.isGlobalChecked = false;
     this.vpCheckListAll = [];
     visboprojects.forEach(item => {
@@ -508,7 +508,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   evaluateDirection(): void {
     if (this.visboprojectversions.length === 0) {
-      if (this.isSameDay(this.vpvRefDate, new Date())) {
+      if (visboIsSameDay(this.vpvRefDate, new Date())) {
         // no Versions for this Portfolio at all
         this.statusDirection = undefined;
       } else {
@@ -516,7 +516,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         this.statusDirection = -1;
       }
     } else {
-      if (this.isSameDay(this.vpvRefDate, new Date())) {
+      if (visboIsSameDay(this.vpvRefDate, new Date())) {
         // refDate Today and Versions available, page into past
         this.statusDirection = 1;
       } else {
@@ -566,13 +566,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       // preserve the existing query params in the route
       queryParamsHandling: 'merge'
     });
-  }
-
-  isSameDay(dateA: Date, dateB: Date): boolean {
-    if (!dateA || !dateB) { return false; }
-    dateA.setHours(0, 0, 0, 0);
-    dateB.setHours(0, 0, 0, 0);
-    return dateA.toISOString() === dateB.toISOString();
   }
 
   isVersionMismatch(): boolean {
