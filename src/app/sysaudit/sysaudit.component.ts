@@ -103,7 +103,7 @@ export class SysauditComponent implements OnInit {
       'isStacked': true,
       'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
     };
-    const listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux']
+    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux']
 
     constructor(
       private visboauditService: VisboAuditService,
