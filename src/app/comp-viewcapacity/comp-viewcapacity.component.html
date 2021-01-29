@@ -64,11 +64,16 @@
           </div>
           <div class="row">
             <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
-              {{ 'ViewCapacity.lbl.totalCapa' | translate }}
+              <div *ngIf="refPFV">
+                {{ 'ViewCapacity.lbl.budgetBase' | translate }}
+              </div>
+              <div *ngIf="!refPFV">
+                {{ 'ViewCapacity.lbl.totalCapa' | translate }}
+              </div>
             </div>
             <div class="col col-sm-6 text-right">
               {{sumBudget | number:'1.0-0'}}
-              <span *ngIf="showUnit != 'PD'">T€</span>
+              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacity.lbl.keuro' | translate }}</span>
               <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacity.lbl.pd' | translate }}</span>
             </div>
           </div>
