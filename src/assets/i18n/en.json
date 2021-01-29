@@ -567,6 +567,7 @@
 		"totalCapaPT": "Total Capacity",
 		"actualCostPT": "Actual Cost",
 		"plannedCostPT": "Planned Cost",
+		"plannedCost": "Planned Cost",
 		"roleName": "Role",
 		"budgetPT": "Baseline",
 		"budgetBase": "",
@@ -577,6 +578,7 @@
 			"totalCapaPT": "Total Capacity",
 			"pd": "PD",
 			"euro": "Euro",
+			"keuro": "kEuro",
 			"refPFV": "Compare against Order"
 		},
 		"btn": {

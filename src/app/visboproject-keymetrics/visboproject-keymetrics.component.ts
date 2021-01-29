@@ -445,10 +445,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
-    const index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    let delay = 0;
+    if (keyMetrics && keyMetrics.endDateCurrent && keyMetrics.endDateBaseLast) {
+      delay = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    }
+    this.delayEndDate = Math.round(delay / 1000 / 60 / 60 / 24) / 7;
 
     this.vpvActive = vpv;
-    this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }
 

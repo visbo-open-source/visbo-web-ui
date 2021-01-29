@@ -567,6 +567,7 @@
 		"totalCapaPT": "gesamte Kapazität",
 		"actualCostPT": "Istkosten",
 		"plannedCostPT": "geplante Kosten",
+		"plannedCost": "geplante Kosten",
 		"roleName": "Rolle",
 		"budgetPT": "Baseline",
 		"budgetBase": "",
@@ -577,6 +578,7 @@
 			"totalCapaPT": "gesamte Kapzität",
 			"pd": "PT",
 			"euro": "Euro",
+			"keuro": "kEuro",
 			"refPFV": "Vergleich mit Beauftragung"
 		},
 		"btn": {
