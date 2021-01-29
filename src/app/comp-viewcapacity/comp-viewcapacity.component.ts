@@ -612,8 +612,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return resultList;
   }
 
-
   visboViewCapacityDrillDown(): void {
+
+    class drillDownElement {
+      currentDate: Date;
+      name: string;
+      plan: number;
+      budget: number;
+    }
+
     const graphDataCapacity = [];
     const initialOffset = 3    // first 3 elements in the arry are currentdate, total capa, remaining capa of the parent if not all assigned
     const capacity = this.visboCapcityChild.length > 0 ? this.visboCapcityChild : this.visboCapcity;
@@ -940,7 +947,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  createTooltipOrgaDrillDown(currentDate: Date, role: name, value: number, PT: boolean, refPFV = false): string {
+  createTooltipOrgaDrillDown(currentDate: Date, role: string, value: number, PT: boolean, refPFV = false): string {
     const current = convertDate(currentDate, 'shortDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
       '<div><b>' + current + '</b></div>' + '<div>' +
@@ -959,11 +966,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       planCost = this.translate.instant('ViewCapacity.plannedCost');
       unit = ' ' + this.translate.instant('ViewCapacity.lbl.keuro');
     }
-    value = (value || 0).toFixed(0);
+    const strValue = (value || 0).toFixed(0);
     if (refPFV) {
     } else {
     }
-    result = result + '<tr>' + '<td>' + planCost + ':</td>' + '<td align="right"><b>' + value + unit + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planCost + ':</td>' + '<td align="right"><b>' + strValue + unit + '</b></td>' + '</tr>';
     return result;
   }
 
