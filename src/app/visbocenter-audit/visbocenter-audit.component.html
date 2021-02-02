@@ -57,6 +57,7 @@
             <th id="SortDate" class="d-none d-md-table-cell" (click)="sortTable(1)">{{ 'vcAudit.lbl.created' | translate }}</th>
             <th id="SortUser" (click)="sortTable(2)">{{ 'vcAudit.lbl.user' | translate }}</th>
             <th id="SortAction" (click)="sortTable(3)"> {{ 'vcAudit.lbl.action' | translate }}</th>
+            <th id="SortVP" class="d-none d-lg-table-cell" (click)="sortTable(8)"> {{ 'vcAudit.lbl.vp' | translate }}</th>
             <th id="SortInfo" class="d-none d-md-table-cell" (click)="sortTable(4)"> {{ 'vcAudit.lbl.info' | translate }}</th>
             <th id="SortResult" class="d-none d-lg-table-cell" (click)="sortTable(5)"> {{ 'vcAudit.lbl.result' | translate }}</th>
             <th>Detail</th>
@@ -71,6 +72,7 @@
             <td id="ColUser" *ngIf="auditentry.user" >{{auditentry.user.email }}</td>
             <td id="ColUser" *ngIf="!auditentry.user"> Unknown </td>
             <td id="ColAction">{{auditentry.actionDescription }}</td>
+            <td id="ColVP" class="d-none d-lg-table-cell" >{{auditentry.vp ? auditentry.vp.name : '' }}</td>
             <td id="ColInfo" class="d-none d-md-table-cell" >{{helperShortenText(auditentry.actionInfo, 30) }}</td>
             <td id="ColResult" class="d-none d-lg-table-cell" >{{helperResponseText(auditentry) }}</td>
             <td>
@@ -80,6 +82,11 @@
           </tr>
         </tbody>
       </table>
+      <div *ngIf="audit && audit.length == 0">
+        <h3 class="d-flex justify-content-center">
+          {{ 'vcAudit.msg.noAudit' | translate }}
+        </h3>
+      </div>
     </div>
   </div>
 </div>

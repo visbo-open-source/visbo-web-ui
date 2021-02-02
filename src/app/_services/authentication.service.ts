@@ -6,9 +6,12 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { Login, VisboUser, VisboUserResponse, LoginResponse, VisboVersion, VisboVersionResponse, VisboStatusPWPolicy, VisboStatusPWPolicyResponse } from '../_models/visbouser';
+import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
+
 import { MessageService } from './message.service';
 
-import * as JWT from 'jwt-decode';
+// import * as JWT from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -55,7 +58,7 @@ export class AuthenticationService {
                     localStorage.setItem('currentToken', JSON.stringify(result.token));
                     this.isLoggedIn = true;
                     // eslint-disable-next-line
-                    const decoded: any = JWT(result.token);
+                    const decoded: any = jwt_decode(result.token);
                     if (decoded && decoded.exp) {
                       // this.log(`Login token expiration:  ${decoded.exp}`);
                       this.logoutTime = new Date(decoded.exp * 1000);
@@ -68,6 +71,56 @@ export class AuthenticationService {
               }),
               catchError(this.handleError<VisboUser>('LoginError'))
             );
+    }
+
+    loginGoogleUrl(): string {
+      const url = `${this.authUrl}/logingoogle`;
+      return url;
+    }
+
+    loginGoogle(): Observable<VisboUser> {
+      const url = `${this.authUrl}/logingoogle`;
+      this.log(`Calling HTTP Request: ${url}`);
+
+      return this.http.post<LoginResponse>(url, {})
+        .pipe(
+          map(result => {
+            console.log(`google Login :  ${JSON.stringify(result)}`);
+            // login successful if there's a jwt token in the response
+            if (result && result.token) {
+              this.log(`Login Request Successful:  ${result.user.email}`);
+              // store user details and jwt token in local storage to keep user logged in between page refreshes
+              localStorage.setItem('currentUser', JSON.stringify(result.user));
+              localStorage.setItem('currentToken', JSON.stringify(result.token));
+              this.isLoggedIn = true;
+              // eslint-disable-next-line
+              const decoded: any = jwt_decode(result.token);
+              if (decoded && decoded.exp) {
+                // this.log(`Login token expiration:  ${decoded.exp}`);
+                this.logoutTime = new Date(decoded.exp * 1000);
+              }
+              this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+
+              return result.user;
+            }
+            return null;
+          }),
+          catchError(this.handleError<VisboUser>('LoginError'))
+        );
+    }
+
+    oauthconfirm(hash: string): void {
+      // MS TODO: we need to get the full blown real user
+      localStorage.setItem('currentUser',
+        JSON.stringify({
+          "profile":{"company":"Privat","firstName":"Markus (G)","lastName":"Seyfried"},
+          "status":{"registeredAt":"2020-11-10T16:20:32.620Z","lastLoginAt":"2020-11-10T18:10:31.694Z","loginRetries":0},
+          "_id":"5b60762decb6077f42ba27d2","email":"markus.seyfried@gmail.com",
+          "createdAt":"2018-07-31T14:46:05.138Z","updatedAt":"2020-11-10T18:22:39.469Z","__v":3,
+          "userAgents":[]
+        })
+      );
+      localStorage.setItem('currentToken', JSON.stringify(hash));
     }
 
     logout(): void {
@@ -87,7 +140,7 @@ export class AuthenticationService {
 
       this.log(`Calling HTTP Request: ${url} for: ${newUser.email} `);
 
-      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP Headers */
+      return this.http.post<LoginResponse>(url, newUser) /* MS Last Option HTTP */
           .pipe(
             map(result => {
                 // registration successful if there's a user in the response
@@ -219,6 +272,17 @@ export class AuthenticationService {
             }),
           tap(value => this.log(`fetched PW Policy ${JSON.stringify(value)}`)),
           catchError(this.handleError<VisboStatusPWPolicy>('initPWPolicy'))
+        );
+    }
+
+    getSetting(): Observable<VisboSetting[]> {
+      const url = this.env.restUrl.concat('/status/setting');
+      this.log(`Calling HTTP Request: ${url}` );
+      return this.http.get<VisboSettingListResponse>(url, httpOptions)
+        .pipe(
+          map(response => response.vcsetting ),
+          tap(value => this.log(`fetched Setting ${JSON.stringify(value)}`)),
+          catchError(this.handleError<VisboSetting[]>('initSetting'))
         );
     }
 

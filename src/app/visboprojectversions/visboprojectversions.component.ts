@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -23,6 +23,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 export class VisboProjectVersionsComponent implements OnInit {
 
   visboprojectversions: VisboProjectVersion[];
+  visboprojectversion: VisboProjectVersion;
   vpSelected: string;
   vpActive: VisboProject;
   deleted = false;
@@ -44,13 +45,8 @@ export class VisboProjectVersionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.getVisboCenters();
     this.getVisboProjectVersions();
   }
-
-  // onSelect(visboprojectversion: VisboProjectVersion): void {
-  //   this.getVisboProjectVersions();
-  // }
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
@@ -117,14 +113,82 @@ export class VisboProjectVersionsComponent implements OnInit {
     const url = this.route.snapshot.url.join('/');
     this.log(`VP toggleVisboProjectVersions ${this.deleted} URL ${url}`);
     this.getVisboProjectVersions();
-    // MS TODO: go to the current url and add delete flag
+    // go to the current url and add delete flag
     this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
-  gotoClickedRow(visboprojectversion: VisboProjectVersion): void {
-    this.log(`goto VPV Detail for VP ${visboprojectversion.name} Deleted ${this.deleted}`);
-    this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-    // this.router.navigate(['vpvDetail/'.concat(visboprojectversion._id)], {});
+  checkLocked(visboprojectversion: VisboProjectVersion, otherUser = false): string {
+    const variantName = visboprojectversion.variantName || '';
+    const lock = this.vpActive.lock.find(item => item.variantName === variantName);
+    let result = undefined;
+    if (lock) {
+      if (otherUser) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        result = currentUser.email != lock.email ? lock.email : undefined;
+      } else {
+        result = lock.email
+      }
+    }
+    return result;
+  }
+
+  helperSetVPV(index: number): void {
+    this.visboprojectversion = this.visboprojectversions[index];
+  }
+
+  delete(visboprojectversion: VisboProjectVersion): void {
+    this.log(`delete VPV ${visboprojectversion._id}`);
+
+    this.visboprojectversionService.deleteVisboProjectVersion(visboprojectversion, this.deleted)
+      .subscribe(
+        () => {
+            this.alertService.success(`Visbo Project Version ${visboprojectversion._id} deleted successfully`, true);
+            this.log(`delete VPV success`);
+            // remove version from list
+            const index = this.visboprojectversions.findIndex(item => item._id === visboprojectversion._id);
+            if (index >= 0) {
+              this.visboprojectversions.splice(index, 1);
+            }
+          },
+        error => {
+          this.log(`delete VPV failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpv.msg.errorPermDelete', {'name': visboprojectversion.name});
+            this.alertService.error(message);
+          } else if (error.status === 423) {
+            const message = this.translate.instant('vpv.msg.errorLocked', {'name': visboprojectversion.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  restore(): void {
+    this.log(`update VPV ${this.visboprojectversion._id}`);
+    this.visboprojectversionService.updateVisboProjectVersion(this.visboprojectversion, this.deleted)
+      .subscribe(
+        (vpv) => {
+          this.alertService.success(`Visbo Project Version ${vpv.name} updated successfully`, true);
+          const index = this.visboprojectversions.findIndex(item => item._id === vpv._id);
+          if (index >= 0) {
+            this.visboprojectversions.splice(index, 1);
+          }
+        },
+        error => {
+          this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpv.msg.errorPermVersion', {'name': this.visboprojectversion.name});
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpv.msg.errorConflict', {'name': this.visboprojectversion._id});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(error.error.message);
+          }
+        }
+      );
   }
 
   gotoVPDetail(visboproject: VisboProject): void {

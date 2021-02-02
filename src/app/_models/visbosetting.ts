@@ -60,8 +60,9 @@ export class VisboRole {
   entryDate: Date;
   exitDate: Date;
   farbe: number;
+  defaultDayCapa: number;
   defaultKapa: number;
-  tagessatzIntern: number;
+  tagessatz: number;
   kapazitaet: [number];
   timestamp: Date;
   startOfCal: Date;
@@ -70,9 +71,11 @@ export class VisboRole {
 export class VisboOrgaTreeLeaf {
   uid: number;
   name: string;
+  parent: VisboOrgaTreeLeaf;
   children: VisboOrgaTreeLeaf[];
   showChildren: boolean;
   isSelected: TreeLeafSelection;
+  status: number;
 }
 
 export enum TreeLeafSelection {

@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div class="col-md-8 col-md-offset-2">
+<div *ngIf="user" class="col-md-8 col-md-offset-2">
   <h3 id="profileTitle">{{ 'profile.title' | translate }} {{user.email}}</h3>
   <div>
     <!-- <form name="form" (ngSubmit)="f.form.valid && saveUserProfile()" #f="ngForm" novalidate> -->

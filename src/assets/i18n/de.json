@@ -1,11 +1,13 @@
 {
 	"login": {
+		"title": "VISBO Anmeldung",
 		"lbl": {
 			"email": "Ihre E-Mail Adresse",
 			"password": "Passwort"
 		},
 		"btn": {
 			"login": "Login",
+			"loginGoogle": "Login mit Google",
 			"pwForgotten": "Passwort vergessen?",
 			"register": "Registrieren"
 		},
@@ -14,10 +16,10 @@
 			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
-		},
-		"title": "Willkommen bei VISBO - the Project Warehouse"
+		}
 	},
 	"dashboard": {
+		"title": "Übersicht",
 		"topvc": "Top VISBO Centers",
 		"noVC": "Kein Zugriff auf ein VISBO Center",
 		"topvp": "Top VISBO Projekte",
@@ -125,6 +127,7 @@
 		}
 	},
 	"profile": {
+		"titleShort": "Benutzer Profil",
 		"title": "Profil Information für:",
 		"titleChangePW": "Passwort ändern",
 		"lbl": {
@@ -174,6 +177,7 @@
 	},
 	"vcDetail": {
 		"title": "VISBO Center",
+		"titleName": "VISBO Center {{name}} Detail",
 		"titleUsers": "VISBO Center Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Center",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
@@ -257,6 +261,7 @@
 	},
 	"vp": {
 		"title": "Projekte",
+		"titleName": "Projekte in {{name}}",
 		"titleVC": "Projekte in",
 		"noVP": "Kein VISBO Projekt",
 		"titleCreate": "Ein neues Projekt anlegen",
@@ -280,7 +285,8 @@
 			"showExisting": "Nicht gelöschte",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
-			"viewProjectBoard": "Zeige Projektübersicht",
+			"viewProjectBoard": "Projekttafel",
+			"viewList": "Liste",
 			"create": "Neues Projekt",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
@@ -296,13 +302,16 @@
 	},
 	"vpDetail": {
 		"title": "VISBO Projekt",
+		"titleName": "Projekt {{name}} Detail",
 		"titleVC": "VISBO Center",
 		"titleUsers": "VISBO Projekt Benutzer",
 		"titleAddUser": "Einladen eines Benutzers in das VISBO Projekt",
 		"titleRemoveUser": "Benutzer aus einer Gruppe löschen",
-		"titleGroups": "VISBO Center Gruppen",
+		"titleGroups": "VISBO Projekt Gruppen",
+		"titleVariants": "VISBO Projekt Varianten",
 		"titleViewGroup": "Anzeigen einer Gruppe im VISBO Projekt",
 		"titleAddGroup": "Anlegen einer neuen Gruppe im VISBO Projekt",
+		"titleAddVariant": "Anlegen einer neuen Variante im VISBO Projekt",
 		"titleModifyGroup": "Ändern einer Gruppe im VISBO Projekt",
 		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Projekt",
 		"titleDeleteProject": "VISBO Projekt löschen",
@@ -310,6 +319,7 @@
 		"titlePermUser": "Berechtigung für {{name}}",
 		"titleProjectRestrict": "VISBO Projekt Freigaben",
 		"titleRemoveRestriction": "Löschen einer Freigabe im VISBO Projekt",
+		"titleRemoveVariant": "Löschen einer Variante im VISBO Projekt",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -329,12 +339,14 @@
 			"global": "Global",
 			"message": "Nachricht",
 			"expires": "Läuft ab",
+			"lock": "Sperre",
 			"variant": "Variante",
 			"versions": "Versionen",
 			"ofTotal": "of total",
 			"unlock": "Entsperren",
 			"delete": "Löschen",
 			"deleteUser": "Benutzer löschen",
+			"deleteVariant": "Variante löschen",
 			"restrictpath": "Planelement",
 			"restrictgroup": "Gruppe",
 			"inclChildren": "hierarchisch",
@@ -351,9 +363,13 @@
 			"viewAudit": "Audit",
 			"viewGroups": "Gruppen",
 			"viewUsers": "Benutzer",
+			"viewVariant": "Varianten",
+			"viewLock": "Sperren",
 			"addUser": "Benutzer einladen",
 			"addGroup": "Gruppe hinzufügen",
+			"addVariant": "Variante anlegen",
 			"invite": "Einladen",
+			"createVariant": "Anlegen",
 			"save": "Speichern",
 			"restore": "Wiederherstellen",
 			"destroy": "Vernichten!",
@@ -366,11 +382,13 @@
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
 			"removeGroupConfirm": "Wollen Sie die Gruppe wirklich aus dem VISBO Projekt löschen?",
+			"removeVariantConfirm": "Wollen Sie die Variante wirklich aus dem VISBO Projekt löschen?",
 			"removeProjectConfirm": "Wollen Sie das VISBO Projekt wirklich löschen?",
 			"destroyProjectConfirm": "Wollen Sie das VISBO Projekt wirklich endgültig löschen?",
 			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
 			"groupRequired": "Es muss eine Gruppe ausgewählt sein",
 			"groupNameRequired": "Gruppen Name erforderlich",
+			"variantRequired": "Varianten Name erforderlich",
 			"invalidMessage": "Fehlerhafter Inhalt",
 			"removeGroup": "Gruppe löschen",
 			"detailGroup": "Details zur Gruppe",
@@ -382,6 +400,8 @@
 			"createGroupSuccess": "Gruppe {{name}} wurde erfolgreich angelegt",
 			"removeGroupSuccess": "Gruppe {{name}} wurde erfolgreich gelöscht",
 			"removeLockSuccess": "Sperre wurde erfolgreich aufgehoben",
+			"createVariantSuccess": "Variante {{name}} wurde zum VISBO Projekt hinzugefügt",
+			"removeVariantSuccess": "Variante {{name}} wurde erfolgreich gelöscht",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVP": "Keine Berechtigung für VISBO Projekt {{name}}",
 			"errorAddUserPerm": "Keine Berechtigung Benutzer hinzuzufügen für VISBO Projekt {{name}}",
@@ -390,7 +410,10 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
-			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!"
+			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!",
+			"errorRemoveVariantPerm": "Keine Berechtigung Variante {{name}} zu löschen",
+			"errorRemoveVariantConflict": "Beim Löschen der Variante {{name}} ist ein Fehler aufgetreten",
+			"errorVariantConflict": "Eine Variante mit dem Namen {{name}} existiert bereits!"
 		}
 	},
 	"vpRestrict": {
@@ -441,6 +464,7 @@
 	},
 	"vpKeyMetric": {
 		"title": "Projekt-Kennzahlen für",
+		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
 		"lbl": {
@@ -450,6 +474,7 @@
 			"info": "Info",
 			"startDate": "Projekt Start",
 			"endDate": "Projekt Ende",
+			"savingED": "Änderung",
 			"leadPerson": "Projektverantwortlicher",
 			"description": "Beschreibung/Ziel",
 			"template": "Projektvorlage",
@@ -463,8 +488,13 @@
 			"total": "Gesamt",
 			"detail": "Detail",
 			"trend": "Trend",
+			"finished": "Status: erledigt",
+			"unfinished": "Status: offen",
+			"xAxis": "X-Achse",
+			"yAxis": "Y-Achse",
 			"metricCost": "Kosten",
 			"metricDelivery": "Qualität",
+			"metricEndDate": "Projekt Ende",
 			"metricDeadline": "Termin",
 			"metricDeadlineDelay": "Termin Verschiebung",
 			"unitsDelay": "Tage",
@@ -476,8 +506,16 @@
 			"totalCost": "geplante Erreichung der Gesamtkosten",
 			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
 			"totalDeadline": "geplante Erreichung der Gesamttermine",
+			"baselineEndDate": "Projekt Ende (beauftragt)",
 			"inPlan": "im Plan",
+			"timeLag": "Verschiebung",
+			"missing": "fehlen",
+			"of": "von",
 			"view": "Anzeigen",
+			"day": "Tag",
+			"week": "Woche",
+			"month": "Monat",
+			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
 			"nextPeriod": "Periode nach {{refDate}}",
 			"viewList": "Liste",
@@ -487,58 +525,57 @@
 			"vc": "VISBO Center"
 		},
 		"btn": {
-			"vpView": "Zeige Projekt Informationen",
+			"vpView": "Details",
+			"vpViewAll": "Alle",
+			"vpCapacity": "Kapazität",
+			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
 			"back": "Zurück"
 		},
 		"msg": {
+			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewCost": {
+	"compViewCost": {
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
+		"titleBox": "Gesamtkosten",
 		"btn": {
 			"back": "Zurück"
 		},
 		"msg": {
+			"noCost": "Keine Kosteninformation für dieses Projekt",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"ViewCapacity": {
+	"ViewCapacity": {		
+		"titleCapacity": "Auslastung für den Zeitraum:",
+		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
 		"title2": " angegeben in ",
-		"titleTimeFrom": " Auslastung für den Zeitraum: von",
+		"titleTimeFrom": " von",
 		"titleTimeTo": " bis ",
 		"titleVersion": "Version vom",
-		"yAxisCapaOverTime": "Monatliche Kosten",
+		"yAxisCapaOverTime": "Monatliche Aufwände",
 		"titleCapaOverTime": "Auslastung: Kapazität vs. Projektkosten",
 		"internCapaPT": "interne Kapazität",
 		"totalCapaPT": "gesamte Kapazität",
 		"actualCostPT": "Istkosten",
 		"plannedCostPT": "geplante Kosten",
 		"roleName": "Rolle",
+		"budgetPT": "Baseline",
+		"budgetBase": "",
 		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center",
+			"totalCost": "Gesamtkosten",
+			"totalCapa": "gesamte Kapazität",
+			"totalCostPT": "Gesamtaufwand",
+			"totalCapaPT": "gesamte Kapzität",
 			"pd": "PT",
-			"euro": "Euro"
+			"euro": "Euro",
+			"refPFV": "Vergleich mit Beauftragung"
 		},
 		"btn": {
 			"back": "Zurück",
@@ -551,8 +588,86 @@
 			"calculating": "Berechnen der Kapzitäten ...",
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
-			"errorPermCapacity": "Keine Berechtigung für VISBO Capacity ",
-			"errorPermOrganisation": "Keine Berechtigung für die Organisation dieses VISBO Center "
+			"errorPermCapacity": "Keine Berechtigung für Kapazität von {{name}}",
+			"errorPermOrganisation": "Keine Organisation im VISBO Center {{name}}"
+		}
+	},
+	"compViewBubble": {
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Anzahl Projekte",
+			"project": "Projekt",
+			"variant": "Variant",
+			"timestamp": "Zeitstempel",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
+			"timeline": "Projektübersicht",
+			"xAxis": "X-Achse",
+			"yAxis": "Y-Achse",
+			"bac": "Gesamtkosten (Baseline)",
+			"endDate": "Projektende",
+			"deadlines": "Termine (Baseline)",
+			"deliveries": "Lieferungen (Baseline)",
+			"days": "Tage",
+			"weeks": "Wochen",
+			"show": "Anzeige",
+			"and": "und",
+			"from": "vom",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "gefiltert mit",
+			"filter": "Filter Projekte"
+		},
+		"btn": {
+			"showChart": "Zeige Chart",
+			"showList": "Zeige Liste",
+			"change": "Ändern",
+			"cancel": "Abbrechen"
+		},
+		"metric": {
+			"costName": "Kosten (gesamt)",
+			"costAxis": "Erwartete Gesamtkosten",
+			"costBubble": "Erwartete Gesamtkosten (%)",
+			"costTable": "Erwartete Gesamtkosten",
+			"costActualName": "Kosten (aktuell)",
+			"costActualAxis": "aktuelle Kosten",
+			"costActualBubble": "aktuelle Kosten (%)",
+			"costActualTable": "aktuelle Kosten",
+			"endDateName": "Termin (Projektende)",
+			"endDateAxis": "Abweichung beim Projektende",
+			"endDateBubble": "Abweichung beim Projektende (Wochen)",
+			"endDateTable": "Änderung Projektende",
+			"deadlineName": "Termin (Deadlines)",
+			"deadlineAxis": "Abweichung bei den Terminen",
+			"deadlineBubble": "Erreichte Termine in %",
+			"deadlineTable": "Erreichte Termine",
+			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
+			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
+			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayTable": "Unerledigte",
+			"deliveryName": "Qualität (Lieferungen)",
+			"deliveryAxis": "Erreichte Lieferungen",
+			"deliveryBubble": "Erreichte Lieferungen in %",
+			"deliveryTable": "Erreichte Lieferungen",
+			"deliveryFinishedDelayName": "Abweichung bei Lieferungen (erledigte)",
+			"deliveryFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayBubble": "Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayTable": "Erledigte",
+			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
+			"deliveryUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayTable": "Unerledigte"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
 		}
 	},
 	"compViewBoard": {
@@ -597,23 +712,6 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewDelivery": {
-		"title": "Lieferungen für",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
 	"compViewDeadline": {
 		"titleAllDeadlines": "Status der Termine",
 		"titleDetailDeadline": "Details zum Termin",
@@ -645,92 +743,33 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"vpViewDeadline": {
-		"title": "Termine für",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpView": {
-		"title": "Information über",
-		"titleVersion": "Version vom",
-		"lbl": {
-			"day": "Tag",
-			"week": "Woche",
-			"month": "Monat",
-			"quarter": "Quartal",
-			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"vc": "VISBO Center"
-		},
-		"btn": {
-			"cost": "Kosten anzeigen",
-			"deadline": "Termine anzeigen",
-			"delivery": "Lieferungen anzeigen"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
+		"titleDetailVPV": "Information über Version",
+		"titleDeleteVPV": "Löschen der Projekt Version",
 		"lbl": {
 			"nr": "Nr.",
+			"name": "Name",
+			"variantName": "Variante",
 			"timestamp": "Zeitstempel",
+			"updatedAt": "Verändert am",
 			"status": "Status",
 			"endDate": "Projektende",
 			"trafficlight": "Ampel",
 			"budget": "Budget",
 			"variant": "Variante",
+			"locked": "Sperre",
+			"delete": "Löschen",
+			"deleteVersion": "Version löschen",
 			"vc": "VISBO Center"
 		},
 		"btn": {
 			"deleted": "Gelöschte",
 			"undeleted": "Nicht gelöschte",
-			"back": "Zurück"
-		},
-		"msg": {
-			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
-		}
-	},
-	"vpvDetails": {
-		"title": "Details zur Projekt Version",
-		"titleDeleteVPV": "Löschen der Projekt Version",
-		"lbl": {
-			"name": "Name",
-			"description": "Beschreibung",
-			"createdUpdated": "Erstellt/Verändert am",
-			"timestamp": "Zeitstempel von",
-			"variant": "Variante",
-			"keyMetric": "Kennzahl",
-			"detail": "Detail",
-			"kmCost": "Vergleich der Kosten",
-			"kmCostDetail": "Zeige monatliche Kosten",
-			"kmDelivery": "Vergleich der Lieferungen",
-			"kmDeliveryDetail": "Zeige alle Lieferungen",
-			"kmDeadline": "Vergleich der Termine",
-			"kmDeadlineDetail": "Zeige alle Termine"
-		},
-		"btn": {
-			"restore": "Wiederherstellen",
 			"delete": "Löschen",
 			"destroy": "Vernichten",
-			"deleted": "Gelöschte",
-			"undeleted": "Nicht gelöschte",
+			"restore": "Wiederherstellen",
 			"cancel": "Abbrechen",
 			"back": "Zurück"
 		},
@@ -740,90 +779,39 @@
 			"errorPerm": "Keine Berechtigung für diese VISBO Projekt Version",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorLocked": "Projekt {{name}} ist von einem anderen Benutzer gesperrt.",
 			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}
 	},
 	"vpfVersion": {
 		"title": "Projekte aus Portfolio",
+		"titleName": "Portfolio {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Auswahl Portfolio Version",
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
-		"titleChange": "Ändern der Kennzahlen",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"lbl": {
-			"nr": "Nummer",
-			"variant": "Variante",
 			"day": "Tag",
-			"days": "Tage",
 			"week": "Woche",
-			"weeks": "Wochen",
 			"month": "Monat",
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}",
-			"show": "Anzeige",
-			"and": "und",
-			"from": "vom",
-			"planVsBase": "plan-to-date vs. baseline",
-			"filtered": "gefiltert mit",
-			"filter": "Filter Projekte",
-			"xAxis": "X-Achse",
-			"yAxis": "Y-Achse",
-			"project": "Projekt",
-			"timestamp": "Zeitstempel",
-			"keyMetrics": "Projekt Metrik",
-			"name": "Name",
-			"bac": "Gesamtkosten (Baseline)",
-			"endDate": "Projektende (Baseline)",
-			"deadlines": "Termine (Baseline)",
-			"deliveries": "Lieferungen (Baseline)"
+			"nextPeriod": "Periode nach {{refDate}}"
 		},
 		"btn": {
-			"showChart": "Zeige Chart",
-			"showList": "Zeige Liste",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
-			"viewProjectBoard": "Projekttafel",
-			"filter": "Filter",
-			"change": "Ändern",
-			"cancel": "Abbrechen",
-			"back": "Zurück"
-		},
-		"metric": {
-			"costName": "Gesamtkosten",
-			"costAxis": "Erwartete Gesamtkosten",
-			"costBubble": "Erwartete Gesamtkosten (%)",
-			"costTable": "Erwartete Gesamtkosten",
-			"endDateName": "Termin (Projektende)",
-			"endDateAxis": "Abweichung beim Projektende",
-			"endDateBubble": "Abweichung beim Projektende (Wochen)",
-			"endDateTable": "Änderung Projektende",
-			"deadlineName": "Termin (Deadlines)",
-			"deadlineAxis": "Abweichung bei den Terminen",
-			"deadlineBubble": "Erreichte Termine in %",
-			"deadlineTable": "Erreichte Termine",
-			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
-			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
-			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
-			"deadlineFinishedDelayTable": "Erledigte",
-			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
-			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
-			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
-			"deadlineUnFinishedDelayTable": "Unerledigte",
-			"deliveryName": "Qualität (Lieferungen)",
-			"deliveryAxis": "Erreichte Lieferungen",
-			"deliveryBubble": "Erreichte Lieferungen in %",
-			"deliveryTable": "Erreichte Lieferungen"
+			"viewProjectBoard": "Projekttafel"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
-			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte"
+			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte sichtbar"
 		}
 	},
 	"vcAudit": {
@@ -880,6 +868,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Center Audit erfolgreich geladen",
+			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Center"
 		}
 	},
@@ -937,6 +926,7 @@
 		},
 		"msg": {
 			"auditSuccess": "VISBO Pprojekt Audit erfolgreich geladen",
+			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
 	},
@@ -956,6 +946,11 @@
 		"shortETC": "ETC",
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
+
+		"shortEED": "EED",
+		"longEED": "Estimated End Date",
+		"shortBED": "BED",
+		"longBED": "Baseline End Date",
 
 		"shortDAC": "DAC",
 		"longDAC": "Number of Deadlines at Completion, according baseline",
@@ -981,8 +976,8 @@
 
 		"finishedDeadline": "Erledigte Termine",
 		"unfinishedDeadline": "Offene Termine",
-		"finishedDeadlineDelay": "Verzögerung (Erledigte)",
-		"unfinishedDeadlineDelay": "Verzögerung (Unerledigte)",
+		"finishedDeadlineDelay": "Verschiebung (Erledigte)",
+		"unfinishedDeadlineDelay": "Verschiebung (Unerledigte)",
 		"longFinishedDeadline": "Durchschnittliche Abweichung über alle erledigten Termine gegenüber baseline in Tagen",
 		"longUnfinishedDeadline": "Durchschnittliche Abweichung über alle nicht erledigten Termine gegenüber baseline in Tagen",
 
@@ -993,8 +988,8 @@
 			"shortcut": "Abkürzung",
 			"explanation": "Bedeutung",
 			"showLegend": "Zeige Definition der Abkürzungen",
-			"actualDelay": "Aktuelle Verzögerung",
-			"totalDelay": "Gesamte Verzögerung"
+			"actualDelay": "Aktuelle Verschiebung",
+			"totalDelay": "Gesamte Verschiebung"
 		},
 		"chart": {
 			"statusDeliveryAhead": "Vorzeitig",
@@ -1016,6 +1011,8 @@
 			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
 			"yAxisDeadlineDelayTrend": "durschnittliche Terminabweichung in Tagen",
 			"titleDeadlineDelayTrend": "Historischer Vergleich der Terminabweichungen: erledigt vs. offen",
+			"titleEndDateTrend": "Historische Entwicklung vom Projektende: plan-to-date vs. baseline",
+			"yAxisEndDateTrend": "Projekt Ende",
 			"yAxisCostTrend": "Kosten in T€",
 			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},

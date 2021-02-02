@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
+import { OauthconfirmComponent } from './oauthconfirm/oauthconfirm.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
 import { PwresetComponent } from './pwreset/pwreset.component';
@@ -17,13 +18,8 @@ import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-au
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
-import { VisboProjectVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
-import { VisboProjectViewVPVComponent } from './visboproject-viewvpv/visboproject-viewvpv.component';
-import { VisboProjectViewCostComponent } from './visboproject-viewcost/visboproject-viewcost.component';
-import { VisboProjectViewDeliveryComponent } from './visboproject-viewdelivery/visboproject-viewdelivery.component';
-import { VisboProjectViewDeadlineComponent } from './visboproject-viewdeadline/visboproject-viewdeadline.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 // import { VisboPortfolioVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
 
@@ -46,6 +42,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'registerconfirm', component: RegisterconfirmComponent },
+  { path: 'oauthconfirm', component: OauthconfirmComponent },
   { path: 'register/:id', component: RegisterComponent },
   { path: 'pwforgotten', component: PwforgottenComponent },
   { path: 'pwreset', component: PwresetComponent },
@@ -57,15 +54,15 @@ const routes: Routes = [
   { path: 'vp/:id', component: VisboProjectsComponent, canActivate: [AuthGuard] },
   { path: 'vpDetail/:id', component: VisboprojectDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpAudit/:id', component: VisboprojectAuditComponent, canActivate: [AuthGuard]  },
+// old URLs showing individual pages
+  { path: 'vpViewCost/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewDeadlines/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpViewDeliveries/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
+  { path: 'vpView/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
   { path: 'vpKeyMetrics/:id', component: VisboProjectKeyMetricsComponent, canActivate: [AuthGuard]  },
-  { path: 'vpView/:id', component: VisboProjectViewVPVComponent, canActivate: [AuthGuard] },
-  { path: 'vpViewCost/:id', component: VisboProjectViewCostComponent, canActivate: [AuthGuard]  },
-  { path: 'vpViewDelivery/:id', component: VisboProjectViewDeliveryComponent, canActivate: [AuthGuard] },
-  { path: 'vpViewDeadline/:id', component: VisboProjectViewDeadlineComponent, canActivate: [AuthGuard] },
   { path: 'vpRestrict/:id', component: VisboprojectRestrictComponent, canActivate: [AuthGuard]  },
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
-  { path: 'vpvDetail/:id', component: VisboProjectVersionDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vpf/:id', component: VisboPortfolioVersionsComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
@@ -79,7 +76,8 @@ const routes: Routes = [
   { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: 'systasks', component: SystasksComponent, canActivate: [AuthGuard] },
   { path: 'sysconfig', component: SysconfigComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard'}
 ];
 
 @NgModule({

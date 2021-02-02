@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import 'jasmine';
 
-import { VisboCompViewKeyMetricsComponent } from './comp-keyMetrics.component';
+import { VisboCompViewKeyMetricsComponent } from './comp-viewkeymetrics.component';
 
 describe('VisboCompViewKeyMetricsComponent', () => {
   let component: VisboCompViewKeyMetricsComponent;
@@ -8,7 +9,9 @@ describe('VisboCompViewKeyMetricsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisboCompViewKeyMetricsComponent ]
+      declarations: [
+        VisboProjectViewCostComponent
+      ]
     })
     .compileComponents();
   }));
@@ -19,7 +22,7 @@ describe('VisboCompViewKeyMetricsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

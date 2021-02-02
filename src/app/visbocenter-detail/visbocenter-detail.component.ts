@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -17,16 +19,24 @@ import { VisboSetting } from '../_models/visbosetting';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 class OrganisationItem {
+  calcid: number;
   uid: number;
   pid: number;
+  type: number;
+  isTeam: boolean;
   level: number;
   name: string;
   parent: string;
   path: string;
+  employeeNr: string;
   isExternRole: boolean;
+  defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
-  aliases: string;
+  entryDate: Date;
+  exitDate: Date;
+  percent: number;
+  aliases: [string];
 }
 
 @Component({
@@ -74,7 +84,8 @@ export class VisbocenterDetailComponent implements OnInit {
     private location: Location,
     private router: Router,
     private alertService: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
@@ -92,6 +103,7 @@ export class VisbocenterDetailComponent implements OnInit {
         visbocenter => {
           this.visbocenter = visbocenter;
           this.combinedPerm = visbocenter.perm;
+          this.titleService.setTitle(this.translate.instant('vcDetail.titleName', {name: visbocenter.name}));
           this.log(`VisboCenter initialised ${this.visbocenter._id} Perm ${JSON.stringify(this.combinedPerm)} `);
         },
         error => {
@@ -521,7 +533,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  initSetting(index): void {
+  initSetting(index: number): void {
     this.vcSetting = this.vcSettings[index];
   }
 
@@ -549,43 +561,173 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  calcFullPath(id: number, organisation: OrganisationItem[]): void {
+    if (!organisation || !(id >= 0)) {
+      return;
+    }
+    let path = '';
+    let index = id;
+    let level = -1;
+    if (organisation[index]) {
+      const pid = organisation[index] && organisation[index].pid;
+      if (pid >= 0) {
+        organisation[index].parent = organisation[pid] && organisation[pid].name;
+      }
+    }
+    while (index >= 0 && organisation[index]) {
+      path = '/'.concat(organisation[index].name, path);
+      index = organisation[index].pid;
+      level += 1;
+    }
+    organisation[id].path = path;
+    organisation[id].level = level;
+  }
+
   downloadSetting(): void {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
-      let organisation: OrganisationItem[] = [];
-      for (let i = 0; i < setting.value.allRoles.length; i++) {
+      const organisation: OrganisationItem[] = [];
+      for (let i = 0; setting.value.allRoles && i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        if (!organisation[role.uid - 1]) {
-          organisation[role.uid - 1] = new OrganisationItem()
-          organisation[role.uid - 1].uid = role.uid;
-          organisation[role.uid - 1].pid = undefined;
-          organisation[role.uid - 1].path = '';
-          organisation[role.uid - 1].level = 0;
+        const id = role.uid;
+        if (!organisation[id]) {
+          organisation[id] = new OrganisationItem()
+          organisation[id].uid = id;
+          organisation[id].calcid = id;
+          organisation[id].pid = undefined;
         }
-        organisation[role.uid - 1].name = role.name;
-        organisation[role.uid - 1].isExternRole = role.isExternRole;
-        organisation[role.uid - 1].tagessatz = role.tagessatzIntern;
-        organisation[role.uid - 1].aliases = role.aliases;
+        organisation[id].name = role.name;
+        organisation[id].isExternRole = role.isExternRole;
+        organisation[id].defaultKapa = role.defaultKapa;
+        organisation[id].tagessatz = role.tagessatzIntern;
+        organisation[id].employeeNr = role.employeeNr;
+        organisation[id].defaultDayCapa = role.defaultDayCapa;
+        if (role.entryDate > "0001-01-01T00:00:00Z") {
+          organisation[id].entryDate = role.entryDate;
+        }
+        if (role.exitDate < "2200-11-30T23:00:00Z") {
+          organisation[id].exitDate = role.exitDate;
+        }
+        organisation[id].aliases = role.aliases;
 
-        this.log(`Add Orga Unit ${i} ${role.name} Children ${role.subRoleIDs.length}`);
+        // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
+        if (role.isTeam) {
+          this.log("Skip Handling of Team Members");
+          organisation[id].type = 2;
+          organisation[id].isTeam = true;
+        } else {
+          organisation[id].type = 1;
+        }
         for (let j = 0; j < role.subRoleIDs.length; j++) {
-          let index = Number(role.subRoleIDs[j].key) - 1;
+          const index = Number(role.subRoleIDs[j].key);
           if (index < 0) {
+            this.log(`Inconsistent Org Structure Role ${id} SubRole ${role.subRoleIDs[j].key}`);
             // something wrong with the numbering
             break;
           }
           if (!organisation[index]) {
+            // added by subrole
             organisation[index] = new OrganisationItem();
-            organisation[index].uid = index + 1;
+            organisation[index].uid = index;
+            organisation[index].calcid = index;
+          } else {
+            this.log(`SubRole already exists ${id} SubRole ${index}`);
           }
-          organisation[index].pid = role.uid;
-          organisation[index].parent = role.name;
-          organisation[index].path = organisation[role.uid - 1].path.concat('/', organisation[role.uid - 1].name);
-          organisation[index].level = organisation[role.uid - 1].level + 1;
+          if (!organisation[index].pid) {
+            organisation[index].pid = id;
+          }
         }
       }
-      organisation.sort(function(a, b) { return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name)); });
+
+      // build team members Information by duplicating users with their percentage
+      let maxid = 0;
+      setting.value.allRoles.forEach(element => { if (element.uid > maxid) maxid = element.uid; } );
+      this.log(`MaxID ${maxid}`);
+      for (let i = 0; i < setting.value.allRoles.length; i++) {
+        const role = setting.value.allRoles[i];
+        if (role.isTeam && role.subRoleIDs && role.subRoleIDs.length > 0) {
+          for (let j = 0; j < role.subRoleIDs.length; j++) {
+            const index = role.subRoleIDs[j].key;
+            if (!organisation[index] || organisation[index].isTeam) {
+              // nothing to do
+              continue;
+            }
+            const userRole = organisation[index];
+            // now it is a user, add a new entry
+            maxid += 1;
+            organisation[maxid] = new OrganisationItem();
+            organisation[maxid].uid = index;
+            organisation[maxid].calcid = maxid;
+            organisation[maxid].type = 2;
+            organisation[maxid].pid = role.uid;
+            organisation[maxid].name = userRole.name;
+            organisation[maxid].parent = role.name;
+            if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
+            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole; }
+            if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
+            if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
+            if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
+            if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
+            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
+            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
+            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
+          }
+        }
+      }
+      organisation.forEach(item => this.calcFullPath(item.calcid, organisation));
+      organisation.sort(function(a, b) {
+        if (a.type != b.type) {
+          return a.type - b.type;
+        } else {
+          return visboCmpString(a.path, b.path);
+        }
+      });
+
+      // build cost Information hierarchy
+      const listCost: OrganisationItem[] = [];
+      for (let i = 0; setting.value.allCosts && i < setting.value.allCosts.length; i++) {
+        const cost = setting.value.allCosts[i];
+        const id = cost.uid;
+        if (!listCost[id]) {
+          listCost[id] = new OrganisationItem()
+          listCost[id].uid = id;
+          listCost[id].calcid = id;
+          listCost[id].pid = undefined;
+        }
+        listCost[id].name = cost.name;
+
+        listCost[id].type = 3;
+        for (let j = 0; cost.subCostIDs && j < cost.subCostIDs.length; j++) {
+          const index = Number(cost.subCostIDs[j].key);
+          if (index < 0) {
+            this.log(`Inconsistent Org Structure Cost ${id} SubCost ${cost.subCostIDs[j].key}`);
+            // something wrong with the numbering
+            break;
+          }
+          if (!listCost[index]) {
+            // added by subCost
+            listCost[index] = new OrganisationItem();
+            listCost[index].uid = index;
+            listCost[index].calcid = index;
+          } else {
+            this.log(`listCost already exists ${id} listCost ${index}`);
+          }
+          listCost[index].pid = id;
+        }
+      }
+
+      listCost.forEach(item => this.calcFullPath(item.calcid, listCost));
+      listCost.sort(function(a, b) {
+        if (a.type != b.type) {
+          return a.type - b.type;
+        } else {
+          return visboCmpString(a.path, b.path);
+        }
+      });
+      // add the list to the orga list
+      listCost.forEach(item => organisation.push(item));
+
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
 
       // export as CSV
@@ -594,34 +736,45 @@ export class VisbocenterDetailComponent implements OnInit {
       data = 'sep=' + separator + '\n';  // to force excel to use the separator
       data = data + 'name' + separator
             + 'uid' + separator
-            // + 'pid' + separator
+            + 'type' + separator
             + 'organisation' + separator
             + 'isExternal' + separator
-            // + 'isTeam' + separator
+            + 'isTeam' + separator
             + 'defaultKapa' + separator
             + 'tagessatz' + separator
+            + 'employeeNr' + separator
+            + 'defaultDayCapa' + separator
+            + 'entryDate' + separator
+            + 'exitDate' + separator
+            + 'percent' + separator
             + 'aliases' + '\n';
       for (let i = 0; i < organisation.length; i++) {
         const role = organisation[i];
         if (!role) {
           // organisation could contain holes and they are sorted at the end
-          break;
+          continue;
         }
-        let parent = '';
         const lineItem = ''
-                    + role.name.padStart(role.name.length + role.level, ' ') + separator
+                    + '"' + role.name.padStart(role.name.length + role.level, ' ') + '"'+ separator
                     + role.uid + separator
-                    // + (role.pid || '') + separator
-                    + role.parent + separator
-                    + (role.isExternRole ? '1' : '0') + separator
-                    // + (role.isTeam ? '1' : '0') + separator
-                    + (role.defaultKapa || '0') + separator
-                    + role.tagessatz + separator
-                    + (role.aliases || '') + '\n';
+                    + (role.type || '') + separator
+                    + (role.parent || '') + separator
+                    + (role.isExternRole ? '1' : '') + separator
+                    + (role.isTeam ? '1' : '') + separator
+                    + (role.defaultKapa || '').toLocaleString() + separator
+                    + (role.tagessatz || '').toLocaleString() + separator
+                    + (role.employeeNr || '') + separator
+                    + (role.defaultDayCapa || '').toLocaleString() + separator
+                    + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
+                    + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
+                    + (role.percent ? role.percent.toLocaleString() : '') + separator
+                    + (role.aliases && role.aliases.length > 0 ? role.aliases.join("#") : '') + '\n';
         data = data.concat(lineItem);
       }
       this.log(`VC Setting Orga CSV Len ${data.length} `);
-      const blob = new Blob([data], { type: 'text/plain' });
+      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
+      const blob = new Blob([data], { type: 'text/csv;charset=utf-8' });
+      data = '\ufeff' + data;
       const url = window.URL.createObjectURL(blob);
       this.log(`Open URL ${url}`);
       const a = document.createElement('a');
@@ -629,7 +782,7 @@ export class VisbocenterDetailComponent implements OnInit {
       a.href = url;
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();
-      var strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
+      const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
 
       a.download = `VisboCenterOrganisation_${strTimestamp}.csv`;
       this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
@@ -637,7 +790,7 @@ export class VisbocenterDetailComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     } else {
       // export as JSON/Text
-      let data = JSON.stringify(setting.value);
+      const data = JSON.stringify(setting.value);
       this.log(`VC Setting JSON Len ${data.length} `);
       const blob = new Blob([data], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);

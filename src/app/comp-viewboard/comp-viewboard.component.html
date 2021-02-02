@@ -1,10 +1,10 @@
-<div class='well'>
+<div class='well' (resized)="onResized($event)">
   <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
     <div class="row text-dark">
       <div class="my-1 pl-0 col-11">
         <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
         <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
-        <input class="ml-2" type="text" (keyup)="visboViewBoardOverTime()" [(ngModel)]="vpFilter" placeholder="Filter">
+        <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
       </div>
     </div>
   </div>

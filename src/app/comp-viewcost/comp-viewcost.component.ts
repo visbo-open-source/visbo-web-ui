@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -12,8 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-import { getErrorMessage } from '../_helpers/visbo.helper';
+import { convertDate, getErrorMessage } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -32,9 +32,11 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   vpvTotalCostCurrent: number;
 
   parentThis = this;
+  timeoutID: number;
 
   colors = ['#F7941E', '#BDBDBD', '#458CCB'];
 
+  chartActive: Date;
   graphDataComboChart = [];
   graphOptionsComboChart = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
@@ -57,7 +59,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         minorGridlines: {count: 0, color: 'none'}
       },
       hAxis: {
-        format: 'MMM YY',
+        format: 'MMM yy',
         gridlines: {
           color: '#FFF',
           count: -1
@@ -81,15 +83,31 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    moment.locale(this.currentLang);
     this.visboCostCalc();
   }
 
   ngOnChanges(): void {
     this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
+    this.chartActive = undefined;
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboCostCalc();
     }
+  }
+
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
+    let diff = 0;
+    if (this.chartActive) {
+      diff = (new Date()).getTime() - this.chartActive.getTime()
+    }
+    if (diff < 1000) {
+      return;
+    }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboCostCalc();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   hasVPPerm(perm: number): boolean {
@@ -124,7 +142,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
           if (error.status === 403) {
-            const message = this.translate.instant('vpViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
+            const message = this.translate.instant('compViewCost.msg.errorPermVersion', {'name': this.vpvActive.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(getErrorMessage(error));
@@ -193,8 +211,8 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
     if (len === 1) {
       // add an additional month as one month could not be displayed, but do not deliver values for it
-      let currentDate = new Date(graphDataCost[0][0]);
-      currentDate.setMonth(currentDate.getMonth()+1);
+      const currentDate = new Date(graphDataCost[0][0]);
+      currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCost.push([
         currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
@@ -212,6 +230,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     // graphDataCost.reverse();
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
+    this.chartActive = new Date();
   }
 
   chartSelectRow(row: number, label: string, value: number): void {
@@ -219,7 +238,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(cost: VPVCost, actualData: boolean): string {
-    const currentDate = moment(cost.currentDate).format('MMM YYYY');
+    const currentDate = convertDate(new Date(cost.currentDate), 'shortDate', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
       '<div><b>' + currentDate + '</b></div>' + '<div>' +
       '<table>';
@@ -236,15 +255,28 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     return result;
   }
 
-  displayCost(): boolean {
-    let result = false;
-    if (this.vpvActive                                // the vpv is already available
-    && this.hasVPPerm(this.permVP.ViewAudit)          // user has audit permission
-    && this.vpvCost && this.vpvCost.length > 0) {     // vpv contains cost data
-      result = true;
+  getLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      percentCalc = plan/baseline;
     }
-    if (this.vpvTotalCostBaseLine === 0 && this.vpvTotalCostCurrent === 0) {
-      result = false;
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
+  }
+
+  vpHasCost(type: string): boolean {
+    let result = false;
+    if (!this.vpvActive) {
+      return result
+    }
+    if (type == 'keyMetric') {
+      result = this.vpvActive.keyMetrics &&
+                (this.vpvActive.keyMetrics.costBaseLastTotal > 0 || this.vpvActive.keyMetrics.costCurrentTotal > 0)
+    } else {
+      if (this.vpvCost && this.vpvCost.length > 0) {     // vpv contains cost data
+        result = true;
+      }
     }
     return result;
   }

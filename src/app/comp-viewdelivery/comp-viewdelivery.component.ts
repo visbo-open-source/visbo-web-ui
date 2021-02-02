@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -40,6 +41,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   reducedList: boolean;
   statusList: string[];
   deliveryIndex: number;
+  timeoutID: number;
 
   listType = [
     {name: 'PFV', ref: 'pfv', localName: ''},
@@ -99,6 +101,15 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     }
   }
 
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewAllDeliveryPie();
+      this.timeoutID = undefined;
+    }, 500);
+  }
+
   visboDeliveryCalc(): void {
     // this.visboViewAllDeliveryPie = undefined;
     if (!this.vpvActive) {
@@ -116,6 +127,13 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
           } else {
             this.log(`Store Delivery for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].delivery.length} Timestamp ${visboprojectversions[0].timestamp}`);
             this.allDelivery = visboprojectversions[0].delivery;
+            // check if we got the PFV Values and if not set the refType to vpv
+            if (this.refType != 'vpv') {
+              if (this.allDelivery && !this.allDelivery[0].fullPathPFV) {
+                this.refType = 'vpv'
+                this.switchType = false;
+              }
+            }
           }
           this.initDeliveries();
           this.visboViewAllDeliveryPie();
@@ -136,16 +154,12 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     if (this.allDelivery === undefined) {
       return;
     }
-    this.switchType = (this.refType === 'vpv');
     // generate long Names
     for (let i = 0; i < this.allDelivery.length; i++) {
       this.allDelivery[i].fullName = this.getFullName(this.allDelivery[i]);
       const statusID = this.getStatus(this.allDelivery[i]);
       this.allDelivery[i].statusID = statusID;
       this.allDelivery[i].status = this.statusList[statusID];
-      if (this.switchType ||  this.allDelivery[i].endDatePFV) {
-        this.switchType = true;
-      }
     }
     this.filterDeliveries();
   }

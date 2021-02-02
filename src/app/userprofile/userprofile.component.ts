@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
@@ -23,6 +25,8 @@ export class UserProfileComponent implements OnInit {
   newpw: string;
   changePW: boolean;
 
+  currentLang: string;
+
   PWPolicy: string;
   PWPolicyDescription: string;
   loading = false;
@@ -34,10 +38,13 @@ export class UserProfileComponent implements OnInit {
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('profile.titleShort'));
     this.getPWPolicy();
     // this.passwordInit();
     this.log('Start init User Get Profile');

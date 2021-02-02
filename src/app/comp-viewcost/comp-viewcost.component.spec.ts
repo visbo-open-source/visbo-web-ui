@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import 'jasmine';
 
-import { VisboCompViewCostComponent } from './visboproject-viewcost.component';
+import { VisboCompViewCostComponent } from './comp-viewcost.component';
 
 describe('VisboCompViewCostComponent', () => {
   let component: VisboCompViewCostComponent;

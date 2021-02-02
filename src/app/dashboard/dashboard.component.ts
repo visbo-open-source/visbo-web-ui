@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslateService} from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -7,6 +11,7 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
+import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage } from '../_helpers/visbo.helper';
 
@@ -19,16 +24,27 @@ export class DashboardComponent implements OnInit {
   visbocenters: VisboCenter[] = [];
   visboprojects: VisboProject[] = [];
 
+  currentLang: string;
+
+  combinedPerm: VGPermission = undefined;
+  permVC = VGPVC;
+  permVP = VGPVP;
+
   constructor(
     private visbocenterService: VisboCenterService,
     private visboprojectService: VisboProjectService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.currentLang = this.translate.currentLang;
+    this.titleService.setTitle(this.translate.instant('dashboard.title'));
+
     this.getVisboCenters();
     this.getVisboProjects();
   }
@@ -59,6 +75,13 @@ export class DashboardComponent implements OnInit {
           this.alertService.error(getErrorMessage(error));
         }
       );
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
   }
 
   gotoClickedVc(visbocenter: VisboCenter): void {

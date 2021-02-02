@@ -14,7 +14,8 @@
         </span>
     </h2>
       <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
-        <a (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
       </h5>
     </div>
   </div>
@@ -23,69 +24,49 @@
     <div class="row">
       <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM'}}</div>
+        <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM.'}}</div>
       </h3>
-      <div class="col-4">
+      <div class="col-4 d-print-none">
         <div class="row">
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpViewCost.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(-1)'></span>
-          <select class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
+          <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpfVersion.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(-1)'></span>
+          <select *ngIf="statusDirection != undefined" class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
             <option value="day">{{ 'vpfVersion.lbl.day' | translate }}</option>
             <option value="week">{{ 'vpfVersion.lbl.week' | translate }}</option>
             <option value="month">{{ 'vpfVersion.lbl.month' | translate }}</option>
             <option value="quarter">{{ 'vpfVersion.lbl.quarter' | translate }}</option>
           </select>
-          <span style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpViewCost.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM'} }}" (click)='getNextVersion(1)'></span>
+          <span *ngIf="statusDirection <= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpfVersion.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(1)'></span>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row d-print-none">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
-        <button *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
-        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
       <div class="col-3 mt-2 text-warning text-right" *ngIf="isVersionMismatch()">
-          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvWithKM, 'total': vpList.length} }}
+          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
       </div>
     </div>
   </div>
 
 
-  <div *ngIf="currentView == 'Capacity' && vpActive && vpfActive">
+  <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive">
     <hr>
     <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
-  <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions">
+  <div *ngIf="pageParams.view == 'KeyMetrics' && visboprojectversions">
     <hr>
-    <app-comp-viewkeymetrics [activeID]="vpActive._id" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewkeymetrics>
+    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="currentView == 'ProjectBoard' && vpList">
+  <div *ngIf="pageParams.view == 'List' && vpList">
     <hr>
-    <app-comp-viewboard [vps]="vpList" [refDate]="vpvRefDate" ></app-comp-viewboard>
+    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="currentView == 'List' && vpfActive" class="mt-3">
-    <table class='table table-hover table-sortable'>
-      <!--Table head-->
-      <thead>
-        <tr>
-          <th class="d-none d-md-table-cell">{{ 'vpfVersion.lbl.nr' | translate }}</th>
-          <th (click)="sortTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
-          <th (click)="sortTable(2)">{{ 'vpfVersion.lbl.variant' | translate }}</th>
-          <th (click)="sortTable(3)">{{ 'vpfVersion.lbl.timestamp' | translate }}</th>
-          <th (click)="sortTable(4)">{{ 'vpfVersion.lbl.keyMetrics' | translate }}</th>
-        </tr>
-      </thead>
-      <!--Table body-->
-      <tbody>
-        <tr *ngFor="let vpItem of vpList; let vpIndex=index" (click)="gotoVP(vpItem.vpid, vpItem.variantName)" >
-          <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
-          <td><a>{{vpItem.name}}</a></td>
-          <td>{{vpItem.variantName}}</td>
-          <td>{{vpItem.timestamp | date: 'dd.MM.yy HH:mm'}}</td>
-          <td><i *ngIf="vpItem.keyMetrics" class="fas fa-check-circle" style="color:green"></i></td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
+    <hr>
+    <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
   </div>
 </div>
