@@ -50,4 +50,5 @@ export class VPFParams {
   from: string;
   to: string;
   pfv: string;
+  drillDown: string;
 }

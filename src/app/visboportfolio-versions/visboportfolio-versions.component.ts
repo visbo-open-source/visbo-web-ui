@@ -68,6 +68,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpList: VisboProjectVersion[];
     vpCheckListAll: vpCheckItem[] = [];
     vpCheckListFiltered: vpCheckItem[] = [];
+    vpFilterIndex: number;
+    switchVariantCount: number;
+    switchVariant: string;
     filter: string;
     hasOrga = false;
 
@@ -152,7 +155,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
   }
 
-  getAllProjects(vp: VisboProject): void {
+  initProjectList(vp: VisboProject): void {
+    this.filter = undefined;
     if (!vp && !vp.vcid) {
       this.log("No Portfolio found");
       return;
@@ -367,6 +371,60 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     });
     this.vpCheckListFiltered = list;
     this.isGlobalChecked = allOn;
+  }
+
+  initVariantChange(index: number): void {
+    this.log(`init Change Variant of VPs ${index}`);
+    if (index >= 0 && index < this.vpCheckListFiltered.length) {
+      let element = this.vpCheckListFiltered[index];
+      this.vpFilterIndex = index;
+      this.log(`Found VP ${element.vp.name} Variant Selected ${element.variantName}`);
+      this.switchVariantCount = 0;
+      this.switchVariant = element.variantName || '';
+      if (element.variantName) {
+        // count the number of projects who have this getVariantName
+        this.vpCheckListFiltered.forEach(item => {
+          if (item.vp && item.vp.variant && item.vp.variant.length > 0) {
+            item.vp.variant.forEach(variant => {
+              if (variant.variantName == element.variantName && variant.vpvCount > 0) {
+                  this.switchVariantCount += 1;
+              }
+            })
+          }
+        });
+        this.log(`Change to Variant ${element.variantName} for count ${this.switchVariantCount} VPs`);
+      } else {
+        // count the number of projects who have this getVariantName
+        this.vpCheckListFiltered.forEach(item => {
+          if (item.variantName) {
+            this.switchVariantCount += 1;
+          }
+        });
+        this.log(`Change to Standard for count ${this.switchVariantCount} VPs`);
+      }
+    }
+  }
+
+  changeVPVariant(item: vpCheckItem = undefined): void {
+    this.log(`Change Variant ${this.switchVariant || 'Standard'} of ${this.switchVariantCount} VPs`);
+    if (this.switchVariant) {
+      this.vpCheckListFiltered.forEach(item => {
+        if (item.vp && item.vp.variant && item.vp.variant.length > 0) {
+          item.vp.variant.forEach(variant => {
+            if (variant.variantName == this.switchVariant) {
+                item.variantName = this.switchVariant;
+            }
+          })
+        }
+      });
+    } else {
+      // reset to Standard
+      this.vpCheckListFiltered.forEach(item => {
+        if (item.variantName) {
+          item.variantName = '';
+        }
+      });
+    }
   }
 
   checkUpdateVPF(): boolean {
@@ -716,6 +774,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string): void {
     this.messageService.add('VisboPortfolioVersion: ' + message);
-    // console.log('VisboPortfolioVersion: ' + message)
+    console.log('VisboPortfolioVersion: ' + message)
   }
 }

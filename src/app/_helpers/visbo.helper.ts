@@ -46,6 +46,14 @@ export function convertDate(input: Date, format: string, lang = 'en'): string {
         month: 'short'
       }
     );
+  } else if (format == 'fullMonthYear') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: 'numeric',
+        month: 'long'
+      }
+    );
   } else {
     return input.toLocaleDateString(
       lang,

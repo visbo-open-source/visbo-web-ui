@@ -568,19 +568,18 @@
 			"totalCost": "Gesamtkosten",
 			"totalCapa": "Kapazität",
 			"totalCostPT": "Gesamtaufwand",
-			"totalCapaPT": "Kapazität",
-			"internCapaPT": "interne Kapazität",
-			"actualCostPT": "Istkosten",
-			"plannedCostPT": "geplante Kosten",
+			"internCapa": "interne Kapazität",
+			"actualCost": "Istkosten",
 			"plannedCost": "geplante Kosten",
 			"diffCost": "Abweichung",
 			"budgetPT": "Baseline",
-			"budgetBase": "Baseline",
+			"budget": "Baseline",
 			"roleName": "Rolle",
 			"pd": "PT",
 			"euro": "Euro",
 			"keuro": "T€",
-			"refPFV": "Vergleich mit Beauftragung"
+			"refPFV": "Vergleich mit Beauftragung",
+			"drillDownOrga": "Zeige Organisation Einheiten"
 		},
 		"btn": {
 			"back": "Zurück",
@@ -799,6 +798,7 @@
 		"titleKMShort": "Zahlen vom",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
 		"titleVPList": "Projekt Liste für {{name}} vom {{from}}",
+		"titleChangeVPVariant": "Änderung der Variante in der Portfolio Liste",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -814,7 +814,8 @@
 			"nrOfItems": "Anzahl Projekte",
 			"user": "Erstellt von",
 			"from": "Vom",
-			"isChecked": "Ausgewählt"
+			"isChecked": "Ausgewählt",
+			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {
 			"viewKeyMetrics": "Projekt Metrik",
@@ -828,6 +829,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"changeVPVariant": "Wollen Sie {{count}} Projekte auf Variante {{name}} setzen?",
 			"createVPFSuccess": "Portfolio {{name}}: Liste wurde erfolgreich gespeichert",
 			"removeVPFSuccess": "Portfolio {{name}}: Liste vom {{from}} wurde erfolgreich gelöscht",
 			"noProjectList": "Dieses Portfolio hat keine Projektliste",

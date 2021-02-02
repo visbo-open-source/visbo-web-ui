@@ -46,7 +46,7 @@
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
       <div class="align-items-end btn-toolbar" style="padding: unset;">
-        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
       </div>
     </div>
     <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
@@ -56,7 +56,7 @@
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
     {{ 'vpfVersion.msg.noProjectList' | translate }}
     <div *ngIf="hasVPPerm(permVP.Modify)" class="btn-toolbar my-3" style="padding: unset;">
-      <button type="button" class="btn btn-primary" (click)="getAllProjects(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+      <button type="button" class="btn btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
     </div>
   </div>
 
@@ -117,18 +117,20 @@
             </thead>
 
             <tbody id="VPList">
-              <tr *ngFor="let item of vpCheckListFiltered">
+              <tr *ngFor="let item of vpCheckListFiltered; let vpFilterIndex=index">
                 <td id="ColChecked">
                   <input type="checkbox" [(ngModel)]="item.isChecked">
                 </td>
                 <td id="ColName"><a>{{item.vp.name}}</a></td>
                 <td *ngIf="!item.hasVariants" id="ColName"></td>
                 <td *ngIf="item.hasVariants" id="ColName">
-                  <!-- <a>{{item.variantName}} {{item.hasVariants}}</a> -->
-                  <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName">
-                    <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
-                    <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
-                  </select>
+                  <div class="row">
+                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName">
+                      <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
+                      <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
+                    </select>
+                    <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-toggle="modal" data-target="#ChangeVPVariant"></span>
+                  </div>
                 </td>
                 <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
               </tr>
@@ -184,6 +186,29 @@
         <div class="modal-footer align-items-end">
           <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
           <button *ngIf="hasVPPerm(permVP.DeleteVP)" id="Delete" type="submit" class="btn btn-warning mx-1" (click)="deleteVPF(vpfActive)" data-dismiss="modal">{{ 'vpfVersion.btn.delete' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Change VP Variant -->
+  <div *ngIf="vpfActive" class="modal fade" id="ChangeVPVariant" tabindex="-1" role="dialog" aria-labelledby="ChangeVPVariantTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ChangeVPVariantTitle">{{ 'vpfVersion.titleChangeVPVariant' | translate:{'name': vpfActive.name } }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariant' | translate:{'name': switchVariant, 'count': switchVariantCount} }}</label>
+          </div>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button id="Change" type="submit" class="btn btn-warning mx-1" (click)="changeVPVariant()" data-dismiss="modal">{{ 'vpfVersion.btn.update' | translate }}</button>
         </div>
       </div>
     </div>

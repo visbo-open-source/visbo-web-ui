@@ -568,19 +568,18 @@
 			"totalCost": "Total Cost",
 			"totalCapa": "Capacity",
 			"totalCostPT": "Baseline Workload",
-			"totalCapaPT": "Capacity",
-			"internCapaPT": "Internal Capacity ",
-			"actualCostPT": "Actual Cost",
-			"plannedCostPT": "Planned Cost",
+			"internCapa": "Internal Capacity ",
+			"actualCost": "Actual Cost",
 			"plannedCost": "Planned Cost",
 			"diffCost": "Deviation",
 			"budgetPT": "Baseline",
-			"budgetBase": "Baseline",
+			"budget": "Baseline",
 			"roleName": "Role",
 			"pd": "PD",
 			"euro": "Euro",
 			"keuro": "T€",
-			"refPFV": "Compare against Order"
+			"refPFV": "Compare against Order",
+			"drillDownOrga": "Show per Organisation Unit"
 		},
 		"btn": {
 			"back": "Back",
@@ -799,6 +798,7 @@
 		"titleKMShort": "Metrics from",
 		"titleRessourceChange": "Change Ressource",
 		"titleVPList": "Project list for {{name}} from {{from}}",
+		"titleChangeVPVariant": "Change of Variant in the Portfolio List",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -814,7 +814,8 @@
 			"nrOfItems": "Nr. of Projects",
 			"user": "Created by",
 			"from": "From",
-			"isChecked": "Selected"
+			"isChecked": "Selected",
+			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {
 			"viewKeyMetrics": "Project Metric",
@@ -828,6 +829,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"changeVPVariant": "Do you want to change {{count}} Projects to Variant {{name}}?",
 			"createVPFSuccess": "Portfolio {{name}}: List was saved successfully",
 			"removeVPFSuccess": "Portfolio {{name}}: List from {{from}} was deleted successfully",
 			"noProjectList": "This portfolio does not have a project list",
