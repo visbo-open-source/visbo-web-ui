@@ -1,4 +1,4 @@
-<div *ngIf="hasDeadlines()" class='well'>
+<div *ngIf="hasDeadlines()" class='well' (resized)="onResized($event)">
   <div *ngIf="displaySwitch()" class="container">
     <div class="d-flex justify-content-center my-1">
       <button type="button" class="btn btn-md btn-light mx-2" (click)="toggleGantt()">{{ buttonGantt }}</button>
@@ -46,11 +46,9 @@
       <!--Table body-->
       <tbody>
         <tr *ngFor="let deadlines of filteredDeadline; let deadlineIndex=index" (click)='helperDeadline(deadlineIndex)' data-toggle="modal" data-target="#detailDeadline">
-          <td *ngIf="getStatus(deadlines) === 0" class="font-weight-bold my_darkgreen" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
-          <td *ngIf="getStatus(deadlines) === 1" class="font-weight-bold my_green" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
-          <td *ngIf="getStatus(deadlines) === 2" class="font-weight-bold my_orange" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
-          <td *ngIf="getStatus(deadlines) === 3" class="font-weight-bold my_red" title="{{deadlines.type}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
-          <td *ngIf="getStatus(deadlines) === -1" title="{{getFullName(deadlines)}}">{{getShortText(getFullName(deadlines), 100, 'right')}}</td>
+          <td title="{{getFullName(deadlines)}}">
+            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatus(deadlines), text: getShortText(getFullName(deadlines), 100, 'right')} " ></ng-container>
+          </td>
           <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
           <td *ngIf="switchType" class="d-none d-xl-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
@@ -58,16 +56,31 @@
 
           <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
           <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
-          <td class="d-none d-md-table-cell">
-            <i *ngIf="deadlines.trafficlight == 1" class="fas fa-lightbulb text-success" title="{{deadlines.trafficlightDesc}}"></i>
-            <i *ngIf="deadlines.trafficlight == 2" class="fas fa-lightbulb text-warning" title="{{deadlines.trafficlightDesc}}"></i>
-            <i *ngIf="deadlines.trafficlight == 3" class="fas fa-lightbulb text-danger" title="{{deadlines.trafficlightDesc}}"></i>
+          <td class="d-none d-md-table-cell" title="{{deadlines.trafficlightDesc}}">
+            <ng-container *ngTemplateOutlet="trafficLight; context:{level: deadlines.trafficlight} " ></ng-container>
           </td>
         </tr>
       </tbody>
       <!--Table body-->
     </table>
   </div>
+
+  <ng-template #fontStyle let-level="level" let-text="text">
+    <i [ngClass]="{
+      'font-weight-normal': level == -1,
+      'font-weight-bold': level >= 0,
+      'my_darkgreen': level == 0,
+      'my_green': level == 1,
+      'my_orange': level == 2,
+      'my_red': level == 3}
+      ">
+      {{text}}
+    </i>
+  </ng-template>
+
+  <ng-template #trafficLight let-level="level">
+    <i class="fas fa-lightbulb" [ngClass]="{'d-none': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+  </ng-template>
 
   <!-- Modal Show Deadline Detail -->
   <div class="modal fade" id="detailDeadline" tabindex="-1" role="dialog" aria-labelledby="Detail Deadline" aria-hidden="true">
@@ -109,10 +122,7 @@
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.trafficlight' | translate }}:</label>
               <label class="col-8 form-control-static">
                 <span class="mx-2" title="{{ filteredDeadline[deadlineIndex].trafficlightDesc }}">
-                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 0" class="fas fa-lightbulb text-grey"></i>
-                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 1" class="fas fa-lightbulb text-success"></i>
-                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 2" class="fas fa-lightbulb text-warning"></i>
-                  <i *ngIf="filteredDeadline[deadlineIndex].trafficlight == 3" class="fas fa-lightbulb text-danger"></i>
+                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: filteredDeadline[deadlineIndex].trafficlight} " ></ng-container>
                 </span>
                 <span class="mx-1">
                   {{ filteredDeadline[deadlineIndex].trafficlightDesc }}

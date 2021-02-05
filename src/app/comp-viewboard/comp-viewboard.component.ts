@@ -1,16 +1,18 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
+import { VPFParams } from '../_models/visboportfolioversion';
+import { VPParams } from '../_models/visboproject';
 
-import * as moment from 'moment';
-import { visboCmpString } from '../_helpers/visbo.helper';
+import { visboCmpString, convertDate, visboIsToday } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -18,11 +20,12 @@ import { visboCmpString } from '../_helpers/visbo.helper';
 })
 export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
-  @Input() refDate: Date;
   @Input() vps: VisboProjectVersion[];
 
-  currentRefDate: Date;
-  vpFilter: string;
+  refDate: Date;
+  filter: string;
+  activeID: string; // either VP ID of Portfolio or VC ID
+  timeoutID: number;
 
   parentThis = this;
 
@@ -52,20 +55,63 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
-    if (!this.refDate) { this.refDate = new Date(); }
-    this.currentRefDate = this.refDate;
-    this.log(`ProjectBoard Init  ${this.refDate.toISOString()} ${this.refDate !== this.currentRefDate} `);
-
+    this.log(`ProjectBoard Init  ${this.refDate.toISOString()} `);
+    this.initSetting();
     this.visboViewBoardOverTime();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()} ${this.refDate?.getTime() !== this.currentRefDate?.getTime()}, Changes ${JSON.stringify(changes)}`);
+    this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()}, Changes ${JSON.stringify(changes)}`);
+    this.initSetting();
     this.visboViewBoardOverTime();
   }
 
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewBoardOverTime();
+      this.timeoutID = undefined;
+    }, 500);
+  }
+
+  initSetting(): void {
+    this.activeID = this.route.snapshot.paramMap.get('id');
+    const refDate = this.route.snapshot.queryParams['refDate'];
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+
+    this.refDate = refDate ? new Date(refDate) : new Date();
+    this.filter = filter;
+  }
+
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    // const keyCode = event ? event.keyCode : 0;
+    // if (keyCode == 13) {    // only return key
+      // add parameter to URL
+      this.updateUrlParam('filter', this.filter)
+    // }
+    this.visboViewBoardOverTime();
+  }
+
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
+    if (type == 'filter') {
+      queryParams.filter = value;
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
+  }
+
   visboViewBoardOverTime(): void {
-    this.currentRefDate = this.refDate;
     const graphDataTimeline = [];
     if (!this.vps || this.vps.length === 0) {
       this.graphDataTimeline = [];
@@ -73,13 +119,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
-    
+
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     for (let i = 0; i < this.vps.length; i++) {
-      if (this.vpFilter
-        && !(this.vps[i].name.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].businessUnit?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].leadPerson?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
-          || this.vps[i].VorlagenName?.toLowerCase().indexOf(this.vpFilter.toLowerCase()) >= 0
+      if (filter
+        && !(this.vps[i].name.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].businessUnit?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter
@@ -104,11 +151,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         //   vpsFarbe = vpsFarbe + 1000;
         //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
         // }
-        
+
       }
     }
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
-    
+
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
@@ -127,8 +174,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(vpv: VisboProjectVersion): string {
-    const startDate = moment(vpv.startDate).format('DD.MM.YY');
-    const endDate = moment(vpv.endDate).format('DD.MM.YY');
+    const startDate = convertDate(new Date(vpv.startDate), 'fullDate', this.currentLang);
+    const endDate = convertDate(new Date(vpv.endDate), 'fullDate', this.currentLang);
 
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + this.combineName(vpv.name, vpv.variantName) + '</b></div>' + '<div>' +
@@ -163,7 +210,12 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     if (vp) {
       this.log(`Navigate to: ${vp.vpid} ${vp.name} ${vp.variantName}`);
-      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], vp.variantName ? { queryParams: { variantName: vp.variantName }} : {});
+      const queryParams = new VPParams();
+      queryParams.variantName = vp.variantName || null;
+      if (this.refDate && !visboIsToday(this.refDate)) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: queryParams });
     } else {
       this.log(`VP not found: ${vpName}`);
     }
@@ -173,9 +225,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return JSON.stringify(this.vps);
   }
 
-  combineName(vpName, variantName): string {
+  combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
-    result = result
     if (variantName) {
       result = result.concat(' ( ', variantName, ' ) ')
     }
@@ -187,7 +238,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let result = this.vps.find(x => x.name === name);
     if (!result && name.lastIndexOf(" ) ") === name.length - 3) {
       // variant Part at the end
-      let index = name.lastIndexOf(" ( ");
+      const index = name.lastIndexOf(" ( ");
       const vpName = name.substring(0, index);
       const variantName = name.substring(index + 3, name.length - 3);
       result = this.vps.find(x => x.name === vpName && x.variantName === variantName)

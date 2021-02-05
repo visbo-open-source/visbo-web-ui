@@ -1,26 +1,54 @@
-<div *ngIf="displayCost()" class='well'>
-  <div class="col">
-    <div class="row text-dark">
-      <span class="mr-2">
-        {{ 'keyMetrics.shortEAC' | translate }}
-        ({{ 'keyMetrics.longEAC' | translate }})
-        {{vpvTotalCostCurrent | number : '1.0-0'}} T€
-        {{ 'keyMetrics.versus' | translate }}
-        {{ 'keyMetrics.shortBAC' | translate }}
-        ({{ 'keyMetrics.longBAC' | translate }})
-        {{vpvTotalCostBaseLine | number : '1.0-0'}} T€
-      </span>
-      <span *ngIf="vpvTotalCostCurrent <= vpvTotalCostBaseLine"><strong class="fas fa-check-circle" style="color:green"></strong></span>
-      <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine && vpvTotalCostCurrent <= vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-triangle" style="color:orange"></strong></span>
-      <span *ngIf="vpvTotalCostCurrent > vpvTotalCostBaseLine * 1.05"><strong class="fas fa-exclamation-circle" style="color:red"></strong></span>
+<div *ngIf="hasVPPerm(this.permVP.ViewAudit)" class='well' (resized)="onResized($event)">
+  <div class="row row-cols-1 row-cols-lg-2">
+    <div class="col col-sm-12 col-lg-8">
+      <div class="row text-dark">
+      </div>
+    </div>
+    <div *ngIf="vpHasCost('')" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+      <!-- <h5 class="card-title">Special title treatment</h5> -->
+      <h5 class="card-header p-2">
+        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine)}"></ng-container></strong>
+        {{ 'compViewCost.titleBox' | translate }}</h5>
+      <div class="card-body p-2">
+        <div class="row">
+          <div class="col col-sm-8">
+            {{ 'keyMetrics.shortEAC' | translate }}
+            ({{ 'keyMetrics.longEAC' | translate }})
+          </div>
+          <div class="col col-sm-4 text-right">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine)}"></ng-container></strong>
+            {{vpvTotalCostCurrent | number:'1.0-0'}} T€
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-sm-8">
+            {{ 'keyMetrics.shortBAC' | translate }}
+            ({{ 'keyMetrics.longBAC' | translate }})
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{vpvTotalCostBaseLine | number:'1.0-0'}} T€
+          </div>
+        </div>
+        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+      </div>
     </div>
   </div>
 
   <div *ngIf="graphDataComboChart.length > 0" >
     <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
   </div>
+
+  <div *ngIf="!vpHasCost('cost')">
+    <h3 class="d-flex justify-content-center">
+      {{ 'compViewCost.msg.noCost' | translate }}
+    </h3>
+  </div>
   <i class="fas fa-info-circle fa-lg mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></i>
 </div>
+
+<ng-template #indicator let-level="level">
+  <strong><i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i></strong>
+</ng-template>
 
 <!-- Modal Show Shortcut explanation -->
 <div class="modal fade" id="VpvLegend" tabindex="-1" role="dialog" aria-labelledby="VpvDetailsTitle" aria-hidden="true">
@@ -54,7 +82,7 @@
           </tbody>
         </table>
         <div class="modal-footer align-items-end">
-          <button class="btn btn-primary" data-dismiss="modal">{{ 'vpViewCost.btn.back' | translate }}</button>
+          <button class="btn btn-primary" data-dismiss="modal">{{ 'compViewCost.btn.back' | translate }}</button>
         </div>
       </div>
     </div>

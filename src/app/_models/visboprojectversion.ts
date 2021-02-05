@@ -10,6 +10,8 @@ export class VisboCapacity {
   plannedCost: number;
   internCapa: number;
   externCapa: number;
+  baselineCost: number;
+  baselineCost_PT: number;
 }
 
 export class VPVCost {
@@ -145,6 +147,7 @@ export class VisboProjectVersion {
   cost: VPVCost[];
   delivery: VPVDelivery[];
   deadline: VPVDeadline[];
+  capacity:VisboCapacity[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;

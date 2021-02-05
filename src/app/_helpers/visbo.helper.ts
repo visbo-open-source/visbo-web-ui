@@ -19,6 +19,77 @@ export function visboCmpDate(first: Date, second: Date): number {
   return result;
 }
 
+export function convertDate(input: Date, format: string, lang = 'en'): string {
+  if (format == 'longDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '4-digit',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    );
+  } else if (format == 'fullDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    );
+  } else if (format == 'shortDate') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: 'short'
+      }
+    );
+  } else {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
+  }
+}
+
+export function validateDate(dateString: string, allowEmpty: boolean): string {
+	if (!allowEmpty && !dateString) {
+		return undefined;
+	}
+	const dateValue = dateString ? new Date(dateString) : new Date();
+	if (!dateValue) {
+		return undefined;
+	}
+	return dateValue.toISOString();
+}
+
+export function visboIsToday(refDate: Date): boolean {
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+  if (refDate && refDate.getTime() >= current.getTime()) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
+  if (!dateA || !dateB) { return false; }
+  let localA = new Date(dateA);
+  let localB = new Date(dateB);
+  localA.setHours(0, 0, 0, 0);
+  localB.setHours(0, 0, 0, 0);
+  return localA.toISOString() === localB.toISOString();
+}
+
 export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';
@@ -46,10 +117,12 @@ export function getErrorMessage(error: any): string {
       console.log(`Rest Server not reachable: ${error.status} ${error.statusText}, Message ${error.message}`);
     } else {
       console.log(`Rest Error Status: ${error.status} ${error.statusText}, Message ${error.message}, Name: ${error.error.name || ''}`);
-      if (error.statusText) {
-        result = error.statusText;
+      if (error.error && error.error.message) {
+        result = error.error.message;
       } else if (error.message) {
         result = error.message;
+      } else if (error.statusText) {
+        result = error.statusText;
       }
     }
   }

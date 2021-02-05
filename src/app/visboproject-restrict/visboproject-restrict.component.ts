@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -81,6 +81,13 @@ export class VisboprojectRestrictComponent implements OnInit {
           }
         }
       );
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
   }
 
   hasVPPerm(perm: number): boolean {

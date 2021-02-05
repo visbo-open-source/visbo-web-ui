@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -12,8 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import * as moment from 'moment';
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewdeadline',
@@ -36,6 +36,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   filterStatus: number;
   fullList: boolean;
+  timeoutID: number;
 
   deadlineIndex: number;
 
@@ -123,8 +124,18 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Deadlines on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
-      this.visboDeadlineCalc(true);
+      this.visboDeadlineCalc(false);
     }
+  }
+
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewAllDeadlinePie(false);
+      this.visboViewDeadlineTimeline();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   visboDeadlineCalc(change = false): void {
@@ -147,6 +158,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
           } else {
             this.log(`Get Deadlines for ${visboprojectversions[0]._id} Len ${visboprojectversions[0].deadline.length} Actual ${visboprojectversions[0].actualDataUntil}`);
             this.allDeadline = visboprojectversions[0].deadline;
+            // check if we got the PFV Values and if not set the refType to vpv
+            if (this.refType != 'vpv') {
+              if (this.allDeadline && !this.allDeadline[0].fullPathPFV) {
+                this.refType = 'vpv'
+                this.switchType = false;
+              }
+            }
           }
           this.initDeadlines(change);
           this.visboViewAllDeadlinePie(change);
@@ -170,16 +188,12 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     }
 
     this.filterPath = this.getFullPath(this.allDeadline[0]);
-    this.switchType = (this.refType === 'vpv');
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
       this.allDeadline[i].status = this.statusList[this.getStatus(this.allDeadline[i])];
       this.allDeadline[i].statusID = this.getStatus(this.allDeadline[i]);
       // check if the user can switch between pfv & vpv
-      if (this.switchType ||  this.allDeadline[i].endDatePFV) {
-        this.switchType = true;
-      }
     }
     this.filterDeadlines(change);
   }
@@ -305,6 +319,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
     }
     // show the last PieChart as well
+    this.log(`PIE Chart change ${change}`)
     // this.graphBeforeAllDataPieChart = change ? this.graphAllDataPieChart : undefined;
     if (nonEmpty) {
       this.graphAllDataPieChart = graphData;
@@ -359,8 +374,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   createCustomHTMLContent(deadline: VPVDeadline): string {
-    const startDate = moment(deadline.startDateVPV).format('DD.MM.YY');
-    const endDate = moment(deadline.endDateVPV).format('DD.MM.YY');
+    const startDate = convertDate(new Date(deadline.startDateVPV), 'fullDate', this.currentLang);
+    const endDate = convertDate(new Date(deadline.endDateVPV), 'fullDate', this.currentLang);
     let name = deadline.fullName;
     if (name === '.') {
       name = this.vpvActive.name;

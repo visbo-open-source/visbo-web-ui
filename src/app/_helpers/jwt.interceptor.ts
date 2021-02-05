@@ -1,6 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { AlertService } from '../_services/alert.service';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -11,6 +12,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     constructor(
       private authenticationService: AuthenticationService,
+      private alertService: AlertService
     ) { }
 
     // eslint-disable-next-line
@@ -32,8 +34,10 @@ export class JwtInterceptor implements HttpInterceptor {
                   if (error && error.status === 401) {
                       console.log('Interceptor: Session Expired, redirect to login');
                       this.authenticationService.logout();
+                      this.alertService.error("Session expired", true);
                       location.reload();
                   }
+                  // console.log('Interceptor: error:', JSON.stringify(error));
                   // const err = error.error.message || error.statusText;
                   return throwError(error);
              })

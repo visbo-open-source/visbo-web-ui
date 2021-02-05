@@ -60,6 +60,12 @@ export class VisboProjectResponse {
   perm: {system: number, vc: number, vp: number};
 }
 
+export class VPVariantResponse {
+  state: string;
+  message: string;
+  variant: [ VPVariant ];
+}
+
 export class VisboProjectLockResponse {
   state: string;
   message: string;
@@ -71,4 +77,18 @@ export class VisboRestrictResponse {
   message: string;
   restrict: [ VPRestrict ];
   perm: {system: number, vc: number, vp: number};
+}
+
+export class VPParams {
+  variantID: string;
+  variantName: string;
+  vpvid: string;
+  deleted: string;
+  refDate: string;
+  view: string;
+  filter: string;
+  roleID: number;
+  unit: string;
+  from: string;
+  to: string;
 }

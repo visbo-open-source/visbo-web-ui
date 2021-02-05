@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpParameterCodec } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs'; // only need to import from rxjs
 import { catchError, map, tap } from 'rxjs/operators';
@@ -8,7 +8,6 @@ import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
-import { VisboSetting, VisboSettingListResponse } from '../_models/visbosetting';
 import { MessageService } from './message.service';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -128,11 +127,14 @@ export class VisboCenterService  {
   }
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
-  getCapacity(id: string, refDate: Date, roleID: string, hierarchy = false, sysadmin = false, deleted = false): Observable<VisboCenter> {
+  getCapacity(id: string, refDate: Date, roleID: string, hierarchy = false, pfv = false, sysadmin = false, deleted = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
     if (hierarchy) {
       params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
     }
     if (sysadmin) {
       params = params.append('sysadmin', '1');

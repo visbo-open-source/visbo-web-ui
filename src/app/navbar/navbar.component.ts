@@ -37,7 +37,7 @@ export class NavbarComponent implements OnInit {
   }
 
   hasSystemPerm(perm: number): boolean {
-    return (this.combinedPerm.system & perm) > 0;
+    return (this.combinedPerm?.system & perm) > 0;
   }
 
   /** Log a message with the MessageService */
