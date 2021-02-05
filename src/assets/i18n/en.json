@@ -830,6 +830,7 @@
 		},
 		"msg": {
 			"changeVPVariant": "Do you want to change {{count}} Projects to Variant {{name}}?",
+			"changeVPVariantStandard": "Do you want to change {{count}} Projects back to default?",
 			"createVPFSuccess": "Portfolio {{name}}: List was saved successfully",
 			"removeVPFSuccess": "Portfolio {{name}}: List from {{from}} was deleted successfully",
 			"noProjectList": "This portfolio does not have a project list",

@@ -78,7 +78,7 @@
   </div>
 
   <!-- Modal Edit VPF List -->
-  <div *ngIf="vpActive" class="modal fade" id="VPFList" tabindex="-1" role="dialog" aria-labelledby="VPFListTitle" aria-hidden="true">
+  <div *ngIf="vpActive" class="modal fade" id="VPFList" role="dialog" aria-labelledby="VPFListTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -129,7 +129,7 @@
                       <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
                       <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
                     </select>
-                    <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-toggle="modal" data-target="#ChangeVPVariant"></span>
+                    <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
                   </div>
                 </td>
                 <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
@@ -147,7 +147,7 @@
   </div>
 
   <!-- Modal Delete VPF List Confirm -->
-  <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" tabindex="-1" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">
+  <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -192,8 +192,8 @@
   </div>
 
   <!-- Modal Change VP Variant -->
-  <div *ngIf="vpfActive" class="modal fade" id="ChangeVPVariant" tabindex="-1" role="dialog" aria-labelledby="ChangeVPVariantTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+  <div *ngIf="vpfActive" class="modal fade" id="ChangeVPVariant" role="dialog" aria-labelledby="ChangeVPVariantTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="ChangeVPVariantTitle">{{ 'vpfVersion.titleChangeVPVariant' | translate:{'name': vpfActive.name } }}</h5>
@@ -203,12 +203,13 @@
         </div>
         <div class="modal-body">
           <div>
-            <label class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariant' | translate:{'name': switchVariant, 'count': switchVariantCount} }}</label>
+            <label *ngIf="switchVariant" class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariant' | translate:{'name': switchVariant, 'count': switchVariantCount} }}</label>
+            <label *ngIf="!switchVariant" class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariantStandard' | translate:{'count': switchVariantCount} }}</label>
           </div>
         </div>
         <div class="modal-footer align-items-end">
-          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
-          <button id="Change" type="submit" class="btn btn-warning mx-1" (click)="changeVPVariant()" data-dismiss="modal">{{ 'vpfVersion.btn.update' | translate }}</button>
+          <button class="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button id="Change" type="submit" class="btn btn-warning mx-1" (click)="changeVPVariant()" data-dismiss="modal" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.update' | translate }}</button>
         </div>
       </div>
     </div>

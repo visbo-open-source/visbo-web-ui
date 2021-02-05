@@ -38,7 +38,8 @@ class vpCheckItem {
 
 @Component({
   selector: 'app-visboportfolio-versions',
-  templateUrl: './visboportfolio-versions.component.html'
+  templateUrl: './visboportfolio-versions.component.html',
+  styleUrls: ['./visboportfolio-versions.component.css']
 })
 export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
@@ -756,17 +757,24 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn === 1) {
       // sort by VP Name
-      this.vpCheckListAll.sort(function(a, b) {
+      this.vpCheckListFiltered.sort(function(a, b) {
         return visboCmpString(a.vp.name.toLowerCase(), b.vp.name.toLowerCase());
       });
     } else if (this.sortColumn === 2) {
-      this.vpCheckListAll.sort(function(a, b) { return visboCmpDate(a.vp.updatedAt, b.vp.updatedAt); });
+      this.vpCheckListFiltered.sort(function(a, b) { return visboCmpDate(a.vp.updatedAt, b.vp.updatedAt); });
     } else if (this.sortColumn === 3) {
-      this.vpCheckListAll.sort(function(a, b) { return (a.isChecked ? 0 : 1) - (b.isChecked ? 0 : 1); });
+      this.vpCheckListFiltered.sort(function(a, b) { return (a.isChecked ? 0 : 1) - (b.isChecked ? 0 : 1); });
+    } else if (this.sortColumn === 4) {
+      this.vpCheckListFiltered.sort(function(a, b) {
+        // combine the two fields hasVariants and Variant Name to get them sorted as a block (all projects together with a variant separated from the ones without)
+        const aVariant = (a.hasVariants ? '1' : '0') + (a.variantName || '');
+        const bVariant = (b.hasVariants ? '1' : '0') + (b.variantName || '');
+        return visboCmpString(aVariant.toLowerCase(), bVariant.toLowerCase()); 
+      });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
-      this.vpCheckListAll.reverse();
+      this.vpCheckListFiltered.reverse();
       // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
