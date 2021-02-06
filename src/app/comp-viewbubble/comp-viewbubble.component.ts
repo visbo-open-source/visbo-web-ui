@@ -304,6 +304,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
       ) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
         elementKeyMetric.name = this.visboprojectversions[item].name;

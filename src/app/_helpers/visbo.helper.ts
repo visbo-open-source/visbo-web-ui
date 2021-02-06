@@ -24,7 +24,7 @@ export function convertDate(input: Date, format: string, lang = 'en'): string {
     return input.toLocaleDateString(
       lang,
       {
-        year: '4-digit',
+        year: 'numeric',
         month: '2-digit',
         day: '2-digit'
       }
@@ -42,8 +42,16 @@ export function convertDate(input: Date, format: string, lang = 'en'): string {
     return input.toLocaleDateString(
       lang,
       {
-        year: '2-digit',
+        year: 'numeric',
         month: 'short'
+      }
+    );
+  } else if (format == 'fullMonthYear') {
+    return input.toLocaleDateString(
+      lang,
+      {
+        year: 'numeric',
+        month: 'long'
       }
     );
   } else {

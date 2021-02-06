@@ -273,7 +273,8 @@
 			"versions": "# Versionen",
 			"vc": "VISBO Center",
 			"detail": "Detail",
-			"description": "Beschreibung"
+			"description": "Beschreibung",
+			"type": "Typ"
 		},
 		"type": {
 			"vpType0": "Projekt",
@@ -287,12 +288,12 @@
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",
 			"viewList": "Liste",
-			"create": "Neues Projekt",
+			"create": "Hinzufügen",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
 		},
 		"msg": {
-			"createSuccess": "VISBO Projekt {{name}} wurde erfolgreich angelegt",
+			"createSuccess": "VISBO {{vpType}} {{name}} wurde erfolgreich angelegt",
 			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
@@ -470,6 +471,7 @@
 		"lbl": {
 			"project": "Projekt",
 			"name": "Name",
+			"defaultVariant": "Standard",
 			"value": "Wert",
 			"info": "Info",
 			"startDate": "Projekt Start",
@@ -551,7 +553,7 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
-	"ViewCapacity": {		
+	"ViewCapacity": {
 		"titleCapacity": "Auslastung für den Zeitraum:",
 		"titleBox": "Monatliche Kapazitäten im Zeitraum",
 		"title1": "Orga-Einheit ",
@@ -561,21 +563,23 @@
 		"titleVersion": "Version vom",
 		"yAxisCapaOverTime": "Monatliche Aufwände",
 		"titleCapaOverTime": "Auslastung: Kapazität vs. Projektkosten",
-		"internCapaPT": "interne Kapazität",
-		"totalCapaPT": "gesamte Kapazität",
-		"actualCostPT": "Istkosten",
-		"plannedCostPT": "geplante Kosten",
-		"roleName": "Rolle",
-		"budgetPT": "Baseline",
-		"budgetBase": "",
+		"titleCapaOverTimeBL": "Auslastung: Baseline vs. Projektkosten",
 		"lbl": {
 			"totalCost": "Gesamtkosten",
-			"totalCapa": "gesamte Kapazität",
+			"totalCapa": "Kapazität",
 			"totalCostPT": "Gesamtaufwand",
-			"totalCapaPT": "gesamte Kapzität",
+			"internCapa": "interne Kapazität",
+			"actualCost": "Istkosten",
+			"plannedCost": "geplante Kosten",
+			"diffCost": "Abweichung",
+			"budgetPT": "Baseline",
+			"budget": "Baseline",
+			"roleName": "Rolle",
 			"pd": "PT",
 			"euro": "Euro",
-			"refPFV": "Vergleich mit Beauftragung"
+			"keuro": "T€",
+			"refPFV": "Vergleich mit Beauftragung",
+			"drillDownOrga": "Zeige Organisation Einheiten"
 		},
 		"btn": {
 			"back": "Zurück",
@@ -793,24 +797,48 @@
 		"titleKM": "Kennzahlen vom",
 		"titleKMShort": "Zahlen vom",
 		"titleRessourceChange": "Ändern der Organisations-Einheit",
+		"titleVPList": "Projekt Liste für {{name}} vom {{from}}",
+		"titleChangeVPVariant": "Änderung der Variante in der Portfolio Liste",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
 			"month": "Monat",
 			"quarter": "Quartal",
 			"previousPeriod": "Periode vor {{refDate}}",
-			"nextPeriod": "Periode nach {{refDate}}"
+			"nextPeriod": "Periode nach {{refDate}}",
+			"name": "Projekt",
+			"variant": "Variante",
+			"modified": "Änderung",
+			"filter": "Filter",
+			"defaultVariant": "Standard",
+			"nrOfItems": "Anzahl Projekte",
+			"user": "Erstellt von",
+			"from": "Vom",
+			"isChecked": "Ausgewählt",
+			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
-			"viewProjectBoard": "Projekttafel"
+			"editPFList": "Portfolio Liste ändern",
+			"viewProjectBoard": "Projekttafel",
+			"update": "Aktualisieren",
+			"create": "Anlegen",
+			"delete": "Löschen",
+			"back": "Zurück"
 		},
 		"msg": {
+			"changeVPVariant": "Wollen Sie {{count}} Projekte auf Variante {{name}} setzen?",
+			"changeVPVariantStandard": "Wollen Sie {{count}} Projekte auf den Standard zurücksetzen?",
+			"createVPFSuccess": "Portfolio {{name}}: Liste wurde erfolgreich gespeichert",
+			"removeVPFSuccess": "Portfolio {{name}}: Liste vom {{from}} wurde erfolgreich gelöscht",
+			"noProjectList": "Dieses Portfolio hat keine Projektliste",
 			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"removeVPFConfirm": "Wollen Sie die Portfolio Liste wirklich löschen?",
 			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorVPFPerm": "Keine Berechtigung für VISBO Portfolio {{name}} Liste",
 			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte sichtbar"
 		}
 	},

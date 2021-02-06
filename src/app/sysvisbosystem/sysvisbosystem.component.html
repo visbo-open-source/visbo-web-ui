@@ -179,7 +179,7 @@
 </div>
 
 <!-- Modal Add/Change VC Group -->
-<div class="modal fade" id="SystemGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcGroupModalCreateTitle" aria-hidden="true">
+<div class="modal fade" id="SystemGroupModalCreate" tabindex="-1" role="dialog" aria-labelledby="SystemGroupModalCreateTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document" >
     <div *ngIf="actGroup" class="modal-content">
       <div class="modal-header">
@@ -286,7 +286,7 @@
             <label class="form-control-static">Group Members</label>
             <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
               <div class="col-8 ml-3" *ngIf="member.groupName == actGroup.name">
-                <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.email }}</a>
+                <a (click)="activateUser(member)" data-dismiss="modal" data-toggle="modal" data-target="#SystemUserDetail">{{ member.email }}</a>
               </div>
             </ng-container>
           </div>
@@ -453,7 +453,7 @@
         <label class="form-control-static mt-2">Group Member Ship</label>
         <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
           <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
-            <a (click)="toggleUserGroup()" data-dismiss="modal">{{ member.groupName }}</a>
+            <a (click)="activateGroup(member)" data-dismiss="modal" data-toggle="modal" data-target="#SystemGroupModalCreate">{{ member.groupName }}</a>
           </div>
         </ng-container>
 

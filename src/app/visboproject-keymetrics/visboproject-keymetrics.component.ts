@@ -35,6 +35,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   variantID: string;
   variantName: string;
   deleted = false;
+  defaultVariant: string;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
@@ -71,6 +72,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
+    this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       const baseUrl = this.route.snapshot.url[0]
@@ -139,7 +141,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       }
     }
     if (this.dropDown.length > 0 ) {
-      this.dropDown.splice(0, 0, 'DEFAULT');
+      this.dropDown.splice(0, 0, this.defaultVariant);
       this.dropDownIndex = 0;
     }
     if (this.variantName) {
@@ -226,7 +228,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   isActiveVariant(variantName: string): boolean {
     let result = false;
-    if (this.variantName == undefined && variantName == 'DEFAULT') { result = true; }
+    if (this.variantName == undefined && variantName == this.defaultVariant) { result = true; }
     if (this.variantName === variantName) { result = true; }
     return result;
   }
@@ -443,10 +445,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
-    const index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    let delay = 0;
+    if (keyMetrics && keyMetrics.endDateCurrent && keyMetrics.endDateBaseLast) {
+      delay = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    }
+    this.delayEndDate = Math.round(delay / 1000 / 60 / 60 / 24) / 7;
 
     this.vpvActive = vpv;
-    this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }
 

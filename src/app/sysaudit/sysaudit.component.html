@@ -53,8 +53,11 @@
         <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart"></app-line-chart>
       </div>
       <div class="col">
-        <app-column-chart [graphData]="graphDataColumnChart" [graphOptions]="graphOptionsColumnChart"></app-column-chart>
+        <app-column-chart [elementID]="divColumnChart1" [graphData]="graphDataUserChart" [graphOptions]="graphOptionsUserChart"></app-column-chart>
       </div>
+      <div class="col" *ngIf="graphDataBrowserChart && graphDataBrowserChart.length > 0">
+        <app-column-chart [elementID]="divColumnChart2" [graphData]="graphDataBrowserChart" [graphOptions]="graphOptionsBrowserChart"></app-column-chart>
+      </div> 
     </h3>
   </div>
   <div *ngIf="!chart" class='container-fluid'>

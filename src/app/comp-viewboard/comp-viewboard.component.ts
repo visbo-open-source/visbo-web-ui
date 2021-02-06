@@ -127,6 +127,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           || this.vps[i].businessUnit?.toLowerCase().indexOf(filter) >= 0
           || this.vps[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
           || this.vps[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].status?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter

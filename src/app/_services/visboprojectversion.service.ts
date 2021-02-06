@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 // import { VisboCenter } from '../_models/visbocenter';
+import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion, VisboProjectVersionResponse } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VisboPortfolioVersionResponse } from '../_models/visboportfolioversion';
 
@@ -139,12 +140,58 @@ export class VisboProjectVersionService {
       .pipe(
         map(response => {
                   // TODO: is there a better way to transfer the perm?
-                  response.vpf[0].perm = response.perm;
+                  if (response.vpf && response.vpf.length > 0) {
+                    response.vpf[0].perm = response.perm;
+                  }
                   return response.vpf;
                 }),
         tap(visboportfolioversion => this.log(`fetched ${visboportfolioversion.length} VisboPortfolioVersion `)),
         catchError(this.handleError<VisboPortfolioVersion[]>('getVisboPortfolioVersions'))
       );
+  }
+
+  /** POST: add a new Visbo Portfolio Version to the server */
+  addVisboPortfolioVersion(vp: VisboProject, vpf: VisboPortfolioVersion): Observable<VisboPortfolioVersion> {
+    const url = `${this.vpfUrl}/${vp._id}/portfolio`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const params = new HttpParams();
+    return this.http.post<VisboPortfolioVersionResponse>(url, vpf, { headers , params })
+      .pipe(
+        map(response => response.vpf[0]),
+        tap(vpf => this.log(`added VisboPortfolioVersion w/ id=${vpf._id}`)),
+        catchError(this.handleError<VisboPortfolioVersion>('addVisboPortfolioVersion'))
+      );
+  }
+
+  /** PUT: update a Visbo Portfolio Version to the server */
+  updateVisboPortfolioVersion(vp: VisboProject, vpf: VisboPortfolioVersion): Observable<VisboPortfolioVersion> {
+    const url = `${this.vpfUrl}/${vp._id}/portfolio/${vpf._id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const params = new HttpParams();
+    return this.http.put<VisboPortfolioVersionResponse>(url, vpf, { headers , params })
+      .pipe(
+        map(response => response.vpf[0]),
+        tap(vpf => this.log(`updated VisboPortfolioVersion w/ id=${vpf._id}`)),
+        catchError(this.handleError<VisboPortfolioVersion>('updateVisboPortfolioVersion'))
+      );
+  }
+
+  /** DELETE: delete VISBO Portfolio Version from the server */
+  deleteVisboPortfolioVersion (vpf: VisboPortfolioVersion, deleted = false): Observable<VisboPortfolioVersion> {
+    const id = vpf._id;
+    const vpid = vpf.vpid;
+    const url = `${this.vpfUrl}/${vpid}/portfolio/${id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request Delete: ${url} Params ${params}`);
+
+    return this.http.delete<VisboPortfolioVersion>(url, { headers , params }).pipe(
+      tap(() => this.log(`deleted VisboPortfolioVersion id=${id}`)),
+      catchError(this.handleError<VisboPortfolioVersion>('deleteVisboPortfolioVersion'))
+    );
   }
 
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/

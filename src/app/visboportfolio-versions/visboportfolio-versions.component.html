@@ -1,13 +1,12 @@
 <app-usernavbar></app-usernavbar>
 <div class='well'>
-  <div *ngIf="vpActive && vpfActive" class='row'>
+  <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="vpfActive.variantName" class="ml-1"> ({{vpfActive.variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important"></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
           </div>
@@ -20,7 +19,7 @@
     </div>
   </div>
 
-  <div class="container-fluid">
+  <div *ngIf="vpfActive" class="container-fluid">
     <div class="row">
       <h3 class="col-6 px-0">
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
@@ -40,18 +39,26 @@
       </div>
     </div>
     <div class="row d-print-none">
-      <div class="col-9 btn-toolbar" style="padding: unset;">
+      <div class="col btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
-      <div class="col-3 mt-2 text-warning text-right" *ngIf="isVersionMismatch()">
-          {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
+      <div class="align-items-end btn-toolbar" style="padding: unset;">
+        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
       </div>
     </div>
+    <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
+        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
+    </div>
   </div>
-
+  <div *ngIf="!vpfActive" class="container-fluid text-danger">
+    {{ 'vpfVersion.msg.noProjectList' | translate }}
+    <div *ngIf="hasVPPerm(permVP.Modify)" class="btn-toolbar my-3" style="padding: unset;">
+      <button type="button" class="btn btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+    </div>
+  </div>
 
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive">
     <hr>
@@ -69,4 +76,143 @@
     <hr>
     <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
   </div>
+
+  <!-- Modal Edit VPF List -->
+  <div *ngIf="vpActive" class="modal fade" id="VPFList" role="dialog" aria-labelledby="VPFListTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VPFListTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpActive.name, 'from': (vpfActive ? vpfActive.timestamp : vpActive.updatedAt) | date: 'dd.MM.yyyy'} }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex">
+            <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
+              {{ 'vpfVersion.lbl.variant' | translate }}:
+              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
+              <div class="dropdown-menu">
+                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchEditVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
+              </div>
+            </div>
+            <div class="ml-auto">
+              <span> {{ 'vpfVersion.lbl.filter' | translate }}:</span>
+              <input class="mb-2 ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+              <a class="ml-2" (click)="filterVPList(true)"><i class="far fa-times-circle"></i></a>
+            </div>
+          </div>
+          <!-- VP List -->
+          <table *ngIf="vpCheckListFiltered.length > 0" class='table table-hover table-sortable'>
+            <thead id="VPHead">
+              <tr>
+                <th id="SorChecked">
+                  <input type="checkbox" [(ngModel)]="isGlobalChecked" (change)="globalChecked()">
+                  <span (click)="sortVPTable(3)"> {{ 'vpfVersion.lbl.isChecked' | translate }}</span>
+                </th>
+                <th id="SortName" (click)="sortVPTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
+                <th id="SortVariant" (click)="sortVPTable(4)">{{ 'vpfVersion.lbl.variant' | translate }}</th>
+                <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vpfVersion.lbl.modified' | translate }}</th>
+              </tr>
+            </thead>
+
+            <tbody id="VPList">
+              <tr *ngFor="let item of vpCheckListFiltered; let vpFilterIndex=index">
+                <td id="ColChecked">
+                  <input type="checkbox" [(ngModel)]="item.isChecked">
+                </td>
+                <td id="ColName"><a>{{item.vp.name}}</a></td>
+                <td *ngIf="!item.hasVariants" id="ColName"></td>
+                <td *ngIf="item.hasVariants" id="ColName">
+                  <div class="row">
+                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName">
+                      <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
+                      <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
+                    </select>
+                    <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
+                  </div>
+                </td>
+                <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button *ngIf="hasVPPerm(permVP.DeleteVP)" id="Delete" type="submit" class="btn btn-warning mx-1" data-dismiss="modal" data-toggle="modal" id="DeleteVPFListID" data-target="#DeleteVPFList">{{ 'vpfVersion.btn.delete' | translate }}</button>
+          <button id="Save" type="submit" class="btn btn-primary mx-1" (click)="updateVPF()" data-dismiss="modal">{{ saveVPFString() }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Delete VPF List Confirm -->
+  <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="DeleteVPFListTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpfActive.name, 'from': vpfActive.timestamp | date: 'dd.MM.yyyy' } }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning text-dark">{{ 'vpfVersion.msg.removeVPFConfirm' | translate }}</label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.name' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.name }} </label>
+            </div>
+            <div *ngIf="vpfActive.variantName" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.variant' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.variantName }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.from' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.timestamp | date: 'dd.MM.yyyy' }} </label>
+            </div>
+            <div *ngIf="vpfActive.allItems.length > 0" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.nrOfItems' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.allItems.length }}</label>
+            </div>
+            <div *ngIf="vpfActive.updatedFrom" class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.user' | translate }}:</label>
+              <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.updatedFrom.email }}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button *ngIf="hasVPPerm(permVP.DeleteVP)" id="Delete" type="submit" class="btn btn-warning mx-1" (click)="deleteVPF(vpfActive)" data-dismiss="modal">{{ 'vpfVersion.btn.delete' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Change VP Variant -->
+  <div *ngIf="vpfActive" class="modal fade" id="ChangeVPVariant" role="dialog" aria-labelledby="ChangeVPVariantTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ChangeVPVariantTitle">{{ 'vpfVersion.titleChangeVPVariant' | translate:{'name': vpfActive.name } }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label *ngIf="switchVariant" class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariant' | translate:{'name': switchVariant, 'count': switchVariantCount} }}</label>
+            <label *ngIf="!switchVariant" class="bg-warning text-dark">{{ 'vpfVersion.msg.changeVPVariantStandard' | translate:{'count': switchVariantCount} }}</label>
+          </div>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button class="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.back' | translate }}</button>
+          <button id="Change" type="submit" class="btn btn-warning mx-1" (click)="changeVPVariant()" data-dismiss="modal" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.update' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

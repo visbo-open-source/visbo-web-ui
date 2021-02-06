@@ -46,6 +46,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   delayEndDate: number;
 
   refDate = new Date();
+  variantID: string;
 
   chartButton: string;
   chart = true;
@@ -176,9 +177,16 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initSettings(): void {
+    this.showHistory(false);
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
+    const newVariantID = this.route.snapshot.queryParams.variantID;
+    if (newVariantID != this.variantID) {
+      this.typeMetricChart = undefined;
+      this.variantID = newVariantID;
+    }
+
   }
 
   hasKM(km: VPVKeyMetrics, type: string): boolean {

@@ -14,9 +14,11 @@ export class AlertService {
             if (event instanceof NavigationStart) {
                 if (this.keepAfterNavigationChange) {
                     // only keep for a single location change
+                    console.log("alert only single event");
                     this.keepAfterNavigationChange = false;
                 } else {
                     // clear alert
+                    // console.log("alert clear");
                     this.subject.next();
                 }
             }
@@ -24,12 +26,14 @@ export class AlertService {
     }
 
     clear(): void {
+      console.log("alert clear");
       this.subject.next();
     }
 
     success(message: string, keepAfterNavigationChange = false): void {
         this.keepAfterNavigationChange = keepAfterNavigationChange;
         this.subject.next({ type: 'success', text: message });
+        console.log("alert success", keepAfterNavigationChange);
     }
 
     error(message: string, keepAfterNavigationChange = false): void {
@@ -38,6 +42,7 @@ export class AlertService {
         }
         this.keepAfterNavigationChange = keepAfterNavigationChange;
         this.subject.next({ type: 'error', text: message });
+        console.log("alert error", keepAfterNavigationChange);
     }
 
     // eslint-disable-next-line

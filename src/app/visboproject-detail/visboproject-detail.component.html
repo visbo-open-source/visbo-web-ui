@@ -386,7 +386,7 @@
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
                 <div class="col-8 ml-3" *ngIf="member.groupId == actGroup._id">
-                  <a (click)="toggleView('User')" data-dismiss="modal">{{ member.email }}</a>
+                  <a (click)="activateUser(member)" data-dismiss="modal" data-toggle="modal" data-target="#VPUserDetail">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
@@ -534,7 +534,7 @@
           <label class="form-control-static mt-2">{{ 'perm.lblGroupMembership' | translate }}</label>
           <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
             <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
-              <a (click)="toggleView('Group')" data-dismiss="modal">{{ member.groupName }}</a>
+              <a (click)="activateGroup(member)" data-dismiss="modal" data-toggle="modal" data-target="#VpGroupModalCreate">{{ member.groupName }}</a>
             </div>
           </ng-container>
 

@@ -9,6 +9,7 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class ColumnChartComponent implements OnInit, OnChanges {
 
+  @Input() elementID: string;
   @Input() graphData: [];
   @Input() language: string;
 
@@ -31,6 +32,9 @@ export class ColumnChartComponent implements OnInit, OnChanges {
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
     // console.log(`Google Chart Column Chart Init ${this.language} ${JSON.stringify(this.graphData)}`);
+    if (!this.elementID || this.elementID === '') {
+      this.elementID = 'divColumnChart';
+    }
   }
 
   ngOnChanges(): void {
@@ -42,7 +46,7 @@ export class ColumnChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // console.log(`Google Chart Column Chart Draw ${this.graphData.length}`);
-    const chart = new this.gLib.visualization.ColumnChart(document.getElementById('divColumnChart'));
+    const chart = new this.gLib.visualization.ColumnChart(document.getElementById(this.elementID));
     const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
 
     const options = {'title': 'Column Chart'};
