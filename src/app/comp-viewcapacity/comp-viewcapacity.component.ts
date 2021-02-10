@@ -111,6 +111,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       legend: {position: 'top'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
+      annotations: {
+        textStyle: {
+          // fontName: 'Times-Roman',
+          fontSize: 10
+        }
+      },
       colors: this.colorsOrga,
       series: this.seriesOrga,
       seriesType: 'bars',
@@ -217,7 +223,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     if (from && validateDate(from, false)) {
       this.capacityFrom = new Date(validateDate(from, false));
+    } else if (this.vpvActive){
+      // specific Project, show start & end date of the project
+      this.capacityFrom = new Date(this.vpvActive.startDate);
     } else {
+      // Portfolio or VC set a defined time range
       this.capacityFrom = new Date();
       this.capacityFrom.setMonth(this.capacityFrom.getMonth() - 3);
     }
@@ -226,7 +236,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     if (to && validateDate(to, false)) {
       this.capacityTo = new Date(validateDate(to, false));
+    } else if (this.vpvActive){
+      // specific Project, show start & end date of the project
+      this.capacityTo = new Date(this.vpvActive.endDate);
     } else {
+      // Portfolio or VC set a defined time range
       this.capacityTo = new Date();
       this.capacityTo.setMonth(this.capacityTo.getMonth() + 9);
     }
@@ -500,7 +514,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   initShowUnit(unit: string): void {
-    unit = unit == 'PD' ? 'PD' : undefined;
+    unit = unit ? 'PD' : undefined;
     this.showUnit = unit;
     this.updateUrlParam('unit', unit == 'PD' ? '1' : '0')
     if (unit === 'PD') {
@@ -729,6 +743,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         childNodeList.forEach((item, index) => {
           rowMatrix.push(element[index + initialOffset].plan);
           rowMatrix.push(this.createTooltipOrgaDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
+          const diffPercent = Math.round(this.calcLoadDiff(element[index + initialOffset], true) * 100);
+          if (diffPercent > 100) {
+            rowMatrix.push( '' + diffPercent + ' %')
+          } else {
+            rowMatrix.push(undefined)
+          }
         });
         graphDataCapacity.push(rowMatrix);
       }
@@ -752,10 +772,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       childNodeList.forEach((item, index) => {
         rowMatrix.push(undefined);
         rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
       });
       graphDataCapacity.push(rowMatrix);
     }
     const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
+    const annotation = {type: 'string', role: 'annotation' };
     let rowHeader = [];
     rowHeader.push('Month');
     rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacity.lbl.budget' : 'ViewCapacity.lbl.totalCapa'));
@@ -764,7 +786,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     rowHeader.push(tooltip);
     childNodeList.forEach(item => {
       rowHeader.push(item);
-      rowHeader.push(tooltip); // this.createCustomHTMLContent(capacity[index], false) : undefined
+      rowHeader.push(tooltip);
+      rowHeader.push(annotation);
     });
     graphDataCapacity.unshift(rowHeader);
     this.graphDataComboChart = graphDataCapacity;
@@ -1039,12 +1062,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
     result = result + this.addTooltipRowNumber(strPlannedCost, plan, PT ? 0 : 1, unit, false);
 
-    const diff = plan - item.budget;
+    const diff = this.calcLoadDiff(item, false);
     if (diff != 0) {
       result = result + this.addTooltipRowNumber(strDiffCost, diff, PT ? 0 : 1, unit, true);
+      const diffPercent = '' + Math.round(this.calcLoadDiff(item, true) * 100) + ' %';
+      result = result + this.addTooltipRowString(strDiffCost, diffPercent, true);
     }
     result = result + '</div>';
     return result;
+  }
+
+  calcLoadDiff(item: drillDownElement, percent = false) {
+    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
+    const diff = plan - item.budget;
+    if (percent) {
+      return plan / (item.budget || 1);
+    } else {
+      return diff;
+    }
   }
 
   visboRoundToString(value: number, fraction = 1): string {
