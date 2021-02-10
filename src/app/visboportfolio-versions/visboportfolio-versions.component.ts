@@ -26,6 +26,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToda
 class DropDown {
   name: string;
   version: number;
+  variantName: string;
   timestamp: Date;
 }
 
@@ -692,7 +693,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       if (this.visboportfolioversions[i].variantName) {
         text = text.concat(' ( ', this.visboportfolioversions[i].variantName, ' )');
       }
-      this.dropDown.push({name: text, version: i, timestamp: timestamp });
+      this.dropDown.push({name: text, version: i, variantName: this.visboportfolioversions[i].variantName, timestamp: timestamp });
     }
     this.dropDown.sort(function (a, b) { return b.timestamp.getTime() - a.timestamp.getTime(); });
     if (len > 0 ) {
@@ -701,16 +702,27 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.dropDownVariantInit();
   }
 
+  checkVPFActive(item: DropDown): boolean {
+    let result = false;
+    if (this.vpfActive) {
+      if (item.variantName == this.vpfActive.variantName
+      && item.timestamp.getTime() == (new Date(this.vpfActive.timestamp)).getTime()) {
+        result = true;
+      }
+    }
+    return result;
+  }
+
   dropDownVariantInit(): void {
     this.log(`Init Variant Drop Down List ${this.vpActive.variant.length}`);
     this.dropDownVariant = [];
     let index = 1;
 
     this.vpActive.variant.forEach(item => {
-      this.dropDownVariant.push({name: item.variantName, version: index++, timestamp: undefined });
+      this.dropDownVariant.push({name: item.variantName, variantName: item.variantName, version: index++, timestamp: undefined });
     });
     // this.dropDownVariant.sort(function (a, b) { visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
-    this.dropDownVariant.splice(0, 0, {name: '', version: 0, timestamp: undefined });
+    this.dropDownVariant.splice(0, 0, {name: '', variantName: '', version: 0, timestamp: undefined });
     index = 0;
     if (this.vpfActive.variantName) {
       const i = this.dropDownVariant.findIndex(item => item.name === this.vpfActive.variantName);
@@ -769,7 +781,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         // combine the two fields hasVariants and Variant Name to get them sorted as a block (all projects together with a variant separated from the ones without)
         const aVariant = (a.hasVariants ? '1' : '0') + (a.variantName || '');
         const bVariant = (b.hasVariants ? '1' : '0') + (b.variantName || '');
-        return visboCmpString(aVariant.toLowerCase(), bVariant.toLowerCase()); 
+        return visboCmpString(aVariant.toLowerCase(), bVariant.toLowerCase());
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
@@ -782,6 +794,5 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string): void {
     this.messageService.add('VisboPortfolioVersion: ' + message);
-    console.log('VisboPortfolioVersion: ' + message)
   }
 }
