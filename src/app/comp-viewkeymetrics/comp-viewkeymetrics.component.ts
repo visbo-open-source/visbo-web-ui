@@ -1021,39 +1021,39 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 3) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingCostTotal - b.savingCostTotal; });
     } else if (this.sortColumn === 4) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costBaseLastActual - b.keyMetrics?.costBaseLastActual; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0); });
     } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costBaseLastTotal - b.keyMetrics?.costBaseLastTotal; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0); });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
     } else if (this.sortColumn === 7) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costCurrentActual - b.keyMetrics?.costCurrentActual; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.costCurrentActual || 0) - (b.keyMetrics?.costCurrentActual || 0); });
     } else if (this.sortColumn === 8) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.costCurrentTotal - b.keyMetrics?.costCurrentTotal; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.costCurrentTotal || 0) - (b.keyMetrics?.costCurrentTotal || 0); });
     } else if (this.sortColumn === 10) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.timeCompletionCurrentActual - b.keyMetrics?.timeCompletionCurrentActual; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeCompletionCurrentActual || 0) - (b.keyMetrics?.timeCompletionCurrentActual || 0); });
     } else if (this.sortColumn === 11) {
       this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 12) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.timeCompletionBaseLastTotal - b.keyMetrics?.timeCompletionBaseLastTotal; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeCompletionBaseLastTotal || 0) - (b.keyMetrics?.timeCompletionBaseLastTotal || 0); });
     } else if (this.sortColumn === 13) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.timeDelayFinished - b.keyMetrics?.timeDelayFinished; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
     } else if (this.sortColumn === 14) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.timeDelayUnFinished - b.keyMetrics?.timeDelayUnFinished; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0); });
     } else if (this.sortColumn === 20) {
       this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
     } else if (this.sortColumn === 21) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableCompletionCurrentActual - b.keyMetrics?.deliverableCompletionCurrentActual; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableCompletionCurrentActual || 0) - (b.keyMetrics?.deliverableCompletionCurrentActual || 0); });
     } else if (this.sortColumn === 22) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableCompletionCurrentTotal - b.keyMetrics?.deliverableCompletionCurrentTotal; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableCompletionCurrentTotal || 0) - (b.keyMetrics?.deliverableCompletionCurrentTotal || 0); });
     } else if (this.sortColumn === 23) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableDelayFinished - b.keyMetrics?.deliverableDelayFinished; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableDelayFinished || 0) - (b.keyMetrics?.deliverableDelayFinished || 0); });
     } else if (this.sortColumn === 24) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableDelayUnFinished - b.keyMetrics?.deliverableDelayUnFinished; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableDelayUnFinished || 0) - (b.keyMetrics?.deliverableDelayUnFinished || 0); });
     } else if (this.sortColumn === 25) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableCompletionBaseLastTotal - b.keyMetrics?.deliverableCompletionBaseLastTotal; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableCompletionBaseLastTotal || 0) - (b.keyMetrics?.deliverableCompletionBaseLastTotal || 0); });
     } else if (this.sortColumn === 26) {
-      this.visbokeymetrics.sort(function(a, b) { return a.keyMetrics?.deliverableCompletionBaseLastActual - b.keyMetrics?.deliverableCompletionBaseLastActual; });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0); });
     } else if (this.sortColumn === 31) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateCurrent, b.keyMetrics?.endDateCurrent); });
     } else if (this.sortColumn === 32) {

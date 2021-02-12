@@ -8,7 +8,11 @@
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
           <div class="dropdown-menu">
-            <a *ngFor="let item of dropDown" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a>
+            <!-- <a *ngFor="let item of dropDown; let dropDownIndex = index" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a> -->
+            <a *ngFor="let item of dropDown">
+              <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
+              <div *ngIf="!checkVPFActive(item)" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
+            </a>
           </div>
         </span>
     </h2>

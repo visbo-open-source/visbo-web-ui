@@ -28,8 +28,8 @@
               </span>
             </div>
           </div>
-          <div *ngIf="!vpvActive"  class="d-flex flex-wrap">
-            <div class="custom-control custom-checkbox mr-2">
+          <div class="d-flex flex-wrap">
+            <div *ngIf="!vpvActive" class="custom-control custom-checkbox mr-2">
               <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
               <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
             </div>
