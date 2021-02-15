@@ -95,7 +95,7 @@ export class VisboProjectService {
   }
 
   /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
-  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, hierarchy = false, pfv = false, sysadmin = false, deleted = false): Observable<VisboProject> {
+  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -104,6 +104,9 @@ export class VisboProjectService {
     }
     if (pfv) {
       params = params.append('pfv', '1');
+    }
+    if (perProject) {
+      params = params.append('perProject', '1');
     }
     if (sysadmin) {
       params = params.append('sysadmin', '1');

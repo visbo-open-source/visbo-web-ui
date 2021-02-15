@@ -74,6 +74,17 @@ export class AppComponent implements OnInit {
       );
   }
 
+  // printPreview() {
+  //   var toPrint = document.getElementById('visboRoot');
+  //   var popupWin = window.open('', '_blank', 'width=1024,height=768,location=center');
+  //   popupWin.document.open();
+  //
+  //   popupWin.document.write('<html></head><body media="print">')
+  //   popupWin.document.write(toPrint.innerHTML);
+  //   popupWin.document.write('</html>');
+  //   popupWin.document.close();
+  // }
+
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('App: ' + message);

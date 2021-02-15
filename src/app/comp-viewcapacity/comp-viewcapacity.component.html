@@ -4,7 +4,7 @@
     <div class="row row-cols-1 row-cols-lg-2">
       <div class="col col-sm-12 col-lg-8">
         <div class="text-dark">
-          <div class="row ml-1 pt-2">
+          <div class="row ml-1 pt-2 d-print-none">
             <span >
               <label class="mr-2 pt-1">{{ 'ViewCapacity.titleCapacity' | translate }}</label>
             </span>
@@ -28,7 +28,7 @@
               </span>
             </div>
           </div>
-          <div class="d-flex flex-wrap">
+          <div class="d-flex flex-wrap d-print-none">
             <div *ngIf="!vpvActive" class="custom-control custom-checkbox mr-2">
               <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
               <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
@@ -81,9 +81,9 @@
     </div>
   </div>
 
-  <div class="">
+  <div>
     <div class="row">
-      <div  *ngIf="orgaTreeData" class="pl-3 col-3 border-right scroll">
+      <div  *ngIf="orgaTreeData" class="pl-3 col-md-auto border-right scroll d-print-none">
         <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>
