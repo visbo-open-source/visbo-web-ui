@@ -40,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="visboCapcity && visboCapcity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+      <div *ngIf="visboCapacity && visboCapacity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
         <h5 class="card-header p-2">
           <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
           {{ 'ViewCapacity.titleBox' | translate }}</h5>
@@ -83,7 +83,7 @@
 
   <div>
     <div class="row">
-      <div  *ngIf="orgaTreeData" class="pl-3 col-md-auto border-right scroll d-print-none">
+      <div  *ngIf="orgaTreeData" class="pl-3 col-3 border-right scroll d-print-none">
         <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>

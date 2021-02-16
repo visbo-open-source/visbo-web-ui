@@ -177,9 +177,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initSettings(): void {
-    this.showHistory(false);
+    // this.showHistory(false);
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
+    } else {
+      this.refDate = new Date();
     }
     const newVariantID = this.route.snapshot.queryParams.variantID;
     if (newVariantID != this.variantID) {
@@ -298,7 +300,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // search the coresponding version for refDate
       if (this.refDate) {
         for (; i < this.visbokeymetrics.length; i++) {
-          if (visboCmpDate(this.refDate, this.visbokeymetrics[i].timestamp) >= 0) {
+          if (visboCmpDate(this.refDate, new Date(this.visbokeymetrics[i].timestamp)) >= 0) {
             break;
           }
         }

@@ -378,7 +378,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   initVariantChange(index: number): void {
     this.log(`init Change Variant of VPs ${index}`);
     if (index >= 0 && index < this.vpCheckListFiltered.length) {
-      let element = this.vpCheckListFiltered[index];
+      const element = this.vpCheckListFiltered[index];
       this.vpFilterIndex = index;
       this.log(`Found VP ${element.vp.name} Variant Selected ${element.variantName}`);
       this.switchVariantCount = 0;
@@ -407,7 +407,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
-  changeVPVariant(item: vpCheckItem = undefined): void {
+  changeVPVariant(): void {
     this.log(`Change Variant ${this.switchVariant || 'Standard'} of ${this.switchVariantCount} VPs`);
     if (this.switchVariant) {
       this.vpCheckListFiltered.forEach(item => {

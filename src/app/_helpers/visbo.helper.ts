@@ -91,8 +91,8 @@ export function visboIsToday(refDate: Date): boolean {
 
 export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
   if (!dateA || !dateB) { return false; }
-  let localA = new Date(dateA);
-  let localB = new Date(dateB);
+  const localA = new Date(dateA);
+  const localB = new Date(dateB);
   localA.setHours(0, 0, 0, 0);
   localB.setHours(0, 0, 0, 0);
   return localA.toISOString() === localB.toISOString();

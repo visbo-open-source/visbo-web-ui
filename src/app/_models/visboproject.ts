@@ -91,4 +91,5 @@ export class VPParams {
   unit: string;
   from: string;
   to: string;
+  drillDown: string;
 }
