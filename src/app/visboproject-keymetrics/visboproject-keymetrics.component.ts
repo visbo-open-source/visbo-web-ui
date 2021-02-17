@@ -263,11 +263,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
-      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+      result = km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlineDelay') {
-      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      if (km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1) {
+        result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      }
     } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {

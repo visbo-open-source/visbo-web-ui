@@ -199,11 +199,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
-      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+      // check for dedline in addition to project end
+      result = km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlineDelay') {
-      result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
+      if (km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1) {
+        result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
+      }
     } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
@@ -244,12 +247,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
         elementKeyMetric.savingCostTotal = Math.round((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
                                                       / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
-        if (elementKeyMetric.savingCostTotal > 100) {
-          elementKeyMetric.savingCostTotal = 100;
-        }
-        if (elementKeyMetric.savingCostTotal < -100) {
-          elementKeyMetric.savingCostTotal = -100;
-        }
+
         elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
         elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                             / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;

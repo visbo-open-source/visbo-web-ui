@@ -320,9 +320,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
           this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
           this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
-          this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 0;
-          this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
-                                    || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
+          this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1;
+          this.hasKMDeadlineDelay = (this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1)
+                    && (this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
+                        || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined);
           this.hasKMDeliveryDelay = this.hasKMDeliveryDelay || elementKeyMetric.keyMetrics.deliverableDelayFinished != undefined
                                     || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
           this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
@@ -881,6 +882,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortColumn === 14) {
       this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
+    } else if (this.sortColumn === 15) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.savingCostActual - b.savingCostActual;
+      });
+    } else if (this.sortColumn === 16) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
+      });
     }
 
     if (!this.sortAscending) {

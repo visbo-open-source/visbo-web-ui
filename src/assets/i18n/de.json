@@ -615,6 +615,7 @@
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
 			"bac": "Gesamtkosten (Baseline)",
+			"pv": "Kosten (Baseline)",
 			"endDate": "Projektende",
 			"deadlines": "Termine (Baseline)",
 			"deliveries": "Lieferungen (Baseline)",
