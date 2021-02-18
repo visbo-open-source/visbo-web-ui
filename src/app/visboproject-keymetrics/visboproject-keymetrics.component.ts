@@ -96,6 +96,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
+    this.findVPV(new Date(newParam.refDate));
+  }
+
+  switchViewParent(newParam: VPParams): void {
+    if (!newParam) return;
+    if (newParam.refDate) {
+      this.findVPV(new Date(newParam.refDate));
+    }
   }
 
   hasVCPerm(perm: number): boolean {
@@ -146,15 +154,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (this.variantName) {
       this.dropDownIndex = this.dropDown.findIndex(item => item === this.variantName);
-    }
-  }
-
-  switchViewParent(newParam: VPParams): void {
-    if (!newParam) return;
-    if (newParam.view) {
-      this.switchView(newParam.view, true);
-    } else if (newParam.refDate) {
-      this.findVPV(new Date(newParam.refDate));
     }
   }
 

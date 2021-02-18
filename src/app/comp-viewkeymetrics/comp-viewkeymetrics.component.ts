@@ -826,16 +826,24 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  updateUrlParam(type: string, value: string): void {
+  updateUrlParam(type: string, value: string, history = false): void {
     // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
     if (value === undefined) { value = null; }
     const queryParams = new VPParams();
     if (type == 'view') {
       queryParams.view = value;
     } else if (type == 'refDate') {
       queryParams.refDate = value;
+      this.switchViewChild.emit(queryParams); //emmiting the event to update the info in main.
     }
-    this.switchViewChild.emit(queryParams); //emmiting the event.
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: !history,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   chartSelectRow(row: number, col: number, label: string): void {
