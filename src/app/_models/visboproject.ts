@@ -86,6 +86,7 @@ export class VPParams {
   deleted: string;
   refDate: string;
   view: string;
+  viewKM: string;
   filter: string;
   roleID: number;
   unit: string;

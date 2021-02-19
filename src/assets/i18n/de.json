@@ -484,7 +484,7 @@
 			"weeksAhead": "Wochen voraus",
 			"weeksDelay": "Wochen verzögert",
 			"inTime": "pünktlich",
-			"status": "Status vom",
+			"status": "Status",
 			"keyMetric": "Kennzahl",
 			"planToDate": "Plan-to-Date",
 			"total": "Gesamt",
@@ -581,7 +581,10 @@
 			"euro": "Euro",
 			"keuro": "T€",
 			"refPFV": "Vergleich mit Beauftragung",
-			"drillDownOrga": "Zeige Organisation Einheiten"
+			"showDrill": "Zeige",
+			"drillNone": "Plan & Ist",
+			"drillOrga": "Organisationseinheiten",
+			"drillProject": "Projekte"
 		},
 		"btn": {
 			"back": "Zurück",
@@ -962,6 +965,9 @@
 		}
 	},
 	"keyMetrics": {
+		"shortRAC": "RAC",
+		"baselineRAC": "in % of RAC",
+		"longRAC": "Revenue at Completion",
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",
 		"shortBAC": "BAC",

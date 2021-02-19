@@ -186,8 +186,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       this.hierarchyDeadline = [];
       return;
     }
-
-    this.filterPath = this.getFullPath(this.allDeadline[0]);
+    // set the filter to the root, as the restricted user might not see this.
+    this.filterPath = ['.'];
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);

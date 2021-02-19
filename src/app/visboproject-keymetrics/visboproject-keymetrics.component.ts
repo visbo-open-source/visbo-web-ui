@@ -96,13 +96,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
-    this.findVPV(new Date(newParam.refDate));
+    this.findVPV(new Date(this.refDate));
   }
 
   switchViewParent(newParam: VPParams): void {
     if (!newParam) return;
     if (newParam.refDate) {
       this.findVPV(new Date(newParam.refDate));
+    }
+    if (newParam.view) {
+      this.currentView = newParam.view;
+    }
+    if (newParam.viewKM) {
+      this.currentView = newParam.viewKM;
+      this.currentViewKM = true;
     }
   }
 

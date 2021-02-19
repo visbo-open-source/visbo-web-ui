@@ -180,8 +180,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     // this.showHistory(false);
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
-    } else {
-      this.refDate = new Date();
     }
     const newVariantID = this.route.snapshot.queryParams.variantID;
     if (newVariantID != this.variantID) {
@@ -758,7 +756,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   showHistory(newValue: boolean): void {
     this.history = newValue;
     this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
-
   }
 
   switchView(newView: string, withKM = false): void {
@@ -771,10 +768,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentView = newView;
     this.currentViewKM  = withKM;
     this.showHistory(false);
-    this.updateUrlParam('view', newView);
+    this.updateUrlParam('viewKM', newView);
   }
 
-  switchTo(metric: string): void {
+  switchToHistory(metric: string): void {
     this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
     this.currentView = 'KeyMetrics';
     this.updateUrlParam('view', this.currentView);
@@ -833,10 +830,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     const queryParams = new VPParams();
     if (type == 'view') {
       queryParams.view = value;
+    } else if (type == 'viewKM') {
+      queryParams.viewKM = value;
     } else if (type == 'refDate') {
       queryParams.refDate = value;
-      this.switchViewChild.emit(queryParams); //emmiting the event to update the info in main.
     }
+    this.switchViewChild.emit(queryParams); //emmiting the event to update the refDate info in main.
     this.router.navigate([url], {
       queryParams: queryParams,
       // no navigation back to old status, but to the page before

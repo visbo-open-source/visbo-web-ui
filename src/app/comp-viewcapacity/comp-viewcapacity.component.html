@@ -28,14 +28,17 @@
               </span>
             </div>
           </div>
-          <div class="d-flex flex-wrap d-print-none">
-            <div *ngIf="!vpvActive" class="custom-control custom-checkbox mr-2">
+          <div class="d-flex flex-wrap d-print-none mt-1">
+            <div *ngIf="!vpvActive" class="custom-control custom-checkbox m-2">
               <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
               <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
             </div>
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" (change)="updateDrillDown()" id="idDrillDownOrga" [(ngModel)]="drillDown">
-              <label class="custom-control-label" for="idDrillDownOrga">{{ 'ViewCapacity.lbl.drillDownOrga' | translate }}</label>
+
+            <div class="d-flex flex-wrap d-print-none">
+              <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCapacity.lbl.showDrill' | translate }}:</label>
+              <select class="col-9 form-control" id="drillDownOpt" (change)="updateDrillDown()" name="drillDown" [(ngModel)]="drillDown">
+                <option *ngFor="let drillItem of drillDownCapaFiltered" value="{{drillItem.id}}">{{drillItem.localName}}</option>
+              </select>
             </div>
           </div>
         </div>

@@ -31,13 +31,19 @@ class CapaLoad {
   rankUnder: number;
 }
 
-class drillDownElement {
+class DrillDownElement {
   currentDate: Date;
   name: string;
   variantName: string;
   plan: number;
   planTotal: number;
   budget: number;
+}
+
+class DrillDownCapa {
+  id: number;
+  name: string;
+  localName: string;
 }
 
 @Component({
@@ -78,6 +84,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   showUnitText: string;
   refPFV = false;
   drillDown: number;
+  drillDownCapa: DrillDownCapa[];
+  drillDownCapaFiltered: DrillDownCapa[];
   parentThis = this;
 
   orgaTreeData: VisboOrgaTreeLeaf;
@@ -159,19 +167,39 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.drillDownCapa = [
+      {
+        id: 0,
+        name: 'drillNone',
+        localName: this.translate.instant('ViewCapacity.lbl.drillNone')
+      },
+      {
+        id: 1,
+        name: 'drillOrga',
+        localName: this.translate.instant('ViewCapacity.lbl.drillOrga')
+      },
+      {
+        id: 2,
+        name: 'drillProject',
+        localName: this.translate.instant('ViewCapacity.lbl.drillProject')
+      },
+    ];
+    this.drillDownCapaFiltered = this.drillDownCapa
+
     this.initSetting();
     if (!this.refDate) { this.refDate = new Date(); }
     this.currentRefDate = this.refDate;
     if (this.showUnit == 'PD') {
-      this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd')
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.pd');
     } else {
-      this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro')
+      this.showUnitText = this.translate.instant('ViewCapacity.lbl.euro');
     }
     this.log(`Capacity Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     this.capaLoad = [];
     if (this.vpfActive) {
       this.lastTimestampVPF = this.vpfActive.timestamp;
     } else if (this.vpvActive) {
+      this.drillDownCapaFiltered = this.drillDownCapa.filter( item => item.id != 2 );
       this.lastTimestampVPF = this.vpvActive.timestamp;
     }
 
@@ -225,7 +253,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.roleID = this.route.snapshot.queryParams['roleID'];
     const pfv = this.route.snapshot.queryParams['pfv'];
     this.refPFV = pfv && Number(pfv) ? true : false;
-    this.drillDown = Number(this.route.snapshot.queryParams['drillDown']);
+    this.drillDown = Number(this.route.snapshot.queryParams['drillDown']) || 0;
     const unit = this.route.snapshot.queryParams['unit'];
     this.initShowUnit(unit);
 
@@ -738,7 +766,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const childNodeList = this.calcChildNode(this.visboCapacityChild, 'name');
     const mapNodeList = this.mapChildNode(childNodeList);
 
-    const drillDownCapacity: drillDownElement[][] = [];
+    const drillDownCapacity: DrillDownElement[][] = [];
 
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -765,8 +793,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.sumCost += plan;
         this.sumBudget += capa;
 
-        const template: drillDownElement[] = [];
-        const elementDrill = new drillDownElement();
+        const template: DrillDownElement[] = [];
+        const elementDrill = new DrillDownElement();
         elementDrill.currentDate = currentDate;
         elementDrill.name = 'All';
         elementDrill.plan = plan;
@@ -889,7 +917,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
     const mapNodeList = this.mapChildNode(childNodeList);
 
-    const drillDownCapacity: drillDownElement[][] = [];
+    const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
       if ((currentDate.getTime() >= this.capacityFrom.getTime() && currentDate.getTime() <= this.capacityTo.getTime())) {
@@ -915,8 +943,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.sumCost += plan;
         this.sumBudget += capa;
 
-        const template: drillDownElement[] = [];
-        const elementDrill = new drillDownElement();
+        const template: DrillDownElement[] = [];
+        const elementDrill = new DrillDownElement();
         elementDrill.currentDate = currentDate;
         elementDrill.name = this.currentLeaf.name;
         elementDrill.plan = plan;
@@ -1321,7 +1349,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-  createTooltipProjectDrillDown(item: drillDownElement, PT: boolean, refPFV = false): string {
+  createTooltipProjectDrillDown(item: DrillDownElement, PT: boolean, refPFV = false): string {
     const current = convertDate(item.currentDate, 'fullMonthYear', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
       '<div><b>' + current + '</b></div>';
@@ -1364,7 +1392,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-  createTooltipOrgaDrillDown(item: drillDownElement, PT: boolean, refPFV = false): string {
+  createTooltipOrgaDrillDown(item: DrillDownElement, PT: boolean, refPFV = false): string {
     const current = convertDate(item.currentDate, 'fullMonthYear', this.currentLang);
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
       '<div><b>' + current + '</b></div>';
@@ -1406,7 +1434,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
-  calcLoadDiff(item: drillDownElement, percent = false): number {
+  calcLoadDiff(item: DrillDownElement, percent = false): number {
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
     const diff = plan - item.budget;
     if (percent) {

@@ -56,9 +56,9 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost')">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline')">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery')">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', true)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', true)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', true)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -73,7 +73,6 @@
     <div *ngIf="currentView == 'Capacity'">
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
-
     <div *ngIf="currentView == 'Cost'">
       <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
     </div>
@@ -196,13 +195,27 @@
                 </td>
                 <td class="d-none d-md-table-cell"></td>
               </tr>
+              <tr *ngIf="vpvActive.Erloes">
+                <td title="{{ 'keyMetrics.longRAC' | translate }}">{{ 'keyMetrics.shortRAC' | translate }}</td>
+                <td>
+                  {{ vpvActive.Erloes | number:'1.0-0' }} T€
+                </td>
+                <td></td>
+              </tr>
+              <tr *ngIf="vpvActive.status">
+                <td>{{ 'vpKeyMetric.lbl.status' | translate }}</td>
+                <td title="{{ vpvActive.status }}">
+                  {{ getShortText(vpvActive.status, 20) }}
+                </td>
+                <td></td>
+              </tr>
               <tr>
                 <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
                 <td title="{{ vpvActive.ampelErlaeuterung }}">
                   <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
                 </td>
                 <td class="d-none d-md-table-cell" title="{{ vpvActive.ampelErlaeuterung }}">
-                  {{ getShortText(vpvActive.ampelErlaeuterung, 40) }}
+                  {{ vpvActive.ampelErlaeuterung }}
                 </td>
               </tr>
               <tr *ngIf="vpvActive.leadPerson">
@@ -214,10 +227,10 @@
               </tr>
               <tr *ngIf="vpvActive.description">
                 <td>{{ 'vpKeyMetric.lbl.description' | translate }}</td>
-                <td title="{{ vpvActive.description }}">
-                  {{ getShortText(vpvActive.description, 20) }}
-                </td>
                 <td></td>
+                <td title="{{ vpvActive.description }}">
+                  {{ vpvActive.description }}
+                </td>
               </tr>
               <tr *ngIf="vpvActive.VorlagenName">
                 <td>{{ 'vpKeyMetric.lbl.template' | translate }}</td>
