@@ -4,7 +4,7 @@ import { AuthenticationService } from './_services/authentication.service';
 import { AlertService } from './_services/alert.service';
 
 import { TranslateService } from '@ngx-translate/core';
-import { getErrorMessage } from './_helpers/visbo.helper';
+import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.helper';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ import { getErrorMessage } from './_helpers/visbo.helper';
 })
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '2.0';
+  version = '21-02';
   restVersionString = new Date();
   restUIVersionString = new Date();
   localsAvailable = false;
@@ -72,6 +72,14 @@ export class AppComponent implements OnInit {
           this.alertService.error(getErrorMessage(error));
         }
       );
+  }
+
+  getPreView(): boolean {
+    return getPreView();
+  }
+
+  switchPreView(): boolean {
+    return switchPreView();
   }
 
   /** Log a message with the MessageService */

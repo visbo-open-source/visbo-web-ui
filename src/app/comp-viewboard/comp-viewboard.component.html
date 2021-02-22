@@ -1,6 +1,6 @@
 <div class='well' (resized)="onResized($event)">
   <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
-    <div class="row text-dark">
+    <div *ngIf="filter || !getPreView()" class="row text-dark d-print-none">
       <div class="my-1 pl-0 col-11">
         <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
         <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>

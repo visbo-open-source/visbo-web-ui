@@ -1,7 +1,7 @@
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
-      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2" class='container-fluid'>
+      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-0 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div class='container-fluid'>
+      <div *ngIf="filter || !getPreView()" class='container-fluid'>
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
@@ -79,6 +79,10 @@
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
               <th class="d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+
+              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
+              <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
+
               <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}}</th>
               <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }}</th>
@@ -102,6 +106,14 @@
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
+                <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} k€</td>
+                <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right"
+                        title="{{(vp.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} k€">
+                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostActual, 'percentOver')} " ></ng-container>
+                  {{vp.savingCostActual*100 | number:'1.0-0'}} %
+                </td>
+                <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+                <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics"></td>
                 <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
                 <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right"
                         title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€">

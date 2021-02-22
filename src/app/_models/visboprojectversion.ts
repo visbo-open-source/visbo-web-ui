@@ -2,6 +2,9 @@ export class VisboCapacity {
   month: Date;
   roleID: number;
   roleName: string;
+  vpid: string;
+  name: string;
+  variantName: string;
   actualCost_PT: number;
   plannedCost_PT: number;
   internCapa_PT: number;

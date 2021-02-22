@@ -1,17 +1,21 @@
 <app-usernavbar></app-usernavbar>
 <div class='well'>
   <div class="container">
+    <h2 *ngIf="!vpActive">
+      {{ 'vpv.title' | translate }}
+    </h2>
+    <h2 *ngIf="vpActive">
+      {{ 'vpv.titleVP' | translate }}:
+      <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
+        {{vpActive.name}}
+      </button>
+    </h2>
     <div class='row'>
-      <div class='col'>
-        <h2 *ngIf="!vpActive">
-          {{ 'vpv.title' | translate }}
-        </h2>
-        <h2 *ngIf="vpActive">
-          {{ 'vpv.titleVP' | translate }}:
-          <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
-            {{vpActive.name}}
-          </button>
-        </h2>
+      <div class='col my-2'>
+        <h5 *ngIf="vpActive">{{ 'vpv.titleVC' | translate }}:
+          <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVCDetail(vpActive)">{{ vpActive.vc.name }}</a>
+          <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
+        </h5>
       </div>
       <div *ngIf="hasVPPerm(permVP.DeleteVP)" class='btn-group '>
         <button *ngIf="!deleted" class="btn btn-sm btn-secondary m-2" (click)="toggleVisboProjectVersions()">{{ 'vpv.btn.deleted' | translate }}</button>
@@ -75,21 +79,37 @@
       </div>
       <div class="modal-body">
         <form>
-          <div class="form-group row">
+          <div class="form-group v_compact_t row">
             <label for="VpvName" class="col-sm-4 col-form-label">{{ 'vpv.lbl.name' | translate }}:</label>
-            <label class="col-sm-8 form-control-static">{{ visboprojectversion.name }} </label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.name }} </label>
           </div>
-          <div class="form-group row">
+          <div class="form-group v_compact_t row">
             <label for="VpvVersions" class="col-sm-4 col-form-label">{{ 'vpv.lbl.timestamp' | translate }}:</label>
-            <label class="col-sm-8 form-control-static">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.timestamp | date :'dd.MM.yyyy HH:mm:ss'}} </label>
           </div>
-          <div class="form-group row">
+          <div class="form-group v_compact_t row">
             <label for="VpvUpdated" class="col-sm-4 col-form-label">{{ 'vpv.lbl.updatedAt' | translate }}:</label>
-            <label class="col-sm-8 form-control-static">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
           </div>
-          <div *ngIf="visboprojectversion.variantName" class="form-group row">
+          <div *ngIf="visboprojectversion.variantName" class="form-group v_compact_t row">
             <label for="VpvVariant" class="col-sm-4 col-form-label">{{ 'vpv.lbl.variantName' | translate }}:</label>
-            <label class="col-sm-8 form-control-static">{{ visboprojectversion.variantName }} </label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.variantName }} </label>
+          </div>
+          <div *ngIf="visboprojectversion.startDate" class="form-group v_compact_t row">
+            <label for="VpvStart" class="col-sm-4 col-form-label">{{ 'vpv.lbl.startDate' | translate }}:</label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.startDate | date :'dd.MM.yyyy' }} </label>
+          </div>
+          <div *ngIf="visboprojectversion.endDate" class="form-group v_compact_t row">
+            <label for="VpvEnd" class="col-sm-4 col-form-label">{{ 'vpv.lbl.endDate' | translate }}:</label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.endDate | date :'dd.MM.yyyy' }} </label>
+          </div>
+          <div *ngIf="visboprojectversion.status" class="form-group v_compact_t row">
+            <label for="VpvStatus" class="col-sm-4 col-form-label">{{ 'vpv.lbl.status' | translate }}:</label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.status }} </label>
+          </div>
+          <div *ngIf="visboprojectversion.businessUnit" class="form-group v_compact_t row">
+            <label for="VpvBU" class="col-sm-4 col-form-label">{{ 'vpv.lbl.bu' | translate }}:</label>
+            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.businessUnit }} </label>
           </div>
         </form>
       </div>

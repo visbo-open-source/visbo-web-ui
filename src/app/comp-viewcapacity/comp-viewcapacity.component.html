@@ -4,7 +4,7 @@
     <div class="row row-cols-1 row-cols-lg-2">
       <div class="col col-sm-12 col-lg-8">
         <div class="text-dark">
-          <div class="row ml-1 pt-2">
+          <div *ngIf="!getPreView()" class="row ml-1 pt-2 d-print-none">
             <span >
               <label class="mr-2 pt-1">{{ 'ViewCapacity.titleCapacity' | translate }}</label>
             </span>
@@ -28,19 +28,22 @@
               </span>
             </div>
           </div>
-          <div *ngIf="!vpvActive"  class="d-flex flex-wrap">
-            <div class="custom-control custom-checkbox mr-2">
+          <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none mt-1">
+            <div *ngIf="!vpvActive" class="custom-control custom-checkbox m-2">
               <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
               <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
             </div>
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" (change)="updateDrillDown()" id="idDrillDownOrga" [(ngModel)]="drillDown">
-              <label class="custom-control-label" for="idDrillDownOrga">{{ 'ViewCapacity.lbl.drillDownOrga' | translate }}</label>
+
+            <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
+              <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCapacity.lbl.showDrill' | translate }}:</label>
+              <select class="col-9 form-control" id="drillDownOpt" (change)="updateDrillDown()" name="drillDown" [(ngModel)]="drillDown">
+                <option *ngFor="let drillItem of drillDownCapaFiltered" value="{{drillItem.id}}">{{drillItem.localName}}</option>
+              </select>
             </div>
           </div>
         </div>
       </div>
-      <div *ngIf="visboCapcity && visboCapcity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+      <div *ngIf="visboCapacity && visboCapacity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
         <h5 class="card-header p-2">
           <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
           {{ 'ViewCapacity.titleBox' | translate }}</h5>
@@ -81,9 +84,9 @@
     </div>
   </div>
 
-  <div class="">
+  <div>
     <div class="row">
-      <div  *ngIf="orgaTreeData" class="pl-3 col-3 border-right scroll">
+      <div  *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
         <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>
