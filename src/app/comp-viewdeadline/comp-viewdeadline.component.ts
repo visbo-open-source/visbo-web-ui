@@ -13,7 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewdeadline',
@@ -576,6 +576,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     if (!this.sortAscendingDeadline) {
       this.filteredDeadline.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

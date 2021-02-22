@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div *ngIf="vpvActive">
+  <div *ngIf="vpvActive && !getPreView()" class="d-print-none">
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
@@ -45,8 +45,8 @@
     </div>
   </div>
 
-  <div class="container-fluid" *ngIf="vpvActive">
-    <div class="row">
+  <div *ngIf="vpvActive" class="container-fluid">
+    <div *ngIf="!getPreView()" class="row d-print-none">
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
@@ -56,9 +56,9 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', true)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', true)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
-            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', true)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
+            <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>

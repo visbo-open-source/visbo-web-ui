@@ -14,7 +14,7 @@ import { VPParams } from '../_models/visboproject';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboIsToday } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 class Metric {
   name: string;
@@ -237,7 +237,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.metricX = this.getMetric(metricX, metricY, false).metric;
     this.metricY = this.getMetric(metricY, this.metricX, false).metric;
     this.refDate = refDate ? new Date(refDate) : new Date();
-    this.filter = filter;
+    if (filter) {
+      this.filter = filter;
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -263,6 +265,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
+      localStorage.setItem('vpfFilter', value || '');
     } else if (type == 'metricX' || type == 'metricY') {
       queryParams.metricX = this.metricX;
       queryParams.metricY = this.metricY;
@@ -895,6 +898,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

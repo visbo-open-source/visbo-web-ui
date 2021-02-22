@@ -4,7 +4,7 @@ import { AuthenticationService } from './_services/authentication.service';
 import { AlertService } from './_services/alert.service';
 
 import { TranslateService } from '@ngx-translate/core';
-import { getErrorMessage } from './_helpers/visbo.helper';
+import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.helper';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ import { getErrorMessage } from './_helpers/visbo.helper';
 })
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '2.0';
+  version = '21-02';
   restVersionString = new Date();
   restUIVersionString = new Date();
   localsAvailable = false;
@@ -74,16 +74,13 @@ export class AppComponent implements OnInit {
       );
   }
 
-  // printPreview() {
-  //   var toPrint = document.getElementById('visboRoot');
-  //   var popupWin = window.open('', '_blank', 'width=1024,height=768,location=center');
-  //   popupWin.document.open();
-  //
-  //   popupWin.document.write('<html></head><body media="print">')
-  //   popupWin.document.write(toPrint.innerHTML);
-  //   popupWin.document.write('</html>');
-  //   popupWin.document.close();
-  // }
+  getPreView(): boolean {
+    return getPreView();
+  }
+
+  switchPreView(): boolean {
+    return switchPreView();
+  }
 
   /** Log a message with the MessageService */
   private log(message: string) {

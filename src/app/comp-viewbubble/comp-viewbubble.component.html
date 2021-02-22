@@ -1,7 +1,7 @@
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
-      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2" class='container-fluid d-print-none'>
+      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-0 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div class='container-fluid'>
+      <div *ngIf="filter || !getPreView()" class='container-fluid'>
         <div class="row text-dark">
           <div class="my-1 pl-0 col-11">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>

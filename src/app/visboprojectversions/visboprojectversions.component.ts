@@ -18,7 +18,8 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 
 @Component({
   selector: 'app-visboprojectversions',
-  templateUrl: './visboprojectversions.component.html'
+  templateUrl: './visboprojectversions.component.html',
+  styleUrls: ['./visboprojectversions.component.css']
 })
 export class VisboProjectVersionsComponent implements OnInit {
 
@@ -53,6 +54,13 @@ export class VisboProjectVersionsComponent implements OnInit {
       return false;
     }
     return (this.combinedPerm.vp & perm) !== 0;
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) !== 0;
   }
 
   getVisboProjectVersions(): void {
@@ -193,6 +201,10 @@ export class VisboProjectVersionsComponent implements OnInit {
 
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
+  }
+
+  gotoVCDetail(visboproject: VisboProject): void {
+    this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
   sortVPVTable(n: number): void {

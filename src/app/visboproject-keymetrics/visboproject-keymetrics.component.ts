@@ -16,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -524,6 +524,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

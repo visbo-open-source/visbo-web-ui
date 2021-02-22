@@ -21,7 +21,8 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
+            from '../_helpers/visbo.helper';
 
 class CapaLoad {
   uid: number;
@@ -69,6 +70,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   capaLoad: CapaLoad[];
   timeoutID: number;
   hasCost: boolean;
+  printView = false;
 
   roleID: number;
   currentLeaf: VisboOrgaTreeLeaf;
@@ -1691,6 +1693,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // }
     }
     return null;
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

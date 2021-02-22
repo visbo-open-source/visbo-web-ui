@@ -13,7 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { convertDate, visboCmpDate } from '../_helpers/visbo.helper';
+import { convertDate, visboCmpDate, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewkeymetrics',
@@ -768,7 +768,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentView = newView;
     this.currentViewKM  = withKM;
     this.showHistory(false);
-    this.updateUrlParam('viewKM', newView);
+    this.updateUrlParam(withKM ? 'viewKM' : 'view', newView);
   }
 
   switchToHistory(metric: string): void {
@@ -1071,6 +1071,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

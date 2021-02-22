@@ -136,3 +136,15 @@ export function getErrorMessage(error: any): string {
   }
   return result;
 }
+
+export function getPreView(): boolean {
+  const result = localStorage.getItem('printPreView');
+  return result === '1' ? true : false;
+}
+
+export function switchPreView(): boolean {
+  let result = !getPreView();
+  localStorage.setItem('printPreView', result ? '1' : '0');
+  console.log("Switch PreView", result);
+  return result;
+}

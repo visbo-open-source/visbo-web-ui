@@ -756,6 +756,7 @@
 	"vpv": {
 		"title": "Projekt Versionen",
 		"titleVP": "Projekt Versionen in",
+		"titleVC": "VISBO Center",
 		"titleDetailVPV": "Information über Version",
 		"titleDeleteVPV": "Löschen der Projekt Version",
 		"lbl": {
@@ -765,7 +766,9 @@
 			"timestamp": "Zeitstempel",
 			"updatedAt": "Verändert am",
 			"status": "Status",
+			"startDate": "Projektstart",
 			"endDate": "Projektende",
+			"bu": "Business Unit",
 			"trafficlight": "Ampel",
 			"budget": "Budget",
 			"variant": "Variante",
