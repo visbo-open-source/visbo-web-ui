@@ -662,7 +662,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDrillDown(): void {
     this.log(`Show Drilldown change to ${this.drillDown}`);
-    this.updateUrlParam('drillDown', this.drillDown ? '1' : undefined);
+    this.updateUrlParam('drillDown', this.drillDown);
     this.capaLoad = []; // reset the load indicators
     this.getCapacity();
   }
@@ -682,7 +682,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (type == 'pfv') {
       queryParams.pfv = value;
     } else if (type == 'drillDown') {
-      queryParams.drillDown = value;
+      queryParams.drillDown = value > 0 ? value : undefined;
     }
     this.router.navigate([url], {
       queryParams: queryParams,
@@ -709,7 +709,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart.title = this.translate.instant(this.refPFV ? 'ViewCapacity.titleCapaOverTimeBL' : 'ViewCapacity.titleCapaOverTime', {name: this.currentName, roleName: this.currentLeaf.name});
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
-    if (this.drillDown) {
+    // set the colors for the Chart
+    if (this.drillDown > 0) {
       delete this.graphOptionsComboChart.colors;
       this.graphOptionsComboChart.series = this.seriesPFV;
     } else if (this.refPFV) {
@@ -1687,10 +1688,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
        actDate.setDate(1);
        actDate.setHours(0, 0, 0, 0);
        return actDate;
-    //   var d = Date.parse(dateString);
-    //   if (d > 0) {
-    //     return new Date(d);
-    // }
     }
     return null;
   }
@@ -1701,7 +1698,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompVisboViewCapcity: ' + message);
     this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 

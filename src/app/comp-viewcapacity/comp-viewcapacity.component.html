@@ -86,16 +86,28 @@
 
   <div>
     <div class="row">
-      <div  *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
+      <div *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
         <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>
-      <div *ngIf="displayCapacity() > 0" class="col-9">
-        <div *ngIf="graphDataComboChart.length > 2" >
-            <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+      <div *ngIf="!getPreView()" class="col-9">
+        <div *ngIf="displayCapacity() > 0">
+          <div *ngIf="graphDataComboChart.length > 2" >
+              <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+          </div>
+          <div *ngIf="graphDataComboChart.length < 2"  >
+            <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+          </div>
         </div>
-        <div *ngIf="graphDataComboChart.length < 2"  >
-          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+      </div>
+      <div *ngIf="getPreView()" class="col-12">
+        <div *ngIf="displayCapacity() > 0">
+          <div *ngIf="graphDataComboChart.length > 2" >
+              <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+          </div>
+          <div *ngIf="graphDataComboChart.length < 2"  >
+            <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+          </div>
         </div>
       </div>
       <!-- here will be shown the text: No Capacity the spinner -->
