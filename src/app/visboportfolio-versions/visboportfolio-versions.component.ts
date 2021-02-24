@@ -727,7 +727,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     let index = 1;
 
     this.vpActive.variant.forEach(item => {
-      this.dropDownVariant.push({name: item.variantName, variantName: item.variantName, version: index++, timestamp: undefined, email: undefined });
+      if (item.variantName != 'pfv') {
+        this.dropDownVariant.push({name: item.variantName, variantName: item.variantName, version: index++, timestamp: undefined, email: undefined });
+      }
     });
     // this.dropDownVariant.sort(function (a, b) { visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
     this.dropDownVariant.splice(0, 0, {name: '', variantName: '', version: 0, timestamp: undefined, email: undefined });
