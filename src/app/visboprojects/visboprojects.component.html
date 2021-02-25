@@ -10,6 +10,9 @@
       </h2>
     </div>
     <div class='btn-group'>
+      <select class="form-control mt-2" id="ViewMode" name="viewMode" [(ngModel)]="viewMode" (change)="switchView()">
+        <option *ngFor="let item of dropDownVPType" value="{{item.id}}">{{item.name}}</option>
+      </select>
       <div *ngIf="vcActive && visboprojects.length > 0">
         <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
         <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
@@ -98,7 +101,7 @@
           <form>
             <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
               <label for="type" class="col-form-label">{{ 'vp.lbl.type' | translate }}:</label>
-              <select id="vpType" class="form-control" name="vpType" [(ngModel)]="vpType">
+              <select id="addVPType" class="form-control" name="addVPType" [(ngModel)]="addVPType">
                 <option value=0>{{ 'vp.type.vpType0' | translate }}</option>
                 <option value=1>{{ 'vp.type.vpType1' | translate }}</option>
                 <!-- <option value=2>{{ 'vp.type.vpType2' | translate }}</option> -->
@@ -117,7 +120,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
-          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, vpType); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
+          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, addVPType); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
             {{ 'vp.btn.save' | translate }}
           </button>
         </div>

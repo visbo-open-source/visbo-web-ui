@@ -22,6 +22,12 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
+class DropDown {
+  name: string;
+  id: string;
+}
+
+
 @Component({
   selector: 'app-visboprojects',
   templateUrl: './visboprojects.component.html'
@@ -29,9 +35,13 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 export class VisboProjectsComponent implements OnInit {
 
   visboprojects: VisboProject[];
+  visboprojectsAll: VisboProject[];
+  filterVPType: string;
   vcSelected: string;
   vcActive: VisboCenter;
-  vpType = 0;
+  addVPType = 0;
+  dropDownVPType: DropDown[];
+  viewMode = 'All';
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -162,7 +172,9 @@ export class VisboProjectsComponent implements OnInit {
             this.visboprojectService.getVisboProjects(id, false, deleted)
               .subscribe(
                 visboprojects => {
-                  this.visboprojects = visboprojects;
+                  this.visboprojectsAll = visboprojects;
+                  this.filterVP();
+                  this.initDropDown(deleted);
                   this.sortVPTable(1);
                   if (this.chart) { this.getVisboProjectKeyMetrics(); }
                 },
@@ -183,7 +195,9 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojectService.getVisboProjects(null, false, deleted)
         .subscribe(
           visboprojects => {
-            this.visboprojects = visboprojects;
+            this.visboprojectsAll = visboprojects;
+            this.filterVP();
+            this.initDropDown(deleted);
             this.sortVPTable(1);
             // this.getVisboProjectKeyMetrics();
           },
@@ -193,6 +207,82 @@ export class VisboProjectsComponent implements OnInit {
           }
         );
     }
+  }
+
+  filterVP(): void {
+    if (this.filterVPType) {
+      // show the specific selected type
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType == this.filterVPType);
+    } else {
+      // show projects & portfolios, no templates
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+    }
+
+  }
+  initDropDown(deleted: boolean): void {
+    this.dropDownVPType = [];
+    if (this.vcSelected) {
+      this.dropDownVPType.push({name: 'Portfolio & Project', id: 'All'});
+      this.dropDownVPType.push({name: 'Cockpit', id: 'Cockpit'});
+      this.dropDownVPType.push({name: 'Portfolio', id: 'Portfolio'});
+      if (this.hasVCPerm(this.permVC.Modify + this.permVC.CreateVP)) {
+        this.dropDownVPType.push({name: 'Template', id: 'Template'});
+      }
+      if (this.hasVPPerm(this.permVP.DeleteVP)) {
+        this.dropDownVPType.push({name: 'Deleted', id: 'Deleted'});
+      }
+    }
+  }
+
+  switchView() {
+    let element: DropDown;
+    if (!this.dropDownVPType) {
+      return;
+    }
+    element = this.dropDownVPType.find(item => item.id === this.viewMode);
+    let oldViewMode = this.viewMode;
+    this.log(`switchView to ${this.viewMode} ${element?.name}`);
+    if (element) {
+      this.viewMode = element.id;
+    }
+    if (oldViewMode == 'Deleted' || this.viewMode == 'Deleted') {
+      this.getVisboProjects(this.viewMode == 'Deleted');
+    }
+    switch(this.viewMode) {
+      case 'All':
+        this.chart = false;
+        this.deleted = false;
+        this.filterVPType = undefined;
+        this.filterVP();
+        break;
+      case 'Portfolio':
+        this.chart = false;
+        this.deleted = false;
+        this.filterVPType = 1;
+        this.filterVP();
+        break;
+      case 'Template':
+        this.chart = false;
+        this.deleted = false;
+        this.filterVPType = 2;
+        this.filterVP();
+        break;
+      case 'Cockpit':
+        this.chart = true;
+        this.deleted = false;
+        if (!this.visboprojectversions) {
+          this.getVisboProjectKeyMetrics();
+        }
+        break;
+      case 'Deleted':
+        this.chart = false;
+        this.deleted = true;
+        this.filterVPType = undefined;
+        break;
+      default:
+        this.log(`Unknown viewMode ${this.viewMode}`)
+    }
+
   }
 
   addproject(name: string, vcid: string, desc: string, type: number): void {
@@ -223,7 +313,7 @@ export class VisboProjectsComponent implements OnInit {
         }
       }
     );
-    this.vpType = 0;
+    this.addVPType = 0;
   }
 
   getVisboProjectKeyMetrics(): void {
@@ -365,6 +455,7 @@ export class VisboProjectsComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
+    console.log("VisboProject:", message);
     this.messageService.add('VisboProject: ' + message);
   }
 }
