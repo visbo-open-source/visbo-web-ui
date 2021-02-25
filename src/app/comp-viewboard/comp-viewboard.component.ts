@@ -12,7 +12,7 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VPParams } from '../_models/visboproject';
 
-import { visboCmpString, convertDate, visboIsToday } from '../_helpers/visbo.helper';
+import { visboCmpString, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -101,6 +101,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
+      localStorage.setItem('vpfFilter', value || '');
     }
     this.router.navigate([url], {
       queryParams: queryParams,
@@ -127,6 +128,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           || this.vps[i].businessUnit?.toLowerCase().indexOf(filter) >= 0
           || this.vps[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
           || this.vps[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
+          || this.vps[i].status?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter
@@ -244,6 +246,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       result = this.vps.find(x => x.name === vpName && x.variantName === variantName)
     }
     return result;
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

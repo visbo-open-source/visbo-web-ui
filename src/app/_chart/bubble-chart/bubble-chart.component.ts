@@ -72,7 +72,7 @@ export class BubbleChartComponent implements OnInit, OnChanges {
       if (parentThis === undefined) {
         console.log(`Bubble: The user clicked and this is undefined`);
       } else if (targetID) {
-        console.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
+        // console.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
       } else {
         console.log(`Bubble: The user clicked somewhere`);
       }

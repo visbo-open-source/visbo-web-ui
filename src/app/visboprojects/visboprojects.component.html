@@ -23,95 +23,126 @@
       </div>
     </div>
     <div class='container-fluid'></div>
-      <div *ngIf="chart" class="btn-toolbar" >
-          <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
-          <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("List")'>{{ 'vp.btn.viewList' | translate }}</button>
-          <button *ngIf="hasVCPerm(permVC.ViewAudit + permVC.Modify) && hasOrga" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
-          <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vp.btn.viewProjectBoard' | translate }}</button>
-      </div>
+    <div *ngIf="chart" class="btn-toolbar" >
+        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
+        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("List")'>{{ 'vp.btn.viewList' | translate }}</button>
+        <button *ngIf="hasVCPerm(permVC.ViewAudit + permVC.Modify) && hasOrga" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
+        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vp.btn.viewProjectBoard' | translate }}</button>
     </div>
-    <div *ngIf="!chart" class='panel-body'>
-      <table class='table table-hover table-sortable'>
-        <thead id="VPHead">
-          <tr>
-            <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
-            <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
-            <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
-            <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
-            <th id="SortVersions" class="d-none d-md-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
-            <th id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
-            <th>Info</th>
-          </tr>
-        </thead>
+  </div>
+  <div *ngIf="!chart" class='panel-body'>
+    <table class='table table-hover table-sortable'>
+      <thead id="VPHead">
+        <tr>
+          <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
+          <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
+          <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
+          <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
+          <th id="SortVersions" class="d-none d-md-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
+          <th id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
+          <th>Info</th>
+        </tr>
+      </thead>
 
-        <tbody id="VPList" *ngIf="visboprojects.length > 0">
-          <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
-            <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
-            <td id="ColName"><a>{{vp.name}}</a></td>
-            <td id="ColType" class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
-            <td id="ColDate" class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
-            <td id="ColDate" class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
-            <td id="ColVersions" class="d-none d-md-table-cell">{{vp.vpfCount || vp.vpvCount}}</td>
-            <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
-            <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
-            <td id="ColDetail">
-              <button class="Detail" title="Detail of Visbo Project"
-              (click)="gotoDetail(vp)">i</button>
-            </td>
-          </tr>
-        </tbody>
+      <tbody id="VPList" *ngIf="visboprojects.length > 0">
+        <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
+          <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
+          <td id="ColName"><a>{{vp.name}}</a></td>
+          <td id="ColType" class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
+          <td id="ColDate" class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
+          <td id="ColDate" class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
+          <td id="ColVersions" class="d-none d-md-table-cell">{{vp.vpfCount || vp.vpvCount}}</td>
+          <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
+          <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
+          <td id="ColDetail">
+            <button class="Detail" title="Detail of Visbo Project"
+            (click)="gotoDetail(vp)">i</button>
+          </td>
+        </tr>
+      </tbody>
 
-      </table>
-      <div *ngIf="visboprojects.length == 0">
-        <h3 class="d-flex justify-content-center">
-          {{ 'vp.msg.noVP' | translate }}
-        </h3>
-      </div>
+    </table>
+    <div *ngIf="visboprojects.length == 0">
+      <h3 class="d-flex justify-content-center">
+        {{ 'vp.msg.noVP' | translate }}
+      </h3>
     </div>
-    <div *ngIf="chart">
-      <hr>
-      <div *ngIf="currentView == 'Capacity' && vcActive">
-        <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-      </div>
-      <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
-        <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
-      </div>
-      <div *ngIf="currentView == 'List' && visboprojectversions">
-        <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
-      </div>
-      <div *ngIf="currentView == 'ProjectBoard' && visboprojectversions">
-        <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>
+  </div>
+  <div *ngIf="chart">
+    <hr>
+    <div *ngIf="currentView == 'Capacity' && vcActive">
+      <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    </div>
+    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
+      <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    </div>
+    <div *ngIf="currentView == 'List' && visboprojectversions">
+      <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    </div>
+    <div *ngIf="currentView == 'ProjectBoard' && visboprojectversions">
+      <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>
+    </div>
+  </div>
+
+  <!-- Modal VP Create-->
+  <div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VpModalCenterTitle">{{ 'vp.titleCreate' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
+              <label for="type" class="col-form-label">{{ 'vp.lbl.type' | translate }}:</label>
+              <select id="vpType" class="form-control" name="vpType" [(ngModel)]="vpType">
+                <option value=0>{{ 'vp.type.vpType0' | translate }}</option>
+                <option value=1>{{ 'vp.type.vpType1' | translate }}</option>
+                <!-- <option value=2>{{ 'vp.type.vpType2' | translate }}</option> -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
+              <input id="CreateVPName" type="text" class="form-control" #vpName>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
+              <textarea id="CreateVPDesc" class="form-control" #vpDescription></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
+          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, vpType); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
+            {{ 'vp.btn.save' | translate }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-<!-- Modal VP Create-->
-<div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="VpModalCenterTitle">{{ 'vp.titleCreate' | translate }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
-            <input id="CreateVPName" type="text" class="form-control" #vpName>
-          </div>
-          <div class="form-group">
-            <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
-            <textarea id="CreateVPDesc" class="form-control" #vpDescription></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer align-items-end">
-        <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
-        <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
-          {{ 'vp.btn.save' | translate }}
-        </button>
+  <!-- Modal Select Projects for Portfolio -->
+  <div class="modal fade" id="VPFListCreate" tabindex="-1" role="dialog" aria-labelledby="VPFListCreateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VPFListCenterTitle">{{ 'vp.titleCreateVPFList' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonVPFBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
+          <button id="CreateVPFConfirm" type="button" class="btn btn-primary" data-dismiss="modal">
+            {{ 'vp.btn.save' | translate }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -55,7 +55,7 @@ export class LineChartComponent implements OnInit, OnChanges {
          console.log(`Chart Line: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
-        console.log(`Chart Line: The user selected ${JSON.stringify(selectedItem)}`);
+        // console.log(`Chart Line: The user selected ${JSON.stringify(selectedItem)} `);
         if (parentThis === undefined) {
           console.log(`Chart Line: The user clicked and this is undefined`);
         } else if (selectedItem) {

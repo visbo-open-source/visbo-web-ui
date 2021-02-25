@@ -16,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -35,6 +35,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   variantID: string;
   variantName: string;
   deleted = false;
+  defaultVariant: string;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
@@ -71,6 +72,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
+    this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       const baseUrl = this.route.snapshot.url[0]
@@ -94,6 +96,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
+    this.findVPV(new Date(this.refDate));
+  }
+
+  switchViewParent(newParam: VPParams): void {
+    if (!newParam) return;
+    if (newParam.refDate) {
+      this.findVPV(new Date(newParam.refDate));
+    }
+    if (newParam.view) {
+      this.currentView = newParam.view;
+    }
+    if (newParam.viewKM) {
+      this.currentView = newParam.viewKM;
+      this.currentViewKM = true;
+    }
   }
 
   hasVCPerm(perm: number): boolean {
@@ -139,20 +156,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       }
     }
     if (this.dropDown.length > 0 ) {
-      this.dropDown.splice(0, 0, 'DEFAULT');
+      this.dropDown.splice(0, 0, this.defaultVariant);
       this.dropDownIndex = 0;
     }
     if (this.variantName) {
       this.dropDownIndex = this.dropDown.findIndex(item => item === this.variantName);
-    }
-  }
-
-  switchViewParent(newParam: VPParams): void {
-    if (!newParam) return;
-    if (newParam.view) {
-      this.switchView(newParam.view, true);
-    } else if (newParam.refDate) {
-      this.findVPV(new Date(newParam.refDate));
     }
   }
 
@@ -226,7 +234,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   isActiveVariant(variantName: string): boolean {
     let result = false;
-    if (this.variantName == undefined && variantName == 'DEFAULT') { result = true; }
+    if (this.variantName == undefined && variantName == this.defaultVariant) { result = true; }
     if (this.variantName === variantName) { result = true; }
     return result;
   }
@@ -261,11 +269,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
-      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+      result = km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlineDelay') {
-      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      if (km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1) {
+        result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      }
     } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
@@ -443,10 +453,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
-    const index = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    let delay = 0;
+    if (keyMetrics && keyMetrics.endDateCurrent && keyMetrics.endDateBaseLast) {
+      delay = (new Date(keyMetrics.endDateCurrent)).getTime() - (new Date(keyMetrics.endDateBaseLast)).getTime();
+    }
+    this.delayEndDate = Math.round(delay / 1000 / 60 / 60 / 24) / 7;
 
     this.vpvActive = vpv;
-    this.delayEndDate = Math.round(index / 1000 / 60 / 60 / 24) / 7;
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }
 
@@ -511,6 +524,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

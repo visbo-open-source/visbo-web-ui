@@ -12,6 +12,7 @@ import { MessageService } from './message.service';
 
 @Injectable()
 export class VisboSettingService  {
+
   private vcUrl = this.env.restUrl.concat('/vc');  // URL to web api
 
   constructor(

@@ -37,7 +37,7 @@
       <button id="ViewUser" *ngIf="actView != 'User'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
       <button id="ViewRestrictUser" *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
       <button id="ViewVariant" *ngIf="actView != 'Variant' && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Variant')">{{ 'vpDetail.btn.viewVariant' | translate }}</button>
-      <button id="ViewLock" *ngIf="actView != 'Lock' && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>
+      <button id="ViewLock" *ngIf="actView != 'Lock' && hasVPPerm(permVP.Modify) && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>
     </div>
 
     <div *ngIf="actView == 'User'" >
@@ -386,7 +386,7 @@
               <label class="form-control-static">{{ 'perm.lblGroupMembers' | translate }}</label>
               <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
                 <div class="col-8 ml-3" *ngIf="member.groupId == actGroup._id">
-                  <a (click)="toggleView('User')" data-dismiss="modal">{{ member.email }}</a>
+                  <a (click)="activateUser(member)" data-dismiss="modal" data-toggle="modal" data-target="#VPUserDetail">{{ member.email }}</a>
                 </div>
               </ng-container>
             </div>
@@ -534,7 +534,7 @@
           <label class="form-control-static mt-2">{{ 'perm.lblGroupMembership' | translate }}</label>
           <ng-container class="row" *ngFor="let member of vgUsers; let memberIndex=index" >
             <div class="col-8 ml-3" *ngIf="member.email == vgUsers[userIndex].email">
-              <a (click)="toggleView('Group')" data-dismiss="modal">{{ member.groupName }}</a>
+              <a (click)="activateGroup(member)" data-dismiss="modal" data-toggle="modal" data-target="#VpGroupModalCreate">{{ member.groupName }}</a>
             </div>
           </ng-container>
 
