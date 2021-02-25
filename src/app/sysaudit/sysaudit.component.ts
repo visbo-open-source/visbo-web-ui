@@ -103,7 +103,7 @@ export class SysauditComponent implements OnInit {
       'isStacked': true,
       'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
     };
-    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux']
+    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -367,6 +367,7 @@ export class SysauditComponent implements OnInit {
     getUserAgent(userAgent: string): string {
       const searchList = ['VISBO Projectboard', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
       let result = 'Unknown';
+      userAgent = userAgent || '';
       for (let i = 0; i < searchList.length; i++) {
         if (userAgent.indexOf(searchList[i]) >= 0) {
           result = searchList[i];
@@ -377,13 +378,17 @@ export class SysauditComponent implements OnInit {
     }
 
     getOSAgent(userAgent: string): number {
-      let result = this.listOS.length;
+      let result = this.listOS.length - 1;
+      userAgent = userAgent || '';
       for (let i = 0; i < this.listOS.length; i++) {
         if (userAgent.indexOf(this.listOS[i]) >= 0) {
           result = i;
           break;
         }
       }
+      // if (result == this.listOS.length - 1) {
+      //   this.log(`Operating System Unknown ${userAgent}`)
+      // }
       return result;
     }
 

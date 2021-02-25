@@ -13,7 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { convertDate, visboCmpDate } from '../_helpers/visbo.helper';
+import { convertDate, visboCmpDate, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewkeymetrics',
@@ -177,7 +177,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initSettings(): void {
-    this.showHistory(false);
+    // this.showHistory(false);
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
@@ -197,11 +197,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
-      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+      // check for dedline in addition to project end
+      result = km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlineDelay') {
-      result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
+      if (km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1) {
+        result = km.timeDelayFinished !== undefined || km.timeDelayUnFinished !== undefined;
+      }
     } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
@@ -242,12 +245,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
         elementKeyMetric.savingCostTotal = Math.round((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
                                                       / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
-        if (elementKeyMetric.savingCostTotal > 100) {
-          elementKeyMetric.savingCostTotal = 100;
-        }
-        if (elementKeyMetric.savingCostTotal < -100) {
-          elementKeyMetric.savingCostTotal = -100;
-        }
+
         elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
         elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                             / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
@@ -298,7 +296,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // search the coresponding version for refDate
       if (this.refDate) {
         for (; i < this.visbokeymetrics.length; i++) {
-          if (visboCmpDate(this.refDate, this.visbokeymetrics[i].timestamp) >= 0) {
+          if (visboCmpDate(this.refDate, new Date(this.visbokeymetrics[i].timestamp)) >= 0) {
             break;
           }
         }
@@ -758,7 +756,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   showHistory(newValue: boolean): void {
     this.history = newValue;
     this.historyButton = this.history ? this.translate.instant('vpKeyMetric.lbl.hideTrend') : this.translate.instant('vpKeyMetric.lbl.showTrend');
-
   }
 
   switchView(newView: string, withKM = false): void {
@@ -771,10 +768,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentView = newView;
     this.currentViewKM  = withKM;
     this.showHistory(false);
-    this.updateUrlParam('view', newView);
+    this.updateUrlParam(withKM ? 'viewKM' : 'view', newView);
   }
 
-  switchTo(metric: string): void {
+  switchToHistory(metric: string): void {
     this.log(`Switch Chart from ${this.typeMetricChart} to ${metric} `);
     this.currentView = 'KeyMetrics';
     this.updateUrlParam('view', this.currentView);
@@ -826,16 +823,26 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  updateUrlParam(type: string, value: string): void {
+  updateUrlParam(type: string, value: string, history = false): void {
     // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
     if (value === undefined) { value = null; }
     const queryParams = new VPParams();
     if (type == 'view') {
       queryParams.view = value;
+    } else if (type == 'viewKM') {
+      queryParams.viewKM = value;
     } else if (type == 'refDate') {
       queryParams.refDate = value;
     }
-    this.switchViewChild.emit(queryParams); //emmiting the event.
+    this.switchViewChild.emit(queryParams); //emmiting the event to update the refDate info in main.
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: !history,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   chartSelectRow(row: number, col: number, label: string): void {
@@ -1064,6 +1071,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

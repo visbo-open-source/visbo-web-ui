@@ -6,6 +6,7 @@ import { AlertService } from '../_services/alert.service';
 import { MessageService } from '../_services/message.service';
 
 import { VGPermission, VGPSYSTEM } from '../_models/visbogroup';
+import { getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-usernavbar',
@@ -38,6 +39,10 @@ export class NavbarComponent implements OnInit {
 
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm?.system & perm) > 0;
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

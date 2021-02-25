@@ -37,7 +37,7 @@
       <button id="ViewUser" *ngIf="actView != 'User'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
       <button id="ViewRestrictUser" *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
       <button id="ViewVariant" *ngIf="actView != 'Variant' && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Variant')">{{ 'vpDetail.btn.viewVariant' | translate }}</button>
-      <button id="ViewLock" *ngIf="actView != 'Lock' && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>
+      <button id="ViewLock" *ngIf="actView != 'Lock' && hasVPPerm(permVP.Modify) && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>
     </div>
 
     <div *ngIf="actView == 'User'" >

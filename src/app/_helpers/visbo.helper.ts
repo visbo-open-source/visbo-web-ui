@@ -91,8 +91,8 @@ export function visboIsToday(refDate: Date): boolean {
 
 export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
   if (!dateA || !dateB) { return false; }
-  let localA = new Date(dateA);
-  let localB = new Date(dateB);
+  const localA = new Date(dateA);
+  const localB = new Date(dateB);
   localA.setHours(0, 0, 0, 0);
   localB.setHours(0, 0, 0, 0);
   return localA.toISOString() === localB.toISOString();
@@ -134,5 +134,17 @@ export function getErrorMessage(error: any): string {
       }
     }
   }
+  return result;
+}
+
+export function getPreView(): boolean {
+  const result = localStorage.getItem('printPreView');
+  return result === '1' ? true : false;
+}
+
+export function switchPreView(): boolean {
+  let result = !getPreView();
+  localStorage.setItem('printPreView', result ? '1' : '0');
+  console.log("Switch PreView", result);
   return result;
 }

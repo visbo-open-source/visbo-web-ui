@@ -5,11 +5,11 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
+        <span *ngIf="dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
           <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
           <div class="dropdown-menu">
             <!-- <a *ngFor="let item of dropDown; let dropDownIndex = index" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a> -->
-            <a *ngFor="let item of dropDown">
+            <a *ngFor="let item of dropDown" title="{{item.email}}">
               <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
               <div *ngIf="!checkVPFActive(item)" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
             </a>
@@ -29,7 +29,7 @@
         <div class="d-none d-lg-block">{{ 'vpfVersion.titleKM' | translate }} {{vpvRefDate | date: 'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM.'}}</div>
       </h3>
-      <div class="col-4 d-print-none">
+      <div *ngIf="!getPreView()" class="col-4 d-print-none">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpfVersion.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(-1)'></span>
           <select *ngIf="statusDirection != undefined" class="col-4 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="row d-print-none">
+    <div *ngIf="!getPreView()" class="row d-print-none">
       <div class="col btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("KeyMetrics")'>{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button>
@@ -102,7 +102,7 @@
             </div>
             <div class="ml-auto">
               <span> {{ 'vpfVersion.lbl.filter' | translate }}:</span>
-              <input class="mb-2 ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+              <input class="mb-2 ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="vpfListFilter" placeholder="Filter">
               <a class="ml-2" (click)="filterVPList(true)"><i class="far fa-times-circle"></i></a>
             </div>
           </div>

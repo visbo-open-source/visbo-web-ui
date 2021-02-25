@@ -16,7 +16,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-visboproject-keymetrics',
@@ -96,6 +96,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
+    this.findVPV(new Date(this.refDate));
+  }
+
+  switchViewParent(newParam: VPParams): void {
+    if (!newParam) return;
+    if (newParam.refDate) {
+      this.findVPV(new Date(newParam.refDate));
+    }
+    if (newParam.view) {
+      this.currentView = newParam.view;
+    }
+    if (newParam.viewKM) {
+      this.currentView = newParam.viewKM;
+      this.currentViewKM = true;
+    }
   }
 
   hasVCPerm(perm: number): boolean {
@@ -146,15 +161,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (this.variantName) {
       this.dropDownIndex = this.dropDown.findIndex(item => item === this.variantName);
-    }
-  }
-
-  switchViewParent(newParam: VPParams): void {
-    if (!newParam) return;
-    if (newParam.view) {
-      this.switchView(newParam.view, true);
-    } else if (newParam.refDate) {
-      this.findVPV(new Date(newParam.refDate));
     }
   }
 
@@ -263,11 +269,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
-      result = km.timeCompletionCurrentTotal > 0 || km.timeCompletionBaseLastTotal > 0;
+      result = km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1;
     } else if (type == 'EndDate') {
       result = km.endDateCurrent != undefined || km.endDateBaseLast != undefined;
     } else if (type === 'DeadlineDelay') {
-      result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      if (km.timeCompletionCurrentTotal > 1 || km.timeCompletionBaseLastTotal > 1) {
+        result = km.timeDelayFinished !== undefined && km.timeDelayUnFinished !== undefined;
+      }
     } else if (type == 'Delivery') {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
@@ -516,6 +524,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */
