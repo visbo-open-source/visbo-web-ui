@@ -662,7 +662,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDrillDown(): void {
     this.log(`Show Drilldown change to ${this.drillDown}`);
-    this.updateUrlParam('drillDown', this.drillDown);
+    this.updateUrlParam('drillDown', this.drillDown.toString());
     this.capaLoad = []; // reset the load indicators
     this.getCapacity();
   }
@@ -682,7 +682,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (type == 'pfv') {
       queryParams.pfv = value;
     } else if (type == 'drillDown') {
-      queryParams.drillDown = value > 0 ? value : undefined;
+      queryParams.drillDown = value == '0' ? undefined : value;
     }
     this.router.navigate([url], {
       queryParams: queryParams,
