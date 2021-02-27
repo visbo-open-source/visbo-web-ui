@@ -59,6 +59,8 @@ export class SysauditComponent implements OnInit {
     sysVCId = '';
     chart = false;
     parentThis = this;
+    divColumnChart1 = "SysAudit_User_div";
+    divColumnChart2 = "SysAudit_Browser_div";
     chartButton = 'Chart';
     graphData = [];
     graphLegend = [
@@ -89,12 +91,19 @@ export class SysauditComponent implements OnInit {
       'curveType': 'function',
       'colors': ['blue', 'red', 'green', 'yellow']
     };
-    graphDataColumnChart = [];
-    graphOptionsColumnChart = {
+    graphDataUserChart = [];
+    graphOptionsUserChart = {
       'title': 'Audit Activity by User',
       'isStacked': true,
       'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
     };
+    graphDataBrowserChart = [];
+    graphOptionsBrowserChart = {
+      'title': 'Audit Activity by User Agent',
+      'isStacked': true,
+      'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
+    };
+    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -157,8 +166,9 @@ export class SysauditComponent implements OnInit {
             this.alertService.success('Successfully accessed Audit', true);
             this.sortTable(undefined);
             this.groupGraphData();
-            this.groupgraphDataLineChart();
-            this.groupgraphDataColumnChart();
+            this.groupgraphDataActivityChart();
+            this.groupgraphDataUserChart();
+            this.groupgraphDataBrowserChart();
           },
           error => {
             this.log(`get Audit failed: error: ${error.status} message: ${error.error.message}`);
@@ -269,7 +279,7 @@ export class SysauditComponent implements OnInit {
       // this.log(`Group Graph Sum Chart Updated`);
     }
 
-    groupgraphDataLineChart(): void {
+    groupgraphDataActivityChart(): void {
       const graphSum = [];
       const graphData = [];
       for (const auditElement in this.audit) {
@@ -308,7 +318,7 @@ export class SysauditComponent implements OnInit {
       this.graphDataLineChart = graphData;
     }
 
-    groupgraphDataColumnChart(): void {
+    groupgraphDataUserChart(): void {
       const graphSum = [];
       const graphData = [];
       for (const auditElement in this.audit) {
@@ -351,7 +361,63 @@ export class SysauditComponent implements OnInit {
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[0])}`);
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[1])}`);
 
-      this.graphDataColumnChart = graphData;
+      this.graphDataUserChart = graphData;
+    }
+
+    getUserAgent(userAgent: string): string {
+      const searchList = ['VISBO Projectboard', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
+      let result = 'Unknown';
+      userAgent = userAgent || '';
+      for (let i = 0; i < searchList.length; i++) {
+        if (userAgent.indexOf(searchList[i]) >= 0) {
+          result = searchList[i];
+          break;
+        }
+      }
+      return result;
+    }
+
+    getOSAgent(userAgent: string): number {
+      let result = this.listOS.length - 1;
+      userAgent = userAgent || '';
+      for (let i = 0; i < this.listOS.length; i++) {
+        if (userAgent.indexOf(this.listOS[i]) >= 0) {
+          result = i;
+          break;
+        }
+      }
+      // if (result == this.listOS.length - 1) {
+      //   this.log(`Operating System Unknown ${userAgent}`)
+      // }
+      return result;
+    }
+
+    groupgraphDataBrowserChart(): void {
+      const graphSum = [];
+      const graphData = [];
+      for (const auditElement in this.audit) {
+        const userAgent = (this.audit[auditElement].userAgent);
+        const browserString = this.getUserAgent(userAgent);
+        const osIndex = this.getOSAgent(userAgent);
+        if (graphSum[browserString] === undefined) {
+          // browserString: ProjectBoard, SmartInfo, Chrome, Firefox, Safari, Postman, Unknown
+          // operatingSystem: Mac, Windows, iOS, Android, Unknown
+          graphSum[browserString] = [browserString, 0, 0, 0, 0, 0, 0, 0, ''];
+        }
+        graphSum[browserString][osIndex + 1] += 1;
+      }
+      for (const graphElement in graphSum) {
+        graphData.push(graphSum[graphElement]);
+      }
+
+      graphData.sort(function(a, b) {
+        const firstSum = a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + a[7];
+        const secondSum = b[1] + b[2] + b[3] + b[4] + b[5] + b[6] + b[7];
+        return firstSum - secondSum;
+      });
+      graphData.push(['UserAgent', this.listOS[0], this.listOS[1], this.listOS[2], this.listOS[3], this.listOS[4], this.listOS[5], this.listOS[6], { role: 'annotation' } ]);
+      graphData.reverse();
+      this.graphDataBrowserChart = graphData;
     }
 
     auditGroup(audit: VisboAudit, match: string): boolean {

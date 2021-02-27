@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-white bg-light sticky-top">
+<nav *ngIf="!getPreView()" class="navbar navbar-expand-md navbar-white bg-light sticky-top">
   <a class="navbar-brand bg-light " (click)="gotoClickedItem('dashboard')">{{ 'navbar.visbo' | translate }}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMainNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
     <i class="fas fa-bars"></i>

@@ -273,7 +273,8 @@
 			"versions": "# Versions",
 			"vc": "VISBO Center",
 			"detail": "Detail",
-			"description": "Description"
+			"description": "Description",
+			"type": "Type"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -287,12 +288,12 @@
 			"viewCapacity": "Capacity",
 			"viewProjectBoard": "Project Board",
 			"viewList": "List",
-			"create": "New project",
+			"create": "Add",
 			"save": "Save",
 			"cancel": "Cancel"
 		},
 		"msg": {
-			"createSuccess": "VISBO Project {{name}} created successfully",
+			"createSuccess": "VISBO {{vpType}} {{name}} created successfully",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVC": "Permission denied for this VISBO Center",
 			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
@@ -470,6 +471,7 @@
 		"lbl": {
 			"project": "Project",
 			"name": "Name",
+			"defaultVariant": "Standard",
 			"value": "Value",
 			"info": "Info",
 			"startDate": "Start of Project",
@@ -482,7 +484,7 @@
 			"weeksAhead": "Weeks Ahead",
 			"weeksDelay": "Weeks Delay",
 			"inTime": "in Time",
-			"status": "Status of",
+			"status": "Status",
 			"keyMetric": "Metric",
 			"planToDate": "Plan-to-Date",
 			"total": "Total",
@@ -551,7 +553,7 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
-	"ViewCapacity": {				
+	"ViewCapacity": {
 		"titleCapacity": "Capacity Utilisation - Timespam:",
 		"titleBox": "Capacity per Month in Timerange",
 		"title1": "Orga Unit",
@@ -560,22 +562,29 @@
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",
-		"titleCapaOverTime":"Workload: Capacity vs. Cost",
-		"internCapaPT": "Internal Capacity ",
-		"totalCapaPT": "Total Capacity",
-		"actualCostPT": "Actual Cost",
-		"plannedCostPT": "Planned Cost",
-		"roleName": "Role",		
-		"budgetPT": "Baseline",
-		"budgetBase": "",		
+		"titleCapaOverTime":"Workload of {{roleName}}: Capacity vs. Cost for {{name}}",
+		"titleCapaOverTimeBL":"Workload of {{roleName}}: Baseline vs. Cost for {{name}}",
 		"lbl": {
 			"totalCost": "Total Cost",
-			"totalCapa": "Total Capacity",
-			"totalCostPT": "Total Workload",
-			"totalCapaPT": "Total Capacity",
+			"totalCapa": "Capacity",
+			"totalCostPT": "Baseline Workload",
+			"internCapa": "Internal Capacity ",
+			"actualCost": "Actual Cost",
+			"cost": "Cost",
+			"diffCost": "Deviation",
+			"fractionCost": "Share",
+			"budgetPT": "Baseline",
+			"budget": "Baseline",
+			"roleName": "Role",
+			"project": "Project",
 			"pd": "PD",
 			"euro": "Euro",
-			"refPFV": "Compare against Order"
+			"keuro": "T€",
+			"refPFV": "Compare against Order",
+			"showDrill": "View",
+			"drillNone": "Actual & Plan",
+			"drillOrga": "Organisation Units",
+			"drillProject": "Projects"
 		},
 		"btn": {
 			"back": "Back",
@@ -609,6 +618,7 @@
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
 			"bac": "Total Cost (Baseline)",
+			"pv": "Cost (Baseline)",
 			"endDate": "End of Project",
 			"deadlines": "Deadlines (Baseline)",
 			"deliveries": "Deliveries (Baseline)",
@@ -746,6 +756,7 @@
 	"vpv": {
 		"title": "Project Versions",
 		"titleVP": "Project Versions in",
+		"titleVC": "VISBO Center",
 		"titleDetailVPV": "Information about Version",
 		"titleDeleteVPV": "Delete this Project Version",
 		"lbl": {
@@ -755,7 +766,9 @@
 			"timestamp": "Timestamp",
 			"updatedAt": "Changed",
 			"status": "Status",
+			"startDate": "Start Date",
 			"endDate": "End Date",
+			"bu": "Business Unit",
 			"trafficlight": "Traffic Light",
 			"budget": "Budget",
 			"variant": "Variant",
@@ -793,24 +806,48 @@
 		"titleKM": "Key Metrics from",
 		"titleKMShort": "Metrics from",
 		"titleRessourceChange": "Change Ressource",
+		"titleVPList": "Project list for {{name}} from {{from}}",
+		"titleChangeVPVariant": "Change of Variant in the Portfolio List",
 		"lbl": {
 			"day": "day",
 			"week": "week",
 			"month": "month",
 			"quarter": "quarter",
 			"previousPeriod": "Periode before {{refDate}}",
-			"nextPeriod": "Periode after {{refDate}}"
+			"nextPeriod": "Periode after {{refDate}}",
+			"name": "Project",
+			"variant": "Variant",
+			"modified": "Modified",
+			"filter": "Filter",
+			"defaultVariant": "Standard",
+			"nrOfItems": "Nr. of Projects",
+			"user": "Created by",
+			"from": "From",
+			"isChecked": "Selected",
+			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewList": "List",
-			"viewProjectBoard": "Project Board"
+			"editPFList": "Edit Portfolio List",
+			"viewProjectBoard": "Project Board",
+			"update": "Change",
+			"create": "Create",
+			"delete": "Delete",
+			"back": "Back"
 		},
 		"msg": {
+			"changeVPVariant": "Do you want to change {{count}} Projects to Variant {{name}}?",
+			"changeVPVariantStandard": "Do you want to change {{count}} Projects back to default?",
+			"createVPFSuccess": "Portfolio {{name}}: List was saved successfully",
+			"removeVPFSuccess": "Portfolio {{name}}: List from {{from}} was deleted successfully",
+			"noProjectList": "This portfolio does not have a project list",
 			"noVersions": "No Project Versions related to this Date",
+			"removeVPFConfirm": "Do you really want to remove this Portfolio Project List?",
 			"errorPermVP": "No Permission for this Proects",
 			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
+			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List",
 			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
 		}
 	},
@@ -931,6 +968,9 @@
 		}
 	},
 	"keyMetrics": {
+		"shortRAC": "RAC",
+		"baselineRAC": "in % of RAC",
+		"longRAC": "Revenue at Completion",
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",
 		"shortBAC": "BAC",

@@ -14,7 +14,7 @@ import { VPParams } from '../_models/visboproject';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboIsToday } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 class Metric {
   name: string;
@@ -237,7 +237,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.metricX = this.getMetric(metricX, metricY, false).metric;
     this.metricY = this.getMetric(metricY, this.metricX, false).metric;
     this.refDate = refDate ? new Date(refDate) : new Date();
-    this.filter = filter;
+    if (filter) {
+      this.filter = filter;
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -263,6 +265,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const queryParams = new VPFParams();
     if (type == 'filter') {
       queryParams.filter = value;
+      localStorage.setItem('vpfFilter', value || '');
     } else if (type == 'metricX' || type == 'metricY') {
       queryParams.metricX = this.metricX;
       queryParams.metricY = this.metricY;
@@ -304,6 +307,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
       ) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
         elementKeyMetric.name = this.visboprojectversions[item].name;
@@ -319,9 +323,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
           this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
           this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
-          this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 0;
-          this.hasKMDeadlineDelay = this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
-                                    || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined;
+          this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1;
+          this.hasKMDeadlineDelay = (this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1)
+                    && (this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
+                        || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined);
           this.hasKMDeliveryDelay = this.hasKMDeliveryDelay || elementKeyMetric.keyMetrics.deliverableDelayFinished != undefined
                                     || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
           this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
@@ -852,39 +857,51 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       });
     } else if (this.sortColumn === 3) {
       this.visbokeymetrics.sort(function(a, b) {
-        return a.keyMetrics.costBaseLastTotal - b.keyMetrics.costBaseLastTotal;
+        return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0);
       });
     } else if (this.sortColumn === 4) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
     } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics.endDateBaseLast, b.keyMetrics.endDateBaseLast); });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 7) {
       this.visbokeymetrics.sort(function(a, b) {
-        return a.keyMetrics.timeCompletionBaseLastActual - b.keyMetrics.timeCompletionBaseLastActual;
+        return (a.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.keyMetrics?.timeCompletionBaseLastActual || 0);
       });
     } else if (this.sortColumn === 8) {
       this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
     } else if (this.sortColumn === 9) {
       this.visbokeymetrics.sort(function(a, b) {
-        return a.keyMetrics.deliverableCompletionBaseLastActual - b.keyMetrics.deliverableCompletionBaseLastActual;
+        return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0);
       });
     } else if (this.sortColumn === 10) {
-      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics.timeDelayFinished || 0) - (b.keyMetrics.timeDelayFinished || 0); });
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
     } else if (this.sortColumn === 11) {
-      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics.timeDelayUnFinished || 0) - (b.keyMetrics.timeDelayUnFinished || 0);});
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0);});
     } else if (this.sortColumn === 12) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
     } else if (this.sortColumn === 13) {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortColumn === 14) {
       this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
+    } else if (this.sortColumn === 15) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.savingCostActual - b.savingCostActual;
+      });
+    } else if (this.sortColumn === 16) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
+      });
     }
 
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

@@ -7,7 +7,7 @@
           <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
           <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
           <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
-          <th class="d-none d-md-table-cell">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
+          <th *ngIf="!getPreView()" class="d-none d-md-table-cell d-print-none">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
         </tr>
       </thead>
       <!--Table body-->
@@ -33,13 +33,13 @@
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
             </a>
           </td>
-          <td><a>
-            <button type="button" class="btn" (click)="switchTo('Cost')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no"><a>
+            <button type="button" class="btn" (click)="switchToHistory('Cost')" title="{{historyButton}}">i</button>
           </a></td>
         </tr>
 
         <tr *ngIf="vpvKeyMetricActive.keyMetrics.endDateBaseLast != undefined">
-          <td (click)="switchTo('EndDate')">
+          <td (click)="switchToHistory('EndDate')">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
                 selected: typeMetricChart == 'EndDate',
                 text: 'vpKeyMetric.lbl.metricEndDate' | translate } " >
@@ -47,14 +47,14 @@
           </td>
           <td></td>
           <td title="{{ 'vpKeyMetric.lbl.baselineEndDate' | translate }}: {{vpvKeyMetricActive.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}">
-            <a (click)="switchTo('EndDate')">
+            <a (click)="switchToHistory('EndDate')">
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
               <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
               <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
             </a>
           </td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('EndDate')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no">
+            <button type="button" class="btn" (click)="switchToHistory('EndDate')" title="{{historyButton}}">i</button>
           </td>
         </tr>
 
@@ -85,13 +85,13 @@
                 ({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}}
                 {{ 'vpKeyMetric.lbl.missing' | translate }})
               </span>
-              <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >
+              <!-- <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >
                 ({{ 'vpKeyMetric.lbl.inPlan' | translate }})
-              </span>
+              </span> -->
             </a>
           </td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('Deadline')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no">
+            <button type="button" class="btn" (click)="switchToHistory('Deadline')" title="{{historyButton}}">i</button>
           </td>
         </tr>
 
@@ -116,10 +116,10 @@
           <td (click)="switchView('Delivery', true)"><a>
             <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
             <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-            <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span>
+            <!-- <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span> -->
           </a></td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('Delivery')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no">
+            <button type="button" class="btn" (click)="switchToHistory('Delivery')" title="{{historyButton}}">i</button>
           </td>
         </tr>
 
@@ -127,7 +127,7 @@
           <th></th>
           <th>{{ 'vpKeyMetric.lbl.finished' | translate }}</th>
           <th>{{ 'vpKeyMetric.lbl.unfinished' | translate }}</th>
-          <th></th>
+          <th *ngIf="!getPreView()" class="d-print-no"></th>
         </tr>
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')">
           <td (click)="switchView('Deadline', true)">
@@ -148,8 +148,8 @@
               <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
             </div>
           </a></td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('DeadlineDelay')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no">
+            <button type="button" class="btn" (click)="switchToHistory('DeadlineDelay')" title="{{historyButton}}">i</button>
           </td>
         </tr>
 
@@ -172,8 +172,8 @@
               <span> {{vpvKeyMetricActive.keyMetrics.deliverableDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
             </div>
           </a></td>
-          <td>
-            <button type="button" class="btn" (click)="switchTo('DeliveryDelay')" title="{{historyButton}}">i</button>
+          <td *ngIf="!getPreView()" class="d-print-no">
+            <button type="button" class="btn" (click)="switchToHistory('DeliveryDelay')" title="{{historyButton}}">i</button>
           </td>
         </tr>
       </tbody>

@@ -342,6 +342,20 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return perm;
   }
 
+  activateGroup(userGroup: VGUserGroup): void {
+    this.log(`Activate Group : ${userGroup.groupName}`);
+    const group = this.vgGroups.find(item => item.name == userGroup.groupName);
+    this.initGroup(group);
+  }
+
+  activateUser(userGroup: VGUserGroup): void {
+    this.log(`Activate User : ${userGroup.email}`);
+    const memberIndex = this.vgUsers.findIndex(item => item.email == userGroup.email)
+    if (memberIndex >= 0) {
+      this.calcCombinedPerm(memberIndex);
+    }
+  }
+
   initGroup(curGroup: VGGroup): void {
 
     this.actGroup = new VGGroupExpanded();

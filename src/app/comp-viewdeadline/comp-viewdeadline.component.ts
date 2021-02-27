@@ -13,7 +13,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewdeadline',
@@ -186,8 +186,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       this.hierarchyDeadline = [];
       return;
     }
-
-    this.filterPath = this.getFullPath(this.allDeadline[0]);
+    // set the filter to the root, as the restricted user might not see this.
+    this.filterPath = ['.'];
     // generate long Names
     for (let i = 0; i < this.allDeadline.length; i++) {
       this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
@@ -576,6 +576,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     if (!this.sortAscendingDeadline) {
       this.filteredDeadline.reverse();
     }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */
