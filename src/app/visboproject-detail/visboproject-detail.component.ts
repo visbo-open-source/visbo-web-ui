@@ -175,7 +175,7 @@ export class VisboprojectDetailComponent implements OnInit {
           this.alertService.success(message, true);
           this.log(`delete VP success`);
           // could not use go back as it is used from different places and produces access denied if it returns to KeyMetrics View
-          this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
+          this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { view: 'Deleted' }} : {});
         },
         error => {
           this.log(`delete VP failed: error: ${error.status} message: ${error.error.message}`);

@@ -274,7 +274,8 @@
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Beschreibung",
-			"type": "Typ"
+			"type": "Typ",
+			"view": "Zeige"
 		},
 		"type": {
 			"vpType0": "Projekt",
@@ -282,8 +283,11 @@
 			"vpType2": "Vorlage"
 		},
 		"btn": {
+			"showDefault": "Portfolio & Projekt",
+			"showCockpit": "Cockpit",
+			"showPortfolio": "Portfolio",
+			"showTemplate": "Vorlage",
 			"showDeleted": "Gelöschte",
-			"showExisting": "Nicht gelöschte",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",

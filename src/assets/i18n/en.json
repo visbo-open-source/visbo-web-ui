@@ -274,7 +274,8 @@
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Description",
-			"type": "Type"
+			"type": "Type",
+			"view": "View"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -282,8 +283,11 @@
 			"vpType2": "Template"
 		},
 		"btn": {
+			"showDefault": "Portfolio & Projekt",
+			"showCockpit": "Cockpit",
+			"showPortfolio": "Portfolio",
+			"showTemplate": "Template",
 			"showDeleted": "Show deleted",
-			"showExisting": "Show existing",
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewProjectBoard": "Project Board",
