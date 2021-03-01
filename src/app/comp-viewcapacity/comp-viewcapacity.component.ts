@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
+import * as XLSX from 'xlsx';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -23,6 +24,9 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
             from '../_helpers/visbo.helper';
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 class CapaLoad {
   uid: number;
@@ -380,8 +384,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapacityChild = [];
             } else {
               this.log(`Store VC Project Capacity for Len ${visbocenter.capacity.length}`);
-              this.visboCapacity = visbocenter.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacityChild = visbocenter.capacity.filter(item => item.vpid != undefined);
+              let capacity = visbocenter.capacity.filter(item => item.vpid == undefined);
+              this.visboCapacity = this.filterRange(capacity);
+              capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
+              this.visboCapacityChild = this.filterRange(capacity);
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -409,8 +415,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapacity = [];
             } else {
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
-              this.visboCapacity = vp.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacityChild = vp.capacity.filter(item => item.vpid != undefined);
+              let capacity = vp.capacity.filter(item => item.vpid == undefined);
+              this.visboCapacity = this.filterRange(capacity);
+              capacity = vp.capacity.filter(item => item.vpid != undefined);
+              this.visboCapacityChild = this.filterRange(capacity);
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -526,6 +534,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         );
     }
+  }
+
+  filterRange(capacity: VisboCapacity[]): VisboCapacity[] {
+    let filteredCapacity: VisboCapacity[] = [];
+    capacity && capacity.forEach(element => {
+      const current = new Date(element.month);
+      if (current.getTime() >= this.capacityFrom.getTime() &&
+        current.getTime() <= this.capacityTo.getTime() ) {
+          filteredCapacity.push(element);
+        }
+    });
+    return filteredCapacity;
   }
 
   checkCostAvailable(capacity: VisboCapacity[]): void {
@@ -1682,6 +1702,58 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return resultLeaf;
   }
 
+  exportExcel(): void {
+    this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
+    // MS TODO: convert list to matix
+
+    let excel: VisboCapacity[];
+    excel = [];
+
+    if (this.visboCapacity) {
+      this.visboCapacity.forEach(element => {
+        excel.push(element);
+      });
+    }
+    if (this.visboCapacityChild) {
+      this.visboCapacityChild.forEach(element => {
+        excel.push(element);
+      });
+    }
+    this.log(`Export Data to Excel ${excel.length}`);
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    let name = '';
+    if (this.vpfActive) {
+      name = this.vpfActive.name
+    } else if (this.vpActive) {
+      name = this.vpActive.name;
+    } else if (this.vcActive) {
+      name = this.vcActive.name;
+    }
+    const fileName = ''.concat(
+      actDate.getFullYear(),
+      '_',
+      ('00' + (actDate.getMonth() + 1)).slice(-2),
+      '_',
+      ('00' + actDate.getDate()).slice(-2),
+      '_Capacity ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   parseDate(dateString: string): Date {
      if (dateString) {
        const actDate = new Date(dateString);
@@ -1698,6 +1770,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
+    console.log('CompVisboViewCapcity:', message);
     this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 

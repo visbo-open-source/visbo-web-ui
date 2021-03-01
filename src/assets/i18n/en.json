@@ -836,6 +836,7 @@
 			"viewList": "List",
 			"editPFList": "Edit Portfolio List",
 			"viewProjectBoard": "Project Board",
+			"exportExcel": "Excel",
 			"update": "Change",
 			"create": "Create",
 			"delete": "Delete",
