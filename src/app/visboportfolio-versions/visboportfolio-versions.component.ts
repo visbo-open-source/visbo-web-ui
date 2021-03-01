@@ -176,9 +176,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.alertService.error(getErrorMessage(error));
         }
       );
-
-
   }
+
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       // check if Orga is available
@@ -216,6 +215,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
             this.dropDownInit();
             this.getVisboPortfolioKeyMetrics();
             this.log(`get VPF Length ${this.visboportfolioversions.length}`);
+          } else if (this.hasVPPerm(this.permVP.Modify)) {
+            // initiate the edit if user has permission
+            document.getElementById("editVPFList").click();
           }
         },
         error => {
@@ -537,6 +539,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           if (index >= 0) {
             this.dropDownInit()
             this.switchPFVersion(index);
+          } else {
+            this.switchPFVersion(undefined);
+            this.getVisboPortfolioVersions();
           }
           this.alertService.success(message);
         },
@@ -752,9 +757,14 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   switchPFVersion(i: number): void {
     this.log(`Change Drop Down ${i} `);
-    this.vpfActive = this.visboportfolioversions[i];
-    this.dropDownVariantSelected = this.vpfActive.variantName;
-    this.getVisboPortfolioKeyMetrics();
+    if (i >= 0 && i < this.visboportfolioversions.length) {
+      this.vpfActive = this.visboportfolioversions[i];
+      this.dropDownVariantSelected = this.vpfActive.variantName;
+      this.getVisboPortfolioKeyMetrics();
+    } else {
+      this.vpfActive = undefined;
+      this.visboprojectversions = undefined;
+    }
 
     // MS TODO: do we have to reset the refDate???
     this.changeView(undefined, undefined, undefined, this.vpfActive._id)
