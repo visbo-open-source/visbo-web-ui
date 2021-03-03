@@ -24,13 +24,13 @@
     </div>
   </div>
 
-  <div *ngIf="vpvActive && !getPreView()" class="d-print-none">
+  <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
-      <div class="col-6">
+      <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select *ngIf="statusDirection != undefined" class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
