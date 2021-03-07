@@ -828,6 +828,7 @@
 			"user": "Erstellt von",
 			"from": "Vom",
 			"isChecked": "Ausgewählt",
+			"noKM": "Keine Baseline",
 			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {

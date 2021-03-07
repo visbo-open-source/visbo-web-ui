@@ -828,6 +828,7 @@
 			"user": "Created by",
 			"from": "From",
 			"isChecked": "Selected",
+			"noKM": "No Baseline",
 			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {

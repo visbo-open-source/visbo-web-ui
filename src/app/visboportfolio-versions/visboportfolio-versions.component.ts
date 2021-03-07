@@ -640,6 +640,15 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     });
   }
 
+  getKM(vp: VisboProject): number {
+    const vpv = this.visboprojectversions?.find(item => item.vpid.toString() == vp._id.toString())
+    let result = 0;
+    if (vpv) {
+      result = vpv.keyMetrics ? 0 : 2;
+    }
+    return result;
+  }
+
   isVersionMismatch(): boolean {
     let result = false;
     if (!this.vpList || !this.vpfActive || !this.vpfActive.allItems) { return result; }

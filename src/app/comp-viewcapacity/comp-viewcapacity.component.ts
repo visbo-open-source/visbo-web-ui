@@ -1693,6 +1693,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return resultLeaf;
   }
 
+  generateMatrix(width: number, len: number): string {
+    const startLetter = 'A';
+    const endLetter = String.fromCharCode(startLetter.charCodeAt(0) + width);
+    const startNumber = 1
+    const endNumber = startNumber + len;
+    return ''.concat(startLetter, startNumber.toString(), ':', endLetter, endNumber.toString());
+  }
+
   exportExcel(): void {
     this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
     // MS TODO: convert list to matix
@@ -1702,20 +1710,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     if (this.visboCapacity) {
       this.visboCapacity.forEach(element => {
+        element.month = new Date(element.month);
         excel.push(element);
       });
     }
     if (this.visboCapacityChild) {
       this.visboCapacityChild.forEach(element => {
+        element.month = new Date(element.month);
         excel.push(element);
       });
     }
-    this.log(`Export Data to Excel ${excel.length}`);
+    const len = excel.length;
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel);
-    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const actDate = new Date();
+    let width = 0;
+    for (let item in excel[0]) {
+      width += 1;
+    }
+    const matrix = this.generateMatrix(width, len);
     let name = '';
     if (this.vpfActive) {
       name = this.vpfActive.name
@@ -1724,6 +1735,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vcActive) {
       name = this.vcActive.name;
     }
+    this.log(`Export Data to Excel ${excel.length}`);
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel);
+    worksheet['!autofilter'] = { ref: matrix };
+    const workbook: XLSX.WorkBook = { Sheets: { 'Capacity': worksheet }, SheetNames: ['Capacity'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
     const fileName = ''.concat(
       actDate.getFullYear().toString(),
       '_',

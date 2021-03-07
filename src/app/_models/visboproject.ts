@@ -94,3 +94,16 @@ export class VPParams {
   to: string;
   drillDown: string;
 }
+
+export interface CreateProjectProperty {
+  vcid: string;
+  vpType: number;
+  name: string;
+  description?: string;
+  startDate?: Date;
+  endDate?: Date;
+  templateID?: string;
+  bac?: number;
+  rac?: number;
+  businessUnit?: string;
+}

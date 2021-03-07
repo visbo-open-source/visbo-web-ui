@@ -8,7 +8,7 @@ import { TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -38,7 +38,7 @@ export class VisboProjectsComponent implements OnInit {
   visboprojectsAll: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
-  addVPType = 0;
+  newVP: CreateProjectProperty;
   dropDownVPType: DropDown[];
   viewMode = 'Default';
 
@@ -249,17 +249,34 @@ export class VisboProjectsComponent implements OnInit {
     this.updateUrlParam('view', this.viewMode);
   }
 
-  addproject(name: string, vcid: string, desc: string, type: number): void {
-    name = name.trim();
-    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} `);
-    if (!name) { return; }
-    if (type != 1 && type != 2) { type = 0 }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid, vpType: type } as VisboProject).subscribe(
+  initCreateVP(): void {
+      this.newVP = { name: '', vcid: this.vcActive?._id, vpType: 0};
+  }
+
+  addproject(): void {
+    this.newVP.name = this.newVP.name.trim();
+    this.log(`Create VP newVP: ${JSON.stringify(this.newVP)}`);
+    if (!this.newVP.name) { return; }
+    if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
+    // dummy code to test additional properties find the first Template and create with start and end date
+    let vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
+    if (vpTemplate) {
+      this.newVP.templateID = vpTemplate._id;
+      let actDate = new Date();
+      actDate.setHours(0, 0, 0, 0);
+      this.newVP.startDate = new Date(actDate);
+      actDate.setMonth(actDate.getMonth() + 14);
+      this.newVP.endDate = actDate;
+      this.newVP.bac = 600;
+      this.newVP.rac = 660;
+    }
+
+    this.visboprojectService.addVisboProject(this.newVP).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        const vpType = this.translate.instant('vp.type.vpType'.concat(type.toString()));
+        const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
         const message = this.translate.instant('vp.msg.createSuccess', {name: vp.name, vpType: vpType});
         this.alertService.success(message, true);
         this.gotoClickedRow(vp);
@@ -277,7 +294,6 @@ export class VisboProjectsComponent implements OnInit {
         }
       }
     );
-    this.addVPType = 0;
   }
 
   getVisboProjectKeyMetrics(): void {
@@ -419,7 +435,6 @@ export class VisboProjectsComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log("VisboProject:", message);
     this.messageService.add('VisboProject: ' + message);
   }
 }

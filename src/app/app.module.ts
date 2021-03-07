@@ -30,7 +30,6 @@ import { AlertService } from './_services/alert.service';
 
 import { NavbarComponent } from './navbar/navbar.component';
 
-import { MessagesComponent } from './messages/messages.component';
 import { LogoutTimerComponent } from './logouttimer/logouttimer.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './userprofile/userprofile.component';
@@ -111,7 +110,6 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,
-    MessagesComponent,
     LogoutTimerComponent,
     SettingsComponent,
     UserProfileComponent,

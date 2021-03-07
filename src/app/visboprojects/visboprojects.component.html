@@ -17,7 +17,7 @@
         <option *ngFor="let item of dropDownVPType" value="{{item.id}}">{{item.name}}</option>
       </select>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button id="CreateVP" type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
+        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='initCreateVP()' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
     <div class='container-fluid'></div>
@@ -83,7 +83,7 @@
   </div>
 
   <!-- Modal VP Create-->
-  <div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
+  <div *ngIf="newVP" class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -96,7 +96,7 @@
           <form>
             <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
               <label for="type" class="col-form-label">{{ 'vp.lbl.type' | translate }}:</label>
-              <select id="addVPType" class="form-control" name="addVPType" [(ngModel)]="addVPType">
+              <select id="CreateVPType" class="form-control" name="vpType" [(ngModel)]="newVP.vpType">
                 <option value=0>{{ 'vp.type.vpType0' | translate }}</option>
                 <option value=1>{{ 'vp.type.vpType1' | translate }}</option>
                 <!-- <option value=2>{{ 'vp.type.vpType2' | translate }}</option> -->
@@ -105,17 +105,17 @@
 
             <div class="form-group">
               <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
-              <input id="CreateVPName" type="text" class="form-control" #vpName>
+              <input id="CreateVPName" type="text" class="form-control" name="name" [(ngModel)]="newVP.name">
             </div>
             <div class="form-group">
               <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
-              <textarea id="CreateVPDesc" class="form-control" #vpDescription></textarea>
+              <textarea id="CreateVPDesc" class="form-control" name="description" [(ngModel)]="newVP.description"></textarea>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
-          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, addVPType); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
+          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject()" data-dismiss="modal">
             {{ 'vp.btn.save' | translate }}
           </button>
         </div>

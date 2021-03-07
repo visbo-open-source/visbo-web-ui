@@ -124,7 +124,10 @@
                 <td id="ColChecked">
                   <input type="checkbox" [(ngModel)]="item.isChecked">
                 </td>
-                <td id="ColName"><a>{{item.vp.name}}</a></td>
+                <td id="ColName" (click)="item.isChecked = !item.isChecked">
+                  <a>{{item.vp.name}}</a>
+                  <ng-container *ngTemplateOutlet="indicator; context:{level: getKM(item.vp), title: 'vpfVersion.lbl.noKM'}"></ng-container>
+                </td>
                 <td *ngIf="!item.hasVariants" id="ColName"></td>
                 <td *ngIf="item.hasVariants" id="ColName">
                   <div class="row">
@@ -148,6 +151,10 @@
       </div>
     </div>
   </div>
+
+  <ng-template #indicator let-level="level" let-title="title">
+    <i class="fa ml-2" [ngClass]="{'fa-exclamation-triangle text-warning': level == 2}"  title="{{title | translate}}"></i>
+  </ng-template>
 
   <!-- Modal Delete VPF List Confirm -->
   <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">

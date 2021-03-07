@@ -386,7 +386,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   thinDownMetricList(): void {
-    if (this.metricListFiltered) {
+    if (!this.metricList || this.metricListFiltered) {
       // filter the metric list only once in the beginning, but not during filtering projects
       return;
     }
