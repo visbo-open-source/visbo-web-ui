@@ -274,7 +274,8 @@
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Description",
-			"type": "Type"
+			"type": "Type",
+			"view": "View"
 		},
 		"type": {
 			"vpType0": "Project",
@@ -282,8 +283,11 @@
 			"vpType2": "Template"
 		},
 		"btn": {
+			"showDefault": "Portfolio & Projekt",
+			"showCockpit": "Cockpit",
+			"showPortfolio": "Portfolio",
+			"showTemplate": "Template",
 			"showDeleted": "Show deleted",
-			"showExisting": "Show existing",
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewProjectBoard": "Project Board",
@@ -342,6 +346,7 @@
 			"expires": "Expires",
 			"lock": "Lock",
 			"variant": "Variant",
+			"variantDescription": "Description",
 			"versions": "Versions",
 			"ofTotal": "of total",
 			"unlock": "Unlock",
@@ -565,16 +570,26 @@
 		"titleCapaOverTime":"Workload of {{roleName}}: Capacity vs. Cost for {{name}}",
 		"titleCapaOverTimeBL":"Workload of {{roleName}}: Baseline vs. Cost for {{name}}",
 		"lbl": {
+			"month": "Month",
 			"totalCost": "Total Cost",
 			"totalCapa": "Capacity",
+			"baselineCost": "Baseline Cost",
+			"baselineCost_PT": "Baseline Workload",
 			"totalCostPT": "Baseline Workload",
-			"internCapa": "Internal Capacity ",
+			"internCapa": "Internal Capacity",
+			"internCapa": "Internal Capacity (PD)",
+			"externCapa_PT": "External Capacity",
+			"externCapa_PT": "External Capacity (PD)",
 			"actualCost": "Actual Cost",
+			"actualCost_PT": "Actual Workload",
+			"plannedCost": "Planned Cost",
+			"plannedCost_PT": "Planned Workload",
 			"cost": "Cost",
 			"diffCost": "Deviation",
 			"fractionCost": "Share",
 			"budgetPT": "Baseline",
 			"budget": "Baseline",
+			"roleID": "Role(ID)",
 			"roleName": "Role",
 			"project": "Project",
 			"pd": "PD",
@@ -824,6 +839,7 @@
 			"user": "Created by",
 			"from": "From",
 			"isChecked": "Selected",
+			"noKM": "No Baseline",
 			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {
@@ -832,6 +848,7 @@
 			"viewList": "List",
 			"editPFList": "Edit Portfolio List",
 			"viewProjectBoard": "Project Board",
+			"exportExcel": "Excel",
 			"update": "Change",
 			"create": "Create",
 			"delete": "Delete",
@@ -898,7 +915,7 @@
 		},
 		"btn": {
 			"filter": "Filter",
-			"download": "Download",
+			"download": "Excel",
 			"more": "More",
 			"less": "Less",
 			"back": "Back"
@@ -956,7 +973,7 @@
 		},
 		"btn": {
 			"filter": "Filter",
-			"download": "Download",
+			"download": "Excel",
 			"more": "More",
 			"less": "Less",
 			"back": "Back"

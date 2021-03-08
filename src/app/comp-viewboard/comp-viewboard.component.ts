@@ -12,7 +12,7 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VPParams } from '../_models/visboproject';
 
-import { visboCmpString, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -119,7 +119,16 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
+    this.vps.sort(function(a, b) {
+      let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
+      if (result == 0) {
+        result = visboCmpDate(b.startDate, a.startDate);
+      }
+      if (result == 0) {
+        result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
+      }
+      return result;
+    });
 
     const filter = this.filter ? this.filter.toLowerCase() : undefined;
     for (let i = 0; i < this.vps.length; i++) {

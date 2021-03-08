@@ -6,14 +6,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboProject, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse, VPVariant, VPVariantResponse } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse, VPVariant, VPVariantResponse } from '../_models/visboproject';
 import { VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 
 import { MessageService } from './message.service';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable()
 export class VisboProjectService {
@@ -146,8 +142,13 @@ export class VisboProjectService {
   //////// Save methods //////////
 
   /** POST: add a new Visbo Project to the server */
-  addVisboProject (visboproject: VisboProject): Observable<VisboProject> {
-    return this.http.post<VisboProjectResponse>(this.vpUrl, visboproject, httpOptions)
+  addVisboProject (newVP: CreateProjectProperty): Observable<VisboProject> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (newVP.templateID) {
+      params = params.append('vpid', newVP.templateID);
+    }
+    return this.http.post<VisboProjectResponse>(this.vpUrl, newVP, { headers , params })
       .pipe(
         map(response => response.vp[0] ),
         tap(vp => this.log(`added VisboProject with id=${vp._id}`)),
@@ -353,18 +354,15 @@ export class VisboProjectService {
   }
 
   /** POST: add a new Variant to the Visbo Project */
-  createVariant (name: string, vpid: string, sysadmin = false): Observable<VPVariant> {
+  createVariant (variant: VPVariant, vpid: string, sysadmin = false): Observable<VPVariant> {
     const url = `${this.vpUrl}/${vpid}/variant`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
-    const reqBody = {
-      variantName: name
-    };
     this.log(`Calling HTTP Request: ${url} for ${name} `);
-    return this.http.post<VPVariantResponse>(url, reqBody, { headers , params })
+    return this.http.post<VPVariantResponse>(url, variant, { headers , params })
       .pipe(
         map(response => response.variant[0]),
         tap(variant => this.log(`added VP Variant with id=${variant._id}`)),

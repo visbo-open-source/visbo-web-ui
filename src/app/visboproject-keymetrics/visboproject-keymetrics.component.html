@@ -4,12 +4,12 @@
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
+        <span *ngIf="dropDownIndex > 0" class="ml-1" title="{{dropDown[dropDownIndex].description}}"> ({{dropDown[dropDownIndex].variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
           <div class="dropdown-menu">
             <div *ngFor="let item of dropDown">
-              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.variantName }}</a>
             </div>
           </div>
         </span>
@@ -17,6 +17,9 @@
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
         </small>
       </h2>
+      <div *ngIf="dropDownIndex > 0">
+        {{ dropDown[dropDownIndex].description }}
+      </div>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
         <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
         <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
@@ -24,13 +27,13 @@
     </div>
   </div>
 
-  <div *ngIf="vpvActive && !getPreView()" class="d-print-none">
+  <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
         <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
-      <div class="col-6">
+      <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select *ngIf="statusDirection != undefined" class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">

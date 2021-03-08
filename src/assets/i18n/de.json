@@ -274,7 +274,8 @@
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Beschreibung",
-			"type": "Typ"
+			"type": "Typ",
+			"view": "Zeige"
 		},
 		"type": {
 			"vpType0": "Projekt",
@@ -282,8 +283,11 @@
 			"vpType2": "Vorlage"
 		},
 		"btn": {
+			"showDefault": "Portfolio & Projekt",
+			"showCockpit": "Cockpit",
+			"showPortfolio": "Portfolio",
+			"showTemplate": "Vorlage",
 			"showDeleted": "Gelöschte",
-			"showExisting": "Nicht gelöschte",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",
@@ -342,6 +346,7 @@
 			"expires": "Läuft ab",
 			"lock": "Sperre",
 			"variant": "Variante",
+			"variantDescription": "Beschreibung",
 			"versions": "Versionen",
 			"ofTotal": "of total",
 			"unlock": "Entsperren",
@@ -565,16 +570,26 @@
 		"titleCapaOverTime": "Auslastung von {{roleName}}: Kapazität vs. Projektkosten für {{name}}",
 		"titleCapaOverTimeBL": "Auslastung von {{roleName}}: Baseline vs. Projektkosten {{name}}",
 		"lbl": {
+			"month": "Monat",
 			"totalCost": "Gesamtkosten",
 			"totalCapa": "Kapazität",
+			"baselineCost": "Baseline-Kosten",
+			"baselineCost_PT": "Baseline-Aufwand",
 			"totalCostPT": "Gesamtaufwand",
-			"internCapa": "interne Kapazität",
-			"actualCost": "Istkosten",
+			"internCapa": "Interne Kapazität",
+			"internCapa_PT": "Interne Kapazität (PT)",
+			"externCapa": "Externe Kapazität",
+			"externCapa_PT": "Externe Kapazität (PT)",
+			"actualCost": "Ist-Kosten",
+			"actualCost_PT": "Ist-Aufwand",
+			"plannedCost": "Plan-Kosten",
+			"plannedCost_PT": "Plan-Aufwand",
 			"cost": "Kosten",
 			"diffCost": "Abweichung",
 			"fractionCost": "Anteil",
 			"budgetPT": "Baseline",
 			"budget": "Baseline",
+			"roleID": "Rolle(ID)",
 			"roleName": "Rolle",
 			"project": "Projekt",
 			"pd": "PT",
@@ -824,6 +839,7 @@
 			"user": "Erstellt von",
 			"from": "Vom",
 			"isChecked": "Ausgewählt",
+			"noKM": "Keine Baseline",
 			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {
@@ -832,6 +848,7 @@
 			"viewList": "Liste",
 			"editPFList": "Portfolio Liste ändern",
 			"viewProjectBoard": "Projekttafel",
+			"exportExcel": "Excel",
 			"update": "Aktualisieren",
 			"create": "Anlegen",
 			"delete": "Löschen",
@@ -898,7 +915,7 @@
 		},
 		"btn": {
 			"filter": "Filter",
-			"download": "Download",
+			"download": "Excel",
 			"more": "Mehr",
 			"less": "Weniger",
 			"back": "Zurück"
@@ -956,7 +973,7 @@
 		},
 		"btn": {
 			"filter": "Filter",
-			"download": "Download",
+			"download": "Excel",
 			"more": "Mehr",
 			"less": "Weniger",
 			"back": "Zurück"

@@ -164,6 +164,7 @@
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
                 <th (click)="sortVariantTable(1)">{{ 'vpDetail.lbl.variant' | translate }}</th>
+                <th>{{ 'vpDetail.lbl.variantDescription' | translate }}</th>
                 <th (click)="sortVariantTable(2)">{{ 'vpDetail.lbl.email' | translate }}</th>
                 <th (click)="sortVariantTable(3)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.createdAt' | translate }}</th>
                 <th (click)="sortVariantTable(4)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.versions' | translate }}</th>
@@ -176,6 +177,7 @@
               <tr *ngFor="let variant of visboproject.variant; let variantIndex=index">
                 <td>{{variantIndex+1}}</td>
                 <td id="ColName">{{variant.variantName}}</td>
+                <td id="ColDescription">{{variant.description}}</td>
                 <td id="ColEmail">{{variant.email}}</td>
                 <td class="d-none d-md-table-cell" title="{{ variant.createdAt | date :'dd.MM.yyyy HH:mm:ss'}}">{{variant.createdAt | date :'dd.MM.yy'}}</td>
                 <td class="d-none d-md-table-cell">{{variant.vpvCount}}</td>
@@ -558,17 +560,38 @@
         </div>
         <div class="modal-body">
           <form name="newVariant" #f3="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f3.submitted && !variant.valid }">
-              <label for="variant" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
-              <input id="AddVariant" type="text" class="form-control" name="variant" [(ngModel)]="newVariant" #variant="ngModel" required>
-              <div *ngIf="f3.submitted && !variant.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+            <div class="form-group">
+              <label for="NewVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+              <input id="NewVariantName" type="text" class="form-control" name="variantName" [(ngModel)]="newVariant.variantName" #variantName="ngModel" required>
+              <div *ngIf="f3.submitted && !variantName.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+            </div>
+            <div class="form-group">
+              <label for="NewVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+              <textarea id="NewVariantDesc" name=variantDesc class="form-control" name="description" [(ngModel)]="newVariant.description" #description="ngModel"></textarea>
             </div>
             <div class="modal-footer align-items-end">
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
-              <button id="AddVariantConfirm" *ngIf="!variant.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.createVariant' | translate }}</button>
-              <button id="AddVariantConfirm" *ngIf="variant.valid" type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
+              <!-- <button id="AddVariantConfirm"  type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button> -->
+              <button id="AddVariantConfirm" *ngIf="!variantName.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.createVariant' | translate }}</button>
+              <button id="AddVariantConfirm" *ngIf="variantName.valid"  type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
             </div>
           </form>
+          <!-- <form name="newVariant" #f3="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f3.submitted && !variantName.valid }">
+              <label for="NewVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+              <input id="NewVariantName" type="text" class="form-control" name="variantName" [(ngModel)]="newVariant.variantName" #variantName required>
+              <div *ngIf="f3.submitted && !variantName.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+            </div>
+            <div class="form-group">
+              <label for="NewVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+              <textarea id="NewVariantDesc" name=variantDesc class="form-control" name="description" [(ngModel)]="newVariant.description"></textarea>
+            </div>
+            <div class="modal-footer align-items-end">
+              <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
+              <button id="AddVariantConfirm" *ngIf="!variantName.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.createVariant' | translate }}</button>
+              <button id="AddVariantConfirm"  type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
+            </div>
+          </form> -->
         </div>
       </div>
     </div>
