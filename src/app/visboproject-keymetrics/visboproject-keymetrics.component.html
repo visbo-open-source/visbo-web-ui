@@ -4,12 +4,12 @@
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
+        <span *ngIf="dropDownIndex > 0" class="ml-1" title="{{dropDown[dropDownIndex].description}}"> ({{dropDown[dropDownIndex].variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
           <div class="dropdown-menu">
             <div *ngFor="let item of dropDown">
-              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.variantName }}</a>
             </div>
           </div>
         </span>
@@ -17,6 +17,9 @@
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
         </small>
       </h2>
+      <div *ngIf="dropDownIndex > 0">
+        {{ dropDown[dropDownIndex].description }}
+      </div>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
         <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
         <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>

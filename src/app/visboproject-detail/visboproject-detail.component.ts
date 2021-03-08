@@ -10,7 +10,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboUser, VisboUserInvite } from '../_models/visbouser';
-import { VisboProject, VPTYPE } from '../_models/visboproject';
+import { VisboProject, VPVariant, VPTYPE } from '../_models/visboproject';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -23,7 +23,7 @@ export class VisboprojectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
   newUserInvite = new VisboUserInvite();
-  newVariant: string;
+  newVariant: VPVariant;
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
   vgGroupsInvite: VGGroup[];
@@ -62,6 +62,7 @@ export class VisboprojectDetailComponent implements OnInit {
   ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    this.newVariant = new VPVariant();
     this.getVisboProject();
     this.getVisboProjectUsers();
   }
@@ -295,11 +296,12 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   addNewVPVariant(): void {
-    if (!this.newVariant || !this.newVariant.trim()) {
+    if (!this.newVariant || !this.newVariant.variantName || !this.newVariant.variantName.trim()) {
       // ignore empty variant
       return;
     }
-    this.newVariant = this.newVariant.trim();
+    this.newVariant.variantName = this.newVariant.variantName.trim();
+    this.newVariant.description =  (this.newVariant.description || '').trim();
     this.visboprojectService.createVariant(this.newVariant, this.visboproject._id )
       .subscribe(
         variant => {
@@ -314,7 +316,7 @@ export class VisboprojectDetailComponent implements OnInit {
             const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
             this.alertService.error(message);
           } else if (error.status === 409) {
-            const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant});
+            const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
             this.alertService.error(message);
           } else {
             this.log(`Error during creating Variant ${error.error.message}`); // log to console instead

@@ -11,10 +11,6 @@ import { VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/vis
 
 import { MessageService } from './message.service';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
-
 @Injectable()
 export class VisboProjectService {
 
@@ -358,18 +354,15 @@ export class VisboProjectService {
   }
 
   /** POST: add a new Variant to the Visbo Project */
-  createVariant (name: string, vpid: string, sysadmin = false): Observable<VPVariant> {
+  createVariant (variant: VPVariant, vpid: string, sysadmin = false): Observable<VPVariant> {
     const url = `${this.vpUrl}/${vpid}/variant`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (sysadmin) {
       params = params.append('sysadmin', '1');
     }
-    const reqBody = {
-      variantName: name
-    };
     this.log(`Calling HTTP Request: ${url} for ${name} `);
-    return this.http.post<VPVariantResponse>(url, reqBody, { headers , params })
+    return this.http.post<VPVariantResponse>(url, variant, { headers , params })
       .pipe(
         map(response => response.variant[0]),
         tap(variant => this.log(`added VP Variant with id=${variant._id}`)),

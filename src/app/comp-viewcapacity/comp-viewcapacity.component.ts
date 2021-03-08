@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
-import * as XLSX from 'xlsx';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -25,6 +24,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
             from '../_helpers/visbo.helper';
 
+import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
@@ -543,7 +543,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   filterRange(capacity: VisboCapacity[]): VisboCapacity[] {
-    let filteredCapacity: VisboCapacity[] = [];
+    const filteredCapacity: VisboCapacity[] = [];
     capacity && capacity.forEach(element => {
       const current = new Date(element.month);
       if (current.getTime() >= this.capacityFrom.getTime() &&
@@ -1693,20 +1693,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return resultLeaf;
   }
 
-  generateMatrix(width: number, len: number): string {
-    const startLetter = 'A';
-    const endLetter = String.fromCharCode(startLetter.charCodeAt(0) + width);
-    const startNumber = 1
-    const endNumber = startNumber + len;
-    return ''.concat(startLetter, startNumber.toString(), ':', endLetter, endNumber.toString());
-  }
-
   exportExcel(): void {
     this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
     // MS TODO: convert list to matix
 
-    let excel: VisboCapacity[];
-    excel = [];
+    const excel: VisboCapacity[] = [];
 
     if (this.visboCapacity) {
       this.visboCapacity.forEach(element => {
@@ -1720,13 +1711,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         excel.push(element);
       });
     }
-    const len = excel.length;
 
+    const len = excel.length;
     let width = 0;
-    for (let item in excel[0]) {
+    for (const item in excel[0]) {
       width += 1;
     }
-    const matrix = this.generateMatrix(width, len);
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     let name = '';
     if (this.vpfActive) {
       name = this.vpfActive.name
@@ -1736,18 +1727,31 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       name = this.vcActive.name;
     }
     this.log(`Export Data to Excel ${excel.length}`);
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    for (const element in excel[0]) {
+      this.log(`Processing Header ${element}`);
+      header[element] = this.translate.instant('ViewCapacity.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel);
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
     worksheet['!autofilter'] = { ref: matrix };
-    const workbook: XLSX.WorkBook = { Sheets: { 'Capacity': worksheet }, SheetNames: ['Capacity'] };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    sheets[name] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+    // eslint-disable-next-line
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const actDate = new Date();
     const fileName = ''.concat(
       actDate.getFullYear().toString(),
       '_',
-      ('00' + (actDate.getMonth() + 1)).slice(-2),
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
       '_',
-      ('00' + actDate.getDate()).slice(-2),
+      actDate.getDate().toString().padStart(2, "0"),
       '_Capacity ',
       (name || '')
     );

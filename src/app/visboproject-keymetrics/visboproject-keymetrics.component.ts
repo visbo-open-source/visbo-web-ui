@@ -18,6 +18,12 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
+class DropDown {
+  variantName: string;
+  description?: string;
+  email?: string;
+}
+
 @Component({
   selector: 'app-visboproject-keymetrics',
   templateUrl: './visboproject-keymetrics.component.html'
@@ -26,7 +32,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   visboprojectversions: VisboProjectVersion[];
 
-  dropDown: string[] = [];
+  dropDown: DropDown[] = [];
   dropDownIndex: number;
 
   vpSelected: string;
@@ -127,6 +133,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  getVariantInfo(item: DropDown, owner = true): string {
+      let result: string[] = []
+      if (item.description) { result.push(item.description); }
+      if (item.variantName != this.defaultVariant) {
+        result.push('(' + item.email + ')');
+      }
+      return result.join(' ');
+  }
+
   dropDownInit(): void {
     if (this.variantID) {
       // serach for the variant Name
@@ -152,15 +167,23 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
     for (let i = 0; i < len; i++) {
       if (this.vpActive.variant[i].variantName !== 'pfv' && this.vpActive.variant[i].vpvCount > 0) {
-        this.dropDown.push(this.vpActive.variant[i].variantName);
+        this.dropDown.push(
+          {
+            variantName: this.vpActive.variant[i].variantName,
+            description: this.vpActive.variant[i].description,
+            email: this.vpActive.variant[i].email
+          }
+        );
       }
     }
     if (this.dropDown.length > 0 ) {
-      this.dropDown.splice(0, 0, this.defaultVariant);
+      this.dropDown.splice(0, 0,
+        {variantName: this.defaultVariant}
+      );
       this.dropDownIndex = 0;
     }
     if (this.variantName) {
-      this.dropDownIndex = this.dropDown.findIndex(item => item === this.variantName);
+      this.dropDownIndex = this.dropDown.findIndex(item => item.variantName === this.variantName);
     }
   }
 
@@ -202,7 +225,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   switchVariant(name: string): void {
-    const i = this.dropDown.findIndex(item => item === name);
+    const i = this.dropDown.findIndex(item => item.variantName === name);
     if (i <= 0) {
       // not found or the main variant
       this.dropDownIndex = undefined;
@@ -300,7 +323,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.dropDownInit();
               this.getVisboCenterOrga();
             }
-            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex] : '';
+            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex].variantName : '';
             let variantID = '';
             if (variantName) {
               const variant = this.vpActive.variant.find(item => item.variantName === variantName);

@@ -259,10 +259,10 @@ export class VisboProjectsComponent implements OnInit {
     if (!this.newVP.name) { return; }
     if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
     // dummy code to test additional properties find the first Template and create with start and end date
-    let vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
+    const vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
     if (vpTemplate) {
       this.newVP.templateID = vpTemplate._id;
-      let actDate = new Date();
+      const actDate = new Date();
       actDate.setHours(0, 0, 0, 0);
       this.newVP.startDate = new Date(actDate);
       actDate.setMonth(actDate.getMonth() + 14);

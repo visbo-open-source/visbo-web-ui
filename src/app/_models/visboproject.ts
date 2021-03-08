@@ -18,6 +18,7 @@ export class VPRestrict {
 export class VPVariant {
   _id: string;
   variantName: string;
+  description: string;
   email: string;
   createdAt: Date;
   vpvCount: number;
