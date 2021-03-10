@@ -152,7 +152,7 @@
           </div>
           <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class='col'>
             <!-- Button trigger modal -->
-            <button id="AddVariant" type="button" class="my-1 btn btn-primary float-right" (click)='initVPVariant(variant)' data-toggle="modal" data-target="#VpVariantModalCreate">
+            <button id="AddVariant" type="button" class="my-1 btn btn-primary float-right" (click)='initVPVariant(undefined)' data-toggle="modal" data-target="#VpVariantModalCreate">
               {{ 'vpDetail.btn.addVariant' | translate }}
             </button>
           </div>

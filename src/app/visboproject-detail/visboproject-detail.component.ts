@@ -415,7 +415,7 @@ export class VisboprojectDetailComponent implements OnInit {
   canDeleteVariant(variant: VPVariant): boolean {
     if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
       return false;
-    } else if (this.hasVPPerm(this.permVP.Modify) || (this.hasVPPerm(this.permVP.CreateVariant) && variant.email == currentUser.email)) {
+    } else if (this.hasVPPerm(this.permVP.Modify) || (this.hasVPPerm(this.permVP.CreateVariant) && variant.email == this.currentUser.email)) {
       return true;
     } else {
       return false;
@@ -470,7 +470,10 @@ export class VisboprojectDetailComponent implements OnInit {
       .subscribe(
         () => {
           const message = this.translate.instant('vpDetail.msg.removeVariantSuccess', {'name': variant.variantName});
-          this.visboproject.variant = this.visboproject.variant.filter(item => item.variantName != variant.variantName);
+          let index = this.visboproject.variant.findIndex(item => item.variantName === variant.variantName);
+          if (index >= 0) {
+            this.visboproject.variant.splice(index, 1);
+          }
           this.alertService.success(message);
         },
         error => {
