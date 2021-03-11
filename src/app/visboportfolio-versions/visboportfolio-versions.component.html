@@ -6,7 +6,7 @@
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(false, true)}}</a>
           <div class="dropdown-menu">
             <!-- <a *ngFor="let item of dropDown; let dropDownIndex = index" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a> -->
             <a *ngFor="let item of dropDown" title="{{item.email}}">
@@ -94,7 +94,7 @@
           <div class="d-flex">
             <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
               {{ 'vpfVersion.lbl.variant' | translate }}:
-              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{dropDownVariant[dropDownVariantIndex].description}}">{{getVariantName(true, false)}}</a>
               <div class="dropdown-menu">
                 <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchEditVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
               </div>

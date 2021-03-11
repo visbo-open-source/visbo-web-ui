@@ -25,10 +25,11 @@ import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToda
 
 class DropDown {
   name: string;
-  version: number;
+  version?: number;
   variantName: string;
-  timestamp: Date;
-  email: string;
+  description?: string;
+  timestamp?: Date;
+  email?: string;
 }
 
 class vpCheckItem {
@@ -54,6 +55,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     dropDownVariant: DropDown[] = [];
     dropDownVariantSelected: string;
+    dropDownVariantIndex = 0;
 
     views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
 
@@ -304,7 +306,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   initVPF(visboprojects: VisboProject[]): void {
-    this.dropDownVariantSelected = this.vpfActive ? this.vpfActive.variantName : '';
+    this.switchVPFVariant(this.vpfActive ? this.vpfActive.variantName : '');
     this.isGlobalChecked = false;
     this.vpCheckListAll = [];
     visboprojects.forEach(item => {
@@ -558,15 +560,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       );
   }
 
-  getVariantName(vpf: VisboPortfolioVersion, replace = false, style = false): string {
-    let result = '';
-    if (vpf) {
-      result = vpf.variantName || '';
+  getVariantName(replace = false, style = false): string {
+    let result: string;
+    if (replace) {
+      result = this.dropDownVariant[this.dropDownVariantIndex].name;
     } else {
-      result = this.dropDownVariantSelected || '';
-    }
-    if (result == '' && replace) {
-      result = this.translate.instant('vpfVersion.lbl.defaultVariant');
+      result = this.dropDownVariant[this.dropDownVariantIndex].variantName;
     }
     if (result && style) {
       result = '('.concat(result, ')');
@@ -659,6 +658,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  switchVPFVariant(variantName: string): void {
+    let index = undefined;
+    if (this.dropDownVariant && this.dropDownVariant.length > 0) {
+      index = this.dropDownVariant.findIndex(item => item.variantName == variantName);
+      if (index < 0) {
+        index = 0;
+      }
+    }
+    this.dropDownVariantIndex = index;
+    this.dropDownVariantSelected = index >= 0 ? this.dropDownVariant[index].name : undefined;
+  }
+
   calcVPList(): void {
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.vpList = [];
@@ -742,25 +753,19 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     this.vpActive.variant.forEach(item => {
       if (item.variantName != 'pfv') {
-        this.dropDownVariant.push({name: item.variantName, variantName: item.variantName, version: index++, timestamp: undefined, email: undefined });
+        this.dropDownVariant.push({name: item.variantName, variantName: item.variantName, description: item.description, version: index++});
       }
     });
     // this.dropDownVariant.sort(function (a, b) { visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
-    this.dropDownVariant.splice(0, 0, {name: '', variantName: '', version: 0, timestamp: undefined, email: undefined });
-    index = 0;
-    if (this.vpfActive.variantName) {
-      const i = this.dropDownVariant.findIndex(item => item.name === this.vpfActive.variantName);
-      if (i >= 0) {
-          index = i;
-      }
-    }
-    this.dropDownVariantSelected = this.dropDownVariant[index].name;
+    this.dropDownVariant.splice(0, 0, {name: this.translate.instant('vpfVersion.lbl.defaultVariant'), variantName: '', version: 0 });
+    this.switchVPFVariant(this.vpfActive.variantName || '');
   }
 
   switchEditVariant(i: number): void {
     this.log(`Change Variant Drop Down ${i} `);
     if (i >= 0 && i < this.dropDownVariant.length) {
-      this.dropDownVariantSelected = this.dropDownVariant[i].name;
+      this.dropDownVariantSelected = this.dropDownVariant[i].variantName;
+      this.dropDownVariantIndex = i;
     }
   }
 
@@ -768,7 +773,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.log(`Change Drop Down ${i} `);
     if (i >= 0 && i < this.visboportfolioversions.length) {
       this.vpfActive = this.visboportfolioversions[i];
-      this.dropDownVariantSelected = this.vpfActive.variantName;
+      this.switchVPFVariant(this.vpfActive.variantName || '');
       this.getVisboPortfolioKeyMetrics();
     } else {
       this.vpfActive = undefined;
