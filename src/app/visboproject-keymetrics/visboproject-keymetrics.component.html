@@ -53,7 +53,7 @@
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
-        <div class="btn-group">
+        <div class="dropdown mr-1">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpView' | translate }}
             <span class="caret"></span>
@@ -63,6 +63,17 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
+          </div>
+        </div>
+        <div *ngIf="hasVPPerm(permVP.Modify)" class="dropdown mr-1">
+          <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
+            {{ 'vpKeyMetric.btn.vpvChange' | translate }}
+            <span class="caret"></span>
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <a class="dropdown-item" (click)="initNewVPV()" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+            <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvScale' | translate }}</a>
           </div>
         </div>
       </div>
@@ -254,6 +265,34 @@
 
           <div class="modal-footer align-items-end">
             <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal move start&end Date of VPV -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalMove" tabindex="-1" role="dialog" aria-labelledby="vpvModalMoveTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vpvModalMoveTitle">{{ 'vpKeyMetric.titleVPVMove' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="vpvMove" #f2="ngForm" novalidate>
+          <div class="form-group">
+            <label for="startDateID" class="col-form-label">{{ 'vpKeyMetric.lbl.startDate' | translate }}:</label>
+            <input id="startDateID" type="date" class="col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate">
+          </div>
+
+          <div class="modal-footer align-items-end">
+            <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.cancel' | translate }}</button>
+            <!-- <button id="vpvMoveConfirm" *ngIf="!email.valid || !group.valid" type="submit" class="btn btn-primary mx-1">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</button> -->
+            <button id="vpvMoveConfirm" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</button>
           </div>
         </form>
       </div>

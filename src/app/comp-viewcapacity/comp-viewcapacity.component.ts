@@ -1766,7 +1766,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     a.click();
     window.URL.revokeObjectURL(url);
   }
-
+ 
   parseDate(dateString: string): Date {
      if (dateString) {
        const actDate = new Date(dateString);

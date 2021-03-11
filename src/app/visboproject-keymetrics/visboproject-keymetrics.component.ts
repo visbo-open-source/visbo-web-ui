@@ -43,6 +43,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
 
+  newVPV: VisboProjectVersion;
+  newVPVstartDate: Date;
+  newVPVendDate: Date;
+
   currentView = 'KeyMetrics';
   currentViewKM = false;
   refDate = new Date();
@@ -510,6 +514,30 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getShortText(text: string, len: number): string {
     return visboGetShortText(text, len);
+  }
+
+  initNewVPV(): void {
+    this.newVPV = new VisboProjectVersion();
+    if (this.vpvActive) {
+      this.newVPV.startDate = new Date(this.vpvActive.startDate);
+      this.newVPV.endDate = new Date(this.vpvActive.endDate);
+      this.newVPVstartDate = new Date(this.vpvActive.startDate);
+      this.newVPVendDate = new Date(this.vpvActive.endDate);
+    }
+  }
+
+  moveVPV(): void {
+    this.log(`Move VPV ${this.vpvActive.name} from  start ${this.vpvActive.startDate.toISOString()} doc ${this.newVPVstartDate}`);
+  }
+
+  parseDate(dateString: string): Date {
+     if (dateString) {
+       const actDate = new Date(dateString);
+       actDate.setDate(1);
+       actDate.setHours(0, 0, 0, 0);
+       return actDate;
+    }
+    return null;
   }
 
   sortVPVTable(n?: number): void {
