@@ -473,6 +473,8 @@
 		"titleName": "Project {{name}}",
 		"titleVersion": "Version of",
 		"titleDetailVersion": "Details about Version",
+		"titleVPVMove": "Copy & Move",
+		"titleVPVScale": "Copy & Scale",
 		"lbl": {
 			"project": "Project",
 			"name": "Name",
@@ -537,6 +539,9 @@
 			"vpCapacity": "Capacity",
 			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
+			"vpvChange": "Change",
+			"vpvMove": "Move",
+			"vpvScale": "Scale",
 			"back": "Back"
 		},
 		"msg": {

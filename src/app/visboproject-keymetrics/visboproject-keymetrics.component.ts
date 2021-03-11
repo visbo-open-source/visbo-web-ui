@@ -43,9 +43,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
 
-  newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
   newVPVendDate: Date;
+  scaleFactor: number;
+  changeStatus = true;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
@@ -517,23 +518,92 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initNewVPV(): void {
-    this.newVPV = new VisboProjectVersion();
     if (this.vpvActive) {
-      this.newVPV.startDate = new Date(this.vpvActive.startDate);
-      this.newVPV.endDate = new Date(this.vpvActive.endDate);
       this.newVPVstartDate = new Date(this.vpvActive.startDate);
       this.newVPVendDate = new Date(this.vpvActive.endDate);
     }
+    this.scaleFactor = 0;
   }
 
   moveVPV(): void {
-    this.log(`Move VPV ${this.vpvActive.name} from  start ${this.vpvActive.startDate.toISOString()} doc ${this.newVPVstartDate}`);
+    this.log(`Move VPV ${this.vpvActive.name} to new start ${this.newVPVstartDate} end ${this.newVPVendDate}`);
+    const startDate = new Date(this.vpvActive.startDate);
+    const endDate = new Date(this.vpvActive.endDate);
+    if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
+    || endDate.toISOString() !== this.newVPVendDate.toISOString()) {
+      this.log(`Execute Move VPV ${this.vpvActive.name} to new start ${this.newVPVstartDate} end ${this.newVPVendDate}`);
+      this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id, this.newVPVstartDate, this.newVPVendDate)
+        .subscribe(
+          vpv => {
+            this.visboprojectversions.splice(0, 0, vpv);
+            this.setVpvActive(vpv);
+            this.evaluateDirection(0);
+          },
+          error => {
+            this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
+  scaleVPV(): void {
+    const scaleFactor = 1 + this.scaleFactor / 100;
+    this.log(`Scale VPV ${this.vpvActive.name} with ${scaleFactor}`);
+    if (scaleFactor != 1) {
+      this.log(`Execute Scale VPV ${this.vpvActive.name}  with ${scaleFactor}`);
+      this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id, undefined, undefined, scaleFactor)
+        .subscribe(
+          vpv => {
+            this.visboprojectversions.splice(0, 0, vpv);
+            this.setVpvActive(vpv);
+            this.evaluateDirection(0);
+          },
+          error => {
+            this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
+  updateDateRange(): void {
+    // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
+    let result = true;
+    if (!this.vpvActive || !this.vpvActive.startDate) {
+      this.log(`no VPV Active`);
+      result = false;
+    } else if (!this.newVPVstartDate || !this.newVPVendDate) {
+      this.log(`Dates Empty ${this.newVPVstartDate} ${this.newVPVendDate}`);
+      result = false;
+    } else if (this.newVPVstartDate.getTime() >= this.newVPVendDate.getTime()) {
+      this.log(`Dates start later end ${this.newVPVstartDate} ${this.newVPVendDate}`);
+      result = false;
+    } else if (this.newVPVstartDate.toISOString() != (new Date(this.vpvActive.startDate)).toISOString()) {
+      const actStartMonth = new Date();
+      actStartMonth.setDate(1);
+      actStartMonth.setHours(0, 0, 0, 0);
+      if (this.newVPVstartDate.getTime() < actStartMonth.getTime()) {
+        this.log(`start before current Month  ${this.newVPVstartDate}`);
+        result = false;
+      }
+    }
+    this.changeStatus = result;
   }
 
   parseDate(dateString: string): Date {
      if (dateString) {
        const actDate = new Date(dateString);
-       actDate.setDate(1);
        actDate.setHours(0, 0, 0, 0);
        return actDate;
     }

@@ -473,6 +473,8 @@
 		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
+		"titleVPVMove": "Kopieren & Verschieben",
+		"titleVPVScale": "Kopieren & Skalieren",
 		"lbl": {
 			"project": "Projekt",
 			"name": "Name",
@@ -537,6 +539,9 @@
 			"vpCapacity": "Kapazität",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
+			"vpvChange": "Ändern",
+			"vpvMove": "Verschieben",
+			"vpvScale": "Skalieren",
 			"back": "Zurück"
 		},
 		"msg": {

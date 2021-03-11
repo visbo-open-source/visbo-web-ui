@@ -71,9 +71,9 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
             <a class="dropdown-item" (click)="initNewVPV()" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-            <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvScale' | translate }}</a>
+            <a class="dropdown-item" (click)="initNewVPV()" data-toggle="modal" data-target="#vpvModalScale">{{ 'vpKeyMetric.btn.vpvScale' | translate }}</a>
           </div>
         </div>
       </div>
@@ -285,14 +285,44 @@
       <div class="modal-body">
         <form name="vpvMove" #f2="ngForm" novalidate>
           <div class="form-group">
-            <label for="startDateID" class="col-form-label">{{ 'vpKeyMetric.lbl.startDate' | translate }}:</label>
-            <input id="startDateID" type="date" class="col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate">
+            <label for="startDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.startDate' | translate }}:</label>
+            <input id="startDateID" type="date" class="col-6 col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate | date:'yyyy-MM-dd'" (input)="newVPVstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
           </div>
-
+          <div class="form-group">
+            <label for="endDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.endDate' | translate }}:</label>
+            <input id="endDateID" type="date" class="col-6 col-form-label" name="newVPVendDate" [ngModel]="newVPVendDate | date:'yyyy-MM-dd'" (input)="newVPVendDate=parseDate($event.target.value)" (change)="updateDateRange()">
+          </div>
           <div class="modal-footer align-items-end">
-            <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.cancel' | translate }}</button>
-            <!-- <button id="vpvMoveConfirm" *ngIf="!email.valid || !group.valid" type="submit" class="btn btn-primary mx-1">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</button> -->
-            <button id="vpvMoveConfirm" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</button>
+            <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button id="vpvMoveConfirm" *ngIf="!changeStatus" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal scale VPV -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalScale" tabindex="-1" role="dialog" aria-labelledby="vpvModalScaleTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vpvModalScaleTitle">{{ 'vpKeyMetric.titleVPVScale' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="vpvScale" #f3="ngForm" novalidate>
+          <div class="form-group">
+            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
+            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99"> %
+          </div>
+          <div class="modal-footer align-items-end">
+            <button id="vpvScaleCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button id="vpvScaleConfirm" *ngIf="!scaleFactor" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvScaleConfirm" *ngIf="scaleFactor" type="submit" class="btn btn-primary mx-1" (click)="scaleVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
           </div>
         </form>
       </div>
