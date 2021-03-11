@@ -274,7 +274,6 @@
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Beschreibung",
-			"type": "Typ",
 			"view": "Zeige"
 		},
 		"type": {
@@ -634,7 +633,6 @@
 			"yAxis": "Y-Achse",
 			"bac": "Gesamtkosten (Baseline)",
 			"pv": "Kosten (Baseline)",
-			"endDate": "Projektende",
 			"deadlines": "Termine (Baseline)",
 			"deliveries": "Lieferungen (Baseline)",
 			"days": "Tage",
