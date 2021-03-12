@@ -78,7 +78,7 @@
   </div>
   <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
     <hr>
-    <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
+    <app-comp-viewboard [vps]="vpList" [customize]="customize" [vpf] ="vpActive"></app-comp-viewboard>
   </div>
 
   <!-- Modal Edit VPF List -->

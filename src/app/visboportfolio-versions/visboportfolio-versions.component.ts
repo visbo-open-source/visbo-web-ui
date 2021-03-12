@@ -22,6 +22,8 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday, visboIsSameDay, getPreView } from '../_helpers/visbo.helper';
+import { VisboSetting } from '../_models/visbosetting';
+import { textChangeRangeIsUnchanged } from 'typescript';
 
 class DropDown {
   name: string;
@@ -75,7 +77,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     switchVariantCount: number;
     switchVariant: string;
     vpfListFilter: string;
-    hasOrga = false;
+    hasOrga = false;    
+    customize: VisboSetting;
 
     pageParams = new VPFParams();
     isGlobalChecked = false;
@@ -148,6 +151,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.titleService.setTitle(this.translate.instant('vpfVersion.titleName', {name: visboproject.name}));
           this.getVisboPortfolioVersions();
           this.getVisboCenterOrga();
+          this.getVisboCenterCustomization();
         },
         error => {
           this.log(`get Portfolio VP failed: error: ${error.status} message: ${error.error.message}`);
@@ -186,7 +190,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
         .subscribe(
           vcsettings => {
-            this.hasOrga = vcsettings.length > 0;
+            this.hasOrga = vcsettings.length > 0;            
           },
           error => {
             if (error.status === 403) {
@@ -299,6 +303,27 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpvRefDate = new Date(newRefDate.toISOString()); // to guarantee that the item is refreshed in UI
     this.changeView(undefined, this.vpvRefDate);
     this.getVisboPortfolioKeyMetrics();
+  }
+
+  
+  getVisboCenterCustomization(): void {
+    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
+      this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
+        .subscribe(
+          vcsettings => {
+            if (vcsettings.length > 0) { this.customize = vcsettings[0]; }        
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
   }
 
   initVPF(visboprojects: VisboProject[]): void {
