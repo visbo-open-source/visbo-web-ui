@@ -10,27 +10,25 @@
       </h2>
     </div>
     <div class='btn-group'>
-      <div *ngIf="vcActive && visboprojects.length > 0">
-        <i *ngIf="!chart" (click)="toggleVisboChart()" class="mt-3 fa fa-signal" aria-hidden="true"></i>
-        <i *ngIf="chart" (click)="toggleVisboChart()" class="mt-3 fa fa-list" aria-hidden="true"></i>
+      <div class="mt-3 mr-1">
+        {{'vp.lbl.view' | translate}}:
       </div>
-      <div *ngIf="hasVPPerm(permVP.DeleteVP)">
-        <button id="DeletedVP" *ngIf="!deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showDeleted' | translate }}</button>
-        <button id="UnDeletedVP" *ngIf="deleted" type="button" class="m-2 btn btn-secondary" (click)="toggleVisboProjects()">{{ 'vp.btn.showExisting' | translate }}</button>
-      </div>
+      <select class="form-control mt-2" id="ViewMode" name="viewMode" [(ngModel)]="viewMode" (change)="switchView()">
+        <option *ngFor="let item of dropDownVPType" value="{{item.id}}">{{item.name}}</option>
+      </select>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button id="CreateVP" type="button" class="m-2 btn btn-primary" data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
+        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='initCreateVP()' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
     <div class='container-fluid'></div>
-    <div *ngIf="chart" class="btn-toolbar" >
+    <div *ngIf="viewMode == 'KeyMetrics'" class="btn-toolbar" >
         <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("List")'>{{ 'vp.btn.viewList' | translate }}</button>
         <button *ngIf="hasVCPerm(permVC.ViewAudit + permVC.Modify) && hasOrga" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
         <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vp.btn.viewProjectBoard' | translate }}</button>
     </div>
   </div>
-  <div *ngIf="!chart" class='panel-body'>
+  <div *ngIf="viewMode != 'KeyMetrics'" class='panel-body'>
     <table class='table table-hover table-sortable'>
       <thead id="VPHead">
         <tr>
@@ -68,24 +66,24 @@
       </h3>
     </div>
   </div>
-  <div *ngIf="chart">
+  <div *ngIf="viewMode == 'KeyMetrics'">
     <hr>
-    <div *ngIf="currentView == 'Capacity' && vcActive">
+    <div *ngIf="viewCockpit == 'Capacity' && vcActive">
       <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
-    <div *ngIf="currentView == 'KeyMetrics' && visboprojectversions && vcActive">
+    <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
-    <div *ngIf="currentView == 'List' && visboprojectversions">
+    <div *ngIf="viewCockpit == 'List' && visboprojectversions">
       <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
-    <div *ngIf="currentView == 'ProjectBoard' && visboprojectversions">
+    <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
       <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>
     </div>
   </div>
 
   <!-- Modal VP Create-->
-  <div class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
+  <div *ngIf="newVP" class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -98,7 +96,7 @@
           <form>
             <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
               <label for="type" class="col-form-label">{{ 'vp.lbl.type' | translate }}:</label>
-              <select id="vpType" class="form-control" name="vpType" [(ngModel)]="vpType">
+              <select id="CreateVPType" class="form-control" name="vpType" [(ngModel)]="newVP.vpType">
                 <option value=0>{{ 'vp.type.vpType0' | translate }}</option>
                 <option value=1>{{ 'vp.type.vpType1' | translate }}</option>
                 <!-- <option value=2>{{ 'vp.type.vpType2' | translate }}</option> -->
@@ -107,17 +105,17 @@
 
             <div class="form-group">
               <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
-              <input id="CreateVPName" type="text" class="form-control" #vpName>
+              <input id="CreateVPName" type="text" class="form-control" name="name" [(ngModel)]="newVP.name">
             </div>
             <div class="form-group">
               <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
-              <textarea id="CreateVPDesc" class="form-control" #vpDescription></textarea>
+              <textarea id="CreateVPDesc" class="form-control" name="description" [(ngModel)]="newVP.description"></textarea>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
-          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject(vpName.value, vcActive._id, vpDescription.value, vpType); vpName.value=''; vpDescription.value='';" data-dismiss="modal">
+          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject()" data-dismiss="modal">
             {{ 'vp.btn.save' | translate }}
           </button>
         </div>

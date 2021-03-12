@@ -120,8 +120,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  visboViewBoardOverTime(): void {
+  visboViewBoardOverTime(): void { 
+    const defaultColor = '#c5c5c5';
+    const headLineColor = '#2c2c2c';
     const graphDataTimeline = [];
+
     if (!this.vps || this.vps.length === 0 || !this.customize ) {
       this.graphDataTimeline = [];
       return;
@@ -130,15 +133,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     for ( let j = 0; this.customize && this.customize.value && this.customize.value.businessUnitDefinitions && j < this.customize.value.businessUnitDefinitions.length; j++) {
       buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;     
     }
-
-    this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
     
+    //this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
+    this.vps.sort(function(a, b) {
+      let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
+      if (result == 0) {
+        result = visboCmpDate(b.startDate, a.startDate);
+      }
+      if (result == 0) {
+        result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
+      }
+      return result;
+    });
+
     var minAndMaxDate = this.getMinAndMaxDate(this.vps);
     
-    const filter = this.filter ? this.filter.toLowerCase() : undefined;    
-    
-    var defaultColor = '#c5c5c5';
-    var headLineColor = '#2c2c2c';
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;   
     
     for (let i = 0; i < this.vps.length; i++) {
       if (filter
@@ -169,19 +179,17 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         var buColor = 0;
         var rgbHex = defaultColor;
         var bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
-        if (bu) {         
-          // ??? UR: 21.08.2020:.farbe wasn't delivered with the visboProjectService
+        if (bu) { 
           buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;          
           rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor; 
         }     
         this.graphOptionsTimeline.colors.push(rgbHex);
-      }  
-      var lastlineID = this.vps.length - i;
+      }       
     }
 
     //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio  
     if (minAndMaxDate && minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
-      lastlineID = 0;
+      const lastlineID = 0;
       // color for the Portfolio-TimeLine
       this.graphOptionsTimeline.colors.push(headLineColor);
 

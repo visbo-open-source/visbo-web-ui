@@ -1,3 +1,29 @@
+export class VisboAuditXLS {
+  createdAt: Date;
+  email: string;
+  vcName: string;
+  vcid: string;
+  vpid: string;
+  vpName: string;
+  vpvid: string;
+  vpvName: string;
+  action: string;
+  actionDescription: string;
+  actionInfo: string;
+  url: string;
+  ip: string;
+  host: string;
+  ttl: Date;
+  sysAdmin: boolean;
+  userAgent: string;
+  resultTime: number;
+  resultStatus: string;
+  resultStatusText: string;
+  resultSize: number;
+  vcjson: string;
+  vpjson: string;
+}
+
 export class VisboAudit {
   _id: string;
   updatedAt: Date;

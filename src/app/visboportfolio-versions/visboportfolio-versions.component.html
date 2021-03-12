@@ -6,23 +6,25 @@
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
+          <a *ngIf="activeVPFVariant && activeVPFVariant.variantName" class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.description}}">({{activeVPFVariant.variantName}})</a>
           <div class="dropdown-menu">
             <!-- <a *ngFor="let item of dropDown; let dropDownIndex = index" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a> -->
-            <a *ngFor="let item of dropDown" title="{{item.email}}">
+            <a *ngFor="let item of dropDown" title="{{item.longDescription}}">
               <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
               <div *ngIf="!checkVPFActive(item)" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
             </a>
           </div>
         </span>
     </h2>
+    <div *ngIf="activeVPFVariant && activeVPFVariant.description">
+      {{ activeVPFVariant.description }}
+    </div>
       <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
         <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
         <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
       </h5>
     </div>
   </div>
-
   <div *ngIf="vpfActive" class="container-fluid">
     <div class="row">
       <h3 class="col-6 px-0">
@@ -59,8 +61,8 @@
   </div>
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
     {{ 'vpfVersion.msg.noProjectList' | translate }}
-    <div *ngIf="hasVPPerm(permVP.Modify)" class="btn-toolbar my-3" style="padding: unset;">
-      <button type="button" class="btn btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+    <div *ngIf="hasVPPerm(permVP.Modify) && !getPreView()" class="btn-toolbar my-3 d-print-none" style="padding: unset;">
+      <button type="button" id="editVPFList" class="btn btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
     </div>
   </div>
 
@@ -93,11 +95,13 @@
         </div>
         <div class="modal-body">
           <div class="d-flex">
-            <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
+            <div *ngIf="listVPFVariant.length > 1" class="dropdown" class="ml-2">
               {{ 'vpfVersion.lbl.variant' | translate }}:
-              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.longDescription}}">
+                {{activeVPFVariant.name}}
+              </a>
               <div class="dropdown-menu">
-                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchEditVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
+                <a *ngFor="let item of listVPFVariant" class="dropdown-item" (click)="switchVariantByID(item.version)"  title="{{item.longDescription}}">{{ item.name }}</a>
               </div>
             </div>
             <div class="ml-auto">
@@ -125,13 +129,16 @@
                 <td id="ColChecked">
                   <input type="checkbox" [(ngModel)]="item.isChecked">
                 </td>
-                <td id="ColName"><a>{{item.vp.name}}</a></td>
+                <td id="ColName" (click)="item.isChecked = !item.isChecked">
+                  <a>{{item.vp.name}}</a>
+                  <ng-container *ngTemplateOutlet="indicator; context:{level: getKM(item.vp), title: 'vpfVersion.lbl.noKM'}"></ng-container>
+                </td>
                 <td *ngIf="!item.hasVariants" id="ColName"></td>
                 <td *ngIf="item.hasVariants" id="ColName">
                   <div class="row">
-                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName">
+                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName" title="{{item.description}}">
                       <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
-                      <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
+                      <option *ngFor="let variant of getVariants(item.vp)" title="{{ variant.description }}">{{ variant.variantName }}</option>
                     </select>
                     <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
                   </div>
@@ -149,6 +156,10 @@
       </div>
     </div>
   </div>
+
+  <ng-template #indicator let-level="level" let-title="title">
+    <i class="fa ml-2" [ngClass]="{'fa-exclamation-triangle text-warning': level == 2}"  title="{{title | translate}}"></i>
+  </ng-template>
 
   <!-- Modal Delete VPF List Confirm -->
   <div *ngIf="vpfActive" class="modal fade" id="DeleteVPFList" role="dialog" aria-labelledby="DeleteVPFListTitle" aria-hidden="true">

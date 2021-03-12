@@ -8,7 +8,7 @@ import { TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -22,6 +22,12 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
+class DropDown {
+  name: string;
+  id: string;
+}
+
+
 @Component({
   selector: 'app-visboprojects',
   templateUrl: './visboprojects.component.html'
@@ -29,23 +35,24 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 export class VisboProjectsComponent implements OnInit {
 
   visboprojects: VisboProject[];
+  visboprojectsAll: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
-  vpType = 0;
+  newVP: CreateProjectProperty;
+  dropDownVPType: DropDown[];
+  viewMode = 'Default';
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
   vpvWithKM: number;
   vpvRefDate: Date = new Date();
   hasOrga = false;
-  chart = false;
-  modalChart = true;
   deleted = false;
   sortAscending: boolean;
   sortColumn: number;
 
   currentLang: string;
-  currentView: string;
+  viewCockpit: string;
 
   combinedPerm: VGPermission = undefined;
   permVC = VGPVC;
@@ -69,13 +76,13 @@ export class VisboProjectsComponent implements OnInit {
     this.titleService.setTitle(this.translate.instant('vp.title'));
 
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
-    this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     const nextView = this.route.snapshot.queryParams['view'];
-    if (nextView) { this.chart = true; }
-    this.currentView = nextView || 'KeyMetrics';
+    this.viewMode = nextView || 'Default'
+    const viewCockpit = this.route.snapshot.queryParams['viewCockpit'];
+    this.viewCockpit = viewCockpit || 'KeyMetrics';
 
-    this.log(`Init VP View: ${this.currentView} Deleted: ${this.deleted}`);
-    this.getVisboProjects(this.deleted);
+    this.log(`Init VP View: ${this.dropDownVPType} Cockpit ${this.viewCockpit}`);
+    this.getVisboProjects(nextView == 'Deleted');
   }
 
   hasVPPerm(perm: number): boolean {
@@ -98,21 +105,14 @@ export class VisboProjectsComponent implements OnInit {
 
   changeView(nextView: string, filter: string = undefined): void {
     if (nextView === 'Capacity' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
-      this.currentView = nextView;
+      this.viewCockpit = nextView;
     } else {
-      this.currentView = 'KeyMetrics';
+      this.viewCockpit = 'KeyMetrics';
     }
-    this.updateUrlParam('view', this.currentView);
+    this.updateUrlParam('viewCockpit', this.viewCockpit);
 
     if (filter) {
       this.updateUrlParam('filter', filter.trim());
-    }
-  }
-
-  toggleVisboChart(): void {
-    this.chart = !this.chart;
-    if (this.chart && !this.visboprojectversions) {
-      this.getVisboProjectKeyMetrics();
     }
   }
 
@@ -126,7 +126,9 @@ export class VisboProjectsComponent implements OnInit {
     } else if (type == 'refDate') {
       queryParams.refDate = value;
     } else if (type == 'view') {
-      queryParams.view = value;
+      queryParams.view = value != 'Default' ? value : undefined;
+    } else if (type == 'viewCockpit') {
+      queryParams.viewCockpit = value != 'KeyMetrics' ? value : undefined;
     }
     this.router.navigate([url], {
       queryParams: queryParams,
@@ -137,18 +139,9 @@ export class VisboProjectsComponent implements OnInit {
     });
   }
 
-  toggleVisboProjects(): void {
-    this.chart = false;
-    this.deleted = !this.deleted;
-    const url = this.route.snapshot.url.join('/');
-    this.log(`VP toggleVisboProjects ${this.deleted} URL ${url}`);
-    this.getVisboProjects(this.deleted);
-    // MS TODO: go to the current url and add delete flag
-    this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
-  }
-
   getVisboProjects(deleted: boolean): void {
     const id = this.route.snapshot.paramMap.get('id');
+    this.deleted = deleted;
 
     this.vcSelected = id;
     if (id) {
@@ -162,9 +155,12 @@ export class VisboProjectsComponent implements OnInit {
             this.visboprojectService.getVisboProjects(id, false, deleted)
               .subscribe(
                 visboprojects => {
-                  this.visboprojects = visboprojects;
+                  this.visboprojectsAll = visboprojects;
+                  this.filterVP();
+                  this.initDropDown();
+                  this.switchView();
                   this.sortVPTable(1);
-                  if (this.chart) { this.getVisboProjectKeyMetrics(); }
+                  if (this.viewMode == 'Cockpit') { this.getVisboProjectKeyMetrics(); }
                 },
                 error => {
                   this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
@@ -183,7 +179,10 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojectService.getVisboProjects(null, false, deleted)
         .subscribe(
           visboprojects => {
-            this.visboprojects = visboprojects;
+            this.visboprojectsAll = visboprojects;
+            this.filterVP();
+            this.initDropDown();
+            this.switchView();
             this.sortVPTable(1);
             // this.getVisboProjectKeyMetrics();
           },
@@ -195,17 +194,89 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  addproject(name: string, vcid: string, desc: string, type: number): void {
-    name = name.trim();
-    this.log(`call create VP ${name} with VCID ${vcid} Desc ${desc} `);
-    if (!name) { return; }
-    if (type != 1 && type != 2) { type = 0 }
-    this.visboprojectService.addVisboProject({ name: name, description: desc, vcid: vcid, vpType: type } as VisboProject).subscribe(
+  filterVP(): void {
+    let newVPType: number;
+    switch(this.viewMode) {
+      case 'Portfolio':
+        newVPType = 1;
+        break;
+      case 'Template':
+        newVPType = 2;
+        break;
+    }
+    if (newVPType !== undefined) {
+      // show the specific selected type
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType == newVPType);
+    } else {
+      // show projects & portfolios, no templates
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+    }
+  }
+
+  initDropDown(): void {
+    this.dropDownVPType = [];
+    this.dropDownVPType.push({name: this.translate.instant('vp.btn.showDefault'), id: 'Default'});
+    if (this.vcSelected) {
+      this.dropDownVPType.push({name: this.translate.instant('vp.btn.showCockpit'), id: 'KeyMetrics'});
+    }
+    this.dropDownVPType.push({name: this.translate.instant('vp.btn.showPortfolio'), id: 'Portfolio'});
+    if (this.hasVCPerm(this.permVC.Modify + this.permVC.CreateVP)) {
+      this.dropDownVPType.push({name: this.translate.instant('vp.btn.showTemplate'), id: 'Template'});
+    }
+    if (this.hasVPPerm(this.permVP.DeleteVP)) {
+      this.dropDownVPType.push({name: this.translate.instant('vp.btn.showDeleted'), id: 'Deleted'});
+    }
+  }
+
+  switchView(): void {
+    if (!this.dropDownVPType) {
+      return;
+    }
+    const element = this.dropDownVPType.find(item => item.id === this.viewMode);
+    this.log(`switchView to ${this.viewMode} ${element?.name}`);
+    if (element) {
+      this.viewMode = element.id;
+    }
+    if (this.viewMode == 'Deleted' && this.deleted == false) {
+      this.getVisboProjects(true);
+    } else if (this.viewMode != 'Deleted' && this.deleted == true) {
+      this.getVisboProjects(false);
+    }
+    this.filterVP();
+    if (this.viewMode === 'KeyMetrics' && !this.visboprojectversions) {
+      this.getVisboProjectKeyMetrics();
+    }
+    this.updateUrlParam('view', this.viewMode);
+  }
+
+  initCreateVP(): void {
+      this.newVP = { name: '', vcid: this.vcActive?._id, vpType: 0};
+  }
+
+  addproject(): void {
+    this.newVP.name = this.newVP.name.trim();
+    this.log(`Create VP newVP: ${JSON.stringify(this.newVP)}`);
+    if (!this.newVP.name) { return; }
+    if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
+    // dummy code to test additional properties find the first Template and create with start and end date
+    const vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
+    if (vpTemplate) {
+      this.newVP.templateID = vpTemplate._id;
+      const actDate = new Date();
+      actDate.setHours(0, 0, 0, 0);
+      this.newVP.startDate = new Date(actDate);
+      actDate.setMonth(actDate.getMonth() + 14);
+      this.newVP.endDate = actDate;
+      this.newVP.bac = 600;
+      this.newVP.rac = 660;
+    }
+
+    this.visboprojectService.addVisboProject(this.newVP).subscribe(
       vp => {
         // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
-        const vpType = this.translate.instant('vp.type.vpType'.concat(type.toString()));
+        const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
         const message = this.translate.instant('vp.msg.createSuccess', {name: vp.name, vpType: vpType});
         this.alertService.success(message, true);
         this.gotoClickedRow(vp);
@@ -223,7 +294,6 @@ export class VisboProjectsComponent implements OnInit {
         }
       }
     );
-    this.vpType = 0;
   }
 
   getVisboProjectKeyMetrics(): void {
@@ -236,7 +306,7 @@ export class VisboProjectsComponent implements OnInit {
           this.calcVPVList();
           this.log(`get VC Key metrics: Get ${visboprojectversions.length} Project Versions`);
           if (this.visboprojectversions.length === 0) {
-            this.chart = false;
+            // this.chart = false;
           }
         },
         error => {
