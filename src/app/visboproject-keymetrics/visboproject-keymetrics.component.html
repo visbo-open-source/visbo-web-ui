@@ -65,7 +65,7 @@
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
-        <div *ngIf="hasVPPerm(permVP.Modify)" class="dropdown mr-1">
+        <div *ngIf="canModify()" class="dropdown mr-1">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpvChange' | translate }}
             <span class="caret"></span>
@@ -283,21 +283,25 @@
         </button>
       </div>
       <div class="modal-body">
-        <form name="vpvMove" #f2="ngForm" novalidate>
+        <div *ngIf="newVPV && newVPV.variantName == 'pfv'">
+          <label class="bg-warning">{{ 'vpKeyMetric.msgChangePFV' | translate }}</label>
+        </div>
+        <form *ngIf="newVPV" name="vpvMove" #f2="ngForm" novalidate>
           <div class="form-group">
             <label for="startDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.startDate' | translate }}:</label>
-            <input id="startDateID" type="date" class="col-6 col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate | date:'yyyy-MM-dd'" (input)="newVPVstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
+            <input *ngIf="canModifyDate('startDate')" id="startDateID" type="date" class="col-6 col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate | date:'yyyy-MM-dd'" (input)="newVPVstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
+            <label *ngIf="!canModifyDate('startDate')" id="startDateID" class="col-6 col-form-label">{{ newVPV.startDate | date:'dd.MM.yyyy' }}</label>
           </div>
           <div class="form-group">
             <label for="endDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.endDate' | translate }}:</label>
             <input id="endDateID" type="date" class="col-6 col-form-label" name="newVPVendDate" [ngModel]="newVPVendDate | date:'yyyy-MM-dd'" (input)="newVPVendDate=parseDate($event.target.value)" (change)="updateDateRange()">
           </div>
-          <div class="modal-footer align-items-end">
-            <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
-            <button id="vpvMoveConfirm" *ngIf="!changeStatus" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
-            <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
-          </div>
         </form>
+        <div class="modal-footer align-items-end">
+          <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+          <button id="vpvMoveConfirm" *ngIf="!changeStatus" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+          <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+        </div>
       </div>
     </div>
   </div>

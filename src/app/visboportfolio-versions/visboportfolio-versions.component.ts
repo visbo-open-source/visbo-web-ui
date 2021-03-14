@@ -54,7 +54,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     dropDownSelected: string;
 
     dropDownVariant: DropDown[] = [];
-    dropDownVariantSelected: string;
     dropDownVariantIndex = 0;
 
     views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
@@ -439,7 +438,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   checkUpdateVPF(): boolean {
     let result = false;
     if (this.vpfActive
-    && this.vpfActive.variantName == this.dropDownVariantSelected
+    && this.vpfActive.variantName == this.dropDownVariant[this.dropDownVariantIndex].variantName
     && this.user._id == this.vpfActive.updatedFrom?.userId
     && visboIsToday(new Date(this.vpfActive.timestamp))) {
         result = true;
@@ -474,7 +473,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         newVPF.allItems.push(entry);
       }
     });
-    newVPF.variantName = this.dropDownVariantSelected;
+    newVPF.variantName = this.dropDownVariant[this.dropDownVariantIndex].variantName;
     if (this.checkUpdateVPF()) {
       this.log(`update VPF List ${this.vpCheckListAll.length}`);
       newVPF._id = this.vpfActive._id;
@@ -667,7 +666,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       }
     }
     this.dropDownVariantIndex = index;
-    this.dropDownVariantSelected = index >= 0 ? this.dropDownVariant[index].name : undefined;
   }
 
   calcVPList(): void {
@@ -764,7 +762,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   switchEditVariant(i: number): void {
     this.log(`Change Variant Drop Down ${i} `);
     if (i >= 0 && i < this.dropDownVariant.length) {
-      this.dropDownVariantSelected = this.dropDownVariant[i].variantName;
       this.dropDownVariantIndex = i;
     }
   }

@@ -328,7 +328,7 @@ export class VisboProjectVersionService {
       );
   }
 
-  /** POST: move & scale a Visbo Project Version with copy */
+  /** POST: copy, move & scale a Visbo Project Version with copy */
   changeVisboProjectVersion(vpvid: string, startDate?: Date, endDate?: Date, scaleFactor = 1): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

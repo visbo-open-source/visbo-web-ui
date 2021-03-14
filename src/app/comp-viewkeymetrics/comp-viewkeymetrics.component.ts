@@ -294,7 +294,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.sortKeyMetricsTable(undefined);
       let i = 0;
       // search the coresponding version for refDate
-      if (this.refDate) {
+      if (this.refDate && !this.sameDay(this.refDate, new Date())) {
         for (; i < this.visbokeymetrics.length; i++) {
           if (visboCmpDate(this.refDate, new Date(this.visbokeymetrics[i].timestamp)) >= 0) {
             break;

@@ -803,6 +803,7 @@
 			"delete": "Delete",
 			"destroy": "Destroy",
 			"restore": "Restore",
+			"show": "Show",
 			"cancel": "Cancel",
 			"back": "Back"
 		},
