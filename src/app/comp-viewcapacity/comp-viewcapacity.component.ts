@@ -672,7 +672,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDateRange(): void {
     this.updateUrlParam('from', undefined)
-    this.visboViewCapacityOverTime();
+    this.getProjectCapacity();
   }
 
   updateRef(): void {

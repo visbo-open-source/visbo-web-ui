@@ -329,7 +329,7 @@ export class VisboProjectVersionService {
   }
 
   /** POST: copy, move & scale a Visbo Project Version with copy */
-  changeVisboProjectVersion(vpvid: string, startDate?: Date, endDate?: Date, scaleFactor = 1): Observable<VisboProjectVersion> {
+  changeVisboProjectVersion(vpvid: string, startDate?: Date, endDate?: Date, scaleFactor = 1, scaleStart?: Date): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -340,6 +340,9 @@ export class VisboProjectVersionService {
     const newVPV = new VisboProjectVersion();
     newVPV.startDate = startDate;
     newVPV.endDate = endDate;
+    if (scaleStart) {
+      newVPV.actualDataUntil = scaleStart
+    }
     return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
       .pipe(
         map(response => response.vpv[0]),

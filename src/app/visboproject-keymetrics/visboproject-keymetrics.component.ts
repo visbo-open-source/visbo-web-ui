@@ -46,6 +46,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
   newVPVendDate: Date;
+  newVPVscaleStartDate: Date;
+  scaleCheckBox: boolean;
   scaleFactor: number;
   changeStatus: boolean;
 
@@ -602,6 +604,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.newVPVstartDate = new Date(this.newVPV.startDate);
       this.newVPVendDate = new Date(this.newVPV.endDate);
     }
+    this.newVPVscaleStartDate = new Date();
+    this.newVPVscaleStartDate.setDate(1);
+    this.newVPVscaleStartDate.setHours(0, 0, 0, 0);
+    this.scaleCheckBox = false;
     this.scaleFactor = 0;
   }
 
@@ -612,10 +618,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Move VPV ${this.newVPV.name}/${this.newVPV.variantName}/${this.newVPV._id} to new start ${this.newVPVstartDate} end ${this.newVPVendDate}`);
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
+    let scaleFactor = 1;
+    if (this.scaleCheckBox && this.scaleFactor) {
+        scaleFactor = 1 + this.scaleFactor / 100;
+    }
+
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
     || endDate.toISOString() !== this.newVPVendDate.toISOString()) {
-      this.log(`Execute Move VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()}`);
-      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate)
+      this.log(`Execute Copy VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${this.scaleFactor}`);
+      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, this.newVPVscaleStartDate)
         .subscribe(
           vpv => {
             if (vpv.variantName != 'pfv') {
@@ -682,6 +693,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             }
           }
         );
+    }
+  }
+
+  updateScaleFactor(): void {
+    if (this.scaleFactor != 0) {
+      this.changeStatus = true;
     }
   }
 

@@ -296,6 +296,19 @@
             <label for="endDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.endDate' | translate }}:</label>
             <input id="endDateID" type="date" class="col-6 col-form-label" name="newVPVendDate" [ngModel]="newVPVendDate | date:'yyyy-MM-dd'" (input)="newVPVendDate=parseDate($event.target.value)" (change)="updateDateRange()">
           </div>
+          <div class="custom-control custom-checkbox ml-3">
+              <input type="checkbox" class="custom-control-input" id="scaleCheckBox" name="scaleCheckBox" [(ngModel)]="scaleCheckBox">
+              <label class="custom-control-label" for="scaleCheckBox">{{ 'vpKeyMetric.lbl.scaleCheck' | translate }}</label>
+          </div>
+          <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
+            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99" (change)="updateScaleFactor()"> %
+          </div>
+          <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleStartDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleStartDate' | translate }}:</label>
+            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
+          </div>
+
         </form>
         <div class="modal-footer align-items-end">
           <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
