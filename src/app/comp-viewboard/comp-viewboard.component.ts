@@ -13,6 +13,10 @@ import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams } from '../_models/visboproject';
 
+import { scale } from 'chroma-js';
+
+// var colorArray = scale(['blue', 'lightblue)']).colors(5);
+
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 
 class startAndEndDate {
@@ -149,7 +153,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     var minAndMaxDate = this.getMinAndMaxDate(this.vps);
     
     const filter = this.filter ? this.filter.toLowerCase() : undefined;   
-    
+    // variables to count the number of sameBu's
+    var bu = '';
+    var lastbu = '';
+    var sameBuCount = 0;
+    var rgbHex = defaultColor;
+    var colorArray = [];
+
     for (let i = 0; i < this.vps.length; i++) {
       if (filter
         && !(this.vps[i].name.toLowerCase().indexOf(filter) >= 0
@@ -176,16 +186,28 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.vps[i].endDate)
         ]);
         
-        var buColor = 0;
-        var rgbHex = defaultColor;
-        var bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
-        if (bu) { 
+        var buColor = 0;       
+        bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
+        if (i == 0) { lastbu = bu };
+        if (bu) {                 
+          if (lastbu != bu){
+            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount);
+            scaleArray.reverse();
+            colorArray = colorArray.concat(scaleArray);
+            sameBuCount = 0;
+            lastbu = bu;
+          }         
+          sameBuCount += 1;
           buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;          
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor; 
-        }     
-        this.graphOptionsTimeline.colors.push(rgbHex);
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;  
+        }
       }       
     }
+    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount);
+    scaleArray.reverse();
+    colorArray = colorArray.concat(scaleArray);
+   
+    this.graphOptionsTimeline.colors = colorArray;
 
     //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio  
     if (minAndMaxDate && minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
