@@ -267,14 +267,17 @@
 		"titleCreate": "Create a new VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
-			"name": "Name",
+			"name": "Name",			
+			"template": "Project Template",
 			"type": "Type",
 			"modified": "Modified",
 			"versions": "# Versions",
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Description",
-			"view": "View"
+			"view": "View",
+			"startDate": "Start of Project", 
+			"endDate":"End of Project"
 		},
 		"type": {
 			"vpType0": "Project",

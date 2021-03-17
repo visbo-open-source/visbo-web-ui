@@ -268,13 +268,16 @@
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
+			"template": "Projektvorlage",
 			"type": "Typ",
 			"modified": "Änderung",
 			"versions": "# Versionen",
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Beschreibung",
-			"view": "Zeige"
+			"view": "Zeige",
+			"startDate": "Projekt Start", 
+			"endDate":"Projekt Ende"
 		},
 		"type": {
 			"vpType0": "Projekt",

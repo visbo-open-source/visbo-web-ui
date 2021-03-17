@@ -259,14 +259,16 @@ export class VisboProjectsComponent implements OnInit {
     if (!this.newVP.name) { return; }
     if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
     // dummy code to test additional properties find the first Template and create with start and end date
-    const vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
+
+    // in newVP.templateID there comes the name of the template!!
+    const vpTemplate = this.visboprojectsAll.find(vp => (vp.vpType == 2 && vp.name == this.newVP.templateID));
     if (vpTemplate) {
       this.newVP.templateID = vpTemplate._id;
-      const actDate = new Date();
-      actDate.setHours(0, 0, 0, 0);
-      this.newVP.startDate = new Date(actDate);
-      actDate.setMonth(actDate.getMonth() + 14);
-      this.newVP.endDate = actDate;
+      // const actDate = new Date();
+      // actDate.setHours(0, 0, 0, 0);
+      // this.newVP.startDate = new Date(actDate);
+      // actDate.setMonth(actDate.getMonth() + 14);
+      // this.newVP.endDate = actDate;
       this.newVP.bac = 600;
       this.newVP.rac = 660;
     }
@@ -432,6 +434,13 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
+
+  getTemplates(vps: VisboProject[]): VisboProject[] {
+    
+    return vps.filter(item => item.vpType == 2);
+   
+  }
+  
 
   /** Log a message with the MessageService */
   private log(message: string) {
