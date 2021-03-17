@@ -277,7 +277,9 @@
 			"description": "Description",
 			"view": "View",
 			"startDate": "Start of Project", 
-			"endDate":"End of Project"
+			"endDate":"End of Project",
+			"rac": "Order Value [T€]", 
+			"bac": "Budget [T€]"
 		},
 		"type": {
 			"vpType0": "Project",

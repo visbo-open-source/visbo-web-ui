@@ -277,7 +277,9 @@
 			"description": "Beschreibung",
 			"view": "Zeige",
 			"startDate": "Projekt Start", 
-			"endDate":"Projekt Ende"
+			"endDate": "Projekt Ende",
+			"rac": "Auftragswert [T€]", 
+			"bac": "Budget [T€]"
 		},
 		"type": {
 			"vpType0": "Projekt",
