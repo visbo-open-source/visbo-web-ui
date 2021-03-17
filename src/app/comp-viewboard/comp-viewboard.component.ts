@@ -15,8 +15,6 @@ import { VisboProject, VPParams } from '../_models/visboproject';
 
 import { scale } from 'chroma-js';
 
-// var colorArray = scale(['blue', 'lightblue)']).colors(5);
-
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 
 class startAndEndDate {

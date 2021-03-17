@@ -929,7 +929,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // give the capacities colors
     let orgaColors = [];    
     //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
-    orgaColors = orgaColors.concat(scale('GnBu').colors(childNodeList.length + 1));
+    orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
       orgaColors.unshift('#F7941E');
@@ -1094,7 +1094,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     // give the capacities colors
     let orgaColors = [];    
-    orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 1));
+    orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
       orgaColors.unshift('#F7941E');
