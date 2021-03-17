@@ -473,12 +473,15 @@
 		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
-		"titleVPVMove": "Kopieren & Verschieben",
-		"titleVPVScale": "Kopieren & Skalieren",
+		"titleVPVMove": "Kopieren & Verschieben/Skalieren",
+		"titleVPVCopy": "Kopieren",
 		"lbl": {
 			"project": "Projekt",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"pfvVariant": "Baseline",
+			"source": "Quelle",
+			"destination": "Ziel",
 			"value": "Wert",
 			"info": "Info",
 			"startDate": "Projekt Start",
@@ -541,7 +544,7 @@
 			"allVersions": "Alle Versionen",
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
-			"vpvScale": "Skalieren",
+			"vpvCopy": "Kopieren",
 			"back": "Zurück"
 		},
 		"msg": {

@@ -9,7 +9,7 @@
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
           <div class="dropdown-menu">
             <div *ngFor="let item of dropDown">
-              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.variantName }}</a>
+              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.name }}</a>
             </div>
           </div>
         </span>
@@ -72,8 +72,8 @@
           </button>
           <div class="dropdown-menu">
             <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
-            <a class="dropdown-item" (click)="initNewVPV()" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-            <a class="dropdown-item" (click)="initNewVPV()" data-toggle="modal" data-target="#vpvModalScale">{{ 'vpKeyMetric.btn.vpvScale' | translate }}</a>
+            <a class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <a class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
           </div>
         </div>
       </div>
@@ -320,26 +320,37 @@
   </div>
 </div>
 
-<!-- Modal scale VPV -->
-<div *ngIf="vpvActive" class="modal fade" id="vpvModalScale" tabindex="-1" role="dialog" aria-labelledby="vpvModalScaleTitle" aria-hidden="true">
+<!-- Modal copy VPV -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalCopy" tabindex="-1" role="dialog" aria-labelledby="vpvModalCopyTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="vpvModalScaleTitle">{{ 'vpKeyMetric.titleVPVScale' | translate }}</h5>
+        <h5 class="modal-title" id="vpvModalCopyTitle">{{ 'vpKeyMetric.titleVPVCopy' | translate }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form name="vpvScale" #f3="ngForm" novalidate>
+        <form *ngIf="newVPV && vpvActive" name="vpvCopy" #f3="ngForm" novalidate>
           <div class="form-group">
-            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
-            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99"> %
+            <div class="form-group">
+              <label for="sourceVariantID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.source' | translate }}:</label>
+              <label id="sourceVariantID" class="col-6 col-form-label">{{ getVariantName(vpvActive.variantName) }}</label>
+            </div>
+            <div class="form-group row ml-0">
+              <label for="variantNameID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.destination' | translate }}:</label>
+              <div id="variantNameID" *ngIf="newVPVdropDown.length > 1" class="col-6 col-form-label">
+                <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{getVariantName(newVPVvariantName)}}</a>
+                <div class="dropdown-menu">
+                  <a *ngFor="let item of newVPVdropDown; let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(variantIndex)">{{ item.name }}</a>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer align-items-end">
-            <button id="vpvScaleCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
-            <button id="vpvScaleConfirm" *ngIf="!scaleFactor" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
-            <button id="vpvScaleConfirm" *ngIf="scaleFactor" type="submit" class="btn btn-primary mx-1" (click)="scaleVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvCopyCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button id="vpvCopyConfirm" *ngIf="!hasVariantChange()" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvCopyConfirm" *ngIf="hasVariantChange()" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
           </div>
         </form>
       </div>

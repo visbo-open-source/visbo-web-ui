@@ -328,7 +328,7 @@ export class VisboProjectVersionService {
       );
   }
 
-  /** POST: copy, move & scale a Visbo Project Version with copy */
+  /** POST: move & scale a Visbo Project Version with copy */
   changeVisboProjectVersion(vpvid: string, startDate?: Date, endDate?: Date, scaleFactor = 1, scaleStart?: Date): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -346,8 +346,24 @@ export class VisboProjectVersionService {
     return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
       .pipe(
         map(response => response.vpv[0]),
-        tap(vpv => this.log(`copied VisboProjectVersion w/ id=${vpv._id}`)),
+        tap(vpv => this.log(`moved & scaled VisboProjectVersion w/ id=${vpv._id}`)),
         catchError(this.handleError<VisboProjectVersion>('changeVisboProjectVersion'))
+      );
+  }
+
+  /** POST: copy a Visbo Project Version */
+  copyVisboProjectVersion(vpvid: string, variantName: string): Observable<VisboProjectVersion> {
+    const url = `${this.vpvUrl}/${vpvid}/copy`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    const newVPV = new VisboProjectVersion();
+    newVPV.variantName = variantName;
+    return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
+      .pipe(
+        map(response => response.vpv[0]),
+        tap(vpv => this.log(`copied VisboProjectVersion w/ id=${vpv._id}`)),
+        catchError(this.handleError<VisboProjectVersion>('copyVisboProjectVersion'))
       );
   }
 
