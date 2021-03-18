@@ -65,7 +65,7 @@
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
-        <div *ngIf="canModify()" class="dropdown mr-1">
+        <div *ngIf="dropDownAll.length > 0" class="dropdown mr-1">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpvChange' | translate }}
             <span class="caret"></span>
@@ -73,7 +73,7 @@
           <div class="dropdown-menu">
             <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
             <a class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
-            <a class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+            <a *ngIf="canModify()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
           </div>
         </div>
       </div>
@@ -284,7 +284,7 @@
       </div>
       <div class="modal-body">
         <div *ngIf="newVPV && newVPV.variantName == 'pfv'">
-          <label class="bg-warning">{{ 'vpKeyMetric.msgChangePFV' | translate }}</label>
+          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
         </div>
         <form *ngIf="newVPV" name="vpvMove" #f2="ngForm" novalidate>
           <div class="form-group">
@@ -331,6 +331,9 @@
         </button>
       </div>
       <div class="modal-body">
+        <div *ngIf="newVPVvariantName == 'pfv'">
+          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
+        </div>
         <form *ngIf="newVPV && vpvActive" name="vpvCopy" #f3="ngForm" novalidate>
           <div class="form-group">
             <div class="form-group">

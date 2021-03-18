@@ -37,7 +37,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   currentUser: VisboUser;
   dropDown: DropDown[] = [];          // variants that have versions except pfv
-  dropDownAll: DropDown[] = [];       // all variants including standard
+  dropDownAll: DropDown[] = [];       // all variants including standard where the user can modify
   newVPVdropDown: DropDown[];         // variants to create a new Version
   dropDownIndex: number;
 
@@ -199,7 +199,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       );
     }
-    this.dropDownAll = dropDown.filter(item => item.name != ''); // make a copy 
+    this.dropDownAll = dropDown.filter(item => item.name != ''); // make a copy
     this.dropDownAll.splice(0, 0,
       {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
     );
@@ -212,8 +212,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       email = '';
     } else if (this.hasVPPerm(this.permVP.CreateVariant)) {
       email = this.currentUser?.email;
+      this.dropDownAll = this.dropDownAll.filter(item => item.email === email); // filter only variants that the user can modify
     } else {
       email = ' UNKNOWN ';
+      this.dropDown = [];
     }
     if (email || email == '') {
       this.newVPVdropDown = dropDown.filter(item => item.variantName != 'pfv' && (email == '' || item.email == email));
@@ -540,6 +542,23 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
+  gotoVPKeyMetric(vp: VisboProject): void {
+    const queryParams = new VPParams();
+    if (this.vpvActive?.variantName) {
+      const variant = vp.variant.find(variant => variant.variantName == this.vpvActive.variantName);
+      if (variant) {
+        queryParams.variantID = variant._id;
+      }
+      queryParams.refDate = (new Date()).toISOString();
+    }
+
+    this.router.navigate(['vpKeyMetrics/'.concat(vp._id)], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true
+    });
+  }
+
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
@@ -572,14 +591,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   canModify(): boolean {
-    let result = true;
     if (this.statusDirection != undefined && this.statusDirection != 1) {
       // not the latest version
-      result = false;
-    } else if (!this.hasVPPerm(this.permVP.Modify)) {
-      result = false;
+      return false;
     }
-    return result;
+    if (this.hasVPPerm(this.permVP.Modify)) {
+      return true;
+    } else if (this.hasVPPerm(this.permVP.CreateVariant)) {
+      // check if user can copy to a variant
+      if (this.dropDownAll.find(variant => variant.variantName == this.vpvActive.variantName)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 
   canModifyDate(mode: string): boolean {
@@ -664,7 +690,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.newVPV) {
       return;
     }
-    this.log(`Move VPV ${this.newVPV.name}/${this.newVPV.variantName}/${this.newVPV._id} to new start ${this.newVPVstartDate} end ${this.newVPVendDate}`);
+    this.log(`Move VPV ${this.newVPV.name}/${this.newVPV.variantName}/${this.newVPV._id} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()}`);
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
     let scaleFactor = 1;
@@ -673,8 +699,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
-    || endDate.toISOString() !== this.newVPVendDate.toISOString()) {
-      this.log(`Execute Copy VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${this.scaleFactor}`);
+    || endDate.toISOString() !== this.newVPVendDate.toISOString()
+    || scaleFactor !== 1) {
+      this.log(`Execute Move VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${scaleFactor} from ${this.newVPVscaleStartDate.toISOString()}`);
       this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, this.newVPVscaleStartDate)
         .subscribe(
           vpv => {
@@ -684,7 +711,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.evaluateDirection(0);
               const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess');
               this.alertService.success(message, true);
-            } else if (this.vpvActive.variantName != 'pfv') {
+            } else {
               // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
               this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
                 .subscribe(
@@ -725,9 +752,33 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName)
       .subscribe(
         vpv => {
-          this.visboprojectversions.splice(0, 0, vpv);
-          this.setVpvActive(vpv);
-          this.evaluateDirection(0);
+          if (vpv.variantName != 'pfv') {
+            const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess');
+            this.alertService.success(message, true);
+            // MS TODO: Navigate to the copied variant
+
+          } else {
+            // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
+            this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
+              .subscribe(
+                vpv => {
+                  this.visboprojectversions.splice(0, 0, vpv);
+                  this.setVpvActive(vpv);
+                  this.evaluateDirection(0);
+                  const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
+                  this.alertService.success(message, true);
+                },
+                error => {
+                  this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
+                  if (error.status === 403) {
+                    const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
+                  } else {
+                    this.alertService.error(getErrorMessage(error));
+                  }
+                }
+              );
+          }
         },
         error => {
           this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);

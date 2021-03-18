@@ -482,6 +482,9 @@
 			"pfvVariant": "Baseline",
 			"source": "From",
 			"destination": "To",
+			"scaleCheck": "Scale",
+			"scaleFactor": "Factor",
+			"scaleStartDate": "from",
 			"value": "Value",
 			"info": "Info",
 			"startDate": "Start of Project",
@@ -548,6 +551,7 @@
 			"back": "Back"
 		},
 		"msg": {
+			"changePFV": "Attention: Change of Baseline!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"

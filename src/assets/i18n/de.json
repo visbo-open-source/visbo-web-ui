@@ -482,6 +482,9 @@
 			"pfvVariant": "Baseline",
 			"source": "Quelle",
 			"destination": "Ziel",
+			"scaleCheck": "Skalieren",
+			"scaleFactor": "Faktor",
+			"scaleStartDate": "ab",
 			"value": "Wert",
 			"info": "Info",
 			"startDate": "Projekt Start",
@@ -548,6 +551,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
+			"changePFV": "Vorsicht: Änderung der Baseline!",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"

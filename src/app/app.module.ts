@@ -1,7 +1,7 @@
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
@@ -137,7 +137,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
   ],
   imports: [
     BrowserModule,
-    NgbModule,
+    // NgbModule,
     FormsModule,
     AppRoutingModule,
     AngularResizedEventModule,
