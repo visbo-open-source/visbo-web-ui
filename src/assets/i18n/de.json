@@ -478,10 +478,18 @@
 		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleDetailVersion": "Details zur Version",
+		"titleVPVMove": "Kopieren & Verschieben/Skalieren",
+		"titleVPVCopy": "Kopieren",
 		"lbl": {
 			"project": "Projekt",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"pfvVariant": "Baseline",
+			"source": "Quelle",
+			"destination": "Ziel",
+			"scaleCheck": "Skalieren",
+			"scaleFactor": "Faktor",
+			"scaleStartDate": "ab",
 			"value": "Wert",
 			"info": "Info",
 			"startDate": "Projekt Start",
@@ -542,9 +550,13 @@
 			"vpCapacity": "Ressourcen-Bedarf",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
+			"vpvChange": "Ändern",
+			"vpvMove": "Verschieben",
+			"vpvCopy": "Kopieren",
 			"back": "Zurück"
 		},
 		"msg": {
+			"changePFV": "Vorsicht: Änderung der Baseline!",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
@@ -803,6 +815,7 @@
 			"delete": "Löschen",
 			"destroy": "Vernichten",
 			"restore": "Wiederherstellen",
+			"show": "Anzeigen",
 			"cancel": "Abbrechen",
 			"back": "Zurück"
 		},

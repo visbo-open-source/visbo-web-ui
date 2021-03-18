@@ -123,7 +123,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       height: '600',
       title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
-      legend: {position: 'top'},
+      legend: {position: 'none'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       annotations: {
@@ -672,7 +672,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDateRange(): void {
     this.updateUrlParam('from', undefined)
-    this.visboViewCapacityOverTime();
+    this.getProjectCapacity();
   }
 
   updateRef(): void {
@@ -788,6 +788,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboViewProjectCapacityDrillDown resource ${this.currentLeaf.name}`);
     this.sumCost = 0;
     this.sumBudget = 0;
+    const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacity.lbl.noPFV') : '';
     const childNodeList = this.calcChildNode(this.visboCapacityChild, 'name');
     const mapNodeList = this.mapChildNode(childNodeList);
 
@@ -877,11 +878,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(tooltip);
       childNodeList.forEach((item, index) => {
         rowMatrix.push(element[index + initialOffset].plan);
-        rowMatrix.push(this.createTooltipProjectDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
-        const diff = this.calcLoadDiff(element[index + initialOffset], true);
-        if (diff == undefined){
-          rowMatrix.push( '> 999 %')
-        } else if (diff > 100) {
+        const currentElement = element[index + initialOffset];
+        rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, this.showUnit === 'PD', this.refPFV));
+        const diff = this.calcLoadDiff(currentElement, true);
+        if (diff == undefined && this.isParentLeaf(this.currentLeaf)){
+          rowMatrix.push(strNoPFV)
+        // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
+        //   rowMatrix.push(strNoPFV)
+        } else if (diff > 1) {
           const diffPercent = Math.round(diff * 100);
           rowMatrix.push( '' + diffPercent + ' %')
         } else {
@@ -1691,6 +1695,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
+  }
+
+  isParentLeaf(leaf: VisboOrgaTreeLeaf): boolean {
+    let result = false;
+    if (leaf && leaf.parent && leaf.parent.parent == null) {
+      result = true;
+    }
+    return result;
   }
 
   exportExcel(): void {

@@ -199,6 +199,14 @@ export class VisboProjectVersionsComponent implements OnInit {
       );
   }
 
+  gotoVP(visboproject: VisboProject): void {
+    this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
+  }
+
+  gotoKMVersion(vpv: VisboProjectVersion): void {
+    this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: { refDate: vpv.timestamp }});
+  }
+
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
