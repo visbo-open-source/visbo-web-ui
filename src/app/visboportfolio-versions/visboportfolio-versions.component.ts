@@ -677,13 +677,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   switchVPFVariant(variantName: string): void {
     let index = undefined;
-    if (this.dropDownVariant && this.dropDownVariant.length > 0) {
-      index = this.dropDownVariant.findIndex(item => item.variantName == variantName);
+    if (this.listVPFVariant && this.listVPFVariant.length > 0) {
+      index = this.listVPFVariant.findIndex(item => item.variantName == variantName);
       if (index < 0) {
         index = 0;
       }
+      this.activeVPFVariant = this.listVPFVariant[index];
     }
-    this.dropDownVariantIndex = index;
   }
 
   calcVPList(): void {
@@ -809,13 +809,21 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.vpfActive = this.visboportfolioversions[i];
       this.switchVariantByName(this.vpfActive.variantName);
       this.getVisboPortfolioKeyMetrics();
+
+      // MS TODO: do we have to reset the refDate???
+      this.changeView(undefined, undefined, undefined, this.vpfActive._id)
     } else {
       this.vpfActive = undefined;
       this.visboprojectversions = undefined;
     }
+  }
 
-    // MS TODO: do we have to reset the refDate???
-    this.changeView(undefined, undefined, undefined, this.vpfActive._id)
+  displayVariantName(variant: DropDown): string {
+    let result = '';
+    if (variant?.variantName) {
+      result = '(' + variant.name + ')';
+    }
+    return result
   }
 
   sortVPTable(n: number): void {

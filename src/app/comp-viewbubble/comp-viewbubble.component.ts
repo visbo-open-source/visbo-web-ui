@@ -209,7 +209,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`Delivery on Changes  ${this.activeID}, Changes: ${JSON.stringify(changes)}`);
+    this.log(`Delivery on Changes  ${this.activeID}`);
     // change event happens before init, ignore
     if (this.metricList) {
       this.initSetting();
@@ -906,6 +906,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    this.messageService.add('CompViewKeyMetrics: ' + message);
+    this.messageService.add('CompViewBubble: ' + message);
   }
 }
