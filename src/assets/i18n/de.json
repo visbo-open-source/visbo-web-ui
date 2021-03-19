@@ -616,7 +616,9 @@
 			"showDrill": "Zeige",
 			"drillNone": "Plan & Ist",
 			"drillOrga": "Organisationseinheiten",
-			"drillProject": "Projekte"
+			"drillProject": "Projekte",
+			"name": "Project",
+			"noPFV": "keine BL"
 		},
 		"btn": {
 			"back": "Zurück",
