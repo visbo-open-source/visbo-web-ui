@@ -123,8 +123,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   visboViewBoardOverTime(): void { 
-    const defaultColor = '#c5c5c5';
-    const headLineColor = '#2c2c2c';
+    const defaultColor = '#59a19e';
+    const headLineColor = '#808080';
     const graphDataTimeline = [];
 
     if (!this.vps || this.vps.length === 0 || !this.customize ) {
@@ -189,7 +189,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (i == 0) { lastbu = bu };
         if (bu) {                 
           if (lastbu != bu){
-            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount);
+            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+            scaleArray.splice(scaleArray.length-3, 3);
             scaleArray.reverse();
             colorArray = colorArray.concat(scaleArray);
             sameBuCount = 0;
@@ -201,9 +202,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         }
       }       
     }
-    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount);
+    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+    scaleArray.splice(scaleArray.length-3, 3);
     scaleArray.reverse();
     colorArray = colorArray.concat(scaleArray);
+   
    
     this.graphOptionsTimeline.colors = colorArray;
 
