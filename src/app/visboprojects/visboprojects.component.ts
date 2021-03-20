@@ -269,8 +269,8 @@ export class VisboProjectsComponent implements OnInit {
       // this.newVP.startDate = new Date(actDate);
       // actDate.setMonth(actDate.getMonth() + 14);
       // this.newVP.endDate = actDate;
-      this.newVP.bac = 600;
-      this.newVP.rac = 660;
+      // this.newVP.bac = 600;
+      // this.newVP.rac = 660;
     }
 
     this.visboprojectService.addVisboProject(this.newVP).subscribe(
@@ -435,10 +435,8 @@ export class VisboProjectsComponent implements OnInit {
   }
 
 
-  getTemplates(vps: VisboProject[]): VisboProject[] {
-    
-    return vps.filter(item => item.vpType == 2);
-   
+  getTemplates(vps: VisboProject[]): VisboProject[] {    
+    return vps.filter(item => item.vpType == 2);   
   }
   
 

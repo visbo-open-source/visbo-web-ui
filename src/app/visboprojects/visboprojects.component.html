@@ -87,7 +87,9 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VpModalCenterTitle">{{ 'vp.titleCreate' | translate }}</h5>
+          <!-- <h5 class="modal-title" id="VpModalCenterTitlePr">{{ 'vp.titleCreatePr' | translate }}</h5> -->
+          <h5 *ngIf="newVP.vpType == 0" class="modal-title" id="VpModalCenterTitlePr">{{ 'vp.titleCreatePr' | translate }}</h5>
+          <h5 *ngIf="newVP.vpType == 1" class="modal-title" id="VpModalCenterTitlePf">{{ 'vp.titleCreatePf' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -134,12 +136,12 @@
               <!-- Edit RAC -->
               <div class="form-group">
                 <label for="vpRAC" class="col-form-label">{{ 'vp.lbl.rac' | translate }}:</label>
-                <input id="CreateVPRac" type="number" class="form-control" name="rac" [ngModel]="newVP.rac" (input)="newVP.rac=$event.target.value" >
+                <input id="CreateVPRac" type="number" class="form-control" min = "0"  name="rac" [ngModel]="newVP.rac" (input)="newVP.rac=$event.target.value" >
               </div>
               <!-- Edit BAC -->
               <div class="form-group">
                 <label for="vpBAC" class="col-form-label">{{ 'vp.lbl.bac' | translate }}:</label>
-                <input id="CreateVPBac" type="number" class="form-control" name="bac" [ngModel]="newVP.bac" (input)="newVP.bac=$event.target.value" >
+                <input id="CreateVPBac" type="number" class="form-control" min = "0" name="bac" [ngModel]="newVP.bac" (input)="newVP.bac=$event.target.value" >
               </div>
             </div>
           </form>

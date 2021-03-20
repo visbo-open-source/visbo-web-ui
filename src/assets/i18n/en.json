@@ -264,7 +264,8 @@
 		"titleName": "Projects in {{name}}",
 		"titleVC": "Projects in",
 		"noVP": "No VISBO Project",
-		"titleCreate": "Create a new VISBO Project",
+		"titleCreatePf": "Create a new VISBO Portfolio",
+		"titleCreatePr": "Create a new VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",			
