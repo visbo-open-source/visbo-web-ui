@@ -87,7 +87,9 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VpModalCenterTitle">{{ 'vp.titleCreate' | translate }}</h5>
+          <!-- <h5 class="modal-title" id="VpModalCenterTitlePr">{{ 'vp.titleCreatePr' | translate }}</h5> -->
+          <h5 *ngIf="newVP.vpType == 0" class="modal-title" id="VpModalCenterTitlePr">{{ 'vp.titleCreatePr' | translate }}</h5>
+          <h5 *ngIf="newVP.vpType == 1" class="modal-title" id="VpModalCenterTitlePf">{{ 'vp.titleCreatePf' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -102,14 +104,45 @@
                 <!-- <option value=2>{{ 'vp.type.vpType2' | translate }}</option> -->
               </select>
             </div>
-
+            <!-- Edit Name -->
             <div class="form-group">
               <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
               <input id="CreateVPName" type="text" class="form-control" name="name" [(ngModel)]="newVP.name">
             </div>
+            <!-- Edit Description -->
             <div class="form-group">
               <label class="col-form-label">{{ 'vp.lbl.description' | translate }}:</label>
               <textarea id="CreateVPDesc" class="form-control" name="description" [(ngModel)]="newVP.description"></textarea>
+            </div>
+            <!-- show only when Add Project is selected -->
+            <div *ngIf="newVP.vpType == 0">
+              <!-- Selection Template -->
+              <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
+                <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
+                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">               
+                  <option *ngFor="let template of getTemplates(visboprojectsAll)" value="{{ template._id }}">{{ template.name }}</option>
+                </select>
+              </div>              
+              <!-- Edit Start Date -->
+              <div class="form-group">              
+                  <label for="vpStart" class="col-form-label">{{ 'vp.lbl.startDate' | translate }}:</label>
+                  <input id="CreateVPStart" type="date" class="form-control" name="startDate" [ngModel]="newVP.startDate | date:'yyyy-MM-dd'" (input)="newVP.startDate=$event.target.value" >              
+              </div>
+              <!-- Edit End Date  -->
+              <div class="form-group">
+                <label for="vpEnd" class="col-form-label">{{ 'vp.lbl.endDate' | translate }}:</label>
+                <input id="CreateVPEnd" type="date" class="form-control" name="endDate" [ngModel]="newVP.endDate | date:'yyyy-MM-dd'" (input)="newVP.endDate=$event.target.value" >
+              </div>
+              <!-- Edit RAC -->
+              <div class="form-group">
+                <label for="vpRAC" class="col-form-label">{{ 'vp.lbl.rac' | translate }}:</label>
+                <input id="CreateVPRac" type="number" class="form-control" min = "0"  name="rac" [ngModel]="newVP.rac" (input)="newVP.rac=$event.target.value" >
+              </div>
+              <!-- Edit BAC -->
+              <div class="form-group">
+                <label for="vpBAC" class="col-form-label">{{ 'vp.lbl.bac' | translate }}:</label>
+                <input id="CreateVPBac" type="number" class="form-control" min = "0" name="bac" [ngModel]="newVP.bac" (input)="newVP.bac=$event.target.value" >
+              </div>
             </div>
           </form>
         </div>
