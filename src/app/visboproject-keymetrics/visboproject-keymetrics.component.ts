@@ -226,6 +226,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.newVPVdropDown = dropDown;
     }
     if (this.newVPVdropDown.length > 0) {
+      this.newVPVdropDown.splice(0, 0,
+        {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
+      );
       this.newVPVdropDownIndex = 0;
     }
     if (this.dropDown.length > 0 ) {
@@ -368,11 +371,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
           visboproject => {
-            if (!this.vpActive || this.vpActive._id !== visboproject._id) {
-              this.vpActive = visboproject;
-              this.combinedPerm = visboproject.perm;
-              this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
-              this.dropDownInit();
+            this.vpActive = visboproject;
+            this.combinedPerm = visboproject.perm;
+            this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
+            this.dropDownInit();
+            if (this.vpActive?._id !== visboproject._id) {
               this.getVisboCenterOrga();
             }
             const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex].variantName : '';
@@ -709,18 +712,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.visboprojectversions.splice(0, 0, vpv);
               this.setVpvActive(vpv);
               this.evaluateDirection(0);
-              const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess');
+              const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
               this.alertService.success(message, true);
             } else {
               // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
               this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
                 .subscribe(
                   vpv => {
-                    this.visboprojectversions.splice(0, 0, vpv);
-                    this.setVpvActive(vpv);
-                    this.evaluateDirection(0);
                     const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                     this.alertService.success(message, true);
+                    this.getVisboProjectVersions();
                   },
                   error => {
                     this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -753,8 +754,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       .subscribe(
         vpv => {
           if (vpv.variantName != 'pfv') {
-            const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess');
+            const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
             this.alertService.success(message, true);
+            this.getVisboProjectVersions();
             // MS TODO: Navigate to the copied variant
 
           } else {
@@ -762,11 +764,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
               .subscribe(
                 vpv => {
-                  this.visboprojectversions.splice(0, 0, vpv);
-                  this.setVpvActive(vpv);
-                  this.evaluateDirection(0);
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                   this.alertService.success(message, true);
+                  this.getVisboProjectVersions();
                 },
                 error => {
                   this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
