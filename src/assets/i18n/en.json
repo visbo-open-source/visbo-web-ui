@@ -303,9 +303,9 @@
 		},
 		"msg": {
 			"createSuccess": "VISBO {{vpType}} {{name}} created successfully",
-			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPerm": "Permission denied for this VISBO {{vpType}}",
 			"errorPermVC": "Permission denied for this VISBO Center",
-			"errorConflict": "VISBO Project {{name}} already exists or not allowed",
+			"errorConflict": "VISBO {{vpType}} {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project",
 			"noVP": "You do not have access to a VISBO Project."
 		}
