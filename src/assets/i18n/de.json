@@ -562,6 +562,8 @@
 		},
 		"msg": {
 			"changePFV": "Vorsicht: Änderung der Baseline!",
+			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
+			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"

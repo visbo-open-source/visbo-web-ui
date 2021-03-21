@@ -394,8 +394,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
@@ -492,8 +492,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         continue;
       }
       keyMetrics.push([
@@ -560,8 +560,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
@@ -624,8 +624,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
@@ -681,8 +681,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // skip multiple versions per day
-      if (i < this.visboprojectversions.length - 1
-      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i + 1].timestamp)) {
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
