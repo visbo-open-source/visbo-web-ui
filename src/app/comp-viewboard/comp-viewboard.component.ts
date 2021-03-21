@@ -13,6 +13,8 @@ import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams } from '../_models/visboproject';
 
+import { scale } from 'chroma-js';
+
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 
 class startAndEndDate {
@@ -120,8 +122,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  visboViewBoardOverTime(): void {
+  visboViewBoardOverTime(): void { 
+    const defaultColor = '#59a19e';
+    const headLineColor = '#808080';
     const graphDataTimeline = [];
+
     if (!this.vps || this.vps.length === 0 || !this.customize ) {
       this.graphDataTimeline = [];
       return;
@@ -130,7 +135,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     for ( let j = 0; this.customize && this.customize.value && this.customize.value.businessUnitDefinitions && j < this.customize.value.businessUnitDefinitions.length; j++) {
       buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
     }
-
     this.vps.sort(function(a, b) {
       let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
       if (result == 0) {
@@ -143,10 +147,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
 
     var minAndMaxDate = this.getMinAndMaxDate(this.vps);
-    const filter = this.filter ? this.filter.toLowerCase() : undefined;    
-
-    var defaultColor = '#c5c5c5';
-    var headLineColor = '#2c2c2c';
+    
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;   
+    // variables to count the number of sameBu's
+    var bu = '';
+    var lastbu = '';
+    var sameBuCount = 0;
+    var rgbHex = defaultColor;
+    var colorArray = [];
 
     for (let i = 0; i < this.vps.length; i++) {
       if (filter
@@ -173,23 +181,36 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
         ]);
-
-        var buColor = 0;
-        var rgbHex = defaultColor;
-        var bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
-        if (bu) {
-          // ??? UR: 21.08.2020:.farbe wasn't delivered with the visboProjectService
-          buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+        
+        var buColor = 0;       
+        bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
+        if (i == 0) { lastbu = bu };
+        if (bu) {                 
+          if (lastbu != bu){
+            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+            scaleArray.splice(scaleArray.length-3, 3);
+            scaleArray.reverse();
+            colorArray = colorArray.concat(scaleArray);
+            sameBuCount = 0;
+            lastbu = bu;
+          }         
+          sameBuCount += 1;
+          buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;          
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;  
         }
-        this.graphOptionsTimeline.colors.push(rgbHex);
-      }
-      var lastlineID = this.vps.length - i;
+      }       
     }
+    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+    scaleArray.splice(scaleArray.length-3, 3);
+    scaleArray.reverse();
+    colorArray = colorArray.concat(scaleArray);
+   
+   
+    this.graphOptionsTimeline.colors = colorArray;
 
     //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio
     if (minAndMaxDate && minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
-      lastlineID = 0;
+      const lastlineID = 0;
       // color for the Portfolio-TimeLine
       this.graphOptionsTimeline.colors.push(headLineColor);
 

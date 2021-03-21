@@ -24,6 +24,8 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
             from '../_helpers/visbo.helper';
 
+import { scale, brewer } from 'chroma-js';
+
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -97,7 +99,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
   colorsPFV = ['#F7941E', '#BDBDBD', '#458CCB'];
-  colorsOrga = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
+  colorsOrga = ['#ff0000', '#ff0000', '#BDBDBD', '#458CCB'];
 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
@@ -927,6 +929,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowHeader.push(annotation);
     });
     graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];    
+    //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
+    orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    if (this.refPFV) {
+      orgaColors.unshift('#F7941E');
+    } else {
+      orgaColors.unshift('#ff0000');
+    }   
+    this.graphOptionsComboChart.colors = orgaColors;
+
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
   }
@@ -940,8 +955,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    const mapNodeList = this.mapChildNode(childNodeList);
-
+    const mapNodeList = this.mapChildNode(childNodeList);      
+    
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -1080,6 +1095,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowHeader.push(annotation);
     });
     graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];    
+    orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    if (this.refPFV) {
+      orgaColors.unshift('#F7941E');
+    } else {
+      orgaColors.unshift('#ff0000');
+    }   
+    this.graphOptionsComboChart.colors = orgaColors;
+
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
   }
