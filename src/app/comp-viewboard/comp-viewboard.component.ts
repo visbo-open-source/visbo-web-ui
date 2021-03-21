@@ -133,10 +133,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
     var buDefs = [];
     for ( let j = 0; this.customize && this.customize.value && this.customize.value.businessUnitDefinitions && j < this.customize.value.businessUnitDefinitions.length; j++) {
-      buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;     
+      buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
     }
-    
-    //this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
     this.vps.sort(function(a, b) {
       let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
       if (result == 0) {
@@ -172,13 +170,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       }
       const startDate = this.vps[i].startDate;
       const endDate = this.vps[i].endDate;
-           
+
       if (startDate && endDate && startDate <= endDate) {
         // we have a start & end date for the project, add it to the Timeline
 
         graphDataTimeline.push([
           (this.vps.length - i).toString(),
-          this.combineName(this.vps[i].name, this.vps[i].variantName),         
+          this.combineName(this.vps[i].name, this.vps[i].variantName),
           this.createCustomHTMLContent(this.vps[i]),
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
@@ -210,7 +208,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
    
     this.graphOptionsTimeline.colors = colorArray;
 
-    //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio  
+    //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio
     if (minAndMaxDate && minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
       const lastlineID = 0;
       // color for the Portfolio-TimeLine
@@ -218,19 +216,19 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
       graphDataTimeline.push([
         (lastlineID).toString(),
-        this.combineName(this.vpf.name, ''),         
-        '', 
+        this.combineName(this.vpf.name, ''),
+        '',
         new Date(minAndMaxDate.start),
         new Date(minAndMaxDate.end)
       ]);
     }
-    
+
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
 
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
-   
+
     // header of the projectboard
     graphDataTimeline.push([
       'ID',
@@ -326,10 +324,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   getMinAndMaxDate(vpslist: VisboProjectVersion[]): startAndEndDate {
-    
+
     let minMaxDate = new startAndEndDate();
-    let newStartDate = new Date(8640000000000000); 
-    let newEndDate =  new Date(-8640000000000000); 
+    let newStartDate = new Date(8640000000000000);
+    let newEndDate =  new Date(-8640000000000000);
 
     if (!vpslist && vpslist.length < 1) {
       return undefined;
@@ -346,7 +344,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     })
     minMaxDate.start = newStartDate;
     minMaxDate.end = newEndDate;
-    return minMaxDate;    
+    return minMaxDate;
   }
 
   /** Log a message with the MessageService */

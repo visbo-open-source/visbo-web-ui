@@ -27,7 +27,7 @@ import { textChangeRangeIsUnchanged } from 'typescript';
 
 class DropDown {
   name: string;
-  version: number;
+  version?: number;
   variantName: string;
   description?: string;
   longDescription?: string;
@@ -80,7 +80,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     switchVariantCount: number;
     switchVariant: string;
     vpfListFilter: string;
-    hasOrga = false;    
+    hasOrga = false;
     customize: VisboSetting;
 
     pageParams = new VPFParams();
@@ -192,7 +192,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
         .subscribe(
           vcsettings => {
-            this.hasOrga = vcsettings.length > 0;            
+            this.hasOrga = vcsettings.length > 0;
           },
           error => {
             if (error.status === 403) {
@@ -310,7 +310,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.getVisboPortfolioKeyMetrics();
   }
 
-  
+
   getVisboCenterCustomization(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       // check if appearance is available
@@ -318,7 +318,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
         .subscribe(
           vcsettings => {
-            if (vcsettings.length > 0) { this.customize = vcsettings[0]; }        
+            if (vcsettings.length > 0) { this.customize = vcsettings[0]; }
           },
           error => {
             if (error.status === 403) {
@@ -675,6 +675,17 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  switchVPFVariant(variantName: string): void {
+    let index = undefined;
+    if (this.listVPFVariant && this.listVPFVariant.length > 0) {
+      index = this.listVPFVariant.findIndex(item => item.variantName == variantName);
+      if (index < 0) {
+        index = 0;
+      }
+      this.activeVPFVariant = this.listVPFVariant[index];
+    }
+  }
+
   calcVPList(): void {
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.vpList = [];
@@ -798,13 +809,21 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.vpfActive = this.visboportfolioversions[i];
       this.switchVariantByName(this.vpfActive.variantName);
       this.getVisboPortfolioKeyMetrics();
+
+      // MS TODO: do we have to reset the refDate???
+      this.changeView(undefined, undefined, undefined, this.vpfActive._id)
     } else {
       this.vpfActive = undefined;
       this.visboprojectversions = undefined;
     }
+  }
 
-    // MS TODO: do we have to reset the refDate???
-    this.changeView(undefined, undefined, undefined, this.vpfActive._id)
+  displayVariantName(variant: DropDown): string {
+    let result = '';
+    if (variant?.variantName) {
+      result = '(' + variant.name + ')';
+    }
+    return result
   }
 
   sortVPTable(n: number): void {
