@@ -30,7 +30,7 @@
   <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
       <div class="col-6 d-print-none" *ngIf="!getPreView()">

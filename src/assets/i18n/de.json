@@ -107,7 +107,7 @@
 			"emailRequired": "Korrekte e-Mail Adresse erforderlich",
 			"companyRequired": "Ein Firmenname ist erforderlich",
 			"lastNameRequired": "Nachname ist erforderlich",
-			"firstNameRequired": "Nachname ist erforderlich",
+			"firstNameRequired": "Vorname ist erforderlich",
 			"registerSuccess": "Gratulation, Ihre E-Mail Adresse {{email}} ist nun bestätigt. Bitte melden Sie sich an.",
 			"registerSuccessConfirm": "Gratulation, Sie haben ihre E-Mail Adresse {{email}} erfolgreich registriert. Bitte prüfen Sie Ihre E-Mail und bestätigen Sie den Zugriff.",
 			"registerError": "Fehler beim Registrieren: {{message}}",
@@ -277,9 +277,9 @@
 			"detail": "Detail",
 			"description": "Beschreibung",
 			"view": "Zeige",
-			"startDate": "Projekt Start", 
+			"startDate": "Projekt Start",
 			"endDate": "Projekt Ende",
-			"rac": "Auftragswert [T€]", 
+			"rac": "Auftragswert [T€]",
 			"bac": "Budget [T€]"
 		},
 		"type": {
