@@ -28,10 +28,12 @@ class startAndEndDate {
 })
 export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
-  @Input() vps: VisboProjectVersion[];
+  @Input() listVP: VisboProject[];
+  @Input() listVPV: VisboProjectVersion[];
   @Input() customize: VisboSetting;
   @Input() vpf: VisboProject;
 
+  mapVPID: number[];
   refDate: Date;
   filter: string;
   activeID: string; // either VP ID of Portfolio or VC ID
@@ -92,6 +94,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     this.refDate = refDate ? new Date(refDate) : new Date();
     this.filter = filter;
+
+    this.mapVPID = [];
+    this.listVP?.forEach((vp, index) => this.mapVPID[vp._id] = index);
   }
 
   filterKeyBoardEvent(event: KeyboardEvent): void {
@@ -122,12 +127,21 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  visboViewBoardOverTime(): void { 
+  updateVPV(): void {
+      this.listVPV?.forEach(vpv => {
+        const bu = this.getCustomPropertyString(vpv.vpid, 'businessUnit')
+        if (bu) {
+          vpv.businessUnit = bu;
+        }
+      });
+  }
+
+  visboViewBoardOverTime(): void {
     const defaultColor = '#59a19e';
     const headLineColor = '#808080';
     const graphDataTimeline = [];
 
-    if (!this.vps || this.vps.length === 0 || !this.customize ) {
+    if (!this.listVPV || this.listVPV.length === 0 || !this.customize ) {
       this.graphDataTimeline = [];
       return;
     }
@@ -135,7 +149,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     for ( let j = 0; this.customize && this.customize.value && this.customize.value.businessUnitDefinitions && j < this.customize.value.businessUnitDefinitions.length; j++) {
       buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
     }
-    this.vps.sort(function(a, b) {
+
+    this.updateVPV();
+    this.listVPV.sort(function(a, b) {
       let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
       if (result == 0) {
         result = visboCmpDate(b.startDate, a.startDate);
@@ -146,9 +162,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       return result;
     });
 
-    var minAndMaxDate = this.getMinAndMaxDate(this.vps);
-    
-    const filter = this.filter ? this.filter.toLowerCase() : undefined;   
+    var minAndMaxDate = this.getMinAndMaxDate(this.listVPV);
+
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     // variables to count the number of sameBu's
     var bu = '';
     var lastbu = '';
@@ -156,36 +172,37 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     var rgbHex = defaultColor;
     var colorArray = [];
 
-    for (let i = 0; i < this.vps.length; i++) {
+    for (let i = 0; i < this.listVPV.length; i++) {
       if (filter
-        && !(this.vps[i].name.toLowerCase().indexOf(filter) >= 0
-          || this.vps[i].businessUnit?.toLowerCase().indexOf(filter) >= 0
-          || this.vps[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
-          || this.vps[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
-          || this.vps[i].status?.toLowerCase().indexOf(filter) >= 0
+        && !(this.listVPV[i].name.toLowerCase().indexOf(filter) >= 0
+          || this.getCustomPropertyString(this.listVPV[i].vpid, 'businessUnit').toLowerCase().indexOf(filter) >= 0
+          || this.listVPV[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
+          || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
+          || this.listVPV[i].status?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter
         continue;
       }
-      const startDate = this.vps[i].startDate;
-      const endDate = this.vps[i].endDate;
+      const startDate = this.listVPV[i].startDate;
+      const endDate = this.listVPV[i].endDate;
 
       if (startDate && endDate && startDate <= endDate) {
         // we have a start & end date for the project, add it to the Timeline
 
         graphDataTimeline.push([
-          (this.vps.length - i).toString(),
-          this.combineName(this.vps[i].name, this.vps[i].variantName),
-          this.createCustomHTMLContent(this.vps[i]),
-          new Date(this.vps[i].startDate),
-          new Date(this.vps[i].endDate)
+          (this.listVPV.length - i).toString(),
+          this.combineName(this.listVPV[i].name, this.listVPV[i].variantName),
+          this.createCustomHTMLContent(this.listVPV[i]),
+          new Date(this.listVPV[i].startDate),
+          new Date(this.listVPV[i].endDate)
         ]);
-        
-        var buColor = 0;       
-        bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
+
+        var buColor = 0;
+        var businessUnit = this.getCustomPropertyString(this.listVPV[i].vpid, 'businessUnit');
+        bu = businessUnit || undefined;
         if (i == 0) { lastbu = bu };
-        if (bu) {                 
+        if (bu) {
           if (lastbu != bu){
             let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
             scaleArray.splice(scaleArray.length-3, 3);
@@ -193,19 +210,19 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
             colorArray = colorArray.concat(scaleArray);
             sameBuCount = 0;
             lastbu = bu;
-          }         
+          }
           sameBuCount += 1;
-          buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;          
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;  
+          buColor = buDefs[businessUnit] ? buDefs[businessUnit]: undefined;
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
         }
-      }       
+      }
     }
     let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
     scaleArray.splice(scaleArray.length-3, 3);
     scaleArray.reverse();
     colorArray = colorArray.concat(scaleArray);
-   
-   
+
+
     this.graphOptionsTimeline.colors = colorArray;
 
     //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio
@@ -260,8 +277,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
 
-    if (vpv.businessUnit) {
-      result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + vpv.businessUnit + '</b></td>' + '</tr>';
+    const businessUnit = this.getCustomPropertyString(vpv.vpid, 'businessUnit') || vpv.businessUnit;
+    if (businessUnit) {
+      result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
     if (vpv.leadPerson) {
       result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + vpv.leadPerson + '</b></td>' + '</tr>';
@@ -273,6 +291,19 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     result = result + '<tr>' + '<td>' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
+  }
+
+  getCustomPropertyString(vpid: string, name: string): string {
+      let result = '';
+      const index = this.mapVPID[vpid];
+      if (index >= 0 && index < this.listVP.length) {
+        const vp = this.listVP[index];
+        const property = vp.customFieldString?.find(item => item.name == name);
+        if (property) {
+          result = property.value;
+        }
+      }
+      return result;
   }
 
   timelineSelectRow(row: number): void {
@@ -294,10 +325,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
   }
 
-  getvps(): string {
-    return JSON.stringify(this.vps);
-  }
-
   combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
     if (variantName) {
@@ -308,13 +335,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   findProject(name: string): VisboProjectVersion {
     // name could not contain a variantPart if it does not end with " ) ", and this is not an allowed vp name
-    let result = this.vps.find(x => x.name === name);
+    let result = this.listVPV.find(x => x.name === name);
     if (!result && name.lastIndexOf(" ) ") === name.length - 3) {
       // variant Part at the end
       const index = name.lastIndexOf(" ( ");
       const vpName = name.substring(0, index);
       const variantName = name.substring(index + 3, name.length - 3);
-      result = this.vps.find(x => x.name === vpName && x.variantName === variantName)
+      result = this.listVPV.find(x => x.name === vpName && x.variantName === variantName)
     }
     return result;
   }

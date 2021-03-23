@@ -31,6 +31,20 @@ export class VPLock {
   expiresAt: Date;
 }
 
+export class VPCustomString {
+  name: string;
+  localName: string;
+  value: string;
+  type: string;
+}
+
+export class VPCustomDouble {
+  name: string;
+  localName: string;
+  value: number;
+  type: string;
+}
+
 export class VisboProject {
   _id: string;
   updatedAt: Date;
@@ -44,6 +58,8 @@ export class VisboProject {
   variant: [VPVariant];
   lock: [VPLock];
   restrict: [VPRestrict];
+  customFieldDouble: VPCustomDouble[];
+	customFieldString: VPCustomString[];
   // eslint-disable-next-line
   capacity: any[];
   vc: {
@@ -108,3 +124,5 @@ export interface CreateProjectProperty {
   rac?: number;
   businessUnit?: string;
 }
+
+export const constSystemCustomName = ['businessUnit', 'risk', 'strategicFit']

@@ -682,7 +682,7 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[maxid].name = userRole.name;
             organisation[maxid].parent = role.name;
             if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
-            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole; }
+            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole }
             if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
             if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
@@ -770,6 +770,7 @@ export class VisbocenterDetailComponent implements OnInit {
         cleanupIsTeam && delete item.percent;
         if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
         if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
+        item.name = item.name.padStart(item.name.length + item.level, ' ')
       });
 
       // export to Excel

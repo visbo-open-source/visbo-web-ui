@@ -1101,6 +1101,9 @@
 		},
 		"versus": "vs."
 	},
+	"customField": {
+		"businessUnit": "Geschäftseinheit"
+	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Berechtigung",
 		"titleVCPerm": "VISBO Center Berechtigung",

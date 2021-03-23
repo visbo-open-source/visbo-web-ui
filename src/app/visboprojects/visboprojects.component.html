@@ -78,7 +78,7 @@
       <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
-      <app-comp-viewboard [vps]="visboprojectversions"></app-comp-viewboard>
+      <app-comp-viewboard [listVPV]="visboprojectversions"></app-comp-viewboard>
     </div>
   </div>
 
@@ -119,14 +119,14 @@
               <!-- Selection Template -->
               <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
                 <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
-                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">               
+                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">
                   <option *ngFor="let template of getTemplates(visboprojectsAll)" value="{{ template._id }}">{{ template.name }}</option>
                 </select>
-              </div>              
+              </div>
               <!-- Edit Start Date -->
-              <div class="form-group">              
+              <div class="form-group">
                   <label for="vpStart" class="col-form-label">{{ 'vp.lbl.startDate' | translate }}:</label>
-                  <input id="CreateVPStart" type="date" class="form-control" name="startDate" [ngModel]="newVP.startDate | date:'yyyy-MM-dd'" (input)="newVP.startDate=$event.target.value" >              
+                  <input id="CreateVPStart" type="date" class="form-control" name="startDate" [ngModel]="newVP.startDate | date:'yyyy-MM-dd'" (input)="newVP.startDate=$event.target.value" >
               </div>
               <!-- Edit End Date  -->
               <div class="form-group">

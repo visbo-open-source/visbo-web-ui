@@ -10,7 +10,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboUser, VisboUserInvite } from '../_models/visbouser';
-import { VisboProject, VPVariant, VPTYPE } from '../_models/visboproject';
+import { VisboProject, VPVariant, VPTYPE, constSystemCustomName } from '../_models/visboproject';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
@@ -32,6 +32,7 @@ export class VisboprojectDetailComponent implements OnInit {
   userIndex: number;
   groupIndex: number;
   actView = 'User';
+  expandProperties = false;
 
   currentUser: VisboUser;
   combinedPerm: VGPermission = undefined;
@@ -73,6 +74,7 @@ export class VisboprojectDetailComponent implements OnInit {
       .subscribe(
         visboproject => {
           this.visboproject = visboproject;
+          this.translateCustomFields(this.visboproject);
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpDetail.titleName', {name: visboproject.name}));
           this.log(`Get VisboProject for VP ${id} Perm ${JSON.stringify(this.combinedPerm)} `);
@@ -87,6 +89,18 @@ export class VisboprojectDetailComponent implements OnInit {
           }
         }
       );
+  }
+
+  translateCustomFields(vp: VisboProject): void {
+    if (vp?.customFieldString) {
+      vp.customFieldString.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
+    }
   }
 
   hasVCPerm(perm: number): boolean {
@@ -222,6 +236,9 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   save(): void {
+    if (this.visboproject.customFieldString) {
+      this.visboproject.customFieldString = this.visboproject.customFieldString.filter(item => item.value != '');
+    }
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
         () => {

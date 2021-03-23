@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboProject, VPParams } from '../_models/visboproject';
+import { VisboProject, VPParams, constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -372,6 +372,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         .subscribe(
           visboproject => {
             this.vpActive = visboproject;
+            this.translateCustomFields(this.vpActive);
             this.combinedPerm = visboproject.perm;
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
@@ -415,6 +416,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         });
     } else {
       this.gotoRoot();
+    }
+  }
+
+  translateCustomFields(vp: VisboProject): void {
+    if (vp?.customFieldString) {
+      vp.customFieldString.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
     }
   }
 

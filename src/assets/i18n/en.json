@@ -268,7 +268,7 @@
 		"titleCreatePr": "Create a new VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
-			"name": "Name",			
+			"name": "Name",
 			"template": "Project Template",
 			"type": "Type",
 			"modified": "Modified",
@@ -277,9 +277,9 @@
 			"detail": "Detail",
 			"description": "Description",
 			"view": "View",
-			"startDate": "Start of Project", 
+			"startDate": "Start of Project",
 			"endDate":"End of Project",
-			"rac": "Order Value [T€]", 
+			"rac": "Order Value [T€]",
 			"bac": "Budget [T€]"
 		},
 		"type": {
@@ -1100,6 +1100,9 @@
 			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
+	},
+	"customField": {
+		"businessUnit": "Business Unit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",
