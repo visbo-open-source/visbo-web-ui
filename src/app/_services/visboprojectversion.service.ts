@@ -333,16 +333,15 @@ export class VisboProjectVersionService {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (scaleFactor) {
+    if (scaleFactor != 1) {
       params = params.append('scaleFactor', scaleFactor.toString());
     }
 
     const newVPV = new VisboProjectVersion();
     newVPV.startDate = startDate;
     newVPV.endDate = endDate;
-    if (scaleStart) {
-      newVPV.actualDataUntil = scaleStart
-    }
+    newVPV.actualDataUntil = scaleStart
+
     return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
       .pipe(
         map(response => response.vpv[0]),
