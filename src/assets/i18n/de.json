@@ -303,9 +303,9 @@
 		},
 		"msg": {
 			"createSuccess": "VISBO {{vpType}} {{name}} wurde erfolgreich angelegt",
-			"errorPerm": "Keine Berechtigung für  dieses VISBO Projekt",
+			"errorPerm": "Keine Berechtigung für  dieses VISBO {{vpType}}",
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
-			"errorConflict": "VISBO Projekt {{name}} existiert bereits oder anlegen nicht erlaubt",
+			"errorConflict": "VISBO {{vpType}} {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum VISBO Projekt",
 			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt."
 		}

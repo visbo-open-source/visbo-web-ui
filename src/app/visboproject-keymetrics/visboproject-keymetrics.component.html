@@ -306,7 +306,7 @@
           </div>
           <div *ngIf="scaleCheckBox" class="form-group">
             <label for="scaleStartDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleStartDate' | translate }}:</label>
-            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
+            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" min="{{getScaleDate('Min') | date:'yyyy-MM-dd'}}" max="{{getScaleDate('Max') | date:'yyyy-MM-dd'}}" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
           </div>
 
         </form>

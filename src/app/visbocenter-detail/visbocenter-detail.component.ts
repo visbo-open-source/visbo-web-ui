@@ -27,13 +27,13 @@ class OrganisationItem {
   uid: number;
   pid: number;
   type: number;
-  isTeam: boolean;
+  isTeam: string;
   level: number;
   name: string;
   parent: string;
   path: string;
   employeeNr: string;
-  isExternRole: boolean;
+  isExternRole: string;
   defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
@@ -616,7 +616,7 @@ export class VisbocenterDetailComponent implements OnInit {
           organisation[id].pid = undefined;
         }
         organisation[id].name = role.name;
-        organisation[id].isExternRole = role.isExternRole;
+        organisation[id].isExternRole = role.isExternRole?'1': '';
         organisation[id].defaultKapa = role.defaultKapa;
         organisation[id].tagessatz = role.tagessatzIntern;
         organisation[id].employeeNr = role.employeeNr;
@@ -633,7 +633,7 @@ export class VisbocenterDetailComponent implements OnInit {
         if (role.isTeam) {
           this.log("Skip Handling of Team Members");
           organisation[id].type = 2;
-          organisation[id].isTeam = true;
+          organisation[id].isTeam = '1';
         } else {
           organisation[id].type = 1;
         }
@@ -770,7 +770,7 @@ export class VisbocenterDetailComponent implements OnInit {
         cleanupIsTeam && delete item.percent;
         if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
         if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
-        item.name = item.name.padStart(item.name.length + item.level, ' ')
+        item.name = item.name.padStart(item.name.length + item.level, ' ');
       });
 
       // export to Excel

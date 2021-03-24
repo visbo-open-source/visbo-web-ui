@@ -44,6 +44,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   vpSelected: string;
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
+  vpvBaseline: VisboProjectVersion;
   variantID: string;
   variantName: string;
   deleted = false;
@@ -649,6 +650,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result && false;
   }
 
+  getScaleDate(mode: string): Date {
+    let result: Date;
+    if (mode == 'Min' && this.newVPV) {
+      if (this.vpvActive.actualDataUntil) {
+        result = new Date(this.newVPV.actualDataUntil);
+      } else {
+        result = new Date(this.newVPV.startDate);
+        result.setDate(1);
+        result.setHours(0, 0, 0, 0);
+      }
+    } else if (mode == 'Max' && this.newVPV) {
+      result = new Date(this.newVPV.endDate);
+      result.setDate(1);
+      result.setMonth(result.getMonth() + 1)
+      result.setHours(0, 0, 0, 0);
+    } else {
+      result = new Date();
+    }
+    return result;
+  }
+
   initNewVPV(mode: string): void {
     this.newVPV = undefined;
     if (!this.vpvActive) {
@@ -670,6 +692,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               vpv.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
               if (vpv.length > 0) {
                 this.newVPV = vpv[0];
+                this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
                 this.newVPVstartDate = new Date(this.newVPV.startDate);
                 this.newVPVendDate = new Date(this.newVPV.endDate);
                 this.newVPVvariantName = 'pfv';
@@ -710,15 +733,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
     let scaleFactor = 1;
-    if (this.scaleCheckBox && this.scaleFactor) {
-        scaleFactor = 1 + this.scaleFactor / 100;
+    let newVPVscaleStartDate: Date;
+    if (this.scaleCheckBox) {
+        if (this.newVPVscaleStartDate) { newVPVscaleStartDate = this.newVPVscaleStartDate; }
+        if (this.scaleFactor) { scaleFactor = 1 + this.scaleFactor / 100; }
     }
 
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
     || endDate.toISOString() !== this.newVPVendDate.toISOString()
     || scaleFactor !== 1) {
-      this.log(`Execute Move VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${scaleFactor} from ${this.newVPVscaleStartDate.toISOString()}`);
-      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, this.newVPVscaleStartDate)
+      this.log(`Execute Move VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${scaleFactor} from ${newVPVscaleStartDate?.toISOString()}`);
+      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate)
         .subscribe(
           vpv => {
             if (vpv.variantName != 'pfv') {
@@ -731,7 +756,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             } else {
               // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
               this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-              this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
+              this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
                 .subscribe(
                   vpv => {
                     const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
@@ -780,7 +805,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           } else {
             // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
             this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-            this.visboprojectversionService.changeVisboProjectVersion(this.vpvActive._id)
+            this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
               .subscribe(
                 vpv => {
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
