@@ -31,7 +31,7 @@ export class VisboProjectVersionService {
 
 
   /** GET VisboProjectVersions from the server if id is specified get only projects of this vpid*/
-  getVisboProjectVersions(id: string, deleted?: boolean, variantID?: string, keyMetrics?: boolean): Observable<VisboProjectVersion[]> {
+  getVisboProjectVersions(id: string, deleted?: boolean, variantID?: string, keyMetrics?: number): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -45,7 +45,7 @@ export class VisboProjectVersionService {
       params = params.append('variantID', variantID);
     }
     if (keyMetrics) {
-      params = params.append('keyMetrics', '1');
+      params = params.append('keyMetrics', keyMetrics.toString());
     }
 
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);

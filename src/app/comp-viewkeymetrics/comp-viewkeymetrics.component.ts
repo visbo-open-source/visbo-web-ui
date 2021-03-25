@@ -9,7 +9,6 @@ import { AlertService } from '../_services/alert.service';
 
 import { VPParams } from '../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
-import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -74,7 +73,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: undefined, pointSize: undefined},
     '2': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
     '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined  },
-    '4': { lineWidth: 1, pointShape: 'circle', lineDashStyle: undefined, pointSize: 4 },
+    '4': { lineWidth: 4, pointShape: 'circle', lineDashStyle: [6, 2, 2, 6], pointSize: 6 },
     '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
   };
   seriesEndDate =  {
@@ -154,7 +153,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   permVP = VGPVP;
 
   constructor(
-    private visboprojectversionService: VisboProjectVersionService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -209,6 +207,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
+    } else if (type === 'PAC') {
+      result = km.costCurrentTotalPredict !== undefined;
     }
     return result;
   }
@@ -326,6 +326,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visboprojectversions) {
       return;
     }
+    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC') >= 0;
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {
@@ -339,17 +340,32 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
-      keyMetricsCost.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
-      ]);
+      if (predict) {
+        keyMetricsCost.push([
+          new Date(this.visboprojectversions[i].timestamp),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotalPredict || 0)
+        ]);
+      } else {
+        keyMetricsCost.push([
+          new Date(this.visboprojectversions[i].timestamp),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
+        ]);
+      }
     }
     if (keyMetricsCost.length === 0) {
       this.log(`keyMetricsCost empty`);
-      keyMetricsCost.push([new Date(), 0, 0, 0, 0]);
+      if (predict) {
+        keyMetricsCost.push([new Date(), 0, 0, 0, 0, 0]);
+      } else {
+        keyMetricsCost.push([new Date(), 0, 0, 0, 0]);
+      }
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0]; });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -359,18 +375,35 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       const currentDate = new Date(keyMetricsCost[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetricsCost.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
+      if (predict) {
+        keyMetricsCost.push([
+          currentDate, undefined, undefined, undefined, undefined, undefined
+        ]);
+      } else {
+        keyMetricsCost.push([
+          currentDate, undefined, undefined, undefined, undefined
+        ]);
+      }
     }
+    if (predict) {
+      keyMetricsCost.push([
+        'Timestamp',
+        this.translate.instant('keyMetrics.shortAC'),
+        this.translate.instant('keyMetrics.shortPV'),
+        this.translate.instant('keyMetrics.shortEAC'),
+        this.translate.instant('keyMetrics.shortBAC'),
+        this.translate.instant('keyMetrics.shortPAC')
+      ]);
+    } else {
+      keyMetricsCost.push([
+        'Timestamp',
+        this.translate.instant('keyMetrics.shortAC'),
+        this.translate.instant('keyMetrics.shortPV'),
+        this.translate.instant('keyMetrics.shortEAC'),
+        this.translate.instant('keyMetrics.shortBAC')
+      ]);
 
-    keyMetricsCost.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortAC'),
-      this.translate.instant('keyMetrics.shortPV'),
-      this.translate.instant('keyMetrics.shortEAC'),
-      this.translate.instant('keyMetrics.shortBAC')
-    ]);
+    }
     keyMetricsCost.reverse();
     // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsCost)}`);
     this.graphDataLineChart = keyMetricsCost;

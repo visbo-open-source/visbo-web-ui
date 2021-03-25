@@ -387,7 +387,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               variantID = variant ? variant._id.toString() : '';
             }
             this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, true)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, 2)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -686,7 +686,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             variantID = variant._id;
           }
         }
-        this.visboprojectversionService.getVisboProjectVersions(this.vpvActive.vpid, false, variantID, true)
+        this.visboprojectversionService.getVisboProjectVersions(this.vpvActive.vpid, false, variantID, 1)
           .subscribe(
             vpv => {
               vpv.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });

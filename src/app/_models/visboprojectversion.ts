@@ -68,6 +68,7 @@ export class VPVDeadline {
 export class VPVKeyMetrics {
   costCurrentActual: number;
   costCurrentTotal: number;
+  costCurrentTotalPredict: number;
   costBaseLastActual: number;
   costBaseLastTotal: number;
   timeCompletionCurrentActual: number;
