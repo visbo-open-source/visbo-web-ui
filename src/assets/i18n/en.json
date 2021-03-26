@@ -307,7 +307,13 @@
 			"errorPermVC": "Permission denied for this VISBO Center",
 			"errorConflict": "VISBO {{vpType}} {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project",
-			"noVP": "You do not have access to a VISBO Project."
+			"noVP": "You do not have access to a VISBO Project.",
+			"errorNamePattern": "Name may only contain A-Z, a-z, numericals, spaces and '; : . - _'", 
+			"errorNameLen": "Name is required and has to be at least 2 chars",
+			"errorStartEnd": "Start-Date must not be later than End-Date", 
+			"errorStartDate": "please provide Start-Date",
+			"errorEndDate": "please provide End-Date", 
+			"errorBac": "Budget is required and has to be >= 0"
 		}
 	},
 	"vpDetail": {
@@ -750,10 +756,11 @@
 			"planElement": "Plan Element",
 			"type": "Type",
 			"percentDone": "Done",
-			"startDateVPV": "Start Phase (planned)",
 			"startDatePFV": "Start Phase (baseline)",
-			"endDateVPV": "End Date (planned)",
+			"startDateTTVPV": "Start (planned)",
+			"endDateTTVPV": "End (planned)",
 			"endDatePFV": "End Date (baseline)",
+			"endDateVPV": "End Date (planned)",
 			"change": "Change (in weeks)",
 			"done": "Done",
 			"trafficlight": "Traffic Light",

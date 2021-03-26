@@ -384,8 +384,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       '<div><b>' + name + '</b></div>' + '<div>' +
       '<table>';
 
-    const start = this.translate.instant('compViewDeadline.lbl.startDateVPV');
-    const end = this.translate.instant('compViewDeadline.lbl.endDateVPV');
+    const start = this.translate.instant('compViewDeadline.lbl.startDateTTVPV');
+    const end = this.translate.instant('compViewDeadline.lbl.endDateTTVPV');
     const percentDone = this.translate.instant('compViewDeadline.lbl.percentDone');
     const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight');
     const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc');

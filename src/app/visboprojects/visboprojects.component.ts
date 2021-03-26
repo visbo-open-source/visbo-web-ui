@@ -21,6 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { isThisTypeNode } from 'typescript';
 
 class DropDown {
   name: string;
@@ -30,6 +31,7 @@ class DropDown {
 
 @Component({
   selector: 'app-visboprojects',
+  styleUrls: ['./visboprojects.component.css'],
   templateUrl: './visboprojects.component.html'
 })
 export class VisboProjectsComponent implements OnInit {
@@ -251,29 +253,40 @@ export class VisboProjectsComponent implements OnInit {
 
   initCreateVP(): void {
       
-      const suggestedDate: Date = new Date();
+      const suggestedStartDate: Date = new Date();
       
       // if there are templates, then suggest the  first template in the list as the default template
       let templateID = '';
       templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
                 
       // suggest the first of next month as start of Project ...
-      if (suggestedDate.getMonth() < 11) {
-        suggestedDate.setMonth(suggestedDate.getMonth() + 1 );
+      if (suggestedStartDate.getMonth() < 11) {
+        suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
       } else {
-        suggestedDate.setMonth(0); 
-        suggestedDate.setFullYear(suggestedDate.getFullYear() + 1);
+        suggestedStartDate.setMonth(0); 
+        suggestedStartDate.setFullYear(suggestedStartDate.getFullYear() + 1);
       }
 
-      suggestedDate.setDate(1);
+      suggestedStartDate.setDate(1);
+      
+      const suggestedEndDate: Date = new Date(suggestedStartDate);
+      suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
 
       this.newVP = { 
         name: '', 
         vcid: this.vcActive?._id, 
         vpType: 0, 
-        startDate: suggestedDate,
+        // startDate: suggestedStartDate,
+        // endDate: suggestedEndDate, 
         templateID: templateID
       };       
+  }
+
+  datesAreInvalid(): boolean {
+    // const result = !(this.newVP.startDate < this.newVP.endDate);
+    const result = !(this.newVP?.startDate && this.newVP.endDate && (visboCmpDate(this.newVP.startDate, this.newVP.endDate) < 0));
+    // visboCmpDate
+    return result;
   }
 
   addproject(): void {
@@ -284,9 +297,9 @@ export class VisboProjectsComponent implements OnInit {
     // dummy code to test additional properties find the first Template and create with start and end date
 
     // in newVP.templateID there comes the name of the template!!
-    const vpTemplate = this.visboprojectsAll.find(vp => (vp.vpType == 2 && vp.name == this.newVP.templateID));
-    if (vpTemplate) {
-      this.newVP.templateID = vpTemplate._id;
+    //const vpTemplate = this.visboprojectsAll.find(vp => (vp.vpType == 2 && vp.name == this.newVP.templateID));
+    //if (vpTemplate) {
+      //this.newVP.templateID = vpTemplate._id;
       // const actDate = new Date();
       // actDate.setHours(0, 0, 0, 0);
       // this.newVP.startDate = new Date(actDate);
@@ -294,7 +307,7 @@ export class VisboProjectsComponent implements OnInit {
       // this.newVP.endDate = actDate;
       // this.newVP.bac = 600;
       // this.newVP.rac = 660;
-    }
+    //}
 
     this.visboprojectService.addVisboProject(this.newVP).subscribe(
       vp => {
