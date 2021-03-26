@@ -370,6 +370,23 @@ export class VisboProjectService {
       );
   }
 
+  /** PUT: update a Variant to the Visbo Project */
+  updateVariant (variant: VPVariant, vpid: string, sysadmin = false): Observable<VPVariant> {
+    const url = `${this.vpUrl}/${vpid}/variant/${variant._id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} for ${name} `);
+    return this.http.put<VPVariantResponse>(url, variant, { headers , params })
+      .pipe(
+        map(response => response.variant[0]),
+        tap(variant => this.log(`updated VP Variant with id=${variant._id}`)),
+        catchError(this.handleError<VPVariant>('updateVariant'))
+      );
+  }
+
   /** DELETE: delete Visbo Project Variant */
   deleteVariant (variantID: string, vpid: string): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/variant/${variantID}`;

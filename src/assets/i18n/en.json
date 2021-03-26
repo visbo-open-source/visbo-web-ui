@@ -110,15 +110,15 @@
 			"firstNameRequired": "First name is required!",
 			"registerSuccess": "Congratulation, your e-mail address {{email}} is now confirmed. Please login. ",
 			"registerSuccessConfirm": "Congratulation, you registered successfully your e-mail address  {{email}}. Please check your e-Mail for confirmation.",
-			"registerError": "Error durin registration: {{message}}",
-			"confirmDP_TOU": "You have to accept the Terms & Conditioons and the Data Protection Policy",
+			"registerError": "Error during registration: {{message}}",
+			"confirmDP_TOU": "You have to accept the Terms & Conditions and the Data Protection Policy",
 			"followPolicy": "New password has to follow the Policy.",
 			"followRule": "Password Rule: At least one alpha, one capital, one number and one special character and a length of minimum 8."
 		}
 	},
 	"registerConfirm": {
 		"title": "e-mail Confirmation",
-		"description": "This is an inbetween page without specific content, you should get redirected to login. If not please use the button below.",
+		"description": "This is an in-between page without specific content, you should get redirected to login. If not please use the button below.",
 		"btn": {
 			"cancel": "Cancel"
 		},
@@ -328,6 +328,7 @@
 		"titleViewGroup": "View a Group from the VISBO Project",
 		"titleAddGroup": "Add a new Group to the VISBO Project",
 		"titleAddVariant": "Add a new Variant to the VISBO Project",
+		"titleChangeVariant": "Modify a Variant from VISBO Project",
 		"titleModifyGroup": "Modify a Group in the VISBO Project",
 		"titleDeleteGroup": "Delete a Group in the VISBO Project",
 		"titleDeleteProject": "Delete VISBO Project",
@@ -387,6 +388,7 @@
 			"addVariant": "Add Variant",
 			"invite": "Invite",
 			"createVariant": "Create",
+			"changeVariant": "Change",
 			"save": "Save",
 			"restore": "Restore",
 			"destroy": "Destroy!",
@@ -418,6 +420,7 @@
 			"removeGroupSuccess": "Group {{name}} was deleted successfully",
 			"removeLockSuccess": "Lock was deleted successfully",
 			"createVariantSuccess": "Variant {{name}} was added to VISBO Project",
+			"changeVariantSuccess": "Variant {{name}} was updated successfully",
 			"removeVariantSuccess": "Variant {{name}} was deleted successfully",
 			"errorPerm": "No Permission for this VISBO Project",
 			"errorAddUserPerm": "No Permission to add Users to this VISBO Project",
@@ -429,7 +432,9 @@
 			"errorRemoveLockPerm": "No Permission to delete Lock",
 			"errorVPConflict": "A VISBO Project with {{name}} does already exist!",
 			"errorRemoveVariantPerm": "No Permission to delete Variant {{name}}",
-			"errorRemoveVariantConflict": "An Error occured during delete Variant {{name}}",
+			"errorRemoveVariantConflict": "An Error occurred during delete Variant {{name}}",
+			"errorCreateVariantPerm": "No Permission to create Variant",
+			"errorChangeVariantPerm": "No Permission to change Variant {{name}}",
 			"errorVariantConflict": "A Variant with {{name}} does already exist!"
 		}
 	},
@@ -484,10 +489,18 @@
 		"titleName": "Project {{name}}",
 		"titleVersion": "Version of",
 		"titleDetailVersion": "Details about Version",
+		"titleVPVMove": "Copy & Move/Scale",
+		"titleVPVCopy": "Copy",
 		"lbl": {
 			"project": "Project",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"pfvVariant": "Baseline",
+			"source": "From",
+			"destination": "To",
+			"scaleCheck": "Scale",
+			"scaleFactor": "Factor",
+			"scaleStartDate": "from",
 			"value": "Value",
 			"info": "Info",
 			"startDate": "Start of Project",
@@ -520,7 +533,7 @@
 			"unfinishedDeadlineDelay": "Planned average deviation of unfinished deadlines",
 			"actualCost": "actual achievement of costs",
 			"actualDelivery": "actual achievement of deliveries",
-			"actualDeadline": "actual achievement od deadlines",
+			"actualDeadline": "actual achievement of deadlines",
 			"totalCost": "planned achievement of total cost",
 			"totalDelivery": "planned achievement of total deliveries",
 			"totalDeadline": "planned achievement of total deadlines",
@@ -548,9 +561,15 @@
 			"vpCapacity": "Resource-Needs",
 			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
+			"vpvChange": "Change",
+			"vpvMove": "Move",
+			"vpvCopy": "Copy",
 			"back": "Back"
 		},
 		"msg": {
+			"changePFV": "Attention: Change of Baseline!",
+			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
+			"changeVPVSuccess": "Project Baseline was changed successfully!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
@@ -571,15 +590,15 @@
 	},
 	"ViewCapacity": {
 		"titleCapacity": "Capacity Utilisation - Timespam:",
-		"titleBox": "Sum Resource-Needs in Timerange",
+		"titleBox": "Sum Resource-Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " From",
 		"titleTimeTo": " To ",
 		"titleVersion": "Version of",
 		"yAxisCapaOverTime": "Monthly Cost",
-		"titleCapaOverTime":"Workload of {{roleName}}: Capacity vs. Plan for {{name}}",
-		"titleCapaOverTimeBL":"Workload of {{roleName}}: Baseline vs. Plan for {{name}}",
+		"titleCapaOverTime":"Workload from {{roleName}}: Capacity vs. Plan for {{name}}",
+		"titleCapaOverTimeBL":"Workload from {{roleName}}: Baseline vs. Plan for {{name}}",
 		"lbl": {
 			"month": "Month",
 			"totalCost": "Plan Cost",
@@ -610,7 +629,9 @@
 			"showDrill": "View",
 			"drillNone": "Actual & Plan",
 			"drillOrga": "Organisation Units",
-			"drillProject": "Projects"
+			"drillProject": "Projects",
+			"name": "Project",
+			"noPFV": "no BL"
 		},
 		"btn": {
 			"back": "Back",
@@ -809,6 +830,7 @@
 			"delete": "Delete",
 			"destroy": "Destroy",
 			"restore": "Restore",
+			"show": "Show",
 			"cancel": "Cancel",
 			"back": "Back"
 		},
@@ -873,7 +895,7 @@
 			"noProjectList": "This portfolio does not have a project list",
 			"noVersions": "No Project Versions related to this Date",
 			"removeVPFConfirm": "Do you really want to remove this Portfolio Project List?",
-			"errorPermVP": "No Permission for this Proects",
+			"errorPermVP": "No Permission for this Projects",
 			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
 			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List",
 			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
@@ -1029,7 +1051,7 @@
 		"longPD": "Planned number of Deadlines, according baseline",
 		"shortAD": "AD",
 		"planAD": "AD, plan-to-date",
-		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+		"longAD": "Actual number of weighted Deadlines, according plan to-date",
 
 		"shortDVAC": "DVAC",
 		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
@@ -1040,7 +1062,7 @@
 		"longPDV": "Planned number of Deliveries(DV), according baseline",
 		"shortADV": "ADV",
 		"planADV": "ADV, plan-to-date",
-		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+		"longADV": "Actual number of weighted Deliveries(DV), according plan-to-date",
 
 		"finishedDeadline": "finished Deadlines",
 		"unfinishedDeadline": "unfinished Deadlines",

@@ -5,17 +5,19 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(vpfActive, false, true)}}</a>
+        <span *ngIf="activeVPFVariant && dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
+          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
           <div class="dropdown-menu">
-            <!-- <a *ngFor="let item of dropDown; let dropDownIndex = index" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }}</a> -->
-            <a *ngFor="let item of dropDown" title="{{item.email}}">
+            <a *ngFor="let item of dropDown" class="dropdown-item">
               <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
               <div *ngIf="!checkVPFActive(item)" class="dropdown-item" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
             </a>
           </div>
         </span>
     </h2>
+    <div *ngIf="activeVPFVariant && activeVPFVariant.description">
+      {{ activeVPFVariant.description }}
+    </div>
       <h5 *ngIf="vpActive">{{ 'vpfVersion.titleVC' | translate }}:
         <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
         <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
@@ -77,7 +79,7 @@
   </div>
   <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
     <hr>
-    <app-comp-viewboard [vps]="vpList"></app-comp-viewboard>
+    <app-comp-viewboard [vps]="vpList" [customize]="customize" [vpf] ="vpActive"></app-comp-viewboard>
   </div>
 
   <!-- Modal Edit VPF List -->
@@ -92,11 +94,13 @@
         </div>
         <div class="modal-body">
           <div class="d-flex">
-            <div *ngIf="dropDownVariant.length > 1" class="dropdown" class="ml-2">
+            <div *ngIf="listVPFVariant.length > 1" class="dropdown" class="ml-2">
               {{ 'vpfVersion.lbl.variant' | translate }}:
-              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important">{{getVariantName(undefined, true, false)}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.longDescription}}">
+                {{activeVPFVariant.name}}
+              </a>
               <div class="dropdown-menu">
-                <a *ngFor="let item of dropDownVariant" class="dropdown-item" (click)="switchEditVariant(item.version)">{{ item.name || 'vpfVersion.lbl.defaultVariant' | translate }}</a>
+                <a *ngFor="let item of listVPFVariant" class="dropdown-item" (click)="switchVariantByID(item.version)"  title="{{item.longDescription}}">{{ item.name }}</a>
               </div>
             </div>
             <div class="ml-auto">
@@ -131,9 +135,9 @@
                 <td *ngIf="!item.hasVariants" id="ColName"></td>
                 <td *ngIf="item.hasVariants" id="ColName">
                   <div class="row">
-                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName">
+                    <select  class="form-select" style="border-width:0px" name="variantName" [(ngModel)]="item.variantName" title="{{item.description}}">
                       <option value="">{{ 'vpfVersion.lbl.defaultVariant' | translate }}</option>
-                      <option *ngFor="let variantName of getVariants(item.vp)">{{ variantName }}</option>
+                      <option *ngFor="let variant of getVariants(item.vp)" title="{{ variant.description }}">{{ variant.variantName }}</option>
                     </select>
                     <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
                   </div>
