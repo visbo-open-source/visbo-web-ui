@@ -390,14 +390,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight');
     const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc');
 
-    result = result + '<tr>' + '<td width="40%">' + start + ':</td>' + '<td><b>' + startDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td width="40%">' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td width="40%">' + percentDone + ':</td>' + '<td><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + start + ':</td>' + '<td class="align-right"><b>' + startDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + end + ':</td>' + '<td class="align-right"><b>' + endDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + percentDone + ':</td>' + '<td class="align-right"><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
     if (deadline.trafficlight) {
-      result = result + '<tr>' + '<td width="40%">' + trafficlight + ':</td>' + '<td><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + trafficlight + ':</td>' + '<td class="align-right"><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
     }
     if (deadline.trafficlightDesc) {
-      result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td class="align-right"><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';
     }
     result = result + '</table>' + '</div>' + '</div>';
     return result;

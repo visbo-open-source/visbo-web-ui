@@ -24,6 +24,8 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
             from '../_helpers/visbo.helper';
 
+import { scale, brewer } from 'chroma-js';
+
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -97,7 +99,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
   colorsPFV = ['#F7941E', '#BDBDBD', '#458CCB'];
-  colorsOrga = ['#F7941E', '#F7941E', '#BDBDBD', '#458CCB'];
+  colorsOrga = ['#ff0000', '#ff0000', '#BDBDBD', '#458CCB'];
 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
@@ -123,7 +125,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       height: '600',
       title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
-      legend: {position: 'top'},
+      legend: {position: 'none'},
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       annotations: {
@@ -672,7 +674,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDateRange(): void {
     this.updateUrlParam('from', undefined)
-    this.visboViewCapacityOverTime();
+    this.getProjectCapacity();
   }
 
   updateRef(): void {
@@ -788,6 +790,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`visboViewProjectCapacityDrillDown resource ${this.currentLeaf.name}`);
     this.sumCost = 0;
     this.sumBudget = 0;
+    const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacity.lbl.noPFV') : '';
     const childNodeList = this.calcChildNode(this.visboCapacityChild, 'name');
     const mapNodeList = this.mapChildNode(childNodeList);
 
@@ -877,11 +880,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(tooltip);
       childNodeList.forEach((item, index) => {
         rowMatrix.push(element[index + initialOffset].plan);
-        rowMatrix.push(this.createTooltipProjectDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
-        const diff = this.calcLoadDiff(element[index + initialOffset], true);
-        if (diff == undefined){
-          rowMatrix.push( '> 999 %')
-        } else if (diff > 100) {
+        const currentElement = element[index + initialOffset];
+        rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, this.showUnit === 'PD', this.refPFV));
+        const diff = this.calcLoadDiff(currentElement, true);
+        if (diff == undefined && this.isParentLeaf(this.currentLeaf)){
+          rowMatrix.push(strNoPFV)
+        // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
+        //   rowMatrix.push(strNoPFV)
+        } else if (diff > 1) {
           const diffPercent = Math.round(diff * 100);
           rowMatrix.push( '' + diffPercent + ' %')
         } else {
@@ -923,6 +929,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowHeader.push(annotation);
     });
     graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];    
+    //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
+    orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    if (this.refPFV) {
+      orgaColors.unshift('#F7941E');
+    } else {
+      orgaColors.unshift('#ff0000');
+    }   
+    this.graphOptionsComboChart.colors = orgaColors;
+
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
   }
@@ -936,8 +955,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    const mapNodeList = this.mapChildNode(childNodeList);
-
+    const mapNodeList = this.mapChildNode(childNodeList);      
+    
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -1076,6 +1095,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowHeader.push(annotation);
     });
     graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];    
+    orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    if (this.refPFV) {
+      orgaColors.unshift('#F7941E');
+    } else {
+      orgaColors.unshift('#ff0000');
+    }   
+    this.graphOptionsComboChart.colors = orgaColors;
+
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
   }
@@ -1691,6 +1722,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       findMappingLeaf(curLeaf.children[j]);
     }
     return resultLeaf;
+  }
+
+  isParentLeaf(leaf: VisboOrgaTreeLeaf): boolean {
+    let result = false;
+    if (leaf && leaf.parent && leaf.parent.parent == null) {
+      result = true;
+    }
+    return result;
   }
 
   exportExcel(): void {

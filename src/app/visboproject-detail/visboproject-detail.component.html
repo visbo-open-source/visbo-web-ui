@@ -152,7 +152,7 @@
           </div>
           <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class='col'>
             <!-- Button trigger modal -->
-            <button id="AddVariant" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VpVariantModalCreate">
+            <button id="AddVariant" type="button" class="my-1 btn btn-primary float-right" (click)='initVPVariant(undefined)' data-toggle="modal" data-target="#VpVariantModalCreate">
               {{ 'vpDetail.btn.addVariant' | translate }}
             </button>
           </div>
@@ -169,12 +169,11 @@
                 <th (click)="sortVariantTable(3)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.createdAt' | translate }}</th>
                 <th (click)="sortVariantTable(4)" class="d-none d-md-table-cell">{{ 'vpDetail.lbl.versions' | translate }}</th>
                 <th class="d-none d-md-table-cell">{{ 'vpDetail.lbl.lock' | translate }}</th>
-                <th *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)">{{ 'vpDetail.lbl.delete' | translate }}</th>
               </tr>
             </thead>
             <!--Table body-->
             <tbody id="VariantList">
-              <tr *ngFor="let variant of visboproject.variant; let variantIndex=index">
+              <tr *ngFor="let variant of visboproject.variant; let variantIndex=index" (click)='initVPVariant(variant)' data-toggle="modal" data-target="#VpVariantModalChange">
                 <td>{{variantIndex+1}}</td>
                 <td id="ColName">{{variant.variantName}}</td>
                 <td id="ColDescription">{{variant.description}}</td>
@@ -182,17 +181,7 @@
                 <td class="d-none d-md-table-cell" title="{{ variant.createdAt | date :'dd.MM.yyyy HH:mm:ss'}}">{{variant.createdAt | date :'dd.MM.yy'}}</td>
                 <td class="d-none d-md-table-cell">{{variant.vpvCount}}</td>
                 <td class="d-none d-md-table-cell">
-                  <ng-container *ngTemplateOutlet="lockIndicator; context:{level: getLockStatus(variantIndex)}"></ng-container>
-                </td>
-                <td>
-                  <button  *ngIf="!variant.vpvCount && hasVPPerm(permVP.Modify) && getLockStatus(variantIndex) <= 1" id="ColDeleteVariant" class="Detail"
-                    title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-                    data-toggle="modal" data-target="#VpVariantRemove">&times;
-                  </button>
-                  <button  *ngIf="!variant.vpvCount && !hasVPPerm(permVP.Modify) && hasVPPerm(permVP.CreateVariant) && getLockStatus(variantIndex) <= 1 && variant.email == currentUser.email" id="ColDeleteVariant" class="Detail"
-                    title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-                    data-toggle="modal" data-target="#VpVariantRemove">&times;
-                  </button>
+                  <ng-container *ngTemplateOutlet="lockIndicator; context:{level: getLockStatus(variant)}"></ng-container>
                 </td>
               </tr>
             </tbody>
@@ -550,7 +539,7 @@
 
   <!-- Modal Add VP Variant -->
   <div class="modal fade" id="VpVariantModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpVariantModalCreateTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div *ngIf="newVariant" class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="VpVariantModalCreateTitle">{{ 'vpDetail.titleAddVariant' | translate }}</h5>
@@ -576,22 +565,42 @@
               <button id="AddVariantConfirm" *ngIf="variantName.valid"  type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
             </div>
           </form>
-          <!-- <form name="newVariant" #f3="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f3.submitted && !variantName.valid }">
-              <label for="NewVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
-              <input id="NewVariantName" type="text" class="form-control" name="variantName" [(ngModel)]="newVariant.variantName" #variantName required>
-              <div *ngIf="f3.submitted && !variantName.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Change VP Variant -->
+  <div class="modal fade" id="VpVariantModalChange" tabindex="-1" role="dialog" aria-labelledby="VpVariantModalChangeTitle" aria-hidden="true">
+    <div *ngIf="newVariant" class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VpVariantModalChangeTitle">{{ 'vpDetail.titleChangeVariant' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="newVariant">
+            <div class="form-group">
+              <label for="ChangeVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+              <label id="ChangeVariantName" class="form-control">{{ newVariant.variantName }}</label>
             </div>
             <div class="form-group">
-              <label for="NewVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
-              <textarea id="NewVariantDesc" name=variantDesc class="form-control" name="description" [(ngModel)]="newVariant.description"></textarea>
+              <label for="ChangeVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+              <textarea id="ChangeVariantDesc" name=variantDesc class="form-control" name="description" [(ngModel)]="newVariant.description" #description="ngModel"></textarea>
             </div>
             <div class="modal-footer align-items-end">
               <button type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpDetail.btn.cancel' | translate }}</button>
-              <button id="AddVariantConfirm" *ngIf="!variantName.valid" type="submit" class="btn btn-primary mx-1" >{{ 'vpDetail.btn.createVariant' | translate }}</button>
-              <button id="AddVariantConfirm"  type="submit" class="btn btn-primary mx-1" (click)="addNewVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.createVariant' | translate }}</button>
+
+              <button  *ngIf="canDeleteVariant(newVariant)" id="ColDeleteVariant" class="btn btn-warning mx-1"
+                title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" data-dismiss="modal" data-toggle="modal" data-target="#VpVariantRemove">
+                {{ 'vpDetail.btn.delete' | translate }}
+              </button>
+
+              <button id="ChangeVariantConfirm" type="submit" class="btn btn-primary mx-1" (click)="changeVPVariant()" data-dismiss="modal">{{ 'vpDetail.btn.changeVariant' | translate }}</button>
             </div>
-          </form> -->
+          </form>
         </div>
       </div>
     </div>
@@ -599,7 +608,7 @@
 
   <!-- Modal Delete Variant -->
   <div class="modal fade" id="VpVariantRemove" tabindex="-1" role="dialog" aria-labelledby="Remove Variant" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="variantIndex >= 0 && variantIndex < visboproject.variant.length">
+    <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="newVariant">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="VpVariantRemoveTitle">{{ 'vpDetail.titleRemoveVariant' | translate }}</h5>
@@ -618,17 +627,21 @@
             </div>
             <div class="form-group">
               <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
-              <label class="col-sm-8 form-control-static">{{ visboproject.variant[variantIndex].variantName }}</label>
+              <label class="col-sm-8 form-control-static">{{ newVariant.variantName }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+              <label class="col-sm-8 form-control-static">{{ newVariant.description }}</label>
             </div>
             <div class="form-group">
               <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.user' | translate }}:</label>
-              <label class="col-sm-8 form-control-static">{{ visboproject.variant[variantIndex].email }}</label>
+              <label class="col-sm-8 form-control-static">{{ newVariant.email }}</label>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpDetail.btn.back' | translate }}</button>
-          <button id="DeleteVariantConfirm" type="button" class="btn btn-warning" (click)="removeVariant(variantIndex, visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
+          <button id="DeleteVariantConfirm" type="button" class="btn btn-warning" (click)="removeVariant(newVariant, visboproject)" data-dismiss="modal">{{ 'vpDetail.btn.delete' | translate }}</button>
         </div>
       </div>
     </div>

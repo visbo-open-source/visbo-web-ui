@@ -250,7 +250,30 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   initCreateVP(): void {
-      this.newVP = { name: '', vcid: this.vcActive?._id, vpType: 0};
+      
+      const suggestedDate: Date = new Date();
+      
+      // if there are templates, then suggest the  first template in the list as the default template
+      let templateID = '';
+      templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
+                
+      // suggest the first of next month as start of Project ...
+      if (suggestedDate.getMonth() < 11) {
+        suggestedDate.setMonth(suggestedDate.getMonth() + 1 );
+      } else {
+        suggestedDate.setMonth(0); 
+        suggestedDate.setFullYear(suggestedDate.getFullYear() + 1);
+      }
+
+      suggestedDate.setDate(1);
+
+      this.newVP = { 
+        name: '', 
+        vcid: this.vcActive?._id, 
+        vpType: 0, 
+        startDate: suggestedDate,
+        templateID: templateID
+      };       
   }
 
   addproject(): void {
@@ -259,16 +282,18 @@ export class VisboProjectsComponent implements OnInit {
     if (!this.newVP.name) { return; }
     if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
     // dummy code to test additional properties find the first Template and create with start and end date
-    const vpTemplate = this.visboprojectsAll.find(vp => vp.vpType == 2);
+
+    // in newVP.templateID there comes the name of the template!!
+    const vpTemplate = this.visboprojectsAll.find(vp => (vp.vpType == 2 && vp.name == this.newVP.templateID));
     if (vpTemplate) {
       this.newVP.templateID = vpTemplate._id;
-      const actDate = new Date();
-      actDate.setHours(0, 0, 0, 0);
-      this.newVP.startDate = new Date(actDate);
-      actDate.setMonth(actDate.getMonth() + 14);
-      this.newVP.endDate = actDate;
-      this.newVP.bac = 600;
-      this.newVP.rac = 660;
+      // const actDate = new Date();
+      // actDate.setHours(0, 0, 0, 0);
+      // this.newVP.startDate = new Date(actDate);
+      // actDate.setMonth(actDate.getMonth() + 14);
+      // this.newVP.endDate = actDate;
+      // this.newVP.bac = 600;
+      // this.newVP.rac = 660;
     }
 
     this.visboprojectService.addVisboProject(this.newVP).subscribe(
@@ -283,11 +308,13 @@ export class VisboProjectsComponent implements OnInit {
       },
       error => {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
+        const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
         if (error.status === 403) {
-          const message = this.translate.instant('vp.msg.errorPerm', {name: name});
+          // const message = this.translate.instant('vp.msg.errorPerm', {name: name});          
+          const message = this.translate.instant('vp.msg.errorPerm', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
-        } else if (error.status === 409) {
-          const message = this.translate.instant('vp.msg.errorConflict', {name: name});
+        } else if (error.status === 409) {          
+          const message = this.translate.instant('vp.msg.errorConflict', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
         } else {
           this.alertService.error(getErrorMessage(error));
@@ -432,6 +459,11 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
+
+  getTemplates(vps: VisboProject[]): VisboProject[] {    
+    return vps.filter(item => item.vpType == 2);   
+  }
+  
 
   /** Log a message with the MessageService */
   private log(message: string) {

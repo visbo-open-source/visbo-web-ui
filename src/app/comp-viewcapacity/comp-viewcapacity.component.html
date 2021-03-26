@@ -42,7 +42,9 @@
             </div>
 
             <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
-              <button type="button" class="btn btn-md btn-primary ml-1" id="exportExcel" (click)='exportExcel()'>{{ 'vpfVersion.btn.exportExcel' | translate }}</button>
+              <button type="button" class="btn btn-md btn-light ml-1" id="exportExcel" (click)='exportExcel()'>
+                {{ 'vpfVersion.btn.exportExcel' | translate }}
+              </button>
             </div>
           </div>
         </div>

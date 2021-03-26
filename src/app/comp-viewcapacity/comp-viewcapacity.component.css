@@ -12,6 +12,7 @@
 .dropdown-item.tree-item.tree-item__parent-selected {
     /* background-color: #dcedf7; */
     background-color: #d8dadb;
+    bg: #808080   
 }
 
 .dropdown-item.tree-item:hover {

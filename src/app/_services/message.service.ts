@@ -27,6 +27,7 @@ export class MessageService {
   }
 
   add(message: string): void {
+    this.initstatus();
     if (this.activateMessages) {
       console.log(message);
     }

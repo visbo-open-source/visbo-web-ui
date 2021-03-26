@@ -31,7 +31,6 @@ export class VisboprojectDetailComponent implements OnInit {
   confirm: string;
   userIndex: number;
   groupIndex: number;
-  variantIndex: number;
   actView = 'User';
 
   currentUser: VisboUser;
@@ -62,7 +61,6 @@ export class VisboprojectDetailComponent implements OnInit {
   ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    this.newVariant = new VPVariant();
     this.getVisboProject();
     this.getVisboProjectUsers();
   }
@@ -295,6 +293,17 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  initVPVariant(variant: VPVariant): void {
+    this.newVariant = new VPVariant();
+    if (variant) {
+      this.newVariant._id = variant._id;
+      this.newVariant.variantName = variant.variantName;
+      this.newVariant.description = variant.description;
+      this.newVariant.email = variant.email;
+      this.newVariant.vpvCount = variant.vpvCount;
+    }
+  }
+
   addNewVPVariant(): void {
     if (!this.newVariant || !this.newVariant.variantName || !this.newVariant.variantName.trim()) {
       // ignore empty variant
@@ -320,6 +329,38 @@ export class VisboprojectDetailComponent implements OnInit {
             this.alertService.error(message);
           } else {
             this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  changeVPVariant(): void {
+    if (!this.newVariant) {
+      return;
+    }
+    this.newVariant.description =  (this.newVariant.description || '').trim();
+    const variant = this.visboproject.variant.find(variant => variant._id.toString() == this.newVariant._id.toString());
+    if (!variant || variant.description == this.newVariant.description) {
+      this.log(`Change Variant not found or not changed: ${variant?.variantName} ${variant?.description}`);
+      return;
+    }
+    this.visboprojectService.updateVariant(this.newVariant, this.visboproject._id )
+      .subscribe(
+        variant => {
+          // Update Variant in list
+          const index = this.visboproject.variant.findIndex(variant => variant._id.toString() == this.newVariant._id.toString());
+          this.visboproject.variant[index].description = variant.description;
+          const message = this.translate.instant('vpDetail.msg.changeVariantSuccess', {'name': variant.variantName});
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Change Variant error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorChangeVariantPerm', {'name': this.newVariant.variantName});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during change Variant ${error.error.message}`); // log to console instead
             this.alertService.error(getErrorMessage(error));
           }
         }
@@ -360,8 +401,25 @@ export class VisboprojectDetailComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
-  helperRemoveVariant(variantIndex: number): void {
-    this.variantIndex = variantIndex;
+/*
+<button  *ngIf="!variant.vpvCount && hasVPPerm(permVP.Modify) && getLockStatus(variantIndex) <= 1" id="ColDeleteVariant" class="Detail"
+  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
+  data-toggle="modal" data-target="#VpVariantRemove">&times;
+</button>
+<button  *ngIf="!variant.vpvCount && !hasVPPerm(permVP.Modify) && hasVPPerm(permVP.CreateVariant) && getLockStatus(variantIndex) <= 1 && variant.email == currentUser.email" id="ColDeleteVariant" class="Detail"
+  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
+  data-toggle="modal" data-target="#VpVariantRemove">&times;
+</button>
+*/
+
+  canDeleteVariant(variant: VPVariant): boolean {
+    if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
+      return false;
+    } else if (this.hasVPPerm(this.permVP.Modify) || (this.hasVPPerm(this.permVP.CreateVariant) && variant.email == this.currentUser.email)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   helperUsersPerGroup(groupId: string): number {
@@ -406,22 +464,25 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
-  removeVariant(index: number, vp: VisboProject): void {
-    this.log(`Remove VisboProject Variant: ${vp.variant[index].variantName} VP: ${vp._id}`);
-    this.visboprojectService.deleteVariant(vp.variant[index]._id, vp._id)
+  removeVariant(variant: VPVariant, vp: VisboProject): void {
+    this.log(`Remove VisboProject Variant: ${variant.variantName} VP: ${vp._id}`);
+    this.visboprojectService.deleteVariant(variant._id, vp._id)
       .subscribe(
         () => {
-          const message = this.translate.instant('vpDetail.msg.removeVariantSuccess', {'name': vp.variant[index].variantName});
-          this.visboproject.variant.splice(index, 1);
+          const message = this.translate.instant('vpDetail.msg.removeVariantSuccess', {'name': variant.variantName});
+          let index = this.visboproject.variant.findIndex(item => item.variantName === variant.variantName);
+          if (index >= 0) {
+            this.visboproject.variant.splice(index, 1);
+          }
           this.alertService.success(message);
         },
         error => {
           this.log(`Remove VisboProject Variant error: ${error.error.message}`);
           if (error.status === 403) {
-            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantPerm', {'name': vp.variant[index].variantName});
+            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantPerm', {'name': variant.variantName});
             this.alertService.error(message);
           } else if (error.status === 409) {
-            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantConflict', {'name': vp.variant[index].variantName});
+            const message = this.translate.instant('vpDetail.msg.errorRemoveVariantConflict', {'name': variant.variantName});
             this.alertService.error(message);
           } else {
             this.log(`Error during remove Variant from VP ${error.error.message}`); // log to console instead
@@ -610,10 +671,9 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
-  getLockStatus(variantIndex: number): number {
+  getLockStatus(variant: VPVariant): number {
     let result = 0;
-    const variantName = this.visboproject.variant[variantIndex].variantName;
-    const lock = this.visboproject.lock.find(item => item.variantName == variantName)
+    const lock = this.visboproject.lock.find(item => item.variantName == variant.variantName)
     if (lock) {
       result = lock.email == this.currentUser.email ? 1 : 2;
     }
