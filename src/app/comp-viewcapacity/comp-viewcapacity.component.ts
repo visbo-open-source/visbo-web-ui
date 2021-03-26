@@ -125,7 +125,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       height: '600',
       title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
-      legend: {position: 'none'},
+      legend: {position: 'top', maxline: 1 },
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       annotations: {
