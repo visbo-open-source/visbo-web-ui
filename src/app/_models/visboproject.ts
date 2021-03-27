@@ -125,4 +125,4 @@ export interface CreateProjectProperty {
   businessUnit?: string;
 }
 
-export const constSystemCustomName = ['businessUnit', 'risk', 'strategicFit']
+export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit']

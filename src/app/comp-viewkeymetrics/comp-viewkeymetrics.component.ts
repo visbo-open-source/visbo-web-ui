@@ -224,6 +224,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (this.visboprojectversions[i].keyMetrics) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
+        elementKeyMetric.vp = this.visboprojectversions[i].vp;
         elementKeyMetric.name = this.visboprojectversions[i].name;
         elementKeyMetric._id = this.visboprojectversions[i]._id;
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
@@ -326,7 +327,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visboprojectversions) {
       return;
     }
-    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC') >= 0;
+    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC');
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {

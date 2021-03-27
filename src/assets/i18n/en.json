@@ -346,6 +346,7 @@
 			"members": "Members",
 			"project": "Project",
 			"type": "Type",
+			"properties": "Eigenschaften",
 			"info": "Info",
 			"global": "Global",
 			"message": "Message",
@@ -1102,7 +1103,7 @@
 		"versus": "vs."
 	},
 	"customField": {
-		"businessUnit": "Business Unit"
+		"_businessUnit": "Business Unit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",

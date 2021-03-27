@@ -391,6 +391,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
+                  this.visboprojectversions.forEach(vpv => {vpv.vp = this.vpActive;})
                   this.visboprojectversions.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
                   this.findVPV(this.refDate);

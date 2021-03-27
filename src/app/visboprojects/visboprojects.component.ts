@@ -250,30 +250,30 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   initCreateVP(): void {
-      
+
       const suggestedDate: Date = new Date();
-      
+
       // if there are templates, then suggest the  first template in the list as the default template
       let templateID = '';
       templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
-                
+
       // suggest the first of next month as start of Project ...
       if (suggestedDate.getMonth() < 11) {
         suggestedDate.setMonth(suggestedDate.getMonth() + 1 );
       } else {
-        suggestedDate.setMonth(0); 
+        suggestedDate.setMonth(0);
         suggestedDate.setFullYear(suggestedDate.getFullYear() + 1);
       }
 
       suggestedDate.setDate(1);
 
-      this.newVP = { 
-        name: '', 
-        vcid: this.vcActive?._id, 
-        vpType: 0, 
+      this.newVP = {
+        name: '',
+        vcid: this.vcActive?._id,
+        vpType: 0,
         startDate: suggestedDate,
         templateID: templateID
-      };       
+      };
   }
 
   addproject(): void {
@@ -310,10 +310,10 @@ export class VisboProjectsComponent implements OnInit {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
         const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
         if (error.status === 403) {
-          // const message = this.translate.instant('vp.msg.errorPerm', {name: name});          
+          // const message = this.translate.instant('vp.msg.errorPerm', {name: name});
           const message = this.translate.instant('vp.msg.errorPerm', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
-        } else if (error.status === 409) {          
+        } else if (error.status === 409) {
           const message = this.translate.instant('vp.msg.errorConflict', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
         } else {
@@ -354,6 +354,7 @@ export class VisboProjectsComponent implements OnInit {
     this.vpvWithKM = 0;
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       const item = this.visboprojectversions[i];
+      item.vp = this.visboprojects.find(vp => vp._id == item.vpid);
       // const nextVPV = new VisboProjectVersion();
       // nextVPV.vpid = item.vpid;
       // nextVPV.name = item.name;
@@ -460,10 +461,10 @@ export class VisboProjectsComponent implements OnInit {
   }
 
 
-  getTemplates(vps: VisboProject[]): VisboProject[] {    
-    return vps.filter(item => item.vpType == 2);   
+  getTemplates(vps: VisboProject[]): VisboProject[] {
+    return vps.filter(item => item.vpType == 2);
   }
-  
+
 
   /** Log a message with the MessageService */
   private log(message: string) {

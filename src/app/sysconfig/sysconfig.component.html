@@ -43,6 +43,7 @@
         <h5 *ngIf="vcsetting[editIndex].name == 'SMTP'" class="modal-title" id="ConfigDetailTitle">Config SMTP Setting</h5>
         <h5 *ngIf="vcsetting[editIndex].name == 'REDIS'" class="modal-title" id="ConfigDetailTitle">Config Redis Address</h5>
         <h5 *ngIf="vcsetting[editIndex].name == 'Log Age'" class="modal-title" id="ConfigDetailTitle">Config Maximum Log File Age</h5>
+        <h5 *ngIf="vcsetting[editIndex].name == 'Predict'" class="modal-title" id="ConfigDetailTitle">Config Predict EAC</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -199,6 +200,14 @@
             <div class="form-group">
               <label for="configLogAge" class="col-4 col-form-label">Max Age:</label>
               <input type="number" name=configLogAge class="form-control" [(ngModel)]="vcsetting[editIndex].value.duration" >
+            </div>
+          </div>
+        </form>
+        <form *ngIf="vcsetting[editIndex].name == 'Predict'">
+          <div>
+            <div class="form-group">
+              <label for="configLogAge" class="col-4 col-form-label">On/Off:</label>
+              <input type="number" name=configLogAge class="form-control" [(ngModel)]="vcsetting[editIndex].value.BAC" >
             </div>
           </div>
         </form>

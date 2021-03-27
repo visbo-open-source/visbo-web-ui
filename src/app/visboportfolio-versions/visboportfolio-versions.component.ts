@@ -696,26 +696,27 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.listCalcVPV = [];
     this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive.allItems.length; i++) {
-      const nextVP = new VisboProjectVersion();
+      const nextVPV = new VisboProjectVersion();
       const item = this.vpfActive.allItems[i];
-      nextVP.vpid = item.vpid;
-      nextVP.name = item.name;
-      nextVP.variantName = item.variantName;
-      const index = this.listVPV.findIndex(vpvItem => vpvItem.vpid === nextVP.vpid);
+      nextVPV.vpid = item.vpid;
+      nextVPV.name = item.name;
+      nextVPV.variantName = item.variantName;
+      const index = this.listVPV.findIndex(vpvItem => vpvItem.vpid === nextVPV.vpid);
+      nextVPV.vp = this.listVP.find(vp => vp._id == nextVPV.vpid);
       if (index >= 0) {
-        nextVP.timestamp = new Date(this.listVPV[index].timestamp);
-        nextVP.startDate = this.listVPV[index].startDate;
-        nextVP.endDate = this.listVPV[index].keyMetrics?.endDateCurrent || this.listVPV[index].endDate;
-        nextVP.leadPerson = this.listVPV[index].leadPerson;
-        nextVP.VorlagenName = this.listVPV[index].VorlagenName;
-        nextVP.businessUnit = this.listVPV[index].businessUnit;
-        nextVP.status = this.listVPV[index].status;
-        nextVP.ampelStatus = this.listVPV[index].ampelStatus;
-        nextVP.ampelErlaeuterung = this.listVPV[index].ampelErlaeuterung;
-        nextVP.keyMetrics = this.listVPV[index].keyMetrics;
+        nextVPV.timestamp = new Date(this.listVPV[index].timestamp);
+        nextVPV.startDate = this.listVPV[index].startDate;
+        nextVPV.endDate = this.listVPV[index].keyMetrics?.endDateCurrent || this.listVPV[index].endDate;
+        nextVPV.leadPerson = this.listVPV[index].leadPerson;
+        nextVPV.VorlagenName = this.listVPV[index].VorlagenName;
+        nextVPV.businessUnit = this.listVPV[index].businessUnit;
+        nextVPV.status = this.listVPV[index].status;
+        nextVPV.ampelStatus = this.listVPV[index].ampelStatus;
+        nextVPV.ampelErlaeuterung = this.listVPV[index].ampelErlaeuterung;
+        nextVPV.keyMetrics = this.listVPV[index].keyMetrics;
         this.vpvCount += 1;
       }
-      this.listCalcVPV.push(nextVP);
+      this.listCalcVPV.push(nextVPV);
     }
   }
 
