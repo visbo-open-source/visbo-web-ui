@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion } from '../_models/visboprojectversion';
+import { VisboProjectVersion, getCustomPropertyString } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams } from '../_models/visboproject';
@@ -160,7 +160,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     for (let i = 0; i < this.listVPV.length; i++) {
       if (filter
         && !(this.listVPV[i].name.toLowerCase().indexOf(filter) >= 0
-          || (this.getCustomPropertyString(this.listVPV[i], '_businessUnit') || '').toLowerCase().indexOf(filter) >= 0
+          || (getCustomPropertyString(this.listVPV[i], '_businessUnit') || '').toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].status?.toLowerCase().indexOf(filter) >= 0
@@ -184,7 +184,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         ]);
 
         var buColor = 0;
-        bu = this.getCustomPropertyString(this.listVPV[i], '_businessUnit') || undefined;
+        bu = getCustomPropertyString(this.listVPV[i], '_businessUnit') || undefined;
         if (i == 0) { lastbu = bu };
         if (bu) {
           if (lastbu != bu){
@@ -260,7 +260,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
 
-    const businessUnit = this.getCustomPropertyString(vpv, '_businessUnit');
+    const businessUnit = getCustomPropertyString(vpv, '_businessUnit');
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
@@ -274,15 +274,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     result = result + '<tr>' + '<td>' + end + ':</td>' + '<td><b>' + endDate + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
-  }
-
-  getCustomPropertyString(vpv: VisboProjectVersion, name: string): string {
-      let result: string;
-      const property = vpv?.vp?.customFieldString?.find(item => item.name == name);
-      if (property) {
-        result = property.value;
-      }
-      return result;
   }
 
   timelineSelectRow(row: number): void {

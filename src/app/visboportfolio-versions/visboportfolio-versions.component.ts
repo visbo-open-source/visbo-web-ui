@@ -249,7 +249,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       .subscribe(
         listVPV => {
           this.listVPV = listVPV;
-          this.calcVPList();
+          this.calcVPVList();
           this.log(`get VPF Key metrics: Get ${listVPV.length} Project Versions`);
           if (listVPV.length > 0) {
             this.log(`First VPV: ${listVPV[0]._id} ${listVPV[0].timestamp} ${listVPV[0].keyMetrics?.endDateCurrent} `);
@@ -691,32 +691,20 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
-  calcVPList(): void {
+  calcVPVList(): void {
+    this.listVPV.forEach(vpv => {
+        vpv.vp = this.listVP.find(vp => vp._id == vpv.vpid);
+    });
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
     this.listCalcVPV = [];
     this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive.allItems.length; i++) {
-      const nextVPV = new VisboProjectVersion();
       const item = this.vpfActive.allItems[i];
-      nextVPV.vpid = item.vpid;
-      nextVPV.name = item.name;
-      nextVPV.variantName = item.variantName;
-      const index = this.listVPV.findIndex(vpvItem => vpvItem.vpid === nextVPV.vpid);
-      nextVPV.vp = this.listVP.find(vp => vp._id == nextVPV.vpid);
-      if (index >= 0) {
-        nextVPV.timestamp = new Date(this.listVPV[index].timestamp);
-        nextVPV.startDate = this.listVPV[index].startDate;
-        nextVPV.endDate = this.listVPV[index].keyMetrics?.endDateCurrent || this.listVPV[index].endDate;
-        nextVPV.leadPerson = this.listVPV[index].leadPerson;
-        nextVPV.VorlagenName = this.listVPV[index].VorlagenName;
-        nextVPV.businessUnit = this.listVPV[index].businessUnit;
-        nextVPV.status = this.listVPV[index].status;
-        nextVPV.ampelStatus = this.listVPV[index].ampelStatus;
-        nextVPV.ampelErlaeuterung = this.listVPV[index].ampelErlaeuterung;
-        nextVPV.keyMetrics = this.listVPV[index].keyMetrics;
+      const nextVPV = this.listVPV.find(vpvItem => vpvItem.vpid === item.vpid);
+      if (nextVPV) {
         this.vpvCount += 1;
+        this.listCalcVPV.push(nextVPV);
       }
-      this.listCalcVPV.push(nextVPV);
     }
   }
 

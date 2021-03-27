@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetricsCalc, getCustomPropertyString } from '../_models/visboprojectversion';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VPParams } from '../_models/visboproject';
 
@@ -304,7 +304,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       if (!filter
         || this.visboprojectversions[item].name.toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-        || (this.visboprojectversions[item].businessUnit || '').toLowerCase().indexOf(filter) >= 0
+        || (getCustomPropertyString(this.visboprojectversions[item], '_businessUnit') || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0

@@ -151,20 +151,21 @@ export function switchPreView(): boolean {
 
 export function mod(value1: number, value2: number): number {
   let remainder = 0;
-  if (!value1 || !value2) return undefined;  
+  if (!value1 || !value2) return undefined;
   var interResult = Math.floor(value1 / value2);
-  remainder = value1 - (interResult * value2);  
+  remainder = value1 - (interResult * value2);
   return remainder;
 }
+
 export function excelColorToRGBHex(value: number): string {
   let rgbHex = '';
   if (!value) return rgbHex;
-  let red = mod(value, 256);  
+  let red = mod(value, 256);
   value = (value - red) /256;
   let green = mod(value, 256);
   value = (value - green)/256;
-  let blue = mod(value, 256); 
-  // change the values for red,green and blue into hex-strings with length 2 
+  let blue = mod(value, 256);
+  // change the values for red,green and blue into hex-strings with length 2
   var redhex = red.toString(16) ;
   while (redhex.length < 2) redhex = '0' + redhex;
   var greenhex = green.toString(16) ;

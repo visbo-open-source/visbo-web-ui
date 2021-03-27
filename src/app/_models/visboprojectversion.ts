@@ -169,3 +169,12 @@ export class VisboProjectVersionResponse {
   vpv: [ VisboProjectVersion ];
   perm: {system: number, vc: number, vp: number};
 }
+
+export function getCustomPropertyString(vpv: VisboProjectVersion, name: string): string {
+    let result: string;
+    const property = vpv?.vp?.customFieldString?.find(item => item.name == name);
+    if (property) {
+      result = property.value;
+    }
+    return result;
+}
