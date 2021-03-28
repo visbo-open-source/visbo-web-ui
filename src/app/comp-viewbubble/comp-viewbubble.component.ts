@@ -302,7 +302,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const filter = (this.filter || '').toLowerCase();
     for (let item = 0; item < this.visboprojectversions.length; item++) {
       if (!filter
-        || ((this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
+        || (this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
         || (getCustomPropertyString(this.visboprojectversions[item], '_businessUnit') || '').toLowerCase().indexOf(filter) >= 0
         || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
