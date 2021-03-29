@@ -101,6 +101,15 @@ export class VisboprojectDetailComponent implements OnInit {
         }
       })
     }
+    if (vp?.customFieldDouble) {
+      vp.customFieldDouble.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
+    }
   }
 
   hasVCPerm(perm: number): boolean {
@@ -238,6 +247,9 @@ export class VisboprojectDetailComponent implements OnInit {
   save(): void {
     if (this.visboproject.customFieldString) {
       this.visboproject.customFieldString = this.visboproject.customFieldString.filter(item => item.value != '');
+    }
+    if (this.visboproject.customFieldDouble) {
+      this.visboproject.customFieldDouble = this.visboproject.customFieldDouble.filter(item => item.value != undefined);
     }
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(

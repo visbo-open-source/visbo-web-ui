@@ -1103,7 +1103,9 @@
 		"versus": "vs."
 	},
 	"customField": {
-		"_businessUnit": "Business Unit"
+		"_businessUnit": "Business Unit",
+		"_risk": "Risk",
+		"_strategicFit": "Strategic Fit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",

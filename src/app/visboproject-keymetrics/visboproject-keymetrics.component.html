@@ -178,7 +178,6 @@
             <thead>
               <tr>
                 <th>{{ 'vpKeyMetric.lbl.name' | translate }}</th>
-                <th>{{ 'vpKeyMetric.lbl.value' | translate }}</th>
                 <th>{{ 'vpKeyMetric.lbl.info' | translate }}</th>
               </tr>
             </thead>
@@ -187,19 +186,11 @@
               <tr *ngIf="vpvActive.startDate">
                 <td>{{ 'vpKeyMetric.lbl.startDate' | translate }}</td>
                 <td>{{ vpvActive.startDate | date :'dd.MM.yyyy'}}</td>
-                <td class="d-none d-md-table-cell"></td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent">
                 <td>{{ 'vpKeyMetric.lbl.endDate' | translate }}</td>
                 <td>
-                  <span *ngIf="delayEndDate > 0" class="fas fa-exclamation-circle" style="color:red"></span>
-                  <span *ngIf="delayEndDate <= 0" class="fas fa-check-circle" style="color:green"></span>
-                  <span> {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}</span>
-                </td>
-                <td class="d-none d-md-table-cell">
-                  <span *ngIf="delayEndDate > 0" class="text-danger"> {{delayEndDate | number:'1.1-1'}} {{ 'vpKeyMetric.lbl.weeksDelay' | translate }}</span>
-                  <span *ngIf="delayEndDate < 0" class="text-success"> {{-delayEndDate | number:'1.1-1'}} {{ 'vpKeyMetric.lbl.weeksAhead' | translate }}</span>
-                  <span *ngIf="delayEndDate == 0"> {{ 'vpKeyMetric.lbl.inTime' | translate }}</span>
+                  {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}
                 </td>
               </tr>
               <tr *ngIf="!(vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent) && vpvActive.endDate">
@@ -207,28 +198,24 @@
                 <td>
                   <span> {{ vpvActive.endDate | date :'dd.MM.yyyy'}}</span>
                 </td>
-                <td class="d-none d-md-table-cell"></td>
               </tr>
               <tr *ngIf="vpvActive.Erloes">
                 <td title="{{ 'keyMetrics.longRAC' | translate }}">{{ 'keyMetrics.shortRAC' | translate }}</td>
                 <td>
                   {{ vpvActive.Erloes | number:'1.0-0' }} T€
                 </td>
-                <td></td>
               </tr>
               <tr *ngIf="vpvActive.status">
                 <td>{{ 'vpKeyMetric.lbl.status' | translate }}</td>
                 <td title="{{ vpvActive.status }}">
                   {{ getShortText(vpvActive.status, 20) }}
                 </td>
-                <td></td>
               </tr>
               <tr>
                 <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
                 <td title="{{ vpvActive.ampelErlaeuterung }}">
                   <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
-                </td>
-                <td class="d-none d-md-table-cell" title="{{ vpvActive.ampelErlaeuterung }}">
+                  <br>
                   {{ vpvActive.ampelErlaeuterung }}
                 </td>
               </tr>
@@ -237,28 +224,26 @@
                 <td title="{{ vpvActive.leadPerson }}">
                   {{ getShortText(vpvActive.leadPerson, 20) }}
                 </td>
-                <td></td>
               </tr>
               <tr *ngIf="vpvActive.description">
                 <td>{{ 'vpKeyMetric.lbl.description' | translate }}</td>
-                <td></td>
-                <td title="{{ vpvActive.description }}">
-                  {{ vpvActive.description }}
-                </td>
+                <td title="{{ vpvActive.description }}">{{ getShortText(vpvActive.description, 40) }}</td>
               </tr>
               <tr *ngIf="vpvActive.VorlagenName">
                 <td>{{ 'vpKeyMetric.lbl.template' | translate }}</td>
                 <td title="{{ vpvActive.VorlagenName }}">
                   {{ getShortText(vpvActive.VorlagenName, 20) }}
                 </td>
-                <td></td>
               </tr>
               <tr *ngFor="let item of vpActive.customFieldString">
                 <td>{{ item.localName }}</td>
                 <td title="{{ item.value }}">
                   {{ getShortText(item.value, 20) }}
                 </td>
-                <td></td>
+              </tr>
+              <tr *ngFor="let item of vpActive.customFieldDouble">
+                <td>{{ item.localName }}</td>
+                <td>{{ item.value }}</td>
               </tr>
             </tbody>
           </table>

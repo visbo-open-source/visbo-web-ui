@@ -431,6 +431,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       })
     }
+    if (vp?.customFieldDouble) {
+      vp.customFieldDouble.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
+    }
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
