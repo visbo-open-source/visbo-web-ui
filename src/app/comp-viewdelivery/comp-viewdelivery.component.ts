@@ -129,7 +129,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
             this.allDelivery = visboprojectversions[0].delivery;
             // check if we got the PFV Values and if not set the refType to vpv
             if (this.refType != 'vpv') {
-              if (this.allDelivery && !this.allDelivery[0].fullPathPFV) {
+              if (!(this.allDelivery[0]?.fullPathPFV)) {
                 this.refType = 'vpv'
                 this.switchType = false;
               }

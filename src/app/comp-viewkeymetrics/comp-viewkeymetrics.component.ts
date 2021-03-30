@@ -388,11 +388,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       currentDate.setMonth(currentDate.getMonth()+1);
       if (predict) {
         keyMetricsCost.push([
-          currentDate, undefined, undefined, undefined, undefined, undefined
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
         ]);
       } else {
         keyMetricsCost.push([
-          currentDate, undefined, undefined, undefined, undefined
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
         ]);
       }
     }
