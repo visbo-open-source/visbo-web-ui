@@ -235,9 +235,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if ((changes.vpfActive?.currentValue?.timestamp &&  changes.vpfActive?.currentValue?.timestamp != changes.vpfActive?.previousValue?.timestamp)) {
       refresh = true;
     }
-    if (changes.capacityFrom) {
-      refresh = true;
-    }
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())
     || (this.vpfActive && this.lastTimestampVPF !== this.vpfActive.timestamp)
