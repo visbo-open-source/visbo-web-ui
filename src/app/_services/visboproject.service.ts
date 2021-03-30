@@ -91,7 +91,7 @@ export class VisboProjectService {
   }
 
   /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
-  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
+  getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -109,6 +109,14 @@ export class VisboProjectService {
     }
     if (deleted) {
       params = params.append('deleted', '1');
+    }
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }    
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
     }
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
