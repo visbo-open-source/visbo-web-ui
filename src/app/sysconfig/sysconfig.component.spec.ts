@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SysconfigComponent } from './sysconfig.component';
 import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
@@ -7,7 +7,7 @@ describe('SysconfigComponent', () => {
   let component: SysconfigComponent;
   let fixture: ComponentFixture<SysconfigComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         SysconfigComponent,
