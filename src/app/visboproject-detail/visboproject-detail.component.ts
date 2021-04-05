@@ -499,7 +499,7 @@ export class VisboprojectDetailComponent implements OnInit {
       .subscribe(
         () => {
           const message = this.translate.instant('vpDetail.msg.removeVariantSuccess', {'name': variant.variantName});
-          let index = this.visboproject.variant.findIndex(item => item.variantName === variant.variantName);
+          const index = this.visboproject.variant.findIndex(item => item.variantName === variant.variantName);
           if (index >= 0) {
             this.visboproject.variant.splice(index, 1);
           }

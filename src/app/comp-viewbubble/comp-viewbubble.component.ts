@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
@@ -208,7 +208,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.log(`Delivery on Changes  ${this.activeID}`);
     // change event happens before init, ignore
     if (this.metricList) {

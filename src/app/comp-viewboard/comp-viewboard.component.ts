@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
@@ -70,7 +70,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.visboViewBoardOverTime();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.log(`ProjectBoard Changes  ${this.refDate?.toISOString()}`);
     this.initSetting();
     this.visboViewBoardOverTime();

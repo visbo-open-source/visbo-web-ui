@@ -354,7 +354,7 @@ export class VisboProjectVersionService {
   copyVisboProjectVersion(vpvid: string, variantName: string): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    let params = new HttpParams();
+    const params = new HttpParams();
 
     const newVPV = new VisboProjectVersion();
     newVPV.variantName = variantName;

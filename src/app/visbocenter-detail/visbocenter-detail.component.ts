@@ -775,10 +775,7 @@ export class VisbocenterDetailComponent implements OnInit {
 
       // export to Excel
       const len = organisation.length;
-      let width = 0;
-      for (const item in organisation[0]) {
-        width += 1;
-      }
+      const width = Object.keys(organisation[0]).length;
       const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();

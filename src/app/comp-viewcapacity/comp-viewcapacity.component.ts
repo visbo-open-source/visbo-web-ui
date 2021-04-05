@@ -931,7 +931,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
     orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
     orgaColors.reverse();
@@ -939,7 +939,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       orgaColors.unshift('#F7941E');
     } else {
       orgaColors.unshift('#ff0000');
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -955,8 +955,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    const mapNodeList = this.mapChildNode(childNodeList);      
-    
+    const mapNodeList = this.mapChildNode(childNodeList);
+
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -1097,14 +1097,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
       orgaColors.unshift('#F7941E');
     } else {
       orgaColors.unshift('#ff0000');
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -1752,10 +1752,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const len = excel.length;
-    let width = 0;
-    for (const item in excel[0]) {
-      width += 1;
-    }
+    const width = Object.keys(excel[0]).length;
     const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     let name = '';
     if (this.vpfActive) {

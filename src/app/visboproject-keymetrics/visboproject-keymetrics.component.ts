@@ -153,8 +153,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
-  getVariantInfo(item: DropDown, owner = true): string {
-      let result: string[] = []
+  getVariantInfo(item: DropDown): string {
+      const result: string[] = []
       if (item.description) { result.push(item.description); }
       if (item.variantName != this.defaultVariant) {
         result.push('(' + item.email + ')');
@@ -163,7 +163,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   dropDownInit(): void {
-    let dropDown: DropDown[] = []
+    const dropDown: DropDown[] = []
     if (this.variantID) {
       // serach for the variant Name
       const index = this.vpActive.variant.findIndex(item => item._id.toString() === this.variantID);

@@ -23,7 +23,6 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday, visboIsSameDay, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting } from '../_models/visbosetting';
-import { textChangeRangeIsUnchanged } from 'typescript';
 
 class DropDown {
   name: string;
