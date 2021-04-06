@@ -133,8 +133,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       height: '600',
       title: 'Monthly Capacity comparison',
       animation: {startup: true, duration: 200},
-      legend: { position: 'top', maxLines: 1 },
-      // legend: {position: 'none'},
+      legend: {position: 'top', maxline: 1 },
       explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
       // curveType: 'function',
       annotations: {
@@ -682,13 +681,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   updateDateRange(): void {
-    this.updateUrlParam('from', undefined);
+    this.updateUrlParam('from', undefined)
     this.getCapacity();
-    // if (this.drillDown == 1 || undefined) {
-    //   this.getCapacity();
-    // } else {
-    //   this.getProjectCapacity();
-    // }
   }
 
   updateRef(): void {

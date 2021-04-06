@@ -335,7 +335,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // skip multiple versions per day
       if (i > 0
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
+        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i - 1].timestamp}`);
         continue;
       }
       // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
@@ -396,7 +396,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // skip multiple versions per day
       if (i > 0
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i + 1].timestamp}`);
+        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i - 1].timestamp}`);
         continue;
       }
       // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
@@ -683,7 +683,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // skip multiple versions per day
       if (i > 0
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
+        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i - 1].timestamp}`);
         continue;
       }
       keyMetrics.push([
