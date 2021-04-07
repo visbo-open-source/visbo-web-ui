@@ -126,3 +126,19 @@ export interface CreateProjectProperty {
 }
 
 export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit']
+
+export function getCustomFieldString(vp: VisboProject, name: string): VPCustomString {
+  let result: VPCustomString;
+  if (vp && vp.customFieldString) {
+    result = vp.customFieldString.find(element => element.name == name)
+  }
+  return result;
+}
+
+export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDouble {
+  let result: VPCustomDouble;
+  if (vp && vp.customFieldDouble) {
+    result = vp.customFieldDouble.find(element => element.name == name)
+  }
+  return result;
+}

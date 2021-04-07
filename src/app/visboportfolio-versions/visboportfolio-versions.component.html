@@ -6,7 +6,7 @@
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="activeVPFVariant && dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item">
               <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
@@ -71,11 +71,11 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && listVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="listVPV" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'List' && listCalcVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="listCalcVPV" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'ProjectBoard' && listCalcVPV">
     <hr>

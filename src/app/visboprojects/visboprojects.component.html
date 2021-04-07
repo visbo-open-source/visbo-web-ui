@@ -72,13 +72,13 @@
       <app-comp-viewcapacity [vcActive]="vcActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
-      <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="true" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'List' && visboprojectversions">
-      <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="false" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
-      <app-comp-viewboard [listVPV]="visboprojectversions"></app-comp-viewboard>
+      <app-comp-viewboard [listVPV]="visboprojectversions" [customize]="customize"></app-comp-viewboard>
     </div>
   </div>
 

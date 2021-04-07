@@ -312,7 +312,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.getVisboPortfolioKeyMetrics();
   }
 
-
   getVisboCenterCustomization(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       // check if appearance is available

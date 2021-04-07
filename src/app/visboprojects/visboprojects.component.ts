@@ -21,6 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { VisboSetting } from '../_models/visbosetting';
 
 class DropDown {
   name: string;
@@ -41,6 +42,7 @@ export class VisboProjectsComponent implements OnInit {
   newVP: CreateProjectProperty;
   dropDownVPType: DropDown[];
   viewMode = 'Default';
+  customize: VisboSetting;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -76,6 +78,7 @@ export class VisboProjectsComponent implements OnInit {
     this.titleService.setTitle(this.translate.instant('vp.title'));
 
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.vcSelected = this.route.snapshot.paramMap.get('id');
     const nextView = this.route.snapshot.queryParams['view'];
     this.viewMode = nextView || 'Default'
     const viewCockpit = this.route.snapshot.queryParams['viewCockpit'];
@@ -140,19 +143,17 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   getVisboProjects(deleted: boolean): void {
-    const id = this.route.snapshot.paramMap.get('id');
     this.deleted = deleted;
-
-    this.vcSelected = id;
-    if (id) {
-      this.visbocenterService.getVisboCenter(id)
+    if (this.vcSelected) {
+      this.visbocenterService.getVisboCenter(this.vcSelected)
         .subscribe(
           visbocenters => {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
             this.titleService.setTitle(this.translate.instant('vp.titleName', {name: this.vcActive.name}));
+            this.getVisboCenterCustomization();
             this.getVisboCenterOrga();
-            this.visboprojectService.getVisboProjects(id, false, deleted)
+            this.visboprojectService.getVisboProjects(this.vcSelected, false, deleted)
               .subscribe(
                 visboprojects => {
                   this.visboprojectsAll = visboprojects;
@@ -368,6 +369,26 @@ export class VisboProjectsComponent implements OnInit {
       // nextVPV.status = this.visboprojectversions[i].status;
       this.vpvWithKM += this.visboprojectversions[i].keyMetrics ? 1 : 0;
       // this.vpvList.push(nextVPV);
+    }
+  }
+
+  getVisboCenterCustomization(): void {
+    if (this.vcActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vcActive._id}`);
+      this.visbosettingService.getVCSettingByName(this.vcActive._id, 'customization')
+        .subscribe(
+          vcsettings => {
+            if (vcsettings.length > 0) { this.customize = vcsettings[0]; }
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vp.msg.errorPermVC');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
     }
   }
 

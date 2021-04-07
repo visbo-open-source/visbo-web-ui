@@ -8,9 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetricsCalc, getCustomPropertyString } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
+import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
-import { VPParams } from '../_models/visboproject';
+import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -39,11 +40,16 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   ) { }
 
   @Input() visboprojectversions: VisboProjectVersion[];
+  @Input() customize: VisboSetting;
   @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
 
   refDate: Date;
   filter: string;
+  filterStrategicFit: number;
+  filterRisk: number;
+  filterBU: string;
+  dropDownBU: string[];
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
@@ -230,6 +236,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.activeID = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
     const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
+    const filterRisk = (this.route.snapshot.queryParams['filterRisk'] || '0').valueOf() || undefined;
+    const filterStrategicFit = (this.route.snapshot.queryParams['filterStrategicFit'] || '0').valueOf() || undefined;
     const metricX = this.route.snapshot.queryParams['metricX'] || undefined;
     let metricY = this.route.snapshot.queryParams['metricY'] || undefined;
     if (metricX === metricY) { metricY = undefined; }
@@ -239,6 +248,43 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.refDate = refDate ? new Date(refDate) : new Date();
     if (filter) {
       this.filter = filter;
+    }
+    this.filterBU = filterBU;
+    this.filterRisk = filterRisk;
+    this.filterStrategicFit = filterStrategicFit;
+    this.initBUDropDown();
+  }
+
+  initFilter(vpvList: VisboProjectVersion[]): void {
+    if (!vpvList && vpvList.length < 1) {
+      return;
+    }
+    vpvList.forEach( item => {
+      if (item.vp?.customFieldDouble) {
+        if (this.filterStrategicFit === undefined) {
+          const customField = getCustomFieldDouble(item.vp, '_strategicFit');
+          if (customField) { this.filterStrategicFit = 0; }
+        }
+        if (this.filterRisk === undefined) {
+          const customField = getCustomFieldDouble(item.vp, '_risk');
+          if (customField) { this.filterRisk = 0; }
+        }
+      }
+    });
+  }
+
+  initBUDropDown(): void {
+    const listBU = this.customize?.value?.businessUnitDefinitions;
+    if (!listBU) return;
+    this.dropDownBU = [];
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } else {
+      this.dropDownBU = undefined;
     }
   }
 
@@ -253,8 +299,18 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (!event) { this.log('No Keyboard Event'); }
     // let keyCode = event.keyCode;
     // if (keyCode == 13) {    // return key
-      this.updateUrlParam('filter', this.filter)
+      this.updateUrlParam('filter', undefined)
     // }
+    this.visboKeyMetricsCalc();
+  }
+
+  filterEventBU(index: number): void {
+    if (index <= 0 || index >= this.dropDownBU.length) {
+      this.filterBU = undefined;
+    } else {
+      this.filterBU = this.dropDownBU[index];
+    }
+    this.updateUrlParam('filter', undefined);
     this.visboKeyMetricsCalc();
   }
 
@@ -264,8 +320,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (value === undefined) { value = null; }
     const queryParams = new VPFParams();
     if (type == 'filter') {
-      queryParams.filter = value;
-      localStorage.setItem('vpfFilter', value || '');
+      queryParams.filter = this.filter;
+      localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterBU = this.filterBU;
+      localStorage.setItem('vpfFilterBU', this.filterBU || '');
+      queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
+      localStorage.setItem('vpfFilterRisk', (this.filterRisk || 0).toString());
+      queryParams.filterStrategicFit = this.filterStrategicFit > 0 ? this.filterStrategicFit.toString() : undefined;
+      localStorage.setItem('vpfFilterStrategicFit', (this.filterStrategicFit || 0).toString());
     } else if (type == 'metricX' || type == 'metricY') {
       queryParams.metricX = this.metricX;
       queryParams.metricY = this.metricY;
@@ -300,80 +362,100 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     // this.log(`calc keyMetrics LEN ${this.visboprojectversions.length}`);
     const filter = (this.filter || '').toLowerCase();
+    this.initFilter(this.visboprojectversions);
     for (let item = 0; item < this.visboprojectversions.length; item++) {
-      if (!filter
-        || (this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
-        || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-        || (getCustomPropertyString(this.visboprojectversions[item], '_businessUnit') || '').toLowerCase().indexOf(filter) >= 0
-        || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
-        || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
-        || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
+      if (filter
+        && !((this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
+          || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
+          || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
+          || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
+          || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
+        )
       ) {
-        const elementKeyMetric = new VPVKeyMetricsCalc();
-        elementKeyMetric.name = this.visboprojectversions[item].name;
-        elementKeyMetric.variantName = this.visboprojectversions[item].variantName;
-        elementKeyMetric.ampelStatus = this.visboprojectversions[item].ampelStatus;
-        elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[item].ampelErlaeuterung;
-        elementKeyMetric._id = this.visboprojectversions[item]._id;
-        elementKeyMetric.vpid = this.visboprojectversions[item].vpid;
-        elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
-        if (this.visboprojectversions[item].keyMetrics) {
-          this.countKM += 1;
-          elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
-
-          this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
-          this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
-          this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1;
-          this.hasKMDeadlineDelay = (this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1)
-                    && (this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
-                        || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined);
-          this.hasKMDeliveryDelay = this.hasKMDeliveryDelay || elementKeyMetric.keyMetrics.deliverableDelayFinished != undefined
-                                    || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
-          this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
-
-          this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
-          this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
-
-          // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
-          if (elementKeyMetric.keyMetrics.costBaseLastTotal > 0) {
-            elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
-                                              / elementKeyMetric.keyMetrics.costBaseLastTotal;
-          } else {
-            elementKeyMetric.savingCostTotal = 1;
-          }
-          if (elementKeyMetric.keyMetrics.costBaseLastActual > 0) {
-            elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0)
-                                              / elementKeyMetric.keyMetrics.costBaseLastActual;
-          } else {
-            elementKeyMetric.savingCostActual = 1;
-          }
-
-          // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
-          // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
-
-          // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
-          if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
-            elementKeyMetric.savingEndDate = this.helperDateDiff(
-              (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
-              (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'd') || 0;
-              elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate / 7 * 10) / 10;
-          } else {
-            elementKeyMetric.savingEndDate = 0;
-          }
-
-          // Calculate the Deadline Completion
-          const km = elementKeyMetric.keyMetrics;
-          elementKeyMetric.timeCompletionTotal =
-            this.calcPercent(km.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
-          elementKeyMetric.timeCompletionActual =
-            this.calcPercent(km.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
-
-          // Calculate the Delivery Completion
-          elementKeyMetric.deliveryCompletionTotal =
-            this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
-          elementKeyMetric.deliveryCompletionActual =
-            this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
+        continue;
+      }
+      if (this.filterBU) {
+        const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
+        if (setting?.value !== this.filterBU) {
+          continue;
         }
+      }
+      if (this.filterRisk >= 0) {
+        const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
+        if (setting?.value < this.filterRisk) {
+          continue;
+        }
+      }
+      if (this.filterStrategicFit >= 0) {
+        const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_strategicFit');
+        if (setting?.value < this.filterStrategicFit) {
+          continue;
+        }
+      }
+      const elementKeyMetric = new VPVKeyMetricsCalc();
+      elementKeyMetric.name = this.visboprojectversions[item].name;
+      elementKeyMetric.variantName = this.visboprojectversions[item].variantName;
+      elementKeyMetric.ampelStatus = this.visboprojectversions[item].ampelStatus;
+      elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[item].ampelErlaeuterung;
+      elementKeyMetric._id = this.visboprojectversions[item]._id;
+      elementKeyMetric.vpid = this.visboprojectversions[item].vpid;
+      elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
+      if (this.visboprojectversions[item].keyMetrics) {
+        this.countKM += 1;
+        elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
+
+        this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
+        this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
+        this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1;
+        this.hasKMDeadlineDelay = (this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1)
+                  && (this.hasKMDeadlineDelay || elementKeyMetric.keyMetrics.timeDelayFinished != undefined
+                      || elementKeyMetric.keyMetrics.timeDelayUnFinished != undefined);
+        this.hasKMDeliveryDelay = this.hasKMDeliveryDelay || elementKeyMetric.keyMetrics.deliverableDelayFinished != undefined
+                                  || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
+        this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
+
+        this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
+        this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
+
+        // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
+        if (elementKeyMetric.keyMetrics.costBaseLastTotal > 0) {
+          elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
+                                            / elementKeyMetric.keyMetrics.costBaseLastTotal;
+        } else {
+          elementKeyMetric.savingCostTotal = 1;
+        }
+        if (elementKeyMetric.keyMetrics.costBaseLastActual > 0) {
+          elementKeyMetric.savingCostActual = (elementKeyMetric.keyMetrics.costCurrentActual || 0)
+                                            / elementKeyMetric.keyMetrics.costBaseLastActual;
+        } else {
+          elementKeyMetric.savingCostActual = 1;
+        }
+
+        // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
+        // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
+
+        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
+        if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
+          elementKeyMetric.savingEndDate = this.helperDateDiff(
+            (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
+            (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'd') || 0;
+            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate / 7 * 10) / 10;
+        } else {
+          elementKeyMetric.savingEndDate = 0;
+        }
+
+        // Calculate the Deadline Completion
+        const km = elementKeyMetric.keyMetrics;
+        elementKeyMetric.timeCompletionTotal =
+          this.calcPercent(km.timeCompletionCurrentTotal, elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal);
+        elementKeyMetric.timeCompletionActual =
+          this.calcPercent(km.timeCompletionCurrentActual, elementKeyMetric.keyMetrics.timeCompletionBaseLastActual);
+
+        // Calculate the Delivery Completion
+        elementKeyMetric.deliveryCompletionTotal =
+          this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
+        elementKeyMetric.deliveryCompletionActual =
+          this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
         this.visbokeymetrics.push(elementKeyMetric);
         if (this.visboprojectversions[item].variantName) {
           this.hasVariant = true;

@@ -44,6 +44,9 @@ export class VPFParams {
   view: string;
   viewCockpit: string;
   filter: string;
+  filterBU: string;
+  filterStrategicFit: string;
+  filterRisk: string;
   metricX: string;
   metricY: string;
   roleID: number;

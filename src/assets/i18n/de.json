@@ -670,7 +670,10 @@
 			"from": "vom",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "gefiltert mit",
-			"filter": "Filter Projekte"
+			"filter": "Filter Projekte",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"all": "Alle"
 		},
 		"btn": {
 			"showChart": "Zeige Chart",
@@ -730,7 +733,10 @@
 			"startDate": "Projektstart",
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
-			"filter": "Filter"
+			"filter": "Filter",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"all": "Alle"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
