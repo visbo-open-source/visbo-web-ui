@@ -1,5 +1,7 @@
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
@@ -30,7 +32,6 @@ import { AlertService } from './_services/alert.service';
 
 import { NavbarComponent } from './navbar/navbar.component';
 
-import { MessagesComponent } from './messages/messages.component';
 import { LogoutTimerComponent } from './logouttimer/logouttimer.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './userprofile/userprofile.component';
@@ -111,7 +112,6 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,
-    MessagesComponent,
     LogoutTimerComponent,
     SettingsComponent,
     UserProfileComponent,
@@ -137,6 +137,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
   ],
   imports: [
     BrowserModule,
+    // NgbModule,
     FormsModule,
     AppRoutingModule,
     AngularResizedEventModule,

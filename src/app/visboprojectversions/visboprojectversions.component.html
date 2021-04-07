@@ -6,7 +6,7 @@
     </h2>
     <h2 *ngIf="vpActive">
       {{ 'vpv.titleVP' | translate }}:
-      <button class='panel-heading bg-white btn-white' (click)="gotoVPDetail(vpActive)">
+      <button class='panel-heading bg-white btn-white' (click)="gotoVP(vpActive)">
         {{vpActive.name}}
       </button>
     </h2>
@@ -81,7 +81,7 @@
         <form>
           <div class="form-group v_compact_t row">
             <label for="VpvName" class="col-sm-4 col-form-label">{{ 'vpv.lbl.name' | translate }}:</label>
-            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.name }} </label>
+            <label class="col-sm-8 form-control-static pt-2" title="{{ visboprojectversion._id }}">{{ visboprojectversion.name }} </label>
           </div>
           <div class="form-group v_compact_t row">
             <label for="VpvVersions" class="col-sm-4 col-form-label">{{ 'vpv.lbl.timestamp' | translate }}:</label>
@@ -115,7 +115,8 @@
       </div>
       <div class="modal-footer align-items-end">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vpv.btn.back' | translate }}</button>
-        <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="restore()" class="btn btn-primary" data-dismiss="modal">{{ 'vpv.btn.restore' | translate }}</button>
+        <button *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="restore()" class="btn btn-warning" data-dismiss="modal">{{ 'vpv.btn.restore' | translate }}</button>
+        <button (click)="gotoKMVersion(visboprojectversion)" class="btn btn-primary" data-dismiss="modal">{{ 'vpv.btn.show' | translate }}</button>
       </div>
     </div>
   </div>

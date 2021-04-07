@@ -254,7 +254,7 @@ export class VisboProjectVersionService {
   }
 
   /** GET Capacity Calculation from the server for the specified vpv id */
-  getCapacity(id: string, roleID: string, hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
+  getCapacity(id: string, roleID: string, startDate: Date, endDate: Date,  hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -263,6 +263,14 @@ export class VisboProjectVersionService {
     }
     if (pfv) {
       params = params.append('pfv', '1');
+    }    
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }    
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
     }
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
@@ -328,6 +336,44 @@ export class VisboProjectVersionService {
       );
   }
 
+  /** POST: move & scale a Visbo Project Version with copy */
+  changeVisboProjectVersion(vpvid: string, startDate?: Date, endDate?: Date, scaleFactor = 1, scaleStart?: Date): Observable<VisboProjectVersion> {
+    const url = `${this.vpvUrl}/${vpvid}/copy`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (scaleFactor != 1) {
+      params = params.append('scaleFactor', scaleFactor.toString());
+    }
+
+    const newVPV = new VisboProjectVersion();
+    newVPV.startDate = startDate;
+    newVPV.endDate = endDate;
+    newVPV.actualDataUntil = scaleStart
+
+    return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
+      .pipe(
+        map(response => response.vpv[0]),
+        tap(vpv => this.log(`moved & scaled VisboProjectVersion w/ id=${vpv._id}`)),
+        catchError(this.handleError<VisboProjectVersion>('changeVisboProjectVersion'))
+      );
+  }
+
+  /** POST: copy a Visbo Project Version */
+  copyVisboProjectVersion(vpvid: string, variantName: string): Observable<VisboProjectVersion> {
+    const url = `${this.vpvUrl}/${vpvid}/copy`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    const newVPV = new VisboProjectVersion();
+    newVPV.variantName = variantName;
+    return this.http.post<VisboProjectVersionResponse>(url, newVPV, { headers , params })
+      .pipe(
+        map(response => response.vpv[0]),
+        tap(vpv => this.log(`copied VisboProjectVersion w/ id=${vpv._id}`)),
+        catchError(this.handleError<VisboProjectVersion>('copyVisboProjectVersion'))
+      );
+  }
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.
@@ -339,7 +385,7 @@ export class VisboProjectVersionService {
     return (error: any): Observable<T> => {
 
       // send the error to remote logging infrastructure
-      this.log(`HTTP Request ${operation} failed: ${error.message} ${error.status}`);
+      console.log(`HTTP Request ${operation} failed: ${error.message} ${error.status}`);
 
       // better job of transforming error for user consumption
 

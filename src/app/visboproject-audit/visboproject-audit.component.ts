@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboAudit, QueryAuditType } from '../_models/visboaudit';
+import { VisboAudit, VisboAuditXLS, QueryAuditType } from '../_models/visboaudit';
 
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProject } from '../_models/visboproject';
@@ -14,6 +14,10 @@ import { VisboAuditService } from '../_services/visboaudit.service';
 
 import { VGPermission } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from '../_helpers/visbo.helper';
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 function encodeCSV(source: string): string {
   let result: string;
@@ -148,65 +152,63 @@ export class VisboprojectAuditComponent implements OnInit {
   }
 
   downloadVisboAudit(): void {
-    this.log(`sysAudit Download ${this.audit.length} Items`);
-    let data: string;
-    const separator = '\t';
-    data = 'sep=' + separator + '\n';  // to force excel to use the separator
-    data = data + 'date' + separator
-          + 'time UTC' + separator
-          + 'email' + separator
-          + 'actiondDescription' + separator
-          + 'action' + separator
-          + 'url' + separator
-          + 'actionInfo' + separator
-          + 'responseTime' + separator
-          + 'responseStatus' + separator
-          + 'vcid' + separator
-          + 'vcname' + separator
-          + 'vpid' + separator
-          + 'vpname' + separator
-          + 'vpvid' + separator
-          + 'size' + separator
-          + 'ip' + separator
-          + 'userId' + separator
-          + 'userAgent' + separator
-          + 'ttl' + separator
-          + 'VC Details' + separator
-          + 'VP Details' + '\n';
-    for (let i = 0; i < this.audit.length; i++) {
-      const createdAt = new Date(this.audit[i].createdAt).toISOString();
-      const userAgent = (this.audit[i].userAgent || '').replace(/,/g, ';');
-      const lineItem = createdAt.substr(0, 10) + separator
-                  + createdAt.substr(11, 8) + separator
-                  + encodeCSV(this.audit[i].user.email) + separator
-                  + encodeCSV(this.audit[i].actionDescription) + separator
-                  + this.audit[i].action + separator
-                  + this.audit[i].url + separator
-                  + this.audit[i].actionInfo + separator
-                  + (this.audit[i].result ? this.audit[i].result.time : '') + separator
-                  + (this.audit[i].result ? this.audit[i].result.status : '') + separator
-                  + (this.audit[i].vc ? this.audit[i].vc.vcid : '') + separator
-                  + (this.audit[i].vc ? encodeCSV(this.audit[i].vc.name) : '') + separator
-                  + (this.audit[i].vp ? this.audit[i].vp.vpid : '') + separator
-                  + (this.audit[i].vp ? encodeCSV(this.audit[i].vp.name) : '') + separator
-                  + (this.audit[i].vpv ? this.audit[i].vpv.vpvid : '') + separator
-                  + (this.audit[i].result ? this.audit[i].result.size : '0') + separator
-                  + this.audit[i].ip + separator
-                  + this.audit[i].user.userId + separator
-                  + encodeCSV(userAgent) + separator
-                  + (this.audit[i].ttl || '') + separator
-                  + (this.audit[i].vc ? (encodeCSV(this.audit[i].vc.vcjson) || '') : '') + separator
-                  + (this.audit[i].vp ? (encodeCSV(this.audit[i].vp.vpjson) || '') : '') + '\n';
-      data = data.concat(lineItem);
+    this.log(`vpAudit Download ${this.audit.length} Items`);
+    let audit: VisboAuditXLS[] = []
+    this.audit.forEach(element => {
+      const auditElement = new VisboAuditXLS();
+      auditElement.createdAt = new Date(element.createdAt);
+      auditElement.email = element.user?.email;
+      auditElement.vcName = element.vc?.name;
+      auditElement.vcid = element.vc?.vcid;
+      auditElement.vpName = element.vp?.name;
+      auditElement.vpid = element.vp?.vpid;
+      auditElement.vpvid = element.vpv?.vpvid;
+      auditElement.action = element.action;
+      auditElement.actionDescription = element.actionDescription;
+      auditElement.actionInfo = element.actionInfo;
+      auditElement.url = element.url;
+      auditElement.action = element.action;
+      auditElement.ip = element.ip;
+      auditElement.host = element.host;
+      if (this.sysadmin) {
+        if (element.ttl) { auditElement.ttl = new Date(element.ttl); }
+        auditElement.sysAdmin = element.sysAdmin;
+      }
+      auditElement.userAgent = element.userAgent;
+      auditElement.resultTime = element.result?.time;
+      auditElement.resultStatus = element.result?.status;
+      auditElement.resultStatusText = element.result?.statusText;
+      auditElement.resultSize = element.result?.size;
+      audit.push(auditElement);
+    });
+
+    // export to Excel
+    const len = audit.length;
+    let width = 0;
+    for (const item in audit[0]) {
+      width += 1;
     }
-    this.log(`sysAudit CSV Len ${data.length} `);
-    const blob = new Blob([data], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    this.log(`Open URL ${url}`);
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    const timestamp = new Date();
+    const month = (timestamp.getMonth() + 1).toString();
+    const day = timestamp.getDate().toString();
+    const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0") + '-' +  day.padStart(2, "0");
+    const name = 'VisboProjectAudit_' + strTimestamp;
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(audit, {header:['createdAt', 'email', 'vcName', 'vpName', 'actionDescription', 'actionInfo', 'resultTime', 'resultSize', 'resultStatus', 'resultStatusText' ]});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    sheets[name] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
     const a = document.createElement('a');
     document.body.appendChild(a);
     a.href = url;
-    a.download = 'auditlog-VP.csv';
+    a.download = name.concat(EXCEL_EXTENSION);
     this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
     a.click();
     window.URL.revokeObjectURL(url);

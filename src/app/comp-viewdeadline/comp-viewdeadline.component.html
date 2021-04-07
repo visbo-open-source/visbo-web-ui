@@ -106,6 +106,14 @@
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.type' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].type }}</label>
             </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].startDatePFV">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.startDatePFV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].startDatePFV | date :'dd.MM.yy' }}</label>
+            </div>
+            <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].startDateVPV">
+              <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.startDateVPV' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].startDateVPV | date :'dd.MM.yy' }}</label>
+            </div>
             <div class="v_compact_t form-group" *ngIf="filteredDeadline[deadlineIndex].endDatePFV">
               <label class="col-4 col-form-label">{{ 'compViewDeadline.lbl.endDatePFV' | translate }}:</label>
               <label class="col-8 form-control-static">{{ filteredDeadline[deadlineIndex].endDatePFV | date :'dd.MM.yy' }}</label>

@@ -4,12 +4,12 @@
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span *ngIf="dropDownIndex > 0" class="ml-1"> ({{dropDown[dropDownIndex]}})</span>
+        <span *ngIf="dropDownIndex > 0" class="ml-1" title="{{dropDown[dropDownIndex].description}}"> ({{dropDown[dropDownIndex].variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
           <div class="dropdown-menu">
             <div *ngFor="let item of dropDown">
-              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item)">{{ item }}</a>
+              <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.name }}</a>
             </div>
           </div>
         </span>
@@ -17,6 +17,9 @@
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
         </small>
       </h2>
+      <div *ngIf="dropDownIndex > 0">
+        {{ dropDown[dropDownIndex].description }}
+      </div>
       <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
         <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
         <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
@@ -24,13 +27,13 @@
     </div>
   </div>
 
-  <div *ngIf="vpvActive && !getPreView()" class="d-print-none">
+  <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
+        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
         <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
       </h4>
-      <div class="col-6">
+      <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select *ngIf="statusDirection != undefined" class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
@@ -50,7 +53,7 @@
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
-        <div class="btn-group">
+        <div class="dropdown mr-1">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpView' | translate }}
             <span class="caret"></span>
@@ -60,6 +63,17 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
+          </div>
+        </div>
+        <div *ngIf="dropDownAll.length > 0" class="dropdown mr-1">
+          <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
+            {{ 'vpKeyMetric.btn.vpvChange' | translate }}
+            <span class="caret"></span>
+          </button>
+          <div class="dropdown-menu">
+            <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
+            <a class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <a *ngIf="canModify()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
           </div>
         </div>
       </div>
@@ -251,6 +265,95 @@
 
           <div class="modal-footer align-items-end">
             <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal move start&end Date of VPV -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalMove" tabindex="-1" role="dialog" aria-labelledby="vpvModalMoveTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vpvModalMoveTitle">{{ 'vpKeyMetric.titleVPVMove' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="newVPV && newVPV.variantName == 'pfv'">
+          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
+        </div>
+        <form *ngIf="newVPV" name="vpvMove" #f2="ngForm" novalidate>
+          <div class="form-group">
+            <label for="startDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.startDate' | translate }}:</label>
+            <input *ngIf="canModifyDate('startDate')" id="startDateID" type="date" class="col-6 col-form-label" name="newVPVstartDate" [ngModel]="newVPVstartDate | date:'yyyy-MM-dd'" (input)="newVPVstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
+            <label *ngIf="!canModifyDate('startDate')" id="startDateID" class="col-6 col-form-label">{{ newVPV.startDate | date:'dd.MM.yyyy' }}</label>
+          </div>
+          <div class="form-group">
+            <label for="endDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.endDate' | translate }}:</label>
+            <input id="endDateID" type="date" class="col-6 col-form-label" name="newVPVendDate" [ngModel]="newVPVendDate | date:'yyyy-MM-dd'" (input)="newVPVendDate=parseDate($event.target.value)" (change)="updateDateRange()">
+          </div>
+          <div class="custom-control custom-checkbox ml-3">
+              <input type="checkbox" class="custom-control-input" id="scaleCheckBox" name="scaleCheckBox" [(ngModel)]="scaleCheckBox">
+              <label class="custom-control-label" for="scaleCheckBox">{{ 'vpKeyMetric.lbl.scaleCheck' | translate }}</label>
+          </div>
+          <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
+            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99" (change)="updateScaleFactor()"> %
+          </div>
+          <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleStartDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleStartDate' | translate }}:</label>
+            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" min="{{getScaleDate('Min') | date:'yyyy-MM-dd'}}" max="{{getScaleDate('Max') | date:'yyyy-MM-dd'}}" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
+          </div>
+
+        </form>
+        <div class="modal-footer align-items-end">
+          <button id="vpvMoveCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+          <button id="vpvMoveConfirm" *ngIf="!changeStatus" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+          <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal copy VPV -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalCopy" tabindex="-1" role="dialog" aria-labelledby="vpvModalCopyTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vpvModalCopyTitle">{{ 'vpKeyMetric.titleVPVCopy' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="newVPVvariantName == 'pfv'">
+          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
+        </div>
+        <form *ngIf="newVPV && vpvActive" name="vpvCopy" #f3="ngForm" novalidate>
+          <div class="form-group">
+            <div class="form-group">
+              <label for="sourceVariantID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.source' | translate }}:</label>
+              <label id="sourceVariantID" class="col-6 col-form-label">{{ getVariantName(vpvActive.variantName) }}</label>
+            </div>
+            <div class="form-group row ml-0">
+              <label for="variantNameID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.destination' | translate }}:</label>
+              <div id="variantNameID" *ngIf="newVPVdropDown.length > 1" class="col-6 col-form-label">
+                <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{getVariantName(newVPVvariantName)}}</a>
+                <div class="dropdown-menu">
+                  <a *ngFor="let item of newVPVdropDown; let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(variantIndex)">{{ item.name }}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer align-items-end">
+            <button id="vpvCopyCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button id="vpvCopyConfirm" *ngIf="!hasVariantChange()" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvCopyConfirm" *ngIf="hasVariantChange()" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
           </div>
         </form>
       </div>

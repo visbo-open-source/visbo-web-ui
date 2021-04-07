@@ -18,6 +18,7 @@ export class VPRestrict {
 export class VPVariant {
   _id: string;
   variantName: string;
+  description: string;
   email: string;
   createdAt: Date;
   vpvCount: number;
@@ -93,4 +94,17 @@ export class VPParams {
   from: string;
   to: string;
   drillDown: string;
+}
+
+export interface CreateProjectProperty {
+  vcid: string;
+  vpType: number;
+  name: string;
+  description?: string;
+  startDate?: Date;
+  endDate?: Date;
+  templateID?: string;
+  bac?: number;
+  rac?: number;
+  businessUnit?: string;
 }
