@@ -254,7 +254,7 @@ export class VisboProjectVersionService {
   }
 
   /** GET Capacity Calculation from the server for the specified vpv id */
-  getCapacity(id: string, roleID: string, hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
+  getCapacity(id: string, roleID: string, startDate: Date, endDate: Date,  hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -263,6 +263,14 @@ export class VisboProjectVersionService {
     }
     if (pfv) {
       params = params.append('pfv', '1');
+    }    
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }    
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
     }
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
