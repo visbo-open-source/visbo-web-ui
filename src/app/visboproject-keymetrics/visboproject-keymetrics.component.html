@@ -13,7 +13,7 @@
             </div>
           </div>
         </span>
-        <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
+        <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initSystemCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
         </small>
       </h2>
@@ -235,21 +235,52 @@
                   {{ getShortText(vpvActive.VorlagenName, 20) }}
                 </td>
               </tr>
-              <tr *ngFor="let item of vpActive.customFieldString">
-                <td>{{ item.localName }}</td>
+              <tr *ngIf="vpActive.customFieldString.length > 0 || vpActive.customFieldDouble.length > 0">
+                <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
+                <td></td>
+              </tr>
+              <tr *ngIf="customBU">
+                <td>{{ 'customField._businessUnit' | translate }}</td>
+                <td title="{{ customBU }}">
+                  <a *ngIf="hasVPPerm(permVP.Modify)" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ customBU }}</a>
+                  <div *ngIf="hasVPPerm(permVP.Modify)" class="dropdown-menu">
+                    <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+                      <div class="dropdown-item" (click)="customBU = item; setModified()">{{ item }}</div>
+                    </a>
+                  </div>
+                  <label id="VPBU" *ngIf="!hasVPPerm(permVP.Modify)">{{ getShortText(customBU, 20) }} </label>
+                </td>
+              </tr>
+              <tr *ngIf="customStrategicFit >= 0">
+                <td>{{ 'customField._strategicFit' | translate }}</td>
+                <td>
+                  <input id="VPSF" *ngIf="hasVPPerm(permVP.Modify)" type="number" (change)="setModified()" name=customStrategicFit [(ngModel)]="customStrategicFit" min=0 max=10>
+                  <label id="VPSF" *ngIf="!hasVPPerm(permVP.Modify)">{{ customStrategicFit }} </label>
+                </td>
+              </tr>
+              <tr *ngIf="customRisk >= 0">
+                <td>{{ 'customField._risk' | translate }}</td>
+                <td>
+                  <input id="VPRisk" *ngIf="hasVPPerm(permVP.Modify)" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
+                  <label id="VPRisk" *ngIf="!hasVPPerm(permVP.Modify)">{{ customRisk }} </label>
+                </td>
+              </tr>
+              <tr *ngFor="let item of getCustomFieldString(true)">
+                <td>{{ item.name }}</td>
                 <td title="{{ item.value }}">
                   {{ getShortText(item.value, 20) }}
                 </td>
               </tr>
-              <tr *ngFor="let item of vpActive.customFieldDouble">
-                <td>{{ item.localName }}</td>
+              <tr *ngFor="let item of getCustomFieldDouble(true)">
+                <td>{{ item.name }}</td>
                 <td>{{ item.value }}</td>
               </tr>
             </tbody>
           </table>
 
           <div class="modal-footer align-items-end">
-            <button class="btn btn-primary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button *ngIf="customVPModified" class="btn btn-primary" data-dismiss="modal"(click)="vpUpdate()">{{ 'vpKeyMetric.btn.save' | translate }}</button>
           </div>
         </form>
       </div>

@@ -202,19 +202,19 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
-        if (item?.value !== this.filterBU) {
+        if ((item?.value || '') !== this.filterBU) {
           continue;
         }
       }
       if (this.filterRisk >= 0) {
         const item = getCustomFieldDouble(this.listVPV[i].vp, '_risk');
-        if (item?.value < this.filterRisk) {
+        if ((item?.value || 0) < this.filterRisk) {
           continue;
         }
       }
       if (this.filterStrategicFit >= 0) {
         const item = getCustomFieldDouble(this.listVPV[i].vp, '_strategicFit');
-        if (item?.value < this.filterStrategicFit) {
+        if ((item?.value || 0) < this.filterStrategicFit) {
           continue;
         }
       }
@@ -379,11 +379,25 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       if (item.vp?.customFieldDouble) {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
-          if (customField) { this.filterStrategicFit = 0; }
+          if (customField) {
+            this.filterStrategicFit = 0;
+            item.StrategicFit = customField.value;
+          }
         }
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
-          if (customField) { this.filterRisk = 0; }
+          if (customField) {
+            this.filterRisk = 0;
+            item.Risiko = customField.value;
+          }
+        }
+      }
+      if (item.vp?.customFieldString) {
+        const customField = getCustomFieldString(item.vp, '_businessUnit');
+        if (customField) {
+          item.businessUnit = customField.value;
+        } else {
+          item.businessUnit = ''; 
         }
       }
     });

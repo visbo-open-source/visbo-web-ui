@@ -8,7 +8,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboProject, VPParams, constSystemCustomName } from '../_models/visboproject';
+import { VisboSetting } from '../_models/visbosetting';
+
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -40,6 +42,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownAll: DropDown[] = [];       // all variants including standard where the user can modify
   newVPVdropDown: DropDown[];         // variants to create a new Version
   dropDownIndex: number;
+  customize: VisboSetting;
 
   vpSelected: string;
   vpActive: VisboProject;
@@ -50,6 +53,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
+
+  customVPModified: boolean;
+  customBU: string;
+  dropDownBU: string[];
+  customStrategicFit: number;
+  customRisk: number;
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -374,9 +383,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           visboproject => {
             this.vpActive = visboproject;
             this.translateCustomFields(this.vpActive);
+            this.initSystemCustomFields(this.vpActive);
             this.combinedPerm = visboproject.perm;
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
+            this.getVisboCenterCustomization();
             if (this.vpActive?._id !== visboproject._id) {
               this.getVisboCenterOrga();
             }
@@ -440,6 +451,26 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       })
     }
+  }
+
+  initSystemCustomFields(vp: VisboProject): void {
+      const customFieldString = getCustomFieldString(vp, '_businessUnit');
+      if (customFieldString) {
+        this.customBU = customFieldString.value;
+      }
+      let customFieldDouble = getCustomFieldDouble(vp, '_strategicFit');
+      if (customFieldDouble) {
+        this.customStrategicFit = customFieldDouble.value;
+      }
+      customFieldDouble = getCustomFieldDouble(vp, '_risk');
+      if (customFieldDouble) {
+        this.customRisk = customFieldDouble.value;
+      }
+      this.customVPModified = false;
+  }
+
+  setModified(): void {
+    this.customVPModified = true;
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -544,12 +575,49 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           },
           error => {
             if (error.status === 403) {
-              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermOrga', {name: this.vpActive.name});
               this.alertService.error(message);
             } else {
               this.alertService.error(getErrorMessage(error));
             }
         });
+    }
+  }
+
+  getVisboCenterCustomization(): void {
+    if (this.vpActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
+      this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
+        .subscribe(
+          vcsettings => {
+            if (vcsettings.length > 0) {
+              this.customize = vcsettings[0];
+              this.initBUDropDown();
+            }
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
+  }
+
+  initBUDropDown(): void {
+    const listBU = this.customize?.value?.businessUnitDefinitions;
+    if (!listBU) return;
+    this.dropDownBU = [];
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+    } else {
+      this.dropDownBU = undefined;
     }
   }
 
@@ -849,6 +917,46 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  vpUpdate(): void {
+    if (this.vpActive && this.customVPModified) {
+      // set the changed custom customfields
+      const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
+      if (customFieldString) {
+        customFieldString.value = this.customBU;
+      }
+      let customFieldDouble = getCustomFieldDouble(this.vpActive, '_strategicFit');
+      if (customFieldDouble) {
+        customFieldDouble.value = this.customStrategicFit;
+      }
+      customFieldDouble = getCustomFieldDouble(this.vpActive, '_risk');
+      if (customFieldDouble) {
+        customFieldDouble.value = this.customRisk;
+      }
+
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+      this.visboprojectService.updateVisboProject(this.vpActive)
+        .subscribe(
+          (vp) => {
+            this.vpActive = vp;
+            const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+            this.alertService.success(message, true);
+          },
+          error => {
+            this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {
       if (variantName) {
@@ -948,6 +1056,26 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
     }
+  }
+
+  getCustomFieldString(vpOnly = true): VPCustomString[] {
+    let result: VPCustomString[] = [];
+    if (vpOnly) {
+      result = this.vpActive?.customFieldString?.filter(item => item.type == 'VP');
+    } else {
+      result = this.vpActive?.customFieldString;
+    }
+    return result;
+  }
+
+  getCustomFieldDouble(vpOnly = true): VPCustomDouble[] {
+    let result: VPCustomDouble[] = [];
+    if (vpOnly) {
+      result = this.vpActive?.customFieldDouble?.filter(item => item.type == 'VP');
+    } else {
+      result = this.vpActive?.customFieldDouble;
+    }
+    return result;
   }
 
   getPreView(): boolean {

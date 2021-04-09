@@ -376,19 +376,19 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
-        if (setting?.value !== this.filterBU) {
+        if ((setting?.value || '') !== this.filterBU) {
           continue;
         }
       }
       if (this.filterRisk >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
-        if (setting?.value < this.filterRisk) {
+        if ((setting?.value || 0) < this.filterRisk) {
           continue;
         }
       }
       if (this.filterStrategicFit >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_strategicFit');
-        if (setting?.value < this.filterStrategicFit) {
+        if ((setting?.value || 0) < this.filterStrategicFit) {
           continue;
         }
       }

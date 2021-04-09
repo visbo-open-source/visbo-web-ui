@@ -245,9 +245,6 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   save(): void {
-    if (this.visboproject.customFieldString) {
-      this.visboproject.customFieldString = this.visboproject.customFieldString.filter(item => item.value != '');
-    }
     if (this.visboproject.customFieldDouble) {
       this.visboproject.customFieldDouble = this.visboproject.customFieldDouble.filter(item => item.value != undefined);
     }

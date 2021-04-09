@@ -488,6 +488,7 @@
 		"titleVPVCopy": "Copy",
 		"lbl": {
 			"project": "Project",
+			"projectProperty": "Projekt Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"pfvVariant": "Baseline",
@@ -559,7 +560,8 @@
 			"vpvChange": "Change",
 			"vpvMove": "Move",
 			"vpvCopy": "Copy",
-			"back": "Back"
+			"back": "Back",
+			"save": "Save"
 		},
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
@@ -567,6 +569,9 @@
 			"changeVPVSuccess": "Project Baseline was changed successfully!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
+			"errorPermVP": "Permission denied updating {{name}}",
+			"errorVPConflict": "Conflict happened during updating of {{name}}",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},

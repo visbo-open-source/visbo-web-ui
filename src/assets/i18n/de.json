@@ -488,6 +488,7 @@
 		"titleVPVCopy": "Kopieren",
 		"lbl": {
 			"project": "Projekt",
+			"projectProperty": "Projekt Einstellungen",
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"pfvVariant": "Baseline",
@@ -559,7 +560,8 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
-			"back": "Zurück"
+			"back": "Zurück",
+			"save": "Speichern"
 		},
 		"msg": {
 			"changePFV": "Vorsicht: Änderung der Baseline!",
@@ -567,6 +569,9 @@
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
+			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
+			"errorPermVP": "Keine Berechtigung zum ändern von {{name}}",
+			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
