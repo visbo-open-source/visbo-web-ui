@@ -81,7 +81,7 @@
 		},
 		"msg": {
 			"pwResetSuccess": "Ihr Passwort wurde geändert.",
-			"pwResetError": "fehler beim ändern des Passworts: {{message}}",
+			"pwResetError": "Fehler beim ändern des Passworts: {{message}}",
 			"followPolicy": "Das neue Passwort muß der Passwort Policy genügen.",
 			"followRule": "Passwort Regel: Mindestens ein Kleinbuchstabe, ein Großbuchstabe, eine Ziffer und ein Sonderzeichen und mindestens 8 Zeichen lang."
 		}
@@ -118,7 +118,7 @@
 	},
 	"registerConfirm": {
 		"title": "e-mail Bestätigung",
-		"description": "Dies ist eine Zwisschenseite ohne spezifischen Inhalt. Sie sollten automatisch weitergeleitet werden, falls nicht bitte betätigen Sie den Schalter.",
+		"description": "Dies ist eine Zwischenseite ohne spezifischen Inhalt. Sie sollten automatisch weitergeleitet werden, falls nicht bitte betätigen Sie den Schalter.",
 		"btn": {
 			"cancel": "Abbrechen"
 		},
@@ -307,7 +307,13 @@
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO {{vpType}} {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum VISBO Projekt",
-			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt."
+			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt.", 
+			"errorNamePattern": "Name darf nur Buchstaben A-Z, a-z, Ziffern, Leerzeichen und '; : . - _' enthalten", 
+			"errorNameLen": "Name muss mind. 2 Zeichen lang sein",
+			"errorStartEnd": "Start-Datum darf nicht nach dem Ende-Datum liegen", 
+			"errorStartDate": "bitte Start-Datum angeben",
+			"errorEndDate": "bitte Ende-Datum angeben",
+			"errorBac": "Budget muss angegeben und >= 0 sein"
 		}
 	},
 	"vpDetail": {
@@ -784,7 +790,8 @@
 			"type": "Typ",
 			"percentDone": "Erledigt",
 			"startDatePFV": "Start Phase (Baseline)",
-			"startDateVPV": "Start Phase (Plan)",
+			"startDateTTVPV": "Start (Plan)",
+			"endDateTTVPV": "Ende (Plan)",
 			"endDatePFV": "Termin (Baseline)",
 			"endDateVPV": "Termin (Plan)",
 			"change": "Änderung (Wochen)",
@@ -1017,7 +1024,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
-			"auditSuccess": "VISBO Pprojekt Audit erfolgreich geladen",
+			"auditSuccess": "VISBO Projekt Audit erfolgreich geladen",
 			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
@@ -1056,7 +1063,7 @@
 		"longPD": "Planned number of Deadlines, according baseline",
 		"shortAD": "AD",
 		"planAD": "AD, plan-to-date",
-		"longAD": "Actual number of weigthed Deadlines, according plan to-date",
+		"longAD": "Actual number of weighted Deadlines, according plan to-date",
 
 		"shortDVAC": "DVAC",
 		"longDVAC": "Number of Deliveries(DV) at Completion, according baseline",
@@ -1067,7 +1074,7 @@
 		"longPDV": "Planned number of Deliveries(DV), according baseline",
 		"shortADV": "ADV",
 		"planADV": "ADV, plan-to-date",
-		"longADV": "Actual number of weigthed Deliveries(DV), according plan-to-date",
+		"longADV": "Actual number of weighted Deliveries(DV), according plan-to-date",
 
 		"finishedDeadline": "Erledigte Termine",
 		"unfinishedDeadline": "Offene Termine",
@@ -1104,7 +1111,7 @@
 			"titleDeliveryTrend": "Historischer Vergleich der Lieferungen: plan-to-date vs. baseline",
 			"yAxisDeadlineTrend": "gewichtete Anzahl von Terminen",
 			"titleDeadlineTrend": "Historischer Vergleich der Termine: plan-to-date vs. baseline",
-			"yAxisDeadlineDelayTrend": "durschnittliche Terminabweichung in Tagen",
+			"yAxisDeadlineDelayTrend": "durchschnittliche Terminabweichung in Tagen",
 			"titleDeadlineDelayTrend": "Historischer Vergleich der Terminabweichungen: erledigt vs. offen",
 			"titleEndDateTrend": "Historische Entwicklung vom Projektende: plan-to-date vs. baseline",
 			"yAxisEndDateTrend": "Projekt Ende",

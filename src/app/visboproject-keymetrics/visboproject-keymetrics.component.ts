@@ -388,9 +388,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
             this.getVisboCenterCustomization();
-            if (this.vpActive?._id !== visboproject._id) {
-              this.getVisboCenterOrga();
-            }
+            // would be better to get the orga and deliver it to the component.
+            this.getVisboCenterOrga();
+
             const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex].variantName : '';
             let variantID = '';
             if (variantName) {

@@ -95,7 +95,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form>
+          <form #myForm="ngForm">
             <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
               <label for="type" class="col-form-label">{{ 'vp.lbl.type' | translate }}:</label>
               <select id="CreateVPType" class="form-control" name="vpType" [(ngModel)]="newVP.vpType">
@@ -107,7 +107,18 @@
             <!-- Edit Name -->
             <div class="form-group">
               <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
-              <input id="CreateVPName" type="text" class="form-control" name="name" [(ngModel)]="newVP.name">
+              <input id="vpName" type="text" class="form-control" name="vpName" #vpName="ngModel" [(ngModel)]="newVP.name" required minlength="2" pattern="(^[A-Za-z0-9][A-Za-z0-9:.;\s_-]*[A-Za-z0-9;.\s)]$)" >
+              <div *ngIf="vpName.invalid && (vpName.dirty || vpName.touched)" class="errorInput">
+                <div *ngIf="vpName.errors?.required">
+                  {{ 'vp.msg.errorNameLen' | translate }}
+                </div>
+                <div *ngIf="vpName.errors?.pattern">
+                  {{ 'vp.msg.errorNamePattern' | translate }}
+                </div>
+                <div *ngIf="vpName.errors?.minlength">
+                  {{ 'vp.msg.errorNameLen' | translate }}
+                </div>
+              </div>
             </div>
             <!-- Edit Description -->
             <div class="form-group">
@@ -123,34 +134,54 @@
                   <option *ngFor="let template of getTemplates(visboprojectsAll)" value="{{ template._id }}">{{ template.name }}</option>
                 </select>
               </div>
-              <!-- Edit Start Date -->
+              <!-- Edit Start- & End-Date -->
               <div class="form-group">
-                  <label for="vpStart" class="col-form-label">{{ 'vp.lbl.startDate' | translate }}:</label>
-                  <input id="CreateVPStart" type="date" class="form-control" name="startDate" [ngModel]="newVP.startDate | date:'yyyy-MM-dd'" (input)="newVP.startDate=$event.target.value" >
+                <div class="row">
+                  <div class="col">
+                    <label for="vpStart" class="col-form-label">{{ 'vp.lbl.startDate' | translate }}:</label>
+                    <input id="vpStart" type="date" class="form-control" name="vpStart" #vpStart="ngModel" required [ngModel]="newVP.startDate | date:'yyyy-MM-dd'" (input)="newVP.startDate=$event.target.value" >
+                    <div *ngIf="vpStart.invalid && (vpStart.dirty || vpStart.touched)" class="errorInput">
+                      {{'vp.msg.errorStartDate' | translate }}
+                    </div>
+                    <div *ngIf="vpStart?.valid && vpEnd?.valid && datesAreInvalid()" class="errorInput">
+                      {{ 'vp.msg.errorStartEnd' | translate }}
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="vpEnd" class="col-form-label">{{ 'vp.lbl.endDate' | translate }}:</label>
+                    <input id="vpEnd" type="date" class="form-control" name="vpEnd" #vpEnd="ngModel" required [ngModel]="newVP.endDate | date:'yyyy-MM-dd'" (input)="newVP.endDate=$event.target.value" >
+                    <div *ngIf="vpEnd.invalid && (vpEnd.dirty || vpEnd.touched)" class="errorInput">
+                      {{'vp.msg.errorEndDate' | translate }}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <!-- Edit End Date  -->
+              <!-- Edit RAC & BAC -->
               <div class="form-group">
-                <label for="vpEnd" class="col-form-label">{{ 'vp.lbl.endDate' | translate }}:</label>
-                <input id="CreateVPEnd" type="date" class="form-control" name="endDate" [ngModel]="newVP.endDate | date:'yyyy-MM-dd'" (input)="newVP.endDate=$event.target.value" >
-              </div>
-              <!-- Edit RAC -->
-              <div class="form-group">
-                <label for="vpRAC" class="col-form-label">{{ 'vp.lbl.rac' | translate }}:</label>
-                <input id="CreateVPRac" type="number" class="form-control" min = "0"  name="rac" [ngModel]="newVP.rac" (input)="newVP.rac=$event.target.value" >
-              </div>
-              <!-- Edit BAC -->
-              <div class="form-group">
-                <label for="vpBAC" class="col-form-label">{{ 'vp.lbl.bac' | translate }}:</label>
-                <input id="CreateVPBac" type="number" class="form-control" min = "0" name="bac" [ngModel]="newVP.bac" (input)="newVP.bac=$event.target.value" >
+                <div class="row">
+                  <!-- RAC -->
+                  <div class="col">
+                    <label for="vpRAC" class="col-form-label">{{ 'vp.lbl.rac' | translate }}:</label>
+                    <input id="vpRAC" type="number" class="form-control" min="0"  name="vpRAC" [ngModel]="newVP.rac" (input)="newVP.rac=$event.target.value" >
+                  </div>
+                  <!-- BAC -->
+                  <div class="col">
+                    <label for="vpBAC" class="col-form-label">{{ 'vp.lbl.bac' | translate }}:</label>
+                    <input id="vpBAC" type="number" class="form-control" min = "0" required name="vpBAC" #vpBAC="ngModel" [ngModel]="newVP.bac" (input)="newVP.bac=$event.target.value" >
+                    <div *ngIf="vpBAC.invalid && (vpBAC.dirty || vpBAC.touched)" class="errorInput">
+                      {{ 'vp.msg.errorBac' | translate }}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </form>
-        </div>
-        <div class="modal-footer align-items-end">
-          <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
-          <button id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject()" data-dismiss="modal">
-            {{ 'vp.btn.save' | translate }}
-          </button>
+          <div class="modal-footer align-items-end">
+            <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
+            <button *ngIf="myForm.valid && (newVP.vpType != 0  || !datesAreInvalid())" id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject()" data-dismiss="modal">
+              {{ 'vp.btn.save' | translate }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

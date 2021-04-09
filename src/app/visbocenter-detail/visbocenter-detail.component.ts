@@ -687,7 +687,7 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
-            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
+            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }            
             if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
             organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
           }
@@ -748,26 +748,26 @@ export class VisbocenterDetailComponent implements OnInit {
 
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
       // cleanup unnecessary fields
-      let cleanupEmployeeNr = true;
-      let cleanupAliases = true;
-      let cleanupIsTeam = true;
-      if (organisation.find(item => item?.employeeNr != undefined)) {
-          cleanupEmployeeNr = false;
-      }
-      if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
-          cleanupAliases = false;
-      }
-      if (organisation.find(item => item?.isTeam != undefined)) {
-          cleanupIsTeam = false;
-      }
+      // let cleanupEmployeeNr = true;
+      // let cleanupAliases = true;
+      // let cleanupIsTeam = true;
+      // if (organisation.find(item => item?.employeeNr != undefined)) {
+      //     cleanupEmployeeNr = false;
+      // }
+      // if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
+      //     cleanupAliases = false;
+      // }
+      // if (organisation.find(item => item?.isTeam != undefined)) {
+      //     cleanupIsTeam = false;
+      // }
       organisation.forEach(item => {
         delete item.calcid;
         delete item.pid;
         delete item.parent;
-        cleanupEmployeeNr && delete item.employeeNr;
-        cleanupAliases && delete item.aliases;
-        cleanupIsTeam && delete item.isTeam;
-        cleanupIsTeam && delete item.percent;
+        // cleanupEmployeeNr && delete item.employeeNr;
+        // cleanupAliases && delete item.aliases;
+        // cleanupIsTeam && delete item.isTeam;
+        // cleanupIsTeam && delete item.percent;
         if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
         if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
         item.name = item.name.padStart(item.name.length + item.level, ' ');
