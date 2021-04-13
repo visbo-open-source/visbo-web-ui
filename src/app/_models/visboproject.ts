@@ -135,6 +135,16 @@ export function getCustomFieldString(vp: VisboProject, name: string): VPCustomSt
   return result;
 }
 
+export function addCustomFieldString(vp: VisboProject, name: string, value: string): VPCustomString {
+  let customField = new VPCustomString();
+  customField.name = name;
+  customField.value = value;
+  if (vp?.customFieldString) {
+    vp.customFieldString.push(customField);
+  }
+  return customField;
+}
+
 export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDouble {
   let result: VPCustomDouble;
   if (vp && vp.customFieldDouble) {

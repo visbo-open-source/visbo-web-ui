@@ -10,7 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -55,6 +55,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   pfvVariant: string;
 
   customVPModified: boolean;
+  customVPAdd: boolean;
   customBU: string;
   dropDownBU: string[];
   customStrategicFit: number;
@@ -467,6 +468,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.customRisk = customFieldDouble.value;
       }
       this.customVPModified = false;
+      this.customVPAdd = false;
+  }
+
+  checkVPCustomValues(): boolean {
+    let result = false;
+    if (!this.customVPAdd && !this.customVPModified) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined) {
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  addVPCustomValues(): void {
+    this.customVPAdd = true;
   }
 
   setModified(): void {
@@ -923,6 +939,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString) {
         customFieldString.value = this.customBU;
+      } else if (this.customBU) {
+        addCustomFieldString(this.vpActive, '_businessUnit', this.customBU);
       }
       let customFieldDouble = getCustomFieldDouble(this.vpActive, '_strategicFit');
       if (customFieldDouble) {
