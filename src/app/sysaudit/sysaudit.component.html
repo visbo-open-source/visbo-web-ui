@@ -38,7 +38,7 @@
       </select>
       <div class='btn-group '>
         <button type="button" class="btn btn-sm btn-primary ml-auto mx-1" (click)="getVisboAudits()">Filter</button>
-        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="downloadVisboAudit()">Download</button>
+        <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="downloadVisboAudit()">Excel</button>
         <button type="button" class="btn btn-sm btn-secondary ml-auto mx-1" (click)="switchChart()">{{chartButton}}</button>
       </div>
     </div>
@@ -57,7 +57,7 @@
       </div>
       <div class="col" *ngIf="graphDataBrowserChart && graphDataBrowserChart.length > 0">
         <app-column-chart [elementID]="divColumnChart2" [graphData]="graphDataBrowserChart" [graphOptions]="graphOptionsBrowserChart"></app-column-chart>
-      </div> 
+      </div>
     </h3>
   </div>
   <div *ngIf="!chart" class='container-fluid'>

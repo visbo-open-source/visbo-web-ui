@@ -9,10 +9,18 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
+import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
-import { VPParams } from '../_models/visboproject';
+import { VisboProject, VPParams } from '../_models/visboproject';
 
-import { visboCmpString, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { scale } from 'chroma-js';
+
+import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
+
+class startAndEndDate {
+  start: Date;
+  end: Date;
+}
 
 @Component({
   selector: 'app-comp-viewboard',
@@ -21,6 +29,8 @@ import { visboCmpString, convertDate, visboIsToday, getPreView } from '../_helpe
 export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   @Input() vps: VisboProjectVersion[];
+  @Input() customize: VisboSetting;
+  @Input() vpf: VisboProject;
 
   refDate: Date;
   filter: string;
@@ -34,7 +44,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
       width: '100%',
       height: 500,
-      // colors:['#cbb69d','#603913','#c69c6e'],
+      colors:[],
       timeline: {
         showBarLabels: true
       },
@@ -112,16 +122,40 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  visboViewBoardOverTime(): void {
+  visboViewBoardOverTime(): void { 
+    const defaultColor = '#59a19e';
+    const headLineColor = '#808080';
     const graphDataTimeline = [];
-    if (!this.vps || this.vps.length === 0) {
+
+    if (!this.vps || this.vps.length === 0 || !this.customize ) {
       this.graphDataTimeline = [];
       return;
     }
+    var buDefs = [];
+    for ( let j = 0; this.customize && this.customize.value && this.customize.value.businessUnitDefinitions && j < this.customize.value.businessUnitDefinitions.length; j++) {
+      buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
+    }
+    this.vps.sort(function(a, b) {
+      let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
+      if (result == 0) {
+        result = visboCmpDate(b.startDate, a.startDate);
+      }
+      if (result == 0) {
+        result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
+      }
+      return result;
+    });
 
-    this.vps.sort(function(a, b) { return visboCmpString(b.name.toLowerCase(), a.name.toLowerCase()); });
+    var minAndMaxDate = this.getMinAndMaxDate(this.vps);
+    
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;   
+    // variables to count the number of sameBu's
+    var bu = '';
+    var lastbu = '';
+    var sameBuCount = 0;
+    var rgbHex = defaultColor;
+    var colorArray = [];
 
-    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     for (let i = 0; i < this.vps.length; i++) {
       if (filter
         && !(this.vps[i].name.toLowerCase().indexOf(filter) >= 0
@@ -136,6 +170,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       }
       const startDate = this.vps[i].startDate;
       const endDate = this.vps[i].endDate;
+
       if (startDate && endDate && startDate <= endDate) {
         // we have a start & end date for the project, add it to the Timeline
 
@@ -146,22 +181,55 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.vps[i].startDate),
           new Date(this.vps[i].endDate)
         ]);
-        // if (this.vps[i].farbe) {
-        //   // ??? UR: 21.08.2020:.farbe wasn't delivered with thw visboProjectService
-        //   this.graphOptionsTimeline.colors.push('#' + this.vps[i].farbe.toString())
-        // } else {
-        //   vpsFarbe = vpsFarbe + 1000;
-        //   this.graphOptionsTimeline.colors.push('#' + vpsFarbe.toString())
-        // }
-
-      }
+        
+        var buColor = 0;       
+        bu = this.vps[i].businessUnit ? this.vps[i].businessUnit : undefined;
+        if (i == 0) { lastbu = bu };
+        if (bu) {                 
+          if (lastbu != bu){
+            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+            scaleArray.splice(scaleArray.length-3, 3);
+            scaleArray.reverse();
+            colorArray = colorArray.concat(scaleArray);
+            sameBuCount = 0;
+            lastbu = bu;
+          }         
+          sameBuCount += 1;
+          buColor = buDefs[this.vps[i].businessUnit] ? buDefs[this.vps[i].businessUnit]: undefined;          
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;  
+        }
+      }       
     }
+    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+    scaleArray.splice(scaleArray.length-3, 3);
+    scaleArray.reverse();
+    colorArray = colorArray.concat(scaleArray);
+   
+   
+    this.graphOptionsTimeline.colors = colorArray;
+
+    //last data - projectline to keep the x-axis fix, start and end is the min and max of the portfolio
+    if (minAndMaxDate && minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
+      const lastlineID = 0;
+      // color for the Portfolio-TimeLine
+      this.graphOptionsTimeline.colors.push(headLineColor);
+
+      graphDataTimeline.push([
+        (lastlineID).toString(),
+        this.combineName(this.vpf.name, ''),
+        '',
+        new Date(minAndMaxDate.start),
+        new Date(minAndMaxDate.end)
+      ]);
+    }
+
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
 
     const project = this.translate.instant('compViewBoard.lbl.project');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
 
+    // header of the projectboard
     graphDataTimeline.push([
       'ID',
       project,
@@ -169,9 +237,12 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       start,
       end
     ]);
+
     graphDataTimeline.reverse();
     // this.log(`view Timeline VP Timeline ${JSON.stringify(graphDataTimeline)}`);
 
+    // the order of the colors has to be changed, because the order of the projects was changed
+    this.graphOptionsTimeline.colors.reverse();
     this.graphDataTimeline = graphDataTimeline;
   }
 
@@ -250,6 +321,30 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   getPreView(): boolean {
     return getPreView();
+  }
+
+  getMinAndMaxDate(vpslist: VisboProjectVersion[]): startAndEndDate {
+
+    let minMaxDate = new startAndEndDate();
+    let newStartDate = new Date(8640000000000000);
+    let newEndDate =  new Date(-8640000000000000);
+
+    if (!vpslist && vpslist.length < 1) {
+      return undefined;
+    }
+    vpslist.forEach( item => {
+      var startDate = new Date(item.startDate);
+      let endDate = new Date(item.endDate);
+      if (visboCmpDate(startDate, new Date(newStartDate))== -1) {
+        newStartDate = new Date(startDate);
+      }
+      if (visboCmpDate( endDate, new Date(newEndDate),) == 1) {
+        newEndDate = new Date (endDate);
+      }
+    })
+    minMaxDate.start = newStartDate;
+    minMaxDate.end = newEndDate;
+    return minMaxDate;
   }
 
   /** Log a message with the MessageService */

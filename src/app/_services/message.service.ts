@@ -16,7 +16,7 @@ export class MessageService {
     this.initstatus();
     this.activateMessages = !this.activateMessages;
     localStorage.setItem('activateMessages', this.activateMessages ? 'On' : 'Off');
-    this.activateMessageToggle.emit(this.activateMessages);
+    // this.activateMessageToggle.emit(this.activateMessages);
     console.log('Messages Toggle to %s', this.activateMessages);
     return this.activateMessages;
   }
@@ -27,10 +27,14 @@ export class MessageService {
   }
 
   add(message: string): void {
-    this.messages.push(message);
-    if (this.messages.length > 20) {
-      this.messages.shift();
+    this.initstatus();
+    if (this.activateMessages) {
+      console.log(message);
     }
+    // this.messages.push(message);
+    // if (this.messages.length > 20) {
+    //   this.messages.shift();
+    // }
   }
 
   clear(): void {

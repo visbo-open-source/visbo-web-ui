@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { TranslateService } from '@ngx-translate/core';
+import * as XLSX from 'xlsx';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
@@ -18,18 +19,21 @@ import { VisboSetting } from '../_models/visbosetting';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
 class OrganisationItem {
   calcid: number;
   uid: number;
   pid: number;
   type: number;
-  isTeam: boolean;
+  isTeam: string;
   level: number;
   name: string;
   parent: string;
   path: string;
   employeeNr: string;
-  isExternRole: boolean;
+  isExternRole: string;
   defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
@@ -612,7 +616,7 @@ export class VisbocenterDetailComponent implements OnInit {
           organisation[id].pid = undefined;
         }
         organisation[id].name = role.name;
-        organisation[id].isExternRole = role.isExternRole;
+        organisation[id].isExternRole = role.isExternRole?'1': '';
         organisation[id].defaultKapa = role.defaultKapa;
         organisation[id].tagessatz = role.tagessatzIntern;
         organisation[id].employeeNr = role.employeeNr;
@@ -629,7 +633,7 @@ export class VisbocenterDetailComponent implements OnInit {
         if (role.isTeam) {
           this.log("Skip Handling of Team Members");
           organisation[id].type = 2;
-          organisation[id].isTeam = true;
+          organisation[id].isTeam = '1';
         } else {
           organisation[id].type = 1;
         }
@@ -668,7 +672,7 @@ export class VisbocenterDetailComponent implements OnInit {
               continue;
             }
             const userRole = organisation[index];
-            // now it is a user, add a new entry
+            // now it is a user, add a new entry to the team
             maxid += 1;
             organisation[maxid] = new OrganisationItem();
             organisation[maxid].uid = index;
@@ -683,7 +687,7 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
-            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
+            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }            
             if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
             organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
           }
@@ -743,62 +747,58 @@ export class VisbocenterDetailComponent implements OnInit {
       listCost.forEach(item => organisation.push(item));
 
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
+      // cleanup unnecessary fields
+      // let cleanupEmployeeNr = true;
+      // let cleanupAliases = true;
+      // let cleanupIsTeam = true;
+      // if (organisation.find(item => item?.employeeNr != undefined)) {
+      //     cleanupEmployeeNr = false;
+      // }
+      // if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
+      //     cleanupAliases = false;
+      // }
+      // if (organisation.find(item => item?.isTeam != undefined)) {
+      //     cleanupIsTeam = false;
+      // }
+      organisation.forEach(item => {
+        delete item.calcid;
+        delete item.pid;
+        delete item.parent;
+        // cleanupEmployeeNr && delete item.employeeNr;
+        // cleanupAliases && delete item.aliases;
+        // cleanupIsTeam && delete item.isTeam;
+        // cleanupIsTeam && delete item.percent;
+        if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
+        if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
+        item.name = item.name.padStart(item.name.length + item.level, ' ');
+      });
 
-      // export as CSV
-      let data = '';
-      const separator = '\t';
-      data = 'sep=' + separator + '\n';  // to force excel to use the separator
-      data = data + 'name' + separator
-            + 'uid' + separator
-            + 'type' + separator
-            + 'organisation' + separator
-            + 'isExternal' + separator
-            + 'isTeam' + separator
-            + 'defaultKapa' + separator
-            + 'tagessatz' + separator
-            + 'employeeNr' + separator
-            + 'defaultDayCapa' + separator
-            + 'entryDate' + separator
-            + 'exitDate' + separator
-            + 'percent' + separator
-            + 'aliases' + '\n';
-      for (let i = 0; i < organisation.length; i++) {
-        const role = organisation[i];
-        if (!role) {
-          // organisation could contain holes and they are sorted at the end
-          continue;
-        }
-        const lineItem = ''
-                    + '"' + role.name.padStart(role.name.length + role.level, ' ') + '"'+ separator
-                    + role.uid + separator
-                    + (role.type || '') + separator
-                    + (role.parent || '') + separator
-                    + (role.isExternRole ? '1' : '') + separator
-                    + (role.isTeam ? '1' : '') + separator
-                    + (role.defaultKapa || '').toLocaleString() + separator
-                    + (role.tagessatz || '').toLocaleString() + separator
-                    + (role.employeeNr || '') + separator
-                    + (role.defaultDayCapa || '').toLocaleString() + separator
-                    + (role.entryDate ? (new Date(role.entryDate)).toLocaleDateString() : '') + separator
-                    + (role.exitDate ? (new Date(role.exitDate)).toLocaleDateString() : '') + separator
-                    + (role.percent ? role.percent.toLocaleString() : '') + separator
-                    + (role.aliases && role.aliases.length > 0 ? role.aliases.join("#") : '') + '\n';
-        data = data.concat(lineItem);
+      // export to Excel
+      const len = organisation.length;
+      let width = 0;
+      for (const item in organisation[0]) {
+        width += 1;
       }
-      this.log(`VC Setting Orga CSV Len ${data.length} `);
-      // const blob = new Blob([data], { type: 'text/plain;charset=ISO-8859-1' });
-      const blob = new Blob([data], { type: 'text/csv;charset=utf-8' });
-      data = '\ufeff' + data;
-      const url = window.URL.createObjectURL(blob);
-      this.log(`Open URL ${url}`);
-      const a = document.createElement('a');
-      document.body.appendChild(a);
-      a.href = url;
+      const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();
       const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
+      const name = 'VisboCenterOrganisation_' + strTimestamp;
 
-      a.download = `VisboCenterOrganisation_${strTimestamp}.csv`;
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'entryDate', 'exitDate' ]});
+      worksheet['!autofilter'] = { ref: matrix };
+      // eslint-disable-next-line
+      const sheets: any = {};
+      sheets[name] = worksheet;
+      const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+      // eslint-disable-next-line
+      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.href = url;
+      a.download = name.concat(EXCEL_EXTENSION);
       this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
       a.click();
       window.URL.revokeObjectURL(url);

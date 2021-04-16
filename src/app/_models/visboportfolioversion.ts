@@ -42,6 +42,7 @@ export class VPFParams {
   vpfid: string;
   refDate: string;
   view: string;
+  viewCockpit: string;
   filter: string;
   metricX: string;
   metricY: string;
