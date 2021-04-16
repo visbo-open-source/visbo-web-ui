@@ -307,10 +307,10 @@
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO {{vpType}} {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum VISBO Projekt",
-			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt.", 
-			"errorNamePattern": "Name darf nur Buchstaben A-Z, a-z, Ziffern, Leerzeichen und '; : . - _' enthalten", 
+			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt.",
+			"errorNamePattern": "Name darf nur Buchstaben A-Z, a-z, Ziffern, Leerzeichen und '; : . - _' enthalten",
 			"errorNameLen": "Name muss mind. 2 Zeichen lang sein",
-			"errorStartEnd": "Start-Datum darf nicht nach dem Ende-Datum liegen", 
+			"errorStartEnd": "Start-Datum darf nicht nach dem Ende-Datum liegen",
 			"errorStartDate": "bitte Start-Datum angeben",
 			"errorEndDate": "bitte Ende-Datum angeben",
 			"errorBac": "Budget muss angegeben und >= 0 sein"
@@ -854,6 +854,8 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"errorLocked": "Projekt {{name}} ist von einem anderen Benutzer gesperrt.",
 			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
+			"errorConsistencyDelete": "Baseline von {{name}} kann nicht gelöscht werden da eine neuere Projektversion existiert",
+			"errorConsistencyUnDelete": "Baseline von {{name}} kann nicht wiederhergestellt werden, da eine neuere Projektversion existiert",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}
 	},

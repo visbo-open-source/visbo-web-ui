@@ -308,11 +308,11 @@
 			"errorConflict": "VISBO {{vpType}} {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project",
 			"noVP": "You do not have access to a VISBO Project.",
-			"errorNamePattern": "Name may only contain A-Z, a-z, numericals, spaces and '; : . - _'", 
+			"errorNamePattern": "Name may only contain A-Z, a-z, numericals, spaces and '; : . - _'",
 			"errorNameLen": "Name is required and has to be at least 2 chars",
-			"errorStartEnd": "Start-Date must not be later than End-Date", 
+			"errorStartEnd": "Start-Date must not be later than End-Date",
 			"errorStartDate": "please provide Start-Date",
-			"errorEndDate": "please provide End-Date", 
+			"errorEndDate": "please provide End-Date",
 			"errorBac": "Budget is required and has to be >= 0"
 		}
 	},
@@ -854,6 +854,8 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"errorLocked": "Project {{name}} is locked by another user",
 			"errorConflict": "A conflict has happened during save of the version {{name}}",
+			"errorConsistencyDelete": "Delete of Baseline from {{name}} is not possible, as a newer project version exists",
+			"errorConsistencyUnDelete": "Restore of Baseline from {{name}} is not possible, as a newer project version exists",
 			"errorPermDelete": "Permission denied to delete this project versions {{name}}"
 		}
 	},
