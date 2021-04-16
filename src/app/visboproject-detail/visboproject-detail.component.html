@@ -7,27 +7,41 @@
   </h5>
   <form>
     <div class="form-group row">
-      <label for="vpName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }}:</label>
+      <label for="VPName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }} ({{ getVPType(visboproject.vpType) }}):</label>
       <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
       <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.name }} </label>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify) || visboproject.description" class="form-group row">
-      <label for="vpDescription" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+      <label for="VPDesc" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
       <textarea id="VPDesc" *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
       <label id="VPDesc" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.description }} </label>
-    </div>
-    <div class="form-group row">
-      <label for="vpType" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.type' | translate }}:</label>
-      <label name=vpType class="col form-control-static col-form-label">{{ getVPType(visboproject.vpType) }} </label>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
       <label name=vpVersion class="col form-control-static col-form-label"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
     </div>
     <div class="form-group row d-none d-md-block">
-      <label for="Created" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
+      <label for="VPCreated" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
       <label id="VPCreated" class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
       <label id="VPUpdated" class="col-4 form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+    </div>
+    <div *ngIf="hasVPPerm(permVP.Modify) && (visboproject.customFieldString?.length > 0 || visboproject.customFieldDouble?.length > 0)">
+      <div class="mb-1">
+        {{ 'vpDetail.lbl.properties' | translate }}:
+        <button id="expandPropertyID" class="btn-sm" title="{{ 'vpDetail.lbl.showProperties' | translate }}" (click)='expandProperties = !expandProperties'>
+          <ng-container *ngTemplateOutlet="expand; context:{level: expandProperties} " ></ng-container>
+        </button>
+      </div>
+      <div *ngIf="expandProperties">
+        <div *ngFor="let entry of visboproject.customFieldString;" class="form-group row">
+          <label for="customFieldStringID" class="col-3 col-md-2 col-form-label">{{ entry.localName }}:</label>
+          <input id="customFieldStringID" type="text" class="col-8 form-control" name="{{ entry.name }}" [(ngModel)]="entry.value">
+        </div>
+        <div *ngFor="let entry of visboproject.customFieldDouble;" class="form-group row">
+          <label for="customFieldDoubleID" class="col-3 col-md-2 col-form-label">{{ entry.localName }}:</label>
+          <input id="customFieldDoubleID" type="number" class="col-8 form-control" name="{{ entry.name }}" [(ngModel)]="entry.value">
+        </div>
+      </div>
     </div>
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
@@ -648,3 +662,7 @@
   </div>
 
 </div>
+
+<ng-template #expand let-level="level">
+  <i class="fas" [ngClass]="{'fa-chevron-down': level == false, 'fa-chevron-up': level == true}"></i>
+</ng-template>

@@ -103,7 +103,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   topLevelNodes: VisboRole[];
   colorsPFV = [baselineColor, '#BDBDBD', '#458CCB'];
   colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB'];
-  
+
 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
@@ -939,7 +939,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
     orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
     orgaColors.reverse();
@@ -947,7 +947,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       orgaColors.unshift(baselineColor);
     } else {
       orgaColors.unshift(capaColor);
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -963,8 +963,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    const mapNodeList = this.mapChildNode(childNodeList);      
-    
+    const mapNodeList = this.mapChildNode(childNodeList);
+
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -1105,7 +1105,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
@@ -1114,7 +1114,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       // color for capa
       orgaColors.unshift(capaColor);
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -1762,10 +1762,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const len = excel.length;
-    let width = 0;
-    for (const item in excel[0]) {
-      width += 1;
-    }
+    const width = Object.keys(excel[0]).length;
     const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     let name = '';
     if (this.vpfActive) {

@@ -6,7 +6,7 @@
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
         <span *ngIf="activeVPFVariant && dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
-          <a class="dropdown-toggle" data-toggle="dropdown" style=" !important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item">
               <div *ngIf="checkVPFActive(item)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version)">{{ item.name }} </div>
@@ -51,17 +51,17 @@
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
       <div class="align-items-end btn-toolbar" style="padding: unset;">
-        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
       </div>
     </div>
     <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
-        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpList.length} }}
+        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': listCalcVPV.length} }}
     </div>
   </div>
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
     {{ 'vpfVersion.msg.noProjectList' | translate }}
     <div *ngIf="hasVPPerm(permVP.Modify) && !getPreView()" class="btn-toolbar my-3 d-print-none" style="padding: unset;">
-      <button type="button" id="editVPFList" class="btn btn-primary" (click)="initProjectList(vpActive)" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+      <button type="button" id="editVPFList" class="btn btn-primary" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
     </div>
   </div>
 
@@ -69,17 +69,17 @@
     <hr>
     <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
-  <div *ngIf="pageParams.view == 'KeyMetrics' && visboprojectversions">
+  <div *ngIf="pageParams.view == 'KeyMetrics' && listVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="pageParams.view == 'List' && vpList">
+  <div *ngIf="pageParams.view == 'List' && listCalcVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
-  <div *ngIf="pageParams.view == 'ProjectBoard' && vpList">
+  <div *ngIf="pageParams.view == 'ProjectBoard' && listCalcVPV">
     <hr>
-    <app-comp-viewboard [vps]="vpList" [customize]="customize" [vpf] ="vpActive"></app-comp-viewboard>
+    <app-comp-viewboard [listVPV]="listCalcVPV" [customize]="customize" [vpf] ="vpActive"></app-comp-viewboard>
   </div>
 
   <!-- Modal Edit VPF List -->
@@ -123,7 +123,7 @@
               </tr>
             </thead>
 
-            <tbody id="VPList">
+            <tbody id="VPListID">
               <tr *ngFor="let item of vpCheckListFiltered; let vpFilterIndex=index">
                 <td id="ColChecked">
                   <input type="checkbox" [(ngModel)]="item.isChecked">

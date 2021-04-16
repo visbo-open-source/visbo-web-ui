@@ -307,10 +307,10 @@
 			"errorPermVC": "Keine Berechtigung für  dieses VISBO Center",
 			"errorConflict": "VISBO {{vpType}} {{name}} existiert bereits oder anlegen nicht erlaubt",
 			"detail": "Details zum VISBO Projekt",
-			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt.", 
-			"errorNamePattern": "Name darf nur Buchstaben A-Z, a-z, Ziffern, Leerzeichen und '; : . - _' enthalten", 
+			"noVP": "Sie haben keinen Zugriff auf ein VISBO Projekt.",
+			"errorNamePattern": "Name darf nur Buchstaben A-Z, a-z, Ziffern, Leerzeichen und '; : . - _' enthalten",
 			"errorNameLen": "Name muss mind. 2 Zeichen lang sein",
-			"errorStartEnd": "Start-Datum darf nicht nach dem Ende-Datum liegen", 
+			"errorStartEnd": "Start-Datum darf nicht nach dem Ende-Datum liegen",
 			"errorStartDate": "bitte Start-Datum angeben",
 			"errorEndDate": "bitte Ende-Datum angeben",
 			"errorBac": "Budget muss angegeben und >= 0 sein"
@@ -352,6 +352,7 @@
 			"members": "Mitglieder",
 			"project": "Projekt",
 			"type": "Typ",
+			"properties": "Eigenschaften",
 			"info": "Info",
 			"global": "Global",
 			"message": "Nachricht",
@@ -493,6 +494,7 @@
 		"titleVPVCopy": "Kopieren",
 		"lbl": {
 			"project": "Projekt",
+			"projectProperty": "Projekt Einstellungen",
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"pfvVariant": "Baseline",
@@ -564,7 +566,8 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
-			"back": "Zurück"
+			"back": "Zurück",
+			"save": "Speichern"
 		},
 		"msg": {
 			"changePFV": "Vorsicht: Änderung der Baseline!",
@@ -572,6 +575,9 @@
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
+			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
+			"errorPermVP": "Keine Berechtigung zum ändern von {{name}}",
+			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
 		}
 	},
@@ -675,7 +681,10 @@
 			"from": "vom",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "gefiltert mit",
-			"filter": "Filter Projekte"
+			"filter": "Filter Projekte",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"all": "Alle"
 		},
 		"btn": {
 			"showChart": "Zeige Chart",
@@ -735,7 +744,10 @@
 			"startDate": "Projektstart",
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
-			"filter": "Filter"
+			"filter": "Filter",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"all": "Alle"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
@@ -842,6 +854,8 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"errorLocked": "Projekt {{name}} ist von einem anderen Benutzer gesperrt.",
 			"errorConflict": "Beim Speichern ist ein Konflikt aufgetreten für die Version {{name}}",
+			"errorConsistencyDelete": "Baseline von {{name}} kann nicht gelöscht werden da eine neuere Projektversion existiert",
+			"errorConsistencyUnDelete": "Baseline von {{name}} kann nicht wiederhergestellt werden, da eine neuere Projektversion existiert",
 			"errorPermDelete": "Keine Berechtigung zum Löschen für diese VISBO Projekt Versionen {{name}}"
 		}
 	},
@@ -1107,6 +1121,11 @@
 			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
+	},
+	"customField": {
+		"_businessUnit": "Geschäftseinheit",
+		"_risk": "Risiko",
+		"_strategicFit": "Strategic Fit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Berechtigung",

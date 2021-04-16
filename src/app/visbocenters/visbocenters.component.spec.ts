@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { VisboCentersComponent } from './visbocenters.component';
 import { SysNavbarComponent } from '../sysnavbar/sysnavbar.component';
@@ -8,7 +8,7 @@ describe('VisboCentersComponent', () => {
   let component: VisboCentersComponent;
   let fixture: ComponentFixture<VisboCentersComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         VisboCentersComponent,

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { VisboprojectRestrictComponent } from './visboproject-restrict.component';
 import { NavbarComponent } from '../navbar/navbar.component';
@@ -7,7 +7,7 @@ describe('VisboprojectRestrictComponent', () => {
   let component: VisboprojectRestrictComponent;
   let fixture: ComponentFixture<VisboprojectRestrictComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         VisboprojectRestrictComponent,

@@ -150,7 +150,7 @@ export class VisbocenterAuditComponent implements OnInit {
 
   downloadVisboAudit(): void {
     this.log(`vcAudit Download ${this.audit.length} Items`);
-    let audit: VisboAuditXLS[] = []
+    const audit: VisboAuditXLS[] = []
     this.audit.forEach(element => {
       const auditElement = new VisboAuditXLS();
       auditElement.createdAt = new Date(element.createdAt);
@@ -180,10 +180,7 @@ export class VisbocenterAuditComponent implements OnInit {
 
     // export to Excel
     const len = audit.length;
-    let width = 0;
-    for (const item in audit[0]) {
-      width += 1;
-    }
+    const width = Object.keys(audit[0]).length;
     const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     const timestamp = new Date();
     const month = (timestamp.getMonth() + 1).toString();

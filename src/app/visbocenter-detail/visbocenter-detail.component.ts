@@ -682,7 +682,7 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[maxid].name = userRole.name;
             organisation[maxid].parent = role.name;
             if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
-            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole; }
+            if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole }
             if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
             if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
@@ -775,10 +775,7 @@ export class VisbocenterDetailComponent implements OnInit {
 
       // export to Excel
       const len = organisation.length;
-      let width = 0;
-      for (const item in organisation[0]) {
-        width += 1;
-      }
+      const width = Object.keys(organisation[0]).length;
       const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();

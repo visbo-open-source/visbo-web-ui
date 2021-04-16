@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import 'jasmine';
 
 import { VisboCompViewCapacityComponent } from './comp-viewcapacity.component';
@@ -7,7 +7,7 @@ describe('VisboCompViewCapacityComponent', () => {
   let component: VisboCompViewCapacityComponent;
   let fixture: ComponentFixture<VisboCompViewCapacityComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         VisboCompViewCapacityComponent

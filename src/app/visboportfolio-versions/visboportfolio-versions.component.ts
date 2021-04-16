@@ -23,7 +23,6 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday, visboIsSameDay, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting } from '../_models/visbosetting';
-import { textChangeRangeIsUnchanged } from 'typescript';
 
 class DropDown {
   name: string;
@@ -50,8 +49,9 @@ class vpCheckItem {
 })
 export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
-    visboportfolioversions: VisboPortfolioVersion[];
-    visboprojectversions: VisboProjectVersion[];
+    listVPF: VisboPortfolioVersion[];
+    listVPV: VisboProjectVersion[];
+    listVP: VisboProject[];
     vpvCount: number;
 
     dropDown: DropDown[] = [];
@@ -73,7 +73,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpfid: string;
     deleted = false;
     currentLang: string;
-    vpList: VisboProjectVersion[];
+    listCalcVPV: VisboProjectVersion[];
     vpCheckListAll: vpCheckItem[] = [];
     vpCheckListFiltered: vpCheckItem[] = [];
     vpFilterIndex: number;
@@ -152,6 +152,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.deleted = visboproject.deletedAt ? true : false;
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpfVersion.titleName', {name: visboproject.name}));
+          this.initProjectList(this.vpActive);
           this.getVisboPortfolioVersions();
           this.getVisboCenterOrga();
           this.getVisboCenterCustomization();
@@ -176,7 +177,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.visboprojectService.getVisboProjects(vp.vcid, false, false)
       .subscribe(
         visboprojects => {
-          this.initVPF(visboprojects);
+          this.listVP = visboprojects;
+          // this.initVPF(visboprojects);
         },
         error => {
           this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
@@ -209,19 +211,19 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.log(`get Portfolio Versions ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
     this.visboprojectversionService.getVisboPortfolioVersions(this.vpActive._id, this.deleted)
       .subscribe(
-        visboportfolioversions => {
-          this.visboportfolioversions = visboportfolioversions;
+        listVPF => {
+          this.listVPF = listVPF;
           let index = 0;
           if (this.vpfid ) {
-            index = visboportfolioversions.findIndex(item => item._id.toString() === this.vpfid);
+            index = listVPF.findIndex(item => item._id.toString() === this.vpfid);
             if (index < 0) { index = 0; }
           }
-          if (visboportfolioversions.length > 0) {
-            // this.combinedPerm = visboportfolioversions[0].perm;
-            this.vpfActive = visboportfolioversions[index];
+          if (listVPF.length > 0) {
+            // this.combinedPerm = listVPF[0].perm;
+            this.vpfActive = listVPF[index];
             this.dropDownInit();
             this.getVisboPortfolioKeyMetrics();
-            this.log(`get VPF Length ${this.visboportfolioversions.length}`);
+            this.log(`get VPF Length ${this.listVPF.length}`);
           } else if (this.hasVPPerm(this.permVP.Modify)) {
             // initiate the edit if user has permission
             document.getElementById("editVPFList").click();
@@ -244,12 +246,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
       .subscribe(
-        visboprojectversions => {
-          this.visboprojectversions = visboprojectversions;
-          this.calcVPList();
-          this.log(`get VPF Key metrics: Get ${visboprojectversions.length} Project Versions`);
-          if (visboprojectversions.length > 0) {
-            this.log(`First VPV: ${visboprojectversions[0]._id} ${visboprojectversions[0].timestamp} ${visboprojectversions[0].keyMetrics?.endDateCurrent} `);
+        listVPV => {
+          this.listVPV = listVPV;
+          this.calcVPVList();
+          this.log(`get VPF Key metrics: Get ${listVPV.length} Project Versions`);
+          if (listVPV.length > 0) {
+            this.log(`First VPV: ${listVPV[0]._id} ${listVPV[0].timestamp} ${listVPV[0].keyMetrics?.endDateCurrent} `);
           }
           this.evaluateDirection();
         },
@@ -310,7 +312,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.getVisboPortfolioKeyMetrics();
   }
 
-
   getVisboCenterCustomization(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       // check if appearance is available
@@ -331,11 +332,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
-  initVPF(visboprojects: VisboProject[]): void {
+  initVPF(): void {
     this.switchVariantByName(this.vpfActive?.variantName || '');
     this.isGlobalChecked = false;
     this.vpCheckListAll = [];
-    visboprojects.forEach(item => {
+    this.listVP?.forEach(item => {
       if (item.vpType == 0) {
         const entry = new vpCheckItem();
         const vpfMember = this.getVPFMember(item);
@@ -514,7 +515,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
           this.alertService.success(message, true);
           // Update VPF List
-          if (this.visboportfolioversions.findIndex(item => item._id == vpf._id) >= 0) {
+          if (this.listVPF.findIndex(item => item._id == vpf._id) >= 0) {
             this.vpfActive = vpf;
             this.getVisboPortfolioKeyMetrics();
           }
@@ -537,7 +538,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
           this.alertService.success(message, true);
           // Extend VPF List
-          this.visboportfolioversions.push(vpf);
+          this.listVPF.push(vpf);
           this.vpfActive = vpf;
           this.dropDownInit();
           this.getVisboPortfolioKeyMetrics();
@@ -563,10 +564,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const from = this.datePipe.transform(vpf.timestamp, 'dd.MM.yy');
           // const from = vpf.timestamp.toISOString();
           const message = this.translate.instant('vpfVersion.msg.removeVPFSuccess', {'name': vpf.name, 'from': from });
-          let index = this.visboportfolioversions.findIndex(item => item._id == vpf._id);
-          this.visboportfolioversions.splice(index, 1);
-          if (index >= this.visboportfolioversions.length) {
-            index = this.visboportfolioversions.length - 1;
+          let index = this.listVPF.findIndex(item => item._id == vpf._id);
+          this.listVPF.splice(index, 1);
+          if (index >= this.listVPF.length) {
+            index = this.listVPF.length - 1;
           }
           if (index >= 0) {
             this.dropDownInit()
@@ -591,7 +592,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   evaluateDirection(): void {
-    if (this.visboprojectversions.length === 0) {
+    if (this.listVPV.length === 0) {
       if (visboIsSameDay(this.vpvRefDate, new Date())) {
         // no Versions for this Portfolio at all
         this.statusDirection = undefined;
@@ -657,7 +658,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   getKM(vp: VisboProject): number {
-    const vpv = this.visboprojectversions?.find(item => item.vpid.toString() == vp._id.toString())
+    const vpv = this.listVPV?.find(item => item.vpid.toString() == vp._id.toString())
     let result = 0;
     if (vpv) {
       result = vpv.keyMetrics ? 0 : 2;
@@ -667,11 +668,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   isVersionMismatch(): boolean {
     let result = false;
-    if (!this.vpList || !this.vpfActive || !this.vpfActive.allItems) { return result; }
+    if (!this.listCalcVPV || !this.vpfActive || !this.vpfActive.allItems) {
+      return result;
+    }
 
     if (this.vpfActive.allItems.length !== this.vpvCount) {
-        result = true;
-      }
+      result = true;
+    }
     return result;
   }
 
@@ -686,31 +689,20 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
-  calcVPList(): void {
+  calcVPVList(): void {
+    this.listVPV.forEach(vpv => {
+        vpv.vp = this.listVP.find(vp => vp._id == vpv.vpid);
+    });
     if (!this.vpfActive && !this.vpfActive.allItems) { return; }
-    this.vpList = [];
+    this.listCalcVPV = [];
     this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive.allItems.length; i++) {
-      const nextVP = new VisboProjectVersion();
       const item = this.vpfActive.allItems[i];
-      nextVP.vpid = item.vpid;
-      nextVP.name = item.name;
-      nextVP.variantName = item.variantName;
-      const index = this.visboprojectversions.findIndex(vpvItem => vpvItem.vpid === nextVP.vpid);
-      if (index >= 0) {
-        nextVP.timestamp = new Date(this.visboprojectversions[index].timestamp);
-        nextVP.startDate = this.visboprojectversions[index].startDate;
-        nextVP.endDate = this.visboprojectversions[index].keyMetrics?.endDateCurrent || this.visboprojectversions[index].endDate;
-        nextVP.leadPerson = this.visboprojectversions[index].leadPerson;
-        nextVP.VorlagenName = this.visboprojectversions[index].VorlagenName;
-        nextVP.businessUnit = this.visboprojectversions[index].businessUnit;
-        nextVP.status = this.visboprojectversions[index].status;
-        nextVP.ampelStatus = this.visboprojectversions[index].ampelStatus;
-        nextVP.ampelErlaeuterung = this.visboprojectversions[index].ampelErlaeuterung;
-        nextVP.keyMetrics = this.visboprojectversions[index].keyMetrics;
+      const nextVPV = this.listVPV.find(vpvItem => vpvItem.vpid === item.vpid);
+      if (nextVPV) {
         this.vpvCount += 1;
+        this.listCalcVPV.push(nextVPV);
       }
-      this.vpList.push(nextVP);
     }
   }
 
@@ -731,18 +723,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   dropDownInit(): void {
-    this.log(`Init Drop Down List ${this.visboportfolioversions.length}`);
+    this.log(`Init Drop Down List ${this.listVPF.length}`);
     this.dropDown = [];
-    const len = this.visboportfolioversions.length;
+    const len = this.listVPF.length;
 
     for (let i = 0; i < len; i++) {
-      const timestamp = new Date(this.visboportfolioversions[i].timestamp);
+      const timestamp = new Date(this.listVPF[i].timestamp);
       let text = 'Version '.concat('from ', convertDate(new Date(timestamp), 'fullDate', this.currentLang));
-      if (this.visboportfolioversions[i].variantName) {
-        text = text.concat(' ( ', this.visboportfolioversions[i].variantName, ' )');
+      if (this.listVPF[i].variantName) {
+        text = text.concat(' ( ', this.listVPF[i].variantName, ' )');
       }
-      const email = (this.visboportfolioversions[i].updatedFrom && this.visboportfolioversions[i].updatedFrom.email) || '';
-      this.dropDown.push({name: text, version: i, variantName: this.visboportfolioversions[i].variantName, timestamp: timestamp, email: email });
+      const email = (this.listVPF[i].updatedFrom && this.listVPF[i].updatedFrom.email) || '';
+      this.dropDown.push({name: text, version: i, variantName: this.listVPF[i].variantName, timestamp: timestamp, email: email });
     }
     this.dropDown.sort(function (a, b) { return b.timestamp.getTime() - a.timestamp.getTime(); });
     if (len > 0 ) {
@@ -805,8 +797,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   switchPFVersion(i: number): void {
     this.log(`Change Drop Down ${i} `);
-    if (i >= 0 && i < this.visboportfolioversions.length) {
-      this.vpfActive = this.visboportfolioversions[i];
+    if (i >= 0 && i < this.listVPF.length) {
+      this.vpfActive = this.listVPF[i];
       this.switchVariantByName(this.vpfActive.variantName);
       this.getVisboPortfolioKeyMetrics();
 
@@ -814,7 +806,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.changeView(undefined, undefined, undefined, this.vpfActive._id)
     } else {
       this.vpfActive = undefined;
-      this.visboprojectversions = undefined;
+      this.listVPV = undefined;
     }
   }
 

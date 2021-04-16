@@ -19,18 +19,6 @@ import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
-function encodeCSV(source: string): string {
-  let result: string;
-  if (!source) {
-    return source;
-  }
-  result = source.replace(/\t/g, ' ');
-  if (result[0] === '='  || result[0] === '+'  || result[0] === '-' ) {
-      result = "'".concat(result);
-  }
-  return result;
-}
-
 @Component({
   selector: 'app-visboproject-audit',
   templateUrl: './visboproject-audit.component.html',
@@ -153,7 +141,7 @@ export class VisboprojectAuditComponent implements OnInit {
 
   downloadVisboAudit(): void {
     this.log(`vpAudit Download ${this.audit.length} Items`);
-    let audit: VisboAuditXLS[] = []
+    const audit: VisboAuditXLS[] = []
     this.audit.forEach(element => {
       const auditElement = new VisboAuditXLS();
       auditElement.createdAt = new Date(element.createdAt);
@@ -184,10 +172,7 @@ export class VisboprojectAuditComponent implements OnInit {
 
     // export to Excel
     const len = audit.length;
-    let width = 0;
-    for (const item in audit[0]) {
-      width += 1;
-    }
+    const width = Object.keys(audit[0]).length;
     const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     const timestamp = new Date();
     const month = (timestamp.getMonth() + 1).toString();
