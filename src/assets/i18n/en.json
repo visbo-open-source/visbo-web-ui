@@ -572,7 +572,7 @@
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
-			"changeVPVSuccess": "Project Baseline was changed successfully!",
+			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
