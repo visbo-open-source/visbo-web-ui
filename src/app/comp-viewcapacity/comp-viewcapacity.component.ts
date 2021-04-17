@@ -30,6 +30,9 @@ import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
+const baselineColor = '#F7941E';
+const capaColor = '#ff0000';
+
 class CapaLoad {
   uid: number;
   percentOver: number;
@@ -98,15 +101,20 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
-  colorsPFV = ['#F7941E', '#BDBDBD', '#458CCB'];
-  colorsOrga = ['#ff0000', '#ff0000', '#BDBDBD', '#458CCB'];
+  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB'];
+  colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB'];
+  
 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
   ];
   seriesOrga = [
     {type: 'line', lineWidth: 4, pointSize: 0},
-    {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}
+    {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1},
+    // legende of Ist-Kosten visible or not
+    {visibleInLegend: true},
+    // legend of Plan-Kosten visible or not
+    {visibleInLegend: true}
   ];
   // seriesPFV = {
   //   0: {type: 'line', lineWidth: 4, pointSize: 0},
@@ -377,7 +385,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV, false, false, true)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -409,7 +417,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name} DrillDown Project`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV, false, false, true)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -444,7 +452,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.roleID}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -479,7 +487,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.roleID}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), true, this.refPFV)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -511,7 +519,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpActive && this.vpvActive && this.currentLeaf) {
       this.refPFV = true;
       this.log(`Capacity Calc for VPV ${this.vpvActive.vpid} role ${this.roleID}`);
-      this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), true, this.refPFV)
+      this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           listVPV => {
             if (!listVPV || listVPV.length != 1 || !listVPV[0].capacity || listVPV[0].capacity.length === 0) {
@@ -674,7 +682,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDateRange(): void {
     this.updateUrlParam('from', undefined)
-    this.getProjectCapacity();
+    this.getCapacity();
   }
 
   updateRef(): void {
@@ -936,9 +944,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
-      orgaColors.unshift('#F7941E');
+      orgaColors.unshift(baselineColor);
     } else {
-      orgaColors.unshift('#ff0000');
+      orgaColors.unshift(capaColor);
     }   
     this.graphOptionsComboChart.colors = orgaColors;
 
@@ -1101,9 +1109,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
-      orgaColors.unshift('#F7941E');
+      // color for baseline
+      orgaColors.unshift(baselineColor);
     } else {
-      orgaColors.unshift('#ff0000');
+      // color for capa
+      orgaColors.unshift(capaColor);
     }   
     this.graphOptionsComboChart.colors = orgaColors;
 
