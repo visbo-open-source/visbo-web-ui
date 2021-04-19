@@ -376,19 +376,19 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
-        if ((setting?.value || '') !== this.filterBU) {
+        if (setting && setting.value !== this.filterBU) {
           continue;
         }
       }
       if (this.filterRisk >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
-        if ((setting?.value || 0) < this.filterRisk) {
+        if (setting && setting.value < this.filterRisk) {
           continue;
         }
       }
       if (this.filterStrategicFit >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_strategicFit');
-        if ((setting?.value || 0) < this.filterStrategicFit) {
+        if (setting && setting.value < this.filterStrategicFit) {
           continue;
         }
       }
@@ -456,10 +456,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
-        this.visbokeymetrics.push(elementKeyMetric);
-        if (this.visboprojectversions[item].variantName) {
-          this.hasVariant = true;
-        }
+      }
+      this.visbokeymetrics.push(elementKeyMetric);
+      if (this.visboprojectversions[item].variantName) {
+        this.hasVariant = true;
       }
     }
     this.sortKeyMetricsTable(undefined);

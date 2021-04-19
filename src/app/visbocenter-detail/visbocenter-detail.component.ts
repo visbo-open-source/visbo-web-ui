@@ -605,7 +605,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
-      const organisation: OrganisationItem[] = [];
+      let organisation: OrganisationItem[] = [];
       for (let i = 0; setting.value.allRoles && i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
         const id = role.uid;
@@ -687,13 +687,14 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
-            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }            
+            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
             if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
             organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
           }
         }
       }
       organisation.forEach(item => this.calcFullPath(item.calcid, organisation));
+      organisation = organisation.filter(item => item.calcid !== undefined);
       organisation.sort(function(a, b) {
         if (a.type != b.type) {
           return a.type - b.type;
@@ -703,7 +704,7 @@ export class VisbocenterDetailComponent implements OnInit {
       });
 
       // build cost Information hierarchy
-      const listCost: OrganisationItem[] = [];
+      let listCost: OrganisationItem[] = [];
       for (let i = 0; setting.value.allCosts && i < setting.value.allCosts.length; i++) {
         const cost = setting.value.allCosts[i];
         const id = cost.uid;
@@ -736,6 +737,7 @@ export class VisbocenterDetailComponent implements OnInit {
       }
 
       listCost.forEach(item => this.calcFullPath(item.calcid, listCost));
+      listCost = listCost.filter(item => item.calcid !== undefined);
       listCost.sort(function(a, b) {
         if (a.type != b.type) {
           return a.type - b.type;

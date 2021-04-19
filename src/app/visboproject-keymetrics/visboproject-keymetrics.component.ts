@@ -10,7 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -60,6 +60,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownBU: string[];
   customStrategicFit: number;
   customRisk: number;
+  editCustomFieldString: VPCustomString[];
+  editCustomFieldDouble: VPCustomDouble[];
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -384,7 +386,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           visboproject => {
             this.vpActive = visboproject;
             this.translateCustomFields(this.vpActive);
-            this.initSystemCustomFields(this.vpActive);
+            this.initCustomFields(this.vpActive);
             this.combinedPerm = visboproject.perm;
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
@@ -454,7 +456,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  initSystemCustomFields(vp: VisboProject): void {
+  initCustomFields(vp: VisboProject): void {
       const customFieldString = getCustomFieldString(vp, '_businessUnit');
       if (customFieldString) {
         this.customBU = customFieldString.value;
@@ -467,6 +469,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (customFieldDouble) {
         this.customRisk = customFieldDouble.value;
       }
+      this.editCustomFieldString = this.getCustomFieldListString(true);
+      this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
       this.customVPModified = false;
       this.customVPAdd = false;
   }
@@ -937,19 +941,40 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
-      if (customFieldString) {
+      if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
       } else if (this.customBU) {
         addCustomFieldString(this.vpActive, '_businessUnit', this.customBU);
       }
       let customFieldDouble = getCustomFieldDouble(this.vpActive, '_strategicFit');
-      if (customFieldDouble) {
+      if (customFieldDouble && this.customStrategicFit != undefined) {
         customFieldDouble.value = this.customStrategicFit;
+      } else if (this.customStrategicFit) {
+        addCustomFieldDouble(this.vpActive, '_strategicFit', this.customStrategicFit);
       }
       customFieldDouble = getCustomFieldDouble(this.vpActive, '_risk');
-      if (customFieldDouble) {
+      if (customFieldDouble && this.customRisk != undefined) {
         customFieldDouble.value = this.customRisk;
+      } else if (this.customRisk) {
+        addCustomFieldDouble(this.vpActive, '_risk', this.customRisk);
       }
+      // update changed custom strings
+      this.vpActive.customFieldString.forEach(item => {
+        if (item.type == 'VP') {
+          const editField = this.editCustomFieldString.find(element => element.name == item.name);
+          if (editField && editField.value) {
+            item.value = editField.value;
+          }
+        }
+      });
+      this.vpActive.customFieldDouble.forEach(item => {
+        if (item.type == 'VP') {
+          const editField = this.editCustomFieldDouble.find(element => element.name == item.name);
+          if (editField && editField.value !== null) {
+            item.value = editField.value;
+          }
+        }
+      });
 
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
       this.visboprojectService.updateVisboProject(this.vpActive)
@@ -1076,24 +1101,40 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  getCustomFieldString(vpOnly = true): VPCustomString[] {
-    let result: VPCustomString[] = [];
+  getCustomFieldListString(vpOnly = true): VPCustomString[] {
+    let list: VPCustomString[] = [];
+    this.editCustomFieldString = [];
     if (vpOnly) {
-      result = this.vpActive?.customFieldString?.filter(item => item.type == 'VP');
+      list = this.vpActive?.customFieldString?.filter(item => item.type == 'VP');
     } else {
-      result = this.vpActive?.customFieldString;
+      list = this.vpActive?.customFieldString;
     }
-    return result;
+    list.forEach(item => {
+      let fieldString = new VPCustomString();
+      fieldString.name = item.name;
+      fieldString.type = item.type;
+      fieldString.value = item.value;
+      this.editCustomFieldString.push(fieldString);
+    });
+    return this.editCustomFieldString;
   }
 
-  getCustomFieldDouble(vpOnly = true): VPCustomDouble[] {
-    let result: VPCustomDouble[] = [];
+  getCustomFieldListDouble(vpOnly = true): VPCustomDouble[] {
+    let list: VPCustomDouble[] = [];
+    this.editCustomFieldDouble = [];
     if (vpOnly) {
-      result = this.vpActive?.customFieldDouble?.filter(item => item.type == 'VP');
+      list = this.vpActive?.customFieldDouble?.filter(item => item.type == 'VP');
     } else {
-      result = this.vpActive?.customFieldDouble;
+      list = this.vpActive?.customFieldDouble;
     }
-    return result;
+    list.forEach(item => {
+      let fieldString = new VPCustomDouble();
+      fieldString.name = item.name;
+      fieldString.type = item.type;
+      fieldString.value = item.value;
+      this.editCustomFieldDouble.push(fieldString);
+    });
+    return this.editCustomFieldDouble;
   }
 
   getPreView(): boolean {
