@@ -730,18 +730,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
     const actualDataUntil = this.newVPV.actualDataUntil ? new Date(this.newVPV.actualDataUntil) : undefined;
+   
     if (mode == 'startDate') {
+      // the reasons not to allow to move startdate:
+      // 1. there exists an actualDataUntil, which is after newVPV.startDate
+      // 2. startDate is before today and(!) newVPV.status is 'beauftragt'
+      // it have to be allowed to move the startDate even if it is in the past, because otherwise you never can initiate projects 
+      // which have been proposed, by the time then been rejected but now should be initiated.  
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (startDate.getTime() < beginMonth.getTime()) {
+      } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
         result = false;
       }
     } else if (mode == 'endDate') {
-      if (endDate.getTime() < beginMonth.getTime()) {
+      // the reasons not to allow to move endDate: 
+      // 1. there exists an actualDataUntil, which is after newVPV.startDate
+      if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      }
+      } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
+        result = false;
+      }      
     }
-    return result && false;
+    // always returns false : return result && false;
+    return result;
   }
 
   getScaleDate(mode: string): Date {
