@@ -149,22 +149,15 @@ export function switchPreView(): boolean {
   return result;
 }
 
-export function mod(value1: number, value2: number): number {
-  let remainder = 0;
-  if (!value1 || !value2) return undefined;
-  const interResult = Math.floor(value1 / value2);
-  remainder = value1 - (interResult * value2);
-  return remainder;
-}
 
 export function excelColorToRGBHex(value: number): string {
   let rgbHex = '';
   if (!value) return rgbHex;
-  const red = mod(value, 256);
+  const red = value % 256;
   value = (value - red) /256;
-  const green = mod(value, 256);
+  const green = value % 256;
   value = (value - green)/256;
-  const blue = mod(value, 256);
+  const blue = value % 256;
   // change the values for red,green and blue into hex-strings with length 2
   let redhex = red.toString(16) ;
   while (redhex.length < 2) redhex = '0' + redhex;

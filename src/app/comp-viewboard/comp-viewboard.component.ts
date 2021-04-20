@@ -178,15 +178,18 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
 
     const filter = this.filter ? this.filter.toLowerCase() : undefined;
-    var minAndMaxDate = this.getMinAndMaxDate(this.listVPV);
+    const minAndMaxDate = this.getMinAndMaxDate(this.listVPV);
     this.initFilter(this.listVPV);
 
     // variables to count the number of sameBu's
-    var bu = '';
-    var lastbu = '';
-    var sameBuCount = 0;
-    var rgbHex = defaultColor;
-    var colorArray = [];
+    let bu = '';
+    let lastbu = '';
+    let sameBuCount = 0;
+    let rgbHex = defaultColor;
+    let colorArray = [];    
+    let nobuArray = [];
+    let scaleArray = [];
+    let nobu = 0;
 
     for (let i = 0; i < this.listVPV.length; i++) {
       if (filter
@@ -231,30 +234,35 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.listVPV[i].startDate),
           new Date(this.listVPV[i].endDate)
         ]);
-
-        var buColor = 0;
+        let buColor = 0;        
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         bu = item ? item.value : undefined;
         if (i == 0) { lastbu = bu };
         if (bu) {
           if (lastbu != bu){
-            let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+            scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
             scaleArray.splice(scaleArray.length-3, 3);
             scaleArray.reverse();
             colorArray = colorArray.concat(scaleArray);
             sameBuCount = 0;
             lastbu = bu;
-          }
+          } 
           sameBuCount += 1;
           buColor = buDefs[bu];
           rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+        } else {
+          nobu += 1; 
+          nobuArray.push(defaultColor);
         }
+
       }
     }
-    let scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
+    scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
     scaleArray.splice(scaleArray.length-3, 3);
     scaleArray.reverse();
     colorArray = colorArray.concat(scaleArray);
+    colorArray = colorArray.concat(nobuArray)
+
 
     this.graphOptionsTimeline.colors = colorArray;
 
