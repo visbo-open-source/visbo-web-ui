@@ -237,7 +237,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         let buColor = 0;        
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         bu = item ? item.value : undefined;
-        if (i == 0) { lastbu = bu };
+        if (i == 0) { lastbu = bu }
         if (bu) {
           if (lastbu != bu){
             scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
@@ -436,8 +436,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       return undefined;
     }
     vpvList.forEach( item => {
-      var startDate = new Date(item.startDate);
-      let endDate = new Date(item.endDate);
+      const startDate = new Date(item.startDate);
+      const endDate = new Date(item.endDate);
       if (visboCmpDate(startDate, newStartDate)== -1) {
         newStartDate = startDate;
       }
