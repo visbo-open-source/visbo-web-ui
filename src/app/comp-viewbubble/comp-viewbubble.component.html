@@ -3,7 +3,7 @@
     <div class="col col-sm-12 col-lg-8">
       <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
         <div class="row text-dark hidden-print">
-          <div class="my-1 pl-0 col-11">
+          <div class="my-1 pl-1 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
               <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
               <span> {{ 'compViewBubble.lbl.and' | translate }} </span>
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="filter || !getPreView()" class='container-fluid'>
+      <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
         <div class="my-1 row">
           <div class="ml-2" *ngIf="filterStrategicFit >= 0">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>

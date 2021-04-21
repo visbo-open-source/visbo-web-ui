@@ -14,7 +14,7 @@
           </div>
         </span>
         <a>
-          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initSystemCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
+          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
           </small>
         </a>
@@ -268,15 +268,21 @@
                   <label id="VPRisk" *ngIf="!hasVPPerm(permVP.Modify)">{{ customRisk }} </label>
                 </td>
               </tr>
-              <tr *ngFor="let item of getCustomFieldString(true)">
+              <tr *ngFor="let item of editCustomFieldString">
                 <td>{{ item.name }}</td>
-                <td title="{{ item.value }}">
+                <td *ngIf="!hasVPPerm(permVP.Modify)" title="{{ item.value }}">
                   {{ getShortText(item.value, 20) }}
                 </td>
+                <td *ngIf="hasVPPerm(permVP.Modify)">
+                  <input id="customFieldStringID" type="text" class="form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
+                </td>
               </tr>
-              <tr *ngFor="let item of getCustomFieldDouble(true)">
+              <tr *ngFor="let item of editCustomFieldDouble">
                 <td>{{ item.name }}</td>
-                <td>{{ item.value }}</td>
+                <td *ngIf="!hasVPPerm(permVP.Modify)">{{ item.value }}</td>
+                <td *ngIf="hasVPPerm(permVP.Modify)">
+                  <input id="customFieldDoubleID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
+                </td>
               </tr>
             </tbody>
           </table>
