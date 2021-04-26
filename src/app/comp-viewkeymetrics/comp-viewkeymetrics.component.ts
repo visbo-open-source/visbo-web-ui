@@ -921,7 +921,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentView = 'KeyMetrics';
     this.updateUrlParam('view', this.currentView);
 
-    // this.switchViewChild.emit(this.currentView); //emmiting the event.
     if (this.typeMetricChart === metric) {
       this.showHistory(!this.history);
       return;

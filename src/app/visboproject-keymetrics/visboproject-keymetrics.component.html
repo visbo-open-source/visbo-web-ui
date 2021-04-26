@@ -32,8 +32,17 @@
   <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
+        <div>
+          <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
+            <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
+            </a>
+          </div>
+          <div class="d-block d-lg-none">
+            V.: {{ vpvActive.timestamp | date :'dd.MM.'}}
+          </div>
+        </div>
       </h4>
       <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
@@ -64,6 +73,9 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <!-- <a href="visbo-predict://localhost:4200" target="_blank">Predict</a> -->
+            <a class="dropdown-item" href="{{getPredictURL()}}">Predict</a>
+            <a class="dropdown-item" href="visbo-predict://localhost:4200/60814753b7c60920b1b01320" target="_blank">PredictFix</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -168,7 +180,14 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvActive.timestamp | date :'dd.MM.yy HH:mm'}} </h5>
+        <h5 class="modal-title" id="VpvDetailsTitle">
+          <div title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvActive.timestamp | date :'dd.MM.yy HH:mm'}}
+          </div>
+          <div *ngIf="vpvBaseline" title="{{ vpvBaseline.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleBaseline' | translate }}: {{ vpvBaseline.timestamp | date :'dd.MM.yy HH:mm'}}
+          </div>
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -187,12 +206,16 @@
             <tbody>
               <tr *ngIf="vpvActive.startDate">
                 <td>{{ 'vpKeyMetric.lbl.startDate' | translate }}</td>
-                <td>{{ vpvActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td>
+                  {{ vpvActive.startDate | date :'dd.MM.yyyy'}}
+                  <span *ngIf="vpvBaseline && vpvBaseline.startDate != vpvActive.startDate"> ({{ vpvBaseline.startDate | date :'dd.MM.yyyy'}}) </span>
+                </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent">
                 <td>{{ 'vpKeyMetric.lbl.endDate' | translate }}</td>
                 <td>
                   {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}
+                  <span *ngIf="vpvBaseline && vpvBaseline.endDate != vpvActive.keyMetrics.endDateCurrent"> ({{ vpvBaseline.endDate | date :'dd.MM.yyyy'}}) </span>
                 </td>
               </tr>
               <tr *ngIf="!(vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent) && vpvActive.endDate">
@@ -386,3 +409,7 @@
     </div>
   </div>
 </div>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>
