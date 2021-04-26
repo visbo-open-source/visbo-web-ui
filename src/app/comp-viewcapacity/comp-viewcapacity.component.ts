@@ -772,7 +772,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     capacity.forEach(item => {
         allNames.push(item[property] || '');
     });
-    allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
+    // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
     uniqueNames = allNames.filter((name, index) => {
         return allNames.indexOf(name) === index;
     });
@@ -799,10 +799,40 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacity.lbl.noPFV') : '';
-    const childNodeList = this.calcChildNode(this.visboCapacityChild, 'name');
-    const mapNodeList = this.mapChildNode(childNodeList);
 
     const drillDownCapacity: DrillDownElement[][] = [];
+
+    
+    // // ------- SORT by sum value -------
+    // const groupKey = (value: VisboCapacity) => value.name;
+    // const sumValue = (value: VisboCapacity) => value.plannedCost_PT;
+    // const capacityChildGroupedByProject = this.visboCapacityChild.reduce((accumulator, elem) => {
+    //   const key = groupKey(elem);
+    //   if (!accumulator.has(key)) {
+    //     accumulator.set(key, {sum: 0, elems: []});
+    //   }
+    //   accumulator.get(key).elems.push(elem);
+    //   accumulator.get(key).sum += sumValue(elem);
+    //   return accumulator;
+    // }, new Map<string, {sum: number; elems: VisboCapacity[]}>());
+
+    // console.log(capacityChildGroupedByProject);
+    
+    // const sortedValues = Array.from(capacityChildGroupedByProject.values())
+    //         .sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
+    // const sortedArray = sortedValues.map((item) => item.elems);
+    // const flatArray = [].concat([], ...sortedArray);
+    // console.log(sortedValues);
+
+    // // ------ SORT END ------
+    let sortedProjects: VisboCapacity[] = null;
+    sortedProjects = this.visboSortProjects(this.visboCapacityChild);
+    const childNodeList = this.calcChildNode(sortedProjects, 'name');
+    console.log(childNodeList);
+    const mapNodeList = this.mapChildNode(childNodeList);
+
+
+
 
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -841,8 +871,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       });
       drillDownCapacity.push(template);
     });
+
     // now fill up with the Child Infos
-    this.visboCapacityChild.forEach(item => {
+    // this.visboCapacityChild.forEach(item => {
+      sortedProjects.forEach(item => {
       const currentDate = new Date(item.month);
       const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
       if (row) {
@@ -1501,6 +1533,35 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return diff;
     }
   }
+
+
+ visboSortProjects(capacity:VisboCapacity[]): VisboCapacity[] {
+    // ------- SORT by sum value -------
+    const groupKey = (value: VisboCapacity) => value.name;
+    const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.actualCost_PT;
+    const capacityChildGroupedByProject = capacity.reduce((accumulator, elem) => {
+      const key = groupKey(elem);
+      if (!accumulator.has(key)) {
+        accumulator.set(key, {sum: 0, elems: []});
+      }
+      accumulator.get(key).elems.push(elem);
+      accumulator.get(key).sum += sumValue(elem);
+      return accumulator;
+    }, new Map<string, {sum: number; elems: VisboCapacity[]}>());
+
+    console.log(capacityChildGroupedByProject);
+
+    const sortedValues = Array.from(capacityChildGroupedByProject.values())
+            .sort((a, z) => z.sum - a.sum);
+            //.sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
+    const sortedArray = sortedValues.map((item) => item.elems);
+    const flatArray = [].concat([], ...sortedArray);
+    console.log(sortedValues);
+    const sortedProjects: VisboCapacity[] = flatArray;    
+    return sortedProjects;
+    // ------ SORT END ------
+ }
+ 
 
   visboRoundToString(value: number, fraction = 1): string {
     const result = value || 0;
