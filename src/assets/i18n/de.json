@@ -1037,7 +1037,7 @@
 		"shortRAC": "RAC",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",
-		"shortEAC": "PAC",
+		"shortPAC": "PAC",
 		"longPAC": "Prediction at Completion",
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",

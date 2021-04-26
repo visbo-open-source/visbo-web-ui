@@ -434,11 +434,15 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       '<table>';
 
     const longEAC = this.translate.instant('keyMetrics.longEAC');
+    const longPAC = this.translate.instant('keyMetrics.longPAC');
     const longBAC = this.translate.instant('keyMetrics.longBAC');
     const planAC = this.translate.instant('keyMetrics.planAC');
     const baselinePV = this.translate.instant('keyMetrics.baselinePV');
 
     result = result + '<tr>' + '<td>' + longEAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    if (vpv.keyMetrics?.costCurrentTotalPredict !== undefined) {
+      result = result + '<tr>' + '<td>' + longPAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotalPredict || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    }
     result = result + '<tr>' + '<td>' + longBAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
