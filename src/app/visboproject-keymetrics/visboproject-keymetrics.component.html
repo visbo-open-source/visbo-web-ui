@@ -14,7 +14,7 @@
           </div>
         </span>
         <a>
-          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initSystemCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
+          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
           </small>
         </a>
@@ -32,8 +32,17 @@
   <div *ngIf="vpvActive">
     <div class="row">
       <h4 class="col-6 text-dark">
-        <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">{{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}</div>
-        <div class="d-block d-lg-none">V.: {{ vpvActive.timestamp | date :'dd.MM.'}}</div>
+        <div>
+          <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
+            <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
+              <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
+            </a>
+          </div>
+          <div class="d-block d-lg-none">
+            V.: {{ vpvActive.timestamp | date :'dd.MM.'}}
+          </div>
+        </div>
       </h4>
       <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
@@ -64,6 +73,7 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
+            <a class="dropdown-item text-dark" [href]="predictURL | safeUrl">Predict</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -168,7 +178,14 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="VpvDetailsTitle">{{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvActive.timestamp | date :'dd.MM.yy HH:mm'}} </h5>
+        <h5 class="modal-title" id="VpvDetailsTitle">
+          <div title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleDetailVersion' | translate }}: {{vpvActive.timestamp | date :'dd.MM.yy HH:mm'}}
+          </div>
+          <div *ngIf="vpvBaseline" title="{{ vpvBaseline.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+            {{ 'vpKeyMetric.titleBaseline' | translate }}: {{ vpvBaseline.timestamp | date :'dd.MM.yy HH:mm'}}
+          </div>
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -187,12 +204,16 @@
             <tbody>
               <tr *ngIf="vpvActive.startDate">
                 <td>{{ 'vpKeyMetric.lbl.startDate' | translate }}</td>
-                <td>{{ vpvActive.startDate | date :'dd.MM.yyyy'}}</td>
+                <td>
+                  {{ vpvActive.startDate | date :'dd.MM.yyyy'}}
+                  <span *ngIf="vpvBaseline && vpvBaseline.startDate != vpvActive.startDate"> ({{ vpvBaseline.startDate | date :'dd.MM.yyyy'}}) </span>
+                </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent">
                 <td>{{ 'vpKeyMetric.lbl.endDate' | translate }}</td>
                 <td>
                   {{ vpvActive.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}
+                  <span *ngIf="vpvBaseline && vpvBaseline.endDate != vpvActive.keyMetrics.endDateCurrent"> ({{ vpvBaseline.endDate | date :'dd.MM.yyyy'}}) </span>
                 </td>
               </tr>
               <tr *ngIf="!(vpvActive.keyMetrics && vpvActive.keyMetrics.endDateCurrent) && vpvActive.endDate">
@@ -268,15 +289,21 @@
                   <label id="VPRisk" *ngIf="!hasVPPerm(permVP.Modify)">{{ customRisk }} </label>
                 </td>
               </tr>
-              <tr *ngFor="let item of getCustomFieldString(true)">
+              <tr *ngFor="let item of editCustomFieldString">
                 <td>{{ item.name }}</td>
-                <td title="{{ item.value }}">
+                <td *ngIf="!hasVPPerm(permVP.Modify)" title="{{ item.value }}">
                   {{ getShortText(item.value, 20) }}
                 </td>
+                <td *ngIf="hasVPPerm(permVP.Modify)">
+                  <input id="customFieldStringID" type="text" class="form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
+                </td>
               </tr>
-              <tr *ngFor="let item of getCustomFieldDouble(true)">
+              <tr *ngFor="let item of editCustomFieldDouble">
                 <td>{{ item.name }}</td>
-                <td>{{ item.value }}</td>
+                <td *ngIf="!hasVPPerm(permVP.Modify)">{{ item.value }}</td>
+                <td *ngIf="hasVPPerm(permVP.Modify)">
+                  <input id="customFieldDoubleID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
+                </td>
               </tr>
             </tbody>
           </table>
@@ -380,3 +407,7 @@
     </div>
   </div>
 </div>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>
