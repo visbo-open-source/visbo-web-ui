@@ -73,9 +73,7 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <!-- <a href="visbo-predict://localhost:4200" target="_blank">Predict</a> -->
-            <a class="dropdown-item" href="{{getPredictURL()}}">Predict</a>
-            <a class="dropdown-item" href="visbo-predict://localhost:4200/60814753b7c60920b1b01320" target="_blank">PredictFix</a>
+            <a class="dropdown-item text-dark" [href]="predictURL | safeUrl">Predict</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>

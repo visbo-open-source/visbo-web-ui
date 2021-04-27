@@ -1,5 +1,5 @@
-import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Component, OnInit, OnChanges, SimpleChanges, Sanitizer, SecurityContext } from '@angular/core';
+import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -56,6 +56,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
+  predictURL: string;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -104,6 +105,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
+    private sanitizer: DomSanitizer,
     private titleService: Title
   ) { }
 
@@ -339,9 +341,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     let url = this.route.snapshot.url.join('/');
     // url = 'visbo-predict://localhost:4200/'.concat(url);
     // url = 'visbo-predict://localhost'.concat('?', url);
-    url = 'visbo-predict://localhost';
+    url = 'visbo-predict://predict';
+    let separator = '?';
+    if (this.vpActive) {
+        url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
+        separator = '&'
+    }
+    if (this.vpvActive) {
+        url = url.concat(separator, 'vpvid:', this.vpvActive._id.toString());
+        separator = '&'
+    }
     console.log("URL:", url);
-    const queryParams = new VPParams();
     return url;
   }
 
@@ -730,6 +740,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.updateUrlParam('view', 'All');
     }
     this.findBaseLine(vpv);
+    this.predictURL = this.getPredictURL();
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }
 
