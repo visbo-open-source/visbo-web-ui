@@ -65,9 +65,9 @@
     </div>
   </div>
 
-  <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive">
+  <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
     <hr>
-    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && listVPV">
     <hr>

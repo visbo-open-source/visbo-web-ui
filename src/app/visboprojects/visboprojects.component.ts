@@ -44,13 +44,14 @@ export class VisboProjectsComponent implements OnInit {
   newVP: CreateProjectProperty;
   dropDownVPType: DropDown[];
   viewMode = 'Default';
+  hasOrga = false;
+  vcOrga: VisboSetting[];
   customize: VisboSetting;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
   vpvWithKM: number;
   vpvRefDate: Date = new Date();
-  hasOrga = false;
   deleted = false;
   sortAscending: boolean;
   sortColumn: number;
@@ -407,21 +408,25 @@ export class VisboProjectsComponent implements OnInit {
 
   getVisboCenterOrga(): void {
     if (this.vcActive) {
-      // check if Orga is available
-      this.log(`get VC Orga ${this.vcActive._id}`);
-      this.visbosettingService.getVCOrganisations(this.vcActive._id, false, undefined, true)
-        .subscribe(
-          vcsettings => {
-            this.hasOrga = vcsettings.length > 0;
-          },
-          error => {
-            if (error.status === 403) {
-              const message = this.translate.instant('vp.msg.errorPermVC');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-        });
+      if (this.vcOrga == undefined
+      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vcActive._id.toString())) {
+        // check if Orga is available
+        this.log(`get VC Orga ${this.vcActive._id}`);
+        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true)
+          .subscribe(
+            vcsettings => {
+              this.vcOrga = vcsettings;
+              this.hasOrga = vcsettings.length > 0;
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vp.msg.errorPermVC');
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
     }
   }
 

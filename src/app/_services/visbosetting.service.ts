@@ -52,6 +52,9 @@ export class VisboSettingService  {
     if (refDate != undefined) {
       params = params.append('refDate', refDate);
     }
+    if (short) {
+      params = params.append('shortList', '1');
+    }
     this.log(`Calling HTTP Request: ${url} ${short}`);
     return this.http.get<VisboSettingListResponse>(url, { headers , params })
       .pipe(
