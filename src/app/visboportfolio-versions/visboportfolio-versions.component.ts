@@ -81,6 +81,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     switchVariant: string;
     vpfListFilter: string;
     hasOrga = false;
+    vcOrga: VisboSetting[];
     customize: VisboSetting;
 
     pageParams = new VPFParams();
@@ -189,21 +190,25 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      // check if Orga is available
-      this.log(`get VC Orga ${this.vpActive.vcid}`);
-      this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
-        .subscribe(
-          vcsettings => {
-            this.hasOrga = vcsettings.length > 0;
-          },
-          error => {
-            if (error.status === 403) {
-              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-        });
+      if (this.vcOrga == undefined
+      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+        // check if Orga is available
+        this.log(`get VC Orga ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
+          .subscribe(
+            vcsettings => {
+              this.vcOrga = vcsettings;
+              this.hasOrga = vcsettings.length > 0;
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
     }
   }
 

@@ -73,7 +73,7 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <a class="dropdown-item text-dark" [href]="predictURL | safeUrl">Predict</a>
+            <!-- <a class="dropdown-item text-dark" [href]="predictURL | safeUrl">Predict</a> -->
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -96,8 +96,8 @@
       <app-comp-viewkeymetrics [visboprojectversions]="visboprojectversions" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
     </div>
 
-    <div *ngIf="currentView == 'Capacity'">
-      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    <div *ngIf="currentView == 'Capacity' && vcOrga">
+      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="currentView == 'Cost'">
       <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
