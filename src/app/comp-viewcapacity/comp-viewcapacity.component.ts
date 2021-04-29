@@ -67,15 +67,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
   @Input() vpvActive: VisboProjectVersion;
-  @Input() vcOrganisation: VisboSettingListResponse;
+  @Input() vcOrganisation: VisboSetting;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
-  vcorganisation: VisboSetting[];
-  actOrga: VisboOrganisation;
   capaLoad: CapaLoad[];
   timeoutID: number;
   hasCost: boolean;
@@ -219,7 +217,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.lastTimestampVPF = this.vpvActive.timestamp;
     }
 
-    this.visboGetOrganisation();
+    this.visboViewOrganisationTree();
+    this.getCapacity();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -325,50 +324,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return false;
     }
     return (this.combinedPerm.vc & perm) > 0;
-  }
-
-  visboGetOrganisation(): void {
-    let vcid: string;
-    if (this.vcActive) {
-      vcid = this.vcActive._id;
-    } else if (this.vpActive) {
-      vcid = this.vpActive.vcid;
-    }
-    if (vcid) {
-      this.log(`Organisaions for CapacityCalc for Object  ${vcid}`);
-      this.visbosettingService.getVCOrganisations(vcid, false, (new Date()).toISOString())
-        .subscribe(
-          vcsetting => {
-            if (vcsetting.length === 0) {
-              this.log(`get VCOrganisations - result is empty `);
-              this.vcorganisation = [];
-            } else {
-              this.log(`Store Organisation for Len ${vcsetting.length}`);
-              this.vcorganisation = vcsetting;
-              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
-            }
-            this.visboViewOrganisationTree();
-            this.getCapacity();
-          },
-          error => {
-            this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              let name: string;
-              if (this.vpActive) {
-                name = this.vpActive.name;
-              } else if (this.vcActive) {
-                name = this.vcActive.name;
-              }
-              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': name});
-              this.log(`Alert: ${message}`);
-              this.alertService.error(message, true);
-            } else {
-              this.alertService.error(getErrorMessage(error), true);
-            }
-          }
-        );
-    }
   }
 
   getCapacity(): void {
@@ -639,14 +594,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   visboViewOrganisationTree(): void {
     this.log(`Show the OrgaTree of the VC `);
-    const organisation = this.actOrga;
+    const organisation = this.vcOrganisation;
 
     const allRoles = [];
     const allRoleNames = [];
     this.log(`get all roles of the organisation, prepared for direct access`);
-    for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
-      allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
-      allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
+    const roles = organisation && organisation.value && organisation.value.allRoles;
+    for (let  i = 0; i < roles.length; i++) {
+      allRoles[roles[i].uid] = roles[i];
+      allRoleNames[roles[i].name] = roles[i];
     }
     this.log(`get all roles of the organisation, prepared for the TreeView`);
     this.topLevelNodes = this.buildTopNodes(allRoles);
@@ -1570,9 +1526,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   displayCapacity(): number {
     let result = -1;
-    if (this.drillDown != 2 && this.actOrga && this.visboCapacity) {     // Orga && Capacity data available
+    if (this.drillDown != 2 && this.vcOrganisation && this.visboCapacity) {     // Orga && Capacity data available
       result = this.visboCapacity.length;
-    } else if (this.drillDown == 2  && this.actOrga && this.visboCapacityChild){
+    } else if (this.drillDown == 2  && this.vcOrganisation && this.visboCapacityChild){
       result = this.visboCapacityChild.length;
     }
     return result;
