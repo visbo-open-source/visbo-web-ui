@@ -569,7 +569,8 @@
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
 			"back": "Zurück",
-			"save": "Speichern"
+			"save": "Speichern",
+			"add": "Hinzufügen"
 		},
 		"msg": {
 			"changePFV": "Vorsicht: Änderung der Baseline!",

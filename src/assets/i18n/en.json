@@ -569,7 +569,8 @@
 			"vpvMove": "Move",
 			"vpvCopy": "Copy",
 			"back": "Back",
-			"save": "Save"
+			"save": "Save",
+			"add": "Add"
 		},
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
