@@ -36,6 +36,7 @@ import { SysuserComponent } from './sysuser/sysuser.component';
 import { SysLogComponent } from './syslog/syslog.component';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './syssettings/syssettings.component';
 
 
 const routes: Routes = [
@@ -76,6 +77,7 @@ const routes: Routes = [
   { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: 'systasks', component: SystasksComponent, canActivate: [AuthGuard] },
   { path: 'sysconfig', component: SysconfigComponent, canActivate: [AuthGuard] },
+  { path: 'syssetting', component: SyssettingsComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard'}
 ];

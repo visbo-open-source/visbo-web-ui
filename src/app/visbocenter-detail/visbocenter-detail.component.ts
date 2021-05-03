@@ -237,7 +237,7 @@ export class VisbocenterDetailComponent implements OnInit {
       .subscribe(
         vcSettings => {
           this.log(`fetched VC Settings ${vcSettings.length}`);
-          this.vcSettings = vcSettings;
+          this.vcSettings = vcSettings.filter(item => item.type != '_VCConfig');
           this.sortSettingTable();
         },
         error => {

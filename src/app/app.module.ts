@@ -87,6 +87,7 @@ import { SysLogComponent } from './syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './syssettings/syssettings.component';
 
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
@@ -135,7 +136,8 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     SysuserComponent,
     SysLogComponent,
     SystasksComponent,
-    SysconfigComponent
+    SysconfigComponent,
+    SyssettingsComponent
   ],
   imports: [
     BrowserModule,
