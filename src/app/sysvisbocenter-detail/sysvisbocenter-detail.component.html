@@ -18,13 +18,14 @@
       <label id="VCUpdated" class="col form-control-static col-form-label">{{ visbocenter.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
     </div>
   </form>
-  <div class="btn-toolbar" style="">
+  <div class="btn-toolbar" class="mb-2" style="">
     <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mx-1" (click)="gotoVCAudit(visbocenter)">View Audit</button>
-    <button id="ViewGroup" *ngIf="!showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Groups</button>
-    <button id="ViewUser" *ngIf="showGroups" type="button" class="btn btn-md btn-light mx-1" (click)="toggleUserGroup()">Show Users</button>
+    <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">Show Groups</button>
+    <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">Show Users</button>
+    <button id="ViewEnable" type="button" class="btn btn-md btn-light mx-1" (click)="showEnableDisable()">Enable/Disable</button>
   </div>
 
-  <div *ngIf="!showGroups" >
+  <div *ngIf="showList == 'Users'" >
     <div >
       <div class='row'>
         <div class='col'>
@@ -64,7 +65,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="showGroups" >
+  <div *ngIf="showList == 'Groups'" >
     <div >
       <div class='row'>
         <div class='col'>
@@ -109,11 +110,117 @@
       </div>
     </div>
   </div>
+  <div *ngIf="showList == 'SettingEnableDisable'">
+    <div >
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+              Visbo Center Settings Enable / Disable
+          </h5>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortSettingEnabledDisabled(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(2)">System Enabled</th>
+              <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(3)">System Limit</th>
+              <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(4)">sysVC Enabled</th>
+              <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(5)">VC Limit</th>
+              <th class="d-none d-md-table-cell">VC Enabled</th>
+              <th (click)="sortSettingEnabledDisabled(10)">Updated</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <tr *ngFor="let setting of vcSettingsEnableDisable; let settingIndex=index" (click)="editEnableDisable(settingIndex)" data-toggle="modal" data-target="#ViewEnableDisable">
+              <td><a>{{setting.name}}</a></td>
+              <td><a>
+                <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.systemEnabled}"></ng-container>
+              </a></td>
+              <td><a>
+                <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.systemLimit}"></ng-container>
+              </a></td>
+              <td>
+                <a *ngIf="!setting.value.systemLimit">
+                  <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.sysVCEnabled == true}"></ng-container>
+                </a>
+              </td>
+              <td>
+                <a *ngIf="!setting.value.systemLimit">
+                  <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.sysVCLimit == true}"></ng-container>
+                </a>
+              </td>
+              <td>
+                <a *ngIf="!setting.value.systemLimit && !setting.value.sysVCLimit">
+                  <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.VCEnabled == true}"></ng-container>
+                </a>
+              </td>
+              <td>{{setting.updatedAt | date :'dd.MM HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #showLimit let-level="level">
+    <i class="fas fa-lg" [ngClass]="{'fa-toggle-on text-success': level == true}"></i>
+  </ng-template>
+
+  <ng-template #showEnabled let-level="level">
+    <i class="far fa-lg" [ngClass]="{'fa-check-circle text-success': level == true, 'fa-times-circle text-danger': level == false}"></i>
+  </ng-template>
+
   <button id="Save" *ngIf="!deleted && hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">save</button>
   <button id="Save" *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" (click)="save()" class="btn btn-primary mx-1">Restore</button>
   <button id="Save" class="btn btn-secondary mx-1" (click)="goBack()">go back</button>
   <button  id="DeleteVC"*ngIf="!deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-warning" style="float: right" title="Delete Visbo Center" data-toggle="modal" data-target="#VcDelete">Delete!</button>
   <button id="DestroyVC" *ngIf="deleted && hasSystemPerm(permSystem.DeleteVC)" class="btn btn-md mx-1 bg-danger text-white" style="float: right" title="Destroy Visbo Center" data-toggle="modal" data-target="#VcDelete">Destroy!</button>
+
+  <!-- Modal View & Edit Setting Enable / Disable -->
+  <div class="modal fade" id="ViewEnableDisable" tabindex="-1" role="dialog" aria-labelledby="View Enable Disable" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="vcSettingsEnableDisable && indexEnableDisable >= 0">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ConfigDetailTitle">Edit {{vcSettingsEnableDisable[indexEnableDisable].name}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="check1" name="systemEnabled" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.systemEnabled" #systemEnabled="ngModel" disabled>
+                  <label class="custom-control-label" for="check1">System Enabled</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="check2" name="systemLimit" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.systemLimit" #systemLimit="ngModel" disabled>
+                  <label class="custom-control-label" for="check2">Enforce as Limit</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="check3" name="sysVCEnabled" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.sysVCEnabled" #sysVCEnabled="ngModel">
+                  <label class="custom-control-label" for="check3">sys VC Enabled</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="check4" name="sysVCLimit" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.sysVCLimit" #sysVCLimit="ngModel">
+                  <label class="custom-control-label" for="check4">Enforce as Limit</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="check5" name="VCEnabled" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.VCEnabled" #VCEnabled="ngModel" disabled>
+                  <label class="custom-control-label" for="check5">VC Enabled</label>
+              </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button *ngIf="hasSystemPerm(permSystem.Modify) && !vcSettingsEnableDisable[indexEnableDisable].value.systemLimit" type="button" class="btn btn-primary" (click)="updateConfig(vcSettingsEnableDisable[indexEnableDisable])" data-dismiss="modal">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Add User -->
   <div class="modal fade" id="VcUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VcUserModalCreateTitle" aria-hidden="true">

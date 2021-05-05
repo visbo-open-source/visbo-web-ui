@@ -8,8 +8,10 @@ import { VisboCenter } from '../_models/visbocenter';
 import { VisboUserInvite } from '../_models/visbouser';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPSYSTEM, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenterService } from '../_services/visbocenter.service';
+import { VisboSettingService } from '../_services/visbosetting.service';
+import { VisboSetting } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-sysvisbocenter-detail',
@@ -27,6 +29,8 @@ export class SysvisbocenterDetailComponent implements OnInit {
   userIndex: number;
   groupIndex: number;
   showGroups: boolean;
+  showList = 'Users';
+
   combinedPerm: VGPermission;
   combinedUserPerm: VGPermission;
   permSystem = VGPSYSTEM;
@@ -34,14 +38,20 @@ export class SysvisbocenterDetailComponent implements OnInit {
   permVP = VGPVP;
   deleted = false;
 
+  vcSettingsEnableDisable: VisboSetting[];
+  indexEnableDisable: number;
+
   sortUserColumn = 1;
   sortUserAscending = true;
   sortGroupColumn = 1;
   sortGroupAscending = true;
+  sortEnableDisableAscending: boolean;
+  sortEnableDisableColumn: number;
 
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
+    private visbosettingService: VisboSettingService,
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
@@ -75,6 +85,58 @@ export class SysvisbocenterDetailComponent implements OnInit {
           } else {
             this.alertService.error(getErrorMessage(error));
           }
+        }
+      );
+  }
+
+  showEnableDisable(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log('VisboCenter Settings Enable/Disable of: ' + id);
+    this.visbosettingService.getVCSettingByType(id, '_VCConfig', true)
+      .subscribe(
+        vcSettings => {
+          this.log(`fetched VC Settings ${vcSettings.length}`);
+          this.vcSettingsEnableDisable = vcSettings;
+          if (vcSettings.length > 0) {
+            this.indexEnableDisable = 0;
+          }
+          this.switchView('SettingEnableDisable')
+          // this.sortSettingTable();
+        },
+        error => {
+          this.log(`Get VC Settings failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            this.alertService.error(`Permission Denied`);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  editEnableDisable(index: number): void {
+    if (index >= 0 && index < this.vcSettingsEnableDisable.length) {
+      this.indexEnableDisable = index;
+    }
+  }
+
+  updateConfig(setting: VisboSetting): void {
+    if (!setting) return;
+    this.log(`Update Config VC ${JSON.stringify(setting)}`);
+    this.visbosettingService.updateVCSetting(setting.vcid, setting, true)
+      .subscribe(
+        data => {
+          this.log(`set sysVC Config success ${JSON.stringify(data)}`);
+          this.alertService.success(`Successfully changed Setting ${setting.name}`, true);
+          const index = this.vcSettingsEnableDisable.findIndex(item => item.name == setting.name);
+          if (index >= 0) {
+            this.vcSettingsEnableDisable[index] = data;
+          }
+        },
+        error => {
+          this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -192,8 +254,9 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
-  toggleUserGroup(): void {
-    this.showGroups = !this.showGroups;
+  switchView(newView: string): void {
+    this.showList = newView;
+    this.log('VisboCenter new View: ' + newView);
   }
 
   addNewVCUser(): void {
@@ -527,6 +590,41 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
     if (!this.sortGroupAscending) {
       this.vgGroups.reverse();
+    }
+  }
+
+  sortSettingEnabledDisabled(n?: number): void {
+    if (!this.vcSettingsEnableDisable) {
+      return;
+    }
+    if (n !== undefined || this.sortEnableDisableColumn === undefined) {
+      if (n !== this.sortEnableDisableColumn) {
+        this.sortEnableDisableColumn = n;
+        this.sortEnableDisableAscending = undefined;
+      }
+      if (this.sortEnableDisableAscending === undefined) {
+        // sort name column ascending, number values desc first
+        this.sortEnableDisableAscending = ( n === 1 ) ? true : false;
+      } else {
+        this.sortEnableDisableAscending = !this.sortEnableDisableAscending;
+      }
+    }
+    if (this.sortEnableDisableColumn === 1) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+    } else if (this.sortEnableDisableColumn === 2) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemEnabled ? 1 : 0) - (b.value.systemEnabled ? 1 : 0); });
+    } else if (this.sortEnableDisableColumn === 3) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? 1 : 0) - (b.value.systemLimit ? 1 : 0); });
+    } else if (this.sortEnableDisableColumn === 4) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? -10 : (a.value.sysVCEnabled ? 1 : 0)) - (b.value.systemLimit ? -10 : (b.value.sysVCEnabled ? 1 : 0)); });
+    } else if (this.sortEnableDisableColumn === 5) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? -10 : (a.value.sysVCLimit ? 1 : 0)) - (b.value.systemLimit ? -10 : (b.value.sysVCLimit ? 1 : 0)); });
+    } else if (this.sortEnableDisableColumn === 10) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    }
+
+    if (!this.sortEnableDisableAscending) {
+      this.vcSettingsEnableDisable.reverse();
     }
   }
 

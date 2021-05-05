@@ -123,7 +123,15 @@ export class SyssettingsComponent implements OnInit {
       }
       if (this.sortColumn === 1) {
         this.vcsetting.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+      } else if (this.sortColumn === 2) {
+        this.vcsetting.sort(function(a, b) { return (a.value.systemEnabled ? 1 : 0) - (b.value.systemEnabled ? 1 : 0); });
       } else if (this.sortColumn === 3) {
+        this.vcsetting.sort(function(a, b) { return (a.value.systemLimit ? 1 : 0) - (b.value.systemLimit ? 1 : 0); });
+      } else if (this.sortColumn === 4) {
+        this.vcsetting.sort(function(a, b) { return (a.value.systemLimit ? 1 : (a.value.sysVCEnabled ? 1 : 0)) - (b.value.systemLimit ? 1 : (b.value.sysVCEnabled ? 1 : 0)); });
+      } else if (this.sortColumn === 5) {
+        this.vcsetting.sort(function(a, b) { return (a.value.systemLimit ? 1 : (a.value.sysVCLimit ? 1 : 0)) - (b.value.systemLimit ? 1 : (b.value.sysVCLimit ? 1 : 0)); });
+      } else if (this.sortColumn === 10) {
         this.vcsetting.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
       }
 

@@ -70,6 +70,9 @@ export class VisbocenterDetailComponent implements OnInit {
   permVC = VGPVC;
   permVP = VGPVP;
 
+  vcSettingsEnableDisable: VisboSetting[];
+  indexEnableDisable: number;
+
   today: Date;
   sortUserColumn = 1;
   sortUserAscending = true;
@@ -79,6 +82,8 @@ export class VisbocenterDetailComponent implements OnInit {
   sortGroupAscending = true;
   sortSettingColumn = 1;
   sortSettingAscending = true;
+  sortEnableDisableAscending: boolean;
+  sortEnableDisableColumn: number;
 
   constructor(
     private messageService: MessageService,
@@ -118,6 +123,79 @@ export class VisbocenterDetailComponent implements OnInit {
           } else {
             this.alertService.error(getErrorMessage(error));
           }
+        }
+      );
+  }
+
+  squeezeEnableDisable(settings: VisboSetting[]): VisboSetting[] {
+    if (!settings || settings.length == 0) {
+      return [];
+    }
+    settings.forEach(item => {
+      // calculate VCEnabled and sysVCLimit for a compact view in VC Admin
+      if (item.value) {
+        if (item.value.systemLimit) {
+          item.value.VCEnabled = item.value.systemEnabled;
+          item.value.sysVCLimit = true;
+        } else if (item.value.sysVCLimit) {
+          item.value.VCEnabled = item.value.sysVCEnabled;
+        } else {
+          item.value.VCEnabled = item.value.VCEnabled ? true : false;
+        }
+      }
+    });
+    let result = settings.filter(item => item.value?.systemLimit !== true);
+    return result;
+  }
+
+  showEnableDisable(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log('VisboCenter Settings Enable/Disable of: ' + id);
+    this.visbosettingService.getVCSettingByType(id, '_VCConfig', false)
+      .subscribe(
+        vcSettings => {
+          this.log(`fetched VC Settings ${vcSettings.length}`);
+          this.vcSettingsEnableDisable = this.squeezeEnableDisable(vcSettings);
+          if (vcSettings.length > 0) {
+            this.indexEnableDisable = 0;
+          }
+          this.switchView('SettingEnableDisable')
+          // this.sortSettingTable();
+        },
+        error => {
+          this.log(`Get VC Settings failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            this.alertService.error(`Permission Denied`);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  editEnableDisable(index: number): void {
+    if (index >= 0 && index < this.vcSettingsEnableDisable.length) {
+      this.indexEnableDisable = index;
+    }
+  }
+
+  updateConfig(setting: VisboSetting): void {
+    if (!setting) return;
+    this.log(`Update Config VC ${JSON.stringify(setting)}`);
+    this.visbosettingService.updateVCSetting(setting.vcid, setting, false)
+      .subscribe(
+        data => {
+          this.log(`set sysVC Config success ${JSON.stringify(data)}`);
+          this.alertService.success(`Successfully changed Setting ${setting.name}`, true);
+          const index = this.vcSettingsEnableDisable.findIndex(item => item.name == setting.name);
+          if (index >= 0) {
+            this.vcSettingsEnableDisable[index] = data;
+          }
+        },
+        error => {
+          this.log(`set System Config failed: error: ${error.status} message: ${error.error.message}`);
+          this.alertService.error(getErrorMessage(error));
         }
       );
   }
@@ -929,6 +1007,41 @@ export class VisbocenterDetailComponent implements OnInit {
     }
     // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
     return new Date(checkDate) >= this.today;
+  }
+
+  sortSettingEnabledDisabled(n?: number): void {
+    if (!this.vcSettingsEnableDisable) {
+      return;
+    }
+    if (n !== undefined || this.sortEnableDisableColumn === undefined) {
+      if (n !== this.sortEnableDisableColumn) {
+        this.sortEnableDisableColumn = n;
+        this.sortEnableDisableAscending = undefined;
+      }
+      if (this.sortEnableDisableAscending === undefined) {
+        // sort name column ascending, number values desc first
+        this.sortEnableDisableAscending = ( n === 1 ) ? true : false;
+      } else {
+        this.sortEnableDisableAscending = !this.sortEnableDisableAscending;
+      }
+    }
+    if (this.sortEnableDisableColumn === 1) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+    } else if (this.sortEnableDisableColumn === 2) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemEnabled ? 1 : 0) - (b.value.systemEnabled ? 1 : 0); });
+    } else if (this.sortEnableDisableColumn === 3) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? 1 : 0) - (b.value.systemLimit ? 1 : 0); });
+    } else if (this.sortEnableDisableColumn === 4) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? -10 : (a.value.sysVCEnabled ? 1 : 0)) - (b.value.systemLimit ? -10 : (b.value.sysVCEnabled ? 1 : 0)); });
+    } else if (this.sortEnableDisableColumn === 5) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return (a.value.systemLimit ? -10 : (a.value.sysVCLimit ? 1 : 0)) - (b.value.systemLimit ? -10 : (b.value.sysVCLimit ? 1 : 0)); });
+    } else if (this.sortEnableDisableColumn === 10) {
+      this.vcSettingsEnableDisable.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    }
+
+    if (!this.sortEnableDisableAscending) {
+      this.vcSettingsEnableDisable.reverse();
+    }
   }
 
   /** Log a message with the MessageService */
