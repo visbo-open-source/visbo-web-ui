@@ -1,5 +1,5 @@
-import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Component, OnInit, OnChanges, SimpleChanges, Sanitizer, SecurityContext } from '@angular/core';
+import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -8,7 +8,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboProject, VPParams } from '../_models/visboproject';
+import { VisboSetting } from '../_models/visbosetting';
+
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -34,22 +36,36 @@ class DropDown {
 export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   visboprojectversions: VisboProjectVersion[];
+  allVPVs: VisboProjectVersion[];
 
   currentUser: VisboUser;
   dropDown: DropDown[] = [];          // variants that have versions except pfv
   dropDownAll: DropDown[] = [];       // all variants including standard where the user can modify
   newVPVdropDown: DropDown[];         // variants to create a new Version
   dropDownIndex: number;
+  vcCustomize: VisboSetting[];
+  vcOrga: VisboSetting[];
 
   vpSelected: string;
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   vpvBaseline: VisboProjectVersion;
+  vpvBaselineNewestTS: Date;
   variantID: string;
   variantName: string;
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
+  predictURL: string;
+
+  customVPModified: boolean;
+  customVPAdd: boolean;
+  customBU: string;
+  dropDownBU: string[];
+  customStrategicFit: number;
+  customRisk: number;
+  editCustomFieldString: VPCustomString[];
+  editCustomFieldDouble: VPCustomDouble[];
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -89,6 +105,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
+    private sanitizer: DomSanitizer,
     private titleService: Title
   ) { }
 
@@ -100,6 +117,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.pfvVariant = this.translate.instant('vpKeyMetric.lbl.pfvVariant');
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
+      // map old / outdated URLs to common url
       const baseUrl = this.route.snapshot.url[0]
       switch (baseUrl.toString()) {
         case 'vpViewCost': view = 'Cost'; break;
@@ -153,8 +171,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
-  getVariantInfo(item: DropDown, owner = true): string {
-      let result: string[] = []
+  getVariantInfo(item: DropDown): string {
+      const result: string[] = []
       if (item.description) { result.push(item.description); }
       if (item.variantName != this.defaultVariant) {
         result.push('(' + item.email + ')');
@@ -163,7 +181,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   dropDownInit(): void {
-    let dropDown: DropDown[] = []
+    const dropDown: DropDown[] = []
     if (this.variantID) {
       // serach for the variant Name
       const index = this.vpActive.variant.findIndex(item => item._id.toString() === this.variantID);
@@ -255,7 +273,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
         if (i >= this.visboprojectversions.length) { i = this.visboprojectversions.length - 1; }
       }
-      this.vpvActive = this.visboprojectversions[i];
+      this.setVpvActive(this.visboprojectversions[i]);
+      this.findBaseLine(this.vpvActive);
       this.evaluateDirection(i);
     }
   }
@@ -318,6 +337,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  getPredictURL(): string {
+    let url = this.route.snapshot.url.join('/');
+    // url = 'visbo-predict://localhost:4200/'.concat(url);
+    // url = 'visbo-predict://localhost'.concat('?', url);
+    url = 'visbo-predict://predict';
+    let separator = '?';
+    if (this.vpActive) {
+        url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
+        separator = '&'
+    }
+    if (this.vpvActive) {
+        url = url.concat(separator, 'vpvid:', this.vpvActive._id.toString());
+        separator = '&'
+    }
+    console.log("URL:", url);
+    return url;
+  }
+
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -342,7 +379,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   hasKM(km: VPVKeyMetrics, type: string): boolean {
     let result = false;
-    if (!km) {
+    if (!km || Object.keys(km).length <= 1) {
+      // in case of no keyMetric return true and try to show the values, might be they do not exist
       return true;
     }
     if (type == 'Cost') {
@@ -363,6 +401,56 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  getAllVersionsShort(): void {
+    if (this.vpActive) {
+      this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, 0)
+        .subscribe(
+          vpv => {
+            this.allVPVs = vpv;
+            this.allVPVs.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
+            this.vpvBaseline = this.allVPVs.find(item => item.variantName === 'pfv');
+            if (this.vpvBaseline) {
+              this.vpvBaselineNewestTS = new Date(this.vpvBaseline.timestamp);
+            }
+            this.log(`get VPV All Key metrics: Get ${vpv.length} Project Versions`);
+          },
+          error => {
+            this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
+  findBaseLine(vpv: VisboProjectVersion): VisboProjectVersion {
+    let result: VisboProjectVersion;
+    if (this.allVPVs && vpv) {
+      result = this.allVPVs.find(item => item.variantName == 'pfv' && visboCmpDate(item.timestamp, vpv.timestamp) == -1)
+    }
+    this.vpvBaseline = result;
+    return result;
+  }
+
+  checkBaselineVersion(vpv: VisboProjectVersion): boolean {
+    let result = true;
+    if (vpv && this.allVPVs) {
+      let latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
+      if (latestVPV?._id.toString() == vpv._id.toString()) {
+        // check only the latest version if a newer PFV exists
+        if (this.vpvBaseline
+        && new Date(vpv.timestamp).getTime() < this.vpvBaselineNewestTS.getTime()){
+            result = false
+        }
+      }
+    }
+    return result
+  }
+
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
@@ -373,9 +461,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         .subscribe(
           visboproject => {
             this.vpActive = visboproject;
+            this.translateCustomFields(this.vpActive);
+            this.initCustomFields(this.vpActive);
             this.combinedPerm = visboproject.perm;
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
+            this.getAllVersionsShort();
+            this.getVisboCenterCustomization();
             // would be better to get the orga and deliver it to the component.
             this.getVisboCenterOrga();
 
@@ -386,10 +478,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               variantID = variant ? variant._id.toString() : '';
             }
             this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, true)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, 2)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
+                  this.visboprojectversions.forEach(vpv => {vpv.vp = this.vpActive;})
                   this.visboprojectversions.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
                   this.findVPV(this.refDate);
@@ -417,6 +510,64 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.gotoRoot();
     }
+  }
+
+  translateCustomFields(vp: VisboProject): void {
+    if (vp?.customFieldString) {
+      vp.customFieldString.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
+    }
+    if (vp?.customFieldDouble) {
+      vp.customFieldDouble.forEach(item => {
+        if (constSystemCustomName.find(element => element == item.name)) {
+          item.localName = this.translate.instant('customField.' + item.name);
+        } else {
+          item.localName = item.name;
+        }
+      })
+    }
+  }
+
+  initCustomFields(vp: VisboProject): void {
+      const customFieldString = getCustomFieldString(vp, '_businessUnit');
+      if (customFieldString) {
+        this.customBU = customFieldString.value;
+      }
+      let customFieldDouble = getCustomFieldDouble(vp, '_strategicFit');
+      if (customFieldDouble) {
+        this.customStrategicFit = customFieldDouble.value;
+      }
+      customFieldDouble = getCustomFieldDouble(vp, '_risk');
+      if (customFieldDouble) {
+        this.customRisk = customFieldDouble.value;
+      }
+      this.editCustomFieldString = this.getCustomFieldListString(true);
+      this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
+      this.customVPModified = false;
+      this.customVPAdd = false;
+  }
+
+  checkVPCustomValues(): boolean {
+    let result = false;
+    if (!this.customVPAdd && !this.customVPModified) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined) {
+          result = true;
+      }
+    }
+    return result;
+  }
+
+  addVPCustomValues(): void {
+    this.customVPAdd = true;
+  }
+
+  setModified(): void {
+    this.customVPModified = true;
   }
 
   sameDay(dateA: Date, dateB: Date): boolean {
@@ -512,21 +663,66 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      // check if Orga is available
-      this.log(`get VC Orga ${this.vpActive.vcid}`);
-      this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, undefined, true)
-        .subscribe(
-          vcsettings => {
-            this.hasOrga = vcsettings.length > 0;
-          },
-          error => {
-            if (error.status === 403) {
-              const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-        });
+      if (this.vcOrga == undefined
+      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+        // check if Orga is available
+        this.log(`get VC Orga ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
+          .subscribe(
+            vcsettings => {
+              this.vcOrga = vcsettings;
+              this.hasOrga = vcsettings.length > 0;
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vpKeyMetric.msg.errorPermOrga', {name: this.vpActive.name});
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
+    }
+  }
+
+  getVisboCenterCustomization(): void {
+    if (this.vpActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
+      if (!this.vcCustomize
+      || (this.vcCustomize[0] && this.vcCustomize[0].vcid.toString() != this.vpActive.vcid.toString())) {
+        // check if appearance is available
+        this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
+          .subscribe(
+            vcsettings => {
+              this.vcCustomize = vcsettings;
+              this.initBUDropDown();
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
+    }
+  }
+
+  initBUDropDown(): void {
+    if (!this.vcCustomize || this.vcCustomize.length == 0) {
+      return
+    }
+    const listBU = this.vcCustomize[0].value?.businessUnitDefinitions;
+    if (!listBU) return;
+    this.dropDownBU = [];
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+    } else {
+      this.dropDownBU = undefined;
     }
   }
 
@@ -539,28 +735,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.delayEndDate = Math.round(delay / 1000 / 60 / 60 / 24) / 7;
 
     this.vpvActive = vpv;
+
+    if (!this.hasKM(vpv.keyMetrics, 'EndDate')) {
+      this.updateUrlParam('view', 'All');
+    }
+    this.findBaseLine(vpv);
+    this.predictURL = this.getPredictURL();
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
   }
 
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
-  }
-
-  gotoVPKeyMetric(vp: VisboProject): void {
-    const queryParams = new VPParams();
-    if (this.vpvActive?.variantName) {
-      const variant = vp.variant.find(variant => variant.variantName == this.vpvActive.variantName);
-      if (variant) {
-        queryParams.variantID = variant._id;
-      }
-      queryParams.refDate = (new Date()).toISOString();
-    }
-
-    this.router.navigate(['vpKeyMetrics/'.concat(vp._id)], {
-      queryParams: queryParams,
-      // no navigation back to old status, but to the page before
-      replaceUrl: true
-    });
   }
 
   gotoVC(visboproject: VisboProject): void {
@@ -623,18 +808,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
     const actualDataUntil = this.newVPV.actualDataUntil ? new Date(this.newVPV.actualDataUntil) : undefined;
+   
     if (mode == 'startDate') {
+      // the reasons not to allow to move startdate:
+      // 1. there exists an actualDataUntil, which is after newVPV.startDate
+      // 2. startDate is before today and(!) newVPV.status is 'beauftragt'
+      // it have to be allowed to move the startDate even if it is in the past, because otherwise you never can initiate projects 
+      // which have been proposed, by the time then been rejected but now should be initiated.  
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (startDate.getTime() < beginMonth.getTime()) {
+      } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
         result = false;
       }
     } else if (mode == 'endDate') {
-      if (endDate.getTime() < beginMonth.getTime()) {
+      // the reasons not to allow to move endDate: 
+      // 1. there exists an actualDataUntil, which is after newVPV.startDate
+      if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      }
+      } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
+        result = false;
+      }      
     }
-    return result && false;
+    // always returns false : return result && false;
+    return result;
   }
 
   getScaleDate(mode: string): Date {
@@ -673,7 +869,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             variantID = variant._id;
           }
         }
-        this.visboprojectversionService.getVisboProjectVersions(this.vpvActive.vpid, false, variantID, true)
+        this.visboprojectversionService.getVisboProjectVersions(this.vpvActive.vpid, false, variantID, 1)
           .subscribe(
             vpv => {
               vpv.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
@@ -786,21 +982,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           if (vpv.variantName != 'pfv') {
             const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
             this.alertService.success(message, true);
-            this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-            // MS TODO: Navigate to the copied variant
+            this.getVisboProjectVersions();
 
           } else {
             // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
-            this.updateVPVCount(this.vpActive, vpv.variantName, 1);
             this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
               .subscribe(
                 vpv => {
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                   this.alertService.success(message, true);
-                  this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-                  this.visboprojectversions.splice(0, 0, vpv);
-                  this.setVpvActive(vpv);
-                  this.evaluateDirection(0);
+                  // this.updateVPVCount(this.vpActive, vpv.variantName, 1);
+                  // this.visboprojectversions.splice(0, 0, vpv);
+                  // this.setVpvActive(vpv);
+                  // this.evaluateDirection(0);
+                  this.getVisboProjectVersions();
                 },
                 error => {
                   this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -826,6 +1021,69 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  vpUpdate(): void {
+    if (this.vpActive && this.customVPModified) {
+      // set the changed custom customfields
+      const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
+      if (customFieldString && this.customBU) {
+        customFieldString.value = this.customBU;
+      } else if (this.customBU) {
+        addCustomFieldString(this.vpActive, '_businessUnit', this.customBU);
+      }
+      let customFieldDouble = getCustomFieldDouble(this.vpActive, '_strategicFit');
+      if (customFieldDouble && this.customStrategicFit != undefined) {
+        customFieldDouble.value = this.customStrategicFit;
+      } else if (this.customStrategicFit) {
+        addCustomFieldDouble(this.vpActive, '_strategicFit', this.customStrategicFit);
+      }
+      customFieldDouble = getCustomFieldDouble(this.vpActive, '_risk');
+      if (customFieldDouble && this.customRisk != undefined) {
+        customFieldDouble.value = this.customRisk;
+      } else if (this.customRisk) {
+        addCustomFieldDouble(this.vpActive, '_risk', this.customRisk);
+      }
+      // update changed custom strings
+      this.vpActive.customFieldString.forEach(item => {
+        if (item.type == 'VP') {
+          const editField = this.editCustomFieldString.find(element => element.name == item.name);
+          if (editField && editField.value) {
+            item.value = editField.value;
+          }
+        }
+      });
+      this.vpActive.customFieldDouble.forEach(item => {
+        if (item.type == 'VP') {
+          const editField = this.editCustomFieldDouble.find(element => element.name == item.name);
+          if (editField && editField.value !== null) {
+            item.value = editField.value;
+          }
+        }
+      });
+
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+      this.visboprojectService.updateVisboProject(this.vpActive)
+        .subscribe(
+          (vp) => {
+            this.vpActive = vp;
+            const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+            this.alertService.success(message, true);
+          },
+          error => {
+            this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {
       if (variantName) {
@@ -841,7 +1099,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   hasVariantChange(): boolean {
-    return this.vpvActive?.variantName != this.newVPVvariantName;
+    let result = this.vpvActive?.variantName != this.newVPVvariantName;
+    if (!result && !this.checkBaselineVersion(this.vpvActive)) {
+      result = true;
+    }
+    return result;
   }
 
   switchCopyVariant(index: number): void {
@@ -925,6 +1187,42 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.sortAscending) {
       this.visboprojectversions.reverse();
     }
+  }
+
+  getCustomFieldListString(vpOnly = true): VPCustomString[] {
+    let list: VPCustomString[] = [];
+    this.editCustomFieldString = [];
+    if (vpOnly) {
+      list = this.vpActive?.customFieldString?.filter(item => item.type == 'VP');
+    } else {
+      list = this.vpActive?.customFieldString;
+    }
+    list.forEach(item => {
+      let fieldString = new VPCustomString();
+      fieldString.name = item.name;
+      fieldString.type = item.type;
+      fieldString.value = item.value;
+      this.editCustomFieldString.push(fieldString);
+    });
+    return this.editCustomFieldString;
+  }
+
+  getCustomFieldListDouble(vpOnly = true): VPCustomDouble[] {
+    let list: VPCustomDouble[] = [];
+    this.editCustomFieldDouble = [];
+    if (vpOnly) {
+      list = this.vpActive?.customFieldDouble?.filter(item => item.type == 'VP');
+    } else {
+      list = this.vpActive?.customFieldDouble;
+    }
+    list.forEach(item => {
+      let fieldString = new VPCustomDouble();
+      fieldString.name = item.name;
+      fieldString.type = item.type;
+      fieldString.value = item.value;
+      this.editCustomFieldDouble.push(fieldString);
+    });
+    return this.editCustomFieldDouble;
   }
 
   getPreView(): boolean {

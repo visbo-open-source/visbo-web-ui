@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import 'jasmine';
 
 import { VisboCompViewBoardComponent } from './comp-viewboard.component';
@@ -7,7 +7,7 @@ describe('VisboCompViewBoardComponent', () => {
   let component: VisboCompViewBoardComponent;
   let fixture: ComponentFixture<VisboCompViewBoardComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         VisboCompViewBoardComponent

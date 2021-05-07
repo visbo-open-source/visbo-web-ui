@@ -1,10 +1,29 @@
 <div class='well' (resized)="onResized($event)">
   <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
     <div *ngIf="filter || !getPreView()" class="row text-dark d-print-none">
-      <div class="my-1 pl-0 col-11">
-        <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
-        <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
-        <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+      <div class="my-1 row">
+        <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+          <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
+          <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
+          <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+        </div>
+        <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+          <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
+          <div class="dropdown-menu">
+            <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+              <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
+            </a>
+          </div>
+        </span>
+        <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+          <span> {{ 'compViewBoard.lbl.strategicFit' | translate }} >=</span>
+          <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
+        </div>
+        <div class="ml-2" *ngIf="filterRisk >= 0">
+          <span> {{ 'compViewBoard.lbl.risk' | translate }} >=</span>
+          <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
+        </div>
       </div>
     </div>
   </div>

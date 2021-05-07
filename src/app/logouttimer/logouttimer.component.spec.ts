@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LogoutTimerComponent } from './logouttimer.component';
 
@@ -6,7 +6,7 @@ describe('LogoutTimerComponent', () => {
   let component: LogoutTimerComponent;
   let fixture: ComponentFixture<LogoutTimerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LogoutTimerComponent ]
     })

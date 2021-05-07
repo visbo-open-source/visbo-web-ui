@@ -166,6 +166,9 @@ export class VisboProjectVersionsComponent implements OnInit {
           } else if (error.status === 423) {
             const message = this.translate.instant('vpv.msg.errorLocked', {'name': visboprojectversion.name});
             this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpv.msg.errorConsistencyDelete', {'name': visboprojectversion.name});
+            this.alertService.error(message);
           } else {
             this.alertService.error(getErrorMessage(error));
           }
@@ -190,7 +193,7 @@ export class VisboProjectVersionsComponent implements OnInit {
             const message = this.translate.instant('vpv.msg.errorPermVersion', {'name': this.visboprojectversion.name});
             this.alertService.error(message);
           } else if (error.status === 409) {
-            const message = this.translate.instant('vpv.msg.errorConflict', {'name': this.visboprojectversion._id});
+            const message = this.translate.instant('vpv.msg.errorConsistencyUnDelete', {'name': this.visboprojectversion.name});
             this.alertService.error(message);
           } else {
             this.alertService.error(error.error.message);

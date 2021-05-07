@@ -1,8 +1,11 @@
+import { VisboProject } from '../_models/visboproject';
+
 export class VisboCapacity {
   month: Date;
   roleID: number;
   roleName: string;
   vpid: string;
+  vp: VisboProject;
   name: string;
   variantName: string;
   actualCost_PT: number;
@@ -68,6 +71,7 @@ export class VPVDeadline {
 export class VPVKeyMetrics {
   costCurrentActual: number;
   costCurrentTotal: number;
+  costCurrentTotalPredict: number;
   costBaseLastActual: number;
   costBaseLastTotal: number;
   timeCompletionCurrentActual: number;
@@ -90,6 +94,7 @@ export class VPVKeyMetricsCalc {
   _id: string;
   name: string;
   vpid: string;
+  vp: VisboProject;
   timestamp: Date;
   variantName: string;
   startDate: Date;
@@ -118,6 +123,7 @@ export class VisboProjectVersion {
   _id: string;
   name: string;
   vpid: string;
+  vp: VisboProject;
   variantName: string;
   variantDescription: string;
   Risiko: number;
