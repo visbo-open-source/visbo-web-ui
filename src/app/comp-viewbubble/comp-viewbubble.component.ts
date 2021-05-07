@@ -64,6 +64,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   metricListSorted: Metric[];
 
   hasKMCost = false;
+  hasKMCostPredict = false;
   hasKMDelivery = false;
   hasKMDeadline = false;
   hasKMEndDate = false;
@@ -162,6 +163,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         axis: this.translate.instant('compViewBubble.metric.costActualAxis'),
         bubble: this.translate.instant('compViewBubble.metric.costActualBubble'),
         table: this.translate.instant('compViewBubble.metric.costActualTable')
+      },
+      {
+        name: this.translate.instant('compViewBubble.metric.costPredictName'),
+        metric: 'CostPredict',
+        axis: this.translate.instant('compViewBubble.metric.costPredictAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.costPredictBubble'),
+        table: this.translate.instant('compViewBubble.metric.costPredictTable')
       },
       {
         name: this.translate.instant('compViewBubble.metric.deadlineName'),
@@ -350,6 +358,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.estimateAtCompletion = 0;
 
     this.hasKMCost = false;
+    this.hasKMCostPredict = false;
     this.hasKMDelivery = false;
     this.hasKMDeadline = false;
     this.hasKMDeadlineDelay = false;
@@ -405,6 +414,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
 
         this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
+        this.hasKMCostPredict = this.hasKMCostPredict || elementKeyMetric.keyMetrics.costCurrentTotalPredict >= 0;
         this.hasKMDelivery = this.hasKMDelivery || elementKeyMetric.keyMetrics.deliverableCompletionBaseLastTotal > 0;
         this.hasKMDeadline = this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1;
         this.hasKMDeadlineDelay = (this.hasKMDeadline || elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal > 1)
@@ -421,6 +431,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         if (elementKeyMetric.keyMetrics.costBaseLastTotal > 0) {
           elementKeyMetric.savingCostTotal = (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
                                             / elementKeyMetric.keyMetrics.costBaseLastTotal;
+          if (elementKeyMetric.keyMetrics.costCurrentTotalPredict > 0) {
+            elementKeyMetric.savingCostTotalPredict = (elementKeyMetric.keyMetrics.costCurrentTotalPredict || 0)
+                                              / elementKeyMetric.keyMetrics.costBaseLastTotal;
+          }
         } else {
           elementKeyMetric.savingCostTotal = 1;
         }
@@ -478,6 +492,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.metricListFiltered.push(item);
       item = this.metricList.find(item => item.metric === 'ActualCost');
       this.metricListFiltered.push(item);
+      if (this.hasKMCostPredict) {
+        item = this.metricList.find(item => item.metric === 'CostPredict');
+        this.metricListFiltered.push(item);
+      }
     }
     if (this.hasKMEndDate) {
       const item = this.metricList.find(item => item.metric === 'EndDate');
@@ -595,6 +613,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           valueX = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
           colorValue += valueX <= 100 ? 1 : 0;
           break;
+        case 'CostPredict':
+          valueX = Math.round(this.visbokeymetrics[item].savingCostTotalPredict * 100);
+          colorValue += valueX <= 100 ? 1 : 0;
+          break;
         case 'EndDate':
           valueX = Math.round(this.visbokeymetrics[item].savingEndDate / 7 * 10) / 10;
           colorValue += valueX <= 0 ? 1 : 0;
@@ -623,6 +645,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           break;
         case 'ActualCost':
           valueY = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
+          colorValue += valueY <= 100 ? 1 : 0;
+          break;
+        case 'CostPredict':
+          valueY = Math.round(this.visbokeymetrics[item].savingCostTotalPredict * 100);
           colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'EndDate':
@@ -676,6 +702,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'ActualCost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
+        case 'CostPredict':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotalPredict - 1) * 100));
+          break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate)  / 7);
           break;
@@ -725,6 +754,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'ActualCost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
+        case 'CostPredict':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotalPredict - 1) * 100));
+          break;
         case 'EndDate':
           rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate) / 7);
           break;
@@ -764,31 +796,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
-        break;
       case 'ActualCost':
+      case 'CostPredict':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# '%'";
         break;
       case 'EndDate':
-        this.graphBubbleOptions.hAxis.baseline = 0;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = weekFormat;
-        break;
-      case 'Deadline':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = 1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
-        break;
       case 'DeadlineFinishedDelay':
       case 'DeadlineUnFinishedDelay':
         this.graphBubbleOptions.hAxis.baseline = 0;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = weekFormat;
         break;
+      case 'Deadline':
       case 'Delivery':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = 1;
@@ -799,31 +820,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
     switch (this.metricY) {
       case 'Cost':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
       case 'ActualCost':
+      case 'CostPredict':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# '%'";
         break;
       case 'EndDate':
-        this.graphBubbleOptions.vAxis.baseline = 0;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = weekFormat;
-        break;
-      case 'Deadline':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = 1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
       case 'DeadlineFinishedDelay':
       case 'DeadlineUnFinishedDelay':
         this.graphBubbleOptions.vAxis.baseline = 0;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = weekFormat;
         break;
+      case 'Deadline':
       case 'Delivery':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = 1;
@@ -974,6 +984,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 16) {
       this.visbokeymetrics.sort(function(a, b) {
         return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 17) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return a.savingCostTotalPredict - b.savingCostTotalPredict;
       });
     }
 

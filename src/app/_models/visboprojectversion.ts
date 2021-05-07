@@ -110,6 +110,7 @@ export class VPVKeyMetricsCalc {
   businessUnit: string;
 
   savingCostTotal: number;
+  savingCostTotalPredict: number;
   savingCostActual: number;
   savingEndDate: number;
   timeCompletionTotal: number;
