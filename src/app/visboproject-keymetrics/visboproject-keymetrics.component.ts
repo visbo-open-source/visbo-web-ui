@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Sanitizer, SecurityContext } from '@angular/core';
 import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -105,6 +106,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
+    private datePipe: DatePipe,
     private sanitizer: DomSanitizer,
     private titleService: Title
   ) { }
@@ -1223,6 +1225,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.editCustomFieldDouble.push(fieldString);
     });
     return this.editCustomFieldDouble;
+  }
+
+  getTimestampTooltip(vpv: VisboProjectVersion): string {
+    if (!vpv) return '';
+    let title = this.translate.instant('vpKeyMetric.lbl.plan') 
+              + ': '
+              + this.datePipe.transform(vpv.timestamp, 'dd.MM.yy HH:mm');
+    if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
+      title = title
+            + ', ' + this.translate.instant('vpKeyMetric.lbl.pfvVariant')
+            + ': '
+            + this.datePipe.transform(vpv.keyMetrics.baselineDate, 'dd.MM.yy HH:mm');
+    }
+    return title;
   }
 
   getPreView(): boolean {

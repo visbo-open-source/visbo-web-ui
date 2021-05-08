@@ -373,6 +373,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const filter = (this.filter || '').toLowerCase();
     this.initFilter(this.visboprojectversions);
     for (let item = 0; item < this.visboprojectversions.length; item++) {
+      if (this.visboprojectversions[item].vp?.vpType != 0) {
+        continue;
+      }
       if (filter
         && !((this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0

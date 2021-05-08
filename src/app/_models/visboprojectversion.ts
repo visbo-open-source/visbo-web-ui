@@ -69,6 +69,7 @@ export class VPVDeadline {
 }
 
 export class VPVKeyMetrics {
+  baselineDate: Date;
   costCurrentActual: number;
   costCurrentTotal: number;
   costCurrentTotalPredict: number;

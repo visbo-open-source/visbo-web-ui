@@ -33,13 +33,13 @@
     <div class="row">
       <h4 class="col-6 text-dark">
         <div>
-          <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+          <div class="d-none d-lg-block" title="{{getTimestampTooltip(vpvActive)}}">
             {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
             <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
               <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
             </a>
           </div>
-          <div class="d-block d-lg-none">
+          <div class="d-block d-lg-none" title="{{getTimestampTooltip(vpvActive)}}">
             V.: {{ vpvActive.timestamp | date :'dd.MM.'}}
           </div>
         </div>

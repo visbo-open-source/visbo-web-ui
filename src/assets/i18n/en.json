@@ -503,6 +503,7 @@
 			"projectProperty": "Projekt Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"plan": "Plan",
 			"pfvVariant": "Baseline",
 			"source": "From",
 			"destination": "To",
