@@ -4,9 +4,8 @@
     <div class='col'>
       <h2 *ngIf="vpActive">
         {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span *ngIf="dropDownIndex > 0" class="ml-1" title="{{dropDown[dropDownIndex].description}}"> ({{dropDown[dropDownIndex].variantName}})</span>
         <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
-          <a class="dropdown-toggle" data-toggle="dropdown" style="!important"></a>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{getDropDown('description')}}">{{getDropDown('variantName')}}</a>
           <div class="dropdown-menu">
             <div *ngFor="let item of dropDown">
               <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.name }}</a>
@@ -33,13 +32,13 @@
     <div class="row">
       <h4 class="col-6 text-dark">
         <div>
-          <div class="d-none d-lg-block" title="{{ vpvActive.timestamp | date :'dd.MM.yyyy HH:mm:ss'}}">
+          <div class="d-none d-lg-block" title="{{getTimestampTooltip(vpvActive)}}">
             {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
             <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
               <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
             </a>
           </div>
-          <div class="d-block d-lg-none">
+          <div class="d-block d-lg-none" title="{{getTimestampTooltip(vpvActive)}}">
             V.: {{ vpvActive.timestamp | date :'dd.MM.'}}
           </div>
         </div>
@@ -73,7 +72,7 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <!-- <a class="dropdown-item text-dark" [href]="predictURL | safeUrl">Predict</a> -->
+            <a *ngIf="getEnableDisable('EnablePredict', 2) && customPredict" class="dropdown-item text-dark" [href]="predictURL | safeUrl">{{customPredict}}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>

@@ -20,24 +20,21 @@
       </div>
     </form>
     <div *ngIf="getVCPerm() != permVC.View">
-      <div class="btn-toolbar" style="">
+      <div class="btn-toolbar" class="mb-2" style="">
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
         <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
         <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('ProjectUsers')">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
         <button id="ViewSetting" *ngIf="hasVCPerm(permVC.Modify)" type="button" class="btn btn-md btn-light mx-1" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
+        <button id="ViewEnable" type="button" class="btn btn-md btn-light mx-1" (click)="showEnableDisable()">{{ 'vcDetail.btn.ViewEnableDisable' | translate }}</button>
       </div>
     </div>
-    <!-- <div *ngIf="getVCPerm() == permVC.View">
-      <div class="btn-toolbar" style="">
-        <button id="ViewSetting" type="button" class="btn btn-md btn-light mx-1 mb-2" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
-      </div>
-    </div> -->
+
     <div *ngIf="getVCPerm() != permVC.View">
       <div *ngIf="showList == 'Users'" >
         <div class='row'>
           <div class='col'>
-            <h4 class='panel-heading mt-2'>
+            <h4 class='panel-heading'>
                 {{ 'vcDetail.titleUsers' | translate }}
             </h4>
           </div>
@@ -79,7 +76,7 @@
       <div *ngIf="showList == 'Groups'" >
         <div class='row'>
           <div class='col'>
-            <h5 class='panel-heading mt-3'>
+            <h5 class='panel-heading'>
                 {{ 'vcDetail.titleGroups' | translate }}
             </h5>
           </div>
@@ -164,7 +161,7 @@
         <div >
           <div class='row'>
             <div class='col'>
-              <h4 class='panel-heading mt-2'>
+              <h4 class='panel-heading'>
                   {{ 'vcDetail.titleSettings' | translate }}
               </h4>
             </div>
@@ -205,10 +202,86 @@
         </div>
       </div>
     </div>
+    <div *ngIf="showList == 'SettingEnableDisable'">
+      <div >
+        <div class='row'>
+          <div class='col'>
+            <h5 class='panel-heading'>
+                {{ 'vcDetail.titleEnableDisable' | translate }}
+            </h5>
+          </div>
+        </div>
+        <div class='panel-body'>
+          <table class='table table-hover table-sortable'>
+            <!--Table head-->
+            <thead>
+              <tr>
+                <th (click)="sortSettingEnabledDisabled(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+                <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(5)">{{ 'vcDetail.lbl.settingLimit' | translate }}</th>
+                <th class="d-none d-md-table-cell">{{ 'vcDetail.lbl.settingEnabled' | translate }}</th>
+                <th (click)="sortSettingEnabledDisabled(10)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              </tr>
+            </thead>
+            <!-- Table body -->
+            <tbody>
+              <tr *ngFor="let setting of vcSettingsEnableDisable; let settingIndex=index" (click)="editEnableDisable(settingIndex)" data-toggle="modal" data-target="#ViewEnableDisable">
+                <td><a>{{setting.name}}</a></td>
+                <td><a>
+                    <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.sysVCLimit == true}"></ng-container>
+                </a></td>
+                <td><a>
+                    <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.VCEnabled == true}"></ng-container>
+                </a></td>
+                <td>{{setting.updatedAt | date :'dd.MM HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #showLimit let-level="level">
+      <i class="fas fa-lg" [ngClass]="{'fa-toggle-on text-success': level == true}"></i>
+    </ng-template>
+
+    <ng-template #showEnabled let-level="level">
+      <i class="far fa-lg" [ngClass]="{'fa-check-circle text-success': level == true, 'fa-times-circle text-danger': level == false}"></i>
+    </ng-template>
+
 
     <div class="mb-3">
       <button id="Save" *ngIf="hasVCPerm(permVC.Modify)" (click)="save()" class="btn btn-primary mx-1">{{ 'vcDetail.btn.save' | translate }}</button>
       <button class="btn btn-secondary mx-1" (click)="goBack()">{{ 'vcDetail.btn.back' | translate }}</button>
+    </div>
+
+    <!-- Modal View & Edit Setting Enable / Disable -->
+    <div class="modal fade" id="ViewEnableDisable" tabindex="-1" role="dialog" aria-labelledby="View Enable Disable" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="vcSettingsEnableDisable && indexEnableDisable >= 0">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ConfigDetailTitle">{{ 'vcDetail.btn.edit' | translate }} {{vcSettingsEnableDisable[indexEnableDisable].name}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+                <div *ngIf="vcSettingsEnableDisable[indexEnableDisable].value.sysVCLimit" class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="check5" name="VCEnabled" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.VCEnabled" #VCEnabled="ngModel" disabled>
+                    <label class="custom-control-label" for="check5">{{ 'vcDetail.lbl.settingEnabled' | translate }}</label>
+                </div>
+                <div *ngIf="!vcSettingsEnableDisable[indexEnableDisable].value.sysVCLimit" class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="check5" name="VCEnabled" [(ngModel)]="vcSettingsEnableDisable[indexEnableDisable].value.VCEnabled" #VCEnabled="ngModel">
+                    <label class="custom-control-label" for="check5">{{ 'vcDetail.lbl.settingEnabled' | translate }}</label>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer align-items-end">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+            <button *ngIf="hasVCPerm(permVC.Modify) && !vcSettingsEnableDisable[indexEnableDisable].value.sysVCLimit" type="button" class="btn btn-primary" (click)="updateConfig(vcSettingsEnableDisable[indexEnableDisable])" data-dismiss="modal">{{ 'vcDetail.btn.save' | translate }}</button>
+          </div>
+        </div>
+      </div>
     </div>
 
   <!-- Modal Add VC User -->

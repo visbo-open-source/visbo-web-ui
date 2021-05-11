@@ -83,6 +83,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     hasOrga = false;
     vcOrga: VisboSetting[];
     customize: VisboSetting;
+    calcPredict = false;
 
     pageParams = new VPFParams();
     isGlobalChecked = false;
@@ -116,6 +117,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     localStorage.removeItem('vpfFilter');
     const refDate = this.route.snapshot.queryParams['refDate'];
+    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
     const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
     const filter = this.route.snapshot.queryParams['filter'] || null;
@@ -249,7 +251,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   getVisboPortfolioKeyMetrics(): void {
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
 
-    this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
+    this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate, false, this.calcPredict, this.vpActive.vcid)
       .subscribe(
         listVPV => {
           this.listVPV = listVPV;

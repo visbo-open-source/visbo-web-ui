@@ -8,3 +8,4 @@ out-tsc
 e2e/src/params.json
 test/params.json
 src/env.js
+src/.DS_Store
