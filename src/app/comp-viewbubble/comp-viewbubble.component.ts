@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
@@ -36,7 +37,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     private alertService: AlertService,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private datePipe: DatePipe
   ) { }
 
   @Input() visboprojectversions: VisboProjectVersion[];
@@ -923,6 +925,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       dateDiff = dateDiff / 1000;
     }
     return dateDiff;
+  }
+
+  getTimestampTooltip(vpv: VisboProjectVersion): string {
+    if (!vpv) return '';
+    let title = this.translate.instant('vpKeyMetric.lbl.plan')
+              + ': '
+              + this.datePipe.transform(vpv.timestamp, 'dd.MM.yy HH:mm');
+    if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
+      title = title
+            + ', ' + this.translate.instant('vpKeyMetric.lbl.pfvVariant')
+            + ': '
+            + this.datePipe.transform(vpv.keyMetrics.baselineDate, 'dd.MM.yy HH:mm');
+    }
+    return title;
   }
 
   sortKeyMetricsTable(n: number): void {

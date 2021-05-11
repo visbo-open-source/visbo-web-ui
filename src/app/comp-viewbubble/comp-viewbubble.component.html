@@ -127,7 +127,7 @@
               <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td>
               <td>{{vp.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-              <td class="d-none d-xl-table-cell" title="{{vp.timestamp | date :'dd.MM.yy HH:MM'}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>
+              <td class="d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>

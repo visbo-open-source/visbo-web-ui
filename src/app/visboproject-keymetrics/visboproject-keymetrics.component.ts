@@ -45,6 +45,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   newVPVdropDown: DropDown[];         // variants to create a new Version
   dropDownIndex: number;
   vcCustomize: VisboSetting[];
+  vcEnableDisable: VisboSetting[];
   vcOrga: VisboSetting[];
 
   vpSelected: string;
@@ -58,6 +59,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   defaultVariant: string;
   pfvVariant: string;
   predictURL: string;
+  customPredict: string;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -260,6 +262,22 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (this.variantName) {
       this.dropDownIndex = this.dropDown.findIndex(item => item.variantName === this.variantName);
+    }
+  }
+
+  getDropDown(type: string): string {
+    if (!(this.dropDownIndex >= 0 && this.dropDownIndex < this.dropDown.length)) {
+      return '';
+    }
+    const variant = this.dropDown[this.dropDownIndex];
+    if (type == 'description') {
+      return variant.description;
+    } else {
+      if (variant.variantName == '') {
+        return '';
+      } else {
+        return '(' + variant.variantName + ')';
+      }
     }
   }
 
@@ -469,7 +487,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
             this.getAllVersionsShort();
-            this.getVisboCenterCustomization();
+            this.getVisboCenterSettings();
             // would be better to get the orga and deliver it to the component.
             this.getVisboCenterOrga();
 
@@ -687,16 +705,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  getVisboCenterCustomization(): void {
+  getVisboCenterSettings(): void {
     if (this.vpActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
       if (!this.vcCustomize
       || (this.vcCustomize[0] && this.vcCustomize[0].vcid.toString() != this.vpActive.vcid.toString())) {
         // check if appearance is available
-        this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
+        this.log(`get VC Setting ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict')
           .subscribe(
             vcsettings => {
-              this.vcCustomize = vcsettings;
+              this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
+              this.vcEnableDisable = this.squeezeEnableDisable(vcsettings.filter(item => item.type == '_VCConfig'));
+              const customSetting = vcsettings.find(item => item.type == 'CustomPredict');
+              if (customSetting) {
+                this.customPredict = customSetting.name;
+              }
               this.initBUDropDown();
             },
             error => {
@@ -709,6 +732,44 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           });
       }
     }
+  }
+
+  squeezeEnableDisable(settings: VisboSetting[]): VisboSetting[] {
+    if (!settings || settings.length == 0) {
+      return [];
+    }
+    settings.forEach(item => {
+      // calculate VCEnabled and sysVCLimit for a compact view in VC Admin
+      if (item.value) {
+        if (item.value.systemLimit) {
+          item.value.VCEnabled = item.value.systemEnabled;
+          item.value.sysVCLimit = true;
+        } else if (item.value.sysVCLimit) {
+          item.value.VCEnabled = item.value.sysVCEnabled;
+        } else {
+          item.value.VCEnabled = item.value.VCEnabled ? true : false;
+        }
+      }
+    });
+    let result = settings.filter(item => item.value?.systemLimit !== true);
+    return result;
+  }
+
+  getEnableDisable(name: string, level: number): boolean {
+    let result = false;
+    if (this.vcEnableDisable) {
+      let setting = this.vcEnableDisable.find(item => item.name == name);
+      if (setting && setting.value) {
+        if (level == 0) {
+          result = setting.value.systemEnabled == true;
+        } else if (level == 2) {
+          result = setting.value.sysVCEnabled == true;
+        } else {
+          result = setting.value.VCEnabled == true;
+        }
+      }
+    }
+    return result;
   }
 
   initBUDropDown(): void {
@@ -1229,7 +1290,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getTimestampTooltip(vpv: VisboProjectVersion): string {
     if (!vpv) return '';
-    let title = this.translate.instant('vpKeyMetric.lbl.plan') 
+    let title = this.translate.instant('vpKeyMetric.lbl.plan')
               + ': '
               + this.datePipe.transform(vpv.timestamp, 'dd.MM.yy HH:mm');
     if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
