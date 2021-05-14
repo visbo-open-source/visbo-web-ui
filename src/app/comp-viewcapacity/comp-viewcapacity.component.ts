@@ -1804,6 +1804,39 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return null;
   }
 
+  
+  checkDate(dateValue: string, minValue: boolean): Date {
+    const minStartDate = new Date('2015-01-01');
+    const maxEndDate = new Date('2050-01-01');
+    const actDate = validateDate(dateValue, false);
+   
+    let newDate: Date = new Date(); 
+    newDate = new Date(actDate);
+
+    if (!actDate) {    
+      newDate = new Date();
+      newDate.setMonth(newDate.getMonth() - 4);
+      newDate.setDate(1);
+      newDate.setHours(0, 0, 0, 0);
+    }
+    if ( minValue) {
+      if (visboCmpDate(new Date(newDate), minStartDate) < 0){     
+        newDate = new Date(minStartDate);
+        newDate.setDate(1);	
+        newDate.setHours(0, 0, 0, 0);
+      }
+    } else {
+      if (visboCmpDate(new Date(newDate), maxEndDate) > 0){     
+        newDate = new Date(maxEndDate);
+        newDate.setDate(1);	
+        newDate.setHours(0, 0, 0, 0);
+      }
+    }  
+    newDate = new Date(newDate);
+    return new Date(newDate);
+  }
+
+
   getPreView(): boolean {
     return getPreView();
   }
