@@ -21,6 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { VisboSetting } from '../_models/visbosetting';
 import { isThisTypeNode } from 'typescript';
 
 class DropDown {
@@ -43,12 +44,14 @@ export class VisboProjectsComponent implements OnInit {
   newVP: CreateProjectProperty;
   dropDownVPType: DropDown[];
   viewMode = 'Default';
+  hasOrga = false;
+  vcOrga: VisboSetting[];
+  customize: VisboSetting;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
   vpvWithKM: number;
   vpvRefDate: Date = new Date();
-  hasOrga = false;
   deleted = false;
   sortAscending: boolean;
   sortColumn: number;
@@ -78,6 +81,7 @@ export class VisboProjectsComponent implements OnInit {
     this.titleService.setTitle(this.translate.instant('vp.title'));
 
     this.log(`Init GetVisboProjects ${JSON.stringify(this.route.snapshot.queryParams)}`);
+    this.vcSelected = this.route.snapshot.paramMap.get('id');
     const nextView = this.route.snapshot.queryParams['view'];
     this.viewMode = nextView || 'Default'
     const viewCockpit = this.route.snapshot.queryParams['viewCockpit'];
@@ -142,19 +146,17 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   getVisboProjects(deleted: boolean): void {
-    const id = this.route.snapshot.paramMap.get('id');
     this.deleted = deleted;
-
-    this.vcSelected = id;
-    if (id) {
-      this.visbocenterService.getVisboCenter(id)
+    if (this.vcSelected) {
+      this.visbocenterService.getVisboCenter(this.vcSelected)
         .subscribe(
           visbocenters => {
             this.vcActive = visbocenters;
             this.combinedPerm = visbocenters.perm;
             this.titleService.setTitle(this.translate.instant('vp.titleName', {name: this.vcActive.name}));
+            this.getVisboCenterCustomization();
             this.getVisboCenterOrga();
-            this.visboprojectService.getVisboProjects(id, false, deleted)
+            this.visboprojectService.getVisboProjects(this.vcSelected, false, deleted)
               .subscribe(
                 visboprojects => {
                   this.visboprojectsAll = visboprojects;
@@ -252,34 +254,34 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   initCreateVP(): void {
-      
+
       const suggestedStartDate: Date = new Date();
-      
+
       // if there are templates, then suggest the  first template in the list as the default template
       let templateID = '';
       templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
-                
+
       // suggest the first of next month as start of Project ...
       if (suggestedStartDate.getMonth() < 11) {
         suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
       } else {
-        suggestedStartDate.setMonth(0); 
+        suggestedStartDate.setMonth(0);
         suggestedStartDate.setFullYear(suggestedStartDate.getFullYear() + 1);
       }
 
       suggestedStartDate.setDate(1);
-      
+
       const suggestedEndDate: Date = new Date(suggestedStartDate);
       suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
 
-      this.newVP = { 
-        name: '', 
-        vcid: this.vcActive?._id, 
-        vpType: 0, 
+      this.newVP = {
+        name: '',
+        vcid: this.vcActive?._id,
+        vpType: 0,
         // startDate: suggestedStartDate,
-        // endDate: suggestedEndDate, 
+        // endDate: suggestedEndDate,
         templateID: templateID
-      };       
+      };
   }
 
   datesAreInvalid(): boolean {
@@ -323,10 +325,10 @@ export class VisboProjectsComponent implements OnInit {
         this.log(`add VP failed: error: ${error.status} messages: ${error.error.message}`);
         const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
         if (error.status === 403) {
-          // const message = this.translate.instant('vp.msg.errorPerm', {name: name});          
+          // const message = this.translate.instant('vp.msg.errorPerm', {name: name});
           const message = this.translate.instant('vp.msg.errorPerm', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
-        } else if (error.status === 409) {          
+        } else if (error.status === 409) {
           const message = this.translate.instant('vp.msg.errorConflict', {name: this.newVP.name, vpType: vpType});
           this.alertService.error(message);
         } else {
@@ -367,6 +369,7 @@ export class VisboProjectsComponent implements OnInit {
     this.vpvWithKM = 0;
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       const item = this.visboprojectversions[i];
+      item.vp = this.visboprojects.find(vp => vp._id == item.vpid);
       // const nextVPV = new VisboProjectVersion();
       // nextVPV.vpid = item.vpid;
       // nextVPV.name = item.name;
@@ -383,14 +386,14 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-  getVisboCenterOrga(): void {
-    if (this.vcActive) {
-      // check if Orga is available
-      this.log(`get VC Orga ${this.vcActive._id}`);
-      this.visbosettingService.getVCOrganisations(this.vcActive._id, false, undefined, true)
+  getVisboCenterCustomization(): void {
+    if (this.vcActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vcActive._id}`);
+      this.visbosettingService.getVCSettingByName(this.vcActive._id, 'customization')
         .subscribe(
           vcsettings => {
-            this.hasOrga = vcsettings.length > 0;
+            if (vcsettings.length > 0) { this.customize = vcsettings[0]; }
           },
           error => {
             if (error.status === 403) {
@@ -400,6 +403,30 @@ export class VisboProjectsComponent implements OnInit {
               this.alertService.error(getErrorMessage(error));
             }
         });
+    }
+  }
+
+  getVisboCenterOrga(): void {
+    if (this.vcActive) {
+      if (this.vcOrga == undefined
+      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vcActive._id.toString())) {
+        // check if Orga is available
+        this.log(`get VC Orga ${this.vcActive._id}`);
+        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true)
+          .subscribe(
+            vcsettings => {
+              this.vcOrga = vcsettings;
+              this.hasOrga = vcsettings.length > 0;
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vp.msg.errorPermVC');
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
     }
   }
 
@@ -473,10 +500,10 @@ export class VisboProjectsComponent implements OnInit {
   }
 
 
-  getTemplates(vps: VisboProject[]): VisboProject[] {    
-    return vps.filter(item => item.vpType == 2);   
+  getTemplates(vps: VisboProject[]): VisboProject[] {
+    return vps.filter(item => item.vpType == 2);
   }
-  
+
 
   /** Log a message with the MessageService */
   private log(message: string) {

@@ -268,7 +268,7 @@
 		"titleCreatePr": "Create a new VISBO Project",
 		"lbl": {
 			"nr": "Nr.",
-			"name": "Name",			
+			"name": "Name",
 			"template": "Project Template",
 			"type": "Type",
 			"modified": "Modified",
@@ -277,9 +277,9 @@
 			"detail": "Detail",
 			"description": "Description",
 			"view": "View",
-			"startDate": "Start of Project", 
+			"startDate": "Start of Project",
 			"endDate":"End of Project",
-			"rac": "Order Value [T€]", 
+			"rac": "Order Value [T€]",
 			"bac": "Budget [T€]"
 		},
 		"type": {
@@ -308,11 +308,11 @@
 			"errorConflict": "VISBO {{vpType}} {{name}} already exists or not allowed",
 			"detail": "Detail of VISBO Project",
 			"noVP": "You do not have access to a VISBO Project.",
-			"errorNamePattern": "Name may only contain A-Z, a-z, numericals, spaces and '; : . - _'", 
+			"errorNamePattern": "Name may only contain A-Z, a-z, numericals, spaces and '; : . - _'",
 			"errorNameLen": "Name is required and has to be at least 2 chars",
-			"errorStartEnd": "Start-Date must not be later than End-Date", 
+			"errorStartEnd": "Start-Date must not be later than End-Date",
 			"errorStartDate": "please provide Start-Date",
-			"errorEndDate": "please provide End-Date", 
+			"errorEndDate": "please provide End-Date",
 			"errorBac": "Budget is required and has to be >= 0"
 		}
 	},
@@ -352,6 +352,7 @@
 			"members": "Members",
 			"project": "Project",
 			"type": "Type",
+			"properties": "Eigenschaften",
 			"info": "Info",
 			"global": "Global",
 			"message": "Message",
@@ -488,11 +489,13 @@
 		"title": "Project Key Metrics for",
 		"titleName": "Project {{name}}",
 		"titleVersion": "Version of",
+		"titleBaseline": "Baseline of",
 		"titleDetailVersion": "Details about Version",
 		"titleVPVMove": "Copy & Move/Scale",
 		"titleVPVCopy": "Copy",
 		"lbl": {
 			"project": "Project",
+			"projectProperty": "Projekt Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"pfvVariant": "Baseline",
@@ -538,6 +541,7 @@
 			"totalDelivery": "planned achievement of total deliveries",
 			"totalDeadline": "planned achievement of total deadlines",
 			"baselineEndDate": "Project End (baseline)",
+			"newerBL": "newer Baseline available",
 			"inPlan": "in Plan",
 			"timeLag": "time lag",
 			"missing": "missing",
@@ -564,7 +568,9 @@
 			"vpvChange": "Change",
 			"vpvMove": "Move",
 			"vpvCopy": "Copy",
-			"back": "Back"
+			"back": "Back",
+			"save": "Save",
+			"add": "Add"
 		},
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
@@ -572,6 +578,9 @@
 			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
+			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
+			"errorPermVP": "Permission denied updating {{name}}",
+			"errorVPConflict": "Conflict happened during updating of {{name}}",
 			"errorPermVersion": "Permission denied for project versions {{name}}"
 		}
 	},
@@ -675,7 +684,10 @@
 			"from": "from",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "filtered with",
-			"filter": "Filter Projects"
+			"filter": "Filter Projects",
+			"strategicFit": "Strategic fit",
+			"risk": "Risk",
+			"all": "All"
 		},
 		"btn": {
 			"showChart": "View Chart",
@@ -735,7 +747,10 @@
 			"startDate": "Project start date",
 			"endDate": "Project end date",
 			"timeline": "Timeline",
-			"filter": "Filter"
+			"filter": "Filter",
+			"strategicFit": "Strategic fit",
+			"risk": "Risk",
+			"all": "All"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
@@ -842,6 +857,8 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"errorLocked": "Project {{name}} is locked by another user",
 			"errorConflict": "A conflict has happened during save of the version {{name}}",
+			"errorConsistencyDelete": "Delete of Baseline from {{name}} is not possible, as a newer project version exists",
+			"errorConsistencyUnDelete": "Restore of Baseline from {{name}} is not possible, as a newer project version exists",
 			"errorPermDelete": "Permission denied to delete this project versions {{name}}"
 		}
 	},
@@ -1021,6 +1038,8 @@
 		"shortRAC": "RAC",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",
+		"shortPAC": "PAC",
+		"longPAC": "Prediction at Completion",
 		"shortEAC": "EAC",
 		"longEAC": "Estimate at Completion",
 		"shortBAC": "BAC",
@@ -1107,6 +1126,11 @@
 			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
+	},
+	"customField": {
+		"_businessUnit": "Business Unit",
+		"_risk": "Risk",
+		"_strategicFit": "Strategic Fit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",

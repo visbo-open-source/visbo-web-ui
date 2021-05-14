@@ -76,12 +76,16 @@ export class SysconfigComponent implements OnInit {
         case 'Log Age':
           result = entry.value.duration;
           break;
+        case 'Predict':
+          result = entry.value.BAC;
+          break;
         case 'REDIS':
           result = entry.value.host;
           break;
       }
     }
-    return result || '';
+    if (result == undefined) { result = '';}
+    return result;
   }
 
   helperConfigName(config: string): number {

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
+import { SafeUrlPipe } from './_guards/safe-url.pipe';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -94,6 +95,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
 @NgModule({
   declarations: [
     AppComponent,
+    SafeUrlPipe,
     AlertComponent,
     VisboCentersComponent,
     VisbocenterDetailComponent,

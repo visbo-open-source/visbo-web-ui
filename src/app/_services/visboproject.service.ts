@@ -51,19 +51,19 @@ export class VisboProjectService {
 
   /** GET VisboProject by id. Return `undefined` when id not found */
   /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
-    const url = `${this.vpUrl}`;
-    this.log(`Calling HTTP Request: ${this.vpUrl}`);
-    return this.http.get<VisboProject[]>(url)
-      .pipe(
-        map(visboprojects => visboprojects[0]), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`getVisboProject404 ${outcome} VisboProject id=${id}`);
-        }),
-        catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
-      );
-  }
+  // getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
+  //   const url = `${this.vpUrl}`;
+  //   this.log(`Calling HTTP Request: ${this.vpUrl}`);
+  //   return this.http.get<VisboProject[]>(url)
+  //     .pipe(
+  //       map(visboprojects => visboprojects[0]), // returns a {0|1} element array
+  //       tap(h => {
+  //         const outcome = h ? `fetched` : `did not find`;
+  //         this.log(`getVisboProject404 ${outcome} VisboProject id=${id}`);
+  //       }),
+  //       catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
+  //     );
+  // }
 
   /** GET VisboProject by id. Will 404 if id not found */
   getVisboProject(id: string, sysadmin = false, deleted = false): Observable<VisboProject> {

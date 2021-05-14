@@ -67,15 +67,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion;
   @Input() vpvActive: VisboProjectVersion;
-  @Input() vcOrganisation: VisboSettingListResponse;
+  @Input() vcOrganisation: VisboSetting;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
-  vcorganisation: VisboSetting[];
-  actOrga: VisboOrganisation;
   capaLoad: CapaLoad[];
   timeoutID: number;
   hasCost: boolean;
@@ -103,7 +101,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   topLevelNodes: VisboRole[];
   colorsPFV = [baselineColor, '#BDBDBD', '#458CCB'];
   colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB'];
-  
+
 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
@@ -219,7 +217,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.lastTimestampVPF = this.vpvActive.timestamp;
     }
 
-    this.visboGetOrganisation();
+    this.visboViewOrganisationTree();
+    this.getCapacity();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -327,50 +326,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
-  visboGetOrganisation(): void {
-    let vcid: string;
-    if (this.vcActive) {
-      vcid = this.vcActive._id;
-    } else if (this.vpActive) {
-      vcid = this.vpActive.vcid;
-    }
-    if (vcid) {
-      this.log(`Organisaions for CapacityCalc for Object  ${vcid}`);
-      this.visbosettingService.getVCOrganisations(vcid, false, (new Date()).toISOString())
-        .subscribe(
-          vcsetting => {
-            if (vcsetting.length === 0) {
-              this.log(`get VCOrganisations - result is empty `);
-              this.vcorganisation = [];
-            } else {
-              this.log(`Store Organisation for Len ${vcsetting.length}`);
-              this.vcorganisation = vcsetting;
-              this.vcorganisation.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-              this.actOrga = this.vcorganisation[this.vcorganisation.length-1].value;
-            }
-            this.visboViewOrganisationTree();
-            this.getCapacity();
-          },
-          error => {
-            this.log(`get VCOrganisations failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              let name: string;
-              if (this.vpActive) {
-                name = this.vpActive.name;
-              } else if (this.vcActive) {
-                name = this.vcActive.name;
-              }
-              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': name});
-              this.log(`Alert: ${message}`);
-              this.alertService.error(message, true);
-            } else {
-              this.alertService.error(getErrorMessage(error), true);
-            }
-          }
-        );
-    }
-  }
-
   getCapacity(): void {
     if (this.drillDown == 2) {
       this.getProjectCapacity();
@@ -395,9 +350,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store VC Project Capacity for Len ${visbocenter.capacity.length}`);
               let capacity = visbocenter.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacity = this.filterRange(capacity);
+              this.visboCapacity = capacity;
               capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
-              this.visboCapacityChild = this.filterRange(capacity);
+              this.visboCapacityChild = capacity;
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -426,9 +381,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
               let capacity = vp.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacity = this.filterRange(capacity);
+              this.visboCapacity = capacity;
               capacity = vp.capacity.filter(item => item.vpid != undefined);
-              this.visboCapacityChild = this.filterRange(capacity);
+              this.visboCapacityChild = capacity;
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -462,9 +417,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Capacity for Len ${visbocenter.capacity.length}`);
               let capacity = visbocenter.capacity.filter(item => item.roleID == this.currentLeaf.uid.toString());
-              this.visboCapacity = this.filterRange(capacity);
+              this.visboCapacity = capacity;
               capacity = visbocenter.capacity.filter(item => item.roleID != this.currentLeaf.uid.toString());
-              this.visboCapacityChild = this.filterRange(capacity);
+              this.visboCapacityChild = capacity;
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
               this.calcLoad(this.visboCapacity, this.refPFV);
@@ -496,9 +451,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store Capacity for Len ${vp.capacity.length}`);
               let capacity = vp.capacity.filter(item => item.roleID == this.currentLeaf.uid);
-              this.visboCapacity = this.filterRange(capacity);
+              this.visboCapacity = capacity;
               capacity = vp.capacity.filter(item => item.roleID != this.currentLeaf.uid);
-              this.visboCapacityChild = this.filterRange(capacity);
+              this.visboCapacityChild = capacity;
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
               this.calcLoad(this.visboCapacity, this.refPFV);
@@ -529,9 +484,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               const vpv = listVPV[0];
               this.log(`Store Capacity for Len ${vpv.capacity.length}`);
               let capacity = vpv.capacity.filter(item => item.roleID == this.currentLeaf.uid);
-              this.visboCapacity = this.filterRange(capacity);
+              this.visboCapacity = capacity;
               capacity = vpv.capacity.filter(item => item.roleID != this.currentLeaf.uid);
-              this.visboCapacityChild = this.filterRange(capacity);
+              this.visboCapacityChild = capacity;
             }
             if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
               this.calcLoad(this.visboCapacity, this.refPFV);
@@ -550,18 +505,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         );
     }
-  }
-
-  filterRange(capacity: VisboCapacity[]): VisboCapacity[] {
-    const filteredCapacity: VisboCapacity[] = [];
-    capacity && capacity.forEach(element => {
-      const current = new Date(element.month);
-      if (current.getTime() >= this.capacityFrom.getTime() &&
-        current.getTime() <= this.capacityTo.getTime() ) {
-          filteredCapacity.push(element);
-        }
-    });
-    return filteredCapacity;
   }
 
   checkCostAvailable(capacity: VisboCapacity[]): void {
@@ -639,14 +582,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   visboViewOrganisationTree(): void {
     this.log(`Show the OrgaTree of the VC `);
-    const organisation = this.actOrga;
+    const organisation = this.vcOrganisation;
 
     const allRoles = [];
     const allRoleNames = [];
     this.log(`get all roles of the organisation, prepared for direct access`);
-    for (let  i = 0; organisation && organisation.allRoles && organisation.allRoles && i < organisation.allRoles.length; i++) {
-      allRoles[organisation.allRoles[i].uid] = organisation.allRoles[i];
-      allRoleNames[organisation.allRoles[i].name] = organisation.allRoles[i];
+    const roles = organisation && organisation.value && organisation.value.allRoles;
+    for (let  i = 0; i < roles.length; i++) {
+      allRoles[roles[i].uid] = roles[i];
+      allRoleNames[roles[i].name] = roles[i];
     }
     this.log(`get all roles of the organisation, prepared for the TreeView`);
     this.topLevelNodes = this.buildTopNodes(allRoles);
@@ -772,7 +716,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     capacity.forEach(item => {
         allNames.push(item[property] || '');
     });
-    allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
+    // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
     uniqueNames = allNames.filter((name, index) => {
         return allNames.indexOf(name) === index;
     });
@@ -799,10 +743,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacity.lbl.noPFV') : '';
-    const childNodeList = this.calcChildNode(this.visboCapacityChild, 'name');
-    const mapNodeList = this.mapChildNode(childNodeList);
 
     const drillDownCapacity: DrillDownElement[][] = [];
+
+    // sorting the projects for capacity-chart view projects
+    let sortedProjects: VisboCapacity[] = null;
+    sortedProjects = this.visboSortProjects(this.visboCapacityChild);
+    const childNodeList = this.calcChildNode(sortedProjects, 'name');
+    console.log(childNodeList);
+    const mapNodeList = this.mapChildNode(childNodeList);
+
 
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -841,8 +791,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       });
       drillDownCapacity.push(template);
     });
+
     // now fill up with the Child Infos
-    this.visboCapacityChild.forEach(item => {
+    // this.visboCapacityChild.forEach(item => {
+      sortedProjects.forEach(item => {
       const currentDate = new Date(item.month);
       const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
       if (row) {
@@ -939,7 +891,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
     orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
     orgaColors.reverse();
@@ -947,7 +899,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       orgaColors.unshift(baselineColor);
     } else {
       orgaColors.unshift(capaColor);
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -963,8 +915,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.sumCost = 0;
     this.sumBudget = 0;
     const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    const mapNodeList = this.mapChildNode(childNodeList);      
-    
+    const mapNodeList = this.mapChildNode(childNodeList);
+
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
@@ -1105,7 +1057,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     // give the capacities colors
-    let orgaColors = [];    
+    let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
@@ -1114,7 +1066,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       // color for capa
       orgaColors.unshift(capaColor);
-    }   
+    }
     this.graphOptionsComboChart.colors = orgaColors;
 
     this.graphDataComboChart = graphDataCapacity;
@@ -1502,6 +1454,35 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
+
+ visboSortProjects(capacity:VisboCapacity[]): VisboCapacity[] {
+    // ------- SORT by sum value -------
+    const groupKey = (value: VisboCapacity) => value.name;
+    const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.actualCost_PT;
+    const capacityChildGroupedByProject = capacity.reduce((accumulator, elem) => {
+      const key = groupKey(elem);
+      if (!accumulator.has(key)) {
+        accumulator.set(key, {sum: 0, elems: []});
+      }
+      accumulator.get(key).elems.push(elem);
+      accumulator.get(key).sum += sumValue(elem);
+      return accumulator;
+    }, new Map<string, {sum: number; elems: VisboCapacity[]}>());
+
+    console.log(capacityChildGroupedByProject);
+
+    const sortedValues = Array.from(capacityChildGroupedByProject.values())
+            .sort((a, z) => z.sum - a.sum);
+            //.sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
+    const sortedArray = sortedValues.map((item) => item.elems);
+    const flatArray = [].concat([], ...sortedArray);
+    console.log(sortedValues);
+    const sortedProjects: VisboCapacity[] = flatArray;    
+    return sortedProjects;
+    // ------ SORT END ------
+ }
+ 
+
   visboRoundToString(value: number, fraction = 1): string {
     const result = value || 0;
     return result.toLocaleString(this.currentLang, {minimumFractionDigits: fraction, maximumFractionDigits: fraction})
@@ -1509,9 +1490,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   displayCapacity(): number {
     let result = -1;
-    if (this.drillDown != 2 && this.actOrga && this.visboCapacity) {     // Orga && Capacity data available
+    if (this.drillDown != 2 && this.vcOrganisation && this.visboCapacity) {     // Orga && Capacity data available
       result = this.visboCapacity.length;
-    } else if (this.drillDown == 2  && this.actOrga && this.visboCapacityChild){
+    } else if (this.drillDown == 2  && this.vcOrganisation && this.visboCapacityChild){
       result = this.visboCapacityChild.length;
     }
     return result;
@@ -1762,10 +1743,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     const len = excel.length;
-    let width = 0;
-    for (const item in excel[0]) {
-      width += 1;
-    }
+    const width = Object.keys(excel[0]).length;
     const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     let name = '';
     if (this.vpfActive) {

@@ -9,7 +9,6 @@ import { AlertService } from '../_services/alert.service';
 
 import { VPParams } from '../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
-import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -74,7 +73,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: undefined, pointSize: undefined},
     '2': { lineWidth: 4, pointShape: 'star', lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
     '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined  },
-    '4': { lineWidth: 1, pointShape: 'circle', lineDashStyle: undefined, pointSize: 4 },
+    '4': { lineWidth: 4, pointShape: 'circle', lineDashStyle: [6, 2, 2, 6], pointSize: 6 },
     '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
   };
   seriesEndDate =  {
@@ -154,7 +153,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   permVP = VGPVP;
 
   constructor(
-    private visboprojectversionService: VisboProjectVersionService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -209,6 +207,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
+    } else if (type === 'PAC') {
+      result = km.costCurrentTotalPredict !== undefined;
     }
     return result;
   }
@@ -224,6 +224,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (this.visboprojectversions[i].keyMetrics) {
         const elementKeyMetric = new VPVKeyMetricsCalc();
+        elementKeyMetric.vp = this.visboprojectversions[i].vp;
         elementKeyMetric.name = this.visboprojectversions[i].name;
         elementKeyMetric._id = this.visboprojectversions[i]._id;
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
@@ -326,6 +327,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visboprojectversions) {
       return;
     }
+    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC');
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {
@@ -339,17 +341,42 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         continue;
       }
       // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
-      keyMetricsCost.push([
-        new Date(this.visboprojectversions[i].timestamp),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
-        Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0)
-      ]);
+      const tooltip = this.createTooltipCost(this.visboprojectversions[i]);
+      if (predict) {
+        keyMetricsCost.push([
+          new Date(this.visboprojectversions[i].timestamp),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotalPredict || 0),
+          tooltip
+        ]);
+      } else {
+        keyMetricsCost.push([
+          new Date(this.visboprojectversions[i].timestamp),
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentActual || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastActual || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costCurrentTotal || 0),
+          tooltip,
+          Math.round(this.visboprojectversions[i].keyMetrics.costBaseLastTotal || 0),
+          tooltip
+        ]);
+      }
     }
     if (keyMetricsCost.length === 0) {
       this.log(`keyMetricsCost empty`);
-      keyMetricsCost.push([new Date(), 0, 0, 0, 0]);
+      if (predict) {
+        keyMetricsCost.push([new Date(), 0, undefined, 0, undefined, 0, undefined, 0, undefined, 0, undefined]);
+      } else {
+        keyMetricsCost.push([new Date(), 0, undefined, 0, undefined, 0, undefined, 0, undefined]);
+      }
     }
     keyMetricsCost.sort(function(a, b) { return a[0] - b[0]; });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -359,21 +386,69 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // add an additional month as one month could not be displayed, but do not deliver values for it
       const currentDate = new Date(keyMetricsCost[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
-      keyMetricsCost.push([
-        currentDate, undefined, undefined, undefined, undefined
-      ]);
+      if (predict) {
+        keyMetricsCost.push([
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+        ]);
+      } else {
+        keyMetricsCost.push([
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+        ]);
+      }
     }
+    if (predict) {
+      keyMetricsCost.unshift([
+        'Timestamp',
+        this.translate.instant('keyMetrics.shortAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortPV'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortEAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortBAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortPAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      ]);
+    } else {
+      keyMetricsCost.unshift([
+        'Timestamp',
+        this.translate.instant('keyMetrics.shortAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortPV'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortEAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('keyMetrics.shortBAC'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      ]);
 
-    keyMetricsCost.push([
-      'Timestamp',
-      this.translate.instant('keyMetrics.shortAC'),
-      this.translate.instant('keyMetrics.shortPV'),
-      this.translate.instant('keyMetrics.shortEAC'),
-      this.translate.instant('keyMetrics.shortBAC')
-    ]);
-    keyMetricsCost.reverse();
-    // this.log(`visboKeyMetrics VP cost budget  ${JSON.stringify(keyMetricsCost)}`);
+    }
     this.graphDataLineChart = keyMetricsCost;
+  }
+
+  createTooltipCost(vpv: VisboProjectVersion): string {
+    const ts = convertDate(new Date(vpv.timestamp), 'fullDateTime', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
+      '<div><b>' + ts + '</b></div>' + '<div>' +
+      '<table>';
+
+    const longEAC = this.translate.instant('keyMetrics.longEAC');
+    const longPAC = this.translate.instant('keyMetrics.longPAC');
+    const longBAC = this.translate.instant('keyMetrics.longBAC');
+    const planAC = this.translate.instant('keyMetrics.planAC');
+    const baselinePV = this.translate.instant('keyMetrics.baselinePV');
+
+    result = result + '<tr>' + '<td>' + longEAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    if (vpv.keyMetrics?.costCurrentTotalPredict !== undefined) {
+      result = result + '<tr>' + '<td>' + longPAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotalPredict || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    }
+    result = result + '<tr>' + '<td>' + longBAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
   }
 
   visboKeyMetricsEndDateOverTime(): void {
@@ -412,9 +487,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       keyMetricsEndDate.push([
         new Date(this.visboprojectversions[i].timestamp),
         endDateCurrent,
-        this.createCustomHTMLContent(ts, estimatedED, baselineED),
+        this.createTooltipEndDate(ts, estimatedED, baselineED),
         endDateBaseLast,
-        this.createCustomHTMLContent(ts, estimatedED, baselineED)
+        this.createTooltipEndDate(ts, estimatedED, baselineED)
       ]);
     }
     if (keyMetricsEndDate.length === 0) {
@@ -462,8 +537,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphDataLineChart = keyMetricsEndDate;
   }
 
-  createCustomHTMLContent(timestamp: string, estimatedED: string, baselineED: string): string {
-    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+  createTooltipEndDate(timestamp: string, estimatedED: string, baselineED: string): string {
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
       '<div><b>' + timestamp + '</b></div>' + '<div>' +
       '<table>';
 
@@ -496,12 +571,18 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
         continue;
       }
+
+      const tooltip = this.createTooltipDelivery(this.visboprojectversions[i]);
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentActual || 0) * 100) / 100,
+        tooltip,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastActual || 0) * 100) / 100,
+        tooltip,
         Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionCurrentTotal || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100) / 100
+        tooltip,
+        Math.round((this.visboprojectversions[i].keyMetrics.deliverableCompletionBaseLastTotal || 0) * 100) / 100,
+        tooltip
         // ,
         // this.visboprojectversions[i].keyMetrics.deliverableDelayFinished || 0,
         // this.visboprojectversions[i].keyMetrics.deliverableDelayUnFinished || 0
@@ -510,7 +591,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (keyMetrics.length === 0) {
       this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0
+      keyMetrics.push([new Date(), 0, undefined, 0, undefined, 0, undefined, 0, undefined
             // , 0, 0
         ]);
     }
@@ -523,26 +604,49 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        currentDate, undefined, undefined, undefined, undefined
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Delivery');
     this.graphOptionsLineChart.vAxis.maxValue = maxValue;
     this.graphOptionsLineChart.vAxis.minValue = -maxValue;
 
-    keyMetrics.push([
+    keyMetrics.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.shortADV'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortPDV'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortEDVC'),
-      this.translate.instant('keyMetrics.shortDVAC')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.shortDVAC'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
       // ,
       // this.translate.instant('keyMetrics.shortDelayFinished'),
       // this.translate.instant('keyMetrics.shortDelayUnFinished')
     ]);
-    keyMetrics.reverse();
     this.log(`visboKeyMetrics VP Delivery Completion  ${JSON.stringify(this.graphOptionsLineChart)}`);
     this.graphDataLineChart = keyMetrics;
+  }
+
+  createTooltipDelivery(vpv: VisboProjectVersion): string {
+    const ts = convertDate(new Date(vpv.timestamp), 'fullDateTime', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
+      '<div><b>' + ts + '</b></div>' + '<div>' +
+      '<table>';
+
+    const shortDVAC = this.translate.instant('keyMetrics.shortDVAC');
+    const shortEDVC = this.translate.instant('keyMetrics.shortEDVC');
+    const planADV = this.translate.instant('keyMetrics.planADV');
+    const baselinePDV = this.translate.instant('keyMetrics.baselinePDV');
+
+    result = result + '<tr>' + '<td>' + shortEDVC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionCurrentTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + shortDVAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionBaseLastTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planADV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + baselinePDV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionBaseLastActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
   }
 
   visboKeyMetricsDeadlineOverTime(): void {
@@ -565,17 +669,22 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
+      const tooltip = this.createTooltipDeadline(this.visboprojectversions[i]);
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentActual || 0) * 100) / 100,
+        tooltip,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastActual || 0) * 100) / 100,
+        tooltip,
         Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionCurrentTotal || 0) * 100) / 100,
-        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100
+        tooltip,
+        Math.round((this.visboprojectversions[i].keyMetrics.timeCompletionBaseLastTotal || 0) * 100) / 100,
+        tooltip
       ]);
     }
     if (keyMetrics.length === 0) {
       this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0, 0, 0]);
+      keyMetrics.push([new Date(), 0, undefined, 0, undefined, 0, undefined, 0, undefined]);
     }
     keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -586,26 +695,46 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        currentDate, undefined, undefined, undefined, undefined
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Deadline');
     this.graphOptionsLineChart.vAxis.maxValue = maxValue;
     this.graphOptionsLineChart.vAxis.minValue = -maxValue;
 
-    keyMetrics.push([
+    keyMetrics.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.shortAD'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortPD'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortEDC'),
-      this.translate.instant('keyMetrics.shortDAC')
-      // ,
-      // this.translate.instant('keyMetrics.shortDeadlineDelayFinished'),
-      // this.translate.instant('keyMetrics.shortDeadlineDelayUnFinished')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.shortDAC'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-    keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
     this.graphDataLineChart = keyMetrics;
+  }
+
+  createTooltipDeadline(vpv: VisboProjectVersion): string {
+    const ts = convertDate(new Date(vpv.timestamp), 'fullDateTime', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
+      '<div><b>' + ts + '</b></div>' + '<div>' +
+      '<table>';
+
+    const shortDAC = this.translate.instant('keyMetrics.shortDAC');
+    const shortEDC = this.translate.instant('keyMetrics.shortEDC');
+    const planAD = this.translate.instant('keyMetrics.planAD');
+    const baselinePD = this.translate.instant('keyMetrics.baselinePD');
+
+    result = result + '<tr>' + '<td>' + shortEDC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionCurrentTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + shortDAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionBaseLastTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planAD + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + baselinePD + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionBaseLastActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
   }
 
   visboKeyMetricsDeadlineDelayOverTime(): void {
@@ -629,15 +758,18 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
         continue;
       }
+      const tooltip = this.createTooltipDeadlineDelay(this.visboprojectversions[i]);
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
         this.visboprojectversions[i].keyMetrics.timeDelayFinished,
-        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished
+        tooltip,
+        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished,
+        tooltip
       ]);
     }
     if (keyMetrics.length === 0) {
       this.log(`visboKeyMetrics empty`);
-      keyMetrics.push([new Date(), 0, 0 ]);
+      keyMetrics.push([new Date(), 0, undefined, 0, undefined ]);
     }
     keyMetrics.sort(function(a, b) { return a[0] - b[0]; });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -648,21 +780,39 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        currentDate, undefined, undefined
+        currentDate, undefined, undefined, undefined, undefined
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
     this.graphOptionsLineChart.vAxis.maxValue = maxValue;
     this.graphOptionsLineChart.vAxis.minValue = -maxValue;
 
-    keyMetrics.push([
+    keyMetrics.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.finishedDeadlineDelay'),
-      this.translate.instant('keyMetrics.unfinishedDeadlineDelay')
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.unfinishedDeadlineDelay'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-    keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
     this.graphDataLineChart = keyMetrics;
+  }
+
+  createTooltipDeadlineDelay(vpv: VisboProjectVersion): string {
+    const ts = convertDate(new Date(vpv.timestamp), 'fullDateTime', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
+      '<div><b>' + ts + '</b></div>' + '<div>' +
+      '<table>';
+
+    const finishedDeadlineDelay = this.translate.instant('keyMetrics.finishedDeadlineDelay');
+    const unfinishedDeadlineDelay = this.translate.instant('keyMetrics.unfinishedDeadlineDelay');
+    const unitsDelay = this.translate.instant('vpKeyMetric.lbl.unitsDelay');
+
+    result = result + '<tr>' + '<td>' + finishedDeadlineDelay + ':</td>' + unitsDelay + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeDelayFinished || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + unfinishedDeadlineDelay + ':</td>' + unitsDelay + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeDelayUnFinished || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
   }
 
   visboKeyMetricsDeliveryDelayOverTime(): void {
@@ -712,12 +862,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.graphOptionsLineChart.vAxis.maxValue = maxValue;
     this.graphOptionsLineChart.vAxis.minValue = -maxValue;
 
-    keyMetrics.push([
+    keyMetrics.unshift([
       'Timestamp',
       this.translate.instant('keyMetrics.finishedDeliveryDelay'),
       this.translate.instant('keyMetrics.unfinishedDeliveryDelay')
     ]);
-    keyMetrics.reverse();
     // this.log(`visboKeyMetrics VP Date Completion  ${JSON.stringify(keyMetrics)}`);
     this.graphDataLineChart = keyMetrics;
   }
@@ -776,7 +925,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     this.currentView = 'KeyMetrics';
     this.updateUrlParam('view', this.currentView);
 
-    // this.switchViewChild.emit(this.currentView); //emmiting the event.
     if (this.typeMetricChart === metric) {
       this.showHistory(!this.history);
       return;
