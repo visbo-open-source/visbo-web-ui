@@ -8,7 +8,7 @@ import { EnvService } from './env.service';
 
 import { MessageService } from './message.service';
 
-import { VisboUser, VisboUserResponse } from '../_models/visbouser';
+import { VisboUser, VisboUserResponse, VisboOTTResponse } from '../_models/visbouser';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -17,8 +17,7 @@ const httpOptions = {
 @Injectable()
 export class UserService {
 
-  private profileUrl = this.env.restUrl.concat('/user/profile');  // URL to api
-  private pwchangeUrl = this.env.restUrl.concat('/user/passwordchange');  // URL to api
+  private userUrl = this.env.restUrl.concat('/user');  // URL to api
 
   constructor(
     private http: HttpClient,
@@ -28,8 +27,9 @@ export class UserService {
 
   // MS TODO Check correct Observable Type VisboUser instead of any
   getUserProfile(): Observable<VisboUser> {
-    this.log(`Calling HTTP Get Request: ${this.profileUrl}`);
-    return this.http.get<VisboUserResponse>(this.profileUrl, httpOptions)
+    const url = `${this.userUrl}/profile`;
+    this.log(`Calling HTTP Get Request: ${url}`);
+    return this.http.get<VisboUserResponse>(url, httpOptions)
       .pipe(
         map(response => response.user),
         tap(user => this.log(`fetched ${user.email} User Profile `)),
@@ -38,8 +38,9 @@ export class UserService {
   }
 
   updateUserProfile(user: VisboUser): Observable<VisboUser> {
-    this.log(`Calling HTTP Put Request: ${this.profileUrl}`);
-    return this.http.put<VisboUserResponse>(this.profileUrl, user, httpOptions)
+    const url = `${this.userUrl}/profile`;
+    this.log(`Calling HTTP Put Request: ${url}`);
+    return this.http.put<VisboUserResponse>(url, user, httpOptions)
       .pipe(
         map(response => response.user),
         tap(resultUser => this.log(`updated User Profile ${resultUser.email} `)),
@@ -47,11 +48,21 @@ export class UserService {
       );
   }
 
+  getUserOTT(): Observable<string> {
+    const url = `${this.userUrl}/ott`;
+    this.log(`Calling HTTP Get Request: ${url}`);
+    return this.http.get<VisboOTTResponse>(url, httpOptions)
+      .pipe(
+        map(response => response.ott),
+        catchError(this.handleError<string>('getUserOTT'))
+      );
+  }
 
   passwordChange(oldpw: string, newpw: string): Observable<VisboUser> {
-    this.log(`Calling HTTP Put Request: ${this.pwchangeUrl}`);
+    const url = `${this.userUrl}/passwordchange`;
+    this.log(`Calling HTTP Put Request: ${url}`);
     const pw = {oldpassword: oldpw, password: newpw};
-    return this.http.put<VisboUserResponse>(this.pwchangeUrl, pw, httpOptions)
+    return this.http.put<VisboUserResponse>(url, pw, httpOptions)
       .pipe(
         map(response => response.user),
         tap(user => this.log(`Changed User Password ${user.email} `)),

@@ -72,7 +72,7 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Deadline')"  class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <a *ngIf="getEnableDisable('EnablePredict', 2) && customPredict" class="dropdown-item text-dark" [href]="predictURL | safeUrl">{{customPredict}}</a>
+            <a *ngIf="getEnableDisable('EnablePredict', 2) && customPredict" class="dropdown-item" (click)="initCustomURL()" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
@@ -400,6 +400,36 @@
             <button id="vpvCopyCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
             <button id="vpvCopyConfirm" *ngIf="!hasVariantChange()" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
             <button id="vpvCopyConfirm" *ngIf="hasVariantChange()" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal call Custom URL -->
+<div *ngIf="vpvActive" class="modal fade" id="vpvModalCustomURL" tabindex="-1" role="dialog" aria-labelledby="vpvModalCustomURLTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vpvModalCustomPredictTitle">{{ 'vpKeyMetric.titleVPVCustomPredict' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="vpvCustomPredict" #f3="ngForm" novalidate>
+          <div class="form-group">
+            <div class="custom-control custom-checkbox ml-3">
+                <input type="checkbox" class="custom-control-input" id="allVersionsBox" name="allVersionsBox" [(ngModel)]="allVersions">
+                <label class="custom-control-label" for="allVersionsBox">{{ 'vpKeyMetric.lbl.allVersions' | translate }}</label>
+            </div>
+            <button *ngIf="predictURL" type="button" class="button btn-primary mt-3 ml-3">
+              <a class="text-white" [href]="predictURL | safeUrl">{{customPredict}}</a>
+            </button>
+          </div>
+          <div class="modal-footer align-items-end">
+            <button id="vpvCustomPredictCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
           </div>
         </form>
       </div>

@@ -499,6 +499,7 @@
 		"titleDetailVersion": "Details zur Version",
 		"titleVPVMove": "Kopieren & Verschieben/Skalieren",
 		"titleVPVCopy": "Kopieren",
+		"titleVPVCustomPredict": "Kundenspezifische Vorhersage",
 		"lbl": {
 			"project": "Projekt",
 			"projectProperty": "Projekt Einstellungen",
@@ -565,6 +566,7 @@
 			"viewChart": "Diagramm",
 			"showTrend": "Trend zeigen",
 			"hideTrend": "Trend ausblenden",
+			"allVersions": "Alle Versionen",
 			"vc": "VISBO Center"
 		},
 		"btn": {

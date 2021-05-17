@@ -65,6 +65,12 @@ export class VisboUsersResponse {
   user: [VisboUser];
 }
 
+export class VisboOTTResponse {
+  state: string;
+  message: string;
+  ott: string;
+}
+
 export class VisboVersion {
   version: Date;
   versionUI: Date;

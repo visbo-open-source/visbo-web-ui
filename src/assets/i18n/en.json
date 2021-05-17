@@ -499,6 +499,7 @@
 		"titleDetailVersion": "Details about Version",
 		"titleVPVMove": "Copy & Move/Scale",
 		"titleVPVCopy": "Copy",
+		"titleVPVCustomPredict": "Customer specific Prediction",
 		"lbl": {
 			"project": "Project",
 			"projectProperty": "Projekt Properties",
@@ -565,6 +566,7 @@
 			"viewChart": "View Chart",
 			"showTrend": "Show Trend",
 			"hideTrend": "Hide Trend",
+			"allVersions": "All Versions",
 			"vc": "VISBO Center"
 		},
 		"btn": {
