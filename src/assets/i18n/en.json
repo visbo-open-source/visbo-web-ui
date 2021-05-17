@@ -14,6 +14,7 @@
 		"msg": {
 			"loginSuccess": "You were authenticated successfully. Last Login at {{lastLogin}}",
 			"loginFailure": "Username {{user}} not found or wrong password",
+			"loginOTTFailure": "One Time Token no longer valid or already used",
 			"emailRequired": "A correct e-mail address is required!",
 			"pwRequired": "Password is required!"
 		}

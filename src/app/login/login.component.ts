@@ -19,6 +19,7 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
 })
 export class LoginComponent implements OnInit {
   email: string;
+  ott: string;
   userpw: string;
   restVersionString: string;
   loading = false;
@@ -46,10 +47,6 @@ export class LoginComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.titleService.setTitle(this.translate.instant('login.title'));
 
-    if (this.route.snapshot.queryParams.email) {
-      this.email = this.route.snapshot.queryParams.email;
-    }
-
     // get return url from route parameters or default to '/'
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     const parts = returnUrl.split('?');
@@ -57,7 +54,16 @@ export class LoginComponent implements OnInit {
     this.returnParams = parts[1];
 
     this.log(`return url ${this.returnUrl} params ${this.returnParams}`);
-    // if (this.returnUrl.indexOf('/login') >= 0) this.returnUrl = '/' // do not return to login
+    if (this.route.snapshot.queryParams.ott) {
+      const params = this.queryStringToJSON(this.returnParams);
+      this.ott = params.ott;
+      this.log(`LoginOtt Token ${this.ott} `);
+      this.loginOTT();
+    } else {
+      if (this.route.snapshot.queryParams.email) {
+        this.email = this.route.snapshot.queryParams.email;
+      }
+    }
   }
 
   restVersion(): void {
@@ -97,7 +103,9 @@ export class LoginComponent implements OnInit {
             .subscribe(
               () => {
                 this.log(`Login Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
-                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: this.queryStringToJSON(this.returnParams)});
+                const params = this.queryStringToJSON(this.returnParams);
+                delete params.ott
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: params});
               },
               error => {
                 this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
@@ -111,6 +119,43 @@ export class LoginComponent implements OnInit {
           if (error.status === 403) {
             message = this.translate.instant('login.msg.loginFailure', {user: this.email});
           }
+          this.alertService.error(message);
+          this.loading = false;
+        }
+      );
+  }
+
+  loginOTT(): void {
+    this.authenticationService.loginOTT(this.ott)
+      .subscribe(
+        user => {
+          this.ott = undefined;
+          this.log(`Login Success Result ${JSON.stringify(user)}`);
+          const lastLogin = new Date(user.status.lastLoginAt);
+          const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});
+          this.alertService.success(message, true);
+
+          this.visbocenterService.getSysVisboCenter()
+            .subscribe(
+              () => {
+                this.log(`Login OTT Success ${this.returnUrl} Role ${JSON.stringify(this.visbocenterService.getSysAdminRole())} `);
+                const params = this.queryStringToJSON(this.returnParams);
+                delete params.ott
+                this.router.navigate([this.returnUrl], {replaceUrl: true, queryParams: params});
+              },
+              error => {
+                this.log(`No SysVC found:  ${error.status} ${error.error.message}`);
+                this.router.navigate(['/'], {replaceUrl: true});
+              }
+            );
+        },
+        error => {
+          this.log(`Login Failed: ${error.status} ${error.error.message} `);
+          let message = getErrorMessage(error);
+          if (error.status === 400) {
+            message = this.translate.instant('login.msg.loginOTTFailure');
+          }
+          this.ott = undefined;
           this.alertService.error(message);
           this.loading = false;
         }

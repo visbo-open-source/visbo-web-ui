@@ -14,6 +14,7 @@
 		"msg": {
 			"loginSuccess": "Sie haben sich erfolgreich angemeldet. Letzte Anmeldung am {{lastLogin}}",
 			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
+			"loginOTTFailure": "Einmal Token nicht mehr gültig oder bereits verwendet",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
 		}
