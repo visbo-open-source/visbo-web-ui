@@ -625,8 +625,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   updateDateRange(): void {
-    this.updateUrlParam('from', undefined)
-    this.getCapacity();
+    if (this.compareDate()) {
+      this.updateUrlParam('from', undefined)
+      this.getCapacity();
+    }
+   
   }
 
   updateRef(): void {
@@ -1076,6 +1079,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewCapacity(): void {
     const graphDataCapacity = [];
     const capacity = this.visboCapacity;
+    if (capacity.length > 0 ) {
+      this.capacityFrom =  new Date(capacity[0].month);
+      this.capacityTo = new Date(capacity[capacity.length-1].month);
+    }   
 
     this.sumCost = 0;
     this.sumBudget = 0;
@@ -1804,39 +1811,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return null;
   }
 
-  
-  checkDate(dateValue: string, minValue: boolean): Date {
-    const minStartDate = new Date('2015-01-01');
-    const maxEndDate = new Date('2050-01-01');
-    const actDate = validateDate(dateValue, false);
-   
-    let newDate: Date = new Date(); 
-    newDate = new Date(actDate);
-
-    if (!actDate) {    
-      newDate = new Date();
-      newDate.setMonth(newDate.getMonth() - 4);
-      newDate.setDate(1);
-      newDate.setHours(0, 0, 0, 0);
+  compareDate(): boolean { 
+    const start = this.capacityFrom;
+    const end = this.capacityTo;
+    
+    const stDate = new Date(start);
+    const enDate = new Date(end);
+    const compDate = visboCmpDate(enDate,stDate);
+    
+    if(compDate >= 0) {
+      return true;
+    } else { 
+      // alert("Please Enter the correct date ");
+      return false;
     }
-    if ( minValue) {
-      if (visboCmpDate(new Date(newDate), minStartDate) < 0){     
-        newDate = new Date(minStartDate);
-        newDate.setDate(1);	
-        newDate.setHours(0, 0, 0, 0);
-      }
-    } else {
-      if (visboCmpDate(new Date(newDate), maxEndDate) > 0){     
-        newDate = new Date(maxEndDate);
-        newDate.setDate(1);	
-        newDate.setHours(0, 0, 0, 0);
-      }
-    }  
-    newDate = new Date(newDate);
-    return new Date(newDate);
   }
-
-
+  
   getPreView(): boolean {
     return getPreView();
   }
