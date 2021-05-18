@@ -19,6 +19,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
+import { UserService } from '../_services/user.service';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
@@ -79,6 +80,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   changeStatus: boolean;
   newVPVvariantName: string;
   newVPVdropDownIndex: number;
+  allVersions: boolean;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
@@ -103,6 +105,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
     private visbosettingService: VisboSettingService,
+    private userService: UserService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -357,11 +360,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getPredictURL(): string {
-    let url = this.route.snapshot.url.join('/');
-    // url = 'visbo-predict://localhost:4200/'.concat(url);
-    // url = 'visbo-predict://localhost'.concat('?', url);
-    url = 'visbo-predict://predict';
+  getPredictURL(ott: string): string {
+    let url = 'visbo-predict://predict';
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
@@ -369,6 +369,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (this.vpvActive) {
         url = url.concat(separator, 'vpvid:', this.vpvActive._id.toString());
+        separator = '&'
+    }
+    if (ott) {
+        url = url.concat(separator, 'ott:', ott);
         separator = '&'
     }
     console.log("URL:", url);
@@ -762,7 +766,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (setting && setting.value) {
         if (level == 0) {
           result = setting.value.systemEnabled == true;
-        } else if (level == 2) {
+        } else if (level == 1) {
           result = setting.value.sysVCEnabled == true;
         } else {
           result = setting.value.VCEnabled == true;
@@ -803,8 +807,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.updateUrlParam('view', 'All');
     }
     this.findBaseLine(vpv);
-    this.predictURL = this.getPredictURL();
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
+  }
+
+  initCustomURL(): void {
+    this.predictURL = undefined;
+    // get the One Time Token and set the predictURL after getting it
+    this.userService.getUserOTT()
+      .subscribe(
+        ott => {
+          this.predictURL = this.getPredictURL(ott);
+        },
+        error => {
+          if (error.status === 400) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorOTT');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+      });
   }
 
   gotoVPDetail(visboproject: VisboProject): void {

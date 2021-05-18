@@ -14,6 +14,7 @@
 		"msg": {
 			"loginSuccess": "Sie haben sich erfolgreich angemeldet. Letzte Anmeldung am {{lastLogin}}",
 			"loginFailure": "Benutzername {{user}} unbekannt oder falsches Passwort",
+			"loginOTTFailure": "Einmal Token nicht mehr gültig oder bereits verwendet",
 			"emailRequired": "Eine korrekte E-Mail-Adresse ist erforderlich!",
 			"pwRequired": "Passwort wird benötigt!"
 		}
@@ -498,6 +499,7 @@
 		"titleDetailVersion": "Details zur Version",
 		"titleVPVMove": "Kopieren & Verschieben/Skalieren",
 		"titleVPVCopy": "Kopieren",
+		"titleVPVCustomPredict": "Kundenspezifische Vorhersage",
 		"lbl": {
 			"project": "Projekt",
 			"projectProperty": "Projekt Einstellungen",
@@ -564,6 +566,7 @@
 			"viewChart": "Diagramm",
 			"showTrend": "Trend zeigen",
 			"hideTrend": "Trend ausblenden",
+			"allVersions": "Alle Versionen",
 			"vc": "VISBO Center"
 		},
 		"btn": {
