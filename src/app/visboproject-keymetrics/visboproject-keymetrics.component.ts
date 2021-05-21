@@ -759,17 +759,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getEnableDisable(name: string, level: number): boolean {
+  getEnableDisable(name: string, level: number, notLimitOff: boolean): boolean {
     let result = false;
     if (this.vcEnableDisable) {
       let setting = this.vcEnableDisable.find(item => item.name == name);
       if (setting && setting.value) {
         if (level == 0) {
-          result = setting.value.systemEnabled == true;
+          if (notLimitOff) {
+            result = setting.value.systemLimit && setting.value.systemEnabled == false ? false : true;
+          } else {
+            result = setting.value.systemEnabled == true;
+          }
         } else if (level == 1) {
-          result = setting.value.sysVCEnabled == true;
+          if (notLimitOff) {
+            result = setting.value.sysVCLimit && setting.value.sysVCEnabled == false ? false : true;
+          } else {
+            result = setting.value.sysVCEnabled == true;
+          }
         } else {
-          result = setting.value.VCEnabled == true;
+          if (notLimitOff) {
+            result = setting.value.sysVCLimit && setting.value.sysVCEnabled == false ? false : true;
+          } else {
+            result = setting.value.VCEnabled == true;
+          }
         }
       }
     }

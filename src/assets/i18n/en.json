@@ -703,7 +703,8 @@
 			"showChart": "View Chart",
 			"showList": "View List",
 			"change": "Change",
-			"cancel": "Cancel"
+			"cancel": "Cancel",
+			"exportExcel": "Excel"
 		},
 		"metric": {
 			"costName": "Cost (total)",

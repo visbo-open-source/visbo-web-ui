@@ -1477,11 +1477,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const sortedArray = sortedValues.map((item) => item.elems);
     const flatArray = [].concat([], ...sortedArray);
     console.log(sortedValues);
-    const sortedProjects: VisboCapacity[] = flatArray;    
+    const sortedProjects: VisboCapacity[] = flatArray;
     return sortedProjects;
     // ------ SORT END ------
  }
- 
+
 
   visboRoundToString(value: number, fraction = 1): string {
     const result = value || 0;
@@ -1725,7 +1725,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   exportExcel(): void {
     this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
-    // MS TODO: convert list to matix
+    // convert list to matix
 
     const excel: VisboCapacity[] = [];
 

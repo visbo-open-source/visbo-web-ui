@@ -71,11 +71,11 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && listVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="true" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'List' && listCalcVPV">
     <hr>
-    <app-comp-viewbubble [bubbleMode]="false" [visboprojectversions]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+    <app-comp-viewbubble [bubbleMode]="false" [vpfActive]="vpfActive" [visboprojectversions]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
   </div>
   <div *ngIf="pageParams.view == 'ProjectBoard' && listCalcVPV">
     <hr>

@@ -11,12 +11,56 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
-import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
+import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
+import { VisboCenter } from '../_models/visbocenter';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
+class exportKeyMetric {
+  name: string;
+  timestamp: Date;
+  baselineDate: Date;
+  variantName: string;
+  startDate: Date;
+  ampelStatus: number;
+  costCurrentActual: number;
+  costCurrentTotal: number;
+  costCurrentTotalPredict: number;
+  costBaseLastActual: number;
+  costBaseLastTotal: number;
+  timeCompletionCurrentActual: number;
+  timeCompletionCurrentTotal: number;
+  timeCompletionBaseLastActual: number;
+  timeCompletionBaseLastTotal: number;
+  timeDelayFinished: number;
+  timeDelayUnFinished: number;
+  endDateCurrent: Date;
+  endDateBaseLast: Date;
+  deliverableCompletionCurrentActual: number;
+  deliverableCompletionCurrentTotal: number;
+  deliverableCompletionBaseLastActual: number;
+  deliverableCompletionBaseLastTotal: number;
+  deliverableDelayFinished: number;
+  deliverableDelayUnFinished: number;
+  savingCostTotal: number;
+  savingCostTotalPredict: number;
+  savingCostActual: number;
+  savingEndDate: number;
+  timeCompletionTotal: number;
+  timeCompletionActual: number;
+  deliveryCompletionTotal: number;
+  deliveryCompletionActual: number;
+  vpid: string;
+  vpvid: string;
+  ampelErlaeuterung: string;
+}
 
 class Metric {
   name: string;
@@ -41,6 +85,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     private datePipe: DatePipe
   ) { }
 
+  @Input() vcActive: VisboCenter;
+  @Input() vpfActive: VisboPortfolioVersion;
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() customize: VisboSetting;
   @Input() bubbleMode: boolean;
@@ -895,6 +941,111 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return result;
   }
 
+  copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
+    let element = new exportKeyMetric();
+    element.name = vpv.name;
+    element.timestamp = vpv.timestamp;
+    if (vpv.keyMetrics) {
+      element.baselineDate = vpv.keyMetrics.baselineDate;
+    }
+    element.variantName = vpv.variantName;
+    element.startDate = vpv.startDate;
+    element.ampelStatus = vpv.ampelStatus;
+    if (vpv.keyMetrics) {
+      element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000) / 1000;
+      element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000) / 1000;
+      element.costCurrentTotalPredict = vpv.keyMetrics.costCurrentTotalPredict && Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000) / 1000;
+      element.costBaseLastActual = vpv.keyMetrics.costBaseLastActual && Math.round(vpv.keyMetrics.costBaseLastActual * 1000) / 1000;
+      element.costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000) / 1000;
+      element.timeCompletionCurrentActual = vpv.keyMetrics.timeCompletionCurrentActual && Math.round(vpv.keyMetrics.timeCompletionCurrentActual * 1000) / 1000;
+      element.timeCompletionCurrentTotal = vpv.keyMetrics.timeCompletionCurrentTotal;
+      element.timeCompletionBaseLastActual = vpv.keyMetrics.timeCompletionBaseLastActual && Math.round(vpv.keyMetrics.timeCompletionBaseLastActual * 1000) / 1000;
+      element.timeCompletionBaseLastTotal = vpv.keyMetrics.timeCompletionBaseLastTotal;
+      element.timeDelayFinished = vpv.keyMetrics.timeDelayFinished && Math.round(vpv.keyMetrics.timeDelayFinished * 1000) / 1000;
+      element.timeDelayUnFinished = vpv.keyMetrics.timeDelayUnFinished && Math.round(vpv.keyMetrics.timeDelayUnFinished * 1000) / 1000;
+      element.endDateCurrent = vpv.keyMetrics.endDateCurrent;
+      element.endDateBaseLast = vpv.keyMetrics.endDateBaseLast;
+      element.deliverableCompletionCurrentActual = vpv.keyMetrics.deliverableCompletionCurrentActual && Math.round(vpv.keyMetrics.deliverableCompletionCurrentActual * 1000) / 1000;
+      element.deliverableCompletionCurrentTotal = vpv.keyMetrics.deliverableCompletionCurrentTotal;
+      element.deliverableCompletionBaseLastActual = vpv.keyMetrics.deliverableCompletionBaseLastActual && Math.round(vpv.keyMetrics.deliverableCompletionBaseLastActual * 1000) / 1000;
+      element.deliverableCompletionBaseLastTotal = vpv.keyMetrics.deliverableCompletionBaseLastTotal;
+      element.deliverableDelayFinished = vpv.keyMetrics.deliverableDelayFinished && Math.round(vpv.keyMetrics.deliverableDelayFinished * 1000) / 1000;
+      element.deliverableDelayUnFinished = vpv.keyMetrics.deliverableDelayUnFinished && Math.round(vpv.keyMetrics.deliverableDelayUnFinished * 1000) / 1000;
+    }
+    element.savingCostTotal = vpv.savingCostTotal && Math.round(vpv.savingCostTotal * 100) / 100;
+    element.savingCostTotalPredict = vpv.savingCostTotalPredict && Math.round(vpv.savingCostTotalPredict * 100) / 100;
+    element.savingCostActual = vpv.savingCostActual && Math.round(vpv.savingCostActual * 100) / 100;
+    element.savingEndDate = vpv.savingEndDate && Math.round(vpv.savingEndDate * 100) / 100;
+    element.timeCompletionTotal = vpv.timeCompletionTotal && Math.round(vpv.timeCompletionTotal * 100) / 100;
+    element.timeCompletionActual = vpv.timeCompletionActual && Math.round(vpv.timeCompletionActual * 100) / 100;
+    element.deliveryCompletionTotal = vpv.deliveryCompletionTotal && Math.round(vpv.deliveryCompletionTotal * 100) / 100;
+    element.deliveryCompletionActual = vpv.deliveryCompletionActual && Math.round(vpv.deliveryCompletionActual * 100) / 100;
+    element.vpid = vpv.vpid;
+    element.vpvid = vpv._id;
+    element.ampelErlaeuterung = vpv.ampelErlaeuterung;
+
+    return element;
+  }
+
+  exportExcel(): void {
+    this.log(`Export Data to Excel ${this.visbokeymetrics?.length}`);
+
+    const excel: exportKeyMetric[] = [];
+
+    if (this.visbokeymetrics) {
+      this.visbokeymetrics.forEach(element => {
+        excel.push(this.copyKeyMetrics(element));
+      });
+    }
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    let name = '';
+    if (this.vpfActive) {
+      name = this.vpfActive.name
+    } else if (this.vcActive) {
+      name = this.vcActive.name;
+    }
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    for (const element in excel[0]) {
+      header[element] = element;
+      // header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    sheets[name] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_Cockpit ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   getLevel(plan: number, baseline: number): number {
     let percentCalc = 1
     if (baseline) {
@@ -1021,6 +1172,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
+    // console.log('CompViewBubble: ' + message);
     this.messageService.add('CompViewBubble: ' + message);
   }
 }

@@ -36,13 +36,12 @@
             <span> {{ 'compViewBubble.lbl.risk' | translate }} >=</span>
             <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
           </div>
-        </div>
-        <!-- <div class="row text-dark">
-          <div class="my-1 pl-0 col-11">
-            <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
-            <input class="ml-2" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+          <div class="ml-2">
+            <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
+              {{ 'compViewBubble.btn.exportExcel' | translate }}
+            </button>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
