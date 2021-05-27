@@ -625,8 +625,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   updateDateRange(): void {
-    this.updateUrlParam('from', undefined)
-    this.getCapacity();
+    if (this.compareDate()) {
+      this.updateUrlParam('from', undefined)
+      this.getCapacity();
+    }
+   
   }
 
   updateRef(): void {
@@ -1076,6 +1079,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewCapacity(): void {
     const graphDataCapacity = [];
     const capacity = this.visboCapacity;
+    if (capacity.length > 0 ) {
+      this.capacityFrom =  new Date(capacity[0].month);
+      this.capacityTo = new Date(capacity[capacity.length-1].month);
+    }   
 
     this.sumCost = 0;
     this.sumBudget = 0;
@@ -1804,6 +1811,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return null;
   }
 
+  compareDate(): boolean { 
+    const start = this.capacityFrom;
+    const end = this.capacityTo;
+    
+    const stDate = new Date(start);
+    const enDate = new Date(end);
+    const compDate = visboCmpDate(enDate,stDate);
+    
+    if(compDate >= 0) {
+      return true;
+    } else { 
+      // alert("Please Enter the correct date ");
+      return false;
+    }
+  }
+  
   getPreView(): boolean {
     return getPreView();
   }
