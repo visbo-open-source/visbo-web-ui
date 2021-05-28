@@ -591,7 +591,8 @@
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
 			"errorPermVP": "Keine Berechtigung zum ändern von {{name}}",
 			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"viewWeb": "Anzeige des Projekts Online"
 		}
 	},
 	"compViewCost": {
