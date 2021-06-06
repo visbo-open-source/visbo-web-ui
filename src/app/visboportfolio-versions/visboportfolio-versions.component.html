@@ -55,7 +55,7 @@
       </div>
     </div>
     <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
-        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': listCalcVPV.length} }}
+        {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpfActive.allItems.length} }}
     </div>
   </div>
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
@@ -157,7 +157,7 @@
   </div>
 
   <ng-template #indicator let-level="level" let-title="title">
-    <i class="fa ml-2" [ngClass]="{'fa-exclamation-triangle text-warning': level == 2}"  title="{{title | translate}}"></i>
+    <i class="fa ml-2" [ngClass]="{'fa-exclamation-circle text-danger': level == 0, 'fa-exclamation-triangle text-warning': level == 2}"  title="{{title | translate}}"></i>
   </ng-template>
 
   <!-- Modal Delete VPF List Confirm -->

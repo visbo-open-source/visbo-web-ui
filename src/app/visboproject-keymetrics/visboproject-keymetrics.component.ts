@@ -61,6 +61,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   pfvVariant: string;
   predictURL: string;
   customPredict: string;
+  calcPredict = false;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -122,6 +123,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.variantName = this.route.snapshot.queryParams['variantName'];
     this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     this.pfvVariant = this.translate.instant('vpKeyMetric.lbl.pfvVariant');
+    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       // map old / outdated URLs to common url
@@ -502,7 +504,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               variantID = variant ? variant._id.toString() : '';
             }
             this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, 1)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, this.calcPredict ? 2 : 1)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;

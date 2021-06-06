@@ -907,6 +907,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (this.refDate && !visboIsToday(this.refDate)) {
       queryParams.refDate = this.refDate.toISOString();
     }
+    const calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
+    if (calcPredict) {
+      queryParams.calcPredict = '1';
+    }
 
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], {
       queryParams: queryParams

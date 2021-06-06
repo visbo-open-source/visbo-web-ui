@@ -102,6 +102,7 @@ export class VPParams {
   vpvid: string;
   deleted: string;
   refDate: string;
+  calcPredict: string;
   view: string;
   viewKM: string;
   filter: string;
