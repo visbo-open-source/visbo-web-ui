@@ -934,6 +934,41 @@
 			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
 		}
 	},
+	"vpfCmp": {
+		"title": "Projects from Portfolio",
+		"titleName": "Portfolio {{name}}",
+		"titleVC": "VISBO Center",
+		"titleVersion": "Portfolio Version",
+		"titleSelectVersion": "Select Portfolio Version",
+		"titleCmp": "Compare of Versions",
+		"titleRessourceChange": "Change Ressource",
+		"titleVPList": "Project list for {{name}} from {{from}}",
+		"titleChangeVPVariant": "Change of Variant in the Portfolio List",
+		"lbl": {
+			"name": "Project",
+			"variant": "Portfolio Variant",
+			"modified": "Modified",
+			"filter": "Filter",
+			"defaultVariant": "Standard",
+			"nrOfItems": "Nr. of Projects",
+			"user": "Created by",
+			"from": "From",
+			"vpvFrom": "Key Metrics from"
+		},
+		"btn": {
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
+			"viewList": "List",
+			"exportExcel": "Excel"
+		},
+		"msg": {
+			"noProjectList": "This portfolio does not have a project list",
+			"noVersions": "No Project Versions related to these criterias",
+			"errorPermVP": "No Permission for this Projects",
+			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
+			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List"
+		}
+	},
 	"vcAudit": {
 		"title": "VISBO Center Audit for",
 		"titleDetail": "Detail of Audit Entry",

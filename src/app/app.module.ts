@@ -70,6 +70,7 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 
 // Visbo Portfolio Versions
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
+import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -115,6 +116,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,
+    VisboPortfolioCmpComponent,
     LogoutTimerComponent,
     SettingsComponent,
     UserProfileComponent,
