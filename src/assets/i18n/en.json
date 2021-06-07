@@ -591,7 +591,8 @@
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
 			"errorPermVP": "Permission denied updating {{name}}",
 			"errorVPConflict": "Conflict happened during updating of {{name}}",
-			"errorPermVersion": "Permission denied for project versions {{name}}"
+			"errorPermVersion": "Permission denied for project versions {{name}}",
+			"viewWeb": "View Project Online"
 		}
 	},
 	"compViewCost": {

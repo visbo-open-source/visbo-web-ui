@@ -17,7 +17,7 @@ import { VisboCenter } from '../_models/visbocenter';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../_helpers/visbo.helper';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -980,8 +980,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     element.timeCompletionActual = vpv.timeCompletionActual && Math.round(vpv.timeCompletionActual * 100) / 100;
     element.deliveryCompletionTotal = vpv.deliveryCompletionTotal && Math.round(vpv.deliveryCompletionTotal * 100) / 100;
     element.deliveryCompletionActual = vpv.deliveryCompletionActual && Math.round(vpv.deliveryCompletionActual * 100) / 100;
-    element.vpid = vpv.vpid;
-    element.vpvid = vpv._id;
+    // element.vpid = vpv.vpid;
+    // element.vpvid = vpv._id;
     element.ampelErlaeuterung = vpv.ampelErlaeuterung;
 
     return element;
@@ -999,7 +999,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     const len = excel.length;
     const width = Object.keys(excel[0]).length;
-    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     let name = '';
     if (this.vpfActive) {
       name = this.vpfActive.name
@@ -1009,7 +1008,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     // Add Localised header to excel
     // eslint-disable-next-line
     const header: any = {};
+    let colName: number, colIndex = 0;
     for (const element in excel[0]) {
+      if (element == 'name') {
+        colName = colIndex;
+      }
+      colIndex++;
       header[element] = element;
       // header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
     }
@@ -1017,11 +1021,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     // this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    // generate link for VP Name
+    const tooltip = this.translate.instant('vpKeyMetric.msg.viewWeb');
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = window.location.origin.concat('/vpKeyMetrics/', this.visbokeymetrics[index - 1].vpid);
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     worksheet['!autofilter'] = { ref: matrix };
     // eslint-disable-next-line
     const sheets: any = {};
-    sheets[name] = worksheet;
-    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
     // eslint-disable-next-line
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const actDate = new Date();
