@@ -190,6 +190,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
             this.vpfActive[1] = listVPF[index];
             this.dropDownInit();
             this.getVisboPortfolioKeyMetrics(0);
+            this.getVisboPortfolioKeyMetrics(1);
             this.log(`get VPF Length ${this.listVPF.length}`);
           } else if (this.hasVPPerm(this.permVP.Modify)) {
             // initiate the edit if user has permission

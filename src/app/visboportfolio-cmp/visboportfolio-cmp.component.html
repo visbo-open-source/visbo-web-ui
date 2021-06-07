@@ -17,14 +17,14 @@
   </div>
   <div *ngIf="vpfActive" class="container-fluid">
     <div class="row">
-      <h3 class="col-6 px-0">
-        <div>{{ 'vpfCmp.titleCmp' | translate }}</div>
-      </h3>
+      <div class="col-6 px-0">
+        <div>{{ 'vpfCmp.titleCmp' | translate }}:</div>
+      </div>
     </div>
     <div class="row gx-5 pb-2">
       <div class="col">
         <!-- Box for original version -->
-        <div class="p-3 border bg-light">
+        <div class="p-3 border">
           <div *ngIf="activeVPFVariant[0] && dropDown.length > 1 && !getPreView()" class="dropdown mb-2 d-print-none">
             <div class="row">
               <div class="col-4">
@@ -92,12 +92,12 @@
     {{ 'vpfCmp.msg.noProjectList' | translate }}
   </div>
 
-  <!-- <div *ngIf="pageParams.view == 'KeyMetrics' && hasListVPV()">
+  <div *ngIf="pageParams.view == 'KeyMetrics' && hasListVPV()">
     <hr>
-    <app-comp-viewbubblecmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpv]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+    <app-comp-viewbubblecmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpvList]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
   </div>
   <div *ngIf="pageParams.view == 'List' && hasListVPV()">
     <hr>
-    <app-comp-viewbubblecmp [bubbleMode]="false" [vpfActive]="vpfActive" [vpv]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
-  </div> -->
+    <app-comp-viewbubblecmp [bubbleMode]="false" [vpfActive]="vpfActive" [vpvList]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+  </div>
 </div>

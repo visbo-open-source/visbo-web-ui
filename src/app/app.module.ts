@@ -62,6 +62,7 @@ import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.compon
 import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
 import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
 import { VisboCompViewBubbleComponent } from './comp-viewbubble/comp-viewbubble.component';
+import { VisboCompViewBubbleCmpComponent } from './comp-viewbubblecmp/comp-viewbubblecmp.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 
 // Visbo Project Versions
@@ -113,6 +114,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboCompViewCapacityComponent,
     VisboCompViewBoardComponent,
     VisboCompViewBubbleComponent,
+    VisboCompViewBubbleCmpComponent,
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,
