@@ -15,7 +15,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { convertDate, visboCmpDate, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
-  selector: 'app-comp-viewkeymetrics',
+  selector: 'app-comp-viewkeymetrics', 
   templateUrl: './comp-viewkeymetrics.component.html'
 })
 export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {

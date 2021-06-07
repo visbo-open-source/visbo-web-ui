@@ -63,7 +63,6 @@ export class VisboPortfolioCmpComponent implements OnInit {
   vpSelected: string;
   vpActive: VisboProject;
 
-  vpfid: string;
   deleted = false;
   currentLang: string;
 
@@ -107,7 +106,6 @@ export class VisboPortfolioCmpComponent implements OnInit {
     const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
     const vpfidCmp = this.route.snapshot.queryParams['vpfidCmp'] || undefined;
     const filter = this.route.snapshot.queryParams['filter'] || null;
-    this.vpfid = vpfid;
     this.vpvRefDate[0] = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
     this.changeView(0, nextView, refDate ? this.vpvRefDate[0] : undefined, filter, vpfid, false);
     this.vpvRefDate[1] = Date.parse(refDateCmp) > 0 ? new Date(refDateCmp) : new Date();
@@ -173,21 +171,26 @@ export class VisboPortfolioCmpComponent implements OnInit {
       );
   }
 
+  getVPF(vpfid: string): VisboPortfolioVersion {
+    let index = 0;
+    if (vpfid ) {
+      index = this.listVPF.findIndex(item => item._id.toString() === vpfid);
+      if (index < 0) { index = 0; }
+    }
+    return this.listVPF[index];
+  }
+
   getVisboPortfolioVersions(): void {
     this.log(`get Portfolio Versions ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
     this.visboprojectversionService.getVisboPortfolioVersions(this.vpActive._id, this.deleted)
       .subscribe(
         listVPF => {
           this.listVPF = listVPF;
-          let index = 0;
-          if (this.vpfid ) {
-            index = listVPF.findIndex(item => item._id.toString() === this.vpfid);
-            if (index < 0) { index = 0; }
-          }
           if (listVPF.length > 0) {
             // this.combinedPerm = listVPF[0].perm;
-            this.vpfActive[0] = listVPF[index];
-            this.vpfActive[1] = listVPF[index];
+            this.vpfActive = [];
+            this.vpfActive[0] = this.getVPF(this.pageParams.vpfid);
+            this.vpfActive[1] = this.getVPF(this.pageParams.vpfidCmp);
             this.dropDownInit();
             this.getVisboPortfolioKeyMetrics(0);
             this.getVisboPortfolioKeyMetrics(1);
@@ -209,13 +212,23 @@ export class VisboPortfolioCmpComponent implements OnInit {
       );
   }
 
+  refreshListVPV(version: number, listVPV: VisboProjectVersion[]): void {
+    // recreate list, to get refresh in child component
+    let indexUnchanged = version ? 0 : 1;
+    let listUnchanged = this.listVPV[indexUnchanged];
+    let list: VisboProjectVersion[][] = [];
+    list[indexUnchanged] = listUnchanged;
+    list[version] = listVPV;
+    this.listVPV = list;
+  }
+
   getVisboPortfolioKeyMetrics(version: number): void {
     this.log(`get VPF keyMetrics ${this.vpfActive[version].name} ${this.vpfActive[version]._id}`);
 
     this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive[version]._id, this.vpvRefDate[version], false, false, this.vpActive.vcid)
       .subscribe(
         list => {
-          this.listVPV[version] = list;
+          this.refreshListVPV(version, list);
           this.calcVPVList(version);
           this.log(`get VPF Key metrics: Get ${list.length} Project Versions`);
         },
@@ -236,16 +249,20 @@ export class VisboPortfolioCmpComponent implements OnInit {
     this.listVPV[version].forEach(vpv => {
         vpv.vp = this.listVP.find(vp => vp._id == vpv.vpid);
     });
-    this.listCalcVPV[version] = [];
+    const indexUnchanged = version ? 0 : 1;
+    let listCalcVPV: VisboProjectVersion[][] = [];
+    listCalcVPV[indexUnchanged] = this.listCalcVPV[indexUnchanged]
+    listCalcVPV[version] = [];
     this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive[version].allItems.length; i++) {
       const item = this.vpfActive[version].allItems[i];
       const nextVPV = this.listVPV[version].find(vpvItem => vpvItem.vpid === item.vpid);
       if (nextVPV) {
         this.vpvCount += 1;
-        this.listCalcVPV[version].push(nextVPV);
+        listCalcVPV[version].push(nextVPV);
       }
     }
+    this.listCalcVPV = listCalcVPV;
   }
 
   // get the details of the project
@@ -253,6 +270,21 @@ export class VisboPortfolioCmpComponent implements OnInit {
     const deleted = visboproject.deletedAt ? true : false;
     this.log(`goto Detail for VP ${visboproject._id}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
+  }
+
+  // goto specific portfolio version with refDate
+  gotoVPF(index: number): void {
+    const item = this.vpfActive[index];
+    if (!item) { return; }
+    this.log(`goto VPF ${item.vpid}`);
+
+    const queryParams = new VPFParams();
+    const refDate = this.vpvRefDate[index];
+    if (refDate && !visboIsToday(refDate)) {
+      queryParams.refDate = refDate.toISOString();
+    }
+    queryParams.vpfid = item._id;
+    this.router.navigate(['vpf/'.concat(item.vpid)], { queryParams: queryParams });
   }
 
   gotoVC(visboproject: VisboProject): void {
@@ -291,41 +323,12 @@ export class VisboPortfolioCmpComponent implements OnInit {
     return result;
   }
 
-  changeVPVariant(): void {
-    this.log(`Change Variant ${this.switchVariant || 'Standard'} of ${this.switchVariantCount} VPs`);
-    // if (this.switchVariant) {
-    //   this.vpCheckListFiltered.forEach(item => {
-    //     if (item.vp && item.vp.variant && item.vp.variant.length > 0) {
-    //       item.vp.variant.forEach(variant => {
-    //         if (variant.variantName == this.switchVariant) {
-    //             item.variantName = this.switchVariant;
-    //         }
-    //       })
-    //     }
-    //   });
-    // } else {
-    //   // reset to Standard
-    //   this.vpCheckListFiltered.forEach(item => {
-    //     if (item.variantName) {
-    //       item.variantName = '';
-    //     }
-    //   });
-    // }
-  }
-
   switchVariantByName(name: string, version: number): void {
       let index = -1;
       if (this.listVPFVariant) {
         index = this.listVPFVariant.findIndex(item => item.variantName == name);
       }
       this.activeVPFVariant[version]= index >= 0 ? this.listVPFVariant[index] : undefined;
-  }
-
-  switchVariantByID(i: number, version: number): void {
-    this.log(`Change Variant Drop Down ${i} `);
-    if (i >= 0 && i < this.listVPFVariant.length) {
-      this.activeVPFVariant[version] = this.listVPFVariant[i];
-    }
   }
 
   switchPFVersion(i: number, version: number): void {
@@ -339,7 +342,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
       this.changeView(version, undefined, undefined, undefined, this.vpfActive[version]._id)
     } else {
       this.vpfActive[version] = undefined;
-      this.listVPV[version] = undefined;
+      this.refreshListVPV(version, undefined);
     }
   }
 

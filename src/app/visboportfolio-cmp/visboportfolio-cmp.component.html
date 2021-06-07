@@ -25,12 +25,12 @@
       <div class="col">
         <!-- Box for original version -->
         <div class="p-3 border">
-          <div *ngIf="activeVPFVariant[0] && dropDown.length > 1 && !getPreView()" class="dropdown mb-2 d-print-none">
+          <div *ngIf="activeVPFVariant[0] && dropDown.length > 1" class="dropdown mb-2">
             <div class="row">
               <div class="col-4">
                 {{ 'vpfCmp.lbl.variant' | translate }}
               </div>
-              <div class="col-8 text-dark">
+              <div class="col-7 text-dark">
                 <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[0].description}}">{{displayVariantName(activeVPFVariant[0])}}</a>
                 <div class="dropdown-menu">
                   <a *ngFor="let item of dropDown" class="dropdown-item">
@@ -39,6 +39,9 @@
                   </a>
                 </div>
               </div>
+              <a class="col-1 text-right" (click)="gotoVPF(0)">
+                <a><i class="fas fa-link"></i></a>
+              </a>
             </div>
           </div>
           <div class="row">
@@ -54,12 +57,12 @@
       <div class="col">
         <!-- Box for compare version -->
         <div class="p-3 border bg-light">
-          <div *ngIf="activeVPFVariant[1] && dropDown.length > 1 && !getPreView()" class="dropdown mb-2 d-print-none">
+          <div *ngIf="activeVPFVariant[1] && dropDown.length > 1" class="dropdown mb-2">
             <div class="row">
               <div class="col-4">
                 {{ 'vpfCmp.lbl.variant' | translate }}
               </div>
-              <div class="col-8 text-dark">
+              <div class="col-7 text-dark">
                 <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[1].description}}">{{displayVariantName(activeVPFVariant[1])}}</a>
                 <div class="dropdown-menu">
                   <a *ngFor="let item of dropDown" class="dropdown-item">
@@ -68,6 +71,9 @@
                   </a>
                 </div>
               </div>
+              <a class="col-1 text-right" (click)="gotoVPF(1)">
+                <a><i class="fas fa-link"></i></a>
+              </a>
            </div>
           </div>
           <div class="row">
