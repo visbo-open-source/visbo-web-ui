@@ -808,6 +808,7 @@
 			"type": "Typ",
 			"percentDone": "Erledigt",
 			"startDatePFV": "Start Phase (Baseline)",
+			"startDateVPV": "Start Phase (Plan)",
 			"startDateTTVPV": "Start (Plan)",
 			"endDateTTVPV": "Ende (Plan)",
 			"endDatePFV": "Termin (Baseline)",
