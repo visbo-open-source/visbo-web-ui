@@ -1,6 +1,6 @@
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
-    <div class="col col-sm-12 col-lg-8">
+    <div class="col col-md-12 col-lg-6">
       <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-1 col-11">
@@ -38,46 +38,56 @@
             <span> {{ 'compViewBubbleCmp.lbl.risk' | translate }} >=</span>
             <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
           </div>
-          <div class="ml-2">
+          <!-- <div class="ml-2">
             <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
               {{ 'compViewBubbleCmp.btn.exportExcel' | translate }}
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
 
-    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
-      <!-- <h5 class="card-title">Special title treatment</h5> -->
+    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-6 card align-right px-0">
       <h5 class="card-header p-2">
-        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
+        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion0, budgetAtCompletion0)}"></ng-container></strong>
         {{ 'compViewBubbleCmp.metric.costName' | translate }}
       </h5>
       <div class="card-body p-2">
         <div class="row">
-          <div class="col col-sm-8">
+          <div class="col col-sm-6">
             {{ 'compViewBubbleCmp.lbl.nrProjects' | translate }}
           </div>
-          <div class="col col-sm-4 text-right">
-            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
-            {{countKM}} / {{visbokeymetrics.length}}
+          <div class="col col-sm-3 text-right">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM0 < vpfActive[0].allItems.length ? 2 : 1}"></ng-container></strong>
+            {{countKM0}} / {{vpfActive[0].allItems.length}}
+          </div>
+          <div class="col col-sm-3 text-right bg-light">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM1 < vpfActive[1].allItems.length ? 2 : 1}"></ng-container></strong>
+            {{countKM1}} / {{vpfActive[1].allItems.length}}
           </div>
         </div>
         <div class="row">
-          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
+          <div class="col col-sm-6" title="{{ 'keyMetrics.longEAC' | translate }}">
             {{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }})
           </div>
-          <div class="col col-sm-4 text-right">
-            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
-            {{estimateAtCompletion | number:'1.0-0'}} T€
+          <div class="col col-sm-3 text-right">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion0, budgetAtCompletion0)}"></ng-container></strong>
+            {{estimateAtCompletion0 | number:'1.0-0'}} T€
+          </div>
+          <div class="col col-sm-3 text-right bg-light">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion1, budgetAtCompletion1)}"></ng-container></strong>
+            {{estimateAtCompletion1 | number:'1.0-0'}} T€
           </div>
         </div>
         <div class="row">
-          <div class="col col-sm-8" title="{{ 'keyMetrics.longBAC' | translate }}">
+          <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
             {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longBAC' | translate }})
           </div>
-          <div class="col col-sm-4 text-right">
-            {{budgetAtCompletion | number:'1.0-0'}} T€
+          <div class="col col-sm-3 text-right">
+            {{budgetAtCompletion0 | number:'1.0-0'}} T€
+          </div>
+          <div class="col col-sm-3 text-right bg-light">
+            {{budgetAtCompletion1 | number:'1.0-0'}} T€
           </div>
         </div>
         <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
@@ -87,7 +97,7 @@
 
   <div>
     <div *ngIf="chart" class='container-fluid'>
-      <div *ngIf="countKM > 0 && graphBubbleData">
+      <div *ngIf="countKM0 > 0 && graphBubbleData">
         <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
       </div>
     </div>
@@ -146,7 +156,9 @@
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.source.variantName}}</td>
               <td class="d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp.source)}}">{{vp.source.timestamp | date :'dd.MM.yy'}}</td>
               <td title="{{vp.source.ampelErlaeuterung}}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.source.ampelStatus} " ></ng-container>
+                <div *ngIf="vp.source.ampelStatus >= 0">
+                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.source.ampelStatus} " ></ng-container>
+                </div>
               </td>
               <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.source.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} k€</td>
               <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics" class="text-right"
@@ -211,7 +223,9 @@
               <!-- This part is the information from the second VPF List that is used for compare -->
 
               <td title="{{vp.compare.ampelErlaeuterung}}" class="bg-light">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.compare.ampelStatus} " ></ng-container>
+                <div *ngIf="vp.compare.ampelStatus >= 0">
+                  <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.compare.ampelStatus} " ></ng-container>
+                </div>
               </td>
               <td *ngIf="selectedMetric('ActualCost') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{(vp.compare.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} k€</td>
               <td *ngIf="selectedMetric('ActualCost') && vp.compare.keyMetrics" class="text-right bg-light"

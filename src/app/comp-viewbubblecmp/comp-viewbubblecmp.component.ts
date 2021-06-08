@@ -123,10 +123,14 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   hasKMDeadlineDelay = false;
   hasKMDeliveryDelay = false;
   hasVariant: boolean;
-  countKM: number;
 
-  estimateAtCompletion = 0;
-  budgetAtCompletion = 0;
+  countKM0: number;
+  countKM1: number;
+  estimateAtCompletion0 = 0;
+  estimateAtCompletion1 = 0;
+  budgetAtCompletion0 = 0;
+  budgetAtCompletion1 = 0;
+
   chart = true;
   parentThis = this;
   graphBubbleData = [];
@@ -443,7 +447,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     elementKeyMetric.vpid = vpv.vpid;
     elementKeyMetric.timestamp = vpv.timestamp;
     if (vpv.keyMetrics) {
-      this.countKM += 1;
       elementKeyMetric.keyMetrics = vpv.keyMetrics;
 
       this.hasKMCost = this.hasKMCost || elementKeyMetric.keyMetrics.costBaseLastTotal >= 0;
@@ -457,8 +460,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
                                 || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
       this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
 
-      this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
-      this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
 
       // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
       if (elementKeyMetric.keyMetrics.costBaseLastTotal > 0) {
@@ -523,9 +524,12 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     // Calculate the keyMetrics Values to show in Chart and List
 
     this.visbokeymetrics = [];
-    this.countKM = 0;
-    this.budgetAtCompletion = 0;
-    this.estimateAtCompletion = 0;
+    this.countKM0 = 0;
+    this.countKM1 = 0;
+    this.budgetAtCompletion0 = 0;
+    this.budgetAtCompletion1 = 0;
+    this.estimateAtCompletion0 = 0;
+    this.estimateAtCompletion1 = 0;
 
     this.hasKMCost = false;
     this.hasKMCostPredict = false;
@@ -544,32 +548,44 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     let refList: number[] = []
     this.initFilter(this.vpvList);
     // add all original vpvs with calculated KeyMetrics to the list
-    for (let item = 0; item < this.vpvList[0].length; item++) {
-      const element = this.calcVPVKeyMetric(this.vpvList[0][item]);
+    for (let index = 0; index < this.vpvList[0].length; index++) {
+      const item = this.vpvList[0][index];
+      const element = this.calcVPVKeyMetric(item);
       if (element) {
-        const item = new CompareVPV();
-        item.source = element;
-        item.compare = this.convertMinVPVKeyMetric(element);
-        this.visbokeymetrics.push(item);
+        const itemMin = new CompareVPV();
+        itemMin.source = element;
+        itemMin.compare = this.convertMinVPVKeyMetric(element);
+        this.visbokeymetrics.push(itemMin);
         refList[element.vpid] = this.visbokeymetrics.length - 1;
+      }
+      if (item.keyMetrics) {
+        this.countKM0 += 1;
+        this.estimateAtCompletion0 += item.keyMetrics.costCurrentTotal || 0;
+        this.budgetAtCompletion0 += item.keyMetrics.costBaseLastTotal || 0;
       }
     }
     // merge all compare vpvs with calculated KeyMetrics to the list
-    for (let item = 0; item < this.vpvList[1].length; item++) {
-      const element = this.calcVPVKeyMetric(this.vpvList[1][item]);
+    for (let index = 0; index < this.vpvList[1].length; index++) {
+      const item = this.vpvList[1][index];
+      const element = this.calcVPVKeyMetric(item);
       if (element) {
-        const index = refList[element.vpid];
-        if (index >= 0) {
+        const indexVP = refList[element.vpid];
+        if (indexVP >= 0) {
           // element exists from original VPF update the second part
-          this.visbokeymetrics[index].compare = element;
+          this.visbokeymetrics[indexVP].compare = element;
         } else {
           // element does not exists in original VPF add empty part and the element
-          const item = new CompareVPV();
-          item.source = this.convertMinVPVKeyMetric(element);
-          item.compare = element;
-          this.visbokeymetrics.push(item);
+          const itemMin = new CompareVPV();
+          itemMin.source = this.convertMinVPVKeyMetric(element);
+          itemMin.compare = element;
+          this.visbokeymetrics.push(itemMin);
           refList[element.vpid] = this.visbokeymetrics.length - 1;
         }
+      }
+      if (item.keyMetrics) {
+        this.countKM1 += 1;
+        this.estimateAtCompletion1 += item.keyMetrics.costCurrentTotal || 0;
+        this.budgetAtCompletion1 += item.keyMetrics.costBaseLastTotal || 0;
       }
     }
 
