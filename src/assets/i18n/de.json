@@ -761,6 +761,8 @@
 			"nrProjects": "Anzahl Projekte",
 			"project": "Projekt",
 			"variant": "Variant",
+			"orgVersion": "Quelle",
+			"cmpVersion": "Vergleich",
 			"timestamp": "Zeitstempel",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
