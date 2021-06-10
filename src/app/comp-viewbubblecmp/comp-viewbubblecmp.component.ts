@@ -1204,7 +1204,8 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   }
 
   sortKeyMetricsTable(n: number): void {
-    return;
+    this.log(`Sort KeyMetrics Col: ${n} Len ${this.visbokeymetrics?.length}`);
+
     if (!this.visbokeymetrics) {
       return;
     }
@@ -1224,59 +1225,106 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       this.sortAscending = true;
     }
     if (this.sortColumn === 1) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.source.name, b.source.name); });
+      this.visbokeymetrics.sort(function(a, b) {
+        return visboCmpString(a.source?.name, b.source?.name);
+      });
+    } else if (this.sortColumn === 2) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.savingCostTotal || 0) - (b.source?.savingCostTotal || 0);
+      });
+    } else if (this.sortColumn === 3) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.keyMetrics?.costBaseLastTotal || 0) - (b.source?.keyMetrics?.costBaseLastTotal || 0);
+      });
+    } else if (this.sortColumn === 4) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.savingEndDate || 0) - (b.source?.savingEndDate || 0); });
+    } else if (this.sortColumn === 5) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.source?.keyMetrics?.endDateBaseLast, b.source?.keyMetrics?.endDateBaseLast); });
+    } else if (this.sortColumn === 6) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.timeCompletionActual || 0) - (b.source?.timeCompletionActual || 0); });
+    } else if (this.sortColumn === 7) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.source?.keyMetrics?.timeCompletionBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 8) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.deliveryCompletionActual || 0) - (b.source?.deliveryCompletionActual || 0); });
+    } else if (this.sortColumn === 9) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.source?.keyMetrics?.deliverableCompletionBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 10) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.keyMetrics?.timeDelayFinished || 0) - (b.source?.keyMetrics?.timeDelayFinished || 0); });
+    } else if (this.sortColumn === 11) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.keyMetrics?.timeDelayUnFinished || 0) - (b.source?.keyMetrics?.timeDelayUnFinished || 0);});
+    } else if (this.sortColumn === 12) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.source?.variantName, b.source?.variantName); });
+    } else if (this.sortColumn === 13) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.source?.timestamp, b.source?.timestamp); });
+    } else if (this.sortColumn === 14) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.ampelStatus || 0) - (b.source?.ampelStatus || 0); });
+    } else if (this.sortColumn === 15) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.source?.savingCostActual || 0) - (b.source?.savingCostActual || 0); });
+    } else if (this.sortColumn === 16) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.keyMetrics?.costBaseLastActual || 0) - (b.source?.keyMetrics?.costBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 17) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.source?.savingCostTotalPredict || 0) - (b.source?.savingCostTotalPredict || 0);
+      });
+    } else if (this.sortColumn === 31) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return visboCmpString(a.compare?.name, b.compare?.name);
+      });
+    } else if (this.sortColumn === 32) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.savingCostTotal || 0) - (b.compare?.savingCostTotal || 0);
+      });
+    } else if (this.sortColumn === 33) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.keyMetrics?.costBaseLastTotal || 0) - (b.compare?.keyMetrics?.costBaseLastTotal || 0);
+      });
+    } else if (this.sortColumn === 34) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.savingEndDate || 0) - (b.compare?.savingEndDate || 0); });
+    } else if (this.sortColumn === 35) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.compare?.keyMetrics?.endDateBaseLast, b.compare?.keyMetrics?.endDateBaseLast); });
+    } else if (this.sortColumn === 36) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.timeCompletionActual || 0) - (b.compare?.timeCompletionActual || 0); });
+    } else if (this.sortColumn === 37) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.compare?.keyMetrics?.timeCompletionBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 38) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.deliveryCompletionActual || 0) - (b.compare?.deliveryCompletionActual || 0); });
+    } else if (this.sortColumn === 39) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.compare?.keyMetrics?.deliverableCompletionBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 40) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.keyMetrics?.timeDelayFinished || 0) - (b.compare?.keyMetrics?.timeDelayFinished || 0); });
+    } else if (this.sortColumn === 41) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.keyMetrics?.timeDelayUnFinished || 0) - (b.compare?.keyMetrics?.timeDelayUnFinished || 0);});
+    } else if (this.sortColumn === 42) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.compare?.variantName, b.compare?.variantName); });
+    } else if (this.sortColumn === 43) {
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.compare?.timestamp, b.compare?.timestamp); });
+    } else if (this.sortColumn === 44) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.ampelStatus || 0) - (b.compare?.ampelStatus || 0); });
+    } else if (this.sortColumn === 45) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.compare?.savingCostActual || 0) - (b.compare?.savingCostActual || 0); });
+    } else if (this.sortColumn === 46) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.keyMetrics?.costBaseLastActual || 0) - (b.compare?.keyMetrics?.costBaseLastActual || 0);
+      });
+    } else if (this.sortColumn === 47) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return (a.compare?.savingCostTotalPredict || 0) - (b.compare?.savingCostTotalPredict || 0);
+      });
     }
-     // else if (this.sortColumn === 2) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return a.savingCostTotal - b.savingCostTotal;
-    //   });
-    // } else if (this.sortColumn === 3) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0);
-    //   });
-    // } else if (this.sortColumn === 4) {
-    //   this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
-    // } else if (this.sortColumn === 5) {
-    //   this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
-    // } else if (this.sortColumn === 6) {
-    //   this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
-    // } else if (this.sortColumn === 7) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return (a.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.keyMetrics?.timeCompletionBaseLastActual || 0);
-    //   });
-    // } else if (this.sortColumn === 8) {
-    //   this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
-    // } else if (this.sortColumn === 9) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0);
-    //   });
-    // } else if (this.sortColumn === 10) {
-    //   this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
-    // } else if (this.sortColumn === 11) {
-    //   this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0);});
-    // } else if (this.sortColumn === 12) {
-    //   this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
-    // } else if (this.sortColumn === 13) {
-    //   this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-    // } else if (this.sortColumn === 14) {
-    //   this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
-    // } else if (this.sortColumn === 15) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return a.savingCostActual - b.savingCostActual;
-    //   });
-    // } else if (this.sortColumn === 16) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
-    //   });
-    // } else if (this.sortColumn === 17) {
-    //   this.visbokeymetrics.sort(function(a, b) {
-    //     return a.savingCostTotalPredict - b.savingCostTotalPredict;
-    //   });
-    // }
-    //
-    // if (!this.sortAscending) {
-    //   this.visbokeymetrics.reverse();
-    // }
+
+    if (!this.sortAscending) {
+      this.visbokeymetrics.reverse();
+    }
   }
 
   getPreView(): boolean {
@@ -1285,7 +1333,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    // console.log('CompViewBubble: ' + message);
-    this.messageService.add('CompViewBubble: ' + message);
+    console.log('CompViewBubbleCmp: ' + message);
+    this.messageService.add('CompViewBubbleCmp: ' + message);
   }
 }
