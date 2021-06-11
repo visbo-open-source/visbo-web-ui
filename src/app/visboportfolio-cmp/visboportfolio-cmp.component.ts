@@ -14,14 +14,14 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboUser } from '../_models/visbouser';
-import { VisboProject, VPVariant } from '../_models/visboproject';
+import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsToday, visboIsSameDay, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting } from '../_models/visbosetting';
 
 class DropDown {
@@ -214,9 +214,9 @@ export class VisboPortfolioCmpComponent implements OnInit {
 
   refreshListVPV(version: number, listVPV: VisboProjectVersion[]): void {
     // recreate list, to get refresh in child component
-    let indexUnchanged = version ? 0 : 1;
-    let listUnchanged = this.listVPV[indexUnchanged];
-    let list: VisboProjectVersion[][] = [];
+    const indexUnchanged = version ? 0 : 1;
+    const listUnchanged = this.listVPV[indexUnchanged];
+    const list: VisboProjectVersion[][] = [];
     list[indexUnchanged] = listUnchanged;
     list[version] = listVPV;
     this.listVPV = list;
@@ -250,7 +250,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
         vpv.vp = this.listVP.find(vp => vp._id == vpv.vpid);
     });
     const indexUnchanged = version ? 0 : 1;
-    let listCalcVPV: VisboProjectVersion[][] = [];
+    const listCalcVPV: VisboProjectVersion[][] = [];
     listCalcVPV[indexUnchanged] = this.listCalcVPV[indexUnchanged]
     listCalcVPV[version] = [];
     this.vpvCount = 0;

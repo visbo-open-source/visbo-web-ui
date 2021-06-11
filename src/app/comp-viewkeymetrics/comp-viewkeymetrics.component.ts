@@ -15,7 +15,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { convertDate, visboCmpDate, getPreView } from '../_helpers/visbo.helper';
 
 @Component({
-  selector: 'app-comp-viewkeymetrics', 
+  selector: 'app-comp-viewkeymetrics',
   templateUrl: './comp-viewkeymetrics.component.html'
 })
 export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
@@ -330,7 +330,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visboprojectversions) {
       return;
     }
-    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC');
+    let predict = false;
+    this.visboprojectversions.forEach(vpv => {
+      if (vpv.keyMetrics) {
+        predict = predict || this.hasKM(vpv.keyMetrics, 'PAC');
+      }
+    });
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {

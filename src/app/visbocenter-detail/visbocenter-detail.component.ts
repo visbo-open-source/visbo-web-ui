@@ -144,7 +144,7 @@ export class VisbocenterDetailComponent implements OnInit {
         }
       }
     });
-    let result = settings.filter(item => item.value?.systemLimit !== true);
+    const result = settings.filter(item => item.value?.systemLimit !== true);
     return result;
   }
 

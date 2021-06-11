@@ -11,13 +11,13 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc, VPVKeyMetrics } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
-import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
+import { VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenter } from '../_models/visbocenter';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -410,7 +410,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   }
 
   calcVPVKeyMetric(vpv: VisboProjectVersion): VPVKeyMetricsCalc {
-    let elementKeyMetric: VPVKeyMetricsCalc;
+    const elementKeyMetric = new VPVKeyMetricsCalc();
     if (vpv.vp?.vpType != 0) {
       return undefined;
     }
@@ -443,7 +443,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
         return undefined;
       }
     }
-    elementKeyMetric = new VPVKeyMetricsCalc();
     elementKeyMetric.name = vpv.name;
     elementKeyMetric.vp = vpv.vp;
     elementKeyMetric.variantName = vpv.variantName;
@@ -551,7 +550,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     }
     // this.log(`calc keyMetrics LEN ${this.vpvList[0].length}`);
     const filter = (this.filter || '').toLowerCase();
-    let refList: number[] = []
+    const refList: number[] = []
     this.initFilter(this.vpvList);
     // add all original vpvs with calculated KeyMetrics to the list
     for (let index = 0; index < this.vpvList[0].length; index++) {
@@ -723,7 +722,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       let colorValue = 0;
       let valueX: number;
       let valueY: number;
-      let costBaseLastTotal = Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1;
+      costBaseLastTotal = Math.max(costBaseLastTotal, Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1);
       switch (this.metricX) {
         case 'Cost':
           valueX = Math.round((vpv.savingCostTotal || 1) * 100);
@@ -1040,7 +1039,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   }
 
   copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
-    let element = new exportKeyMetric();
+    const element = new exportKeyMetric();
     element.name = vpv.name;
     element.timestamp = vpv.timestamp;
     if (vpv.keyMetrics) {
