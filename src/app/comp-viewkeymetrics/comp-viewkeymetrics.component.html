@@ -26,12 +26,16 @@
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
             </a>
           </td>
-          <td (click)="switchView('Cost', true)"
-              title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€">
-            <a>
+          <td (click)="switchView('Cost', true)">
+            <div title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€"><a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
-            </a>
+            </a></div>
+            <div *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict" title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€"><a>
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCostPredict} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotalPredict | number:'1.0-0'}} %) </span>
+              {{ 'vpKeyMetric.lbl.prediction' | translate }}
+            </a></div>
           </td>
           <td *ngIf="!getPreView()" class="d-print-no"><a>
             <button type="button" class="btn" (click)="switchToHistory('Cost')" title="{{historyButton}}">i</button>

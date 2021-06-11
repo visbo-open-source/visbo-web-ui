@@ -83,6 +83,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     hasOrga = false;
     vcOrga: VisboSetting[];
     customize: VisboSetting;
+    calcPredict = false;
 
     pageParams = new VPFParams();
     isGlobalChecked = false;
@@ -116,6 +117,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     localStorage.removeItem('vpfFilter');
     const refDate = this.route.snapshot.queryParams['refDate'];
+    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
     const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
     const filter = this.route.snapshot.queryParams['filter'] || null;
@@ -249,7 +251,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   getVisboPortfolioKeyMetrics(): void {
     this.log(`get VPF keyMetrics ${this.vpfActive.name} ${this.vpfActive._id}`);
 
-    this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate)
+    this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id, this.vpvRefDate, false, this.calcPredict, this.vpActive.vcid)
       .subscribe(
         listVPV => {
           this.listVPV = listVPV;
@@ -664,9 +666,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   getKM(vp: VisboProject): number {
     const vpv = this.listVPV?.find(item => item.vpid.toString() == vp._id.toString())
-    let result = 0;
+    // we only know if there is a version, if it contains already to the portfolio list and we have fetched the related versions
+    // RESULT 0: no Version of the VP either because no version or no permission, 1 vpv with keyMetrics available, 2: no keyMetrics because of missing baseline
+    const isStored = this.vpfActive.allItems && this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
+    let result = isStored ? 0 : 1;
     if (vpv) {
-      result = vpv.keyMetrics ? 0 : 2;
+      result = vpv.keyMetrics ? 1 : 2;
     }
     return result;
   }

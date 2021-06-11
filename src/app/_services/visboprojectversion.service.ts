@@ -195,13 +195,18 @@ export class VisboProjectVersionService {
   }
 
   /** GET getVisboPortfolioVersions from the server if id is specified get only projects of this vpid*/
-  getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted = false): Observable<VisboProjectVersion[]> {
+  getVisboPortfolioKeyMetrics(id: string, refDate: Date = new Date(), deleted = false, calcPredict = false, vcid:string = undefined): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     params = params.append('vpfid', id);
     params = params.append('refDate', refDate.toISOString());
-    params = params.append('keyMetrics', '1');
+    if (calcPredict && vcid) {
+      params = params.append('vcid', vcid);
+      params = params.append('keyMetrics', '2');
+    } else {
+      params = params.append('keyMetrics', '1');
+    }
     if (deleted) {
       params = params.append('deleted', '1');
     }
@@ -263,11 +268,11 @@ export class VisboProjectVersionService {
     }
     if (pfv) {
       params = params.append('pfv', '1');
-    }    
+    }
     if (startDate) {
       this.log(`Calling From: ${startDate.toISOString()}`);
       params = params.append('startDate', startDate.toISOString());
-    }    
+    }
     if (endDate) {
       this.log(`Calling To: ${endDate.toISOString()}`);
       params = params.append('endDate', endDate.toISOString());

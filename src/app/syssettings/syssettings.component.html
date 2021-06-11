@@ -1,0 +1,93 @@
+<app-sysnavbar></app-sysnavbar>
+<div class='well'>
+  <div class='row'>
+      <h2 class='panel-heading'>
+        VISBO Settings System View
+      </h2>
+  </div>
+
+  <div>
+    <div class='container-fluid'>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortTable(1)">Name</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(2)">System Enabled</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(3)">Limit</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(4)">sysVC Enabled</th>
+              <th class="d-none d-md-table-cell" (click)="sortTable(5)">Limit</th>
+              <th (click)="sortTable(10)">Updated</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <tr *ngFor="let setting of vcsetting; let settingIndex=index" (click)="editConfigName(setting.name)" data-toggle="modal" data-target="#ConfigValue">
+              <td><a>{{setting.name}}</a></td>
+              <td><a>
+                <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.systemEnabled}"></ng-container>
+              </a></td>
+              <td><a>
+                <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.systemLimit}"></ng-container>
+              </a></td>
+              <td><a *ngIf="!setting.value.systemLimit">
+                <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.sysVCEnabled}"></ng-container>
+              </a></td>
+              <td><a *ngIf="!setting.value.systemLimit">
+                <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.sysVCLimit}"></ng-container>
+              </a></td>
+              <td>{{setting.updatedAt | date :'dd.MM HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #showLimit let-level="level">
+  <i class="fas fa-lg" [ngClass]="{'fa-toggle-on text-success': level == true}"></i>
+</ng-template>
+
+<ng-template #showEnabled let-level="level">
+  <i class="far fa-lg" [ngClass]="{'fa-check-circle text-success': level == true, 'fa-times-circle text-danger': level == false}"></i>
+</ng-template>
+
+<div class="modal fade" id="ConfigValue" tabindex="-1" role="dialog" aria-labelledby="Config Value" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document" *ngIf="vcsetting && editIndex >= 0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ConfigDetailTitle">Edit {{vcsetting[editIndex].name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <!-- Index {{ editIndex }} -->
+      <div class="modal-body">
+        <form>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check1" name="systemEnabled" [(ngModel)]="vcsetting[editIndex].value.systemEnabled" #systemEnabled="ngModel">
+                <label class="custom-control-label" for="check1">System Enabled</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check2" name="systemLimit" [(ngModel)]="vcsetting[editIndex].value.systemLimit" #systemLimit="ngModel">
+                <label class="custom-control-label" for="check2">Enforce as Limit</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check3" name="sysVCEnabled" [(ngModel)]="vcsetting[editIndex].value.sysVCEnabled" #sysVCEnabled="ngModel">
+                <label class="custom-control-label" for="check3">sysVC Enabled</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="check4" name="sysVCLimit" [(ngModel)]="vcsetting[editIndex].value.sysVCLimit" #sysVCLimit="ngModel">
+                <label class="custom-control-label" for="check4">Enforce as Limit</label>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer align-items-end">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button *ngIf="hasSystemPerm(permSystem.Modify)" type="button" class="btn btn-primary" (click)="updateConfig(vcsetting[editIndex])" data-dismiss="modal">Update</button>
+      </div>
+    </div>
+  </div>
+</div>

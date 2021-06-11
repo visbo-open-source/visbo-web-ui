@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
+import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
 import { VisboProject, VPParams } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -21,7 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView }
+import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboIsToday, getPreView, visboGetShortText }
             from '../_helpers/visbo.helper';
 
 import { scale, brewer } from 'chroma-js';
@@ -625,8 +625,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   updateDateRange(): void {
-    this.updateUrlParam('from', undefined)
-    this.getCapacity();
+    if (this.compareDate()) {
+      this.updateUrlParam('from', undefined)
+      this.getCapacity();
+    }
+
   }
 
   updateRef(): void {
@@ -1076,6 +1079,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewCapacity(): void {
     const graphDataCapacity = [];
     const capacity = this.visboCapacity;
+    if (capacity.length > 0 ) {
+      this.capacityFrom =  new Date(capacity[0].month);
+      this.capacityTo = new Date(capacity[capacity.length-1].month);
+    }
 
     this.sumCost = 0;
     this.sumBudget = 0;
@@ -1477,11 +1484,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const sortedArray = sortedValues.map((item) => item.elems);
     const flatArray = [].concat([], ...sortedArray);
     console.log(sortedValues);
-    const sortedProjects: VisboCapacity[] = flatArray;    
+    const sortedProjects: VisboCapacity[] = flatArray;
     return sortedProjects;
     // ------ SORT END ------
  }
- 
+
 
   visboRoundToString(value: number, fraction = 1): string {
     const result = value || 0;
@@ -1723,53 +1730,83 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return result;
   }
 
+  copyCapacity(vpv: VisboCapacity, name: string): VisboCapacity {
+    const copy: VisboCapacity = Object.assign({}, vpv);
+    copy.month = new Date(vpv.month);
+    copy.name = name;
+    delete copy.vpid;
+
+    return copy;
+  }
+
   exportExcel(): void {
     this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
-    // MS TODO: convert list to matix
+    // convert list to matix
 
     const excel: VisboCapacity[] = [];
 
+    let name = '';
+    let urlWeb = ''
+    const listURL: string[] = [];
+    const tooltip = this.translate.instant('ViewCapacity.msg.viewWeb');
+    if (this.vpfActive) {
+      name = this.vpfActive.name
+      urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Capacity');
+    } else if (this.vpActive) {
+      name = this.vpActive.name;
+      urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Capacity');
+    } else if (this.vcActive) {
+      name = this.vcActive.name;
+      urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Capacity');
+    }
     if (this.visboCapacity) {
       this.visboCapacity.forEach(element => {
-        element.month = new Date(element.month);
-        excel.push(element);
+        excel.push(this.copyCapacity(element, name));
+        listURL.push(urlWeb);
       });
     }
     if (this.visboCapacityChild) {
       this.visboCapacityChild.forEach(element => {
-        element.month = new Date(element.month);
-        excel.push(element);
+        let urlWebDetail = urlWeb;
+        if (element.name) {
+          urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Capacity');
+        }
+        excel.push(this.copyCapacity(element, element.name || name));
+        listURL.push(urlWebDetail);
       });
     }
 
     const len = excel.length;
     const width = Object.keys(excel[0]).length;
-    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
-    let name = '';
-    if (this.vpfActive) {
-      name = this.vpfActive.name
-    } else if (this.vpActive) {
-      name = this.vpActive.name;
-    } else if (this.vcActive) {
-      name = this.vcActive.name;
-    }
     this.log(`Export Data to Excel ${excel.length}`);
     // Add Localised header to excel
     // eslint-disable-next-line
     const header: any = {};
+    let colName: number, colIndex = 0;
     for (const element in excel[0]) {
       this.log(`Processing Header ${element}`);
+      if (element == 'name') {
+        colName = colIndex;
+      }
+      colIndex++;
       header[element] = this.translate.instant('ViewCapacity.lbl.'.concat(element))
     }
     excel.unshift(header);
     this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = listURL[index - 1];
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
     worksheet['!autofilter'] = { ref: matrix };
     // eslint-disable-next-line
     const sheets: any = {};
-    sheets[name] = worksheet;
-    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [name] };
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
     // eslint-disable-next-line
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const actDate = new Date();
@@ -1802,6 +1839,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
        return actDate;
     }
     return null;
+  }
+
+  compareDate(): boolean {
+    const start = this.capacityFrom;
+    const end = this.capacityTo;
+
+    const stDate = new Date(start);
+    const enDate = new Date(end);
+    const compDate = visboCmpDate(enDate,stDate);
+
+    if(compDate >= 0) {
+      return true;
+    } else {
+      // alert("Please Enter the correct date ");
+      return false;
+    }
   }
 
   getPreView(): boolean {

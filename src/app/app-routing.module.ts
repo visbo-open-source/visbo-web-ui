@@ -19,6 +19,8 @@ import { VisboProjectsComponent } from './visboprojects/visboprojects.component'
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
+import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
+
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 // import { VisboPortfolioVersionDetailComponent } from './visboprojectversion-detail/visboprojectversion-detail.component';
@@ -36,6 +38,7 @@ import { SysuserComponent } from './sysuser/sysuser.component';
 import { SysLogComponent } from './syslog/syslog.component';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './syssettings/syssettings.component';
 
 
 const routes: Routes = [
@@ -64,6 +67,7 @@ const routes: Routes = [
   { path: 'vpv', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpv/:id', component: VisboProjectVersionsComponent, canActivate: [AuthGuard] },
   { path: 'vpf/:id', component: VisboPortfolioVersionsComponent, canActivate: [AuthGuard] },
+  { path: 'vpfcmp/:id', component: VisboPortfolioCmpComponent, canActivate: [AuthGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'sysadmins', component: SysvisbosystemComponent, canActivate: [AuthGuard] },
@@ -76,6 +80,7 @@ const routes: Routes = [
   { path: 'syslog', component: SysLogComponent, canActivate: [AuthGuard] },
   { path: 'systasks', component: SystasksComponent, canActivate: [AuthGuard] },
   { path: 'sysconfig', component: SysconfigComponent, canActivate: [AuthGuard] },
+  { path: 'syssetting', component: SyssettingsComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard'}
 ];

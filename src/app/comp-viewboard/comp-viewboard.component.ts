@@ -186,12 +186,15 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let lastbu = '';
     let sameBuCount = 0;
     let rgbHex = defaultColor;
-    let colorArray = [];    
+    let colorArray = [];
     let nobuArray = [];
     let scaleArray = [];
     let nobu = 0;
 
     for (let i = 0; i < this.listVPV.length; i++) {
+      if (this.listVPV[i].vp?.vpType != 0) {
+        continue;
+      }
       if (filter
         && !(this.listVPV[i].vp?.name.toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
@@ -234,7 +237,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           new Date(this.listVPV[i].startDate),
           new Date(this.listVPV[i].endDate)
         ]);
-        let buColor = 0;        
+        let buColor = 0;
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         bu = item ? item.value : undefined;
         if (i == 0) { lastbu = bu }
@@ -246,12 +249,12 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
             colorArray = colorArray.concat(scaleArray);
             sameBuCount = 0;
             lastbu = bu;
-          } 
+          }
           sameBuCount += 1;
           buColor = buDefs[bu];
           rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
         } else {
-          nobu += 1; 
+          nobu += 1;
           nobuArray.push(defaultColor);
         }
 
@@ -405,7 +408,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (customField) {
           item.businessUnit = customField.value;
         } else {
-          item.businessUnit = ''; 
+          item.businessUnit = '';
         }
       }
     });

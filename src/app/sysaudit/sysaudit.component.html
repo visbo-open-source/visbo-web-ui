@@ -168,9 +168,17 @@
             <label class="v_compact_t col-4 form-control-static">Response Size:</label>
             <label class="v_compact_t col-7 form-control-static">{{ helperFormatBytes(audit[auditIndex].result.size || 0, 2) }} </label>
           </div>
-          <div *ngIf="showMore">
+          <div *ngIf="showMore && audit[auditIndex].userAgent">
             <label class="v_compact_t col-4 form-control-static">User Agent:</label>
             <label class="v_compact_t col-7 form-control-static">{{ audit[auditIndex].userAgent }}</label>
+          </div>
+          <div *ngIf="showMore && audit[auditIndex].vc && audit[auditIndex].vc.vcjson">
+            <label class="v_compact_t col-4 form-control-static">VC Details:</label>
+            <label class="v_compact_t col-7 form-control-static" style="overflow-wrap: break-word;">{{ audit[auditIndex].vc.vcjson }} </label>
+          </div>
+          <div *ngIf="showMore && audit[auditIndex].vp && audit[auditIndex].vp.vpjson">
+            <label class="v_compact_t col-4 form-control-static">VP Details:</label>
+            <label class="v_compact_t col-7 form-control-static" style="overflow-wrap: break-word;">{{ audit[auditIndex].vp.vpjson }} </label>
           </div>
           <div *ngIf="showMore && audit[auditIndex].ip">
             <label class="v_compact_t col-4 form-control-static">IP:</label>
