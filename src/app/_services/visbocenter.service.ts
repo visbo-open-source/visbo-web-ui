@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
+import { VisboProject, VisboProjectResponse } from '../_models/visboproject';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 import { MessageService } from './message.service';
 
@@ -144,11 +145,11 @@ export class VisboCenterService  {
     }
     if (deleted) {
       params = params.append('deleted', '1');
-    }    
+    }
     if (startDate) {
       this.log(`Calling From: ${startDate.toISOString()}`);
       params = params.append('startDate', startDate.toISOString());
-    }    
+    }
     if (endDate) {
       this.log(`Calling To: ${endDate.toISOString()}`);
       params = params.append('endDate', endDate.toISOString());
@@ -346,6 +347,39 @@ export class VisboCenterService  {
       tap(() => this.log(`deleted Visbo Center Group ${group.name}`)),
       catchError(this.handleError<VGResponse>('deleteVisboCenterGroup'))
     );
+  }
+
+  // GET VisboCenter Training Info from the server
+  getTrainingStatus(vcid: string, deleted = false): Observable<VisboProject[]> {
+    const url = `${this.vcUrl}/${vcid}/predict`;
+    let params = new HttpParams();
+    params = params.append('sysadmin', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request GET Predict Training: ${url} `);
+    return this.http.get<VisboProjectResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vp),
+        tap(() => this.log(`fetched Predict Training Info `)),
+        catchError(this.handleError<VisboProject[]>('getVisboCenterTraining'))
+      );
+  }
+
+  // Remove VisboCenter Training Info from the server
+  removeTrainingStatus(vcid: string, deleted = false): Observable<VisboProjectResponse> {
+    const url = `${this.vcUrl}/${vcid}/predict`;
+    let params = new HttpParams();
+    params = params.append('sysadmin', '1');
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request GET Predict Training: ${url} `);
+    return this.http.delete<VisboProjectResponse>(url, { headers , params })
+      .pipe(
+        tap(() => this.log(`removed Predict Training Info `)),
+        catchError(this.handleError<VisboProjectResponse>('removeVisboCenterTraining'))
+      );
   }
 
   /**

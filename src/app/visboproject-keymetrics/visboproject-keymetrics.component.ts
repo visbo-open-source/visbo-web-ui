@@ -1,5 +1,5 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Sanitizer, SecurityContext } from '@angular/core';
-import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -61,6 +61,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   pfvVariant: string;
   predictURL: string;
   customPredict: string;
+  calcPredict = false;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -122,6 +123,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.variantName = this.route.snapshot.queryParams['variantName'];
     this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     this.pfvVariant = this.translate.instant('vpKeyMetric.lbl.pfvVariant');
+    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       // map old / outdated URLs to common url
@@ -463,7 +465,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkBaselineVersion(vpv: VisboProjectVersion): boolean {
     let result = true;
     if (vpv && this.allVPVs) {
-      let latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
+      const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
       if (latestVPV?._id.toString() == vpv._id.toString()) {
         // check only the latest version if a newer PFV exists
         if (this.vpvBaseline
@@ -502,7 +504,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               variantID = variant ? variant._id.toString() : '';
             }
             this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, 1)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, this.calcPredict ? 2 : 1)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -755,14 +757,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       }
     });
-    let result = settings.filter(item => item.value?.systemLimit !== true);
+    const result = settings.filter(item => item.value?.systemLimit !== true);
     return result;
   }
 
   getEnableDisable(name: string, level: number, notLimitOff: boolean): boolean {
     let result = false;
     if (this.vcEnableDisable) {
-      let setting = this.vcEnableDisable.find(item => item.name == name);
+      const setting = this.vcEnableDisable.find(item => item.name == name);
       if (setting && setting.value) {
         if (level == 0) {
           if (notLimitOff) {
@@ -1084,7 +1086,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
             this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
               .subscribe(
-                vpv => {
+                () => {
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                   this.alertService.success(message, true);
                   // this.updateVPVCount(this.vpActive, vpv.variantName, 1);
@@ -1294,7 +1296,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       list = this.vpActive?.customFieldString;
     }
     list.forEach(item => {
-      let fieldString = new VPCustomString();
+      const fieldString = new VPCustomString();
       fieldString.name = item.name;
       fieldString.type = item.type;
       fieldString.value = item.value;
@@ -1312,7 +1314,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       list = this.vpActive?.customFieldDouble;
     }
     list.forEach(item => {
-      let fieldString = new VPCustomDouble();
+      const fieldString = new VPCustomDouble();
       fieldString.name = item.name;
       fieldString.type = item.type;
       fieldString.value = item.value;

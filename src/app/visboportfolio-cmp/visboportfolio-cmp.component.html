@@ -1,0 +1,109 @@
+<app-usernavbar></app-usernavbar>
+<div class='well'>
+  <div *ngIf="vpActive" class='row'>
+    <div class='col'>
+      <h2>
+        {{ 'vpfCmp.title' | translate }}:
+        <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
+      </h2>
+    <!-- <div *ngIf="activeVPFVariant && activeVPFVariant.description">
+      {{ activeVPFVariant.description }}
+    </div> -->
+      <h5 *ngIf="vpActive">{{ 'vpfCmp.titleVC' | translate }}:
+        <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+        <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
+      </h5>
+    </div>
+  </div>
+  <div *ngIf="vpfActive" class="container-fluid">
+    <div class="row">
+      <div class="col-6 px-0">
+        <div>{{ 'vpfCmp.titleCmp' | translate }}:</div>
+      </div>
+    </div>
+    <div class="row gx-5 pb-2">
+      <div class="col">
+        <!-- Box for original version -->
+        <div class="p-3 border">
+          <div *ngIf="activeVPFVariant[0] && dropDown.length > 1" class="dropdown mb-2">
+            <div class="row">
+              <div class="col-4">
+                {{ 'vpfCmp.lbl.variant' | translate }}
+              </div>
+              <div class="col-7 text-dark">
+                <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[0].description}}">{{displayVariantName(activeVPFVariant[0])}}</a>
+                <div class="dropdown-menu">
+                  <a *ngFor="let item of dropDown" class="dropdown-item">
+                    <div *ngIf="checkVPFActive(item, 0)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version, 0)">{{ item.name }} </div>
+                    <div *ngIf="!checkVPFActive(item, 0)" class="dropdown-item" (click)="switchPFVersion(item.version, 0)">{{ item.name }} </div>
+                  </a>
+                </div>
+              </div>
+              <a class="col-1 text-right" (click)="gotoVPF(0)">
+                <a><i class="fas fa-link"></i></a>
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              {{ 'vpfCmp.lbl.vpvFrom' | translate }}
+            </div>
+            <div class="col-8 text-dark">
+              <input id="vpvRefDate0" type="date" class="border-1" name="vpvRefDate0" min= "2015-01-01" max="2050-01-01" [ngModel]="vpvRefDate[0] | date:'yyyy-MM-dd'" (input)="vpvRefDate[0]=parseDate($event.target.value)" (change)="updateDateRange(0)" >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <!-- Box for compare version -->
+        <div class="p-3 border bg-light">
+          <div *ngIf="activeVPFVariant[1] && dropDown.length > 1" class="dropdown mb-2">
+            <div class="row">
+              <div class="col-4">
+                {{ 'vpfCmp.lbl.variant' | translate }}
+              </div>
+              <div class="col-7 text-dark">
+                <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[1].description}}">{{displayVariantName(activeVPFVariant[1])}}</a>
+                <div class="dropdown-menu">
+                  <a *ngFor="let item of dropDown" class="dropdown-item">
+                    <div *ngIf="checkVPFActive(item, 1)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version, 1)">{{ item.name }} </div>
+                    <div *ngIf="!checkVPFActive(item, 1)" class="dropdown-item" (click)="switchPFVersion(item.version, 1)">{{ item.name }} </div>
+                  </a>
+                </div>
+              </div>
+              <a class="col-1 text-right" (click)="gotoVPF(1)">
+                <a><i class="fas fa-link"></i></a>
+              </a>
+           </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              {{ 'vpfCmp.lbl.vpvFrom' | translate }}
+            </div>
+            <div class="col-8 text-dark">
+              <input id="vpvRefDate1" type="date" class="border-1" name="vpvRefDate1" min= "2015-01-01" max="2050-01-01" [ngModel]="vpvRefDate[1] | date:'yyyy-MM-dd'" (input)="vpvRefDate[1]=parseDate($event.target.value)" (change)="updateDateRange(1)" >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!getPreView()" class="row d-print-none">
+      <div class="col btn-toolbar" style="padding: unset;">
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "KeyMetrics")'>{{ 'vpfCmp.btn.viewKeyMetrics' | translate }}</button>
+        <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "List")'>{{ 'vpfCmp.btn.viewList' | translate }}</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!vpfActive[0] || !vpfActive[1]" class="container-fluid text-danger">
+    {{ 'vpfCmp.msg.noProjectList' | translate }}
+  </div>
+
+  <div *ngIf="pageParams.view == 'KeyMetrics' && hasListVPV()">
+    <hr>
+    <app-comp-viewbubblecmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpvList]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+  </div>
+  <div *ngIf="pageParams.view == 'List' && hasListVPV()">
+    <hr>
+    <app-comp-viewbubblecmp [bubbleMode]="false" [vpfActive]="vpfActive" [vpvList]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+  </div>
+</div>

@@ -118,6 +118,9 @@
               Visbo Center Settings Enable / Disable
           </h5>
         </div>
+        <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='col'>
+          <button id="Training" type="button" class="btn btn-primary float-right my-1" data-toggle="modal" data-target="#VcTraining" (click)="getTrainingInfo()">View Training</button>
+        </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover table-sortable'>
@@ -552,6 +555,43 @@
           <div class="form-group mt-2">
             <button id="ButtonBack" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal View Training Info -->
+  <div class="modal fade" id="VcTraining" tabindex="-1" role="dialog" aria-labelledby="VcTrainingTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcTrainingTitle">Training Data from Visbo Center</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning">Do you really want to delete Training Data from Visbo Center? </label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label class="col-form-label">Visbo Center:</label>
+              <label class="col-8 form-control-static">{{ visbocenter.name }} </label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Affected VPs:</label>
+              <label class="col-8 form-control-static">{{ totalTrainingVP }}</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Affected VPVs:</label>
+              <label class="col-8 form-control-static">{{ totalTraining }}</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">Close</button>
+          <button id="DeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeTrainingInfo()" data-dismiss="modal">Remove</button>
         </div>
       </div>
     </div>

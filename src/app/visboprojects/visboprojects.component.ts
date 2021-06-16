@@ -22,7 +22,6 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 import { VisboSetting } from '../_models/visbosetting';
-import { isThisTypeNode } from 'typescript';
 
 class DropDown {
   name: string;

@@ -754,6 +754,88 @@
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
 		}
 	},
+	"compViewBubbleCmp": {
+		"titleChange": "Change Key Metric",
+		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Number of projects",
+			"project": "Project",
+			"variant": "Variant",
+			"orgVersion": "Original",
+			"cmpVersion": "Compare",
+			"timestamp": "Timestamp",
+			"bu": "Business Unit",
+			"lead": "Project Manager",
+			"template": "Template",
+			"startDate": "Project start date",
+			"endDate": "Project end date",
+			"timeline": "Timeline",
+			"bac": "Total Cost (Baseline)",
+			"pv": "Cost (Baseline)",
+			"deadlines": "Deadlines (Baseline)",
+			"deliveries": "Deliveries (Baseline)",
+			"days": "days",
+			"weeks": "weeks",
+			"compare": "Compare of",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "filtered with",
+			"filter": "Filter Projects",
+			"strategicFit": "Strategic fit",
+			"risk": "Risk",
+			"all": "All"
+		},
+		"btn": {
+			"showChart": "View Chart",
+			"showList": "View List",
+			"exportExcel": "Excel"
+		},
+		"metric": {
+			"costName": "Cost (total)",
+			"costAxis": "Total Cost at completion",
+			"costBubble": "Total Cost at completion (%)",
+			"costTable": "Total Cost at completion",
+			"costActualName": "Cost (actual)",
+			"costActualAxis": "Actual Cost",
+			"costActualBubble": "Actual Cost (%)",
+			"costActualTable": "Actual Cost",
+			"costPredictName": "Cost (Prediction)",
+			"costPredictAxis": "Prediction Total Cost at completion",
+			"costPredictBubble": "Prediction Total Cost at completion (%)",
+			"costPredictTable": "Prediction Total Cost at completion",
+			"endDateName": "Time (End Date)",
+			"endDateAxis": "Deviation in End Date",
+			"endDateBubble": "Change of End Date in weeks",
+			"endDateTable": "Change of End Date",
+			"deadlineName": "Time (Deadlines)",
+			"deadlineAxis": "Deviation in achieved Deadlines",
+			"deadlineBubble": "Achieved Deadlines in %",
+			"deadlineTable": "Achieved Deadlines",
+			"deadlineFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deadlineFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deadlineFinishedDelayBubble": "Deviation in finished Deadlines",
+			"deadlineFinishedDelayTable": "finished Deadlines",
+			"deadlineUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deadlineUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deadlineUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
+			"deadlineUnFinishedDelayTable": "unfinished Deadlines",
+			"deliveryName": "Quality (Deliveries)",
+			"deliveryAxis": "Achieved Deliveries",
+			"deliveryBubble": "Achieved Deliveries in %",
+			"deliveryTable": "Achieved Deliveries",
+			"deliveryFinishedDelayName": "Time (Finished Deadline Achievement)",
+			"deliveryFinishedDelayAxis": "Average Deviation in finished Deadlines",
+			"deliveryFinishedDelayBubble": "Deviation in finished Deadlines",
+			"deliveryFinishedDelayTable": "finished Deadlines",
+			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
+			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
+		},
+		"msg": {
+			"noVersions": "No Project Versions related to this Date",
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
@@ -933,6 +1015,41 @@
 			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
 			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List",
 			"warningVersionMismatch": "Only {{count}} of {{total}} VISBO Projects visible"
+		}
+	},
+	"vpfCmp": {
+		"title": "Projects from Portfolio",
+		"titleName": "Portfolio {{name}}",
+		"titleVC": "VISBO Center",
+		"titleVersion": "Portfolio Version",
+		"titleSelectVersion": "Select Portfolio Version",
+		"titleCmp": "Compare of",
+		"titleRessourceChange": "Change Ressource",
+		"titleVPList": "Project list for {{name}} from {{from}}",
+		"titleChangeVPVariant": "Change of Variant in the Portfolio List",
+		"lbl": {
+			"name": "Project",
+			"variant": "Portfolio Variant",
+			"modified": "Modified",
+			"filter": "Filter",
+			"defaultVariant": "Standard",
+			"nrOfItems": "Nr. of Projects",
+			"user": "Created by",
+			"from": "From",
+			"vpvFrom": "Key Metrics from"
+		},
+		"btn": {
+			"viewKeyMetrics": "Project Metric",
+			"viewCapacity": "Capacity",
+			"viewList": "List",
+			"exportExcel": "Excel"
+		},
+		"msg": {
+			"noProjectList": "This portfolio does not have a project list",
+			"noVersions": "No Project Versions related to these criterias",
+			"errorPermVP": "No Permission for this Projects",
+			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
+			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List"
 		}
 	},
 	"vcAudit": {

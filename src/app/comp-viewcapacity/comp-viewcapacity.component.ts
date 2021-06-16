@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSettingListResponse, VisboOrganisation , VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
+import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
 import { VisboProject, VPParams } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -21,7 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboCmpString, visboIsToday, getPreView, visboGetShortText }
+import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboIsToday, getPreView, visboGetShortText }
             from '../_helpers/visbo.helper';
 
 import { scale, brewer } from 'chroma-js';
@@ -629,7 +629,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.updateUrlParam('from', undefined)
       this.getCapacity();
     }
-   
+
   }
 
   updateRef(): void {
@@ -1082,7 +1082,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (capacity.length > 0 ) {
       this.capacityFrom =  new Date(capacity[0].month);
       this.capacityTo = new Date(capacity[capacity.length-1].month);
-    }   
+    }
 
     this.sumCost = 0;
     this.sumBudget = 0;
@@ -1731,7 +1731,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   copyCapacity(vpv: VisboCapacity, name: string): VisboCapacity {
-    let copy: VisboCapacity = Object.assign({}, vpv);
+    const copy: VisboCapacity = Object.assign({}, vpv);
     copy.month = new Date(vpv.month);
     copy.name = name;
     delete copy.vpid;
@@ -1747,7 +1747,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     let name = '';
     let urlWeb = ''
-    let listURL: string[] = [];
+    const listURL: string[] = [];
     const tooltip = this.translate.instant('ViewCapacity.msg.viewWeb');
     if (this.vpfActive) {
       name = this.vpfActive.name
@@ -1841,22 +1841,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return null;
   }
 
-  compareDate(): boolean { 
+  compareDate(): boolean {
     const start = this.capacityFrom;
     const end = this.capacityTo;
-    
+
     const stDate = new Date(start);
     const enDate = new Date(end);
     const compDate = visboCmpDate(enDate,stDate);
-    
+
     if(compDate >= 0) {
       return true;
-    } else { 
+    } else {
       // alert("Please Enter the correct date ");
       return false;
     }
   }
-  
+
   getPreView(): boolean {
     return getPreView();
   }

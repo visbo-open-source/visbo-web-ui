@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
-import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
+import { VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -907,6 +907,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (this.refDate && !visboIsToday(this.refDate)) {
       queryParams.refDate = this.refDate.toISOString();
     }
+    const calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
+    if (calcPredict) {
+      queryParams.calcPredict = '1';
+    }
 
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], {
       queryParams: queryParams
@@ -942,7 +946,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
-    let element = new exportKeyMetric();
+    const element = new exportKeyMetric();
     element.name = vpv.name;
     element.timestamp = vpv.timestamp;
     if (vpv.keyMetrics) {

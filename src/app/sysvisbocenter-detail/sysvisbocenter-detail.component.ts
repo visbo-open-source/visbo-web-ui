@@ -41,6 +41,9 @@ export class SysvisbocenterDetailComponent implements OnInit {
   vcSettingsEnableDisable: VisboSetting[];
   indexEnableDisable: number;
 
+  totalTraining = 0;
+  totalTrainingVP = 0;
+
   sortUserColumn = 1;
   sortUserAscending = true;
   sortGroupColumn = 1;
@@ -541,6 +544,50 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  getTrainingInfo(): void {
+    this.log(`Get Training Info for VC: ${this.visbocenter._id}`);
+    this.visbocenterService.getTrainingStatus(this.visbocenter._id)
+      .subscribe(
+        vpList => {
+          this.totalTraining = 0;
+          vpList.forEach(vp => this.totalTraining += vp.vpvCount || 0);
+          this.totalTrainingVP = vpList.length;
+          this.log(`VisboCenter TrainingInfo: Total VPVs ${this.totalTraining} Total VPs ${this.totalTrainingVP}`);
+        },
+        error => {
+          this.log(`VisboCenter TrainingInfo error: ${error.error.message}`);
+          if (error.status === 403) {
+            this.alertService.error(`Permission Denied: Get Visbo Center VisboCenter Training Info`);
+          } else {
+            this.log(`Error during Get Visbo Center VisboCenter Training Info ${error.error.message}`);
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  removeTrainingInfo(): void {
+    this.log(`Remove Training Info for VC: ${this.visbocenter._id}`);
+    this.visbocenterService.removeTrainingStatus(this.visbocenter._id)
+      .subscribe(
+        () => {
+          this.totalTraining = 0;
+          this.totalTrainingVP = 0;
+          this.log(`VisboCenter TrainingInfo Removed`);
+          this.alertService.success(`Visbo Center Training Info removed successfully`);
+        },
+        error => {
+          this.log(`VisboCenter TrainingInfo error: ${error.error.message}`);
+          if (error.status === 403) {
+            this.alertService.error(`Permission Denied: Get Visbo Center VisboCenter Training Info`);
+          } else {
+            this.log(`Error during Get Visbo Center VisboCenter Training Info ${error.error.message}`);
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -630,6 +677,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
+    console.log('Sys VisboCenter Details: ', message)
     this.messageService.add('Sys VisboCenter Details: ' + message);
   }
 }

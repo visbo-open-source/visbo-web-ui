@@ -754,6 +754,88 @@
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
 		}
 	},
+	"compViewBubbleCmp": {
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Anzahl Projekte",
+			"project": "Projekt",
+			"variant": "Variant",
+			"orgVersion": "Quelle",
+			"cmpVersion": "Vergleich",
+			"timestamp": "Zeitstempel",
+			"bu": "Business Unit",
+			"lead": "Projektleiter",
+			"template": "Vorlage",
+			"startDate": "Projektstart",
+			"endDate": "Projektende",
+			"timeline": "Projektübersicht",
+			"bac": "Gesamtkosten (Baseline)",
+			"pv": "Kosten (Baseline)",
+			"deadlines": "Termine (Baseline)",
+			"deliveries": "Lieferungen (Baseline)",
+			"days": "Tage",
+			"weeks": "Wochen",
+			"compare": "Vergleich von",
+			"planVsBase": "plan-to-date vs. baseline",
+			"filtered": "gefiltert mit",
+			"filter": "Filter Projekte",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"all": "Alle"
+		},
+		"btn": {
+			"showChart": "Zeige Chart",
+			"showList": "Zeige Liste",
+			"exportExcel": "Excel"
+		},
+		"metric": {
+			"costName": "Kosten (gesamt)",
+			"costAxis": "Erwartete Gesamtkosten",
+			"costBubble": "Erwartete Gesamtkosten (%)",
+			"costTable": "Erwartete Gesamtkosten",
+			"costActualName": "Kosten (aktuell)",
+			"costActualAxis": "aktuelle Kosten",
+			"costActualBubble": "aktuelle Kosten (%)",
+			"costActualTable": "aktuelle Kosten",
+			"costPredictName": "Kosten (Vorhersage)",
+			"costPredictAxis": "Vorhersage  Gesamtkosten",
+			"costPredictBubble": "Vorhersage Gesamtkosten (%)",
+			"costPredictTable": "Vorhersage  Gesamtkosten",
+			"endDateName": "Termin (Projektende)",
+			"endDateAxis": "Abweichung beim Projektende",
+			"endDateBubble": "Abweichung beim Projektende (Wochen)",
+			"endDateTable": "Änderung Projektende",
+			"deadlineName": "Termin (Deadlines)",
+			"deadlineAxis": "Abweichung bei den Terminen",
+			"deadlineBubble": "Erreichte Termine in %",
+			"deadlineTable": "Erreichte Termine",
+			"deadlineFinishedDelayName": "Terminabweichung (erledigte)",
+			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
+			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
+			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
+			"deadlineUnFinishedDelayTable": "Unerledigte",
+			"deliveryName": "Qualität (Lieferungen)",
+			"deliveryAxis": "Erreichte Lieferungen",
+			"deliveryBubble": "Erreichte Lieferungen in %",
+			"deliveryTable": "Erreichte Lieferungen",
+			"deliveryFinishedDelayName": "Abweichung bei Lieferungen (erledigte)",
+			"deliveryFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayBubble": "Abweichung bei erledigten Lieferungen",
+			"deliveryFinishedDelayTable": "Erledigte",
+			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
+			"deliveryUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
+			"deliveryUnFinishedDelayTable": "Unerledigte"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
 	"compViewBoard": {
 		"lbl": {
 			"project": "Projekt",
@@ -933,6 +1015,41 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"errorVPFPerm": "Keine Berechtigung für VISBO Portfolio {{name}} Liste",
 			"warningVersionMismatch": "Nur {{count}} von {{total}} VISBO Projekte sichtbar"
+		}
+	},
+	"vpfCmp": {
+		"title": "Projekte aus Portfolio",
+		"titleName": "Portfolio {{name}}",
+		"titleVC": "VISBO Center",
+		"titleVersion": "Portfolio Version",
+		"titleSelectVersion": "Auswahl Portfolio Version",
+		"titleCmp": "Vergleich von",
+		"titleRessourceChange": "Ändern der Organisations-Einheit",
+		"titleVPList": "Projekt Liste für {{name}} vom {{from}}",
+		"titleChangeVPVariant": "Änderung der Variante in der Portfolio Liste",
+		"lbl": {
+			"name": "Projekt",
+			"variant": "Portfolio Variante",
+			"modified": "Änderung",
+			"filter": "Filter",
+			"defaultVariant": "Standard",
+			"nrOfItems": "Anzahl Projekte",
+			"user": "Erstellt von",
+			"from": "Vom",
+			"vpvFrom": "Kennzahlen vom"
+		},
+		"btn": {
+			"viewKeyMetrics": "Projekt Metrik",
+			"viewCapacity": "Auslastung",
+			"viewList": "Liste",
+			"exportExcel": "Excel"
+		},
+		"msg": {
+			"noProjectList": "Dieses Portfolio hat keine Projektliste",
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorPermVP": "Keine Berechtigung für dieses VISBO Projekt",
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"errorVPFPerm": "Keine Berechtigung für VISBO Portfolio {{name}} Liste"
 		}
 	},
 	"vcAudit": {
