@@ -995,6 +995,7 @@
 			"viewCapacity": "Capacity",
 			"viewList": "List",
 			"editPFList": "Edit Portfolio List",
+			"compareVPF": "Compare",
 			"viewProjectBoard": "Project Board",
 			"exportExcel": "Excel",
 			"update": "Change",
@@ -1017,8 +1018,8 @@
 		}
 	},
 	"vpfCmp": {
-		"title": "Projects from Portfolio",
-		"titleName": "Portfolio {{name}}",
+		"title": "Compare Portfolio Versions",
+		"titleName": "Compare Portfolio Versions of {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Select Portfolio Version",
