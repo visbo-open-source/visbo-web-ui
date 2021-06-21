@@ -19,6 +19,8 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../_helpers/visbo.helper';
 
+import {BubbleChartOptions} from '../_models/_chart'
+
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -126,7 +128,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   chart = true;
   parentThis = this;
   graphBubbleData = [];
-  graphBubbleOptions = {
+  graphBubbleOptions: BubbleChartOptions;
+  defaultBubbleOptions: BubbleChartOptions = {
       // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
       'width': '100%',
       // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
@@ -638,6 +641,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   visboKeyMetricsCalcBubble(): void {
+    this.graphBubbleOptions = Object.assign({}, this.defaultBubbleOptions);
     this.graphBubbleAxis(); // set the Axis Description and properties
 
     const keyMetrics = [];
@@ -646,6 +650,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     if (this.visbokeymetrics.length > 10) {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
+    } else {
+      this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
     keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
