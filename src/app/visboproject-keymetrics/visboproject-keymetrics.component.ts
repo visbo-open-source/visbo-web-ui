@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate,constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -69,8 +69,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownBU: string[];
   customStrategicFit: number;
   customRisk: number;
+  customCommit: Date;
   editCustomFieldString: VPCustomString[];
-  editCustomFieldDouble: VPCustomDouble[];
+  editCustomFieldDouble: VPCustomDouble[];  
+  editCustomFieldDate: VPCustomDate[];
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -85,6 +87,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
+  customVPToCommit = false;
   refDate = new Date();
   refDateInterval = 'month';
   statusDirection: number;
@@ -572,8 +575,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (customFieldDouble) {
         this.customRisk = customFieldDouble.value;
       }
+      const customFieldDate = getCustomFieldDate(vp, '_PMCommit');
+      if (customFieldDate) {
+        this.customCommit = new Date(customFieldDate.value);
+      }
       this.editCustomFieldString = this.getCustomFieldListString(true);
       this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
+      this.editCustomFieldDate = this.getCustomFieldListDate(true);
       this.customVPModified = false;
       this.customVPAdd = false;
   }
@@ -595,7 +603,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   setModified(): void {
     this.customVPModified = true;
   }
-
+  
+  setVPToCommit(): void {
+    this.customVPToCommit = true;
+  }
   sameDay(dateA: Date, dateB: Date): boolean {
     const localA = new Date(dateA);
     const localB = new Date(dateB);
@@ -1321,6 +1332,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.editCustomFieldDouble.push(fieldString);
     });
     return this.editCustomFieldDouble;
+  }
+  
+  getCustomFieldListDate(vpOnly = true): VPCustomDate[] {
+    let list: VPCustomDate[] = [];
+    this.editCustomFieldDate = [];
+    if (vpOnly) {
+      list = this.vpActive?.customFieldDate?.filter(item => item.type == 'VP');
+    } else {
+      list = this.vpActive?.customFieldDate;
+    }
+    list.forEach(item => {
+      const fieldDate = new VPCustomDate();
+      fieldDate.name = item.name;
+      fieldDate.type = item.type;
+      fieldDate.value = item.value;
+      this.editCustomFieldDate.push(fieldDate);
+    });
+    return this.editCustomFieldDate;
   }
 
   getTimestampTooltip(vpv: VisboProjectVersion): string {

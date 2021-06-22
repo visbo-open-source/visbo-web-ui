@@ -579,6 +579,7 @@
 			"vpvChange": "Change",
 			"vpvMove": "Move",
 			"vpvCopy": "Copy",
+			"vpCommit": "Commit",
 			"back": "Back",
 			"save": "Save",
 			"add": "Add"
@@ -587,6 +588,7 @@
 			"changePFV": "Attention: Change of Baseline!",
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
 			"changePFVSuccess": "Project Baseline was changed successfully!",
+			"confirmCommit": "Do you really want to commit this Project version?",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
@@ -1265,7 +1267,8 @@
 	"customField": {
 		"_businessUnit": "Business Unit",
 		"_risk": "Risk",
-		"_strategicFit": "Strategic Fit"
+		"_strategicFit": "Strategic Fit",
+		"_PMCommit": "Last Commit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",
