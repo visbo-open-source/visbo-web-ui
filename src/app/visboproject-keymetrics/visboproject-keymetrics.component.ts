@@ -121,6 +121,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.customVPToCommit = false;
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
@@ -584,6 +585,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.editCustomFieldDate = this.getCustomFieldListDate(true);
       this.customVPModified = false;
       this.customVPAdd = false;
+      this.customVPToCommit = false;
   }
 
   checkVPCustomValues(): boolean {
@@ -1168,30 +1170,45 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         }
       });
-
-      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
-      this.visboprojectService.updateVisboProject(this.vpActive)
-        .subscribe(
-          (vp) => {
-            this.vpActive = vp;
-            const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
-            this.alertService.success(message, true);
-          },
-          error => {
-            this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
-              this.alertService.error(message);
-            } else if (error.status === 409) {
-              const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-          }
-        );
     }
-  }
+    if (this.vpActive && this.customVPToCommit) {
+      this.customCommit = new Date();
+      const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
+      if (customFieldDate && this.customCommit != undefined) {
+        customFieldDate.value = this.customCommit;
+      } else if (this.customCommit) {
+        addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+      }       
+      this.customVPToCommit = false;
+    }
+    if (!this.customVPToCommit) {
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+    } else {
+      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
+    }
+    
+      
+    this.visboprojectService.updateVisboProject(this.vpActive)
+      .subscribe(
+        (vp) => {
+          this.vpActive = vp;
+          const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+          this.alertService.success(message, true);
+        },
+        error => {
+          this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+    );
+  } 
 
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {
