@@ -279,6 +279,7 @@
 			"type": "Type",
 			"modified": "Modified",
 			"versions": "# Versions",
+			"commit": "Confirmed",
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Description",

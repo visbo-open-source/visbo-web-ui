@@ -8,7 +8,7 @@ import { TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject, CreateProjectProperty } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty, getCustomFieldDate, VPCustomDate } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -476,6 +476,7 @@ export class VisboProjectsComponent implements OnInit {
       });
     } else if (this.sortColumn === 2) {
       this.visboprojects.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+   
     } else if (this.sortColumn === 3) {
       this.visboprojects.sort(function(a, b) {
         return visboCmpString(a.vc.name.toLowerCase(), b.vc.name.toLowerCase());
@@ -490,6 +491,11 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojects.sort(function(a, b) {
         return a.vpType - b.vpType;
       });
+    }  else if (this.sortColumn === 6) {
+      this.visboprojects.sort(function(a, b) { 
+        const aDate = getCustomFieldDate(a, '_PMCommit') ? new Date(getCustomFieldDate(a, '_PMCommit').value) : new Date('2001-01-01');        
+        const bDate = getCustomFieldDate(b, '_PMCommit') ? new Date(getCustomFieldDate(b, '_PMCommit').value) : new Date('2001-01-01');  
+        return visboCmpDate(aDate, bDate); });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
@@ -503,6 +509,14 @@ export class VisboProjectsComponent implements OnInit {
     return vps.filter(item => item.vpType == 2);
   }
 
+  getCommitDate(vp: VisboProject):Date {    
+    if (!vp) { return undefined }
+    return getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;    
+   }
+
+  isViewWithCommit():boolean {
+    return ((this.viewMode != 'Deleted') && (this.viewMode != 'KeyMetrics') && (this.viewMode != 'Template'))
+  }
 
   /** Log a message with the MessageService */
   private log(message: string) {
