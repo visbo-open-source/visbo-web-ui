@@ -57,7 +57,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
   listVPV: VisboProjectVersion[][] = [];
   listCalcVPV: VisboProjectVersion[][] = [];
 
-  views = ['KeyMetrics', 'List'];
+  views = ['KeyMetrics', 'List', 'Capacity'];
 
   user: VisboUser;
   vpSelected: string;
@@ -74,6 +74,9 @@ export class VisboPortfolioCmpComponent implements OnInit {
 
   pageParams = new VPFParams();
   isGlobalChecked = false;
+
+  hasOrga = false;
+  vcOrga: VisboSetting[];
 
   combinedPerm: VGPermission = undefined;
   permVC = VGPVC;
@@ -139,7 +142,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
           this.titleService.setTitle(this.translate.instant('vpfCmp.titleName', {name: visboproject.name}));
           this.initProjectList(this.vpActive);
           this.getVisboPortfolioVersions();
-          // this.getVisboCenterOrga();
+          this.getVisboCenterOrga();
           // this.getVisboCenterCustomization();
         },
         error => {
@@ -151,6 +154,30 @@ export class VisboPortfolioCmpComponent implements OnInit {
             this.alertService.error(getErrorMessage(error));
           }
       });
+  }
+
+  getVisboCenterOrga(): void {
+    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      if (this.vcOrga == undefined
+      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+        // check if Orga is available
+        this.log(`get VC Orga ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
+          .subscribe(
+            vcsettings => {
+              this.vcOrga = vcsettings;
+              this.hasOrga = vcsettings.length > 0;
+            },
+            error => {
+              if (error.status === 403) {
+                const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+                this.alertService.error(message);
+              } else {
+                this.alertService.error(getErrorMessage(error));
+              }
+          });
+      }
+    }
   }
 
   initProjectList(vp: VisboProject): void {

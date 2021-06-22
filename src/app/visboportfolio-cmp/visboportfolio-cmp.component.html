@@ -91,6 +91,7 @@
       <div class="col btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "KeyMetrics")'>{{ 'vpfCmp.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "List")'>{{ 'vpfCmp.btn.viewList' | translate }}</button>
+        <!-- <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button> -->
       </div>
     </div>
   </div>
@@ -98,6 +99,10 @@
     {{ 'vpfCmp.msg.noProjectList' | translate }}
   </div>
 
+  <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
+    <hr>
+    <app-comp-viewcapacitycmp [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacitycmp>
+  </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && hasListVPV()">
     <hr>
     <app-comp-viewbubblecmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpvList]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>

@@ -110,7 +110,7 @@ class Metric {
 
 class CompareVPV {
   source: VPVKeyMetricsCalc;
-  compare: VPVKeyMetricsCalc
+  compare: VPVKeyMetricsCalc;
 }
 
 @Component({
@@ -1398,6 +1398,38 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 47) {
       this.visbokeymetrics.sort(function(a, b) {
         return (a.compare?.savingCostTotalPredict || 0) - (b.compare?.savingCostTotalPredict || 0);
+      });
+    } else if (this.sortColumn === 55) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostActual || 0) - (a.compare?.savingCostActual || 0)) - ((b.source?.savingCostActual || 0) - (b.compare?.savingCostActual || 0));
+      });
+    } else if (this.sortColumn === 52) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostTotal || 0) - (a.compare?.savingCostTotal || 0)) - ((b.source?.savingCostTotal || 0) - (b.compare?.savingCostTotal || 0));
+      });
+    } else if (this.sortColumn === 57) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostTotalPredict || 0) - (a.compare?.savingCostTotalPredict || 0)) - ((b.source?.savingCostTotalPredict || 0) - (b.compare?.savingCostTotalPredict || 0));
+      });
+    } else if (this.sortColumn === 54) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingEndDate || 0) - (a.compare?.savingEndDate || 0)) - ((b.source?.savingEndDate || 0) - (b.compare?.savingEndDate || 0));
+      });
+    } else if (this.sortColumn === 56) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.timeCompletionActual || 0) - (a.compare?.timeCompletionActual || 0)) - ((b.source?.timeCompletionActual || 0) - (b.compare?.timeCompletionActual || 0));
+      });
+    } else if (this.sortColumn === 51) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.keyMetrics?.timeDelayUnFinished || 0) - (a.compare?.keyMetrics?.timeDelayUnFinished || 0)) - ((b.source?.keyMetrics?.timeDelayUnFinished || 0) - (b.compare?.keyMetrics?.timeDelayUnFinished || 0));
+      });
+    } else if (this.sortColumn === 50) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.keyMetrics?.timeDelayFinished || 0) - (a.compare?.keyMetrics?.timeDelayFinished || 0)) - ((b.source?.keyMetrics?.timeDelayFinished || 0) - (b.compare?.keyMetrics?.timeDelayFinished || 0));
+      });
+    } else if (this.sortColumn === 58) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.deliveryCompletionActual || 0) - (a.compare?.deliveryCompletionActual || 0)) - ((b.source?.deliveryCompletionActual || 0) - (b.compare?.deliveryCompletionActual || 0));
       });
     }
 

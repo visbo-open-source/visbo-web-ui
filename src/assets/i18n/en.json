@@ -763,6 +763,7 @@
 			"variant": "Variant",
 			"orgVersion": "Original",
 			"cmpVersion": "Compare",
+			"diff": "Change",
 			"timestamp": "Timestamp",
 			"bu": "Business Unit",
 			"lead": "Project Manager",
