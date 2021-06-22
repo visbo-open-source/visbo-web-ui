@@ -172,12 +172,12 @@ export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDo
   return result;
 }
 
-export function addCustomFieldDate(vp: VisboProject, name: string, value: number): VPCustomDouble {
-  const customField = new VPCustomDouble();
+export function addCustomFieldDate(vp: VisboProject, name: string, value: Date): VPCustomDate {
+  const customField = new VPCustomDate();
   customField.name = name;
-  customField.value = value;
-  if (vp?.customFieldDouble) {
-    vp.customFieldDouble.push(customField);
+  customField.value = new Date(value);
+  if (vp?.customFieldDate) {
+    vp.customFieldDate.push(customField);
   }
   return customField;
 }
