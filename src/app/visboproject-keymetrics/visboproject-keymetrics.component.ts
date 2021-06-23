@@ -606,6 +606,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.customVPModified = true;
   }
   
+  // Commit-Button pressed 
   setVPToCommit(): void {
     this.customVPToCommit = true;
   }
@@ -944,6 +945,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  canCommit(): boolean {
+    if (this.statusDirection != undefined && this.statusDirection != 1) {
+      // not the latest version
+      return false;
+    }
+    // if (this.hasVPPerm(this.permVP.Modify) && this.hasVPPerm(this.permVP.ViewAudit) && (this.vpvActive.variantName == "")) {
+    if (this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == "")) {
+      return true;
+    }
+    return false;
+  }
   getScaleDate(mode: string): Date {
     let result: Date;
     if (mode == 'Min' && this.newVPV) {
@@ -1133,6 +1145,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   vpUpdate(): void {
+
+    // project settings changed?!
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
@@ -1153,7 +1167,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       } else if (this.customRisk) {
         addCustomFieldDouble(this.vpActive, '_risk', this.customRisk);
       }
-      // update changed custom strings
+      // update changed customFields
       this.vpActive.customFieldString.forEach(item => {
         if (item.type == 'VP') {
           const editField = this.editCustomFieldString.find(element => element.name == item.name);
@@ -1171,6 +1185,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       });
     }
+
+    // project version commited
     if (this.vpActive && this.customVPToCommit) {
       this.customCommit = new Date();
       const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
@@ -1178,16 +1194,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         customFieldDate.value = this.customCommit;
       } else if (this.customCommit) {
         addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
-      }       
-      this.customVPToCommit = false;
+      }  
     }
+
     if (!this.customVPToCommit) {
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
     } else {
       this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
     }
-    
-      
+          
     this.visboprojectService.updateVisboProject(this.vpActive)
       .subscribe(
         (vp) => {

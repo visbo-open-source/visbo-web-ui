@@ -579,7 +579,7 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
-			"vpCommit": "Bestätigen",
+			"vpCommit": "Fixieren",
 			"back": "Zurück",
 			"save": "Speichern",
 			"add": "Hinzufügen"
@@ -588,7 +588,7 @@
 			"changePFV": "Vorsicht: Änderung der Baseline!",
 			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
-			"confirmCommit": "Wollen Sie die Projekt Version wirklich bestätigen?",
+			"confirmCommit": "Wollen Sie diesen Projekt Stand wirklich fixieren?",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
