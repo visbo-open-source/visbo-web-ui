@@ -763,6 +763,7 @@
 			"variant": "Variant",
 			"orgVersion": "Quelle",
 			"cmpVersion": "Vergleich",
+			"diff": "Veränderung",
 			"timestamp": "Zeitstempel",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
@@ -995,6 +996,7 @@
 			"viewCapacity": "Auslastung",
 			"viewList": "Liste",
 			"editPFList": "Portfolio Liste ändern",
+			"compareVPF": "Vergleichen",
 			"viewProjectBoard": "Projekttafel",
 			"exportExcel": "Excel",
 			"update": "Aktualisieren",
@@ -1017,8 +1019,8 @@
 		}
 	},
 	"vpfCmp": {
-		"title": "Projekte aus Portfolio",
-		"titleName": "Portfolio {{name}}",
+		"title": "Vergleich Portfolio Versionen",
+		"titleName": "Vergleich Portfolio Versionen von {{name}}",
 		"titleVC": "VISBO Center",
 		"titleVersion": "Portfolio Version",
 		"titleSelectVersion": "Auswahl Portfolio Version",

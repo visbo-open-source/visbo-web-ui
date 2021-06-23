@@ -38,11 +38,11 @@
             <span> {{ 'compViewBubbleCmp.lbl.risk' | translate }} >=</span>
             <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
           </div>
-          <!-- <div class="ml-2">
+          <div class="ml-2">
             <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
               {{ 'compViewBubbleCmp.btn.exportExcel' | translate }}
             </button>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>
@@ -90,15 +90,14 @@
             {{budgetAtCompletion1 | number:'1.0-0'}} T€
           </div>
         </div>
-        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
       </div>
     </div>
   </div>
 
   <div>
     <div *ngIf="chart" class='container-fluid'>
-      <div *ngIf="countKM0 > 0 && graphBubbleData">
-        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
+      <div *ngIf="countKM0 > 0 && graphBarData">
+        <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
       </div>
     </div>
 
@@ -145,6 +144,15 @@
               <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right bg-light" (click)="sortKeyMetricsTable(40)">{{getMetric('DeadlineFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell bg-light" (click)="sortKeyMetricsTable(39)">{{ 'compViewBubbleCmp.lbl.deliveries' | translate }}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right bg-light" (click)="sortKeyMetricsTable(38)">{{getMetric('Delivery').table}}</th>
+              <!-- Show the Diff Column -->
+              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(55)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(52)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(57)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(54)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('Deadline')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(56)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(51)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(50)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
+              <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(58)">{{ 'compViewBubbleCmp.lbl.diff' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -191,7 +199,7 @@
               <td *ngIf="selectedMetric('EndDate') && vp.source.keyMetrics" class="text-right"
                       title="{{vp.source.keyMetrics.endDateCurrent | date :'dd.MM.yyyy'}}">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.source.savingEndDate, 'delay')} " ></ng-container>
-                {{vp.source.savingEndDate | number:'1.0-0' }} weeks
+                {{vp.source.savingEndDate | number:'1.0-0' }} {{ 'compViewBubbleCmp.lbl.weeks' | translate }}
               </td>
               <!-- <td *ngIf="selectedMetric('EndDate') && !vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.source.endDate | date :'dd.MM.yyyy'}}</td> -->
               <td *ngIf="selectedMetric('EndDate') && !vp.source.keyMetrics" class="text-right d-none d-md-table-cell"></td>
@@ -286,6 +294,40 @@
               <td *ngIf="selectedMetric('Delivery') && !vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light"></td>
               <td *ngIf="selectedMetric('Delivery') && !vp.compare.keyMetrics" class="text-right bg-light"></td>
 
+              <!-- Show the Diff Columns  -->
+
+              <td *ngIf="selectedMetric('ActualCost') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics">
+                {{((vp.source.savingCostActual || 0) - (vp.compare.savingCostActual || 0)) * 100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('Cost') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('Cost') && vp.source.keyMetrics">
+                {{((vp.source.savingCostTotal || 0) - (vp.compare.savingCostTotal || 0)) * 100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('CostPredict') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('CostPredict') && vp.source.keyMetrics">
+                {{((vp.source.savingCostTotalPredict || 0) - (vp.compare.savingCostTotalPredict || 0)) * 100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('EndDate') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('EndDate') && vp.source.keyMetrics">
+                {{((vp.source.savingEndDate || 0) - (vp.compare.savingEndDate || 0)) | number:'1.0-0'}} {{ 'compViewBubbleCmp.lbl.weeks' | translate }}
+              </td>
+              <td *ngIf="selectedMetric('Deadline') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('Deadline') && vp.source.keyMetrics">
+                {{((vp.source.timeCompletionActual || 0) - (vp.compare.timeCompletionActual || 0)) * 100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && vp.source.keyMetrics">
+                {{((vp.source.keyMetrics?.timeDelayUnFinished || 0) - (vp.compare.keyMetrics?.timeDelayUnFinished || 0)) | number:'1.0-0'}} {{ 'compViewBubbleCmp.lbl.days' | translate }}
+              </td>
+              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && vp.source.keyMetrics">
+                {{((vp.source.keyMetrics?.timeDelayFinished || 0) - (vp.compare.keyMetrics?.timeDelayFinished || 0)) | number:'1.0-0'}} {{ 'compViewBubbleCmp.lbl.days' | translate }}
+              </td>
+              <td *ngIf="selectedMetric('Delivery') && !vp.source.keyMetrics"></td>
+              <td *ngIf="selectedMetric('Delivery') && vp.source.keyMetrics">
+                {{((vp.source.deliveryCompletionActual || 0) - (vp.compare.deliveryCompletionActual || 0)) * 100 | number:'1.0-0'}} %
+              </td>
             </tr>
           </tbody>
         </table>

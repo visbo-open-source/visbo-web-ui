@@ -60,6 +60,7 @@ import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdel
 import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
 import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
+import { VisboCompViewCapacityCmpComponent } from './comp-viewcapacitycmp/comp-viewcapacitycmp.component';
 import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
 import { VisboCompViewBubbleComponent } from './comp-viewbubble/comp-viewbubble.component';
 import { VisboCompViewBubbleCmpComponent } from './comp-viewbubblecmp/comp-viewbubblecmp.component';
@@ -112,6 +113,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
     VisboCompViewCapacityComponent,
+    VisboCompViewCapacityCmpComponent,
     VisboCompViewBoardComponent,
     VisboCompViewBubbleComponent,
     VisboCompViewBubbleCmpComponent,
