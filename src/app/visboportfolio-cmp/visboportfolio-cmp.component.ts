@@ -43,7 +43,6 @@ export class VisboPortfolioCmpComponent implements OnInit {
 
   listVPF: VisboPortfolioVersion[];
   listVP: VisboProject[];
-  vpvCount: number;
 
   dropDown: DropDown[] = [];
   dropDownSelected: string;
@@ -272,7 +271,9 @@ export class VisboPortfolioCmpComponent implements OnInit {
   }
 
   calcVPVList(version: number): void {
-    if (!this.listVPV[version] || !this.vpfActive[version] || !this.vpfActive[version].allItems) { return; }
+    if (!this.listVPV[version] || !this.vpfActive[version] || !this.vpfActive[version].allItems) {
+      return;
+    }
     this.listVPV[version].forEach(vpv => {
         vpv.vp = this.listVP.find(vp => vp._id == vpv.vpid);
     });
@@ -280,12 +281,10 @@ export class VisboPortfolioCmpComponent implements OnInit {
     const listCalcVPV: VisboProjectVersion[][] = [];
     listCalcVPV[indexUnchanged] = this.listCalcVPV[indexUnchanged]
     listCalcVPV[version] = [];
-    this.vpvCount = 0;
     for (let i = 0; i < this.vpfActive[version].allItems.length; i++) {
       const item = this.vpfActive[version].allItems[i];
       const nextVPV = this.listVPV[version].find(vpvItem => vpvItem.vpid === item.vpid);
       if (nextVPV) {
-        this.vpvCount += 1;
         listCalcVPV[version].push(nextVPV);
       }
     }
@@ -363,6 +362,8 @@ export class VisboPortfolioCmpComponent implements OnInit {
     if (i >= 0 && i < this.listVPF.length) {
       this.vpfActive[version] = this.listVPF[i];
       this.switchVariantByName(this.vpfActive[version].variantName, version);
+      this.vpvRefDate[version] = new Date(this.vpfActive[version].timestamp)
+      this.changeView(version, undefined, this.vpvRefDate[version], undefined, undefined)
       this.getVisboPortfolioKeyMetrics(version);
 
       // MS TODO: do we have to reset the refDate???
@@ -466,8 +467,8 @@ export class VisboPortfolioCmpComponent implements OnInit {
   }
 
   updateDateRange(version: number): void {
-    this.getVisboPortfolioKeyMetrics(version);
     this.changeView(version, undefined, this.vpvRefDate[version], undefined, undefined)
+    this.getVisboPortfolioKeyMetrics(version);
   }
 
   parseDate(dateString: string): Date {
@@ -475,8 +476,8 @@ export class VisboPortfolioCmpComponent implements OnInit {
   }
 
   hasListVPV(): boolean {
-    if (!this.listVPV || !this.listVPV[0] || this.listVPV[0].length == 0) return false;
-    if (!this.listVPV || !this.listVPV[1] || this.listVPV[1].length == 0) return false;
+    if (!this.listVPV || !this.listVPV[0] || !this.listVPV[1]) return false;
+    if ( this.listVPV[0].length == 0 && this.listVPV[1].length == 0) return false;
     return true
   }
 
