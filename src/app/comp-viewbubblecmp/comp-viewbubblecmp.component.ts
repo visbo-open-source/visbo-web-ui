@@ -19,7 +19,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../_helpers/visbo.helper';
 
-import {BubbleChartOptions} from '../_models/_chart'
+import {BarChartOptions} from '../_models/_chart'
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -172,61 +172,41 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
   chart = true;
   parentThis = this;
-  graphBubbleData = [];
-  graphBubbleOptions: BubbleChartOptions;
-  defaultBubbleOptions: BubbleChartOptions = {
-      // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
-      'width': '100%',
-      // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
-      // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
-      'vAxis': {
-        'baseline': 0,
-        'minValue': 20,
-        'maxValue': 200,
-        'direction': -1,
-        'format': "",
-        'title': 'Change in End Date (weeks)',
-        'baselineColor': 'blue'
-      },
-      'hAxis': {
-        'minValue': 20,
-        'maxValue': 200,
-        'baseline': 1,
-        'direction': -1,
-        'format': "# '%'",
-        'title': 'Total Cost',
-        'baselineColor': 'blue'
-      },
-      'sizeAxis': {
-        'minValue': 20,
-        'maxValue': 200
-      },
-      // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
-      'explorer': {
-        'actions': ['dragToZoom', 'rightClickToReset'],
-        'maxZoomIn': .01
-      },
-      'bubble': {
-        'textStyle': {
-          'auraColor': 'none',
-          'fontSize': 11
-        }
-      },
-      'tooltip': {
-        'showColorCode': false
-      },
-      'series': {
-        'Critical': {
-          'color': this.colorMetric[0].color
-        },
-        'Warning': {
-          'color': this.colorMetric[1].color
-        },
-        'Good': {
-          'color': this.colorMetric[2].color
-        }
-      }
-    };
+
+  colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  graphBarData = [];
+  graphBarOptions: BarChartOptions;
+  defaultBarOptions: BarChartOptions = {
+    // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+    width: '100%',
+    height: '1000px',
+    // title: 'Comparison',
+    animation: {startup: true, duration: 200},
+    legend: {position: 'top'},
+    explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+    // curveType: 'function',
+    colors: this.colors,
+    seriesType: 'bars',
+    isStacked: false,
+    tooltip: {
+      isHtml: true
+    },
+    vAxis: {
+      format: "#"
+      // ,
+      // minorGridlines: {count: 0, color: 'none'}
+    },
+    hAxis: {
+      format: '#'
+      // ,
+      // gridlines: {
+      //   color: '#FFF',
+      //   count: -1
+      // }
+    },
+    minorGridlines: {count: 0, color: 'none'}
+  };
+
   currentLang: string;
   orgVersion: string;
   cmpVersion: string;
@@ -745,56 +725,46 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     let vpv: VPVKeyMetricsCalc;
     let costBaseLastTotal = 0;
 
-    this.graphBubbleOptions = Object.assign({}, this.defaultBubbleOptions);
-    this.graphBubbleAxis(); // set the Axis Description and properties
+    this.graphBarOptions = Object.assign({}, this.defaultBarOptions);
+    this.graphBarAxis(); // set the Axis Description and properties
 
-    const keyMetrics = [];
+    const keyMetricsBar = [];
     if (!this.visbokeymetrics || this.visbokeymetrics.length == 0) {
       return;
     }
-    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.cmpVersion + ' ' + this.getMetric(this.metricX).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].source.keyMetrics) {
         vpv = this.emptyVPV;
       } else {
         vpv = this.visbokeymetrics[item].source;
       }
-      let colorValue = 0;
       let valueX: number;
       let valueY: number;
       costBaseLastTotal = Math.max(costBaseLastTotal, Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1);
       switch (this.metricX) {
         case 'Cost':
           valueX = Math.round((vpv.savingCostTotal || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'ActualCost':
           valueX = Math.round((vpv.savingCostActual || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'CostPredict':
           valueX = Math.round((vpv.savingCostTotalPredict || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueX = Math.round((vpv.savingEndDate || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Deadline':
           valueX = Math.round((vpv.timeCompletionActual || 1) * 100);
-          colorValue += valueX >= 100 ? 1 : 0;
           break;
         case 'DeadlineFinishedDelay':
           valueX = Math.round((vpv.keyMetrics?.timeDelayFinished || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'DeadlineUnFinishedDelay':
           valueX = Math.round((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Delivery':
           valueX = Math.round((vpv.deliveryCompletionActual || 1) * 100);
-          colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
 
@@ -806,222 +776,125 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       switch (this.metricX) {
         case 'Cost':
           valueY = Math.round((vpv.savingCostTotal || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'ActualCost':
           valueY = Math.round((vpv.savingCostActual || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'CostPredict':
           valueY = Math.round((vpv.savingCostTotalPredict || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueY = Math.round((vpv.savingEndDate || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Deadline':
           valueY = Math.round((vpv.timeCompletionActual || 1) * 100);
-          colorValue += valueY >= 100 ? 1 : 0;
           break;
         case 'DeadlineFinishedDelay':
           valueY = Math.round((vpv.keyMetrics?.timeDelayFinished || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'DeadlineUnFinishedDelay':
           valueY = Math.round((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Delivery':
           valueY = Math.round((vpv.deliveryCompletionActual || 1) * 100);
-          colorValue += valueY >= 100 ? 1 : 0;
           break;
       }
 
       costBaseLastTotal = Math.max(costBaseLastTotal, Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1);
-      keyMetrics.push([
-        this.combineName(this.visbokeymetrics[item].source.name, this.visbokeymetrics[item].source.variantName),
+      let name: string;
+      if (this.visbokeymetrics[item].source) {
+        name = this.combineName(this.visbokeymetrics[item].source.name, this.visbokeymetrics[item].source.variantName);
+      } else {
+        name = this.combineName(this.visbokeymetrics[item].compare.name, this.visbokeymetrics[item].compare.variantName);
+      }
+      const tooltip = this.createCustomHTMLContent(name, valueX, valueY);
+      keyMetricsBar.push([
+        name,
         valueX,
+        tooltip,
         valueY,
-        this.colorMetric[colorValue].name,
-        costBaseLastTotal
+        tooltip
       ]);
     }
-    this.calcRangeAxis();
-    // works only once in the beginning, needs refresh to update
-    if (keyMetrics.length > 10) {
-      this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
-    } else {
-      this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
-    }
-    this.graphBubbleData = keyMetrics;
+    keyMetricsBar.unshift([
+      'Project',
+      this.getMetric(this.metricX).table,
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.cmpVersion + ' ' + this.getMetric(this.metricX).table,
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+    ]);
+    this.graphBarData = keyMetricsBar;
   }
 
-  calcRangeAxis(): void {
-    let rangeAxis = 0;
-    let minSize = Infinity, maxSize = 0;
-    let vpv: VPVKeyMetricsCalc;
-    if (!this.visbokeymetrics) {
-      return;
-    }
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].compare.keyMetrics) {
-        // continue;
-        vpv = this.emptyVPV;
-      } else {
-        vpv = this.visbokeymetrics[item].source;
-      }
-      switch (this.metricX) {
-        case 'Cost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotal || 1) - 1) * 100));
-          break;
-        case 'ActualCost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostActual || 1) - 1) * 100));
-          break;
-        case 'CostPredict':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotalPredict || 1) - 1) * 100));
-          break;
-        case 'EndDate':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.savingEndDate || 0) / 7));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.timeCompletionActual || 1) - 1) * 100));
-          break;
-        case 'DeadlineFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics?.timeDelayFinished || 0) / 7));
-          break;
-        case 'DeadlineUnFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7));
-          break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.deliveryCompletionActual || 1) - 1) * 100));
-          break;
-      }
-      minSize = Math.min(minSize, vpv.keyMetrics?.costBaseLastTotal || 1);
-      maxSize = Math.max(maxSize, vpv.keyMetrics?.costBaseLastTotal || 1);
-    }
-    // Set the Min/Max Values for the Size of the bubbles decreased/increased by 20%
-    minSize = Math.max(minSize - 100, 0)
-    maxSize += 100;
-    minSize *= 0.8;
-    maxSize *= 1.2;
-    this.graphBubbleOptions.sizeAxis.minValue = minSize;
-    this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
+  createCustomHTMLContent(name: string, valueX: number, valueY: number): string {
 
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].compare.keyMetrics) {
-        // continue;
-        vpv = this.emptyVPV;
-      } else {
-        vpv = this.visbokeymetrics[item].compare;
-      }
-      switch (this.metricX) {
-        case 'Cost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotal || 1) - 1) * 100));
-          break;
-        case 'ActualCost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostActual || 1) - 1) * 100));
-          break;
-        case 'CostPredict':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotalPredict || 1) - 1) * 100));
-          break;
-        case 'EndDate':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.savingEndDate || 0) / 7));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.timeCompletionActual || 1) - 1) * 100));
-          break;
-        case 'DeadlineFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics.timeDelayFinished || 0) / 7));
-          break;
-        case 'DeadlineUnFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics.timeDelayUnFinished || 0) / 7));
-          break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.deliveryCompletionActual || 1) - 1) * 100));
-          break;
-      }
-    }
-    if (this.metricX === 'EndDate'
-    || this.metricX === 'DeadlineFinishedDelay'
-    || this.metricX === 'DeadlineUnFinishedDelay') {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
-    } else {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = 100 - rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = 100 + rangeAxis;
+    let format = '';
+    switch (this.metricX) {
+      case 'Cost':
+      case 'ActualCost':
+      case 'CostPredict':
+        format = '&nbsp' + '%';
+        break;
+      case 'EndDate':
+      case 'DeadlineFinishedDelay':
+      case 'DeadlineUnFinishedDelay':
+        format = '&nbsp' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
+        break;
+      case 'Deadline':
+      case 'Delivery':
+        format = '&nbsp' + '%';
+        break;
     }
 
-    if (this.metricX === 'EndDate'
-    || this.metricX === 'DeadlineFinishedDelay'
-    || this.metricX === 'DeadlineUnFinishedDelay') {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
-    } else {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = 100 - rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = 100 + rangeAxis;
-    }
+    let result = '<div style="padding:5px 5px 5px 5px;">' +
+      '<div><b>' + name + '</b></div>' + '<div>' +
+      '<table>';
+
+    result = result + '<tr>' + '<td>' +
+                this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
+                ':</td>' + '<td><b>' +
+                valueX + format +
+                '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' +
+                this.cmpVersion +
+                ':</td>' + '<td><b>' +
+                valueY + format +
+                '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
   }
 
-  graphBubbleAxis(): void {
+  graphBarAxis(): void {
     if (!this.chart) {
       return;
     }
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
 
-    this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
+    this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
+        this.graphBarOptions.hAxis.baseline = 100;
+        this.graphBarOptions.hAxis.direction = -1;
+        this.graphBarOptions.hAxis.format = "# '%'";
         break;
       case 'EndDate':
       case 'DeadlineFinishedDelay':
       case 'DeadlineUnFinishedDelay':
-        this.graphBubbleOptions.hAxis.baseline = 0;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = weekFormat;
+        this.graphBarOptions.hAxis.baseline = 0;
+        this.graphBarOptions.hAxis.direction = -1;
+        this.graphBarOptions.hAxis.format = weekFormat;
         break;
       case 'Deadline':
       case 'Delivery':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = 1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
+        this.graphBarOptions.hAxis.baseline = 100;
+        this.graphBarOptions.hAxis.direction = 1;
+        this.graphBarOptions.hAxis.format = "# '%'";
         break;
     }
 
-    this.graphBubbleOptions.vAxis.title = this.cmpVersion + ' ' + this.getMetric(this.metricX).axis;
-    switch (this.metricX) {
-      case 'Cost':
-      case 'ActualCost':
-      case 'CostPredict':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
-      case 'EndDate':
-      case 'DeadlineFinishedDelay':
-      case 'DeadlineUnFinishedDelay':
-        this.graphBubbleOptions.vAxis.baseline = 0;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = weekFormat;
-        break;
-      case 'Deadline':
-      case 'Delivery':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = 1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
-    }
-
-    // this.log(`Series: ${JSON.stringify(this.graphBubbleOptions.series)}`)
+    // this.log(`Series: ${JSON.stringify(this.graphBarOptions.series)}`)
   }
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
@@ -1048,7 +921,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
 
   chartSelectRow(row: number, label: string): void {
-    this.log(`Bubble Chart: ${row} ${label} ${this.visbokeymetrics[row].source.name}`);
+    this.log(`Bar Chart: ${row} ${label} ${this.visbokeymetrics[row].source.name}`);
     let vpv = this.visbokeymetrics.find(x => x.source.name === label);
     if (!vpv) {
       // label contains a variantName
@@ -1444,7 +1317,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompViewBubbleCmp: ' + message);
+    // console.log('CompViewBubbleCmp: ' + message);
     this.messageService.add('CompViewBubbleCmp: ' + message);
   }
 }

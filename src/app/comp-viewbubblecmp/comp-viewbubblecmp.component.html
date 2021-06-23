@@ -90,15 +90,14 @@
             {{budgetAtCompletion1 | number:'1.0-0'}} T€
           </div>
         </div>
-        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
       </div>
     </div>
   </div>
 
   <div>
     <div *ngIf="chart" class='container-fluid'>
-      <div *ngIf="countKM0 > 0 && graphBubbleData">
-        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
+      <div *ngIf="countKM0 > 0 && graphBarData">
+        <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
       </div>
     </div>
 
