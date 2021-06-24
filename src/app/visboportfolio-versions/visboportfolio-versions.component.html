@@ -50,8 +50,19 @@
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
-      <div class="align-items-end btn-toolbar" style="padding: unset;">
-        <button *ngIf="hasVPPerm(permVP.Modify)" type="button" class="align-items-end btn btn-md btn-primary" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+      <div *ngIf="hasVPPerm(permVP.Modify)" class="align-items-end btn-toolbar" style="padding: unset;">
+        <div class="btn-group">
+          <button type="button" class="align-items-end btn btn-md btn-primary" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+          <div class="dropdown-toggle btn btn-primary" data-toggle="dropdown">
+            <div class="dropdown-menu">
+              <!-- <div class="dropdown-item" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }} </div> -->
+              <div class="dropdown-item" (click)="gotoCompareVPF()" >{{ 'vpfVersion.btn.compareVPF' | translate }} </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!hasVPPerm(permVP.Modify)" class="align-items-end btn-toolbar" style="padding: unset;">
+        <button type="button" class="align-items-end btn btn-md btn-primary" (click)="gotoCompareVPF()" >{{ 'vpfVersion.btn.compareVPF' | translate }}</button>
       </div>
     </div>
     <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">

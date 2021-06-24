@@ -17,7 +17,9 @@ import { VisboCenter } from '../_models/visbocenter';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { visboCmpString, visboCmpDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../_helpers/visbo.helper';
+
+import {BarChartOptions} from '../_models/_chart'
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -57,9 +59,45 @@ class exportKeyMetric {
   timeCompletionActual: number;
   deliveryCompletionTotal: number;
   deliveryCompletionActual: number;
+
+  cmp_timestamp: Date;
+  cmp_baselineDate: Date;
+  cmp_variantName: string;
+  cmp_startDate: Date;
+  cmp_ampelStatus: number;
+  cmp_costCurrentActual: number;
+  cmp_costCurrentTotal: number;
+  cmp_costCurrentTotalPredict: number;
+  cmp_costBaseLastActual: number;
+  cmp_costBaseLastTotal: number;
+  cmp_timeCompletionCurrentActual: number;
+  cmp_timeCompletionCurrentTotal: number;
+  cmp_timeCompletionBaseLastActual: number;
+  cmp_timeCompletionBaseLastTotal: number;
+  cmp_timeDelayFinished: number;
+  cmp_timeDelayUnFinished: number;
+  cmp_endDateCurrent: Date;
+  cmp_endDateBaseLast: Date;
+  cmp_deliverableCompletionCurrentActual: number;
+  cmp_deliverableCompletionCurrentTotal: number;
+  cmp_deliverableCompletionBaseLastActual: number;
+  cmp_deliverableCompletionBaseLastTotal: number;
+  cmp_deliverableDelayFinished: number;
+  cmp_deliverableDelayUnFinished: number;
+  cmp_savingCostTotal: number;
+  cmp_savingCostTotalPredict: number;
+  cmp_savingCostActual: number;
+  cmp_savingEndDate: number;
+  cmp_timeCompletionTotal: number;
+  cmp_timeCompletionActual: number;
+  cmp_deliveryCompletionTotal: number;
+  cmp_deliveryCompletionActual: number;
+
   vpid: string;
   vpvid: string;
+  cmp_vpvid: string;
   ampelErlaeuterung: string;
+  cmp_ampelErlaeuterung: string;
 }
 
 class Metric {
@@ -72,7 +110,7 @@ class Metric {
 
 class CompareVPV {
   source: VPVKeyMetricsCalc;
-  compare: VPVKeyMetricsCalc
+  compare: VPVKeyMetricsCalc;
 }
 
 @Component({
@@ -134,60 +172,41 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
   chart = true;
   parentThis = this;
-  graphBubbleData = [];
-  graphBubbleOptions = {
-      // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
-      'width': '100%',
-      // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
-      // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
-      'vAxis': {
-        'baseline': 0,
-        'minValue': 20,
-        'maxValue': 200,
-        'direction': -1,
-        'format': "",
-        'title': 'Change in End Date (weeks)',
-        'baselineColor': 'blue'
-      },
-      'hAxis': {
-        'minValue': 20,
-        'maxValue': 200,
-        'baseline': 1,
-        'direction': -1,
-        'format': "# '%'",
-        'title': 'Total Cost',
-        'baselineColor': 'blue'
-      },
-      'sizeAxis': {
-        'minValue': 20,
-        'maxValue': 200
-      },
-      // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
-      'explorer': {
-        'actions': ['dragToZoom', 'rightClickToReset'],
-        'maxZoomIn': .01
-      },
-      'bubble': {
-        'textStyle': {
-          'auraColor': 'none',
-          'fontSize': 11
-        }
-      },
-      'tooltip': {
-        'showColorCode': false
-      },
-      'series': {
-        'Critical': {
-          'color': this.colorMetric[0].color
-        },
-        'Warning': {
-          'color': this.colorMetric[1].color
-        },
-        'Good': {
-          'color': this.colorMetric[2].color
-        }
-      }
-    };
+
+  colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  graphBarData = [];
+  graphBarOptions: BarChartOptions;
+  defaultBarOptions: BarChartOptions = {
+    // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+    width: '100%',
+    height: '1000px',
+    // title: 'Comparison',
+    animation: {startup: true, duration: 200},
+    legend: {position: 'top'},
+    explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+    // curveType: 'function',
+    colors: this.colors,
+    seriesType: 'bars',
+    isStacked: false,
+    tooltip: {
+      isHtml: true
+    },
+    vAxis: {
+      format: "#"
+      // ,
+      // minorGridlines: {count: 0, color: 'none'}
+    },
+    hAxis: {
+      format: '#'
+      // ,
+      // gridlines: {
+      //   color: '#FFF',
+      //   count: -1
+      // }
+    },
+    minorGridlines: {count: 0, color: 'none'}
+  };
+
   currentLang: string;
   orgVersion: string;
   cmpVersion: string;
@@ -706,55 +725,46 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     let vpv: VPVKeyMetricsCalc;
     let costBaseLastTotal = 0;
 
-    this.graphBubbleAxis(); // set the Axis Description and properties
+    this.graphBarOptions = Object.assign({}, this.defaultBarOptions);
+    this.graphBarAxis(); // set the Axis Description and properties
 
-    const keyMetrics = [];
+    const keyMetricsBar = [];
     if (!this.visbokeymetrics || this.visbokeymetrics.length == 0) {
       return;
     }
-    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.cmpVersion + ' ' + this.getMetric(this.metricX).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].source.keyMetrics) {
         vpv = this.emptyVPV;
       } else {
         vpv = this.visbokeymetrics[item].source;
       }
-      let colorValue = 0;
       let valueX: number;
       let valueY: number;
       costBaseLastTotal = Math.max(costBaseLastTotal, Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1);
       switch (this.metricX) {
         case 'Cost':
           valueX = Math.round((vpv.savingCostTotal || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'ActualCost':
           valueX = Math.round((vpv.savingCostActual || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'CostPredict':
           valueX = Math.round((vpv.savingCostTotalPredict || 1) * 100);
-          colorValue += valueX <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueX = Math.round((vpv.savingEndDate || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Deadline':
           valueX = Math.round((vpv.timeCompletionActual || 1) * 100);
-          colorValue += valueX >= 100 ? 1 : 0;
           break;
         case 'DeadlineFinishedDelay':
           valueX = Math.round((vpv.keyMetrics?.timeDelayFinished || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'DeadlineUnFinishedDelay':
           valueX = Math.round((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7 * 10) / 10;
-          colorValue += valueX <= 0 ? 1 : 0;
           break;
         case 'Delivery':
           valueX = Math.round((vpv.deliveryCompletionActual || 1) * 100);
-          colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
 
@@ -766,220 +776,125 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       switch (this.metricX) {
         case 'Cost':
           valueY = Math.round((vpv.savingCostTotal || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'ActualCost':
           valueY = Math.round((vpv.savingCostActual || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'CostPredict':
           valueY = Math.round((vpv.savingCostTotalPredict || 1) * 100);
-          colorValue += valueY <= 100 ? 1 : 0;
           break;
         case 'EndDate':
           valueY = Math.round((vpv.savingEndDate || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Deadline':
           valueY = Math.round((vpv.timeCompletionActual || 1) * 100);
-          colorValue += valueY >= 100 ? 1 : 0;
           break;
         case 'DeadlineFinishedDelay':
           valueY = Math.round((vpv.keyMetrics?.timeDelayFinished || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'DeadlineUnFinishedDelay':
           valueY = Math.round((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7 * 10) / 10;
-          colorValue += valueY <= 0 ? 1 : 0;
           break;
         case 'Delivery':
           valueY = Math.round((vpv.deliveryCompletionActual || 1) * 100);
-          colorValue += valueY >= 100 ? 1 : 0;
           break;
       }
 
       costBaseLastTotal = Math.max(costBaseLastTotal, Math.round(vpv.keyMetrics?.costBaseLastTotal || 0) || 1);
-      keyMetrics.push([
-        this.combineName(this.visbokeymetrics[item].source.name, this.visbokeymetrics[item].source.variantName),
+      let name: string;
+      if (this.visbokeymetrics[item].source) {
+        name = this.combineName(this.visbokeymetrics[item].source.name, this.visbokeymetrics[item].source.variantName);
+      } else {
+        name = this.combineName(this.visbokeymetrics[item].compare.name, this.visbokeymetrics[item].compare.variantName);
+      }
+      const tooltip = this.createCustomHTMLContent(name, valueX, valueY);
+      keyMetricsBar.push([
+        name,
         valueX,
+        tooltip,
         valueY,
-        this.colorMetric[colorValue].name,
-        costBaseLastTotal
+        tooltip
       ]);
     }
-    this.calcRangeAxis();
-    // works only once in the beginning, needs refresh to update
-    if (keyMetrics.length > 10) {
-      this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
-    }
-    this.graphBubbleData = keyMetrics;
+    keyMetricsBar.unshift([
+      'Project',
+      this.getMetric(this.metricX).table,
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.cmpVersion + ' ' + this.getMetric(this.metricX).table,
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+    ]);
+    this.graphBarData = keyMetricsBar;
   }
 
-  calcRangeAxis(): void {
-    let rangeAxis = 0;
-    let minSize = Infinity, maxSize = 0;
-    let vpv: VPVKeyMetricsCalc;
-    if (!this.visbokeymetrics) {
-      return;
-    }
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].compare.keyMetrics) {
-        // continue;
-        vpv = this.emptyVPV;
-      } else {
-        vpv = this.visbokeymetrics[item].source;
-      }
-      switch (this.metricX) {
-        case 'Cost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotal || 1) - 1) * 100));
-          break;
-        case 'ActualCost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostActual || 1) - 1) * 100));
-          break;
-        case 'CostPredict':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotalPredict || 1) - 1) * 100));
-          break;
-        case 'EndDate':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.savingEndDate || 0) / 7));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.timeCompletionActual || 1) - 1) * 100));
-          break;
-        case 'DeadlineFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics?.timeDelayFinished || 0) / 7));
-          break;
-        case 'DeadlineUnFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics?.timeDelayUnFinished || 0) / 7));
-          break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.deliveryCompletionActual || 1) - 1) * 100));
-          break;
-      }
-      minSize = Math.min(minSize, vpv.keyMetrics?.costBaseLastTotal || 1);
-      maxSize = Math.max(maxSize, vpv.keyMetrics?.costBaseLastTotal || 1);
-    }
-    // Set the Min/Max Values for the Size of the bubbles decreased/increased by 20%
-    minSize = Math.max(minSize - 100, 0)
-    maxSize += 100;
-    minSize *= 0.8;
-    maxSize *= 1.2;
-    this.graphBubbleOptions.sizeAxis.minValue = minSize;
-    this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
+  createCustomHTMLContent(name: string, valueX: number, valueY: number): string {
 
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].compare.keyMetrics) {
-        // continue;
-        vpv = this.emptyVPV;
-      } else {
-        vpv = this.visbokeymetrics[item].compare;
-      }
-      switch (this.metricX) {
-        case 'Cost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotal || 1) - 1) * 100));
-          break;
-        case 'ActualCost':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostActual || 1) - 1) * 100));
-          break;
-        case 'CostPredict':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.savingCostTotalPredict || 1) - 1) * 100));
-          break;
-        case 'EndDate':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.savingEndDate || 0) / 7));
-          break;
-        case 'Deadline':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.timeCompletionActual || 1) - 1) * 100));
-          break;
-        case 'DeadlineFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics.timeDelayFinished || 0) / 7));
-          break;
-        case 'DeadlineUnFinishedDelay':
-          rangeAxis = Math.max(rangeAxis, Math.abs((vpv.keyMetrics.timeDelayUnFinished || 0) / 7));
-          break;
-        case 'Delivery':
-          rangeAxis = Math.max(rangeAxis, Math.abs(((vpv.deliveryCompletionActual || 1) - 1) * 100));
-          break;
-      }
-    }
-    if (this.metricX === 'EndDate'
-    || this.metricX === 'DeadlineFinishedDelay'
-    || this.metricX === 'DeadlineUnFinishedDelay') {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
-    } else {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.vAxis.minValue = 100 - rangeAxis;
-      this.graphBubbleOptions.vAxis.maxValue = 100 + rangeAxis;
+    let format = '';
+    switch (this.metricX) {
+      case 'Cost':
+      case 'ActualCost':
+      case 'CostPredict':
+        format = '&nbsp' + '%';
+        break;
+      case 'EndDate':
+      case 'DeadlineFinishedDelay':
+      case 'DeadlineUnFinishedDelay':
+        format = '&nbsp' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
+        break;
+      case 'Deadline':
+      case 'Delivery':
+        format = '&nbsp' + '%';
+        break;
     }
 
-    if (this.metricX === 'EndDate'
-    || this.metricX === 'DeadlineFinishedDelay'
-    || this.metricX === 'DeadlineUnFinishedDelay') {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = -rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
-    } else {
-      rangeAxis *= 1.1;
-      this.graphBubbleOptions.hAxis.minValue = 100 - rangeAxis;
-      this.graphBubbleOptions.hAxis.maxValue = 100 + rangeAxis;
-    }
+    let result = '<div style="padding:5px 5px 5px 5px;">' +
+      '<div><b>' + name + '</b></div>' + '<div>' +
+      '<table>';
+
+    result = result + '<tr>' + '<td>' +
+                this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
+                ':</td>' + '<td><b>' +
+                valueX + format +
+                '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' +
+                this.cmpVersion +
+                ':</td>' + '<td><b>' +
+                valueY + format +
+                '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
   }
 
-  graphBubbleAxis(): void {
+  graphBarAxis(): void {
     if (!this.chart) {
       return;
     }
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
 
-    this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
+    this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
+        this.graphBarOptions.hAxis.baseline = 100;
+        this.graphBarOptions.hAxis.direction = -1;
+        this.graphBarOptions.hAxis.format = "# '%'";
         break;
       case 'EndDate':
       case 'DeadlineFinishedDelay':
       case 'DeadlineUnFinishedDelay':
-        this.graphBubbleOptions.hAxis.baseline = 0;
-        this.graphBubbleOptions.hAxis.direction = -1;
-        this.graphBubbleOptions.hAxis.format = weekFormat;
+        this.graphBarOptions.hAxis.baseline = 0;
+        this.graphBarOptions.hAxis.direction = -1;
+        this.graphBarOptions.hAxis.format = weekFormat;
         break;
       case 'Deadline':
       case 'Delivery':
-        this.graphBubbleOptions.hAxis.baseline = 100;
-        this.graphBubbleOptions.hAxis.direction = 1;
-        this.graphBubbleOptions.hAxis.format = "# '%'";
+        this.graphBarOptions.hAxis.baseline = 100;
+        this.graphBarOptions.hAxis.direction = 1;
+        this.graphBarOptions.hAxis.format = "# '%'";
         break;
     }
 
-    this.graphBubbleOptions.vAxis.title = this.cmpVersion + ' ' + this.getMetric(this.metricX).axis;
-    switch (this.metricX) {
-      case 'Cost':
-      case 'ActualCost':
-      case 'CostPredict':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
-      case 'EndDate':
-      case 'DeadlineFinishedDelay':
-      case 'DeadlineUnFinishedDelay':
-        this.graphBubbleOptions.vAxis.baseline = 0;
-        this.graphBubbleOptions.vAxis.direction = -1;
-        this.graphBubbleOptions.vAxis.format = weekFormat;
-        break;
-      case 'Deadline':
-      case 'Delivery':
-        this.graphBubbleOptions.vAxis.baseline = 100;
-        this.graphBubbleOptions.vAxis.direction = 1;
-        this.graphBubbleOptions.vAxis.format = "# '%'";
-        break;
-    }
-
-    // this.log(`Series: ${JSON.stringify(this.graphBubbleOptions.series)}`)
+    // this.log(`Series: ${JSON.stringify(this.graphBarOptions.series)}`)
   }
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
@@ -1006,7 +921,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
 
   chartSelectRow(row: number, label: string): void {
-    this.log(`Bubble Chart: ${row} ${label} ${this.visbokeymetrics[row].source.name}`);
+    this.log(`Bar Chart: ${row} ${label} ${this.visbokeymetrics[row].source.name}`);
     let vpv = this.visbokeymetrics.find(x => x.source.name === label);
     if (!vpv) {
       // label contains a variantName
@@ -1038,17 +953,16 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     this.changeChart();
   }
 
-  copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
+  copyKeyMetrics(compareVPV: CompareVPV): exportKeyMetric {
     const element = new exportKeyMetric();
+    let vpv = compareVPV.source;
     element.name = vpv.name;
     element.timestamp = vpv.timestamp;
-    if (vpv.keyMetrics) {
-      element.baselineDate = vpv.keyMetrics.baselineDate;
-    }
     element.variantName = vpv.variantName;
     element.startDate = vpv.startDate;
     element.ampelStatus = vpv.ampelStatus;
     if (vpv.keyMetrics) {
+      element.baselineDate = vpv.keyMetrics.baselineDate;
       element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000) / 1000;
       element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000) / 1000;
       element.costCurrentTotalPredict = vpv.keyMetrics.costCurrentTotalPredict && Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000) / 1000;
@@ -1081,6 +995,45 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     // element.vpvid = vpv._id;
     element.ampelErlaeuterung = vpv.ampelErlaeuterung;
 
+    vpv = compareVPV.compare;
+    element.cmp_timestamp = vpv.timestamp;
+    element.cmp_variantName = vpv.variantName;
+    element.cmp_startDate = vpv.startDate;
+    element.cmp_ampelStatus = vpv.ampelStatus;
+    if (vpv.keyMetrics) {
+      element.cmp_baselineDate = vpv.keyMetrics.baselineDate;
+      element.cmp_costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000) / 1000;
+      element.cmp_costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000) / 1000;
+      element.cmp_costCurrentTotalPredict = vpv.keyMetrics.costCurrentTotalPredict && Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000) / 1000;
+      element.cmp_costBaseLastActual = vpv.keyMetrics.costBaseLastActual && Math.round(vpv.keyMetrics.costBaseLastActual * 1000) / 1000;
+      element.cmp_costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000) / 1000;
+      element.cmp_timeCompletionCurrentActual = vpv.keyMetrics.timeCompletionCurrentActual && Math.round(vpv.keyMetrics.timeCompletionCurrentActual * 1000) / 1000;
+      element.cmp_timeCompletionCurrentTotal = vpv.keyMetrics.timeCompletionCurrentTotal;
+      element.cmp_timeCompletionBaseLastActual = vpv.keyMetrics.timeCompletionBaseLastActual && Math.round(vpv.keyMetrics.timeCompletionBaseLastActual * 1000) / 1000;
+      element.cmp_timeCompletionBaseLastTotal = vpv.keyMetrics.timeCompletionBaseLastTotal;
+      element.cmp_timeDelayFinished = vpv.keyMetrics.timeDelayFinished && Math.round(vpv.keyMetrics.timeDelayFinished * 1000) / 1000;
+      element.cmp_timeDelayUnFinished = vpv.keyMetrics.timeDelayUnFinished && Math.round(vpv.keyMetrics.timeDelayUnFinished * 1000) / 1000;
+      element.cmp_endDateCurrent = vpv.keyMetrics.endDateCurrent;
+      element.cmp_endDateBaseLast = vpv.keyMetrics.endDateBaseLast;
+      element.cmp_deliverableCompletionCurrentActual = vpv.keyMetrics.deliverableCompletionCurrentActual && Math.round(vpv.keyMetrics.deliverableCompletionCurrentActual * 1000) / 1000;
+      element.cmp_deliverableCompletionCurrentTotal = vpv.keyMetrics.deliverableCompletionCurrentTotal;
+      element.cmp_deliverableCompletionBaseLastActual = vpv.keyMetrics.deliverableCompletionBaseLastActual && Math.round(vpv.keyMetrics.deliverableCompletionBaseLastActual * 1000) / 1000;
+      element.cmp_deliverableCompletionBaseLastTotal = vpv.keyMetrics.deliverableCompletionBaseLastTotal;
+      element.cmp_deliverableDelayFinished = vpv.keyMetrics.deliverableDelayFinished && Math.round(vpv.keyMetrics.deliverableDelayFinished * 1000) / 1000;
+      element.cmp_deliverableDelayUnFinished = vpv.keyMetrics.deliverableDelayUnFinished && Math.round(vpv.keyMetrics.deliverableDelayUnFinished * 1000) / 1000;
+    }
+    element.cmp_savingCostTotal = vpv.savingCostTotal && Math.round(vpv.savingCostTotal * 100) / 100;
+    element.cmp_savingCostTotalPredict = vpv.savingCostTotalPredict && Math.round(vpv.savingCostTotalPredict * 100) / 100;
+    element.cmp_savingCostActual = vpv.savingCostActual && Math.round(vpv.savingCostActual * 100) / 100;
+    element.cmp_savingEndDate = vpv.savingEndDate && Math.round(vpv.savingEndDate * 100) / 100;
+    element.cmp_timeCompletionTotal = vpv.timeCompletionTotal && Math.round(vpv.timeCompletionTotal * 100) / 100;
+    element.cmp_timeCompletionActual = vpv.timeCompletionActual && Math.round(vpv.timeCompletionActual * 100) / 100;
+    element.cmp_deliveryCompletionTotal = vpv.deliveryCompletionTotal && Math.round(vpv.deliveryCompletionTotal * 100) / 100;
+    element.cmp_deliveryCompletionActual = vpv.deliveryCompletionActual && Math.round(vpv.deliveryCompletionActual * 100) / 100;
+    // element.cmp_vpid = vpv.vpid;
+    // element.cmp_vpvid = vpv._id;
+    element.cmp_ampelErlaeuterung = vpv.ampelErlaeuterung;
+
     return element;
   }
 
@@ -1088,72 +1041,72 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     this.log(`Export Data to Excel ${this.visbokeymetrics?.length}`);
 
     const excel: exportKeyMetric[] = [];
-    //
-    // if (this.visbokeymetrics) {
-    //   this.visbokeymetrics.forEach(element => {
-    //     excel.push(this.copyKeyMetrics(element));
-    //   });
-    // }
-    // const len = excel.length;
-    // const width = Object.keys(excel[0]).length;
-    // let name = '';
-    // if (this.vpfActive && this.vpfActive[0]) {
-    //   name = this.vpfActive[0].name
-    // } else if (this.vcActive) {
-    //   name = this.vcActive.name;
-    // }
-    // // Add Localised header to excel
-    // // eslint-disable-next-line
-    // const header: any = {};
-    // let colName: number, colIndex = 0;
-    // for (const element in excel[0]) {
-    //   if (element == 'name') {
-    //     colName = colIndex;
-    //   }
-    //   colIndex++;
-    //   header[element] = element;
-    //   // header[element] = this.translate.instant('compViewBubbleCmp.lbl.'.concat(element))
-    // }
-    // excel.unshift(header);
-    // // this.log(`Header for Excel: ${JSON.stringify(header)}`)
-    //
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
-    // // generate link for VP Name
-    // const tooltip = this.translate.instant('vpKeyMetric.msg.viewWeb');
-    // for (let index = 1; index <= len; index++) {
-    //   const address = XLSX.utils.encode_cell({r: index, c: colName});
-    //   const url = window.location.origin.concat('/vpKeyMetrics/', this.visbokeymetrics[index - 1].vpid);
-    //   worksheet[address].l = { Target: url, Tooltip: tooltip };
-    // }
-    // const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
-    // worksheet['!autofilter'] = { ref: matrix };
-    // // eslint-disable-next-line
-    // const sheets: any = {};
-    // const sheetName = visboGetShortText(name, 30);
-    // sheets[sheetName] = worksheet;
-    // const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
-    // // eslint-disable-next-line
-    // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    // const actDate = new Date();
-    // const fileName = ''.concat(
-    //   actDate.getFullYear().toString(),
-    //   '_',
-    //   (actDate.getMonth() + 1).toString().padStart(2, "0"),
-    //   '_',
-    //   actDate.getDate().toString().padStart(2, "0"),
-    //   '_Cockpit ',
-    //   (name || '')
-    // );
-    //
-    // const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
-    // const url = window.URL.createObjectURL(data);
-    // const a = document.createElement('a');
-    // document.body.appendChild(a);
-    // a.href = url;
-    // a.download = fileName.concat(EXCEL_EXTENSION);
-    // this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
-    // a.click();
-    // window.URL.revokeObjectURL(url);
+
+    if (this.visbokeymetrics) {
+      this.visbokeymetrics.forEach(element => {
+        excel.push(this.copyKeyMetrics(element));
+      });
+    }
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    let name = '';
+    if (this.vpfActive && this.vpfActive[0]) {
+      name = this.vpfActive[0].name
+    } else if (this.vcActive) {
+      name = this.vcActive.name;
+    }
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    let colName: number, colIndex = 0;
+    for (const element in excel[0]) {
+      if (element == 'name') {
+        colName = colIndex;
+      }
+      colIndex++;
+      header[element] = element;
+      // header[element] = this.translate.instant('compViewBubbleCmp.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    // generate link for VP Name
+    const tooltip = this.translate.instant('vpKeyMetric.msg.viewWeb');
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = window.location.origin.concat('/vpKeyMetrics/', this.visbokeymetrics[index - 1].source.vpid);
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_Cockpit ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   getLevel(plan: number, baseline: number): number {
@@ -1319,6 +1272,38 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) {
         return (a.compare?.savingCostTotalPredict || 0) - (b.compare?.savingCostTotalPredict || 0);
       });
+    } else if (this.sortColumn === 55) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostActual || 0) - (a.compare?.savingCostActual || 0)) - ((b.source?.savingCostActual || 0) - (b.compare?.savingCostActual || 0));
+      });
+    } else if (this.sortColumn === 52) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostTotal || 0) - (a.compare?.savingCostTotal || 0)) - ((b.source?.savingCostTotal || 0) - (b.compare?.savingCostTotal || 0));
+      });
+    } else if (this.sortColumn === 57) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingCostTotalPredict || 0) - (a.compare?.savingCostTotalPredict || 0)) - ((b.source?.savingCostTotalPredict || 0) - (b.compare?.savingCostTotalPredict || 0));
+      });
+    } else if (this.sortColumn === 54) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.savingEndDate || 0) - (a.compare?.savingEndDate || 0)) - ((b.source?.savingEndDate || 0) - (b.compare?.savingEndDate || 0));
+      });
+    } else if (this.sortColumn === 56) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.timeCompletionActual || 0) - (a.compare?.timeCompletionActual || 0)) - ((b.source?.timeCompletionActual || 0) - (b.compare?.timeCompletionActual || 0));
+      });
+    } else if (this.sortColumn === 51) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.keyMetrics?.timeDelayUnFinished || 0) - (a.compare?.keyMetrics?.timeDelayUnFinished || 0)) - ((b.source?.keyMetrics?.timeDelayUnFinished || 0) - (b.compare?.keyMetrics?.timeDelayUnFinished || 0));
+      });
+    } else if (this.sortColumn === 50) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.keyMetrics?.timeDelayFinished || 0) - (a.compare?.keyMetrics?.timeDelayFinished || 0)) - ((b.source?.keyMetrics?.timeDelayFinished || 0) - (b.compare?.keyMetrics?.timeDelayFinished || 0));
+      });
+    } else if (this.sortColumn === 58) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return ((a.source?.deliveryCompletionActual || 0) - (a.compare?.deliveryCompletionActual || 0)) - ((b.source?.deliveryCompletionActual || 0) - (b.compare?.deliveryCompletionActual || 0));
+      });
     }
 
     if (!this.sortAscending) {
@@ -1332,7 +1317,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompViewBubbleCmp: ' + message);
+    // console.log('CompViewBubbleCmp: ' + message);
     this.messageService.add('CompViewBubbleCmp: ' + message);
   }
 }
