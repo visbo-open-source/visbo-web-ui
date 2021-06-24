@@ -45,6 +45,13 @@ export class VPCustomDouble {
   type: string;
 }
 
+export class VPCustomDate {
+  name: string;
+  localName: string;
+  value: Date;
+  type: string;
+}
+
 export class VisboProject {
   _id: string;
   updatedAt: Date;
@@ -60,6 +67,7 @@ export class VisboProject {
   restrict: [VPRestrict];
   customFieldDouble: VPCustomDouble[];
 	customFieldString: VPCustomString[];
+  customFieldDate: VPCustomDate[];
   // eslint-disable-next-line
   capacity: any[];
   vc: {
@@ -126,7 +134,7 @@ export interface CreateProjectProperty {
   businessUnit?: string;
 }
 
-export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit']
+export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit', '_PMCommit']
 
 export function getCustomFieldString(vp: VisboProject, name: string): VPCustomString {
   let result: VPCustomString;
@@ -160,6 +168,24 @@ export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDo
   let result: VPCustomDouble;
   if (vp && vp.customFieldDouble) {
     result = vp.customFieldDouble.find(element => element.name == name)
+  }
+  return result;
+}
+
+export function addCustomFieldDate(vp: VisboProject, name: string, value: Date): VPCustomDate {
+  const customField = new VPCustomDate();
+  customField.name = name;
+  customField.value = new Date(value);
+  if (vp?.customFieldDate) {
+    vp.customFieldDate.push(customField);
+  }
+  return customField;
+}
+
+export function getCustomFieldDate(vp: VisboProject, name: string): VPCustomDate {
+  let result: VPCustomDate;
+  if (vp && vp.customFieldDate) {
+    result = vp.customFieldDate.find(element => element.name == name)
   }
   return result;
 }

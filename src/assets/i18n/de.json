@@ -279,6 +279,7 @@
 			"type": "Typ",
 			"modified": "Änderung",
 			"versions": "# Versionen",
+			"commit": "Bestätigung",
 			"vc": "VISBO Center",
 			"detail": "Detail",
 			"description": "Beschreibung",
@@ -578,6 +579,7 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
+			"vpCommit": "Fixieren",
 			"back": "Zurück",
 			"save": "Speichern",
 			"add": "Hinzufügen"
@@ -586,6 +588,7 @@
 			"changePFV": "Vorsicht: Änderung der Baseline!",
 			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
+			"confirmCommit": "Wollen Sie diesen Projekt Stand wirklich fixieren?",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
@@ -892,6 +895,7 @@
 			"type": "Typ",
 			"percentDone": "Erledigt",
 			"startDatePFV": "Start Phase (Baseline)",
+			"startDateVPV": "Start Phase (Plan)",
 			"startDateTTVPV": "Start (Plan)",
 			"endDateTTVPV": "Ende (Plan)",
 			"endDatePFV": "Termin (Baseline)",
@@ -1265,7 +1269,8 @@
 	"customField": {
 		"_businessUnit": "Geschäftseinheit",
 		"_risk": "Risiko",
-		"_strategicFit": "Strategic Fit"
+		"_strategicFit": "Strategic Fit",
+		"_PMCommit": "Last Commit"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Berechtigung",

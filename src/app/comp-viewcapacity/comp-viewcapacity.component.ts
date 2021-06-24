@@ -478,7 +478,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         .subscribe(
           listVPV => {
             if (!listVPV || listVPV.length != 1 || !listVPV[0].capacity || listVPV[0].capacity.length === 0) {
-              this.log(`get VPF Calc: Reset Capacity to empty `);
+              this.log(`get VPV Calc: Reset Capacity to empty `);
               this.visboCapacity = [];
             } else {
               const vpv = listVPV[0];
@@ -609,7 +609,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
 
   initShowUnit(unit: string): void {
-    const strUnit = (unit == '1' || unit == 'PD') ? 'PD' : undefined;
+    if (!this.hasVPPerm(this.permVP.ViewAudit)) {
+      unit = '1'
+    }
+    const strUnit = ((unit == '1' || unit == 'PD') ? 'PD' : undefined || (unit == '0' || unit == 'Euro') ? 'Euro' : undefined);
     this.showUnit = strUnit;
     this.updateUrlParam('unit', strUnit == 'PD' ? '1' : '0')
     if (unit === 'PD') {
