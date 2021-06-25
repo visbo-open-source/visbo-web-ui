@@ -34,6 +34,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   qualityCost: number;
   qualityTotalCost: number;
+  qualityTotalCostPredict: number;
   qualityEndDate: number;
   qualityEndDiffWeeks: number;
   qualityDeadline: number;
@@ -246,8 +247,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
         elementKeyMetric.savingCostTotal = Math.round((1 - (elementKeyMetric.keyMetrics.costCurrentTotal || 0)
                                                       / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
+        elementKeyMetric.savingCostTotalPredict = Math.round((1 - (elementKeyMetric.keyMetrics.costCurrentTotalPredict || 0)
+                                                      / (elementKeyMetric.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
 
-        elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
+        // elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
         elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                             / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
 
@@ -327,7 +330,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.visboprojectversions) {
       return;
     }
-    const predict = this.hasKM(this.visboprojectversions[0].keyMetrics, 'PAC');
+    let predict = false;
+    this.visboprojectversions.forEach(vpv => {
+      if (vpv.keyMetrics) {
+        predict = predict || this.hasKM(vpv.keyMetrics, 'PAC');
+      }
+    });
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {
@@ -1039,6 +1047,17 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.qualityTotalCost = 2;
     } else {
       this.qualityTotalCost = 3;
+    }
+
+    if (keyMetrics.costCurrentTotalPredict) {
+      index = keyMetrics.costCurrentTotalPredict / (keyMetrics.costBaseLastTotal || 1);
+      if (index < 1 + level1) {
+        this.qualityTotalCostPredict = 1;
+      } else if (index < 1 + level2) {
+        this.qualityTotalCostPredict = 2;
+      } else {
+        this.qualityTotalCostPredict = 3;
+      }
     }
 
     if (keyMetrics.endDateBaseLast) {

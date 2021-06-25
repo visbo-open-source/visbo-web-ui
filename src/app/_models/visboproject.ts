@@ -102,6 +102,7 @@ export class VPParams {
   vpvid: string;
   deleted: string;
   refDate: string;
+  calcPredict: string;
   view: string;
   viewKM: string;
   filter: string;
@@ -136,7 +137,7 @@ export function getCustomFieldString(vp: VisboProject, name: string): VPCustomSt
 }
 
 export function addCustomFieldString(vp: VisboProject, name: string, value: string): VPCustomString {
-  let customField = new VPCustomString();
+  const customField = new VPCustomString();
   customField.name = name;
   customField.value = value;
   if (vp?.customFieldString) {
@@ -146,7 +147,7 @@ export function addCustomFieldString(vp: VisboProject, name: string, value: stri
 }
 
 export function addCustomFieldDouble(vp: VisboProject, name: string, value: number): VPCustomDouble {
-  let customField = new VPCustomDouble();
+  const customField = new VPCustomDouble();
   customField.name = name;
   customField.value = value;
   if (vp?.customFieldDouble) {

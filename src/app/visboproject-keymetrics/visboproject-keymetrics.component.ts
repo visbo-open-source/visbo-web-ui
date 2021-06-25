@@ -1,5 +1,6 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Sanitizer, SecurityContext } from '@angular/core';
-import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { DomSanitizer, Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -18,6 +19,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
+import { UserService } from '../_services/user.service';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
 
@@ -44,6 +46,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   newVPVdropDown: DropDown[];         // variants to create a new Version
   dropDownIndex: number;
   vcCustomize: VisboSetting[];
+  vcEnableDisable: VisboSetting[];
   vcOrga: VisboSetting[];
 
   vpSelected: string;
@@ -57,6 +60,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   defaultVariant: string;
   pfvVariant: string;
   predictURL: string;
+  customPredict: string;
+  calcPredict = false;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -76,6 +81,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   changeStatus: boolean;
   newVPVvariantName: string;
   newVPVdropDownIndex: number;
+  allVersions: boolean;
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
@@ -100,11 +106,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
     private visbosettingService: VisboSettingService,
+    private userService: UserService,
     private messageService: MessageService,
     private alertService: AlertService,
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
+    private datePipe: DatePipe,
     private sanitizer: DomSanitizer,
     private titleService: Title
   ) { }
@@ -115,6 +123,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.variantName = this.route.snapshot.queryParams['variantName'];
     this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     this.pfvVariant = this.translate.instant('vpKeyMetric.lbl.pfvVariant');
+    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       // map old / outdated URLs to common url
@@ -261,6 +270,22 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  getDropDown(type: string): string {
+    if (!(this.dropDownIndex >= 0 && this.dropDownIndex < this.dropDown.length)) {
+      return '';
+    }
+    const variant = this.dropDown[this.dropDownIndex];
+    if (type == 'description') {
+      return variant.description;
+    } else {
+      if (variant.variantName == '') {
+        return '';
+      } else {
+        return '(' + variant.variantName + ')';
+      }
+    }
+  }
+
   findVPV(refDate: Date): void {
     if (this.visboprojectversions.length > 0) {
       let i = 0;
@@ -337,11 +362,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getPredictURL(): string {
-    let url = this.route.snapshot.url.join('/');
-    // url = 'visbo-predict://localhost:4200/'.concat(url);
-    // url = 'visbo-predict://localhost'.concat('?', url);
-    url = 'visbo-predict://predict';
+  getPredictURL(ott: string): string {
+    let url = 'visbo-predict://predict';
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
@@ -349,6 +371,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (this.vpvActive) {
         url = url.concat(separator, 'vpvid:', this.vpvActive._id.toString());
+        separator = '&'
+    }
+    if (ott) {
+        url = url.concat(separator, 'ott:', ott);
         separator = '&'
     }
     console.log("URL:", url);
@@ -439,7 +465,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkBaselineVersion(vpv: VisboProjectVersion): boolean {
     let result = true;
     if (vpv && this.allVPVs) {
-      let latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
+      const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
       if (latestVPV?._id.toString() == vpv._id.toString()) {
         // check only the latest version if a newer PFV exists
         if (this.vpvBaseline
@@ -467,7 +493,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
             this.dropDownInit();
             this.getAllVersionsShort();
-            this.getVisboCenterCustomization();
+            this.getVisboCenterSettings();
             // would be better to get the orga and deliver it to the component.
             this.getVisboCenterOrga();
 
@@ -478,7 +504,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               variantID = variant ? variant._id.toString() : '';
             }
             this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, 2)
+            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, this.calcPredict ? 2 : 1)
               .subscribe(
                 visboprojectversions => {
                   this.visboprojectversions = visboprojectversions;
@@ -685,16 +711,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  getVisboCenterCustomization(): void {
+  getVisboCenterSettings(): void {
     if (this.vpActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
       if (!this.vcCustomize
       || (this.vcCustomize[0] && this.vcCustomize[0].vcid.toString() != this.vpActive.vcid.toString())) {
         // check if appearance is available
-        this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
+        this.log(`get VC Setting ${this.vpActive.vcid}`);
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict')
           .subscribe(
             vcsettings => {
-              this.vcCustomize = vcsettings;
+              this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
+              this.vcEnableDisable = this.squeezeEnableDisable(vcsettings.filter(item => item.type == '_VCConfig'));
+              const customSetting = vcsettings.find(item => item.type == 'CustomPredict');
+              if (customSetting) {
+                this.customPredict = customSetting.name;
+              }
               this.initBUDropDown();
             },
             error => {
@@ -707,6 +738,56 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           });
       }
     }
+  }
+
+  squeezeEnableDisable(settings: VisboSetting[]): VisboSetting[] {
+    if (!settings || settings.length == 0) {
+      return [];
+    }
+    settings.forEach(item => {
+      // calculate VCEnabled and sysVCLimit for a compact view in VC Admin
+      if (item.value) {
+        if (item.value.systemLimit) {
+          item.value.VCEnabled = item.value.systemEnabled;
+          item.value.sysVCLimit = true;
+        } else if (item.value.sysVCLimit) {
+          item.value.VCEnabled = item.value.sysVCEnabled;
+        } else {
+          item.value.VCEnabled = item.value.VCEnabled ? true : false;
+        }
+      }
+    });
+    const result = settings.filter(item => item.value?.systemLimit !== true);
+    return result;
+  }
+
+  getEnableDisable(name: string, level: number, notLimitOff: boolean): boolean {
+    let result = false;
+    if (this.vcEnableDisable) {
+      const setting = this.vcEnableDisable.find(item => item.name == name);
+      if (setting && setting.value) {
+        if (level == 0) {
+          if (notLimitOff) {
+            result = setting.value.systemLimit && setting.value.systemEnabled == false ? false : true;
+          } else {
+            result = setting.value.systemEnabled == true;
+          }
+        } else if (level == 1) {
+          if (notLimitOff) {
+            result = setting.value.sysVCLimit && setting.value.sysVCEnabled == false ? false : true;
+          } else {
+            result = setting.value.sysVCEnabled == true;
+          }
+        } else {
+          if (notLimitOff) {
+            result = setting.value.sysVCLimit && setting.value.sysVCEnabled == false ? false : true;
+          } else {
+            result = setting.value.VCEnabled == true;
+          }
+        }
+      }
+    }
+    return result;
   }
 
   initBUDropDown(): void {
@@ -740,8 +821,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.updateUrlParam('view', 'All');
     }
     this.findBaseLine(vpv);
-    this.predictURL = this.getPredictURL();
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
+  }
+
+  initCustomURL(): void {
+    this.predictURL = undefined;
+    // get the One Time Token and set the predictURL after getting it
+    this.userService.getUserOTT()
+      .subscribe(
+        ott => {
+          this.predictURL = this.getPredictURL(ott);
+        },
+        error => {
+          if (error.status === 400) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorOTT');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+      });
   }
 
   gotoVPDetail(visboproject: VisboProject): void {
@@ -808,26 +906,26 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     const startDate = new Date(this.newVPV.startDate);
     const endDate = new Date(this.newVPV.endDate);
     const actualDataUntil = this.newVPV.actualDataUntil ? new Date(this.newVPV.actualDataUntil) : undefined;
-   
+
     if (mode == 'startDate') {
       // the reasons not to allow to move startdate:
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
       // 2. startDate is before today and(!) newVPV.status is 'beauftragt'
-      // it have to be allowed to move the startDate even if it is in the past, because otherwise you never can initiate projects 
-      // which have been proposed, by the time then been rejected but now should be initiated.  
+      // it have to be allowed to move the startDate even if it is in the past, because otherwise you never can initiate projects
+      // which have been proposed, by the time then been rejected but now should be initiated.
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
       } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
         result = false;
       }
     } else if (mode == 'endDate') {
-      // the reasons not to allow to move endDate: 
+      // the reasons not to allow to move endDate:
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
       } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
         result = false;
-      }      
+      }
     }
     // always returns false : return result && false;
     return result;
@@ -988,7 +1086,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
             this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
               .subscribe(
-                vpv => {
+                () => {
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                   this.alertService.success(message, true);
                   // this.updateVPVCount(this.vpActive, vpv.variantName, 1);
@@ -1198,7 +1296,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       list = this.vpActive?.customFieldString;
     }
     list.forEach(item => {
-      let fieldString = new VPCustomString();
+      const fieldString = new VPCustomString();
       fieldString.name = item.name;
       fieldString.type = item.type;
       fieldString.value = item.value;
@@ -1216,13 +1314,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       list = this.vpActive?.customFieldDouble;
     }
     list.forEach(item => {
-      let fieldString = new VPCustomDouble();
+      const fieldString = new VPCustomDouble();
       fieldString.name = item.name;
       fieldString.type = item.type;
       fieldString.value = item.value;
       this.editCustomFieldDouble.push(fieldString);
     });
     return this.editCustomFieldDouble;
+  }
+
+  getTimestampTooltip(vpv: VisboProjectVersion): string {
+    if (!vpv) return '';
+    let title = this.translate.instant('vpKeyMetric.lbl.plan')
+              + ': '
+              + this.datePipe.transform(vpv.timestamp, 'dd.MM.yy HH:mm');
+    if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
+      title = title
+            + ', ' + this.translate.instant('vpKeyMetric.lbl.pfvVariant')
+            + ': '
+            + this.datePipe.transform(vpv.keyMetrics.baselineDate, 'dd.MM.yy HH:mm');
+    }
+    return title;
   }
 
   getPreView(): boolean {

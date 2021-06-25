@@ -40,7 +40,9 @@ export class VisboPortfolioVersionResponse {
 
 export class VPFParams {
   vpfid: string;
+  vpfidCmp: string;
   refDate: string;
+  refDateCmp: string;
   view: string;
   viewCockpit: string;
   filter: string;

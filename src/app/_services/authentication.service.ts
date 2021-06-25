@@ -39,7 +39,6 @@ export class AuthenticationService {
       return this.logoutTime;
     }
 
-
     login(username: string, password: string): Observable<VisboUser> {
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
@@ -48,6 +47,37 @@ export class AuthenticationService {
       newLogin.password = password;
 
       return this.http.post<LoginResponse>(url, newLogin) /* MS Last Option HTTP Headers */
+            .pipe(
+              map(result => {
+                // login successful if there's a jwt token in the response
+                if (result && result.token) {
+                    this.log(`Login Request Successful:  ${result.user.email}`);
+                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    localStorage.setItem('currentToken', JSON.stringify(result.token));
+                    this.isLoggedIn = true;
+                    // eslint-disable-next-line
+                    const decoded: any = jwt_decode(result.token);
+                    if (decoded && decoded.exp) {
+                      // this.log(`Login token expiration:  ${decoded.exp}`);
+                      this.logoutTime = new Date(decoded.exp * 1000);
+                    }
+                    this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+
+                    return result.user;
+                }
+                return null;
+              }),
+              catchError(this.handleError<VisboUser>('LoginError'))
+            );
+    }
+
+    loginOTT(ott: string): Observable<VisboUser> {
+      const url = `${this.authUrl}/ott`;
+      this.log(`Calling HTTP Request: ${url}`);
+      const newOTT = {ott: ott}
+
+      return this.http.post<LoginResponse>(url, newOTT)
             .pipe(
               map(result => {
                 // login successful if there's a jwt token in the response

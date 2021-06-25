@@ -60,8 +60,10 @@ import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdel
 import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
 import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
+import { VisboCompViewCapacityCmpComponent } from './comp-viewcapacitycmp/comp-viewcapacitycmp.component';
 import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
 import { VisboCompViewBubbleComponent } from './comp-viewbubble/comp-viewbubble.component';
+import { VisboCompViewBubbleCmpComponent } from './comp-viewbubblecmp/comp-viewbubblecmp.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 
 // Visbo Project Versions
@@ -70,6 +72,7 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 
 // Visbo Portfolio Versions
 import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
+import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -87,6 +90,7 @@ import { SysLogComponent } from './syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
 import { SystasksComponent } from './systasks/systasks.component';
 import { SysconfigComponent } from './sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './syssettings/syssettings.component';
 
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
@@ -109,11 +113,14 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
     VisboCompViewCapacityComponent,
+    VisboCompViewCapacityCmpComponent,
     VisboCompViewBoardComponent,
     VisboCompViewBubbleComponent,
+    VisboCompViewBubbleCmpComponent,
     VisboprojectRestrictComponent,
     VisboProjectVersionsComponent,
     VisboPortfolioVersionsComponent,
+    VisboPortfolioCmpComponent,
     LogoutTimerComponent,
     SettingsComponent,
     UserProfileComponent,
@@ -135,7 +142,8 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     SysuserComponent,
     SysLogComponent,
     SystasksComponent,
-    SysconfigComponent
+    SysconfigComponent,
+    SyssettingsComponent
   ],
   imports: [
     BrowserModule,
