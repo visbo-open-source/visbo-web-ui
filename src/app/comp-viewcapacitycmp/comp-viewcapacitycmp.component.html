@@ -6,24 +6,24 @@
         <div class="text-dark">
           <div *ngIf="!getPreView()" class="row ml-1 pt-2 d-print-none">
             <span >
-              <label class="mr-2 pt-1">{{ 'ViewCapacity.titleCapacity' | translate }}</label>
+              <label class="mr-2 pt-1">{{ 'ViewCapacityCmp.titleCapacity' | translate }}</label>
             </span>
             <span>
               <input id="capacityFrom" type="date" class="border-1 font-weight-bold" name="capacityFrom" min= "2015-01-01" max="2050-01-01" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
             </span>
             <span>
-              <label class="mx-2 pt-1">{{ 'ViewCapacity.titleTimeTo'  | translate }}</label>
+              <label class="mx-2 pt-1">{{ 'ViewCapacityCmp.titleTimeTo'  | translate }}</label>
               <input id="capacityTo" type="date" class="border-1 font-weight-bold" name="capacityTo" min= "2015-01-01" max="2050-01-01" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="updateDateRange()" >
             </span>
             <div class="mx-2 pt-1">
-              <span *ngIf="hasCost" class="mr-auto">{{ 'ViewCapacity.title2'  | translate }}</span>
+              <span *ngIf="hasCost" class="mr-auto">{{ 'ViewCapacityCmp.title2'  | translate }}</span>
               <span *ngIf="hasCost" class="mr-auto dropdown">
                 <a class="pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
                   {{showUnitText}}
                 </a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCapacity.lbl.pd' | translate }}</a>
-                  <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacity.lbl.euro' | translate }}</a>
+                  <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCapacityCmp.lbl.pd' | translate }}</a>
+                  <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCapacityCmp.lbl.euro' | translate }}</a>
                 </div>
               </span>
             </div>
@@ -31,11 +31,11 @@
           <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none mt-1">
             <div *ngIf="!vpvActive" class="custom-control custom-checkbox m-2">
               <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
-              <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacity.lbl.refPFV' | translate }}</label>
+              <label class="custom-control-label" for="idRefPFV">{{ 'ViewCapacityCmp.lbl.refPFV' | translate }}</label>
             </div>
 
             <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
-              <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCapacity.lbl.showDrill' | translate }}:</label>
+              <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCapacityCmp.lbl.showDrill' | translate }}:</label>
               <select class="col-9 form-control" id="drillDownOpt" (change)="updateDrillDown()" name="drillDown" [(ngModel)]="drillDown">
                 <option *ngFor="let drillItem of drillDownCapaFiltered" value="{{drillItem.id}}">{{drillItem.localName}}</option>
               </select>
@@ -51,38 +51,49 @@
       </div>
       <div *ngIf="visboCapacity.source && visboCapacity.source.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
         <h5 class="card-header p-2">
-          <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
-          {{ 'ViewCapacity.titleBox' | translate }}</h5>
+          <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost0, sumBudget0)}"></ng-container></strong>
+          {{ 'ViewCapacityCmp.titleBox' | translate }}</h5>
         <div class="card-body p-2">
           <div class="row">
             <div class="col col-sm-6">
               <div *ngIf="showUnit != 'PD'">
-                {{ 'ViewCapacity.lbl.totalCost' | translate }}
+                {{ 'ViewCapacityCmp.lbl.totalCost' | translate }}
               </div>
               <div *ngIf="showUnit == 'PD'">
-                {{ 'ViewCapacity.lbl.totalCostPT' | translate }}
+                {{ 'ViewCapacityCmp.lbl.totalCostPT' | translate }}
               </div>
             </div>
-            <div class="col col-sm-6 text-right">
-              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
-              {{sumCost | number:'1.0-0'}}
-              <span *ngIf="showUnit != 'PD'">T€</span>
-              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacity.lbl.pd' | translate }}</span>
+            <div class="col col-sm-3 text-right">
+              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost0, sumBudget0)}"></ng-container></strong>
+              {{sumCost0 | number:'1.0-0'}}
+              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacityCmp.lbl.keuro' | translate }}</span>
+              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacityCmp.lbl.pd' | translate }}</span>
+            </div>
+            <div class="col col-sm-3 text-right bg-light">
+              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost1, sumBudget1)}"></ng-container></strong>
+              {{sumCost1 | number:'1.0-0'}}
+              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacityCmp.lbl.keuro' | translate }}</span>
+              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacityCmp.lbl.pd' | translate }}</span>
             </div>
           </div>
           <div class="row">
             <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
               <div *ngIf="refPFV">
-                {{ 'ViewCapacity.lbl.budget' | translate }}
+                {{ 'ViewCapacityCmp.lbl.budget' | translate }}
               </div>
               <div *ngIf="!refPFV">
-                {{ 'ViewCapacity.lbl.totalCapa' | translate }}
+                {{ 'ViewCapacityCmp.lbl.totalCapa' | translate }}
               </div>
             </div>
-            <div class="col col-sm-6 text-right">
-              {{sumBudget | number:'1.0-0'}}
-              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacity.lbl.keuro' | translate }}</span>
-              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacity.lbl.pd' | translate }}</span>
+            <div class="col col-sm-3 text-right">
+              {{sumBudget0 | number:'1.0-0'}}
+              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacityCmp.lbl.keuro' | translate }}</span>
+              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacityCmp.lbl.pd' | translate }}</span>
+            </div>
+            <div class="col col-sm-3 text-right bg-light">
+              {{sumBudget1 | number:'1.0-0'}}
+              <span *ngIf="showUnit != 'PD'">{{ 'ViewCapacityCmp.lbl.keuro' | translate }}</span>
+              <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacityCmp.lbl.pd' | translate }}</span>
             </div>
           </div>
         </div>
@@ -93,7 +104,7 @@
   <div>
     <div class="row">
       <div *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
-        <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
+        <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacityCmp.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>
       <div *ngIf="!getPreView() && displayCapacity() > 0" class="col-9">
@@ -108,7 +119,7 @@
       </div>
       <!-- here will be shown the text: No Capacity the spinner -->
       <div *ngIf="displayCapacity() == 0" class="col-9">
-        <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacity.msg.noCapacity' | translate }}</span>
+        <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCapacityCmp.msg.noCapacity' | translate }}</span>
       </div>
     </div>
   </div>
@@ -147,6 +158,6 @@
 
   <div *ngIf="displayCapacity() < 0" >
     <div class="spinner-border" role="status"></div>
-    <span> {{ 'ViewCapacity.msg.calculating' | translate }}</span>
+    <span> {{ 'ViewCapacityCmp.msg.calculating' | translate }}</span>
   </div>
 </div>

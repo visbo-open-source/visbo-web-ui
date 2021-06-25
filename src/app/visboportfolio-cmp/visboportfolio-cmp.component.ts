@@ -55,6 +55,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
   vpvRefDate: Date[] = [];
   listVPV: VisboProjectVersion[][] = [];
   listCalcVPV: VisboProjectVersion[][] = [];
+  update: Date;
 
   views = ['KeyMetrics', 'List', 'Capacity'];
 
@@ -309,6 +310,9 @@ export class VisboPortfolioCmpComponent implements OnInit {
     if (refDate && !visboIsToday(refDate)) {
       queryParams.refDate = refDate.toISOString();
     }
+    if (this.pageParams?.view) {
+      queryParams.view = this.pageParams.view;
+    }
     queryParams.vpfid = item._id;
     this.router.navigate(['vpf/'.concat(item.vpid)], { queryParams: queryParams });
   }
@@ -436,6 +440,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
         this.pageParams.vpfidCmp = vpfid;
       }
     }
+    this.update = new Date();
     if (refreshPage) { this.updateUrlParam(); }
   }
 
