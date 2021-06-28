@@ -24,6 +24,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboIsToday, getPreView, visboGetShortText }
             from '../_helpers/visbo.helper';
 
+import {ComboChartOptions} from '../_models/_chart'
 import { scale, brewer } from 'chroma-js';
 
 import * as XLSX from 'xlsx';
@@ -43,6 +44,7 @@ class CapaLoad {
 
 class DrillDownElement {
   currentDate: Date;
+  source: boolean;
   name: string;
   variantName: string;
   plan: number;
@@ -107,11 +109,12 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
-  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB'];
+  colorsPFV = [baselineColor, '#BDBDBD', '#BDBDBD', '#458CCB', '#BDBDBD', 'gray'];
   colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB', '#BDBDBD', 'gray'];
 
 
   seriesPFV = [
+    {type: 'line', lineWidth: 4, pointSize: 0},
     {type: 'line', lineWidth: 4, pointSize: 0}
   ];
   seriesOrga = [
@@ -122,18 +125,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     // legend of Plan-Kosten visible or not
     {visibleInLegend: true}
   ];
-  // seriesPFV = {
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'none', lineWidth: 0,lineDashStyle: [4, 4], pointSize: 0}
-  // };
-  // seriesOrga ={
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}
-  // };
 
   chartActive: Date;
   graphDataComboChart = [];
-  graphOptionsComboChart = {
+  graphOptionsComboChart: ComboChartOptions;
+  defaultOptionsComboChart: ComboChartOptions = {
       chartArea:{'left':100,'top':100,width:'90%'},
       width: '100%',
       height: '600',
@@ -148,6 +144,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
           fontSize: 10
         }
       },
+      bar: {},
       colors: this.colorsOrga,
       series: this.seriesOrga,
       seriesType: 'bars',
@@ -649,7 +646,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     const strUnit = (unit == '1' || unit == 'PD') ? 'PD' : undefined;
     this.showUnit = strUnit;
     this.updateUrlParam('unit', strUnit == 'PD' ? '1' : '0')
-    if (unit === 'PD') {
+    if (strUnit === 'PD') {
       this.showUnitText = this.translate.instant('ViewCapacityCmp.lbl.pd')
     } else {
       this.showUnitText = this.translate.instant('ViewCapacityCmp.lbl.euro')
@@ -722,6 +719,8 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       optformat = "###,###.## " + this.translate.instant('ViewCapacityCmp.lbl.keuro');
     }
 
+    // create a new object to get refresh of options
+    this.graphOptionsComboChart = Object.assign({}, this.defaultOptionsComboChart);
     this.graphOptionsComboChart.title = this.translate.instant(this.refPFV ? 'ViewCapacityCmp.titleCapaOverTimeBL' : 'ViewCapacityCmp.titleCapaOverTime', {name: this.currentName, roleName: this.currentLeaf.name});
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacityCmp.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
@@ -747,16 +746,15 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     }
   }
 
-  calcChildNode(capacity: VisboCapacity[], property = 'roleName'): string[] {
+  calcChildNode(source: VisboCapacity[], compare: VisboCapacity[], property = 'roleName'): string[] {
     const allNames = [];
     let uniqueNames = [];
-    if (!capacity) {
-      return allNames;
-    }
-    capacity.forEach(item => {
+    source && source.forEach(item => {
         allNames.push(item[property] || '');
     });
-    // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
+    compare && compare.forEach(item => {
+        allNames.push(item[property] || '');
+    });
     uniqueNames = allNames.filter((name, index) => {
         return allNames.indexOf(name) === index;
     });
@@ -946,118 +944,157 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     // this.chartActive = new Date();
   }
 
-  visboViewCapacityDrillDown(): void {
+  addCapacityOrgaRow(drillDownCapacity: DrillDownElement[][], element: VisboCapacity, source: boolean, childNodeList: string[]): void {
+    const currentDate = new Date(element.month);
+    let capa = 0, plan = 0;
+    if (this.showUnit === 'PD') {
+      plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+    } else {
+      plan = (element.actualCost || 0) + (element.plannedCost || 0);
+    }
+    if (this.refPFV) {
+      if (this.showUnit === 'PD') {
+        capa = (element.baselineCost_PT || 0);
+      } else {
+        capa = (element.baselineCost || 0);
+      }
+    } else {
+      if (this.showUnit === 'PD') {
+        capa = (element.internCapa_PT || 0) + (element.externCapa_PT || 0);
+      } else {
+        capa = (element.internCapa || 0) + (element.externCapa || 0);
+      }
+    }
+    if (source) {
+      this.sumCost0 += plan;
+      this.sumBudget0 += capa;
+    } else {
+      this.sumCost1 += plan;
+      this.sumBudget1 += capa;
+    }
+    const template: DrillDownElement[] = [];
+    const elementDrill = new DrillDownElement();
+    elementDrill.currentDate = currentDate;
+    elementDrill.source = source;
+    elementDrill.name = this.currentLeaf.name;
+    elementDrill.plan = plan;
+    elementDrill.planTotal = plan;
+    elementDrill.budget = capa;
+    template.push(elementDrill)
+    childNodeList.forEach(element => {
+      template.push({currentDate: currentDate, source: source, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0});
+    });
+    drillDownCapacity.push(template);
+  }
 
-    // const graphDataCapacity = [];
-    // const initialOffset = 1    // first element in the array is the parent
-    //
-    // this.log(`ViewCapacityDrillDown resource ${this.currentLeaf.name}`);
-    // this.sumCost = 0;
-    // this.sumBudget = 0;
-    // const childNodeList = this.calcChildNode(this.visboCapacityChild);
-    // const mapNodeList = this.mapChildNode(childNodeList);
-    //
-    // const drillDownCapacity: DrillDownElement[][] = [];
-    // this.visboCapacity.forEach(item => {
-    //   const currentDate = new Date(item.month);
-    //   let capa = 0, plan = 0;
-    //   if (this.showUnit === 'PD') {
-    //     plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
-    //   } else {
-    //     plan = (item.actualCost || 0) + (item.plannedCost || 0);
-    //   }
-    //   if (this.refPFV) {
-    //     if (this.showUnit === 'PD') {
-    //       capa = (item.baselineCost_PT || 0);
-    //     } else {
-    //       capa = (item.baselineCost || 0);
-    //     }
-    //   } else {
-    //     if (this.showUnit === 'PD') {
-    //       capa = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
-    //     } else {
-    //       capa = (item.internCapa || 0) + (item.externCapa || 0);
-    //     }
-    //   }
-    //   this.sumCost += plan;
-    //   this.sumBudget += capa;
-    //
-    //   const template: DrillDownElement[] = [];
-    //   const elementDrill = new DrillDownElement();
-    //   elementDrill.currentDate = currentDate;
-    //   elementDrill.name = this.currentLeaf.name;
-    //   elementDrill.plan = plan;
-    //   elementDrill.planTotal = plan;
-    //   elementDrill.budget = capa;
-    //   template.push(elementDrill)
-    //   childNodeList.forEach(element => {
-    //     template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0});
-    //   });
-    //   drillDownCapacity.push(template);
-    // });
-    // // now fill up with the Child Infos
-    // this.visboCapacityChild.forEach(item => {
-    //   const currentDate = new Date(item.month);
-    //   const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
-    //   if (row) {
-    //     const index = mapNodeList[item.roleName];
-    //     if (index >= 0) {
-    //       let plan = 0, budget = 0;
-    //       if (this.showUnit === 'PD') {
-    //         plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
-    //       } else {
-    //         plan = (item.actualCost || 0) + (item.plannedCost || 0);
-    //       }
-    //       if (this.refPFV) {
-    //         if (this.showUnit === 'PD') {
-    //           budget = (item.baselineCost_PT || 0);
-    //         } else {
-    //           budget = (item.baselineCost || 0);
-    //         }
-    //       } else {
-    //         if (this.showUnit === 'PD') {
-    //           budget = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
-    //         } else {
-    //           budget = (item.internCapa || 0) + (item.externCapa || 0);
-    //         }
-    //       }
-    //
-    //       row[index + 1].plan = plan;
-    //       row[index + 1].budget = budget;
-    //       if (row[0].plan >= plan) {
-    //         row[0].plan -= plan;
-    //       } else {
-    //         row[0].plan = 0;
-    //       }
-    //     }
-    //   } else {
-    //     // this.log(`ViewCapacityDrillDown Date out of range ${currentDate.toISOString()}`);
-    //   }
-    // });
-    //
-    // for (let index = 0; index < drillDownCapacity.length; index++) {
-    //   const element = drillDownCapacity[index];
-    //   const currentDate = element[0].currentDate;
-    //   // capa Values compared against resources of organisation
-    //   const rowMatrix = [];
-    //   rowMatrix.push(currentDate);
-    //   rowMatrix.push(element[0].budget || 0);
-    //   const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
-    //   rowMatrix.push(tooltip);
-    //   rowMatrix.push(element[0].plan || 0); // parent planned cost
-    //   rowMatrix.push(tooltip);
-    //   childNodeList.forEach((item, index) => {
-    //     rowMatrix.push(element[index + initialOffset].plan);
-    //     rowMatrix.push(this.createTooltipOrgaDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
-    //     const diffPercent = Math.round(this.calcLoadDiff(element[index + initialOffset], true) * 100);
-    //     if (diffPercent > 100) {
-    //       rowMatrix.push( '' + diffPercent + ' %')
-    //     } else {
-    //       rowMatrix.push(undefined)
-    //     }
-    //   });
-    //   graphDataCapacity.push(rowMatrix);
-    // }
+  addCapacityOrgaDetail(drillDownCapacity: DrillDownElement[][], element: VisboCapacity, source: boolean, mapNodeList: number[]): void {
+    const currentDate = new Date(element.month);
+    const row = drillDownCapacity.find(element => element[0].currentDate.getTime() == currentDate.getTime() && element[0].source == source);
+    let plan = 0, budget = 0;
+
+    if (row) {
+      const index = mapNodeList[element.roleName];
+      if (index >= 0) {
+        if (this.showUnit === 'PD') {
+          plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+        } else {
+          plan = (element.actualCost || 0) + (element.plannedCost || 0);
+        }
+        if (this.refPFV) {
+          if (this.showUnit === 'PD') {
+            budget = (element.baselineCost_PT || 0);
+          } else {
+            budget = (element.baselineCost || 0);
+          }
+        } else {
+          if (this.showUnit === 'PD') {
+            budget = (element.internCapa_PT || 0) + (element.externCapa_PT || 0);
+          } else {
+            budget = (element.internCapa || 0) + (element.externCapa || 0);
+          }
+        }
+
+        row[index + 1].plan = plan;
+        row[index + 1].budget = budget;
+        if (row[0].plan >= plan) {
+          row[0].plan -= plan;
+        } else {
+          row[0].plan = 0;
+        }
+      }
+    }
+  }
+
+  visboViewCapacityDrillDown(): void {
+    const graphDataCapacity = [];
+    const initialOffset = 1    // first element in the array is the parent
+    const capacity = this.visboCapacity.source;
+    const capacityCmp = this.visboCapacity.compare;
+    const capacityChild = this.visboCapacityChild.source;
+    const capacityChildCmp = this.visboCapacityChild.compare;
+
+    this.log(`ViewCapacityDrillDown resource ${this.currentLeaf.name}`);
+    this.sumCost0 = 0;
+    this.sumBudget0 = 0;
+    this.sumCost1 = 0;
+    this.sumBudget1 = 0;
+
+    const childNodeList = this.calcChildNode(capacityChild, capacityChildCmp);
+    const mapNodeList = this.mapChildNode(childNodeList);
+
+    const drillDownCapacity: DrillDownElement[][] = [];
+    capacity.forEach(item => {
+      this.addCapacityOrgaRow(drillDownCapacity, item, true, childNodeList);
+    });
+    capacityCmp.forEach(item => {
+      this.addCapacityOrgaRow(drillDownCapacity, item, false, childNodeList);
+    });
+    // now fill up with the Child Infos
+    capacityChild.forEach(item => {
+      this.addCapacityOrgaDetail(drillDownCapacity, item, true, mapNodeList);
+    });
+    capacityChildCmp.forEach(item => {
+      this.addCapacityOrgaDetail(drillDownCapacity, item, false, mapNodeList);
+    });
+
+    for (let index = 0; index < drillDownCapacity.length; index++) {
+      const element = drillDownCapacity[index];
+      const currentDate = new Date(element[0].currentDate);
+      if (element[0].source) {
+        currentDate.setDate(currentDate.getDate() -5);
+      } else {
+        currentDate.setDate(currentDate.getDate() +5);
+      }
+      // capa Values compared against resources of organisation
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
+      const budget = element[0].budget || 0;
+      if (element[0].source) {
+        rowMatrix.push(budget);
+        rowMatrix.push(tooltip);
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      } else {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+        rowMatrix.push(budget);
+        rowMatrix.push(tooltip);
+      }
+      rowMatrix.push(element[0].plan || 0); // parent planned cost
+      rowMatrix.push(tooltip);
+      childNodeList.forEach((item, index) => {
+        rowMatrix.push(element[index + initialOffset].plan);
+        rowMatrix.push(this.createTooltipOrgaDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
+        const diffPercent = Math.round(this.calcLoadDiff(element[index + initialOffset], true) * 100);
+        if (diffPercent > 100) {
+          rowMatrix.push( '' + diffPercent + ' %')
+        } else {
+          rowMatrix.push(undefined)
+        }
+      });
+      graphDataCapacity.push(rowMatrix);
+    }
     // // we need at least 2 items for Line Chart and show the current status for today
     // const len = graphDataCapacity.length;
     // if (len < 1) {
@@ -1081,36 +1118,43 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     //   });
     //   graphDataCapacity.push(rowMatrix);
     // }
-    // const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
-    // const annotation = {type: 'string', role: 'annotation' };
-    // const rowHeader = [];
-    // rowHeader.push('Month');
-    // rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budget' : 'ViewCapacityCmp.lbl.totalCapa'));
-    // rowHeader.push(tooltip);
-    // rowHeader.push(this.currentLeaf.name);
-    // rowHeader.push(tooltip);
-    // childNodeList.forEach(item => {
-    //   rowHeader.push(item);
-    //   rowHeader.push(tooltip);
-    //   rowHeader.push(annotation);
-    // });
-    // graphDataCapacity.unshift(rowHeader);
-    //
-    // // give the capacities colors
-    // let orgaColors = [];
-    // orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
-    // orgaColors.reverse();
-    // if (this.refPFV) {
-    //   // color for baseline
-    //   orgaColors.unshift(baselineColor);
-    // } else {
-    //   // color for capa
-    //   orgaColors.unshift(capaColor);
-    // }
-    // this.graphOptionsComboChart.colors = orgaColors;
-    //
-    // this.graphDataComboChart = graphDataCapacity;
-    // this.chartActive = new Date();
+
+    const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
+    const annotation = {type: 'string', role: 'annotation' };
+    const rowHeader = [];
+    rowHeader.push('Month');
+    rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budget' : 'ViewCapacityCmp.lbl.totalCapa'));
+    rowHeader.push(tooltip);
+    rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budgetCmp' : 'ViewCapacityCmp.lbl.totalCapaCmp'));
+    rowHeader.push(tooltip);
+    rowHeader.push(this.currentLeaf.name);
+    rowHeader.push(tooltip);
+    childNodeList.forEach(item => {
+      rowHeader.push(item);
+      rowHeader.push(tooltip);
+      rowHeader.push(annotation);
+    });
+    graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];
+    orgaColors = orgaColors.concat(scale('YlGnBu').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    orgaColors.unshift('gray');
+    if (this.refPFV) {
+      // color for baseline
+      orgaColors.unshift(baselineColor);
+    } else {
+      // color for capa
+      orgaColors.unshift(capaColor);
+    }
+    this.graphOptionsComboChart.colors = orgaColors;
+    if (this.graphOptionsComboChart.bar) {
+      this.graphOptionsComboChart.bar.groupWidth = '30%';
+    }
+
+    this.graphDataComboChart = graphDataCapacity;
+    this.chartActive = new Date();
   }
 
   addCapacityRow(list: any[], element: VisboCapacity, source: boolean): void {
@@ -1122,46 +1166,100 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         currentDate.setDate(currentDate.getDate() +5);
       }
       const roleID = this.currentLeaf.uid;
+      let budget: number, actualCost: number, plannedCost: number, budgetCmp: number, actualCostCmp: number, plannedCostCmp: number
+      let tooltip: string, tooltipCmp: string;
       if (this.refPFV) {
         // capa Values compared against baseline Values
-        // if (this.showUnit === 'PD') {
-        //   const budget = Math.round(element.baselineCost_PT * 10) / 10 || 0;
-        //   const actualCost = Math.round(element.actualCost_PT * 10) / 10 || 0;
-        //   const plannedCost = Math.round(element.plannedCost_PT * 10) / 10 || 0;
-        //   this.sumCost += actualCost + plannedCost;
-        //   this.sumBudget += budget;
-        //   const tooltip = this.createTooltipPlanActual(element, true, this.refPFV);
-        //   list.push([
-        //     currentDate,
-        //     element.roleID == roleID ? budget : undefined,
-        //     element.roleID == roleID ? tooltip : undefined,
-        //     actualCost,
-        //     tooltip,
-        //     plannedCost,
-        //     tooltip
-        //   ]);
-        // } else {
-        //   const budget = Math.round((element.baselineCost * 10) / 10 || 0);
-        //   const actualCost = Math.round((element.actualCost * 10) / 10 || 0);
-        //   const plannedCost = Math.round((element.plannedCost * 10) / 10 || 0);
-        //   this.sumCost += actualCost + plannedCost;
-        //   this.sumBudget += budget;
-        //   const tooltip = this.createTooltipPlanActual(element, false, this.refPFV);
-        //   list.push([
-        //     currentDate,
-        //     element.roleID == roleID ? budget : undefined,
-        //     element.roleID == roleID ? tooltip : undefined,
-        //     actualCost,
-        //     tooltip,
-        //     plannedCost,
-        //     tooltip
-        //   ]);
-        // }
+        if (this.showUnit === 'PD') {
+          budget = Math.round(element.baselineCost_PT * 10) / 10 || 0;
+          actualCost = Math.round(element.actualCost_PT * 10) / 10 || 0;
+          plannedCost = Math.round(element.plannedCost_PT * 10) / 10 || 0;
+          tooltip = this.createTooltipPlanActual(element, true, this.refPFV);
+          if (source) {
+            this.sumCost0 += actualCost + plannedCost;
+            this.sumBudget0 += budget;
+            list.push([
+              currentDate,
+              element.roleID == roleID ? budget : undefined,
+              element.roleID == roleID ? tooltip : undefined,
+              undefined,
+              undefined,
+              actualCost,
+              tooltip,
+              plannedCost,
+              tooltip,
+              undefined,
+              undefined,
+              undefined,
+              undefined
+            ]);
+          } else {
+            this.sumCost1 += actualCost + plannedCost;
+            this.sumBudget1 += budget;
+            list.push([
+              currentDate,
+              undefined,
+              undefined,
+              element.roleID == roleID ? budget : undefined,
+              element.roleID == roleID ? tooltip : undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              actualCost,
+              tooltip,
+              plannedCost,
+              tooltip
+            ]);
+          }
+        } else {
+          const budget = Math.round((element.baselineCost * 10) / 10 || 0);
+          const actualCost = Math.round((element.actualCost * 10) / 10 || 0);
+          const plannedCost = Math.round((element.plannedCost * 10) / 10 || 0);
+          const tooltip = this.createTooltipPlanActual(element, false, this.refPFV);
+          if (source) {
+            this.sumCost0 += actualCost + plannedCost;
+            this.sumBudget0 += budget;
+            list.push([
+              currentDate,
+              element.roleID == roleID ? budget : undefined,
+              element.roleID == roleID ? tooltip : undefined,
+              undefined,
+              undefined,
+              actualCost,
+              tooltip,
+              plannedCost,
+              tooltip,
+              undefined,
+              undefined,
+              undefined,
+              undefined
+            ]);
+          } else {
+            this.sumCost1 += actualCost + plannedCost;
+            this.sumBudget1 += budget;
+            list.push([
+              currentDate,
+              undefined,
+              undefined,
+              element.roleID == roleID ? budget : undefined,
+              element.roleID == roleID ? tooltip : undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              actualCost,
+              tooltip,
+              plannedCost,
+              tooltip
+            ]);
+          }
+        }
       } else {
         // capa Values compared against resources of organisation
+        let budgetIntern: number, budgetExtern: number, actualCost: number, plannedCost: number, actualCostCmp: number, plannedCostCmp: number
+        let tooltip: string, tooltipCmp: string;
         if (this.showUnit === 'PD') {
-          let budgetIntern: number, budgetExtern: number, actualCost: number, plannedCost: number, actualCostCmp: number, plannedCostCmp: number
-          let tooltip: string, tooltipCmp: string;
           if (source) {
             budgetIntern = Math.round((element.internCapa_PT * 10) / 10 || 0);
             budgetExtern = Math.round((element.externCapa_PT * 10) / 10 || 0);
@@ -1195,8 +1293,6 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
             tooltipCmp
           ]);
         } else {
-          let budgetIntern: number, budgetExtern: number, actualCost: number, plannedCost: number, actualCostCmp: number, plannedCostCmp: number
-          let tooltip: string, tooltipCmp: string;
           if (source) {
             budgetIntern = Math.round((element.internCapa * 10) / 10 || 0);
             budgetExtern = Math.round((element.externCapa * 10) / 10 || 0);
@@ -1241,6 +1337,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       this.capacityFrom =  new Date(capacity[0].month);
       this.capacityTo = new Date(capacity[capacity.length-1].month);
     }
+    if (this.graphOptionsComboChart.bar) {
+      this.graphOptionsComboChart.bar.groupWidth = '60%';
+    }
 
     this.sumCost0 = 0;
     this.sumBudget0 = 0;
@@ -1252,38 +1351,24 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       this.addCapacityRow(graphDataCapacity, capacityCmp[i], false);
     }
 
-    // // we need at least 2 items for Line Chart and show the current status for today
-    // const len = graphDataCapacity.length;
-    // if (len < 1) {
-    //   this.log(`visboCapacity Empty`);
-    // }
-    // // this.log(`visboCapacity len ${len}`);
-    // if (len === 1) {
-    //   // add an additional month as one month could not be displayed, but do not deliver values for it
-    //   const currentDate = new Date(graphDataCapacity[0][0]);
-    //   currentDate.setMonth(currentDate.getMonth()+1);
-    //   if (this.refPFV) {
-    //     // graphDataCapacity.push([
-    //     //   currentDate, undefined, undefined, undefined, undefined, undefined, undefined
-    //     // ]);
-    //   } else {
-    //     graphDataCapacity.push([
-    //       currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-    //     ]);
-    //   }
-    // }
     // set number of gridlines to a fixed count to avoid in between gridlines
     this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCapacity.length;
     if (this.refPFV) {
-      // graphDataCapacity.unshift([
-      //   'Month',
-      //   this.translate.instant('ViewCapacityCmp.lbl.budget'),
-      //   {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      //   this.translate.instant('ViewCapacityCmp.lbl.actualCost'),
-      //   {type: 'string', role: 'tooltip', 'p': {'html': true}},
-      //   this.translate.instant('ViewCapacityCmp.lbl.cost'),
-      //   {type: 'string', role: 'tooltip', 'p': {'html': true}}
-      // ]);
+      graphDataCapacity.unshift([
+        'Month',
+        this.translate.instant('ViewCapacityCmp.lbl.budget'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacityCmp.lbl.budgetCmp'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacityCmp.lbl.actualCost'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacityCmp.lbl.cost'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacityCmp.lbl.actualCostCmp'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacityCmp.lbl.costCmp'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      ]);
     } else {
       graphDataCapacity.unshift([
         'Month',

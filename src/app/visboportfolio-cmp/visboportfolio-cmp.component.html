@@ -91,7 +91,7 @@
       <div class="col btn-toolbar" style="padding: unset;">
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "KeyMetrics")'>{{ 'vpfCmp.btn.viewKeyMetrics' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "List")'>{{ 'vpfCmp.btn.viewList' | translate }}</button>
-        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
+        <button *ngIf="hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView(undefined, "Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
       </div>
     </div>
   </div>

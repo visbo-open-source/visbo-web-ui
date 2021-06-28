@@ -671,7 +671,7 @@
 			"errorPermOrganisation": "No organisation in VISBO Center {{name}}"
 		}
 	},
-	"ViewCapacity": {
+	"ViewCapacityCmp": {
 		"titleCapacity": "Capacity Utilisation - Timespam:",
 		"titleBox": "Sum Resource-Needs in time range",
 		"title1": "Orga Unit",
@@ -686,6 +686,7 @@
 			"month": "Month",
 			"totalCost": "Plan Cost",
 			"totalCapa": "Capacity",
+			"totalCapaCmp": "Compare Capacity",
 			"baselineCost": "Baseline Cost",
 			"baselineCost_PT": "Baseline Workload",
 			"totalCostPT": "Plan Workload",
@@ -704,6 +705,7 @@
 			"fractionCost": "Share",
 			"budgetPT": "Baseline",
 			"budget": "Baseline",
+			"budgetCmp": "Compare Baseline",
 			"roleID": "Role(ID)",
 			"roleName": "Role",
 			"project": "Project",

@@ -107,7 +107,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     const refDateCmp = this.route.snapshot.queryParams['refDateCmp'];
     const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
     const vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
-    const vpfidCmp = this.route.snapshot.queryParams['vpfidCmp'] || undefined;
+    const vpfidCmp = this.route.snapshot.queryParams['vpfidCmp'] || vpfid;
     const filter = this.route.snapshot.queryParams['filter'] || null;
     this.vpvRefDate[0] = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
     this.changeView(0, nextView, refDate ? this.vpvRefDate[0] : undefined, filter, vpfid, false);
@@ -310,11 +310,13 @@ export class VisboPortfolioCmpComponent implements OnInit {
     if (refDate && !visboIsToday(refDate)) {
       queryParams.refDate = refDate.toISOString();
     }
-    if (this.pageParams?.view) {
-      queryParams.view = this.pageParams.view;
-    }
     queryParams.vpfid = item._id;
-    this.router.navigate(['vpf/'.concat(item.vpid)], { queryParams: queryParams });
+    this.router.navigate(['vpf/'.concat(item.vpid)],
+      { queryParams: queryParams,
+        // preserve the existing query params in the route
+        queryParamsHandling: 'merge'
+      }
+    );
   }
 
   gotoVC(visboproject: VisboProject): void {
@@ -453,7 +455,10 @@ export class VisboPortfolioCmpComponent implements OnInit {
     queryParams.vpfidCmp = this.pageParams.vpfidCmp || null;
     queryParams.refDate = this.pageParams.refDate || null;
     queryParams.refDateCmp = this.pageParams.refDateCmp || null;
+    queryParams.roleID = this.pageParams.roleID || null;
+    queryParams.unit = this.pageParams.unit || null;
     queryParams.view = this.pageParams.view || null;
+    queryParams.drillDown = this.pageParams.drillDown || null;
     this.router.navigate([url], {
       queryParams: queryParams,
       // no navigation back to old status, but to the page before
@@ -466,7 +471,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
   displayVariantName(variant: DropDown): string {
     let result = this.translate.instant('vpfCmp.lbl.defaultVariant');
     if (variant?.variantName) {
-      result = '(' + variant.name + ')';
+      result = variant.name;
     }
     return result
   }
