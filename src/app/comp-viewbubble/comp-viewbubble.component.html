@@ -99,7 +99,8 @@
               <th class="d-none d-lg-table-cell">{{ 'compViewBubble.lbl.nr' | translate }}</th>
               <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
-              <th class="d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
+              <th class="d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>                          
+              <th *ngIf="hasCommitDate()" class="d-none d-md-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
 
               <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
@@ -126,7 +127,10 @@
               <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td>
               <td>{{vp.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-              <td class="d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>
+              <td class="d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>               
+              <td id="ColCommitDate" class="d-none d-lg-table-cell" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yyyy HH:mm'}}</td>
+              <td id="ColCommitDate" class="d-none d-md-table-cell  d-lg-none" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yy'}}</td>
+              
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>

@@ -33,8 +33,8 @@
           <th (click)="sortVPVTable(1)">{{ 'vpv.lbl.timestamp' | translate }}</th>
           <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.status' | translate }}</th>
           <th (click)="sortVPVTable(2)" class="d-none d-lg-table-cell">{{ 'vpv.lbl.endDate' | translate }}</th>
-          <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>
-          <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>
+          <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>                               
+          <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>          
           <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.locked' | translate }}</th>
           <th *ngIf="hasVPPerm(permVP.DeleteVP)">{{ 'vpv.lbl.delete' | translate }}</th>
         </tr>
@@ -48,7 +48,7 @@
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
           <td *ngIf="hasVPPerm(permVP.ViewAudit)">
             <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpv.ampelStatus} " ></ng-container>
-          </td>
+          </td>          
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-md-table-cell">{{vpv.variantName}}</td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">
             <span>{{checkLocked(vpv)}}</span>

@@ -40,7 +40,7 @@ class OrganisationItem {
   entryDate: Date;
   exitDate: Date;
   percent: number;
-  aliases: [string];
+  aliases: string;
 }
 
 @Component({
@@ -705,7 +705,13 @@ export class VisbocenterDetailComponent implements OnInit {
         if (role.exitDate < "2200-11-30T23:00:00Z") {
           organisation[id].exitDate = role.exitDate;
         }
-        organisation[id].aliases = role.aliases;
+        for (let i = 0; role.aliases && i < role.aliases.length; i++) {
+          if (i == 0) {
+            organisation[id].aliases = role.aliases[i];
+          } else {
+            organisation[id].aliases = organisation[id].aliases + '#' + role.aliases[i];
+          }          
+        }
 
         // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
         if (role.isTeam) {
