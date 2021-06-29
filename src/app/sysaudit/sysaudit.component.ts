@@ -51,8 +51,8 @@ export class SysauditComponent implements OnInit {
     sysVCId = '';
     chart = false;
     parentThis = this;
-    divColumnChart1 = "SysAudit_User_div";
-    divColumnChart2 = "SysAudit_Browser_div";
+    divBarChart1 = "SysAudit_User_div";
+    divBarChart2 = "SysAudit_Browser_div";
     chartButton = 'Chart';
     graphData = [];
     graphLegend = [
@@ -87,13 +87,14 @@ export class SysauditComponent implements OnInit {
     graphOptionsUserChart = {
       'title': 'Audit Activity by User',
       'isStacked': true,
-      'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
+      'legend': { 'position': 'top', 'maxLines': 3 },
+      'hAxis': {'direction': 1}
     };
     graphDataBrowserChart = [];
     graphOptionsBrowserChart = {
       'title': 'Audit Activity by User Agent',
       'isStacked': true,
-      'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
+      'hAxis': {'direction': 1 }
     };
     listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']
 
