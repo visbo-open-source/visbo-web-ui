@@ -113,7 +113,7 @@ export class VisboProjectService {
     if (startDate) {
       this.log(`Calling From: ${startDate.toISOString()}`);
       params = params.append('startDate', startDate.toISOString());
-    }    
+    }
     if (endDate) {
       this.log(`Calling To: ${endDate.toISOString()}`);
       params = params.append('endDate', endDate.toISOString());
@@ -153,8 +153,10 @@ export class VisboProjectService {
   addVisboProject (newVP: CreateProjectProperty): Observable<VisboProject> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
-    if (newVP.templateID) {
-      params = params.append('vpid', newVP.templateID);
+    if (!newVP.vpType || newVP.vpType == 0) {
+      if (newVP.templateID) {
+        params = params.append('vpid', newVP.templateID);
+      }
     }
     return this.http.post<VisboProjectResponse>(this.vpUrl, newVP, { headers , params })
       .pipe(
