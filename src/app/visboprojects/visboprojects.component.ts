@@ -517,6 +517,11 @@ export class VisboProjectsComponent implements OnInit {
   isViewWithCommit():boolean {
     return ((this.viewMode != 'Deleted') && (this.viewMode != 'KeyMetrics') && (this.viewMode != 'Template'))
   }
+  
+  hasCommitDate():boolean {    
+    const index = this.visboprojects.findIndex(item => this.getCommitDate(item) != undefined )
+    return (index >= 0);   
+  }
 
   /** Log a message with the MessageService */
   private log(message: string) {

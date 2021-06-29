@@ -65,7 +65,8 @@ export class VisboRole {
   tagessatz: number;
   kapazitaet: [number];
   timestamp: Date;
-  startOfCal: Date;
+  startOfCal: Date;  
+  aliases: [string];
 }
 
 export class VisboOrgaTreeLeaf {

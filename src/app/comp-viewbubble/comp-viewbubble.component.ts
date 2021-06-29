@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
+import { VisboProject, getCustomFieldDate } from '../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
 import { VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
@@ -462,6 +463,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[item].ampelErlaeuterung;
       elementKeyMetric._id = this.visboprojectversions[item]._id;
       elementKeyMetric.vpid = this.visboprojectversions[item].vpid;
+      elementKeyMetric.vp = this.visboprojectversions[item].vp;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
@@ -1182,6 +1184,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) {
         return a.savingCostTotalPredict - b.savingCostTotalPredict;
       });
+    } else if (this.sortColumn === 18) {
+      this.visbokeymetrics.sort(function(a, b) { 
+        const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');        
+        const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');  
+        return visboCmpDate(aDate, bDate); });
     }
 
     if (!this.sortAscending) {
@@ -1191,6 +1198,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   getPreView(): boolean {
     return getPreView();
+  }
+  
+  getCommitDate(vp: VisboProject):Date {    
+    // let result = undefined;
+    // if (!vp) { return undefined }
+    // const pmCommit = getCustomFieldDate(vp, '_PMCommit');
+    // if (!pmCommit) { return undefined }
+    // result = getCustomFieldDate(vp, '_PMCommit').value;   
+    return   getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
+   }
+
+  hasCommitDate():boolean {    
+    const index = this.visbokeymetrics.findIndex(item => this.getCommitDate(item.vp) != undefined )
+    return (index >= 0);   
   }
 
   /** Log a message with the MessageService */
