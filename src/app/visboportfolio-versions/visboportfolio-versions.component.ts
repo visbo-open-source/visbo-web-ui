@@ -668,7 +668,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const vpv = this.listVPV?.find(item => item.vpid.toString() == vp._id.toString())
     // we only know if there is a version, if it contains already to the portfolio list and we have fetched the related versions
     // RESULT 0: no Version of the VP either because no version or no permission, 1 vpv with keyMetrics available, 2: no keyMetrics because of missing baseline
-    const isStored = this.vpfActive.allItems && this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
+    const isStored = this.vpfActive?.allItems?.find(item => item.vpid.toString() == vp._id.toString());
     let result = isStored ? 0 : 1;
     if (vpv) {
       result = vpv.keyMetrics ? 1 : 2;
