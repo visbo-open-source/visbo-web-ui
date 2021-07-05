@@ -443,7 +443,7 @@ export class SysauditComponent implements OnInit {
 
     auditGroup(audit: VisboAudit, match: string): boolean {
       let result = false;
-      if (audit.url.indexOf(match) === 0) {
+      if ((audit.url || '').indexOf(match) === 0) {
         result = true;
       }
       return result;
