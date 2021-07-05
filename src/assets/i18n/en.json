@@ -654,7 +654,8 @@
 			"drillOrga": "Organisation Units",
 			"drillProject": "Projects",
 			"name": "Project",
-			"noPFV": "no BL"
+			"noPFV": "no BL",
+			"orgaValid": "Organisation from"
 		},
 		"btn": {
 			"back": "Back",
