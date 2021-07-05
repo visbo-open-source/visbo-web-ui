@@ -346,10 +346,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   }
 
   getProjectCapacity(): void {
-    // this.visboCapacity = undefined;
-    //
-    // if (this.vcActive ) {
-    //   this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
+    this.visboCapacity = new CompareCapa();
+    if (this.vcActive ) {
+      this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
     //
     //   this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
     //     .subscribe(
@@ -381,35 +380,60 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     //         }
     //       }
     //     );
-    // } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
-    //   this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive[0]._id} vs. ${this.vpfActive[1]._id} role ${this.currentLeaf.name} DrillDown Project`);
-    //   this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
-    //     .subscribe(
-    //       vp => {
-    //         if (!vp.capacity || vp.capacity.length === 0) {
-    //           this.log(`get VPF Calc: Reset Capacity to empty `);
-    //           this.visboCapacity = [];
-    //         } else {
-    //           this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
-    //           let capacity = vp.capacity.filter(item => item.vpid == undefined);
-    //           this.visboCapacity = capacity;
-    //           capacity = vp.capacity.filter(item => item.vpid != undefined);
-    //           this.visboCapacityChild = capacity;
-    //         }
-    //         this.checkCostAvailable(this.visboCapacity);
-    //         this.visboViewCapacityOverTime();
-    //       },
-    //       error => {
-    //         this.log(`get VPF Capacity Project failed: error: ${error.status} message: ${error.error && error.error.message}`);
-    //         if (error.status === 403) {
-    //           const message = this.translate.instant('ViewCapacityCmp.msg.errorPermCapacity', {'name': this.vpActive.name});
-    //           this.alertService.error(message, true);
-    //         } else {
-    //           this.alertService.error(getErrorMessage(error), true);
-    //         }
-    //       }
-    //     );
-    // }
+  } else if (this.vpActive && this.vpfActive?.length && this.currentLeaf) {
+      this.log(`Capacity Calc for VP ${this.vpActive?._id} VPF ${this.vpfActive && this.vpfActive.length} role ${this.currentLeaf.name} DrillDown Project`);
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate[0], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+        .subscribe(
+          vp => {
+            if (!vp.capacity || vp.capacity.length === 0) {
+              this.log(`get VPF Calc: Reset Capacity to empty `);
+              this.visboCapacity.source = [];
+            } else {
+              this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
+              let capacity = vp.capacity.filter(item => item.vpid == undefined);
+              this.visboCapacity.source = capacity;
+              capacity = vp.capacity.filter(item => item.vpid != undefined);
+              this.visboCapacityChild.source = capacity;
+            }
+            this.checkCostAvailable(this.visboCapacity.source);
+
+            this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[1]._id, this.refDate[1], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+              .subscribe(
+                vp => {
+                  if (!vp.capacity || vp.capacity.length === 0) {
+                    this.log(`get VPF Calc: Reset Capacity to empty `);
+                    this.visboCapacity.compare = [];
+                  } else {
+                    this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
+                    let capacity = vp.capacity.filter(item => item.vpid == undefined);
+                    this.visboCapacity.compare = capacity;
+                    capacity = vp.capacity.filter(item => item.vpid != undefined);
+                    this.visboCapacityChild.compare = capacity;
+                  }
+                  this.visboViewCapacityOverTime();
+                },
+                error => {
+                  this.log(`get VPF Capacity Project failed: error: ${error.status} message: ${error.error && error.error.message}`);
+                  if (error.status === 403) {
+                    const message = this.translate.instant('ViewCapacityCmp.msg.errorPermCapacity', {'name': this.vpActive.name});
+                    this.alertService.error(message, true);
+                  } else {
+                    this.alertService.error(getErrorMessage(error), true);
+                  }
+                }
+              );
+          },
+          error => {
+            this.log(`get VPF Capacity Project failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacityCmp.msg.errorPermCapacity', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    }
   }
 
   getCapacityOrga(): void {
@@ -772,129 +796,168 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     return resultList;
   }
 
+  addCapacityProjectRow(drillDownCapacity: DrillDownElement[][], element: VisboCapacity, source: boolean, childNodeList: string[]): void {
+    const currentDate = new Date(element.month);
+    let capa = 0, plan = 0;
+    if (this.showUnit === 'PD') {
+      plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+    } else {
+      plan = (element.actualCost || 0) + (element.plannedCost || 0);
+    }
+    if (this.refPFV) {
+      if (this.showUnit === 'PD') {
+        capa = (element.baselineCost_PT || 0);
+      } else {
+        capa = (element.baselineCost || 0);
+      }
+    } else {
+      if (this.showUnit === 'PD') {
+        capa = (element.internCapa_PT || 0) + (element.externCapa_PT || 0);
+      } else {
+        capa = (element.internCapa || 0) + (element.externCapa || 0);
+      }
+    }
+    if (source) {
+      this.sumCost0 += plan;
+      this.sumBudget0 += capa;
+    } else {
+      this.sumCost1 += plan;
+      this.sumBudget1 += capa;
+    }
+
+    const template: DrillDownElement[] = [];
+    const elementDrill = new DrillDownElement();
+    elementDrill.currentDate = currentDate;
+    elementDrill.source = source;
+    elementDrill.name = 'All';
+    elementDrill.plan = plan;
+    elementDrill.planTotal = plan;
+    elementDrill.budget = capa;
+    template.push(elementDrill)
+    childNodeList.forEach(element => {
+      template.push({currentDate: currentDate, source: source, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0});
+    });
+    drillDownCapacity.push(template);
+  }
+
+  addCapacityProjectDetail(drillDownCapacity: DrillDownElement[][], element: VisboCapacity, source: boolean, mapNodeList: number[]): void {
+    const currentDate = new Date(element.month);
+    const row = drillDownCapacity.find(element => element[0].currentDate.getTime() == currentDate.getTime() && element[0].source == source);
+    let plan = 0, budget = 0;
+    if (row) {
+      const index = mapNodeList[element.name];
+      if (index >= 0) {
+        if (this.showUnit === 'PD') {
+          plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+        } else {
+          plan = (element.actualCost || 0) + (element.plannedCost || 0);
+        }
+        if (this.refPFV) {
+          if (this.showUnit === 'PD') {
+            budget = (element.baselineCost_PT || 0);
+          } else {
+            budget = (element.baselineCost || 0);
+          }
+        } else {
+          if (this.showUnit === 'PD') {
+            budget = (element.internCapa_PT || 0) + (element.externCapa_PT || 0);
+          } else {
+            budget = (element.internCapa || 0) + (element.externCapa || 0);
+          }
+        }
+
+        row[index + 1].plan = plan;
+        row[index + 1].budget = budget;
+        row[index + 1].variantName = element.variantName;
+      }
+    } else {
+      // this.log(`ViewCapacityDrillDown Date out of range ${currentDate.toISOString()}`);
+    }
+  }
+
   visboViewProjectCapacityDrillDown(): void {
 
-    // const graphDataCapacity = [];
-    // const initialOffset = 1    // first element in the array is the parent
-    //
-    // this.log(`visboViewProjectCapacityDrillDown resource ${this.currentLeaf.name}`);
-    // this.sumCost = 0;
-    // this.sumBudget = 0;
-    // const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacityCmp.lbl.noPFV') : '';
-    //
-    // const drillDownCapacity: DrillDownElement[][] = [];
-    //
-    // // sorting the projects for capacity-chart view projects
+    const graphDataCapacity = [];
+    const initialOffset = 1    // first element in the array is the parent
+    const capacity = this.visboCapacity.source;
+    const capacityCmp = this.visboCapacity.compare;
+    const capacityChild = this.visboCapacityChild.source;
+    const capacityChildCmp = this.visboCapacityChild.compare;
+
+    this.log(`visboViewProjectCapacityDrillDown resource ${this.currentLeaf.name}`);
+    this.sumCost0 = 0;
+    this.sumBudget0 = 0;
+    this.sumCost1 = 0;
+    this.sumBudget1 = 0;
+
+    const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacityCmp.lbl.noPFV') : '';
+    const drillDownCapacity: DrillDownElement[][] = [];
+
+    // sorting the projects for capacity-chart view projects
     // let sortedProjects: VisboCapacity[] = null;
-    // sortedProjects = this.visboSortProjects(this.visboCapacityChild);
+    // sortedProjects = this.visboSortProjects(this.visboCapacityChild.source);
     // const childNodeList = this.calcChildNode(sortedProjects, 'name');
     // console.log(childNodeList);
-    // const mapNodeList = this.mapChildNode(childNodeList);
-    //
-    //
-    // this.visboCapacity.forEach(item => {
-    //   const currentDate = new Date(item.month);
-    //   let capa = 0, plan = 0;
-    //   if (this.showUnit === 'PD') {
-    //     plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
-    //   } else {
-    //     plan = (item.actualCost || 0) + (item.plannedCost || 0);
-    //   }
-    //   if (this.refPFV) {
-    //     if (this.showUnit === 'PD') {
-    //       capa = (item.baselineCost_PT || 0);
-    //     } else {
-    //       capa = (item.baselineCost || 0);
-    //     }
-    //   } else {
-    //     if (this.showUnit === 'PD') {
-    //       capa = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
-    //     } else {
-    //       capa = (item.internCapa || 0) + (item.externCapa || 0);
-    //     }
-    //   }
-    //   this.sumCost += plan;
-    //   this.sumBudget += capa;
-    //
-    //   const template: DrillDownElement[] = [];
-    //   const elementDrill = new DrillDownElement();
-    //   elementDrill.currentDate = currentDate;
-    //   elementDrill.name = 'All';
-    //   elementDrill.plan = plan;
-    //   elementDrill.planTotal = plan;
-    //   elementDrill.budget = capa;
-    //   template.push(elementDrill)
-    //   childNodeList.forEach(element => {
-    //     template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0});
-    //   });
-    //   drillDownCapacity.push(template);
-    // });
-    //
-    // // now fill up with the Child Infos
-    // // this.visboCapacityChild.forEach(item => {
-    //   sortedProjects.forEach(item => {
-    //   const currentDate = new Date(item.month);
-    //   const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
-    //   if (row) {
-    //     const index = mapNodeList[item.name];
-    //     if (index >= 0) {
-    //       let plan = 0, budget = 0;
-    //       if (this.showUnit === 'PD') {
-    //         plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
-    //       } else {
-    //         plan = (item.actualCost || 0) + (item.plannedCost || 0);
-    //       }
-    //       if (this.refPFV) {
-    //         if (this.showUnit === 'PD') {
-    //           budget = (item.baselineCost_PT || 0);
-    //         } else {
-    //           budget = (item.baselineCost || 0);
-    //         }
-    //       } else {
-    //         if (this.showUnit === 'PD') {
-    //           budget = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
-    //         } else {
-    //           budget = (item.internCapa || 0) + (item.externCapa || 0);
-    //         }
-    //       }
-    //
-    //       row[index + 1].plan = plan;
-    //       row[index + 1].budget = budget;
-    //       row[index + 1].variantName = item.variantName;
-    //     }
-    //   } else {
-    //     // this.log(`ViewCapacityDrillDown Date out of range ${currentDate.toISOString()}`);
-    //   }
-    // });
-    //
-    // for (let index = 0; index < drillDownCapacity.length; index++) {
-    //   const element = drillDownCapacity[index];
-    //   const currentDate = element[0].currentDate;
-    //   // capa Values compared against resources of organisation
-    //   const rowMatrix = [];
-    //   rowMatrix.push(currentDate);
-    //   rowMatrix.push(element[0].budget || 0); // parent planned cost
-    //   const tooltip = this.createTooltipProjectDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
-    //   rowMatrix.push(tooltip);
-    //   childNodeList.forEach((item, index) => {
-    //     rowMatrix.push(element[index + initialOffset].plan);
-    //     const currentElement = element[index + initialOffset];
-    //     rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, this.showUnit === 'PD', this.refPFV));
-    //     const diff = this.calcLoadDiff(currentElement, true);
-    //     if (diff == undefined && this.isParentLeaf(this.currentLeaf)){
-    //       rowMatrix.push(strNoPFV)
-    //     // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
-    //     //   rowMatrix.push(strNoPFV)
-    //     } else if (diff > 1) {
-    //       const diffPercent = Math.round(diff * 100);
-    //       rowMatrix.push( '' + diffPercent + ' %')
-    //     } else {
-    //       rowMatrix.push(undefined)
-    //     }
-    //   });
-    //   graphDataCapacity.push(rowMatrix);
-    // }
-    // // we need at least 2 items for Line Chart and show the current status for today
+    const childNodeList = this.calcChildNode(capacityChild, capacityChildCmp, 'name');
+    const mapNodeList = this.mapChildNode(childNodeList);
+
+    capacity.forEach(item => {
+      this.addCapacityProjectRow(drillDownCapacity, item, true, childNodeList);
+    });
+    capacityCmp.forEach(item => {
+      this.addCapacityProjectRow(drillDownCapacity, item, false, childNodeList);
+    });
+    // now fill up with the Child Infos
+    capacityChild.forEach(item => {
+      this.addCapacityProjectDetail(drillDownCapacity, item, true, mapNodeList);
+    });
+    capacityChildCmp.forEach(item => {
+      this.addCapacityProjectDetail(drillDownCapacity, item, false, mapNodeList);
+    });
+
+    for (let index = 0; index < drillDownCapacity.length; index++) {
+      const element = drillDownCapacity[index];
+      const currentDate = new Date(element[0].currentDate);
+      if (element[0].source) {
+        currentDate.setDate(currentDate.getDate() -5);
+      } else {
+        currentDate.setDate(currentDate.getDate() +5);
+      }
+      // capa Values compared against resources of organisation
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      const budget = element[0].budget || 0;
+      const tooltip = this.createTooltipProjectDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
+      if (element[0].source) {
+        rowMatrix.push(budget);
+        rowMatrix.push(tooltip);
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      } else {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+        rowMatrix.push(budget);
+        rowMatrix.push(tooltip);
+      }
+      childNodeList.forEach((item, index) => {
+        rowMatrix.push(element[index + initialOffset].plan);
+        const currentElement = element[index + initialOffset];
+        rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, this.showUnit === 'PD', this.refPFV));
+        const diff = this.calcLoadDiff(currentElement, true);
+        if (diff == undefined && this.isParentLeaf(this.currentLeaf)){
+          rowMatrix.push(strNoPFV)
+        // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
+        //   rowMatrix.push(strNoPFV)
+        } else if (diff > 1) {
+          const diffPercent = Math.round(diff * 100);
+          rowMatrix.push( '' + diffPercent + ' %')
+        } else {
+          rowMatrix.push(undefined)
+        }
+      });
+      graphDataCapacity.push(rowMatrix);
+    }
+    // we need at least 2 items for Line Chart and show the current status for today
     // const len = graphDataCapacity.length;
     // if (len < 1) {
     //   this.log(`visboCapacity Empty`);
@@ -908,6 +971,8 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     //   rowMatrix.push(currentDate);
     //   rowMatrix.push(undefined);
     //   rowMatrix.push(undefined);
+    //   rowMatrix.push(undefined);
+    //   rowMatrix.push(undefined);
     //   childNodeList.forEach(() => {
     //     rowMatrix.push(undefined);
     //     rowMatrix.push(undefined);
@@ -915,33 +980,39 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     //   });
     //   graphDataCapacity.push(rowMatrix);
     // }
-    // const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
-    // const annotation = {type: 'string', role: 'annotation' };
-    // const rowHeader = [];
-    // rowHeader.push('Month');
-    // rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budget' : 'ViewCapacityCmp.lbl.totalCapa'));
-    // rowHeader.push(tooltip);
-    // childNodeList.forEach(item => {
-    //   rowHeader.push(item);
-    //   rowHeader.push(tooltip);
-    //   rowHeader.push(annotation);
-    // });
-    // graphDataCapacity.unshift(rowHeader);
-    //
-    // // give the capacities colors
-    // let orgaColors = [];
-    // //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
-    // orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
-    // orgaColors.reverse();
-    // if (this.refPFV) {
-    //   orgaColors.unshift(baselineColor);
-    // } else {
-    //   orgaColors.unshift(capaColor);
-    // }
-    // this.graphOptionsComboChart.colors = orgaColors;
-    //
-    // this.graphDataComboChart = graphDataCapacity;
-    // this.chartActive = new Date();
+    const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
+    const annotation = {type: 'string', role: 'annotation' };
+    const rowHeader = [];
+    rowHeader.push('Month');
+    rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budget' : 'ViewCapacityCmp.lbl.totalCapa'));
+    rowHeader.push(tooltip);
+    rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacityCmp.lbl.budgetCmp' : 'ViewCapacityCmp.lbl.totalCapaCmp'));
+    rowHeader.push(tooltip);
+    childNodeList.forEach(item => {
+      rowHeader.push(item);
+      rowHeader.push(tooltip);
+      rowHeader.push(annotation);
+    });
+    graphDataCapacity.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors = [];
+    //orgaColors = orgaColors.concat(scale(['white', 'black']).colors(childNodeList.length + 1));
+    orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
+    orgaColors.reverse();
+    orgaColors.unshift('gray');
+    if (this.refPFV) {
+      orgaColors.unshift(baselineColor);
+    } else {
+      orgaColors.unshift(capaColor);
+    }
+    this.graphOptionsComboChart.colors = orgaColors;
+    if (this.graphOptionsComboChart.bar) {
+      this.graphOptionsComboChart.bar.groupWidth = '30%';
+    }
+
+    this.graphDataComboChart = graphDataCapacity;
+    this.chartActive = new Date();
   }
 
   addCapacityOrgaRow(drillDownCapacity: DrillDownElement[][], element: VisboCapacity, source: boolean, childNodeList: string[]): void {
@@ -1670,7 +1741,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     let result = -1;
     if (this.drillDown != 2 && this.vcOrganisation && this.visboCapacity?.source) {     // Orga && Capacity data available
       result = this.visboCapacity.source.length;
-    } else if (this.drillDown == 2  && this.vcOrganisation && this.visboCapacityChild){
+    } else if (this.drillDown == 2  && this.vcOrganisation && this.visboCapacityChild?.source){
       result = this.visboCapacityChild.source.length;
     }
     return result;
