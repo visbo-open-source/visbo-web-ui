@@ -734,7 +734,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   gotoCompareVPF(): void {
     this.log(`goto Compare for VPF ${this.vpActive._id} ${this.vpfActive._id}`);
-    this.router.navigate(['vpfcmp/'.concat(this.vpActive._id)], { queryParams: { vpfid: this.vpfActive._id }});
+    this.router.navigate(
+      ['vpfcmp/'.concat(this.vpActive._id)],
+      { queryParams: { vpfid: this.vpfActive._id },
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+      }
+    );
   }
 
   dropDownInit(): void {
