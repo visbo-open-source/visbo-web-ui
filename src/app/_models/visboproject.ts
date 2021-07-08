@@ -62,6 +62,7 @@ export class VisboProject {
   vpType: number;
   vpPublic: boolean;
   vpvCount: number;
+  vpfCount: number;
   variant: [VPVariant];
   lock: [VPLock];
   restrict: [VPRestrict];

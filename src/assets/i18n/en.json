@@ -287,7 +287,8 @@
 			"startDate": "Start of Project",
 			"endDate":"End of Project",
 			"rac": "Order Value [T€]",
-			"bac": "Budget [T€]"
+			"bac": "Budget [T€]",
+			"noTemplate": "None"
 		},
 		"type": {
 			"vpType0": "Project",
