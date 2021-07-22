@@ -38,6 +38,7 @@ export class VisboProjectsComponent implements OnInit {
 
   visboprojects: VisboProject[];
   visboprojectsAll: VisboProject[];
+  vpTemplates: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
   newVP: CreateProjectProperty;
@@ -52,6 +53,7 @@ export class VisboProjectsComponent implements OnInit {
   vpvWithKM: number;
   vpvRefDate: Date = new Date();
   deleted = false;
+
   sortAscending: boolean;
   sortColumn: number;
 
@@ -160,6 +162,7 @@ export class VisboProjectsComponent implements OnInit {
                 visboprojects => {
                   this.visboprojectsAll = visboprojects;
                   this.filterVP();
+                  this.initTemplates(visboprojects);
                   this.initDropDown();
                   this.switchView();
                   this.sortVPTable(1);
@@ -257,17 +260,10 @@ export class VisboProjectsComponent implements OnInit {
       const suggestedStartDate: Date = new Date();
 
       // if there are templates, then suggest the  first template in the list as the default template
-      let templateID = '';
-      templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
+      let templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
 
       // suggest the first of next month as start of Project ...
-      if (suggestedStartDate.getMonth() < 11) {
-        suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
-      } else {
-        suggestedStartDate.setMonth(0);
-        suggestedStartDate.setFullYear(suggestedStartDate.getFullYear() + 1);
-      }
-
+      suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
       suggestedStartDate.setDate(1);
 
       const suggestedEndDate: Date = new Date(suggestedStartDate);
@@ -476,15 +472,15 @@ export class VisboProjectsComponent implements OnInit {
       });
     } else if (this.sortColumn === 2) {
       this.visboprojects.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
-   
+
     } else if (this.sortColumn === 3) {
       this.visboprojects.sort(function(a, b) {
         return visboCmpString(a.vc.name.toLowerCase(), b.vc.name.toLowerCase());
       });
     } else if (this.sortColumn === 4) {
-      // sort by VC vpvCount
+      // sort by VC vpvCount (a.vpfCount || a.vpvCount)
       this.visboprojects.sort(function(a, b) {
-        return a.vpvCount - b.vpvCount;
+        return (a.vpfCount || a.vpvCount) - (b.vpfCount || b.vpvCount);
       });
     } else if (this.sortColumn === 5) {
       // sort by VP vpType
@@ -492,9 +488,9 @@ export class VisboProjectsComponent implements OnInit {
         return a.vpType - b.vpType;
       });
     }  else if (this.sortColumn === 6) {
-      this.visboprojects.sort(function(a, b) { 
-        const aDate = getCustomFieldDate(a, '_PMCommit') ? new Date(getCustomFieldDate(a, '_PMCommit').value) : new Date('2001-01-01');        
-        const bDate = getCustomFieldDate(b, '_PMCommit') ? new Date(getCustomFieldDate(b, '_PMCommit').value) : new Date('2001-01-01');  
+      this.visboprojects.sort(function(a, b) {
+        const aDate = getCustomFieldDate(a, '_PMCommit') ? new Date(getCustomFieldDate(a, '_PMCommit').value) : new Date('2001-01-01');
+        const bDate = getCustomFieldDate(b, '_PMCommit') ? new Date(getCustomFieldDate(b, '_PMCommit').value) : new Date('2001-01-01');
         return visboCmpDate(aDate, bDate); });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
@@ -504,23 +500,28 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
-
-  getTemplates(vps: VisboProject[]): VisboProject[] {
-    return vps.filter(item => item.vpType == 2);
+  initTemplates(vps: VisboProject[]): void {
+    this.vpTemplates = vps.filter(item => item.vpType == 2);
+    if (this.vpTemplates.length > 0) {
+      let vp = new VisboProject();
+      delete vp._id;
+      vp.name = this.translate.instant('vp.lbl.noTemplate');
+      this.vpTemplates.push(vp);
+    }
   }
 
-  getCommitDate(vp: VisboProject):Date {    
+  getCommitDate(vp: VisboProject):Date {
     if (!vp) { return undefined }
-    return getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;    
+    return getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
    }
 
   isViewWithCommit():boolean {
     return ((this.viewMode != 'Deleted') && (this.viewMode != 'KeyMetrics') && (this.viewMode != 'Template'))
   }
-  
-  hasCommitDate():boolean {    
+
+  hasCommitDate():boolean {
     const index = this.visboprojects.findIndex(item => this.getCommitDate(item) != undefined )
-    return (index >= 0);   
+    return (index >= 0);
   }
 
   /** Log a message with the MessageService */
