@@ -41,6 +41,9 @@ class OrganisationItem {
   exitDate: Date;
   percent: number;
   aliases: string;
+  isAggregationRole: string;
+  isSummaryRole: string;
+  isActDataRelevant: string;
 }
 
 @Component({
@@ -712,7 +715,6 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[id].aliases = organisation[id].aliases + '#' + role.aliases[i];
           }          
         }
-
         // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
         if (role.isTeam) {
           this.log("Skip Handling of Team Members");
@@ -739,7 +741,10 @@ export class VisbocenterDetailComponent implements OnInit {
           if (!organisation[index].pid) {
             organisation[index].pid = id;
           }
-        }
+        }        
+        organisation[id].isAggregationRole = role.isAggregationRole?'1': '';
+        organisation[id].isSummaryRole = role.isSummaryRole?'1': '';
+        organisation[id].isActDataRelevant = role.isActDataRelevant?'1': '';
       }
 
       // build team members Information by duplicating users with their percentage
@@ -772,8 +777,11 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
             if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
-            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
-            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
+            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }                                      
+            if (userRole.isAggregationRole) { organisation[maxid].isAggregationRole = userRole.isAggregationRole }
+            if (userRole.isSummaryRole) { organisation[maxid].isSummaryRole = userRole.isSummaryRole }
+            if (userRole.isActDataRelevant) { organisation[maxid].isActDataRelevant = userRole.isActDataRelevant }      
+            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;  
           }
         }
       }
@@ -868,7 +876,7 @@ export class VisbocenterDetailComponent implements OnInit {
       const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
       const name = 'VisboCenterOrganisation_' + strTimestamp;
 
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'entryDate', 'exitDate' ]});
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'entryDate', 'exitDate' , 'isExternRole', 'defaultKapa', 'tagessatz', 'employeeNr','defaultDayCapa','aliases']});
       worksheet['!autofilter'] = { ref: matrix };
       // eslint-disable-next-line
       const sheets: any = {};
