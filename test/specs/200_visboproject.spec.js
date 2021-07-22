@@ -31,7 +31,7 @@ describe('visboproject check', function () {
 
   it('should show full list of VPs and sorting works', function () {
     VisboProjectPage.open();
-    // console.log("Sort VP by Date");
+    console.log("Sort VP by Date");
     VisboProjectPage.sortDate.click();
     const vpList = $('#VPList');
     const len = vpList.$$('tr').length;
@@ -45,13 +45,13 @@ describe('visboproject check', function () {
       vpLastDate = vpDate;
     }
 
-    // console.log("Sort VP by Versions");
     VisboProjectPage.sortVersions.click();
     let vpLastProject = len > 0 ? Number(vpList.$$('tr')[0].$('#ColVersions').getText()) : 0;
+    console.log("Sort VP by Versions. Last", vpLastProject);
     for (var i = 0; i < len; i++) {
       let vpEntry = vpList.$$('tr')[i];
       let vpProject = Number(vpEntry.$('#ColVersions').getText());
-      // console.log("VP Projects", i+1, vpProject, vpLastProject, vpProject - vpLastProject);
+      console.log("Sort VP by Versions. Entry %d (%s), Last %d Actual %d", i, vpEntry.$('#ColName').getText(), vpLastProject, vpProject);
       expectChai(vpLastProject).to.be.gte(vpProject, "Wrong Sorting by #Versions");
       vpLastProject = vpProject
     }
