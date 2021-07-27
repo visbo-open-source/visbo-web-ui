@@ -338,8 +338,8 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   }
 
   getCapacity(): void {
-    if (this.drillDown == 2) {
-      this.getProjectCapacity();
+    if (this.drillDown == 2 ) {
+      this.getProjectCapacity();   
     } else {
       this.getCapacityOrga();
     }
