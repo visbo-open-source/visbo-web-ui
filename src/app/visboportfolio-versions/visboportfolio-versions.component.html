@@ -5,7 +5,7 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="activeVPFVariant && dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
+        <span *ngIf="activeVPFVariant && dropDown.length > 1" class="dropdown ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item">
