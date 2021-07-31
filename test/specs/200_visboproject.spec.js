@@ -35,6 +35,7 @@ describe('visboproject check', function () {
     VisboProjectPage.sortDate.click();
     const vpList = $('#VPList');
     const len = vpList.$$('tr').length;
+    console.log("Sort VP by Date Length", len);
     expectChai(len).to.be.gt(0, "No VPs");
     let vpLastDate = convert.convertDate(vpList.$$('tr')[0].$('#ColDate').getText());
     for (var i = 0; i < len; i++) {
