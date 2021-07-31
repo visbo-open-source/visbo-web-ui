@@ -653,7 +653,8 @@
 			"showDrill": "View",
 			"drillNone": "Actual & Plan",
 			"drillOrga": "Organisation Units",
-			"drillProject": "Projects",
+			"drillProject": "Projects",			
+			"drillProjectBU": "Projects/BusinessUnit",
 			"name": "Project",
 			"noPFV": "no BL",
 			"orgaValid": "Organisation from"

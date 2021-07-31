@@ -181,7 +181,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       .subscribe(
         visboprojects => {
           this.listVP = visboprojects;
-          // this.initVPF(visboprojects);
+          this.initVPF();
         },
         error => {
           this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
