@@ -16,7 +16,7 @@
     "@angular/animations": "^11.2.7",
     "@angular/common": "^11.2.7",
     "@angular/compiler": "^11.2.7",
-    "@angular/core": "^11.2.7",
+    "@angular/core": "^11.2.14",
     "@angular/forms": "^11.2.7",
     "@angular/localize": "^11.2.7",
     "@angular/platform-browser": "^11.2.7",
@@ -48,7 +48,7 @@
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.1.0",
     "web-animations-js": "^2.3.2",
-    "xlsx": "^0.16.9",
+    "xlsx": "^0.17.0",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {
