@@ -109,8 +109,8 @@
             </div>
             <!-- Edit Name -->
             <div class="form-group">
-              <label for="vpName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
-              <input id="vpName" type="text" class="form-control" name="vpName" #vpName="ngModel" [(ngModel)]="newVP.name" required minlength="2" pattern="(^[A-Za-z0-9][A-Za-z0-9:.;\s_-]*[A-Za-z0-9;.\s)]$)" >
+              <label for="CreateVPName" class="col-form-label">{{ 'vp.lbl.name' | translate }}:</label>
+              <input id="CreateVPName" type="text" class="form-control" name="vpName" #vpName="ngModel" [(ngModel)]="newVP.name" required minlength="2" pattern="(^[A-Za-z0-9][A-Za-z0-9:.;\s_-]*[A-Za-z0-9;.\s)]$)" >
               <div *ngIf="vpName.invalid && (vpName.dirty || vpName.touched)" class="errorInput">
                 <div *ngIf="vpName.errors?.required">
                   {{ 'vp.msg.errorNameLen' | translate }}

@@ -52,20 +52,23 @@ describe('visboproject check', function () {
     for (var i = 0; i < len; i++) {
       let vpEntry = vpList.$$('tr')[i];
       let vpProject = Number(vpEntry.$('#ColVersions').getText());
-      console.log("Sort VP by Versions. Entry %d (%s), Last %d Actual %d", i, vpEntry.$('#ColName').getText(), vpLastProject, vpProject);
+      // console.log("Sort VP by Versions. Entry %d (%s), Last %d Actual %d", i, vpEntry.$('#ColName').getText(), vpLastProject, vpProject);
       expectChai(vpLastProject).to.be.gte(vpProject, "Wrong Sorting by #Versions");
       vpLastProject = vpProject
     }
 
-    // console.log("Sort VP by Name");
+    console.log("Sort VP by Name");
     VisboProjectPage.sortName.click();
-    let vpLastName = len > 0 ? vpList.$$('tr')[0].$('#ColName').getText() : undefined;
-    for (var i = 0; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
-      let vpName = vpEntry.$('#ColName').getText().valueOf();
-      // console.log("VP Names", i+1, vpName, vpLastName, vpName <= vpLastName);
-      expectChai(vpName.toLowerCase() >= vpLastName.toLowerCase()).to.be.eql(true, `Wrong Sorting by Name ${vpName} vs ${vpLastName}`);
-      vpLastName = vpName
+    if (len > 0) {
+      let vpLastName = vpList.$$('tr')[0].$('#ColName').getText();
+      for (var i = 1; i < len; i++) {
+        let vpEntry = vpList.$$('tr')[i];
+        let vpName = vpEntry.$('#ColName').getText().valueOf();
+        let result = vpName.localeCompare(vpLastName)
+        // console.log("VP Names", i, vpName, vpLastName, result);
+        expectChai(result).to.be.gte(0, `Wrong Sorting by Name ${vpName} vs ${vpLastName}`);
+        vpLastName = vpName
+      }
     }
   })
 
@@ -379,16 +382,18 @@ describe('visboproject check', function () {
     expectChai(i).to.be.eql(len, `VisboProject ${newVPName} found after Delete`);
 
     // switch to Deleted to find the VP
-    VisboProjectPage.deletedVP.click();
+    // VisboProjectPage.deletedVP.click();
+    // VisboProjectPage.unDeletedVP.waitForDisplayed();
+    VisboProjectPage.openDeleted(vcID);
+    browser.pause(2000);
 
-    VisboProjectPage.unDeletedVP.waitForDisplayed();
     len = VisboProjectPage.vpList.$$('tr').length;
-    console.log("VP List Len:", len);
+    console.log("VP List Search: %s Len: %d", newVPName, len);
     i = 0;
     for (; i < len; i++) {
       let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
-      // console.log("VP", i+1, vpName);
+      console.log("VP", i+1, vpName, newVPName);
       if (vpName == newVPName) {
         console.log("found VP", vpName);
         vpEntry.$('button').click();

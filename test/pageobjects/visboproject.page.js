@@ -73,6 +73,12 @@ class VisboProjectPage extends Page {
       this.alert.waitForDisplayed();
     }
 
+    openDeleted (vcid) {
+      let url = vcid ? '/vp/'.concat(vcid) : '/vp'
+      url = url.concat('?deleted=1');
+      super.open(url);
+    }
+
     delete(vpID) {
       console.log("delete", vpID);
 
@@ -80,7 +86,7 @@ class VisboProjectPage extends Page {
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Delete VP Confirm should show up' });
       console.log("delete confirm", vpID);
       this.deleteVPConfirm.click();
-      this.alert.waitForDisplayed();
+      // this.alert.waitForDisplayed();
       // have to wait, as the server updates it async
       browser.pause(2000);
     }
