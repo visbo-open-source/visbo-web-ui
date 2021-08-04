@@ -29,226 +29,226 @@ describe('visboproject check', function () {
     expectChai(browser.getUrl()).to.include('/dashboard');
   })
 
-  it('should show full list of VPs and sorting works', function () {
-    VisboProjectPage.open();
-    console.log("Sort VP by Date");
-    VisboProjectPage.sortDate.click();
-    const vpList = $('#VPList');
-    const len = vpList.$$('tr').length;
-    console.log("Sort VP by Date Length", len);
-    expectChai(len).to.be.gt(0, "No VPs");
-    let vpLastDate = convert.convertDate(vpList.$$('tr')[0].$('#ColDate').getText());
-    for (var i = 0; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
-      let vpDate = convert.convertDate(vpEntry.$('#ColDate').getText());
-      // console.log("VP Date", i+1, vpEntry.$('#ColDate').getText(), vpDate, vpLastDate, vpDate.getTime() - vpLastDate.getTime());
-      expectChai(vpLastDate).to.be.gte(vpDate, "Wrong Sorting by Date");
-      vpLastDate = vpDate;
-    }
+  // it('should show full list of VPs and sorting works', function () {
+  //   VisboProjectPage.open();
+  //   console.log("Sort VP by Date");
+  //   VisboProjectPage.sortDate.click();
+  //   const vpList = $('#VPList');
+  //   const len = vpList.$$('tr').length;
+  //   console.log("Sort VP by Date Length", len);
+  //   expectChai(len).to.be.gt(0, "No VPs");
+  //   let vpLastDate = convert.convertDate(vpList.$$('tr')[0].$('#ColDate').getText());
+  //   for (var i = 0; i < len; i++) {
+  //     let vpEntry = vpList.$$('tr')[i];
+  //     let vpDate = convert.convertDate(vpEntry.$('#ColDate').getText());
+  //     // console.log("VP Date", i+1, vpEntry.$('#ColDate').getText(), vpDate, vpLastDate, vpDate.getTime() - vpLastDate.getTime());
+  //     expectChai(vpLastDate).to.be.gte(vpDate, "Wrong Sorting by Date");
+  //     vpLastDate = vpDate;
+  //   }
+  //
+  //   VisboProjectPage.sortVersions.click();
+  //   let vpLastProject = len > 0 ? Number(vpList.$$('tr')[0].$('#ColVersions').getText()) : 0;
+  //   console.log("Sort VP by Versions. Last", vpLastProject);
+  //   for (var i = 0; i < len; i++) {
+  //     let vpEntry = vpList.$$('tr')[i];
+  //     let vpProject = Number(vpEntry.$('#ColVersions').getText());
+  //     // console.log("Sort VP by Versions. Entry %d (%s), Last %d Actual %d", i, vpEntry.$('#ColName').getText(), vpLastProject, vpProject);
+  //     expectChai(vpLastProject).to.be.gte(vpProject, "Wrong Sorting by #Versions");
+  //     vpLastProject = vpProject
+  //   }
+  //
+  //   console.log("Sort VP by Name");
+  //   VisboProjectPage.sortName.click();
+  //   if (len > 0) {
+  //     let vpLastName = vpList.$$('tr')[0].$('#ColName').getText();
+  //     for (var i = 1; i < len; i++) {
+  //       let vpEntry = vpList.$$('tr')[i];
+  //       let vpName = vpEntry.$('#ColName').getText().valueOf();
+  //       let result = vpName.localeCompare(vpLastName)
+  //       // console.log("VP Names", i, vpName, vpLastName, result);
+  //       expectChai(result).to.be.gte(0, `Wrong Sorting by Name ${vpName} vs ${vpLastName}`);
+  //       vpLastName = vpName
+  //     }
+  //   }
+  // })
 
-    VisboProjectPage.sortVersions.click();
-    let vpLastProject = len > 0 ? Number(vpList.$$('tr')[0].$('#ColVersions').getText()) : 0;
-    console.log("Sort VP by Versions. Last", vpLastProject);
-    for (var i = 0; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
-      let vpProject = Number(vpEntry.$('#ColVersions').getText());
-      // console.log("Sort VP by Versions. Entry %d (%s), Last %d Actual %d", i, vpEntry.$('#ColName').getText(), vpLastProject, vpProject);
-      expectChai(vpLastProject).to.be.gte(vpProject, "Wrong Sorting by #Versions");
-      vpLastProject = vpProject
-    }
-
-    console.log("Sort VP by Name");
-    VisboProjectPage.sortName.click();
-    if (len > 0) {
-      let vpLastName = vpList.$$('tr')[0].$('#ColName').getText();
-      for (var i = 1; i < len; i++) {
-        let vpEntry = vpList.$$('tr')[i];
-        let vpName = vpEntry.$('#ColName').getText().valueOf();
-        let result = vpName.localeCompare(vpLastName)
-        // console.log("VP Names", i, vpName, vpLastName, result);
-        expectChai(result).to.be.gte(0, `Wrong Sorting by Name ${vpName} vs ${vpLastName}`);
-        vpLastName = vpName
-      }
-    }
-  })
-
-  it('should navigate to Details of a specific VP', function () {
-    let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
-    vcConfigName = vcConfigName.concat("01");
-    let vpConfigName = paramsMap?.VPBaseName || "Test-XX-VP";
-    vpConfigName = vpConfigName.concat("01");
-    VisboProjectPage.open();
-    // console.log("Show VP");
-    const vpList = $('#VPList');
-    const len = vpList.$$('tr').length;
-    // console.log("VP List Len:", len, '\n', vpList.getText());
-    for (var i = 0; i < len; i++) {
-      let vpEntry = vpList.$$('tr')[i];
-      let vpName = vpEntry.$('#ColName').getText();
-      let vcName = vpEntry.$('#ColVC').getText();
-      // console.log("VP", i+1, vpName);
-      if (vpName == vpConfigName && vcName == vcConfigName) {
-        console.log("go to VP Detail", vpName, ' of ', vcName);
-        vpEntry.$('button').click();
-        break;
-      }
-    }
-    expectChai(i).to.be.lt(len, `VisboProject ${vpConfigName} not found`);
-
-    var newUrl = browser.getUrl();
-    const match = '/vpDetail/';
-    expectChai(newUrl).to.include(match, "Wrong redirect to vpDetail");
-    let index = newUrl.indexOf(match);
-    index += match.length;
-    vpID = newUrl.substr(index, 24);
-  })
-
-  it('Create VP Group', function () {
-    VisboProjectPage.detail(vpID);
-
-    const navBar = $('nav');
-    // console.log("Navbar:", navBar.getText());
-    expectChai(navBar.isClickable()).to.be.eql(true, "Navbar is Clickable")
-
-    // console.log("Show VP Details, switch to Group");
-    VisboProjectPage.showGroupButton.click();
-    newGroupName = 'Delete-'.concat((new Date()).toISOString())
-    console.log("Add new Group", newGroupName);
-    VisboProjectPage.addGroup(newGroupName);
-    // console.log("Add Group Check", newGroupName);
-    VisboProjectPage.detail(vpID);
-    // console.log("Show VP Details, switch to Group");
-    VisboProjectPage.showGroupButton.click();
-    const vpGroupList = $('#GroupList')
-    const len = vpGroupList.$$('tr').length
-    let i = 0;
-    let groupEntry = undefined;
-    for (i = 0; i < len; i++) {
-      groupEntry = vpGroupList.$$('tr')[i];
-      let groupName = groupEntry.$('#ColGroup').getText();
-      // console.log("VP GroupName", i+1, groupName);
-      if (groupName.indexOf(newGroupName) >= 0) {
-        // console.log("Group Found", groupName);
-        break;
-      }
-    }
-    expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
-    expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('');
-
-    // console.log("Navbar:", navBar.getText(), navBar.isClickable());
-    // browser.debug();
-  })
-
-  it('Add User to Group', function () {
-    VisboProjectPage.detail(vpID);
-    // console.log("Show VP Details, switch to Group");
-    newUserName = paramsMap?.userRead;
-
-    let message = (new Date()).toISOString();
-    message = "Invitation from ".concat(message);
-    message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
-    console.log("Add new User Group", newUserName, newGroupName);
-    VisboProjectPage.addUser(newUserName, newGroupName, message);
-    console.log("Add User Check", newGroupName);
-    const vpUserList = $('#UserList')
-    const len = vpUserList.$$('tr').length
-    let i = 0;
-    expectChai(len).to.be.gt(0, "No Members in VP");
-    let userEntry, userName, groupName;
-    for (i = 0; i < len; i++) {
-      userEntry = vpUserList.$$('tr')[i];
-      userName = userEntry.$('#ColUser').getText();
-      groupName = userEntry.$('#ColGroup').getText();
-      // console.log("VP User Entry", i+1, userName, groupName);
-      if (groupName == newGroupName && userName == newUserName) {
-        // console.log("Success: User/Group Entry Found", userName, groupName);
-        break;
-      }
-    }
-    expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
-    expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
-  })
-
-  it('Delete VP User from Group', function () {
-
-    // console.log("Test Delete Group", newGroupName);
-    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-
-    VisboProjectPage.detail(vpID);
-    // console.log("Show VP Details, switch to Group");
-    console.log("Delete User from Group", newUserName, newGroupName);
-    let result = VisboProjectPage.deleteUser(newUserName, newGroupName);
-    // expect(result).toBe(false);
-    console.log("Delete User from Group Result:", result)
-    const vpUserList = $('#UserList')
-    const len = vpUserList.$$('tr').length
-    let i = 0;
-    expectChai(len).to.be.gt(0, "No Members in VP");
-    let userEntry, userName, groupName;
-    for (i = 0; i < len; i++) {
-      userEntry = vpUserList.$$('tr')[i];
-      userName = userEntry.$('#ColUser').getText();
-      groupName = userEntry.$('#ColGroup').getText();
-      // console.log("VP User Entry", i+1, userName, groupName);
-      if (groupName == newGroupName && userName == newUserName) {
-        // console.log("Success: User/Group Entry Found", userName, groupName);
-        break;
-      }
-    }
-    expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
-  })
-
-  it('Delete VP Group', function () {
-
-    // console.log("Test Delete Group", newGroupName);
-    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-
-    VisboProjectPage.detail(vpID);
-    // console.log("Show VP Details, switch to Group with Button", VisboProjectPage.showGroupButton.getText());
-    VisboProjectPage.showGroupButton.click();
-    // console.log("Delete Group", newGroupName);
-    let result = VisboProjectPage.deleteGroup(newGroupName);
-    // expect(result).toBe(false);
-    console.log("Delete Group Result:", result)
-    const vpGroupList = $('#GroupList')
-    const len = vpGroupList.$$('tr').length
-    expectChai(len).to.be.gt(0, "No Groups in VP");
-    let i;
-    let groupEntry, groupName;
-    for (i = 0; i < len; i++) {
-      groupEntry = vpGroupList.$$('tr')[i];
-      groupName = groupEntry.$('#ColGroup').getText();
-      // console.log("VP GroupName", i+1, groupName);
-      if (groupName.indexOf(newGroupName) >= 0) {
-        // console.log("Group Found", groupName);
-        break;
-      }
-    }
-    expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
-  })
-
-  it('Rename VP and Description', function () {
-
-    // console.log("Test Delete Group", newGroupName);
-    // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
-
-    VisboProjectPage.detail(vpID);
-    VisboProjectPage.vpName.waitForDisplayed();
-
-    let oldName = VisboProjectPage.vpName.getValue();
-    let oldDescription = VisboProjectPage.vpDesc.getValue();
-    let newName = oldName.concat("_Rename");
-    let newDescription = oldDescription.concat("_Rename");
-    console.log("Rename VP Property", newName, newDescription);
-    VisboProjectPage.rename(newName, newDescription);
-    console.log("Rename Done new URL:", browser.getUrl());
-
-    VisboProjectPage.detail(vpID);
-    VisboProjectPage.vpName.waitForDisplayed();
-    expectChai(VisboProjectPage.vpName.getValue()).to.be.eql(newName);
-    expectChai(VisboProjectPage.vpDesc.getValue()).to.be.eql(newDescription);
-    VisboProjectPage.rename(oldName, oldDescription);
-  })
+  // it('should navigate to Details of a specific VP', function () {
+  //   let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
+  //   vcConfigName = vcConfigName.concat("01");
+  //   let vpConfigName = paramsMap?.VPBaseName || "Test-XX-VP";
+  //   vpConfigName = vpConfigName.concat("01");
+  //   VisboProjectPage.open();
+  //   // console.log("Show VP");
+  //   const vpList = $('#VPList');
+  //   const len = vpList.$$('tr').length;
+  //   // console.log("VP List Len:", len, '\n', vpList.getText());
+  //   for (var i = 0; i < len; i++) {
+  //     let vpEntry = vpList.$$('tr')[i];
+  //     let vpName = vpEntry.$('#ColName').getText();
+  //     let vcName = vpEntry.$('#ColVC').getText();
+  //     // console.log("VP", i+1, vpName);
+  //     if (vpName == vpConfigName && vcName == vcConfigName) {
+  //       console.log("go to VP Detail", vpName, ' of ', vcName);
+  //       vpEntry.$('button').click();
+  //       break;
+  //     }
+  //   }
+  //   expectChai(i).to.be.lt(len, `VisboProject ${vpConfigName} not found`);
+  //
+  //   var newUrl = browser.getUrl();
+  //   const match = '/vpDetail/';
+  //   expectChai(newUrl).to.include(match, "Wrong redirect to vpDetail");
+  //   let index = newUrl.indexOf(match);
+  //   index += match.length;
+  //   vpID = newUrl.substr(index, 24);
+  // })
+  //
+  // it('Create VP Group', function () {
+  //   VisboProjectPage.detail(vpID);
+  //
+  //   const navBar = $('nav');
+  //   // console.log("Navbar:", navBar.getText());
+  //   expectChai(navBar.isClickable()).to.be.eql(true, "Navbar is Clickable")
+  //
+  //   // console.log("Show VP Details, switch to Group");
+  //   VisboProjectPage.showGroupButton.click();
+  //   newGroupName = 'Delete-'.concat((new Date()).toISOString())
+  //   console.log("Add new Group", newGroupName);
+  //   VisboProjectPage.addGroup(newGroupName);
+  //   // console.log("Add Group Check", newGroupName);
+  //   VisboProjectPage.detail(vpID);
+  //   // console.log("Show VP Details, switch to Group");
+  //   VisboProjectPage.showGroupButton.click();
+  //   const vpGroupList = $('#GroupList')
+  //   const len = vpGroupList.$$('tr').length
+  //   let i = 0;
+  //   let groupEntry = undefined;
+  //   for (i = 0; i < len; i++) {
+  //     groupEntry = vpGroupList.$$('tr')[i];
+  //     let groupName = groupEntry.$('#ColGroup').getText();
+  //     // console.log("VP GroupName", i+1, groupName);
+  //     if (groupName.indexOf(newGroupName) >= 0) {
+  //       // console.log("Group Found", groupName);
+  //       break;
+  //     }
+  //   }
+  //   expectChai(groupEntry.$('#ColGroup').getText()).to.be.eql(newGroupName);
+  //   expectChai(groupEntry.$('#ColGlobal').getText()).to.be.eql('');
+  //
+  //   // console.log("Navbar:", navBar.getText(), navBar.isClickable());
+  //   // browser.debug();
+  // })
+  //
+  // it('Add User to Group', function () {
+  //   VisboProjectPage.detail(vpID);
+  //   // console.log("Show VP Details, switch to Group");
+  //   newUserName = paramsMap?.userRead;
+  //
+  //   let message = (new Date()).toISOString();
+  //   message = "Invitation from ".concat(message);
+  //   message = paramsMap?.inviteMessage ? paramsMap?.inviteMessage.concat(message) : '';
+  //   console.log("Add new User Group", newUserName, newGroupName);
+  //   VisboProjectPage.addUser(newUserName, newGroupName, message);
+  //   console.log("Add User Check", newGroupName);
+  //   const vpUserList = $('#UserList')
+  //   const len = vpUserList.$$('tr').length
+  //   let i = 0;
+  //   expectChai(len).to.be.gt(0, "No Members in VP");
+  //   let userEntry, userName, groupName;
+  //   for (i = 0; i < len; i++) {
+  //     userEntry = vpUserList.$$('tr')[i];
+  //     userName = userEntry.$('#ColUser').getText();
+  //     groupName = userEntry.$('#ColGroup').getText();
+  //     // console.log("VP User Entry", i+1, userName, groupName);
+  //     if (groupName == newGroupName && userName == newUserName) {
+  //       // console.log("Success: User/Group Entry Found", userName, groupName);
+  //       break;
+  //     }
+  //   }
+  //   expectChai(userName).to.be.eql(newUserName, "Wrong User Found");
+  //   expectChai(groupName).to.be.eql(newGroupName, "Wrong Group Found");
+  // })
+  //
+  // it('Delete VP User from Group', function () {
+  //
+  //   // console.log("Test Delete Group", newGroupName);
+  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+  //
+  //   VisboProjectPage.detail(vpID);
+  //   // console.log("Show VP Details, switch to Group");
+  //   console.log("Delete User from Group", newUserName, newGroupName);
+  //   let result = VisboProjectPage.deleteUser(newUserName, newGroupName);
+  //   // expect(result).toBe(false);
+  //   console.log("Delete User from Group Result:", result)
+  //   const vpUserList = $('#UserList')
+  //   const len = vpUserList.$$('tr').length
+  //   let i = 0;
+  //   expectChai(len).to.be.gt(0, "No Members in VP");
+  //   let userEntry, userName, groupName;
+  //   for (i = 0; i < len; i++) {
+  //     userEntry = vpUserList.$$('tr')[i];
+  //     userName = userEntry.$('#ColUser').getText();
+  //     groupName = userEntry.$('#ColGroup').getText();
+  //     // console.log("VP User Entry", i+1, userName, groupName);
+  //     if (groupName == newGroupName && userName == newUserName) {
+  //       // console.log("Success: User/Group Entry Found", userName, groupName);
+  //       break;
+  //     }
+  //   }
+  //   expectChai(i).to.be.eql(len, "User still found:".concat(userName, '/', groupName));
+  // })
+  //
+  // it('Delete VP Group', function () {
+  //
+  //   // console.log("Test Delete Group", newGroupName);
+  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+  //
+  //   VisboProjectPage.detail(vpID);
+  //   // console.log("Show VP Details, switch to Group with Button", VisboProjectPage.showGroupButton.getText());
+  //   VisboProjectPage.showGroupButton.click();
+  //   // console.log("Delete Group", newGroupName);
+  //   let result = VisboProjectPage.deleteGroup(newGroupName);
+  //   // expect(result).toBe(false);
+  //   console.log("Delete Group Result:", result)
+  //   const vpGroupList = $('#GroupList')
+  //   const len = vpGroupList.$$('tr').length
+  //   expectChai(len).to.be.gt(0, "No Groups in VP");
+  //   let i;
+  //   let groupEntry, groupName;
+  //   for (i = 0; i < len; i++) {
+  //     groupEntry = vpGroupList.$$('tr')[i];
+  //     groupName = groupEntry.$('#ColGroup').getText();
+  //     // console.log("VP GroupName", i+1, groupName);
+  //     if (groupName.indexOf(newGroupName) >= 0) {
+  //       // console.log("Group Found", groupName);
+  //       break;
+  //     }
+  //   }
+  //   expectChai(groupEntry.$('#ColGroup').getText()).not.to.be.eql(newGroupName, "Group not Deleted");
+  // })
+  //
+  // it('Rename VP and Description', function () {
+  //
+  //   // console.log("Test Delete Group", newGroupName);
+  //   // expect(newGroupName).toHaveTextContaining('Delete-', {wait:0, message: "Group Name missing"});
+  //
+  //   VisboProjectPage.detail(vpID);
+  //   VisboProjectPage.vpName.waitForDisplayed();
+  //
+  //   let oldName = VisboProjectPage.vpName.getValue();
+  //   let oldDescription = VisboProjectPage.vpDesc.getValue();
+  //   let newName = oldName.concat("_Rename");
+  //   let newDescription = oldDescription.concat("_Rename");
+  //   console.log("Rename VP Property", newName, newDescription);
+  //   VisboProjectPage.rename(newName, newDescription);
+  //   console.log("Rename Done new URL:", browser.getUrl());
+  //
+  //   VisboProjectPage.detail(vpID);
+  //   VisboProjectPage.vpName.waitForDisplayed();
+  //   expectChai(VisboProjectPage.vpName.getValue()).to.be.eql(newName);
+  //   expectChai(VisboProjectPage.vpDesc.getValue()).to.be.eql(newDescription);
+  //   VisboProjectPage.rename(oldName, oldDescription);
+  // })
 
   it('should navigate to VP List of a specific VC', function () {
     let vcConfigName = paramsMap?.VCBaseName || "Test-XX-VC";
@@ -306,7 +306,6 @@ describe('visboproject check', function () {
       }
     }
 
-    // Check that the number of projects matches the number of items in list
     expectChai(i).to.be.lt(len, `VisboProject ${newVPName} not found`);
 
     // Check that name and description are correct
@@ -385,15 +384,14 @@ describe('visboproject check', function () {
     // VisboProjectPage.deletedVP.click();
     // VisboProjectPage.unDeletedVP.waitForDisplayed();
     VisboProjectPage.openDeleted(vcID);
-    browser.pause(2000);
 
     len = VisboProjectPage.vpList.$$('tr').length;
-    console.log("VP List Search: %s Len: %d", newVPName, len);
+    console.log("VP List Search Deleted VP: %s Len: %d", newVPName, len);
     i = 0;
     for (; i < len; i++) {
       let vpEntry = VisboProjectPage.vpList.$$('tr')[i];
       let vpName = vpEntry.$('#ColName').getText();
-      console.log("VP", i+1, vpName, newVPName);
+      // console.log("VP", i+1, vpName, newVPName);
       if (vpName == newVPName) {
         console.log("found VP", vpName);
         vpEntry.$('button').click();
@@ -415,7 +413,7 @@ describe('visboproject check', function () {
     VisboProjectPage.open(vcID);
     VisboProjectPage.detail(vpDeleteID);
 
-    console.log("Delete VP", vpDeleteID);
+    console.log("Delete VP %s (%s)", newVPName, vpDeleteID);
     VisboProjectPage.delete(vpDeleteID);
     // check that it gets redirected to the VP List of VC
     let newUrl = browser.getUrl();
@@ -423,8 +421,9 @@ describe('visboproject check', function () {
     expectChai(newUrl).to.include(match, "Wrong redirect to vp");
 
     // switch to Deleted to find the VP
-    VisboProjectPage.deletedVP.click();
-    VisboProjectPage.unDeletedVP.waitForDisplayed();
+    // VisboProjectPage.deletedVP.click();
+    // VisboProjectPage.unDeletedVP.waitForDisplayed();
+    VisboProjectPage.openDeleted(vcID);
     let len = VisboProjectPage.vpList.$$('tr').length;
     console.log("VP List Len:", len);
     let i = 0;
