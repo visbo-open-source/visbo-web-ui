@@ -1061,6 +1061,8 @@
 			"from": "Vom",
 			"isChecked": "Ausgewählt",
 			"noKM": "Keine Baseline",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
 			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {

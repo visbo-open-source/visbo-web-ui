@@ -14,7 +14,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboUser } from '../_models/visbouser';
-import { VisboProject, VPVariant } from '../_models/visboproject';
+import { VisboProject, VPVariant, getCustomFieldDouble } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -200,7 +200,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           .subscribe(
             vcsettings => {
               this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
             },
             error => {
               if (error.status === 403) {
@@ -389,6 +389,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       result = this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
     }
     return result;
+  }
+
+  getVPDouble(vp: VisboProject, key: string): number {
+    let property = getCustomFieldDouble(vp, key);
+    return property?.value;
   }
 
   globalChecked(): void {
@@ -871,6 +876,22 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         const aVariant = (a.hasVariants ? '1' : '0') + (a.variantName || '');
         const bVariant = (b.hasVariants ? '1' : '0') + (b.variantName || '');
         return visboCmpString(aVariant.toLowerCase(), bVariant.toLowerCase());
+      });
+    } else if (this.sortColumn === 5) {
+      this.vpCheckListFiltered.sort(function(a, b) {
+        let aRiskItem = getCustomFieldDouble(a.vp, '_risk');
+        let aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
+        let bRiskItem = getCustomFieldDouble(b.vp, '_risk');
+        let bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
+        return bRisk - aRisk;
+      });
+    } else if (this.sortColumn === 6) {
+      this.vpCheckListFiltered.sort(function(a, b) {
+        let aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
+        let aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
+        let bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
+        let bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
+        return aStrategicFit - bStrategicFit;
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)

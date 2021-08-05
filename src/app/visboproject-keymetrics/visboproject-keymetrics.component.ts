@@ -71,7 +71,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customRisk: number;
   customCommit: Date;
   editCustomFieldString: VPCustomString[];
-  editCustomFieldDouble: VPCustomDouble[];  
+  editCustomFieldDouble: VPCustomDouble[];
   editCustomFieldDate: VPCustomDate[];
 
   newVPV: VisboProjectVersion;
@@ -605,8 +605,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   setModified(): void {
     this.customVPModified = true;
   }
-  
-  // Commit-Button pressed 
+
+  // Commit-Button pressed
   setVPToCommit(): void {
     this.customVPToCommit = true;
   }
@@ -711,7 +711,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           .subscribe(
             vcsettings => {
               this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
             },
             error => {
               if (error.status === 403) {
@@ -1194,7 +1194,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         customFieldDate.value = this.customCommit;
       } else if (this.customCommit) {
         addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
-      }  
+      }
     }
 
     if (!this.customVPToCommit) {
@@ -1202,7 +1202,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
     }
-          
+
     this.visboprojectService.updateVisboProject(this.vpActive)
       .subscribe(
         (vp) => {
@@ -1223,7 +1223,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         }
     );
-  } 
+  }
 
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {
@@ -1365,7 +1365,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     });
     return this.editCustomFieldDouble;
   }
-  
+
   getCustomFieldListDate(vpOnly = true): VPCustomDate[] {
     let list: VPCustomDate[] = [];
     this.editCustomFieldDate = [];

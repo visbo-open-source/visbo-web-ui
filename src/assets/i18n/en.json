@@ -653,7 +653,7 @@
 			"showDrill": "View",
 			"drillNone": "Actual & Plan",
 			"drillOrga": "Organisation Units",
-			"drillProject": "Projects",			
+			"drillProject": "Projects",
 			"drillProjectBU": "Projects/BusinessUnit",
 			"name": "Project",
 			"noPFV": "no BL",
@@ -1061,6 +1061,8 @@
 			"from": "From",
 			"isChecked": "Selected",
 			"noKM": "No Baseline",
+			"strategicFit": "Strategic fit",
+			"risk": "Risk",
 			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {
