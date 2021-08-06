@@ -1278,7 +1278,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} `);
     if (this.graphDataComboChart && row < this.graphDataComboChart.length) {
-      if (this.drillDown == 2) {
+      if (this.drillDown == 2 || this.drillDown == 3) {
         // navigate to the project capacity
         const vpName = this.graphDataComboChart[0][label];
         const currentDate = this.graphDataComboChart[row + 1][0];
