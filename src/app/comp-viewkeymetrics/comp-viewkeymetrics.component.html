@@ -247,10 +247,10 @@
                 text: vp.timestamp | date :'dd.MM.yyyy HH:mm' } " >
             </ng-container></a>
           </td>
-          <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}} k€</td>
-          <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} k€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
-          <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€</td>
-          <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
+          <td class="text-right">{{vp.keyMetrics.costCurrentActual | number:'1.0-0'}}T€</td>
+          <td class="text-right" title="{{ 'keyMetrics.shortPV' | translate }}: {{vp.keyMetrics.costBaseLastActual | number:'1.0-0'}} T€">{{100 - vp.savingCostActual | number:'1.0-0'}} %</td>
+          <td class="text-right">{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€</td>
+          <td class="text-right" title="{{ 'keyMetrics.shortBAC' | translate }}: {{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€">{{100 - vp.savingCostTotal | number:'1.0-0'}} %</td>
           <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
             <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
           </td>
