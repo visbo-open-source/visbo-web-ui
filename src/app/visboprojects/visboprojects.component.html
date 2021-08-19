@@ -38,7 +38,7 @@
           <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
           <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
           <th id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
-          <th id="SortCommitDate" class="d-none d-md-table-cell"  *ngIf="isViewWithCommit()  && hasCommitDate()"  (click)="sortVPTable(6)">{{ 'vp.lbl.commit' | translate }}</th>
+          <th id="SortCommitDate" class="d-none d-xl-table-cell"  *ngIf="isViewWithCommit()  && hasCommitDate()"  (click)="sortVPTable(6)">{{ 'vp.lbl.commit' | translate }}</th>
           <th>Info</th>
         </tr>
       </thead>
@@ -53,8 +53,8 @@
           <td id="ColVersions" class="d-none d-lg-table-cell">{{vp.vpfCount || vp.vpvCount}}</td>
           <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
           <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
-          <td id="ColCommitDate" class="d-none d-lg-table-cell"*ngIf="isViewWithCommit() && hasCommitDate()" >{{getCommitDate(vp)  | date :'dd.MM.yyyy HH:mm'}}</td>
-          <td id="ColCommitDate" class="d-none d-md-table-cell  d-lg-none" *ngIf="isViewWithCommit() && hasCommitDate" >{{getCommitDate(vp)  | date :'dd.MM.yy'}}</td>
+          <td id="ColCommitDate" class="d-none d-xl-table-cell"*ngIf="isViewWithCommit() && hasCommitDate()" >{{getCommitDate(vp)  | date :'dd.MM.yyyy HH:mm'}}</td>
+          <!-- <td id="ColCommitDate" class="d-none d-md-table-cell  d-lg-none" *ngIf="isViewWithCommit() && hasCommitDate" >{{getCommitDate(vp)  | date :'dd.MM.yy'}}</td> -->
           <td id="ColDetail">
             <button class="Detail" title="Detail of Visbo Project"
             (click)="gotoDetail(vp)">i</button>

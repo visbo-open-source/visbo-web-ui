@@ -103,8 +103,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   orgaTreeData: VisboOrgaTreeLeaf;
   topLevelNodes: VisboRole[];
-  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB'];
-  colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB'];
+  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB','#adc7f1'];
+  colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB','#adc7f1'];
 
 
   seriesPFV = [
@@ -114,8 +114,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     {type: 'line', lineWidth: 4, pointSize: 0},
     {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1},
     // legende of Ist-Kosten visible or not
-    {visibleInLegend: true},
+    {visibleInLegend: true},    
     // legend of Plan-Kosten visible or not
+    {visibleInLegend: true},
+    // legend of otherActivity-Kosten visible or not
     {visibleInLegend: true}
   ];
   // seriesPFV = {
@@ -349,7 +351,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(),this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -384,7 +386,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.currentLeaf.name} DrillDown Project`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -422,7 +424,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.roleID}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -457,7 +459,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.roleID}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(),this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -489,7 +491,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpActive && this.vpvActive && this.currentLeaf) {
       this.refPFV = true;
       this.log(`Capacity Calc for VPV ${this.vpvActive.vpid} role ${this.roleID}`);
-      this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+      this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(),this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           listVPV => {
             if (!listVPV || listVPV.length != 1 || !listVPV[0].capacity || listVPV[0].capacity.length === 0) {
@@ -1150,7 +1152,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const budget = Math.round(capacity[i].baselineCost_PT * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
-          this.sumCost += actualCost + plannedCost;
+          const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
+          this.sumCost += actualCost + plannedCost + otherActiviyCost;
           this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], true, this.refPFV);
           graphDataCapacity.push([
@@ -1160,13 +1163,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             actualCost,
             tooltip,
             plannedCost,
+            tooltip,
+            otherActiviyCost,
             tooltip
           ]);
         } else {
           const budget = Math.round((capacity[i].baselineCost * 10) / 10 || 0);
           const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
           const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0);
-          this.sumCost += actualCost + plannedCost;
+          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
+          this.sumCost += actualCost + plannedCost + otherActiviyCost;
           this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], false, this.refPFV);
           graphDataCapacity.push([
@@ -1176,6 +1182,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             actualCost,
             tooltip,
             plannedCost,
+            tooltip,
+            otherActiviyCost,
             tooltip
           ]);
         }
@@ -1186,6 +1194,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const budgetExtern = Math.round(capacity[i].externCapa_PT * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
+          const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
           this.sumCost += actualCost + plannedCost;
           this.sumBudget += budgetIntern + budgetExtern;
           const tooltip = this.createTooltipPlanActual(capacity[i], true);
@@ -1198,13 +1207,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             actualCost,
             tooltip,
             plannedCost,
+            tooltip,
+            otherActiviyCost,
             tooltip
           ]);
         } else {
           const budgetIntern = Math.round((capacity[i].internCapa * 10) / 10 || 0);
           const budgetExtern = Math.round((capacity[i].externCapa * 10) / 10 || 0);
           const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
-          const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0)
+          const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0);
+          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
           this.sumCost += actualCost + plannedCost;
           this.sumBudget += budgetIntern + budgetExtern;
           const tooltip = this.createTooltipPlanActual(capacity[i], false);
@@ -1217,6 +1229,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             actualCost,
             tooltip,
             plannedCost,
+            tooltip,
+            otherActiviyCost,
             tooltip
           ]);
         }
@@ -1234,11 +1248,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       currentDate.setMonth(currentDate.getMonth()+1);
       if (this.refPFV) {
         graphDataCapacity.push([
-          currentDate, undefined, undefined, undefined, undefined, undefined, undefined
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
         ]);
       } else {
         graphDataCapacity.push([
-          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+          currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
         ]);
       }
 
@@ -1253,6 +1267,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.translate.instant('ViewCapacity.lbl.actualCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.cost'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
+        this.translate.instant('ViewCapacity.lbl.otherActivityCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
       ]);
     } else {
@@ -1265,6 +1281,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.translate.instant('ViewCapacity.lbl.actualCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.cost'),
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},        
+        this.translate.instant('ViewCapacity.lbl.otherActivityCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
       ]);
     }
@@ -1278,7 +1296,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} `);
     if (this.graphDataComboChart && row < this.graphDataComboChart.length) {
-      if (this.drillDown == 2) {
+      if (this.drillDown == 2 || this.drillDown == 3) {
         // navigate to the project capacity
         const vpName = this.graphDataComboChart[0][label];
         const currentDate = this.graphDataComboChart[row + 1][0];
@@ -1342,19 +1360,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const strInternCapa = this.translate.instant('ViewCapacity.lbl.internCapa');
     const strActualCost = this.translate.instant('ViewCapacity.lbl.actualCost');
     const strCost = this.translate.instant('ViewCapacity.lbl.cost');
+    const strOtherActivity = this.translate.instant('ViewCapacity.lbl.otherActivityCost')
     const roleName = this.translate.instant('ViewCapacity.lbl.roleName');
     const strBudget = this.translate.instant('ViewCapacity.lbl.budget');
     const strDiffCost = this.translate.instant('ViewCapacity.lbl.diffCost');
 
-    let totalCapa: number, internCapa: number, actualCost: number, plannedCost: number;
+    let totalCapa: number, internCapa: number, actualCost: number, plannedCost: number, otherActivityCost: number;
     const unit = ' ' + this.translate.instant(PT ? 'ViewCapacity.lbl.pd' : 'ViewCapacity.lbl.keuro');
 
     if (PT) {
       actualCost = capacity.actualCost_PT || 0;
       plannedCost = capacity.plannedCost_PT || 0;
+      otherActivityCost = capacity.otherActivityCost_PT || 0;
     } else {
       actualCost = capacity.actualCost || 0;
       plannedCost = capacity.plannedCost || 0;
+      otherActivityCost = capacity.otherActivityCost || 0;
     }
 
     if (refPFV) {
@@ -1382,7 +1403,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       result = result + this.addTooltipRowNumber(strActualCost, actualCost, PT ? 0 : 1, unit, false);
     }
     result = result + this.addTooltipRowNumber(strCost, plannedCost, PT ? 0 : 1, unit, false);
-    const diff = actualCost + plannedCost - totalCapa;
+
+    if (otherActivityCost !== 0) {
+    result = result + this.addTooltipRowNumber(strOtherActivity, otherActivityCost, PT ? 0 : 1, unit, false);
+    }
+    let diff: number;
+    if (!refPFV) {
+      diff = actualCost + plannedCost  + otherActivityCost - totalCapa;
+    } else {
+      diff = actualCost + plannedCost - totalCapa;
+    }
     if (diff != 0) {
       result = result + this.addTooltipRowNumber(strDiffCost, diff, PT ? 0 : 1, unit, true);
     }

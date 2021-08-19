@@ -382,7 +382,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     //     );
   } else if (this.vpActive && this.vpfActive?.length && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive?._id} VPF ${this.vpfActive && this.vpfActive.length} role ${this.currentLeaf.name} DrillDown Project`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate[0], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate[0], this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -397,7 +397,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
             }
             this.checkCostAvailable(this.visboCapacity.source);
 
-            this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[1]._id, this.refDate[1], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
+            this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[1]._id, this.refDate[1], this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV, false, false, true)
               .subscribe(
                 vp => {
                   if (!vp.capacity || vp.capacity.length === 0) {
@@ -477,7 +477,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       //   );
     } else if (this.vpActive && this.vpfActive && this.vpfActive[0] && this.vpfActive[1] && this.currentLeaf) {
       this.log(`Capacity Calc for VP ${this.vpActive._id} VPF ${this.vpfActive[0]._id} vs  ${this.vpfActive[1]._id} role ${this.roleID}`);
-      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate[0], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+      this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[0]._id, this.refDate[0], this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           vp => {
             if (!vp.capacity || vp.capacity.length === 0) {
@@ -494,7 +494,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               this.calcLoad(this.visboCapacity.source, this.refPFV);
             }
             this.calcLoad(this.visboCapacityChild.source, this.refPFV);
-            this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[1]._id, this.refDate[1], this.currentLeaf.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+            this.visboprojectService.getCapacity(this.vpActive._id, this.vpfActive[1]._id, this.refDate[1], this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
               .subscribe(
                 vp => {
                   if (!vp.capacity || vp.capacity.length === 0) {

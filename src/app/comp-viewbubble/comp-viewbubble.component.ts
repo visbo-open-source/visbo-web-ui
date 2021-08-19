@@ -1116,6 +1116,15 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     return title;
   }
+  getPMCommitTooltip (vp: VisboProject): string {
+    if (!vp) return '';
+    let title = '';
+    const PMCommitDate = getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;    
+    if (PMCommitDate) {
+      title = this.datePipe.transform(PMCommitDate, 'dd.MM.yyyy HH:mm');
+    }
+    return title;
+  }
 
   sortKeyMetricsTable(n: number): void {
     if (!this.visbokeymetrics) {

@@ -128,7 +128,7 @@ export class VisboCenterService  {
   }
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
-  getCapacity(id: string, refDate: Date, roleID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboCenter> {
+  getCapacity(id: string, refDate: Date, roleID: string, parentID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboCenter> {
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
     if (hierarchy) {
@@ -157,6 +157,10 @@ export class VisboCenterService  {
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
+    }    
+    if (parentID) {
+      this.log(`Calling ParentID: ${parentID}`);
+      params = params.append('parentID', parentID);
     }
     this.log(`Calling Capacity for a VC: ${url} params  ${JSON.stringify(params)}`);
     return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
