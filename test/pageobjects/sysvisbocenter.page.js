@@ -55,6 +55,11 @@ class SysVisboCenterPage extends Page {
       this.vcList.waitForDisplayed({ timeoutMsg: 'VC List should be visible' });
     }
 
+    openDeleted () {
+      super.open('/sysvc?deleted=true');
+      this.vcList.waitForDisplayed({ timeoutMsg: 'VC List should be visible' });
+    }
+
     detail (vcID, deleted) {
       let url = '/sysvcDetail/'.concat(vcID);
       if (deleted) url = url.concat('?deleted=1');

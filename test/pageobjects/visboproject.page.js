@@ -75,7 +75,7 @@ class VisboProjectPage extends Page {
 
     openDeleted (vcid) {
       let url = vcid ? '/vp/'.concat(vcid) : '/vp'
-      url = url.concat('?deleted=1');
+      url = url.concat('?view=Deleted');
       super.open(url);
     }
 
@@ -99,7 +99,7 @@ class VisboProjectPage extends Page {
       this.deleteVPConfirm.waitForClickable({ timeoutMsg: 'Destroy VP Confirm should show up' });
       // console.log("destroy confirm", vpID);
       this.deleteVPConfirm.click();
-      this.alert.waitForDisplayed();
+      // this.alert.waitForDisplayed();
       // let endDate = new Date();
       // console.log("Destroy took ", endDate.getTime() - startDate.getTime())
       // have to wait, as the server updates it async

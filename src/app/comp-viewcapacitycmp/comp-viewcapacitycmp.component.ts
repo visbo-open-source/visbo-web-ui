@@ -339,7 +339,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
   getCapacity(): void {
     if (this.drillDown == 2 ) {
-      this.getProjectCapacity();   
+      this.getProjectCapacity();
     } else {
       this.getCapacityOrga();
     }
@@ -918,6 +918,28 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     for (let index = 0; index < drillDownCapacity.length; index++) {
       const element = drillDownCapacity[index];
       const currentDate = new Date(element[0].currentDate);
+      const rowMatrixBudget = [];
+      rowMatrixBudget.push(new Date(element[0].currentDate));
+      const budget = element[0].budget || 0;
+      const tooltip = this.createTooltipProjectDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
+      if (element[0].source) {
+        rowMatrixBudget.push(budget);
+        rowMatrixBudget.push(tooltip);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+      } else {
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(budget);
+        rowMatrixBudget.push(tooltip);
+      }
+      childNodeList.forEach((item, index) => {
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+      });
+      graphDataCapacity.push(rowMatrixBudget);
+
       if (element[0].source) {
         currentDate.setDate(currentDate.getDate() -5);
       } else {
@@ -926,19 +948,10 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       // capa Values compared against resources of organisation
       const rowMatrix = [];
       rowMatrix.push(currentDate);
-      const budget = element[0].budget || 0;
-      const tooltip = this.createTooltipProjectDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
-      if (element[0].source) {
-        rowMatrix.push(budget);
-        rowMatrix.push(tooltip);
-        rowMatrix.push(undefined);
-        rowMatrix.push(undefined);
-      } else {
-        rowMatrix.push(undefined);
-        rowMatrix.push(undefined);
-        rowMatrix.push(budget);
-        rowMatrix.push(tooltip);
-      }
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
       childNodeList.forEach((item, index) => {
         rowMatrix.push(element[index + initialOffset].plan);
         const currentElement = element[index + initialOffset];
@@ -1008,7 +1021,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     }
     this.graphOptionsComboChart.colors = orgaColors;
     if (this.graphOptionsComboChart.bar) {
-      this.graphOptionsComboChart.bar.groupWidth = '30%';
+      this.graphOptionsComboChart.bar.groupWidth = '90%';
     }
 
     this.graphDataComboChart = graphDataCapacity;
@@ -1131,6 +1144,32 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     for (let index = 0; index < drillDownCapacity.length; index++) {
       const element = drillDownCapacity[index];
       const currentDate = new Date(element[0].currentDate);
+      const rowMatrixBudget = [];
+      rowMatrixBudget.push(new Date(element[0].currentDate));
+      const budget = element[0].budget || 0;
+      const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
+      if (element[0].source) {
+        rowMatrixBudget.push(budget);
+        rowMatrixBudget.push(tooltip);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(element[0].plan || 0); // parent planned cost
+        rowMatrixBudget.push(tooltip);
+      } else {
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(budget);
+        rowMatrixBudget.push(tooltip);
+        rowMatrixBudget.push(element[0].plan || 0); // parent planned cost
+        rowMatrixBudget.push(tooltip);
+      }
+      childNodeList.forEach((item, index) => {
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+        rowMatrixBudget.push(undefined);
+      });
+      graphDataCapacity.push(rowMatrixBudget);
+
       if (element[0].source) {
         currentDate.setDate(currentDate.getDate() -5);
       } else {
@@ -1139,21 +1178,12 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       // capa Values compared against resources of organisation
       const rowMatrix = [];
       rowMatrix.push(currentDate);
-      const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
-      const budget = element[0].budget || 0;
-      if (element[0].source) {
-        rowMatrix.push(budget);
-        rowMatrix.push(tooltip);
-        rowMatrix.push(undefined);
-        rowMatrix.push(undefined);
-      } else {
-        rowMatrix.push(undefined);
-        rowMatrix.push(undefined);
-        rowMatrix.push(budget);
-        rowMatrix.push(tooltip);
-      }
-      rowMatrix.push(element[0].plan || 0); // parent planned cost
-      rowMatrix.push(tooltip);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
       childNodeList.forEach((item, index) => {
         rowMatrix.push(element[index + initialOffset].plan);
         rowMatrix.push(this.createTooltipOrgaDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
@@ -1221,7 +1251,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     }
     this.graphOptionsComboChart.colors = orgaColors;
     if (this.graphOptionsComboChart.bar) {
-      this.graphOptionsComboChart.bar.groupWidth = '30%';
+      this.graphOptionsComboChart.bar.groupWidth = '90%';
     }
 
     this.graphDataComboChart = graphDataCapacity;

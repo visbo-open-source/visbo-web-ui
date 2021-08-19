@@ -20,12 +20,13 @@ exports.config = {
     //
     specs: [
       './test/specs/**/*.js',      // all
-      './test/specs/**/0*.js',     // login
-      './test/specs/**/1*.js',     // VisboCenter
-      './test/specs/**/2*.js',     // visboproject
-      './test/specs/**/8*.js',        // User Profile
-      './test/specs/**/9*.js',     // app admin
-      './test/specs/**/UNKNOWN*.js'
+      // './test/specs/**/0*.js',     // login
+      // './test/specs/**/1*.js',     // VisboCenter
+      // './test/specs/**/2*.js',     // Visboproject
+      // './test/specs/**/8*.js',        // User Profile
+      // './test/specs/**/9*.js',     // app admin
+      // './test/specs/**/910*.js',     // app admin vc
+      // './test/specs/**/UNKNOWN*.js'
     ],
     // Patterns to exclude.
     exclude: [

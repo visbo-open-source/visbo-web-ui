@@ -509,7 +509,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           elementKeyMetric.savingEndDate = this.helperDateDiff(
             (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
             (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'd') || 0;
-            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate / 7 * 10) / 10;
+            elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate * 10) / 10;
         } else {
           elementKeyMetric.savingEndDate = 0;
         }
@@ -1194,9 +1194,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         return a.savingCostTotalPredict - b.savingCostTotalPredict;
       });
     } else if (this.sortColumn === 18) {
-      this.visbokeymetrics.sort(function(a, b) { 
-        const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');        
-        const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');  
+      this.visbokeymetrics.sort(function(a, b) {
+        const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');
+        const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');
         return visboCmpDate(aDate, bDate); });
     }
 
@@ -1208,19 +1208,19 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   getPreView(): boolean {
     return getPreView();
   }
-  
-  getCommitDate(vp: VisboProject):Date {    
+
+  getCommitDate(vp: VisboProject):Date {
     // let result = undefined;
     // if (!vp) { return undefined }
     // const pmCommit = getCustomFieldDate(vp, '_PMCommit');
     // if (!pmCommit) { return undefined }
-    // result = getCustomFieldDate(vp, '_PMCommit').value;   
+    // result = getCustomFieldDate(vp, '_PMCommit').value;
     return   getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
    }
 
-  hasCommitDate():boolean {    
+  hasCommitDate():boolean {
     const index = this.visbokeymetrics.findIndex(item => this.getCommitDate(item.vp) != undefined )
-    return (index >= 0);   
+    return (index >= 0);
   }
 
   /** Log a message with the MessageService */

@@ -511,7 +511,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
         elementKeyMetric.savingEndDate = this.helperDateDiff(
           (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
           (new Date(elementKeyMetric.keyMetrics.endDateBaseLast).toISOString()), 'd') || 0;
-          elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate / 7 * 10) / 10;
+          elementKeyMetric.savingEndDate = Math.round(elementKeyMetric.savingEndDate * 10) / 10;
       } else {
         elementKeyMetric.savingEndDate = 0;
       }
