@@ -638,6 +638,8 @@
 			"actualCost_PT": "Actual Workload",
 			"plannedCost": "Forecast Cost",
 			"plannedCost_PT": "Forecast Workload",
+			"otherActivityCost": "other Activities",
+			"otherActivityCost_PT": "other Activities",
 			"cost": "Cost",
 			"diffCost": "Deviation",
 			"fractionCost": "Share",
