@@ -88,6 +88,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   currentView = 'KeyMetrics';
   currentViewKM = false;
   customVPToCommit = false;
+  savingCostTotal = undefined;
+  savingCostActual = undefined;
   refDate = new Date();
   refDateInterval = 'month';
   statusDirection: number;
@@ -609,6 +611,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   // Commit-Button pressed
   setVPToCommit(): void {
     this.customVPToCommit = true;
+     // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
+     this.savingCostTotal = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentTotal || 0)
+     / (this.vpvActive.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
+     this.savingCostActual = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentActual || 0)
+     / (this.vpvActive.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
   }
   sameDay(dateA: Date, dateB: Date): boolean {
     const localA = new Date(dateA);
