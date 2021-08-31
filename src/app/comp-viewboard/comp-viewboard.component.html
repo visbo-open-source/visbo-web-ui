@@ -2,12 +2,21 @@
   <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
     <div *ngIf="filter || !getPreView()" class="row text-dark d-print-none">
       <div class="my-1 row">
-        <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+        <div class="ml-2">
           <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
           <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
           <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
         </div>
-        <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+        <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+          <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
+          <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
+          <div class="dropdown-menu">
+            <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+              <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+            </a>
+          </div>
+        </span>
+        <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
           <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
           <div class="dropdown-menu">

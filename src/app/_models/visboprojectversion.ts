@@ -104,7 +104,7 @@ export class VPVKeyMetricsCalc {
   Risiko: number;
   StrategicFit: number;
   leadPerson: string;
-  status: string;
+  vpStatus: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
   VorlagenName: string;

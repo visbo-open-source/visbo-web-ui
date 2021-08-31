@@ -527,6 +527,7 @@
 			"description": "Beschreibung/Ziel",
 			"template": "Projektvorlage",
 			"bu": "Geschäftseinheit",
+			"vpStatus": "Status",
 			"weeksAhead": "Wochen voraus",
 			"weeksDelay": "Wochen verzögert",
 			"inTime": "pünktlich",
@@ -753,6 +754,7 @@
 			"variant": "Variant",
 			"timestamp": "Zeitstempel",
 			"commit": "Bestätigung",
+			"vpStatus": "Status",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
 			"template": "Vorlage",
@@ -1307,6 +1309,7 @@
 
 		"lbl": {
 			"trafficLight": "Ampel",
+			"vpStatus": "Status",
 			"info": "Info.",
 			"timeStamp": "Zeitstempel",
 			"shortcut": "Abkürzung",
@@ -1347,6 +1350,14 @@
 		"_risk": "Risiko",
 		"_strategicFit": "Strategic Fit",
 		"_PMCommit": "letzte Bestätigung"
+	},
+	"vpStatus": {
+		"initialized": "Initial",
+		"proposed": "Vorgeschlagen",
+		"ordered": "Beauftragt",
+		"paused": "Pausiert",
+		"finished": "Beendet",
+		"stopped": "Gestoppt"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Berechtigung",
