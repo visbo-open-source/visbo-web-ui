@@ -407,6 +407,7 @@
                     {{ 'vpKeyMetric.lbl.ofUntilToday' | translate }}
                     {{vpvActive.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}
                     {{ 'vpKeyMetric.lbl.toBeDone' | translate }}
+                    {{vpvActive.timestamp | date :'dd.MM.yyyy'}}
                     ({{timeCompletionActual | number:'1.0-0'}} %)
                   </span>
                 </td>
@@ -419,6 +420,7 @@
                     {{ 'vpKeyMetric.lbl.ofUntilToday' | translate }}
                     {{vpvActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}                    
                     {{ 'vpKeyMetric.lbl.toBeDone' | translate }}
+                    {{vpvActive.timestamp | date :'dd.MM.yyyy'}}
                     ({{deliveryCompletionActual | number:'1.0-0'}} %)
                   </span>
                 </td>

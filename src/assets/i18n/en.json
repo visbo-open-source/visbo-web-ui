@@ -521,7 +521,7 @@
 			"deadlinesCommited": "finished Deadlines",
 			"deliveriesCommited": "finished Deliveries",			
 			"ofUntilToday": "of",
-			"toBeDone": "to be done so far",
+			"toBeDone": ", to be done until",
 			"startDate": "Start of Project",
 			"endDate": "End of Project",
 			"savingED": "Change",
