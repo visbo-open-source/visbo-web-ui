@@ -10,10 +10,12 @@ export class VisboCapacity {
   variantName: string;
   actualCost_PT: number;
   plannedCost_PT: number;
+  otherActivityCost_PT: number;
   internCapa_PT: number;
   externCapa_PT:	number;
   actualCost: number;
   plannedCost: number;
+  otherActivityCost: number;
   internCapa: number;
   externCapa: number;
   baselineCost: number;

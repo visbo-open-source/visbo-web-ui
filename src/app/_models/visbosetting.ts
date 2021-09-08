@@ -65,7 +65,11 @@ export class VisboRole {
   tagessatz: number;
   kapazitaet: [number];
   timestamp: Date;
-  startOfCal: Date;
+  startOfCal: Date;  
+  aliases: [string];
+  isAggregationRole: boolean;
+  isSummaryRole: boolean;
+  isActDataRelevant: boolean;
 }
 
 export class VisboOrgaTreeLeaf {

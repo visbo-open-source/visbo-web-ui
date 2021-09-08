@@ -15,6 +15,7 @@ class Target {
 })
 export class BarChartComponent implements OnInit, OnChanges {
 
+  @Input() elementID: string;
   @Input() graphData: [];
   @Input() language: string;
 
@@ -37,6 +38,9 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
 
     // console.log(`Google Chart Bar Chart Init ${JSON.stringify(this.graphData)}`);
+    if (!this.elementID || this.elementID === '') {
+      this.elementID = 'divBarChart';
+    }
   }
 
   ngOnChanges(): void {
@@ -48,7 +52,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // console.log(`Google Chart Bar Chart Draw ${this.graphData.length}`);
-    const chart = new this.gLib.visualization.BarChart(document.getElementById('divBarChart'));
+    const chart = new this.gLib.visualization.BarChart(document.getElementById(this.elementID));
     const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     const parentThis = this.parentThis;
 

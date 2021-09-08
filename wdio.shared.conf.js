@@ -22,10 +22,11 @@ exports.config = {
       './test/specs/**/*.js',      // all
       // './test/specs/**/0*.js',     // login
       // './test/specs/**/1*.js',     // VisboCenter
-      // './test/specs/**/2*.js',     // visboproject
+      // './test/specs/**/2*.js',     // Visboproject
       // './test/specs/**/8*.js',        // User Profile
       // './test/specs/**/9*.js',     // app admin
-      './test/specs/**/UNKNOWN*.js'
+      // './test/specs/**/910*.js',     // app admin vc
+      // './test/specs/**/UNKNOWN*.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -81,8 +82,8 @@ exports.config = {
     // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
     // gets prepended directly.
 
-    baseUrl: 'https://dev.visbo.net',
-    // baseUrl: 'http://localhost:4200',
+    // baseUrl: 'https://dev.visbo.net',
+    baseUrl: 'http://localhost:4200',
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,

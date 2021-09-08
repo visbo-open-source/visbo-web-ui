@@ -168,27 +168,27 @@
                   <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.source.ampelStatus} " ></ng-container>
                 </div>
               </td>
-              <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.source.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.source.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('ActualCost') && vp.source.keyMetrics" class="text-right"
-                      title="{{(vp.source.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} k€">
+                      title="{{(vp.source.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.source.savingCostActual, 'percentOver')} " ></ng-container>
                 {{vp.source.savingCostActual*100 | number:'1.0-0'}} %
               </td>
               <td *ngIf="selectedMetric('ActualCost') && !vp.source.keyMetrics" class="text-right d-none d-md-table-cell"></td>
               <td *ngIf="selectedMetric('ActualCost') && !vp.source.keyMetrics"></td>
 
-              <td *ngIf="selectedMetric('Cost') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.source.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('Cost') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.source.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('Cost') && vp.source.keyMetrics" class="text-right"
-                      title="{{vp.source.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€">
+                      title="{{vp.source.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.source.savingCostTotal, 'percentOver')} " ></ng-container>
                 {{vp.source.savingCostTotal*100 | number:'1.0-0'}} %
               </td>
               <td *ngIf="selectedMetric('Cost') && !vp.source.keyMetrics" class="text-right d-none d-md-table-cell"></td>
               <td *ngIf="selectedMetric('Cost') && !vp.source.keyMetrics"></td>
 
-              <td *ngIf="selectedMetric('CostPredict') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.source.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('CostPredict') && vp.source.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.source.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('CostPredict') && vp.source.keyMetrics" class="text-right"
-                      title="{{vp.source.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} k€">
+                      title="{{vp.source.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.source.savingCostTotalPredict, 'percentOver')} " ></ng-container>
                 {{vp.source.savingCostTotalPredict*100 | number:'1.0-0'}} %
               </td>
@@ -235,27 +235,27 @@
                   <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.compare.ampelStatus} " ></ng-container>
                 </div>
               </td>
-              <td *ngIf="selectedMetric('ActualCost') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{(vp.compare.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('ActualCost') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{(vp.compare.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('ActualCost') && vp.compare.keyMetrics" class="text-right bg-light"
-                      title="{{(vp.compare.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} k€">
+                      title="{{(vp.compare.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.compare.savingCostActual, 'percentOver')} " ></ng-container>
                 {{vp.compare.savingCostActual*100 | number:'1.0-0'}} %
               </td>
               <td *ngIf="selectedMetric('ActualCost') && !vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light"></td>
               <td *ngIf="selectedMetric('ActualCost') && !vp.compare.keyMetrics" class="bg-light"></td>
 
-              <td *ngIf="selectedMetric('Cost') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{vp.compare.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('Cost') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{vp.compare.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('Cost') && vp.compare.keyMetrics" class="text-right bg-light"
-                      title="{{vp.compare.keyMetrics.costCurrentTotal | number:'1.0-0'}} k€">
+                      title="{{vp.compare.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.compare.savingCostTotal, 'percentOver')} " ></ng-container>
                 {{vp.compare.savingCostTotal*100 | number:'1.0-0'}} %
               </td>
               <td *ngIf="selectedMetric('Cost') && !vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light"></td>
               <td *ngIf="selectedMetric('Cost') && !vp.compare.keyMetrics" class="text-right bg-light"></td>
 
-              <td *ngIf="selectedMetric('CostPredict') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{vp.compare.keyMetrics.costBaseLastTotal | number:'1.0-0'}} k€</td>
+              <td *ngIf="selectedMetric('CostPredict') && vp.compare.keyMetrics" class="text-right d-none d-md-table-cell bg-light">{{vp.compare.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('CostPredict') && vp.compare.keyMetrics" class="text-right bg-light"
-                      title="{{vp.compare.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} k€">
+                      title="{{vp.compare.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.compare.savingCostTotalPredict, 'percentOver')} " ></ng-container>
                 {{vp.compare.savingCostTotalPredict*100 | number:'1.0-0'}} %
               </td>

@@ -5,7 +5,7 @@
       <h2>
         {{ 'vpfVersion.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
-        <span *ngIf="activeVPFVariant && dropDown.length > 1 && !getPreView()" class="dropdown ml-2 d-print-none">
+        <span *ngIf="activeVPFVariant && dropDown.length > 1" class="dropdown ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{displayVariantName(activeVPFVariant)}}</a>
           <div class="dropdown-menu">
             <a *ngFor="let item of dropDown" class="dropdown-item">
@@ -78,7 +78,7 @@
 
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
     <hr>
-    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && listVPV">
     <hr>
@@ -95,7 +95,7 @@
 
   <!-- Modal Edit VPF List -->
   <div *ngIf="vpActive" class="modal fade" id="VPFList" role="dialog" aria-labelledby="VPFListTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="VPFListTitle">{{ 'vpfVersion.titleVPList' | translate:{'name': vpActive.name, 'from': (vpfActive ? vpfActive.timestamp : vpActive.updatedAt) | date: 'dd.MM.yyyy'} }}</h5>
@@ -130,6 +130,8 @@
                 </th>
                 <th id="SortName" (click)="sortVPTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
                 <th id="SortVariant" (click)="sortVPTable(4)">{{ 'vpfVersion.lbl.variant' | translate }}</th>
+                <th id="SortRisk" class="d-none d-xl-table-cell" (click)="sortVPTable(5)">{{ 'vpfVersion.lbl.risk' | translate }}</th>
+                <th id="SortStrategicFit" class="d-none d-xl-table-cell" (click)="sortVPTable(6)">{{ 'vpfVersion.lbl.strategicFit' | translate }}</th>
                 <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vpfVersion.lbl.modified' | translate }}</th>
               </tr>
             </thead>
@@ -153,7 +155,9 @@
                     <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
                   </div>
                 </td>
-                <td id="ColDate">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
+                <td id="ColRisk" class="d-none d-xl-table-cell">{{getVPDouble(item.vp, '_risk')}}</td>
+                <td id="ColStrategicFit" class="d-none d-xl-table-cell">{{getVPDouble(item.vp, '_strategicFit')}}</td>
+                <td id="ColDate" class="d-none d-md-table-cell">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>
               </tr>
             </tbody>
           </table>
