@@ -128,7 +128,7 @@
               <td>{{vp.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
               <td class="text-right d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>               
-              <td id="ColCommitDate" class="text-right d-none d-lg-table-cell" title="{{getPMCommitTooltip(vp.vp)}}" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yy'}}</td>
+              <td id="ColCommitDate" class="text-right d-none d-md-table-cell" title="{{getPMCommitTooltip(vp.vp)}}" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yy'}}</td>
                            
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
