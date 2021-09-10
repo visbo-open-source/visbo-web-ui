@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate,constSystemCustomName } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -69,8 +69,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownBU: string[];
   customStrategicFit: number;
   customRisk: number;
+  customCommit: Date;
   editCustomFieldString: VPCustomString[];
   editCustomFieldDouble: VPCustomDouble[];
+  editCustomFieldDate: VPCustomDate[];
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -85,6 +87,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   currentView = 'KeyMetrics';
   currentViewKM = false;
+  customVPToCommit = false;
+  savingCostTotal = undefined;
+  savingCostActual = undefined;
+  deliveryCompletionActual = undefined;
+  timeCompletionActual = undefined;  
   refDate = new Date();
   refDateInterval = 'month';
   statusDirection: number;
@@ -118,6 +125,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    this.customVPToCommit = false;
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
@@ -572,10 +580,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (customFieldDouble) {
         this.customRisk = customFieldDouble.value;
       }
+      const customFieldDate = getCustomFieldDate(vp, '_PMCommit');
+      if (customFieldDate) {
+        this.customCommit = new Date(customFieldDate.value);
+      }
       this.editCustomFieldString = this.getCustomFieldListString(true);
       this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
+      this.editCustomFieldDate = this.getCustomFieldListDate(true);
       this.customVPModified = false;
       this.customVPAdd = false;
+      this.customVPToCommit = false;
   }
 
   checkVPCustomValues(): boolean {
@@ -596,6 +610,30 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.customVPModified = true;
   }
 
+  // Commit-Button pressed
+  setVPToCommit(): void {
+    this.customVPToCommit = true;
+     // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
+     this.savingCostTotal = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentTotal || 0)
+                  / (this.vpvActive.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
+     this.savingCostActual = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentActual || 0)
+                  / (this.vpvActive.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
+
+     // Calculate the Delivery Completion     actual   
+    if (!this.vpvActive.keyMetrics.deliverableCompletionBaseLastActual) {
+      this.deliveryCompletionActual = 100;
+    } else {
+      this.deliveryCompletionActual = Math.round((this.vpvActive.keyMetrics.deliverableCompletionCurrentActual || 0)
+                                                            / this.vpvActive.keyMetrics.deliverableCompletionBaseLastActual * 100);
+    }
+    // Calculate the Deadline Completion   actual   
+    if (!this.vpvActive.keyMetrics.timeCompletionBaseLastActual) {
+      this.timeCompletionActual = 100;
+    } else {
+      this.timeCompletionActual = Math.round((this.vpvActive.keyMetrics.timeCompletionCurrentActual || 0)
+                                                        / this.vpvActive.keyMetrics.timeCompletionBaseLastActual * 100);
+    }
+  }
   sameDay(dateA: Date, dateB: Date): boolean {
     const localA = new Date(dateA);
     const localB = new Date(dateB);
@@ -697,7 +735,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           .subscribe(
             vcsettings => {
               this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
             },
             error => {
               if (error.status === 403) {
@@ -931,6 +969,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  canCommit(): boolean {
+    if (this.statusDirection != undefined && this.statusDirection != 1) {
+      // not the latest version
+      return false;
+    }
+    // if (this.hasVPPerm(this.permVP.Modify) && this.hasVPPerm(this.permVP.ViewAudit) && (this.vpvActive.variantName == "")) {
+    if (this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == "")) {
+      return true;
+    }
+    return false;
+  }
   getScaleDate(mode: string): Date {
     let result: Date;
     if (mode == 'Min' && this.newVPV) {
@@ -1120,6 +1169,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   vpUpdate(): void {
+
+    // project settings changed?!
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
@@ -1140,7 +1191,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       } else if (this.customRisk) {
         addCustomFieldDouble(this.vpActive, '_risk', this.customRisk);
       }
-      // update changed custom strings
+      // update changed customFields
       this.vpActive.customFieldString.forEach(item => {
         if (item.type == 'VP') {
           const editField = this.editCustomFieldString.find(element => element.name == item.name);
@@ -1157,29 +1208,45 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         }
       });
-
-      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
-      this.visboprojectService.updateVisboProject(this.vpActive)
-        .subscribe(
-          (vp) => {
-            this.vpActive = vp;
-            const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
-            this.alertService.success(message, true);
-          },
-          error => {
-            this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
-            if (error.status === 403) {
-              const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
-              this.alertService.error(message);
-            } else if (error.status === 409) {
-              const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
-              this.alertService.error(message);
-            } else {
-              this.alertService.error(getErrorMessage(error));
-            }
-          }
-        );
     }
+
+    // project version commited
+    if (this.vpActive && this.customVPToCommit) {
+      this.customCommit = new Date();
+      const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
+      if (customFieldDate && this.customCommit != undefined) {
+        customFieldDate.value = this.customCommit;
+      } else if (this.customCommit) {
+        addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+      }
+    }
+
+    if (!this.customVPToCommit) {
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+    } else {
+      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
+    }
+
+    this.visboprojectService.updateVisboProject(this.vpActive)
+      .subscribe(
+        (vp) => {
+          this.vpActive = vp;
+          const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+          this.alertService.success(message, true);
+        },
+        error => {
+          this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+    );
   }
 
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
@@ -1321,6 +1388,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.editCustomFieldDouble.push(fieldString);
     });
     return this.editCustomFieldDouble;
+  }
+
+  getCustomFieldListDate(vpOnly = true): VPCustomDate[] {
+    let list: VPCustomDate[] = [];
+    this.editCustomFieldDate = [];
+    if (vpOnly) {
+      list = this.vpActive?.customFieldDate?.filter(item => item.type == 'VP');
+    } else {
+      list = this.vpActive?.customFieldDate;
+    }
+    list.forEach(item => {
+      const fieldDate = new VPCustomDate();
+      fieldDate.name = item.name;
+      fieldDate.type = item.type;
+      fieldDate.value = item.value;
+      this.editCustomFieldDate.push(fieldDate);
+    });
+    return this.editCustomFieldDate;
   }
 
   getTimestampTooltip(vpv: VisboProjectVersion): string {

@@ -93,7 +93,7 @@
   <div>
     <div class="row">
       <div *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
-        <span class="pt-2 text-dark font-weight-bold ">{{ 'ViewCapacity.title1'  | translate }}</span>
+        <span class="pt-2 text-dark font-weight-bold" title="{{ 'ViewCapacity.lbl.orgaValid' | translate }} {{vcOrganisation.timestamp | date: 'dd.MM.yyyy'}}">{{ 'ViewCapacity.title1'  | translate }}</span>
         <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
       </div>
       <div *ngIf="!getPreView() && displayCapacity() > 0" class="col-9">
@@ -117,7 +117,7 @@
   <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with click on the item, expandable with brackets -->
   <ng-template #recursiveList let-list let-level="level">
     <div *ngFor="let item of list" style="white-space: nowrap;">
-      <div class="dropdown-item tree-item " (click)="selectLeaf(item)"
+      <div class="dropdown-item tree-item" (click)="selectLeaf(item)"
       [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
         <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
           <a (click)="$event.stopPropagation(); switchLeaf(item);">

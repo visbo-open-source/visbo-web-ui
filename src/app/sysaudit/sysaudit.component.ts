@@ -51,8 +51,8 @@ export class SysauditComponent implements OnInit {
     sysVCId = '';
     chart = false;
     parentThis = this;
-    divColumnChart1 = "SysAudit_User_div";
-    divColumnChart2 = "SysAudit_Browser_div";
+    divBarChart1 = "SysAudit_User_div";
+    divBarChart2 = "SysAudit_Browser_div";
     chartButton = 'Chart';
     graphData = [];
     graphLegend = [
@@ -87,13 +87,17 @@ export class SysauditComponent implements OnInit {
     graphOptionsUserChart = {
       'title': 'Audit Activity by User',
       'isStacked': true,
-      'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
+      'height': 500,
+      'legend': { 'position': 'top', 'maxLines': 3 },
+      'hAxis': {'direction': 1}
     };
     graphDataBrowserChart = [];
     graphOptionsBrowserChart = {
       'title': 'Audit Activity by User Agent',
       'isStacked': true,
-      'hAxis': {'direction': -1, 'slantedText': true, 'slantedTextAngle': 45 }
+      'height': 500,
+      'legend': { 'position': 'top', 'maxLines': 3 },
+      'hAxis': {'direction': 1 }
     };
     listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']
 
@@ -344,10 +348,23 @@ export class SysauditComponent implements OnInit {
       graphData.sort(function(a, b) {
         const firstSum = a[1] + a[2] + a[3] + a[4] + a[5] + a[6];
         const secondSum = b[1] + b[2] + b[3] + b[4] + b[5] + b[6];
-        return firstSum - secondSum;
+        return secondSum - firstSum;
       });
-      graphData.push(['User', 'VC', 'VP', 'VPV', 'System', 'User', 'Other', { role: 'annotation' } ]);
-      graphData.reverse();
+      // restrict to top 10 Users + others
+      const maxUsers = 10;
+      if (graphData.length > maxUsers) {
+        for (var index = graphData.length - 1; index > maxUsers; index--) {
+          graphData[maxUsers][1] += graphData[index][1];
+          graphData[maxUsers][2] += graphData[index][2];
+          graphData[maxUsers][3] += graphData[index][3];
+          graphData[maxUsers][4] += graphData[index][4];
+          graphData[maxUsers][5] += graphData[index][5];
+          graphData[maxUsers][6] += graphData[index][6];
+          graphData[maxUsers][0] = 'Others';
+          graphData.pop();
+        }
+      }
+      graphData.unshift(['User', 'VC', 'VP', 'VPV', 'System', 'User', 'Other', { role: 'annotation' } ]);
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[0])}`);
       this.log(`Group Graph Column Chart Element ${JSON.stringify(graphData[1])}`);
 
@@ -403,16 +420,30 @@ export class SysauditComponent implements OnInit {
       graphData.sort(function(a, b) {
         const firstSum = a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + a[7];
         const secondSum = b[1] + b[2] + b[3] + b[4] + b[5] + b[6] + b[7];
-        return firstSum - secondSum;
+        return secondSum - firstSum;
       });
-      graphData.push(['UserAgent', this.listOS[0], this.listOS[1], this.listOS[2], this.listOS[3], this.listOS[4], this.listOS[5], this.listOS[6], { role: 'annotation' } ]);
-      graphData.reverse();
+      // restrict to top 10 User Agents + others
+      const maxAgents = 10;
+      if (graphData.length > maxAgents) {
+        for (var index = graphData.length - 1; index > maxAgents; index--) {
+          graphData[maxAgents][1] += graphData[index][1];
+          graphData[maxAgents][2] += graphData[index][2];
+          graphData[maxAgents][3] += graphData[index][3];
+          graphData[maxAgents][4] += graphData[index][4];
+          graphData[maxAgents][5] += graphData[index][5];
+          graphData[maxAgents][6] += graphData[index][6];
+          graphData[maxAgents][7] += graphData[index][7];
+          graphData[maxAgents][0] = 'Others';
+          graphData.pop();
+        }
+      }
+      graphData.unshift(['UserAgent', this.listOS[0], this.listOS[1], this.listOS[2], this.listOS[3], this.listOS[4], this.listOS[5], this.listOS[6], { role: 'annotation' } ]);
       this.graphDataBrowserChart = graphData;
     }
 
     auditGroup(audit: VisboAudit, match: string): boolean {
       let result = false;
-      if (audit.url.indexOf(match) === 0) {
+      if ((audit.url || '').indexOf(match) === 0) {
         result = true;
       }
       return result;

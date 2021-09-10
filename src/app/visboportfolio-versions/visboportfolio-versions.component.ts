@@ -14,7 +14,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboUser } from '../_models/visbouser';
-import { VisboProject, VPVariant } from '../_models/visboproject';
+import { VisboProject, VPVariant, getCustomFieldDouble } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -181,7 +181,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       .subscribe(
         visboprojects => {
           this.listVP = visboprojects;
-          // this.initVPF(visboprojects);
+          this.initVPF();
         },
         error => {
           this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
@@ -200,7 +200,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           .subscribe(
             vcsettings => {
               this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
             },
             error => {
               if (error.status === 403) {
@@ -389,6 +389,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       result = this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
     }
     return result;
+  }
+
+  getVPDouble(vp: VisboProject, key: string): number {
+    let property = getCustomFieldDouble(vp, key);
+    return property?.value;
   }
 
   globalChecked(): void {
@@ -668,7 +673,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const vpv = this.listVPV?.find(item => item.vpid.toString() == vp._id.toString())
     // we only know if there is a version, if it contains already to the portfolio list and we have fetched the related versions
     // RESULT 0: no Version of the VP either because no version or no permission, 1 vpv with keyMetrics available, 2: no keyMetrics because of missing baseline
-    const isStored = this.vpfActive.allItems && this.vpfActive.allItems.find(item => item.vpid.toString() == vp._id.toString());
+    const isStored = this.vpfActive?.allItems?.find(item => item.vpid.toString() == vp._id.toString());
     let result = isStored ? 0 : 1;
     if (vpv) {
       result = vpv.keyMetrics ? 1 : 2;
@@ -734,7 +739,13 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   gotoCompareVPF(): void {
     this.log(`goto Compare for VPF ${this.vpActive._id} ${this.vpfActive._id}`);
-    this.router.navigate(['vpfcmp/'.concat(this.vpActive._id)], { queryParams: { vpfid: this.vpfActive._id }});
+    this.router.navigate(
+      ['vpfcmp/'.concat(this.vpActive._id)],
+      { queryParams: { vpfid: this.vpfActive._id },
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+      }
+    );
   }
 
   dropDownInit(): void {
@@ -865,6 +876,22 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         const aVariant = (a.hasVariants ? '1' : '0') + (a.variantName || '');
         const bVariant = (b.hasVariants ? '1' : '0') + (b.variantName || '');
         return visboCmpString(aVariant.toLowerCase(), bVariant.toLowerCase());
+      });
+    } else if (this.sortColumn === 5) {
+      this.vpCheckListFiltered.sort(function(a, b) {
+        let aRiskItem = getCustomFieldDouble(a.vp, '_risk');
+        let aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
+        let bRiskItem = getCustomFieldDouble(b.vp, '_risk');
+        let bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
+        return bRisk - aRisk;
+      });
+    } else if (this.sortColumn === 6) {
+      this.vpCheckListFiltered.sort(function(a, b) {
+        let aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
+        let aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
+        let bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
+        let bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
+        return aStrategicFit - bStrategicFit;
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
