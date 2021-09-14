@@ -15,11 +15,20 @@
       </div>
       <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
         <div class="my-1 row">
-          <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+          <div class="ml-2">
             <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
             <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
           </div>
-          <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+          <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+              </a>
+            </div>
+          </span>
+          <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
             <span> {{ 'compViewBubble.lbl.bu' | translate }}: </span>
             <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
             <div class="dropdown-menu">
@@ -99,9 +108,6 @@
               <th class="d-none d-lg-table-cell">{{ 'compViewBubble.lbl.nr' | translate }}</th>
               <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
-              <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>                          
-              <th *ngIf="hasCommitDate()" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
-              <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
 
               <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
               <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
@@ -118,6 +124,11 @@
               <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th>
+
+              <th class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
+              <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+              <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
+              <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
             </tr>
           </thead>
           <!--Table body-->
@@ -133,67 +144,70 @@
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
-                <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
-                <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right"
-                        title="{{(vp.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostActual, 'percentOver')} " ></ng-container>
-                  {{vp.savingCostActual*100 | number:'1.0-0'}} %
-                </td>
-                <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-                <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics"></td>
+              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics"></td>
+                      title="{{(vp.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostActual, 'percentOver')} " ></ng-container>
+                {{vp.savingCostActual*100 | number:'1.0-0'}} %
+              
+              <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
+              <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right"
+                      title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostTotal, 'percentOver')} " ></ng-container>
+                {{vp.savingCostTotal*100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics"></td>
 
-                <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
-                <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right"
-                        title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostTotal, 'percentOver')} " ></ng-container>
-                  {{vp.savingCostTotal*100 | number:'1.0-0'}} %
-                </td>
-                <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-                <td *ngIf="selectedMetric('Cost') && !vp.keyMetrics"></td>
+              <td *ngIf="selectedMetric('CostPredict') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
+              <td *ngIf="selectedMetric('CostPredict') && vp.keyMetrics" class="text-right"
+                      title="{{vp.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} T€">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostTotalPredict, 'percentOver')} " ></ng-container>
+                {{vp.savingCostTotalPredict*100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('CostPredict') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('CostPredict') && !vp.keyMetrics"></td>
 
-                <td *ngIf="selectedMetric('CostPredict') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
-                <td *ngIf="selectedMetric('CostPredict') && vp.keyMetrics" class="text-right"
-                        title="{{vp.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} T€">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostTotalPredict, 'percentOver')} " ></ng-container>
-                  {{vp.savingCostTotalPredict*100 | number:'1.0-0'}} %
-                </td>
-                <td *ngIf="selectedMetric('CostPredict') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-                <td *ngIf="selectedMetric('CostPredict') && !vp.keyMetrics"></td>
+              <td *ngIf="selectedMetric('EndDate') && vp.keyMetrics" class="text-right d-none d-md-table-cell"
+                      title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}</td>
+              <td *ngIf="selectedMetric('EndDate') && vp.keyMetrics" class="text-right"
+                      title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingEndDate, 'delay')} " ></ng-container>
+                {{vp.savingEndDate | number:'1.0-0' }} weeks
+              </td>
+              <td *ngIf="selectedMetric('EndDate') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"
+                  title="{{vp.endDate | date :'dd.MM.yyyy HH:mm'}}">{{vp.endDate | date :'dd.MM.yy'}}</td>
+              <td *ngIf="selectedMetric('EndDate') && !vp.keyMetrics" class="text-right"></td>
 
-                <td *ngIf="selectedMetric('EndDate') && vp.keyMetrics" class="text-right d-none d-md-table-cell"
-                        title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">{{vp.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}</td>
-                <td *ngIf="selectedMetric('EndDate') && vp.keyMetrics" class="text-right"
-                        title="{{vp.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingEndDate, 'delay')} " ></ng-container>
-                  {{vp.savingEndDate | number:'1.0-0' }} weeks
-                </td>
-                <td *ngIf="selectedMetric('EndDate') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"
-                    title="{{vp.endDate | date :'dd.MM.yyyy HH:mm'}}">{{vp.endDate | date :'dd.MM.yy'}}</td>
-                <td *ngIf="selectedMetric('EndDate') && !vp.keyMetrics" class="text-right"></td>
+              <td *ngIf="selectedMetric('Deadline') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('Deadline') && vp.keyMetrics" class="text-right"
+                      title="{{vp.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.timeCompletionActual, 'percentUnder')} " ></ng-container>
+                {{vp.timeCompletionActual*100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('Deadline') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('Deadline') && !vp.keyMetrics" class="text-right"></td>
 
-                <td *ngIf="selectedMetric('Deadline') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
-                <td *ngIf="selectedMetric('Deadline') && vp.keyMetrics" class="text-right"
-                        title="{{vp.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.timeCompletionActual, 'percentUnder')} " ></ng-container>
-                  {{vp.timeCompletionActual*100 | number:'1.0-0'}} %
-                </td>
-                <td *ngIf="selectedMetric('Deadline') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-                <td *ngIf="selectedMetric('Deadline') && !vp.keyMetrics" class="text-right"></td>
+              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && vp.keyMetrics" class="text-right">{{vp.keyMetrics.timeDelayUnFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
+              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && vp.keyMetrics" class="text-right">{{vp.keyMetrics.timeDelayFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
+              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && !vp.keyMetrics" class="text-right"></td>
+              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && !vp.keyMetrics" class="text-right"></td>
 
-                <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && vp.keyMetrics" class="text-right">{{vp.keyMetrics.timeDelayUnFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
-                <td *ngIf="selectedMetric('DeadlineFinishedDelay') && vp.keyMetrics" class="text-right">{{vp.keyMetrics.timeDelayFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
-                <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && !vp.keyMetrics" class="text-right"></td>
-                <td *ngIf="selectedMetric('DeadlineFinishedDelay') && !vp.keyMetrics" class="text-right"></td>
-
-                <td *ngIf="selectedMetric('Delivery') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
-                <td *ngIf="selectedMetric('Delivery') && vp.keyMetrics" class="text-right"
-                        title="{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}">
-                  <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.deliveryCompletionActual, 'percentUnder')} " ></ng-container>
-                  {{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %
-                </td>
-                <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-                <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics"></td>
-
+              <td *ngIf="selectedMetric('Delivery') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
+              <td *ngIf="selectedMetric('Delivery') && vp.keyMetrics" class="text-right"
+                      title="{{vp.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}">
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.deliveryCompletionActual, 'percentUnder')} " ></ng-container>
+                {{vp.deliveryCompletionActual*100 | number:'1.0-0'}} %
+              </td>
+              <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics"></td>
+ 
+              <td class="d-none d-lg-table-cell">{{ vp.vpStatus && getVPStatus(true, vp.vpStatus) }}</td>
+              <td title="{{vp.ampelErlaeuterung}}">
+                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
+              </td>
+              <td class="text-right d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>
+              <td id="ColCommitDate" class="text-right d-none d-lg-table-cell" title="{{getPMCommitTooltip(vp.vp)}}" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yy'}}</td>
             </tr>
           </tbody>
         </table>

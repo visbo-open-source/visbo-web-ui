@@ -84,7 +84,7 @@
           <div class="dropdown-menu">
             <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
             <a class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
-            <a *ngIf="canModify()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>            
+            <a *ngIf="canModify()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
             <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
           </div>
         </div>
@@ -231,12 +231,12 @@
                   {{ vpvActive.Erloes | number:'1.0-0' }} T€
                 </td>
               </tr>
-              <tr *ngIf="vpvActive.status">
+              <!-- <tr *ngIf="vpvActive.status">
                 <td>{{ 'vpKeyMetric.lbl.status' | translate }}</td>
                 <td title="{{ vpvActive.status }}">
                   {{ getShortText(vpvActive.status, 20) }}
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td>{{ 'keyMetrics.lbl.trafficLight' | translate }}</td>
                 <td title="{{ vpvActive.ampelErlaeuterung }}">
@@ -271,33 +271,46 @@
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
                 <td></td>
               </tr>
+              <tr *ngIf="customVPStatusIndex >= 0 || isPMO()">
+                <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>
+                <td title="{{ getVPStatus() }}">
+                  <a *ngIf="isPMO() && !customVPToCommit && dropDownVPStatus?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus() }}</a>
+                  <div class="dropdown-menu">
+                    <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                      <div class="dropdown-item" (click)="setModifiedVPStatus(itemIndex)">{{ item }}</div>
+                    </a>
+                  </div>
+                  <!-- <input id="VPBU" *ngIf="isPMO() && !customVPToCommit && (!dropDownVPStatus || dropDownVPStatus.length <= 1)" type="text" (change)="setModified()" name=customVPStatus [(ngModel)]="customVPStatus"> -->
+                  <label id="VPBU" *ngIf="!isPMO() || customVPToCommit">{{ getShortText(getVPStatus(), 20) }} </label>
+                </td>
+              </tr>
               <tr *ngIf="customBU != undefined || customVPAdd">
                 <td>{{ 'customField._businessUnit' | translate }}</td>
                 <td title="{{ customBU }}">
-                  <a *ngIf="hasVPPerm(permVP.Modify) && !customVPToCommit && dropDownBU?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ customBU }}</a>
+                  <a *ngIf="isPMO() && !customVPToCommit && dropDownBU?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ customBU }}</a>
                   <div class="dropdown-menu">
                     <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                       <div class="dropdown-item" (click)="customBU = item; setModified()">{{ item }}</div>
                     </a>
                   </div>
-                  <input id="VPBU" *ngIf="hasVPPerm(permVP.Modify)   && !customVPToCommit && (!dropDownBU || dropDownBU.length <= 1)" type="text" (change)="setModified()" name=customBU [(ngModel)]="customBU">
-                  <label id="VPBU" *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ getShortText(customBU, 20) }} </label>
+                  <input id="VPBU" *ngIf="isPMO() && !customVPToCommit && (!dropDownBU || dropDownBU.length <= 1)" type="text" (change)="setModified()" name=customBU [(ngModel)]="customBU">
+                  <label id="VPBU" *ngIf="!isPMO() || customVPToCommit">{{ getShortText(customBU, 20) }} </label>
                 </td>
               </tr>
               <tr *ngIf="customStrategicFit >= 0 || customVPAdd">
                 <td>{{ 'customField._strategicFit' | translate }}</td>
                 <td>
-                  <input id="VPSF" *ngIf="hasVPPerm(permVP.Modify)  && !customVPToCommit" type="number" (change)="setModified()" name=customStrategicFit [(ngModel)]="customStrategicFit" min=0 max=10>
-                  <label id="VPSF" *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ customStrategicFit }} </label>
+                  <input id="VPSF" *ngIf="isPMO() && !customVPToCommit" type="number" (change)="setModified()" name=customStrategicFit [(ngModel)]="customStrategicFit" min=0 max=10>
+                  <label id="VPSF" *ngIf="!isPMO() || customVPToCommit">{{ customStrategicFit }} </label>
                 </td>
               </tr>
               <tr *ngIf="customRisk >= 0 || customVPAdd">
                 <td>{{ 'customField._risk' | translate }}</td>
                 <td>
-                  <input id="VPRisk" *ngIf="hasVPPerm(permVP.Modify) && !customVPToCommit" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
-                  <label id="VPRisk" *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ customRisk }} </label>
+                  <input id="VPRisk" *ngIf="isPMO() && !customVPToCommit" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
+                  <label id="VPRisk" *ngIf="!isPMO() || customVPToCommit">{{ customRisk }} </label>
                 </td>
-              </tr>           
+              </tr>
               <tr *ngFor="let item of editCustomFieldString">
                 <td>{{ item.name }}</td>
                 <td *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit" title="{{ item.value }}">
@@ -313,17 +326,17 @@
                 <td *ngIf="hasVPPerm(permVP.Modify) && !customVPToCommit">
                   <input id="customFieldDoubleID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
                 </td>
-              </tr>              
+              </tr>
               <tr *ngFor="let item of editCustomFieldDate">
                 <td>{{ item.name }}</td>
                 <td *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ item.value }}</td>
                 <td *ngIf="hasVPPerm(permVP.Modify) && !customVPToCommit">
                   <input id="customFieldDateID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
                 </td>
-              </tr>                 
+              </tr>
             </tbody>
-          </table>                        
-          <div class="modal-footer align-items-end">                   
+          </table>
+          <div class="modal-footer align-items-end">
             <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
             <button *ngIf="checkVPCustomValues() && !customVPToCommit" class="btn btn-primary" (click)="addVPCustomValues()">{{ 'vpKeyMetric.btn.add' | translate }}</button>
             <button *ngIf="customVPModified && !customVPToCommit" class="btn btn-primary" data-dismiss="modal" (click)="vpUpdate()">{{ 'vpKeyMetric.btn.save' | translate }}</button>
@@ -355,7 +368,7 @@
       <div class="modal-body">
         <div>
           <label *ngIf="customVPToCommit" class="bg-warning text-white">{{ 'vpKeyMetric.msg.confirmCommit' | translate }}</label>
-        </div>  
+        </div>
         <form name="VpvCommitForm">
           <table *ngIf="vpvActive" class='table table-hover'>
             <!--Table head-->
@@ -398,7 +411,7 @@
                 <td>
                   <span> {{vpvActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - savingCostActual | number:'1.0-0'}} %)</span>
                 </td>
-              </tr>             
+              </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.timeCompletionCurrentTotal">
                 <td>{{ 'vpKeyMetric.lbl.deadlinesCommited' | translate }}</td>
                 <td>
@@ -424,17 +437,17 @@
                     ({{deliveryCompletionActual | number:'1.0-0'}} %)
                   </span>
                 </td>
-              </tr>                            
+              </tr>
               <tr *ngFor="let item of editCustomFieldDate">
                 <td>{{ item.name }}</td>
                 <td *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ item.value }}</td>
                 <td *ngIf="hasVPPerm(permVP.Modify) && !customVPToCommit">
                   <input id="customFieldDateID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
                 </td>
-              </tr>                 
+              </tr>
             </tbody>
-          </table>                        
-          <div class="modal-footer align-items-end">                   
+          </table>
+          <div class="modal-footer align-items-end">
             <button class="btn btn-secondary" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
             <button *ngIf="checkVPCustomValues() && !customVPToCommit" class="btn btn-primary" (click)="addVPCustomValues()">{{ 'vpKeyMetric.btn.add' | translate }}</button>
             <button *ngIf="customVPModified && !customVPToCommit" class="btn btn-primary" data-dismiss="modal" (click)="vpUpdate()">{{ 'vpKeyMetric.btn.save' | translate }}</button>

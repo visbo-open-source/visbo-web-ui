@@ -130,6 +130,7 @@
                 </th>
                 <th id="SortName" (click)="sortVPTable(1)">{{ 'vpfVersion.lbl.name' | translate }}</th>
                 <th id="SortVariant" (click)="sortVPTable(4)">{{ 'vpfVersion.lbl.variant' | translate }}</th>
+                <th id="SortVPStatus" class="d-none d-lg-table-cell" (click)="sortVPTable(7)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
                 <th id="SortRisk" class="d-none d-xl-table-cell" (click)="sortVPTable(5)">{{ 'vpfVersion.lbl.risk' | translate }}</th>
                 <th id="SortStrategicFit" class="d-none d-xl-table-cell" (click)="sortVPTable(6)">{{ 'vpfVersion.lbl.strategicFit' | translate }}</th>
                 <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vpfVersion.lbl.modified' | translate }}</th>
@@ -155,6 +156,7 @@
                     <span style="font-size: 1em" class="mx-1 fas fa-cog" title="{{ 'vpfVersion.lbl.changeVPVariant' | translate }}" (click)="initVariantChange(vpFilterIndex)" data-dismiss="modal" data-toggle="modal" data-target="#ChangeVPVariant"></span>
                   </div>
                 </td>
+                <td id="ColVPStatus" class="d-none d-lg-table-cell">{{ item.vp.vpStatus && getVPStatus(true, item.vp.vpStatus) }}</td>
                 <td id="ColRisk" class="d-none d-xl-table-cell">{{getVPDouble(item.vp, '_risk')}}</td>
                 <td id="ColStrategicFit" class="d-none d-xl-table-cell">{{getVPDouble(item.vp, '_strategicFit')}}</td>
                 <td id="ColDate" class="d-none d-md-table-cell">{{item.vp.updatedAt | date :'dd.MM.yy'}}</td>

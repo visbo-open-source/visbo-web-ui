@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate,constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate, constSystemCustomName, constSystemVPStatus } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -67,6 +67,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customVPAdd: boolean;
   customBU: string;
   dropDownBU: string[];
+  customVPStatusIndex: number;
+  dropDownVPStatus: string[];
   customStrategicFit: number;
   customRisk: number;
   customCommit: Date;
@@ -151,6 +153,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
+    this.initVPStatusDropDown();
 
     this.getVisboProjectVersions();
   }
@@ -568,6 +571,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initCustomFields(vp: VisboProject): void {
+      this.customVPStatusIndex = constSystemVPStatus.findIndex(item => item == vp.vpStatus);
       const customFieldString = getCustomFieldString(vp, '_businessUnit');
       if (customFieldString) {
         this.customBU = customFieldString.value;
@@ -610,6 +614,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.customVPModified = true;
   }
 
+  setModifiedVPStatus(index: number): void {
+    this.customVPStatusIndex = index;
+    this.customVPModified = true;
+  }
+
   // Commit-Button pressed
   setVPToCommit(): void {
     this.customVPToCommit = true;
@@ -634,6 +643,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                                                         / this.vpvActive.keyMetrics.timeCompletionBaseLastActual * 100);
     }
   }
+
   sameDay(dateA: Date, dateB: Date): boolean {
     const localA = new Date(dateA);
     const localB = new Date(dateB);
@@ -845,6 +855,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  initVPStatusDropDown(): void {
+    let localVPStatus = '';
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      localVPStatus = this.translate.instant('vpStatus.' + item);
+      this.dropDownVPStatus.push(localVPStatus);
+    })
+  }
+
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
     let delay = 0;
@@ -904,6 +923,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getShortText(text: string, len: number): string {
     return visboGetShortText(text, len);
+  }
+
+  getVPStatus(): string {
+    return this.customVPStatusIndex >= 0 ? this.dropDownVPStatus[this.customVPStatusIndex] : undefined;
   }
 
   isPMO(): boolean {
@@ -1173,6 +1196,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     // project settings changed?!
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
+      if (this.customVPStatusIndex >= 0) {
+        this.vpActive.vpStatus = constSystemVPStatus[this.customVPStatusIndex];
+      }
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
@@ -1222,9 +1248,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     if (!this.customVPToCommit) {
-      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${constSystemVPStatus[this.customVPStatusIndex]}`);
     } else {
-      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
+      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit}`);
     }
 
     this.visboprojectService.updateVisboProject(this.vpActive)

@@ -46,6 +46,7 @@ export class VPFParams {
   view: string;
   viewCockpit: string;
   filter: string;
+  filterVPStatus: string;
   filterBU: string;
   filterStrategicFit: string;
   filterRisk: string;
