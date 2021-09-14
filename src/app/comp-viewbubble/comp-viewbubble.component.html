@@ -123,9 +123,10 @@
               <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlineUnFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }}</th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th>
+              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th> 
 
               <th class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
+             
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
               <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
               <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
@@ -138,18 +139,15 @@
               <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td>
               <td>{{vp.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-              <td class="text-right d-none d-xl-table-cell"  title="{{getTimestampTooltip(vp)}}">{{vp.timestamp | date :'dd.MM.yy'}}</td>               
-              <td id="ColCommitDate" class="text-right d-none d-md-table-cell" title="{{getPMCommitTooltip(vp.vp)}}" *ngIf="hasCommitDate()" >{{getCommitDate(vp.vp)  | date :'dd.MM.yy'}}</td>
-                           
-              <td title="{{vp.ampelErlaeuterung}}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
-              </td>
-              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics"></td>
+              <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
+              <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right"
                       title="{{(vp.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostActual, 'percentOver')} " ></ng-container>
                 {{vp.savingCostActual*100 | number:'1.0-0'}} %
-              
+              </td>
+              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics"></td>
+
               <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right"
                       title="{{vp.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
@@ -201,8 +199,9 @@
               </td>
               <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
               <td *ngIf="selectedMetric('Delivery') && !vp.keyMetrics"></td>
- 
+
               <td class="d-none d-lg-table-cell">{{ vp.vpStatus && getVPStatus(true, vp.vpStatus) }}</td>
+
               <td title="{{vp.ampelErlaeuterung}}">
                 <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
               </td>
