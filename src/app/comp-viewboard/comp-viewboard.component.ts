@@ -13,9 +13,8 @@ import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
 
-import { scale } from 'chroma-js';
-
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
+import * as chroma from 'chroma-js';
 
 class startAndEndDate {
   start: Date;
@@ -191,7 +190,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.listVPV.sort(function(a, b) {
-      let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
+      const aBusinessUnit = getCustomFieldString(a.vp, '_businessUnit')?.value || "";
+      const bBusinessUnit = getCustomFieldString(b.vp, '_businessUnit')?.value || "";    
+      let result = visboCmpString((bBusinessUnit || '').toLowerCase(), (aBusinessUnit || '').toLowerCase());
       if (result == 0) {
         result = visboCmpDate(b.startDate, a.startDate);
       }
@@ -207,14 +208,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     // variables to count the number of sameBu's
     let bu = '';
-    let lastbu = '';
-    let sameBuCount = 0;
     let rgbHex = defaultColor;
     let colorArray = [];
-    let nobuArray = [];
-    let scaleArray = [];
-    let nobu = 0;
-
+    const nobuArray = [];
+   
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
         continue;
@@ -229,15 +226,16 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         // ignore projects not matching filter
         continue;
       }
-      if (this.filterVPStatusIndex > 0) {
-        const setting = this.listVPV[i].vp.vpStatus;
-        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
-          continue;
-        }
-      }
+   
       if (this.filterBU) {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         if ((item?.value || '') !== this.filterBU) {
+          continue;
+        }
+      }  
+      if (this.filterVPStatusIndex > 0) {
+        const setting = this.listVPV[i].vp.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
           continue;
         }
       }
@@ -268,33 +266,54 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         ]);
         let buColor = 0;
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
+        
         bu = item ? item.value : undefined;
-        if (i == 0) { lastbu = bu }
+        console.log("BusinessUnit %s", bu);
+                
         if (bu) {
-          if (lastbu != bu){
-            scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
-            scaleArray.splice(scaleArray.length-3, 3);
-            scaleArray.reverse();
-            colorArray = colorArray.concat(scaleArray);
-            sameBuCount = 0;
-            lastbu = bu;
-          }
-          sameBuCount += 1;
+                  
           buColor = buDefs[bu];
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;          
+          console.log("BusinessUnit - Color %s", rgbHex);
+          let newColor = undefined;         
+          
+          if (!this.listVPV[i].vp.vpStatus) {
+              newColor = chroma(rgbHex).brighten(3).hex();              
+              colorArray.push(newColor)
+          }
+          switch (this.listVPV[i].vp.vpStatus) {            
+            case 'initialized':
+              newColor = chroma(rgbHex).brighten(3).hex();
+              colorArray.push(newColor)
+              break;
+            case 'proposed':
+              newColor = chroma(rgbHex).brighten(3).hex();
+              colorArray.push(newColor)
+              break;
+            case 'ordered':
+              newColor = chroma(rgbHex).brighten().hex();
+              colorArray.push(newColor)
+              break;
+            case 'paused':
+              newColor = chroma(rgbHex).darken(1).hex();
+              colorArray.push(newColor)
+              break;
+            case 'finished':
+              newColor = chroma(rgbHex).darken(1).hex();
+              colorArray.push(newColor)
+              break;
+            case 'stopped':
+              newColor = chroma(rgbHex).darken(1).hex();
+              colorArray.push(newColor)
+              break;
+          }
         } else {
-          nobu += 1;
           nobuArray.push(defaultColor);
         }
 
       }
     }
-    scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
-    scaleArray.splice(scaleArray.length-3, 3);
-    scaleArray.reverse();
-    colorArray = colorArray.concat(scaleArray);
-    colorArray = colorArray.concat(nobuArray)
-
+    colorArray = colorArray.concat(nobuArray);
 
     this.graphOptionsTimeline.colors = colorArray;
 
@@ -343,15 +362,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + this.combineName(vpv.name, vpv.variantName) + '</b></div>' + '<div>' +
       '<table>';
-
+    const status = this.translate.instant('compViewBoard.lbl.vpStatus')
     const bu = this.translate.instant('compViewBoard.lbl.bu');
     const lead = this.translate.instant('compViewBoard.lbl.lead');
     const template = this.translate.instant('compViewBoard.lbl.template');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
-
+    // get businessUnit of vp
     const item = getCustomFieldString(vpv.vp, '_businessUnit');
     const businessUnit = item ? item.value : undefined;
+    // get localName of vpStatus 
+    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";    
+    const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
+    const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
+    if (vpstatus) {
+      result = result + '<tr>' + '<td>' + status + ':</td>' + '<td><b>' + localVPStatus + '</b></td>' + '</tr>';
+    }
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
