@@ -209,8 +209,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     // variables to count the number of sameBu's
     let bu = '';
     let rgbHex = defaultColor;
-    let colorArray = [];
-    const nobuArray = [];
+    const colorArray = [];
    
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
@@ -270,50 +269,48 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         bu = item ? item.value : undefined;
         console.log("BusinessUnit %s", bu);
                 
-        if (bu) {
-                  
+        if (bu) {                  
           buColor = buDefs[bu];
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;          
-          console.log("BusinessUnit - Color %s", rgbHex);
-          let newColor = undefined;         
-          
-          if (!this.listVPV[i].vp.vpStatus) {
-              newColor = chroma(rgbHex).brighten(3).hex();              
-              colorArray.push(newColor)
-          }
-          switch (this.listVPV[i].vp.vpStatus) {            
-            case 'initialized':
-              newColor = chroma(rgbHex).brighten(3).hex();
-              colorArray.push(newColor)
-              break;
-            case 'proposed':
-              newColor = chroma(rgbHex).brighten(3).hex();
-              colorArray.push(newColor)
-              break;
-            case 'ordered':
-              newColor = chroma(rgbHex).brighten().hex();
-              colorArray.push(newColor)
-              break;
-            case 'paused':
-              newColor = chroma(rgbHex).darken(1).hex();
-              colorArray.push(newColor)
-              break;
-            case 'finished':
-              newColor = chroma(rgbHex).darken(1).hex();
-              colorArray.push(newColor)
-              break;
-            case 'stopped':
-              newColor = chroma(rgbHex).darken(1).hex();
-              colorArray.push(newColor)
-              break;
-          }
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;    
         } else {
-          nobuArray.push(defaultColor);
+          rgbHex = defaultColor;
+        }      
+        console.log("BusinessUnit - Color %s", rgbHex);
+        let newColor = undefined;         
+        
+        if (!this.listVPV[i].vp.vpStatus) {
+            newColor = chroma(rgbHex).brighten(3).hex();              
+            colorArray.push(newColor)
         }
-
+        switch (this.listVPV[i].vp.vpStatus) {            
+          case 'initialized':
+            newColor = chroma(rgbHex).brighten(3).hex();
+            colorArray.push(newColor)
+            break;
+          case 'proposed':
+            newColor = chroma(rgbHex).brighten(3).hex();
+            colorArray.push(newColor)
+            break;
+          case 'ordered':
+            newColor = chroma(rgbHex).brighten().hex();
+            colorArray.push(newColor)
+            break;
+          case 'paused':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+          case 'finished':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+          case 'stopped':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+        }
       }
     }
-    colorArray = colorArray.concat(nobuArray);
+    //colorArray = colorArray.concat(nobuArray);
 
     this.graphOptionsTimeline.colors = colorArray;
 
