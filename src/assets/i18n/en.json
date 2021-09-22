@@ -920,7 +920,8 @@
 	},
 	"compViewBoard": {
 		"lbl": {
-			"project": "Project",
+			"project": "Project",			
+			"vpStatus": "Status",
 			"bu": "Business Unit",
 			"lead": "Project Manager",
 			"template": "Template",

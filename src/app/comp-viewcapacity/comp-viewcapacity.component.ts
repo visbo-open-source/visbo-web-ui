@@ -1563,17 +1563,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   sortProjectsByBusinessUnit(capacity: VisboCapacity[]): VisboCapacity[] {
     const copiedCapacity = [...capacity];
     const sortedValues = copiedCapacity.sort((a, z) => {
-      //const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
       const zVP = this.listVP.find(item => item._id == z.vpid);
-      const aVP = this.listVP.find(item => item._id == a.vpid);
-      const zBU = getCustomFieldString(zVP, "_businessUnit")?.value;
-      const aBU = getCustomFieldString(aVP, "_businessUnit")?.value;
+      const aVP = this.listVP.find(item => item._id == a.vpid);    
+      const zBU = getCustomFieldString(zVP, "_businessUnit")?.value || "zzzzzz";
+      const aBU = getCustomFieldString(aVP, "_businessUnit")?.value || "zzzzzz";
       // sorts the businessUnit alphanumerical ascending
       if(aBU < zBU) { return -1; }
       if(aBU > zBU) { return 1; }
       // sorts the strategicFit descending
-      const zStrategicFit = getCustomFieldDouble(zVP, "_strategicFit")?.value;
-      const aStrategicFit = getCustomFieldDouble(aVP, "_strategicFit")?.value;
+      const zStrategicFit = getCustomFieldDouble(zVP, "_strategicFit")?.value || -1;
+      const aStrategicFit = getCustomFieldDouble(aVP, "_strategicFit")?.value || -1;
       if(aStrategicFit < zStrategicFit) { return 1; }
       if(aStrategicFit > zStrategicFit) { return -1; }
       // nur wenn gleich nach nächsten criterium sortieren

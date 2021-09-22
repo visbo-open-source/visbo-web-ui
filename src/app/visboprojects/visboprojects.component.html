@@ -72,7 +72,7 @@
   <div *ngIf="viewMode == 'KeyMetrics'">
     <hr>
     <div *ngIf="viewCockpit == 'Capacity' && vcActive && vcOrga">
-      <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+      <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
