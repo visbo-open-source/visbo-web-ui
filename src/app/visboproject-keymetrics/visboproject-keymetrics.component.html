@@ -411,13 +411,27 @@
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.timeCompletionCurrentTotal">
                 <td>{{ 'vpKeyMetric.lbl.deadlinesCommited' | translate }}</td>
                 <td>
-                  <span> {{ vpvActive.keyMetrics.timeCompletionCurrentTotal |  number:'1.0-0'}}</span>
+                  <span>
+                    {{vpvActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-1'}}
+                    {{ 'vpKeyMetric.lbl.ofUntilToday' | translate }}
+                    {{vpvActive.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}
+                    {{ 'vpKeyMetric.lbl.toBeDone' | translate }}
+                    {{vpvActive.timestamp | date :'dd.MM.yyyy'}}
+                    ({{timeCompletionActual | number:'1.0-0'}} %)
+                  </span>
                 </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.deliverableCompletionCurrentTotal">
-                <td>{{ 'vpKeyMetric.lbl.deliveriesCommited' | translate }}</td>
+                <td>{{ 'vpKeyMetric.lbl.deliveriesCommited' | translate }}</td>                
                 <td>
-                  <span> {{ vpvActive.keyMetrics.deliverableCompletionCurrentTotal |  number:'1.0-0'}}</span>
+                  <span>
+                    {{vpvActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-1'}}
+                    {{ 'vpKeyMetric.lbl.ofUntilToday' | translate }}
+                    {{vpvActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}                    
+                    {{ 'vpKeyMetric.lbl.toBeDone' | translate }}
+                    {{vpvActive.timestamp | date :'dd.MM.yyyy'}}
+                    ({{deliveryCompletionActual | number:'1.0-0'}} %)
+                  </span>
                 </td>
               </tr>
               <tr *ngFor="let item of editCustomFieldDate">
