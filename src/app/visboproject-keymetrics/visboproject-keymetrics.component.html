@@ -271,17 +271,13 @@
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
                 <td></td>
               </tr>
-              <tr *ngIf="customVPStatusIndex >= 0 || isPMO()">
+              <tr *ngIf="customVPStatus || isPMO()">
                 <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>
-                <td title="{{ getVPStatus() }}">
-                  <a *ngIf="isPMO() && !customVPToCommit && dropDownVPStatus?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus() }}</a>
-                  <div class="dropdown-menu">
-                    <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
-                      <div class="dropdown-item" (click)="setModifiedVPStatus(itemIndex)">{{ item }}</div>
-                    </a>
-                  </div>
-                  <!-- <input id="VPBU" *ngIf="isPMO() && !customVPToCommit && (!dropDownVPStatus || dropDownVPStatus.length <= 1)" type="text" (change)="setModified()" name=customVPStatus [(ngModel)]="customVPStatus"> -->
-                  <label id="VPBU" *ngIf="!isPMO() || customVPToCommit">{{ getShortText(getVPStatus(), 20) }} </label>
+                <td>
+                  <select *ngIf="isPMO() && !customVPToCommit && dropDownVPStatus?.length > 1" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">
+                    <option *ngFor="let item of dropDownVPStatus" value="{{item.name}}">{{ item.localName }}</option>
+                  </select>
+                  <label id="VPStatus" *ngIf="!isPMO() || customVPToCommit">{{ getShortText(getVPStatus(), 20) }} </label>
                 </td>
               </tr>
               <tr *ngIf="customBU != undefined || customVPAdd">
