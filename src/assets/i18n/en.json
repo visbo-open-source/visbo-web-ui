@@ -529,6 +529,7 @@
 			"description": "Description/Goal",
 			"template": "Project Template",
 			"bu": "Business Unit",
+			"vpStatus": "State",
 			"weeksAhead": "Weeks Ahead",
 			"weeksDelay": "Weeks Delay",
 			"inTime": "in Time",
@@ -755,6 +756,7 @@
 			"variant": "Variant",
 			"timestamp": "Timestamp",
 			"commit": "Commit",
+			"vpStatus": "State",
 			"bu": "Business Unit",
 			"lead": "Project Manager",
 			"template": "Template",
@@ -1309,6 +1311,7 @@
 
 		"lbl": {
 			"trafficLight": "Traffic Light",
+			"vpStatus": "State",
 			"info": "Info",
 			"timeStamp": "Time Stamp",
 			"shortcut": "Shortcut",
@@ -1349,6 +1352,14 @@
 		"_risk": "Risk",
 		"_strategicFit": "Strategic Fit",
 		"_PMCommit": "Last Commit"
+	},
+	"vpStatus": {
+		"initialized": "Init",
+		"proposed": "Proposed",
+		"ordered": "Ordered",
+		"paused": "Paused",
+		"finished": "Finished",
+		"stopped": "Stopped"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",

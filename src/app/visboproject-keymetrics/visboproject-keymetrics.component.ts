@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate,constSystemCustomName } from '../_models/visboproject';
+import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate, constSystemCustomName, constSystemVPStatus } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -29,6 +29,11 @@ class DropDown {
   vpvCount?: number;
   description?: string;
   email?: string;
+}
+
+class DropDownStatus {
+  name: string;
+  localName: string;
 }
 
 @Component({
@@ -67,6 +72,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customVPAdd: boolean;
   customBU: string;
   dropDownBU: string[];
+  customVPStatus: string;
+  dropDownVPStatus: DropDownStatus[];
   customStrategicFit: number;
   customRisk: number;
   customCommit: Date;
@@ -151,7 +158,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
-
     this.getVisboProjectVersions();
   }
 
@@ -520,6 +526,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                   this.visboprojectversions.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
                   this.findVPV(this.refDate);
+                  this.initVPStatusDropDown();
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -568,6 +575,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initCustomFields(vp: VisboProject): void {
+      this.customVPStatus = constSystemVPStatus.find(item => item == vp.vpStatus);
       const customFieldString = getCustomFieldString(vp, '_businessUnit');
       if (customFieldString) {
         this.customBU = customFieldString.value;
@@ -610,6 +618,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.customVPModified = true;
   }
 
+  setModifiedVPStatus(): void {
+    this.customVPModified = true;
+  }
+
   // Commit-Button pressed
   setVPToCommit(): void {
     this.customVPToCommit = true;
@@ -634,6 +646,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                                                         / this.vpvActive.keyMetrics.timeCompletionBaseLastActual * 100);
     }
   }
+
   sameDay(dateA: Date, dateB: Date): boolean {
     const localA = new Date(dateA);
     const localB = new Date(dateB);
@@ -845,6 +858,28 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  initVPStatusDropDown(): void {
+    let localVPStatus = '';
+    this.dropDownVPStatus = [];
+    let changeOrdered = false
+    let variantPFV = this.vpActive.variant.find(item => item.variantName == 'pfv');
+    if (this.vpActive.vpStatus == 'ordered' || variantPFV?.vpvCount > 0 ) {
+      changeOrdered = true;
+    }
+    if (this.vpActive.vpvCount == 0) {
+      let status = this.vpActive.vpStatus || 'initialized'
+      localVPStatus = this.translate.instant('vpStatus.' + status);
+      this.dropDownVPStatus.push({name: status, localName: localVPStatus});
+    } else {
+      constSystemVPStatus.forEach(item => {
+        if (item != 'ordered' || changeOrdered) {
+          localVPStatus = this.translate.instant('vpStatus.' + item);
+          this.dropDownVPStatus.push({name: item, localName: localVPStatus});
+        }
+      })
+    }
+  }
+
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
     let delay = 0;
@@ -904,6 +939,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getShortText(text: string, len: number): string {
     return visboGetShortText(text, len);
+  }
+
+  getVPStatus(): string {
+    let result = this.customVPStatus ? this.dropDownVPStatus.find(item => item.name == this.customVPStatus) : undefined;
+
+    return result ? result.localName : undefined;
   }
 
   isPMO(): boolean {
@@ -1173,6 +1214,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     // project settings changed?!
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
+      if (this.customVPStatus) {
+        this.vpActive.vpStatus = this.customVPStatus;
+      }
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
@@ -1222,9 +1266,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     if (!this.customVPToCommit) {
-      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit},  risk: ${this.customRisk}, `);
+      this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${this.customVPStatus}`);
     } else {
-      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit},  `);
+      this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit}`);
     }
 
     this.visboprojectService.updateVisboProject(this.vpActive)

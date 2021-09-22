@@ -131,7 +131,7 @@
             <!-- show only when Add Project is selected -->
             <div *ngIf="newVP.vpType == 0 && vpTemplates?.length > 0">
               <!-- Selection Template -->
-              <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
+              <div class="form-group">
                 <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
                 <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">
                   <option *ngFor="let template of vpTemplates" value="{{ template._id }}">{{ template.name }}</option>

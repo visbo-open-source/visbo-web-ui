@@ -12,7 +12,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProject, getCustomFieldDate } from '../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
-import { VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
+import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -73,6 +73,11 @@ class Metric {
   table: string;
 }
 
+class DropDownStatus {
+  name: string;
+  localName: string;
+}
+
 @Component({
   selector: 'app-comp-viewbubble',
   templateUrl: './comp-viewbubble.component.html'
@@ -101,6 +106,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   filterRisk: number;
   filterBU: string;
   dropDownBU: string[];
+  filterVPStatusIndex: number;
+  dropDownVPStatus: DropDownStatus[];
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
@@ -296,9 +303,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.activeID = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
     const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
     const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
-    const filterRisk = (this.route.snapshot.queryParams['filterRisk'] || '0').valueOf() || undefined;
-    const filterStrategicFit = (this.route.snapshot.queryParams['filterStrategicFit'] || '0').valueOf() || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
     const metricX = this.route.snapshot.queryParams['metricX'] || undefined;
     let metricY = this.route.snapshot.queryParams['metricY'] || undefined;
     if (metricX === metricY) { metricY = undefined; }
@@ -312,23 +323,58 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.filterBU = filterBU;
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
+    this.initVPStateDropDown();
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
+    let lastValueRisk: number;
+    let lastValueSF: number;
+    let lastValueVPStatus: string;
+    let lastValueBU: string;
     if (!vpvList && vpvList.length < 1) {
       return;
     }
+
     vpvList.forEach( item => {
       if (item.vp?.customFieldDouble) {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
-          if (customField) { this.filterStrategicFit = 0; }
+          if (customField) {
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+              this.filterStrategicFit = 0;
+            }
+            lastValueSF = customField.value
+          }
         }
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
-          if (customField) { this.filterRisk = 0; }
+          if (customField) {
+            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+              this.filterRisk = 0;
+            }
+            lastValueRisk = customField.value
+          }
         }
+      }
+      if (item.vp?.customFieldString) {
+        if (this.filterBU === undefined) {
+          const customField = getCustomFieldString(item.vp, '_businessUnit');
+          if (customField) {
+            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+              this.filterBU = '';
+            }
+            lastValueBU = customField.value
+          }
+        }
+      }
+      const vpStatus = item.vp?.vpStatus;
+      if (vpStatus) {
+        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          this.filterVPStatusIndex = 0;
+        }
+        lastValueVPStatus = vpStatus
       }
     });
   }
@@ -345,6 +391,19 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
     } else {
       this.dropDownBU = undefined;
+    }
+  }
+
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
     }
   }
 
@@ -374,6 +433,16 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
+  filterEventVPStatus(index: number): void {
+    if (index <= 0 || index >= this.dropDownVPStatus.length) {
+      this.filterVPStatusIndex = 0;
+    } else {
+      this.filterVPStatusIndex = index;
+    }
+    this.updateUrlParam('filter', undefined);
+    this.visboKeyMetricsCalc();
+  }
+
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -382,6 +451,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (type == 'filter') {
       queryParams.filter = this.filter;
       localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterVPStatus = this.getVPStatus(false);
+      localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
       queryParams.filterBU = this.filterBU;
       localStorage.setItem('vpfFilterBU', this.filterBU || '');
       queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
@@ -433,10 +504,15 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
-          || (this.visboprojectversions[item].status || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {
         continue;
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = this.visboprojectversions[item].vp.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+          continue;
+        }
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
@@ -464,6 +540,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric._id = this.visboprojectversions[item]._id;
       elementKeyMetric.vpid = this.visboprojectversions[item].vpid;
       elementKeyMetric.vp = this.visboprojectversions[item].vp;
+      elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
@@ -1081,6 +1158,23 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     else return 3;
   }
 
+  getVPStatus(local: boolean, original: string = undefined): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (original) {
+      result = this.dropDownVPStatus.find(item => item.name == original) || result;
+    } else if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+      result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
+  }
+
   combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
     if (variantName) {
@@ -1119,7 +1213,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   getPMCommitTooltip (vp: VisboProject): string {
     if (!vp) return '';
     let title = '';
-    const PMCommitDate = getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;    
+    const PMCommitDate = getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
     if (PMCommitDate) {
       title = this.datePipe.transform(PMCommitDate, 'dd.MM.yyyy HH:mm');
     }
@@ -1198,6 +1292,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');
         const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');
         return visboCmpDate(aDate, bDate); });
+    } else if (this.sortColumn === 19) {
+      this.visbokeymetrics.sort(function(a, b) {
+        return visboCmpString(a.vpStatus, b.vpStatus);
+      });
     }
 
     if (!this.sortAscending) {
