@@ -283,7 +283,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
           elementKeyMetric.timeCompletionTotal = Math.round((elementKeyMetric.keyMetrics.timeCompletionCurrentTotal || 0)
                                                             / elementKeyMetric.keyMetrics.timeCompletionBaseLastTotal * 100);
         }
-        if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastActual) {
+        if (!elementKeyMetric.keyMetrics.timeCompletionBaseLastActual || elementKeyMetric.keyMetrics.timeCompletionBaseLastActual == 0 ) {
           elementKeyMetric.timeCompletionActual = 100;
         } else {
           elementKeyMetric.timeCompletionActual = Math.round((elementKeyMetric.keyMetrics.timeCompletionCurrentActual || 0)
@@ -323,7 +323,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
+    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');    
+    this.graphOptionsLineChart.vAxis.direction = 1;
     this.graphOptionsLineChart.colors = this.colorsDefault;
 
     const keyMetricsCost = [];
@@ -563,6 +564,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   visboKeyMetricsDeliveryOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeliveryTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeliveryTrend');
+    this.graphOptionsLineChart.vAxis.direction = 1;
     this.graphOptionsLineChart.colors = this.colorsDefault;
 
     const keyMetrics = [];
@@ -660,6 +662,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   visboKeyMetricsDeadlineOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleDeadlineTrend');
     this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisDeadlineTrend');
+    this.graphOptionsLineChart.vAxis.direction = 1;
     this.graphOptionsLineChart.colors = this.colorsDefault;
 
     const keyMetrics = [];
@@ -674,7 +677,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // skip multiple versions per day
       if (i > 0
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
+        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i - 1].timestamp}`);
         continue;
       }
       const tooltip = this.createTooltipDeadline(this.visboprojectversions[i]);
@@ -763,15 +766,15 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       // skip multiple versions per day
       if (i > 0
       && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
-        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i + 1].timestamp}`);
+        this.log(`visboKeyMetrics Skip Same Day  ${this.visboprojectversions[i].timestamp} ${this.visboprojectversions[i - 1].timestamp}`);
         continue;
       }
       const tooltip = this.createTooltipDeadlineDelay(this.visboprojectversions[i]);
       keyMetrics.push([
         new Date(this.visboprojectversions[i].timestamp),
-        this.visboprojectversions[i].keyMetrics.timeDelayFinished,
+        this.visboprojectversions[i].keyMetrics.timeDelayFinished || 0,
         tooltip,
-        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished,
+        this.visboprojectversions[i].keyMetrics.timeDelayUnFinished || 0,
         tooltip
       ]);
     }
@@ -788,7 +791,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       const currentDate = new Date(keyMetrics[0][0]);
       currentDate.setMonth(currentDate.getMonth()+1);
       keyMetrics.push([
-        currentDate, undefined, undefined, undefined, undefined
+        currentDate, undefined, 0, undefined, 0
       ]);
     }
     const maxValue = this.calcRangeAxis(keyMetrics, 'Delay');
