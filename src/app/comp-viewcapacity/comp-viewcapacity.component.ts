@@ -50,6 +50,7 @@ class DrillDownElement {
   plan: number;
   planTotal: number;
   budget: number;
+  budgetIntern: number;
 }
 
 class DrillDownCapa {
@@ -114,20 +115,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     {type: 'line', lineWidth: 4, pointSize: 0},
     {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1},
     // legende of Ist-Kosten visible or not
-    {visibleInLegend: true},    
+    {visibleInLegend: true},
     // legend of Plan-Kosten visible or not
     {visibleInLegend: true},
     // legend of otherActivity-Kosten visible or not
     {visibleInLegend: true}
   ];
-  // seriesPFV = {
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'none', lineWidth: 0,lineDashStyle: [4, 4], pointSize: 0}
-  // };
-  // seriesOrga ={
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}
-  // };
 
   chartActive: Date;
   graphDataComboChart = [];
@@ -336,7 +329,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     return (this.combinedPerm.vc & perm) > 0;
   }
-  
+
   getCapacity(): void {
     if ((this.drillDown == 2)|| (this.drillDown == 3)) {
       this.getProjectCapacity();
@@ -709,7 +702,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
     // set the colors for the Chart
-    if (this.drillDown > 0) {
+    if (this.drillDown > 1) {
       delete this.graphOptionsComboChart.colors;
       this.graphOptionsComboChart.series = this.seriesPFV;
     } else if (this.refPFV) {
@@ -721,7 +714,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     this.log(`ViewCapacityOverTime Type ${this.drillDown ? 'DrillDown' : 'Plan/Ist'} resource ${this.currentLeaf.name}`);
-    if ((this.drillDown == 2)|| (this.drillDown == 3)) {
+    if ((this.drillDown == 2) || (this.drillDown == 3)) {
       this.visboViewProjectCapacityDrillDown()
     } else if (this.drillDown == 1) {
       this.visboViewCapacityDrillDown()
@@ -772,10 +765,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // sorting the projects for capacity-chart view projects
     let sortedProjects: VisboCapacity[] = null;
     if (this.drillDown == 2) {
-      sortedProjects = this.visboSortProjects(this.visboCapacityChild, "cost"); 
+      sortedProjects = this.visboSortProjects(this.visboCapacityChild, "cost");
     } else {
       sortedProjects = this.visboSortProjects(this.visboCapacityChild, "businessUnit");
-    }    
+    }
     console.log(sortedProjects);
     const childNodeList = this.calcChildNode(sortedProjects, 'name');
     console.log(childNodeList);
@@ -806,17 +799,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.sumCost += plan;
       this.sumBudget += capa;
 
-      
+
       const template: DrillDownElement[] = [];
       const elementDrill = new DrillDownElement();
       elementDrill.currentDate = currentDate;
       elementDrill.name = 'All';
       elementDrill.plan = plan;
       elementDrill.planTotal = plan;
-      elementDrill.budget = capa;     
+      elementDrill.budget = capa;
       template.push(elementDrill);
       childNodeList.forEach(element => {
-        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0, businessUnit: '', strategicFit: 0});
+        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0, budgetIntern: 0, businessUnit: '', strategicFit: 0});
       });
       drillDownCapacity.push(template);
     });
@@ -849,9 +842,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               budget = (item.internCapa || 0) + (item.externCapa || 0);
             }
-          }         
-          row[index + 1].businessUnit = getCustomFieldString(item.vp, "_businessUnit")?.value; 
-          row[index + 1].strategicFit = getCustomFieldDouble(item.vp, "_strategicFit")?.value; 
+          }
+          row[index + 1].businessUnit = getCustomFieldString(item.vp, "_businessUnit")?.value;
+          row[index + 1].strategicFit = getCustomFieldDouble(item.vp, "_strategicFit")?.value;
           row[index + 1].plan = plan;
           row[index + 1].budget = budget;
           row[index + 1].variantName = item.variantName;
@@ -893,7 +886,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             rowMatrix.push(undefined)
           }
         }
-       
+
       });
       graphDataCapacity.push(rowMatrix);
     }
@@ -931,29 +924,29 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     });
     graphDataCapacity.unshift(rowHeader);
 
-    // give the capacities colors   
-    let orgaColors =[];    
+    // give the capacities colors
+    let orgaColors =[];
     if (this.drillDown == 2) {
         // for cost coloring
-        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3)); 
-        // sorted - sum of Cost, the darkest color should be nearest to x-Axis       
-        orgaColors.reverse();  
-    } else { 
+        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
+        // sorted - sum of Cost, the darkest color should be nearest to x-Axis
+        orgaColors.reverse();
+    } else {
         // for BU coloring
         const drillDownElementSorted = drillDownCapacity.length> 0 && drillDownCapacity[0];
         const buDefs = [];
         for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
           buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
-        }        
+        }
         for (let s = 1; drillDownElementSorted && s < drillDownElementSorted.length; s++) {
           // s runs beginning as 1 because in the first element there is the sum over all projects
           const defaultColor = '#59a19e';
           const bu = drillDownElementSorted[s].businessUnit;
           const buColor = buDefs[bu];
-          const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;          
-          orgaColors.push(rgbHex);         
-        }    
-    }    
+          const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+          orgaColors.push(rgbHex);
+        }
+    }
     if (this.refPFV) {
       orgaColors.unshift(baselineColor);
     } else {
@@ -979,7 +972,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
-      let capa = 0, plan = 0;
+      let capa = 0, capaIntern = 0, plan = 0;
       if (this.showUnit === 'PD') {
         plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
       } else {
@@ -993,9 +986,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         }
       } else {
         if (this.showUnit === 'PD') {
-          capa = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
+          capaIntern = (item.internCapa_PT || 0);
+          capa = capaIntern + (item.externCapa_PT || 0);
         } else {
-          capa = (item.internCapa || 0) + (item.externCapa || 0);
+          capaIntern = (item.internCapa || 0);
+          capa = capaIntern + (item.externCapa || 0);
         }
       }
       this.sumCost += plan;
@@ -1008,9 +1003,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       elementDrill.plan = plan;
       elementDrill.planTotal = plan;
       elementDrill.budget = capa;
+      elementDrill.budgetIntern = capaIntern;
       template.push(elementDrill)
       childNodeList.forEach(element => {
-        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0, businessUnit: '', strategicFit: 0});
+        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0, budgetIntern: 0, businessUnit: '', strategicFit: 0});
       });
       drillDownCapacity.push(template);
     });
@@ -1063,6 +1059,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(element[0].budget || 0);
       const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
       rowMatrix.push(tooltip);
+      if (!this.refPFV) {
+        rowMatrix.push(element[0].budgetIntern || 0);
+        rowMatrix.push(tooltip);
+      }
       rowMatrix.push(element[0].plan || 0); // parent planned cost
       rowMatrix.push(tooltip);
       childNodeList.forEach((item, index) => {
@@ -1091,6 +1091,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(currentDate);
       rowMatrix.push(undefined);
       rowMatrix.push(undefined);
+      if (!this.refPFV) {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      }
       rowMatrix.push(undefined);
       rowMatrix.push(undefined);
       childNodeList.forEach(() => {
@@ -1106,6 +1110,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     rowHeader.push('Month');
     rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacity.lbl.budget' : 'ViewCapacity.lbl.totalCapa'));
     rowHeader.push(tooltip);
+    if (!this.refPFV) {
+      rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacity.lbl.budget' : 'ViewCapacity.lbl.totalCapa'));
+      rowHeader.push(tooltip);
+    }
     rowHeader.push(this.currentLeaf.name);
     rowHeader.push(tooltip);
     childNodeList.forEach(item => {
@@ -1123,7 +1131,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // color for baseline
       orgaColors.unshift(baselineColor);
     } else {
-      // color for capa
+      // color for capa intern & total
+      orgaColors.unshift(capaColor);
       orgaColors.unshift(capaColor);
     }
     this.graphOptionsComboChart.colors = orgaColors;
@@ -1281,7 +1290,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.translate.instant('ViewCapacity.lbl.actualCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.cost'),
-        {type: 'string', role: 'tooltip', 'p': {'html': true}},        
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.otherActivityCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
       ]);
@@ -1490,7 +1499,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       result = result + this.addTooltipRowString("BusinessUnit", item.businessUnit, false);
       result = result + this.addTooltipRowNumber("StrategicFit", item.strategicFit, 0, '', false);
     }
-    
+
     result = result + '</div>';
     return result;
   }
@@ -1564,7 +1573,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const copiedCapacity = [...capacity];
     const sortedValues = copiedCapacity.sort((a, z) => {
       const zVP = this.listVP.find(item => item._id == z.vpid);
-      const aVP = this.listVP.find(item => item._id == a.vpid);    
+      const aVP = this.listVP.find(item => item._id == a.vpid);
       const zBU = getCustomFieldString(zVP, "_businessUnit")?.value || "zzzzzz";
       const aBU = getCustomFieldString(aVP, "_businessUnit")?.value || "zzzzzz";
       // sorts the businessUnit alphanumerical ascending
@@ -1578,7 +1587,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // nur wenn gleich nach nächsten criterium sortieren
       // if (a.criterium3 < z.criterium3) { return -1;}
       // if (a.criterium3 > z.criterium3) { return 1;}
-      return 0;     
+      return 0;
     });
     return sortedValues;
   }
@@ -1602,7 +1611,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       const sortedValues = Array.from(capacityChildGroupedByProject.values())
               .sort((a, z) => z.sum - a.sum);
               //.sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
-      const sortedArray = sortedValues.map((item) => item.elems);    
+      const sortedArray = sortedValues.map((item) => item.elems);
       const flatArray = [].concat([], ...sortedArray);
       console.log(sortedValues);
       const sortedProjects: VisboCapacity[] = flatArray;
