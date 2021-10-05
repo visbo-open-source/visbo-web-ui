@@ -202,6 +202,10 @@ export class VisboProjectsComponent implements OnInit {
 
   filterVP(): void {
     let newVPType: number;
+    if (this.deleted) {
+      this.visboprojects = this.visboprojectsAll;
+      return;
+    }
     switch(this.viewMode) {
       case 'Portfolio':
         newVPType = 1;
