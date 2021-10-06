@@ -1523,7 +1523,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         result = result + this.addTooltipRowString(strFractionCost, 'Unknown', false);
       }
     }
-    if (this.drillDown == 3) {
+    if ((this.drillDown == 3) && (vpName != "All")) {
       result = result + this.addTooltipRowString("BusinessUnit", item.businessUnit, false);
       result = result + this.addTooltipRowNumber("StrategicFit", item.strategicFit, 0, '', false);
     }
@@ -1556,8 +1556,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     result = result + this.addTooltipRowString(roleName, item.name, false);
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
-    result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
-    result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
+    if (refPFV) {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+    } else {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
+    }    
     result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
