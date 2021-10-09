@@ -1833,7 +1833,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
-    if (leaf.name !== this.currentLeaf.name ) {
+    if ((leaf.name !== this.currentLeaf.name) 
+      || (leaf.parent && this.currentLeaf.parent && (leaf.parent.uid !== this.currentLeaf.parent.uid))) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
       this.updateUrlParam('roleID', leaf.uid.toString());
