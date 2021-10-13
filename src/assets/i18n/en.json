@@ -51,6 +51,7 @@
 	"app": {
 		"product": "VISBO - the project warehouse",
 		"support": "Support",
+		"help": "Help",
 		"impressum": "Legal Notice",
 		"terms": "Terms of Use",
 		"dataProtection": "Data Protection",
@@ -519,7 +520,7 @@
 			"costTotalCommited": "Final Cost",
 			"costActualCommited": "Actual Cost",
 			"deadlinesCommited": "finished Deadlines",
-			"deliveriesCommited": "finished Deliveries",			
+			"deliveriesCommited": "finished Deliveries",
 			"ofUntilToday": "of",
 			"toBeDone": ", to be done until",
 			"startDate": "Start of Project",
@@ -920,7 +921,7 @@
 	},
 	"compViewBoard": {
 		"lbl": {
-			"project": "Project",			
+			"project": "Project",
 			"vpStatus": "Status",
 			"bu": "Business Unit",
 			"lead": "Project Manager",

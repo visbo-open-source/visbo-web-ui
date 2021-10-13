@@ -50,6 +50,7 @@
 	},
 	"app": {
 		"product": "VISBO - the project warehouse",
+		"help": "Hilfe",
 		"support": "Support",
 		"impressum": "Impressum",
 		"terms": "Nutzungsbedingungen",
