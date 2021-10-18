@@ -36,7 +36,7 @@
           <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>                               
           <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>          
           <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.locked' | translate }}</th>
-          <th *ngIf="hasVPPerm(permVP.DeleteVP)">{{ 'vpv.lbl.delete' | translate }}</th>
+          <th *ngIf="hasVPPerm(permVP.DeleteVP) && canDeleteVersion()">{{ 'vpv.lbl.delete' | translate }}</th>
         </tr>
       </thead>
       <!--Table body-->
@@ -54,7 +54,7 @@
             <span>{{checkLocked(vpv)}}</span>
           </td>
           <td>
-            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true)" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteVersion' | translate }}" (click)='helperSetVPV(vpvIndex)'
+            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true) && canDeleteVersion()" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteVersion' | translate }}" (click)='helperSetVPV(vpvIndex)'
             data-toggle="modal" data-target="#VpvDelete">&times;</button>
           </td>
         </tr>

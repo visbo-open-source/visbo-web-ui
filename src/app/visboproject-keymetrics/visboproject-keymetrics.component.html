@@ -76,15 +76,16 @@
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
           </div>
         </div>
-        <div *ngIf="dropDownAll.length > 0" class="dropdown mr-1">
+        <!-- <div *ngIf="dropDownAll.length > 0 || canCommit || canCopyVersion" class="dropdown mr-1"> -->
+          <div *ngIf="dropDownAll.length > 0 && ( canCommit() || canCopyVersion())" class="dropdown mr-1">
           <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
             {{ 'vpKeyMetric.btn.vpvChange' | translate }}
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
             <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
-            <a class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
-            <a *ngIf="canModify()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+            <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
             <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
           </div>
         </div>
@@ -283,28 +284,28 @@
               <tr *ngIf="customBU != undefined || customVPAdd">
                 <td>{{ 'customField._businessUnit' | translate }}</td>
                 <td title="{{ customBU }}">
-                  <a *ngIf="isPMO() && !customVPToCommit && dropDownBU?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ customBU }}</a>
+                  <a *ngIf="isPMO() && !customVPToCommit && canModifyVPProperties() && dropDownBU?.length > 1" class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ customBU }}</a>
                   <div class="dropdown-menu">
                     <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                       <div class="dropdown-item" (click)="customBU = item; setModified()">{{ item }}</div>
                     </a>
                   </div>
-                  <input id="VPBU" *ngIf="isPMO() && !customVPToCommit && (!dropDownBU || dropDownBU.length <= 1)" type="text" (change)="setModified()" name=customBU [(ngModel)]="customBU">
-                  <label id="VPBU" *ngIf="!isPMO() || customVPToCommit">{{ getShortText(customBU, 20) }} </label>
+                  <input id="VPBU" *ngIf="isPMO() && canModifyVPProperties() && !customVPToCommit && (!dropDownBU || dropDownBU.length <= 1)" type="text" (change)="setModified()" name=customBU [(ngModel)]="customBU">
+                  <label id="VPBU" *ngIf="!(isPMO() && canModifyVPProperties()) || customVPToCommit">{{ getShortText(customBU, 20) }} </label>
                 </td>
               </tr>
               <tr *ngIf="customStrategicFit >= 0 || customVPAdd">
                 <td>{{ 'customField._strategicFit' | translate }}</td>
                 <td>
-                  <input id="VPSF" *ngIf="isPMO() && !customVPToCommit" type="number" (change)="setModified()" name=customStrategicFit [(ngModel)]="customStrategicFit" min=0 max=10>
-                  <label id="VPSF" *ngIf="!isPMO() || customVPToCommit">{{ customStrategicFit }} </label>
+                  <input id="VPSF" *ngIf="isPMO() && canModifyVPProperties() && !customVPToCommit " type="number" (change)="setModified()" name=customStrategicFit [(ngModel)]="customStrategicFit" min=0 max=10>
+                  <label id="VPSF" *ngIf="!(isPMO() && canModifyVPProperties()) || customVPToCommit">{{ customStrategicFit }} </label>
                 </td>
               </tr>
               <tr *ngIf="customRisk >= 0 || customVPAdd">
                 <td>{{ 'customField._risk' | translate }}</td>
                 <td>
-                  <input id="VPRisk" *ngIf="isPMO() && !customVPToCommit" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
-                  <label id="VPRisk" *ngIf="!isPMO() || customVPToCommit">{{ customRisk }} </label>
+                  <input id="VPRisk" *ngIf="isPMO() && canModifyVPProperties() && !customVPToCommit && canModifyVPProperties()" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
+                  <label id="VPRisk" *ngIf="!(isPMO() && canModifyVPProperties()) || customVPToCommit ">{{ customRisk }} </label>
                 </td>
               </tr>
               <tr *ngFor="let item of editCustomFieldString">
