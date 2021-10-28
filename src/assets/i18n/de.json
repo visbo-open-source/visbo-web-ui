@@ -583,6 +583,7 @@
 		"btn": {
 			"vpView": "Details",
 			"vpViewAll": "Alle",
+			"vpViewProperties": "Eigenschaften",
 			"vpCapacity": "Ressourcen-Bedarf",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
