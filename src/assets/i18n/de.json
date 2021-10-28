@@ -517,6 +517,7 @@
 			"scaleStartDate": "ab",
 			"value": "Wert",
 			"info": "Info",
+			"level": "Level",
 			"costTotalCommited": "Gesamtkosten",
 			"costActualCommited": "aufgelaufene Kosten",
 			"deadlinesCommited": "Termine",
@@ -582,6 +583,7 @@
 		"btn": {
 			"vpView": "Details",
 			"vpViewAll": "Alle",
+			"vpViewProperties": "Eigenschaften",
 			"vpCapacity": "Ressourcen-Bedarf",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
@@ -598,6 +600,7 @@
 			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
+			"reduce": "Projekt auf oberste Levels reduzieren",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
@@ -667,6 +670,11 @@
 			"drillProjectBU": "Projekte/BusinessUnit",
 			"name": "Project",
 			"noPFV": "keine BL",
+			"filter": "Filter Projekte",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"vpStatus": "Status",
+			"bu": "Business Unit",
 			"orgaValid": "Organisation von"
 		},
 		"btn": {
@@ -678,6 +686,7 @@
 		},
 		"msg": {
 			"calculating": "Berechnen der Kapazitäten ...",
+			"noFilter": "Für diese Ansicht werden alle Projekte des Portfolios angezeigt und nicht gefiltert.",
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für Kapazität von {{name}}",

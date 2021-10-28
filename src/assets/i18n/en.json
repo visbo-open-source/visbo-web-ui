@@ -517,6 +517,7 @@
 			"scaleStartDate": "from",
 			"value": "Value",
 			"info": "Info",
+			"level": "Level",
 			"costTotalCommited": "Final Cost",
 			"costActualCommited": "Actual Cost",
 			"deadlinesCommited": "finished Deadlines",
@@ -582,6 +583,7 @@
 		"btn": {
 			"vpView": "Details",
 			"vpViewAll": "All",
+			"vpViewProperties": "Properties",
 			"vpCapacity": "Resource-Needs",
 			"vpKeyMetric": "Key Metrics",
 			"allVersions": "Show all Versions",
@@ -598,6 +600,7 @@
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
 			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"confirmCommit": "Do you really want to commit this current project plan?",
+			"reduce": "Reduce Projects to top levels",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
@@ -667,6 +670,11 @@
 			"drillProjectBU": "Projects/BusinessUnit",
 			"name": "Project",
 			"noPFV": "no BL",
+			"filter": "Filter Projects",
+			"strategicFit": "Strategic fit",
+			"risk": "Risk",
+			"vpStatus": "State",
+			"bu": "Business Unit",
 			"orgaValid": "Organisation from"
 		},
 		"btn": {
@@ -678,6 +686,7 @@
 		},
 		"msg": {
 			"calculating": "Calculating Capacity ...",
+			"noFilter": "All projects of the portfolio were shown without filter!",
 			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
 			"errorPermCapacity": "Permission denied for  {{name}} Capacity",

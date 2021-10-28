@@ -74,7 +74,8 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Delivery')"  class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
             <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL()" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
-          </div>
+            <a *ngIf="vpvActive" class="dropdown-item" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)">{{ 'vpKeyMetric.btn.vpViewProperties' | translate }}</a>
+        </div>
         </div>
         <!-- <div *ngIf="dropDownAll.length > 0 || canCommit || canCopyVersion" class="dropdown mr-1"> -->
           <div *ngIf="dropDownAll.length > 0 && ( canCommit() || canCopyVersion())" class="dropdown mr-1">
@@ -423,12 +424,12 @@
                 </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.deliverableCompletionCurrentTotal">
-                <td>{{ 'vpKeyMetric.lbl.deliveriesCommited' | translate }}</td>                
+                <td>{{ 'vpKeyMetric.lbl.deliveriesCommited' | translate }}</td>
                 <td>
                   <span>
                     {{vpvActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-1'}}
                     {{ 'vpKeyMetric.lbl.ofUntilToday' | translate }}
-                    {{vpvActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}                    
+                    {{vpvActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}
                     {{ 'vpKeyMetric.lbl.toBeDone' | translate }}
                     {{vpvActive.timestamp | date :'dd.MM.yyyy'}}
                     ({{deliveryCompletionActual | number:'1.0-0'}} %)
@@ -531,6 +532,13 @@
                 <div class="dropdown-menu">
                   <a *ngFor="let item of newVPVdropDown; let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(variantIndex)">{{ item.name }}</a>
                 </div>
+              </div>
+            </div>
+            <div *ngIf="newVPVvariantName == 'pfv'">
+              <label>{{ 'vpKeyMetric.msg.reduce' | translate }}</label>
+              <div class="form-group row ml-0">
+                <label class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.level' | translate }}:</label>
+                <input id="levelID" type="number" class="col-2 form-control" name="level" [(ngModel)]="level">
               </div>
             </div>
           </div>

@@ -67,6 +67,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   predictURL: string;
   customPredict: string;
   calcPredict = false;
+  level: number;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -98,7 +99,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   savingCostTotal = undefined;
   savingCostActual = undefined;
   deliveryCompletionActual = undefined;
-  timeCompletionActual = undefined;  
+  timeCompletionActual = undefined;
   refDate = new Date();
   refDateInterval = 'month';
   statusDirection: number;
@@ -635,14 +636,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
      this.savingCostActual = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentActual || 0)
                   / (this.vpvActive.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
 
-     // Calculate the Delivery Completion     actual   
+     // Calculate the Delivery Completion     actual
     if (!this.vpvActive.keyMetrics.deliverableCompletionBaseLastActual) {
       this.deliveryCompletionActual = 100;
     } else {
       this.deliveryCompletionActual = Math.round((this.vpvActive.keyMetrics.deliverableCompletionCurrentActual || 0)
                                                             / this.vpvActive.keyMetrics.deliverableCompletionBaseLastActual * 100);
     }
-    // Calculate the Deadline Completion   actual   
+    // Calculate the Deadline Completion   actual
     if (!this.vpvActive.keyMetrics.timeCompletionBaseLastActual) {
       this.timeCompletionActual = 100;
     } else {
@@ -1184,8 +1185,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   copyVPV(): void {
-    this.log(`Copye VPV ${this.vpvActive.name} with ${this.vpvActive.variantName} to ${this.newVPVvariantName}`);
-    this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName)
+    this.log(`Copye VPV ${this.vpvActive.name} with ${this.vpvActive.variantName} to ${this.newVPVvariantName} level ${this.level}`);
+    this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
       .subscribe(
         vpv => {
           if (vpv.variantName != 'pfv') {
