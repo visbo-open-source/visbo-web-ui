@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
-import { VisboProject } from '../_models/visboproject';
+import { VisboProject , constSystemVPStatus} from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
@@ -216,6 +216,14 @@ export class VisboProjectVersionsComponent implements OnInit {
 
   gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
+  }
+  
+  canDeleteVersion(): boolean {    
+    const customVPStatus = constSystemVPStatus.find(item => item == this.vpActive.vpStatus);
+    if (customVPStatus == 'paused' || customVPStatus == 'finished' || customVPStatus == 'stopped') {
+      return false;
+    }
+    return true;
   }
 
   sortVPVTable(n: number): void {

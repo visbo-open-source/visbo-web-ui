@@ -612,7 +612,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   addVPCustomValues(): void {
-    this.customVPAdd = true;
+    // if (this.vpActive.vpStatus == 'initialized' || this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered') {
+      this.customVPAdd = true;
+    // } else {
+    //   this.customVPAdd = false;
+    // }  
   }
 
   setModified(): void {
@@ -1016,12 +1020,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // not the latest version
       return false;
     }
-    // if (this.hasVPPerm(this.permVP.Modify) && this.hasVPPerm(this.permVP.ViewAudit) && (this.vpvActive.variantName == "")) {
-    if (this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == "")) {
+    if (!(this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == ""))) {
+      return false;
+    }
+    if (!(this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered')) {
+      return false;
+    }
+    return true;
+  }
+
+  canModifyVPProperties(): boolean {
+    if (this.customVPStatus == 'initialized' || this.customVPStatus == 'proposed' || this.customVPStatus == 'ordered') {
       return true;
     }
     return false;
   }
+
+  canCopyVersion(): boolean {
+    if (this.customVPStatus == 'paused' || this.customVPStatus == 'finished' || this.customVPStatus == 'stopped') {
+      return false;
+    }
+    return true;
+  }
+ 
   getScaleDate(mode: string): Date {
     let result: Date;
     if (mode == 'Min' && this.newVPV) {
