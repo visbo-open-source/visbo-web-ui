@@ -263,10 +263,10 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       return;
     }
     // check only width for redraw chart
-    if (Math.abs(event.newWidth - event.oldWidth) < 5) {
+    if (Math.abs(event.newRect.width - event.oldRect.width) < 5) {
       return;
     }
-    this.log(`Capacity Resize ${diff} ${Math.abs(event.newHeight - event.oldHeight)} ${Math.abs(event.newWidth - event.oldWidth)}`);
+    this.log(`Resize ${diff} ${Math.abs(event.newRect.height - event.oldRect.height)} ${Math.abs(event.newRect.width - event.oldRect.width)}`);
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();

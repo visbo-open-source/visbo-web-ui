@@ -278,10 +278,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return;
     }
     // check only width for redraw chart
-    if (Math.abs(event.newWidth - event.oldWidth) < 5) {
+    if (Math.abs(event.newRect.width - event.oldRect.width) < 5) {
       return;
     }
-    this.log(`Capacity Resize ${diff} ${Math.abs(event.newHeight - event.oldHeight)} ${Math.abs(event.newWidth - event.oldWidth)}`);
+    this.log(`Resize ${diff} ${Math.abs(event.newRect.height - event.oldRect.height)} ${Math.abs(event.newRect.width - event.oldRect.width)}`);
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
@@ -1308,7 +1308,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (!this.refPFV) {
       rowHeader.push(this.translate.instant('ViewCapacity.lbl.internCapa'));
       rowHeader.push(tooltip);
-    }   
+    }
     childNodeList.forEach(item => {
       rowHeader.push(item);
       rowHeader.push(tooltip);
@@ -1873,7 +1873,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       strBudgetCost = this.translate.instant('ViewCapacity.lbl.totalCapa');
       strInternCapa = this.translate.instant('ViewCapacity.lbl.internCapa');
     }
-    
+
     let vpName = item.name;
     if (item.variantName) {
       vpName = vpName.concat(' (', item.variantName,')')
@@ -1935,7 +1935,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
       result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
-    }    
+    }
     result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
@@ -2195,7 +2195,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
-    if ((leaf.name !== this.currentLeaf.name) 
+    if ((leaf.name !== this.currentLeaf.name)
       || (leaf.parent && this.currentLeaf.parent && (leaf.parent.uid !== this.currentLeaf.parent.uid))) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
