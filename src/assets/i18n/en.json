@@ -624,7 +624,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleCapacity": "Capacity Utilisation - Timespam:",
+		"titleCapacity": "Capacity Utilisation - Timespan:",
 		"titleBox": "Sum Resource-Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
@@ -694,7 +694,7 @@
 		}
 	},
 	"ViewCapacityCmp": {
-		"titleCapacity": "Capacity Utilisation - Timespam:",
+		"titleCapacity": "Capacity Utilisation - Timespan:",
 		"titleBox": "Sum Resource-Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
