@@ -616,7 +616,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.customVPAdd = true;
     // } else {
     //   this.customVPAdd = false;
-    // }  
+    // }
   }
 
   setModified(): void {
@@ -1042,7 +1042,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     return true;
   }
- 
+
   getScaleDate(mode: string): Date {
     let result: Date;
     if (mode == 'Min' && this.newVPV) {
@@ -1486,6 +1486,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             + this.datePipe.transform(vpv.keyMetrics.baselineDate, 'dd.MM.yy HH:mm');
     }
     return title;
+  }
+
+  getMonthEnd(actual: Date): Date {
+    let actualDate = actual ? new Date(actual) : undefined;
+    if (actualDate) {
+      actualDate.setMonth(actualDate.getMonth() + 1);
+      actualDate.setDate(1);
+      actualDate.setHours(0, 0, 0, 0);
+      actualDate.setSeconds(-1);
+    }
+    return actualDate;
   }
 
   getPreView(): boolean {

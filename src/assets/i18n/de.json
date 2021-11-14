@@ -526,6 +526,7 @@
 			"toBeDone": ", die zu erledigen waren bis",
 			"startDate": "Projekt Start",
 			"endDate": "Projekt Ende",
+			"actualDataUntil": "Ist Daten bis",
 			"savingED": "Änderung",
 			"leadPerson": "Projektverantwortlicher",
 			"description": "Beschreibung/Ziel",
