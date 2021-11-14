@@ -8,8 +8,9 @@ describe('SyssettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SyssettingsComponent ]
-    })
+    declarations: [SyssettingsComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   });
 

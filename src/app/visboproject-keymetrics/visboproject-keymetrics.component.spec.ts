@@ -10,11 +10,12 @@ describe('VisboProjectVersionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         VisboProjectKeyMetricsComponent,
         NavbarComponent
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

@@ -8,8 +8,9 @@ describe('PwforgottenComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PwforgottenComponent ]
-    })
+    declarations: [PwforgottenComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

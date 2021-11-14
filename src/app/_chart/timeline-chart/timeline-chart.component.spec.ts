@@ -8,8 +8,9 @@ describe('TimelineChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TimelineChartComponent ]
-    })
+    declarations: [TimelineChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

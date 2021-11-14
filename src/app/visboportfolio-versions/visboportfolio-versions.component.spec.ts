@@ -8,8 +8,9 @@ describe('VisboPortfolioVersionsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisboPortfolioVersionsComponent ]
-    })
+    declarations: [VisboPortfolioVersionsComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

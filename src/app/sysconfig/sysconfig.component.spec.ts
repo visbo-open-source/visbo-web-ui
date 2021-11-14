@@ -9,11 +9,12 @@ describe('SysconfigComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         SysconfigComponent,
         SysNavbarComponent
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

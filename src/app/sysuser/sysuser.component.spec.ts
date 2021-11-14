@@ -9,11 +9,12 @@ describe('SysuserComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         SysuserComponent,
         SysNavbarComponent
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

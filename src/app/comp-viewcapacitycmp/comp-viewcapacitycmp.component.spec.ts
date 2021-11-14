@@ -9,10 +9,11 @@ describe('VisboCompViewCapacityCmpComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         VisboCompViewCapacityCmpComponent
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

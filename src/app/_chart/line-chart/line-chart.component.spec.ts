@@ -8,8 +8,9 @@ describe('LineChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LineChartComponent ]
-    })
+    declarations: [LineChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 
