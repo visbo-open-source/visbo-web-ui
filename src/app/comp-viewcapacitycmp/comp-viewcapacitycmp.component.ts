@@ -9,7 +9,7 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
-import { VisboProject, VPParams } from '../_models/visboproject';
+import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
 import { VisboCapacity, VisboProjectVersion } from '../_models/visboprojectversion';
@@ -21,11 +21,11 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboIsToday, getPreView, visboGetShortText }
+import { getErrorMessage, visboCmpDate, convertDate, validateDate, getPreView }
             from '../_helpers/visbo.helper';
 
 import {ComboChartOptions} from '../_models/_chart'
-import { scale, brewer } from 'chroma-js';
+import { scale } from 'chroma-js';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -208,7 +208,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
     this.initSetting();
     if (!this.refDate) {
-      let act = new Date();
+      const act = new Date();
       this.refDate = [act, act];
     }
     this.currentRefDate = this.refDate[0];
@@ -933,7 +933,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         rowMatrixBudget.push(budget);
         rowMatrixBudget.push(tooltip);
       }
-      childNodeList.forEach((item, index) => {
+      childNodeList.forEach(() => {
         rowMatrixBudget.push(undefined);
         rowMatrixBudget.push(undefined);
         rowMatrixBudget.push(undefined);
@@ -1163,7 +1163,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         rowMatrixBudget.push(element[0].plan || 0); // parent planned cost
         rowMatrixBudget.push(tooltip);
       }
-      childNodeList.forEach((item, index) => {
+      childNodeList.forEach(() => {
         rowMatrixBudget.push(undefined);
         rowMatrixBudget.push(undefined);
         rowMatrixBudget.push(undefined);
@@ -1258,6 +1258,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     this.chartActive = new Date();
   }
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   addCapacityRow(list: any[], element: VisboCapacity, source: boolean): void {
       const currentDate = new Date(element.month);
       // change bar position to be left and right from the beginning of month for the two versions source/compare
@@ -1267,8 +1268,8 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         currentDate.setDate(currentDate.getDate() +5);
       }
       const roleID = this.currentLeaf.uid;
-      let budget: number, actualCost: number, plannedCost: number, budgetCmp: number, actualCostCmp: number, plannedCostCmp: number
-      let tooltip: string, tooltipCmp: string;
+      let budget: number, actualCost: number, plannedCost: number;
+      let tooltip: string;
       if (this.refPFV) {
         // capa Values compared against baseline Values
         if (this.showUnit === 'PD') {

@@ -412,7 +412,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   getVPDouble(vp: VisboProject, key: string): number {
-    let property = getCustomFieldDouble(vp, key);
+    const property = getCustomFieldDouble(vp, key);
     return property?.value;
   }
 
@@ -916,18 +916,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
     } else if (this.sortColumn === 5) {
       this.vpCheckListFiltered.sort(function(a, b) {
-        let aRiskItem = getCustomFieldDouble(a.vp, '_risk');
-        let aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
-        let bRiskItem = getCustomFieldDouble(b.vp, '_risk');
-        let bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
+        const aRiskItem = getCustomFieldDouble(a.vp, '_risk');
+        const aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
+        const bRiskItem = getCustomFieldDouble(b.vp, '_risk');
+        const bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
         return bRisk - aRisk;
       });
     } else if (this.sortColumn === 6) {
       this.vpCheckListFiltered.sort(function(a, b) {
-        let aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
-        let aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
-        let bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
-        let bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
+        const aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
+        const aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
+        const bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
+        const bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
         return aStrategicFit - bStrategicFit;
       });
     } else if (this.sortColumn === 7) {

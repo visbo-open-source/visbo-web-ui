@@ -643,7 +643,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       return;
     }
     // this.log(`calc keyMetrics LEN ${this.vpvList[0].length}`);
-    const filter = (this.filter || '').toLowerCase();
     const refList: number[] = []
     this.initFilter(this.vpvList);
     // add all original vpvs with calculated KeyMetrics to the list

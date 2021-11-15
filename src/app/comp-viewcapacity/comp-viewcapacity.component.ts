@@ -23,7 +23,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, validateDate, visboIsToday, visboGetShortText, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 
-import { scale, brewer } from 'chroma-js';
+import { scale } from 'chroma-js';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -379,7 +379,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const filter = this.filter;
 
     if (!vpList) { return undefined }
-    let listVPFilter: VisboProject[] = [];
+    const listVPFilter: VisboProject[] = [];
     vpList.forEach(item => {
       if (item.vpType != 0) {
         return;
@@ -425,7 +425,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   filterVPV(vpvList: VisboProjectVersion[]): VisboProjectVersion[] {
     const filter = this.filter;
 
-    let vpvFiltered: VisboProjectVersion[] = [];
+    const vpvFiltered: VisboProjectVersion[] = [];
     if (!vpvList) { return vpvFiltered }
     vpvList.forEach(item => {
       if (!item.vp) {
@@ -654,7 +654,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store VC Project Capacity for Len ${visbocenter.capacity.length}`);
               let capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
-              let listVPVFilter = this.filterVPV(this.visboprojectversions);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);
               capacity.forEach(item => {
                 const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
                 item.vp = vpv && vpv.vp;
@@ -696,7 +696,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               let capacity: VisboCapacity[];
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
               capacity = vp.capacity.filter(item => item.vpid != undefined);
-              let listVPVFilter = this.filterVPV(this.visboprojectversions);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);
               capacity.forEach(item => {
                 const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
                 item.vp = vpv && vpv.vp;
@@ -727,7 +727,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   sumCapacityChild(capacityChild: VisboCapacity[]): VisboCapacity[] {
     if (!capacityChild) { return undefined; }
-    let capacityParent: VisboCapacity[] = [];
+    const capacityParent: VisboCapacity[] = [];
     capacityChild.forEach(item => {
       let capacity = capacityParent.find(element => element.month == item.month);
       if (!capacity) {
@@ -1410,7 +1410,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (row) {
         const index = mapNodeList[item.roleName];
         if (index >= 0) {
-          let plan = 0, budget = 0 , capa = 0, capaIntern = 0;
+          let plan = 0, budget = 0 , capaIntern = 0;
           if (this.showUnit === 'PD') {
             plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
           } else {
@@ -2000,7 +2000,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   sortProjectsByBusinessUnit(capacity: VisboCapacity[]): VisboCapacity[] {
-    let listVPProperties = this.listVPProperties;
+    const listVPProperties = this.listVPProperties;
     capacity.sort((a, z) => {
       // sorts the businessUnit alphanumerical ascending
       const aBU = listVPProperties[a.vpid]?._bu || "zzzzzz";

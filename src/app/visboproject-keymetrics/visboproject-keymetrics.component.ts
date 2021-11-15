@@ -867,12 +867,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     let localVPStatus = '';
     this.dropDownVPStatus = [];
     let changeOrdered = false
-    let variantPFV = this.vpActive.variant.find(item => item.variantName == 'pfv');
+    const variantPFV = this.vpActive.variant.find(item => item.variantName == 'pfv');
     if (this.vpActive.vpStatus == 'ordered' || variantPFV?.vpvCount > 0 ) {
       changeOrdered = true;
     }
     if (this.vpActive.vpvCount == 0) {
-      let status = this.vpActive.vpStatus || 'initialized'
+      const status = this.vpActive.vpStatus || 'initialized'
       localVPStatus = this.translate.instant('vpStatus.' + status);
       this.dropDownVPStatus.push({name: status, localName: localVPStatus});
     } else {
@@ -947,7 +947,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   getVPStatus(): string {
-    let result = this.customVPStatus ? this.dropDownVPStatus.find(item => item.name == this.customVPStatus) : undefined;
+    const result = this.customVPStatus ? this.dropDownVPStatus.find(item => item.name == this.customVPStatus) : undefined;
 
     return result ? result.localName : undefined;
   }
@@ -1489,7 +1489,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   getMonthEnd(actual: Date): Date {
-    let actualDate = actual ? new Date(actual) : undefined;
+    const actualDate = actual ? new Date(actual) : undefined;
     if (actualDate) {
       actualDate.setMonth(actualDate.getMonth() + 1);
       actualDate.setDate(1);

@@ -191,7 +191,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     this.listVPV.sort(function(a, b) {
       const aBusinessUnit = getCustomFieldString(a.vp, '_businessUnit')?.value || "";
-      const bBusinessUnit = getCustomFieldString(b.vp, '_businessUnit')?.value || "";    
+      const bBusinessUnit = getCustomFieldString(b.vp, '_businessUnit')?.value || "";
       let result = visboCmpString((bBusinessUnit || '').toLowerCase(), (aBusinessUnit || '').toLowerCase());
       if (result == 0) {
         result = visboCmpDate(b.startDate, a.startDate);
@@ -210,7 +210,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let bu = '';
     let rgbHex = defaultColor;
     const colorArray = [];
-   
+
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
         continue;
@@ -225,13 +225,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         // ignore projects not matching filter
         continue;
       }
-   
+
       if (this.filterBU) {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         if ((item?.value || '') !== this.filterBU) {
           continue;
         }
-      }  
+      }
       if (this.filterVPStatusIndex > 0) {
         const setting = this.listVPV[i].vp.vpStatus;
         if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
@@ -265,24 +265,24 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         ]);
         let buColor = 0;
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
-        
+
         bu = item ? item.value : undefined;
         console.log("BusinessUnit %s", bu);
-                
-        if (bu) {                  
+
+        if (bu) {
           buColor = buDefs[bu];
-          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;    
+          rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
         } else {
           rgbHex = defaultColor;
-        }      
+        }
         console.log("BusinessUnit - Color %s", rgbHex);
-        let newColor = undefined;         
-        
+        let newColor = undefined;
+
         if (!this.listVPV[i].vp.vpStatus) {
-            newColor = chroma(rgbHex).brighten(3).hex();              
+            newColor = chroma(rgbHex).brighten(3).hex();
             colorArray.push(newColor)
         }
-        switch (this.listVPV[i].vp.vpStatus) {            
+        switch (this.listVPV[i].vp.vpStatus) {
           case 'initialized':
             newColor = chroma(rgbHex).brighten(3).hex();
             colorArray.push(newColor)
@@ -368,8 +368,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     // get businessUnit of vp
     const item = getCustomFieldString(vpv.vp, '_businessUnit');
     const businessUnit = item ? item.value : undefined;
-    // get localName of vpStatus 
-    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";    
+    // get localName of vpStatus
+    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";
     const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
     const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
     if (vpstatus) {
@@ -529,7 +529,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   getMinAndMaxDate(vpvList: VisboProjectVersion[]): startAndEndDate {
 
-    let minMaxDate = new startAndEndDate();
+    const minMaxDate = new startAndEndDate();
     let newStartDate = new Date(8640000000000000);
     let newEndDate =  new Date(-8640000000000000);
 

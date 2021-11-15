@@ -353,7 +353,7 @@ export class SysauditComponent implements OnInit {
       // restrict to top 10 Users + others
       const maxUsers = 10;
       if (graphData.length > maxUsers) {
-        for (var index = graphData.length - 1; index > maxUsers; index--) {
+        for (let index = graphData.length - 1; index > maxUsers; index--) {
           graphData[maxUsers][1] += graphData[index][1];
           graphData[maxUsers][2] += graphData[index][2];
           graphData[maxUsers][3] += graphData[index][3];
@@ -425,7 +425,7 @@ export class SysauditComponent implements OnInit {
       // restrict to top 10 User Agents + others
       const maxAgents = 10;
       if (graphData.length > maxAgents) {
-        for (var index = graphData.length - 1; index > maxAgents; index--) {
+        for (let index = graphData.length - 1; index > maxAgents; index--) {
           graphData[maxAgents][1] += graphData[index][1];
           graphData[maxAgents][2] += graphData[index][2];
           graphData[maxAgents][3] += graphData[index][3];
