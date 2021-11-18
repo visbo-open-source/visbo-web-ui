@@ -5,8 +5,8 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build --configuration production",
-        "test": "ng test",
+        "build": "npm audit >audit-log.txt; ng build --configuration production",
+        "audit": "npm audit >audit-log.txt",
         "lint": "eslint src/app --ext .ts"
     },
     "private": true,
