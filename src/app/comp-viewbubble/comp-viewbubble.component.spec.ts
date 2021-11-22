@@ -8,8 +8,9 @@ describe('VisboCompViewBubbleComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisboCompViewBubbleComponent ]
-    })
+    declarations: [VisboCompViewBubbleComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

@@ -247,6 +247,12 @@
                   {{ vpvActive.ampelErlaeuterung }}
                 </td>
               </tr>
+              <tr *ngIf="vpvActive.actualDataUntil">
+                <td>{{ 'vpKeyMetric.lbl.actualDataUntil' | translate }}</td>
+                <td>
+                  {{ getMonthEnd(vpvActive.actualDataUntil) | date :'dd.MM.yyyy' }}
+                </td>
+              </tr>
               <tr *ngIf="vpvActive.leadPerson">
                 <td>{{ 'vpKeyMetric.lbl.leadPerson' | translate }}</td>
                 <td title="{{ vpvActive.leadPerson }}">

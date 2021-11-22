@@ -8,8 +8,9 @@ describe('BubbleChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BubbleChartComponent ]
-    })
+    declarations: [BubbleChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

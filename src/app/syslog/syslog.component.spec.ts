@@ -8,8 +8,9 @@ describe('SysLogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SysLogComponent ]
-    })
+    declarations: [SysLogComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

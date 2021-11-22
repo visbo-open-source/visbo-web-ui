@@ -11,14 +11,15 @@ describe('LoginComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         LoginComponent
-      ],
-      imports: [
+    ],
+    imports: [
         FormsModule,
         RouterTestingModule
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

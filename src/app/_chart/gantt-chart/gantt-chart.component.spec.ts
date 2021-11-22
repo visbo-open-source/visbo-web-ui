@@ -8,8 +8,9 @@ describe('GanttChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GanttChartComponent ]
-    })
+    declarations: [GanttChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 
