@@ -11,15 +11,19 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
-import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
-
-import { scale } from 'chroma-js';
+import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
 
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
+import * as chroma from 'chroma-js';
 
 class startAndEndDate {
   start: Date;
   end: Date;
+}
+
+class DropDownStatus {
+  name: string;
+  localName: string;
 }
 
 @Component({
@@ -39,6 +43,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   filterRisk: number;
   filterBU: string;
   dropDownBU: string[];
+  filterVPStatusIndex: number;
+  dropDownVPStatus: DropDownStatus[];
   activeID: string; // either VP ID of Portfolio or VC ID
   timeoutID: number;
 
@@ -94,17 +100,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.activeID = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
     const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
     const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
-    const filterRisk = (this.route.snapshot.queryParams['filterRisk'] || '0').valueOf() || undefined;
-    const filterStrategicFit = (this.route.snapshot.queryParams['filterStrategicFit'] || '0').valueOf() || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
 
     this.refDate = refDate ? new Date(refDate) : new Date();
     this.filter = filter;
     this.filterBU = filterBU;
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
-
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
+    this.initVPStateDropDown();
   }
 
   filterKeyBoardEvent(event: KeyboardEvent): void {
@@ -127,6 +138,16 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.visboViewBoardOverTime();
   }
 
+  filterEventVPStatus(index: number): void {
+    if (index <= 0 || index >= this.dropDownVPStatus.length) {
+      this.filterVPStatusIndex = 0;
+    } else {
+      this.filterVPStatusIndex = index;
+    }
+    this.updateUrlParam('filter', undefined);
+    this.visboViewBoardOverTime();
+  }
+
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -135,6 +156,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (type == 'filter') {
       queryParams.filter = this.filter;
       localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterVPStatus = this.getVPStatus(false);
+      localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
       queryParams.filterBU = this.filterBU;
       localStorage.setItem('vpfFilterBU', this.filterBU || '');
       queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
@@ -167,7 +190,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
 
     this.listVPV.sort(function(a, b) {
-      let result = visboCmpString((b.businessUnit || '').toLowerCase(), (a.businessUnit || '').toLowerCase());
+      const aBusinessUnit = getCustomFieldString(a.vp, '_businessUnit')?.value || "";
+      const bBusinessUnit = getCustomFieldString(b.vp, '_businessUnit')?.value || "";
+      let result = visboCmpString((bBusinessUnit || '').toLowerCase(), (aBusinessUnit || '').toLowerCase());
       if (result == 0) {
         result = visboCmpDate(b.startDate, a.startDate);
       }
@@ -183,13 +208,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     // variables to count the number of sameBu's
     let bu = '';
-    let lastbu = '';
-    let sameBuCount = 0;
     let rgbHex = defaultColor;
-    let colorArray = [];
-    let nobuArray = [];
-    let scaleArray = [];
-    let nobu = 0;
+    const colorArray = [];
 
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
@@ -200,15 +220,21 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
           || (this.listVPV[i].description || '').toLowerCase().indexOf(filter) >= 0
-          || this.listVPV[i].status?.toLowerCase().indexOf(filter) >= 0
         )
       ) {
         // ignore projects not matching filter
         continue;
       }
+
       if (this.filterBU) {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
         if ((item?.value || '') !== this.filterBU) {
+          continue;
+        }
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = this.listVPV[i].vp.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
           continue;
         }
       }
@@ -239,33 +265,52 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         ]);
         let buColor = 0;
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
+
         bu = item ? item.value : undefined;
-        if (i == 0) { lastbu = bu }
+        console.log("BusinessUnit %s", bu);
+
         if (bu) {
-          if (lastbu != bu){
-            scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
-            scaleArray.splice(scaleArray.length-3, 3);
-            scaleArray.reverse();
-            colorArray = colorArray.concat(scaleArray);
-            sameBuCount = 0;
-            lastbu = bu;
-          }
-          sameBuCount += 1;
           buColor = buDefs[bu];
           rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
         } else {
-          nobu += 1;
-          nobuArray.push(defaultColor);
+          rgbHex = defaultColor;
         }
+        console.log("BusinessUnit - Color %s", rgbHex);
+        let newColor = undefined;
 
+        if (!this.listVPV[i].vp.vpStatus) {
+            newColor = chroma(rgbHex).brighten(3).hex();
+            colorArray.push(newColor)
+        }
+        switch (this.listVPV[i].vp.vpStatus) {
+          case 'initialized':
+            newColor = chroma(rgbHex).brighten(3).hex();
+            colorArray.push(newColor)
+            break;
+          case 'proposed':
+            newColor = chroma(rgbHex).brighten(3).hex();
+            colorArray.push(newColor)
+            break;
+          case 'ordered':
+            newColor = chroma(rgbHex).brighten().hex();
+            colorArray.push(newColor)
+            break;
+          case 'paused':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+          case 'finished':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+          case 'stopped':
+            newColor = chroma(rgbHex).darken(1).hex();
+            colorArray.push(newColor)
+            break;
+        }
       }
     }
-    scaleArray = scale([rgbHex, 'white']).colors(sameBuCount + 3);
-    scaleArray.splice(scaleArray.length-3, 3);
-    scaleArray.reverse();
-    colorArray = colorArray.concat(scaleArray);
-    colorArray = colorArray.concat(nobuArray)
-
+    //colorArray = colorArray.concat(nobuArray);
 
     this.graphOptionsTimeline.colors = colorArray;
 
@@ -314,15 +359,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + this.combineName(vpv.name, vpv.variantName) + '</b></div>' + '<div>' +
       '<table>';
-
+    const status = this.translate.instant('compViewBoard.lbl.vpStatus')
     const bu = this.translate.instant('compViewBoard.lbl.bu');
     const lead = this.translate.instant('compViewBoard.lbl.lead');
     const template = this.translate.instant('compViewBoard.lbl.template');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
-
+    // get businessUnit of vp
     const item = getCustomFieldString(vpv.vp, '_businessUnit');
     const businessUnit = item ? item.value : undefined;
+    // get localName of vpStatus
+    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";
+    const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
+    const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
+    if (vpstatus) {
+      result = result + '<tr>' + '<td>' + status + ':</td>' + '<td><b>' + localVPStatus + '</b></td>' + '</tr>';
+    }
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
@@ -357,6 +409,21 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
   }
 
+  getVPStatus(local: boolean): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+      result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
+  }
+
   combineName(vpName: string, variantName: string): string {
     let result = vpName || '';
     if (variantName) {
@@ -383,6 +450,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
+    let lastValueRisk: number;
+    let lastValueSF: number;
+    let lastValueVPStatus: string;
+    let lastValueBU: string;
     if (!vpvList && vpvList.length < 1) {
       return;
     }
@@ -391,25 +462,39 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
           if (customField) {
-            this.filterStrategicFit = 0;
-            item.StrategicFit = customField.value;
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+              this.filterStrategicFit = 0;
+            }
+            lastValueSF = customField.value
           }
         }
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
           if (customField) {
-            this.filterRisk = 0;
-            item.Risiko = customField.value;
+            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+              this.filterRisk = 0;
+            }
+            lastValueRisk = customField.value
           }
         }
       }
       if (item.vp?.customFieldString) {
-        const customField = getCustomFieldString(item.vp, '_businessUnit');
-        if (customField) {
-          item.businessUnit = customField.value;
-        } else {
-          item.businessUnit = '';
+        if (this.filterBU === undefined) {
+          const customField = getCustomFieldString(item.vp, '_businessUnit');
+          if (customField) {
+            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+              this.filterBU = '';
+            }
+            lastValueBU = customField.value
+          }
         }
+      }
+      const vpStatus = item.vp?.vpStatus;
+      if (vpStatus) {
+        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          this.filterVPStatusIndex = 0;
+        }
+        lastValueVPStatus = vpStatus
       }
     });
   }
@@ -429,9 +514,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
   }
 
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
+    }
+  }
+
   getMinAndMaxDate(vpvList: VisboProjectVersion[]): startAndEndDate {
 
-    let minMaxDate = new startAndEndDate();
+    const minMaxDate = new startAndEndDate();
     let newStartDate = new Date(8640000000000000);
     let newEndDate =  new Date(-8640000000000000);
 

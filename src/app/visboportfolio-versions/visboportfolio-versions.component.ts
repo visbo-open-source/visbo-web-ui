@@ -14,7 +14,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboUser } from '../_models/visbouser';
-import { VisboProject, VPVariant, getCustomFieldDouble } from '../_models/visboproject';
+import { VisboProject, VPVariant, getCustomFieldDouble, constSystemVPStatus } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -40,6 +40,11 @@ class vpCheckItem {
   description?: string;
   hasVariants: boolean;
   vp: VisboProject;
+}
+
+class DropDownStatus {
+  name: string;
+  localName: string;
 }
 
 @Component({
@@ -84,6 +89,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vcOrga: VisboSetting[];
     customize: VisboSetting;
     calcPredict = false;
+    dropDownVPStatus: DropDownStatus[];
 
     pageParams = new VPFParams();
     isGlobalChecked = false;
@@ -124,12 +130,26 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpfid = vpfid;
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
     this.changeView(nextView, refDate ? this.vpvRefDate : undefined, filter, vpfid, false);
+    this.initVPStateDropDown();
 
     this.getVisboProject();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Portfolio Changes ${JSON.stringify(changes)}`);
+  }
+
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -392,7 +412,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   getVPDouble(vp: VisboProject, key: string): number {
-    let property = getCustomFieldDouble(vp, key);
+    const property = getCustomFieldDouble(vp, key);
     return property?.value;
   }
 
@@ -836,6 +856,23 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
+  getVPStatus(local: boolean, original: string = undefined): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (original) {
+      result = this.dropDownVPStatus.find(item => item.name == original) || result;
+    // } else if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+    //   result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
+  }
+
   displayVariantName(variant: DropDown): string {
     let result = '';
     if (variant?.variantName) {
@@ -879,19 +916,24 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
     } else if (this.sortColumn === 5) {
       this.vpCheckListFiltered.sort(function(a, b) {
-        let aRiskItem = getCustomFieldDouble(a.vp, '_risk');
-        let aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
-        let bRiskItem = getCustomFieldDouble(b.vp, '_risk');
-        let bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
+        const aRiskItem = getCustomFieldDouble(a.vp, '_risk');
+        const aRisk = aRiskItem ? aRiskItem.value || 0 : 0;
+        const bRiskItem = getCustomFieldDouble(b.vp, '_risk');
+        const bRisk = bRiskItem ? bRiskItem.value || 0 : 0;
         return bRisk - aRisk;
       });
     } else if (this.sortColumn === 6) {
       this.vpCheckListFiltered.sort(function(a, b) {
-        let aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
-        let aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
-        let bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
-        let bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
+        const aStrategicFitItem = getCustomFieldDouble(a.vp, '_strategicFit');
+        const aStrategicFit = aStrategicFitItem ? aStrategicFitItem.value || 0 : 0;
+        const bStrategicFitItem = getCustomFieldDouble(b.vp, '_strategicFit');
+        const bStrategicFit = bStrategicFitItem ? bStrategicFitItem.value || 0 : 0;
         return aStrategicFit - bStrategicFit;
+      });
+    } else if (this.sortColumn === 7) {
+      // sort by VP Status
+      this.vpCheckListFiltered.sort(function(a, b) {
+        return visboCmpString(a.vp.vpStatus, b.vp.vpStatus);
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)

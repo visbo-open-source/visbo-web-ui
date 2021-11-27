@@ -8,8 +8,9 @@ describe('RegisterconfirmComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegisterconfirmComponent ]
-    })
+    declarations: [RegisterconfirmComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

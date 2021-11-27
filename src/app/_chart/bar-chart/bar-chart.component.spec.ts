@@ -8,8 +8,9 @@ describe('BarChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ BarChartComponent ]
-    })
+    declarations: [BarChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

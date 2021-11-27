@@ -9,10 +9,10 @@ import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
 import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
-import { getCustomFieldDouble, getCustomFieldString, VisboProject, VPParams } from '../_models/visboproject';
+import { getCustomFieldDouble, getCustomFieldString, VisboProject, VPParams, constSystemVPStatus } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
-import { VisboCapacity, VisboProjectVersion } from '../_models/visboprojectversion';
+import { VisboCapacity, VisboProjectVersion} from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -21,10 +21,9 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpDate, convertDate, validateDate, visboIsToday, getPreView, visboGetShortText, excelColorToRGBHex }
-            from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, validateDate, visboIsToday, visboGetShortText, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 
-import { scale, brewer } from 'chroma-js';
+import { scale } from 'chroma-js';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -50,12 +49,24 @@ class DrillDownElement {
   plan: number;
   planTotal: number;
   budget: number;
+  budgetIntern: number;
 }
 
 class DrillDownCapa {
   id: number;
   name: string;
   localName: string;
+}
+
+class DropDownStatus {
+  name: string;
+  localName: string;
+}
+
+class VPProperties {
+  _bu: string;
+  _strategicFit: number;
+  _risk: number;
 }
 
 @Component({
@@ -78,8 +89,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
+  visboprojectversions: VisboProjectVersion[];
+
   capaLoad: CapaLoad[];
   timeoutID: number;
+  timeoutFilterID: number;
   hasCost: boolean;
   printView = false;
 
@@ -92,6 +106,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   sumCost = 0;
   sumBudget = 0;
+
+  filter: string;
+  filterStrategicFit: number;
+  filterRisk: number;
+  filterBU: string;
+  dropDownBU: string[];
+  filterVPStatusIndex: number;
+  dropDownVPStatus: DropDownStatus[];
+
+  listVPProperties: VPProperties[];
 
   showUnit: string;
   showUnitText: string;
@@ -114,20 +138,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     {type: 'line', lineWidth: 4, pointSize: 0},
     {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1},
     // legende of Ist-Kosten visible or not
-    {visibleInLegend: true},    
+    {visibleInLegend: true},
     // legend of Plan-Kosten visible or not
     {visibleInLegend: true},
     // legend of otherActivity-Kosten visible or not
     {visibleInLegend: true}
   ];
-  // seriesPFV = {
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'none', lineWidth: 0,lineDashStyle: [4, 4], pointSize: 0}
-  // };
-  // seriesOrga ={
-  //   0: {type: 'line', lineWidth: 4, pointSize: 0},
-  //   1: {type: 'line', lineWidth: 2, lineDashStyle: [4, 4], pointSize: 1}
-  // };
 
   chartActive: Date;
   graphDataComboChart = [];
@@ -227,7 +243,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.drillDownCapaFiltered = this.drillDownCapa.filter( item => (item.id != 2)  && (item.id != 3));
       this.lastTimestampVPF = this.vpvActive.timestamp;
     }
-
+    this.initVPProperties();
+    this.getProjectVersions();
     this.visboViewOrganisationTree();
     this.getCapacity();
   }
@@ -237,17 +254,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     let refresh = false;
 
     // in case of VP Capacity
-    if (changes.vpvActive?.currentValue?.timestamp &&  changes.vpvActive?.currentValue?.timestamp != changes.vpvActive?.previousValue?.timestamp ) {
+    if (changes.vpvActive?.previousValue && changes.vpvActive?.currentValue?.timestamp &&  changes.vpvActive?.currentValue?.timestamp != changes.vpvActive?.previousValue?.timestamp ) {
       refresh = true;
     }
     // in case of VPF Capacity changing VPF Version
-    if ((changes.vpfActive?.currentValue?.timestamp &&  changes.vpfActive?.currentValue?.timestamp != changes.vpfActive?.previousValue?.timestamp)) {
+    if (changes.vpfActive?.previousValue && changes.vpfActive?.currentValue?.timestamp &&  changes.vpfActive?.currentValue?.timestamp != changes.vpfActive?.previousValue?.timestamp) {
       refresh = true;
     }
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
-    if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())
-    || (this.vpfActive && this.lastTimestampVPF !== this.vpfActive.timestamp)
-    ) {
+    if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
       this.initSetting();
       this.getCapacity();
     }
@@ -263,10 +278,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return;
     }
     // check only width for redraw chart
-    if (Math.abs(event.newWidth - event.oldWidth) < 5) {
+    if (Math.abs(event.newRect.width - event.oldRect.width) < 5) {
       return;
     }
-    this.log(`Capacity Resize ${diff} ${Math.abs(event.newHeight - event.oldHeight)} ${Math.abs(event.newWidth - event.oldWidth)}`);
+    this.log(`Resize ${diff} ${Math.abs(event.newRect.height - event.oldRect.height)} ${Math.abs(event.newRect.width - event.oldRect.width)}`);
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
     this.timeoutID = setTimeout(() => {
       this.visboViewCapacityOverTime();
@@ -274,14 +289,49 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }, 500);
   }
 
+  initVPProperties(): void {
+      if (!this.listVP) { return; }
+      this.listVPProperties = [];
+      this.listVP.forEach(vp => {
+        const properties = new VPProperties();
+        properties._bu = getCustomFieldString(vp, "_businessUnit")?.value;
+        properties._strategicFit = getCustomFieldDouble(vp, "_strategicFit")?.value;
+        properties._risk = getCustomFieldDouble(vp, "_risk")?.value;
+        this.listVPProperties[vp._id] = properties;
+      });
+      return;
+  }
+
   initSetting(): void {
     this.chartActive = undefined;
     this.roleID = this.route.snapshot.queryParams['roleID'];
     const pfv = this.route.snapshot.queryParams['pfv'];
     this.refPFV = pfv && Number(pfv) ? true : false;
-    this.drillDown = Number(this.route.snapshot.queryParams['drillDown']) || 0;
     const unit = this.route.snapshot.queryParams['unit'];
     this.initShowUnit(unit);
+
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
+    const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
+    if (filter) {
+      this.filter = filter;
+    }
+    this.filterBU = filterBU;
+    this.filterRisk = filterRisk;
+    this.filterStrategicFit = filterStrategicFit;
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
+    this.log(`Call init Filter ${this.visboprojectversions && this.visboprojectversions.length}`);
+    this.initFilter(this.listVP);
+    let drillDown = Number(this.route.snapshot.queryParams['drillDown']);
+    if (!(drillDown >= 0)) {
+      drillDown =  this.checkFilter() ? 2 : 0;
+    }
+    this.drillDown = drillDown;
 
     const from = this.route.snapshot.queryParams['from'];
     const to = this.route.snapshot.queryParams['to'];
@@ -319,8 +369,203 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpActive) {
       this.currentName = this.vpActive.name;
     }
+    this.initBUDropDown();
+    this.initVPStateDropDown();
 
     this.log(`Capacity From / To ${this.capacityFrom} / ${this.capacityTo}`);
+  }
+
+  filterVP(vpList: VisboProject[]): VisboProject[] {
+    const filter = this.filter;
+
+    if (!vpList) { return undefined }
+    const listVPFilter: VisboProject[] = [];
+    vpList.forEach(item => {
+      if (item.vpType != 0) {
+        return;
+      }
+      if (filter
+        && !(item.name.toLowerCase().indexOf(filter) >= 0
+          // || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
+          // || (item.leadPerson || '').toLowerCase().indexOf(filter) >= 0
+          || (item.description || '').toLowerCase().indexOf(filter) >= 0
+        )
+      ) {
+        return;
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = item.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+          return;
+        }
+      }
+      if (this.filterBU) {
+        const setting = getCustomFieldString(item, '_businessUnit');
+        if (setting && setting.value !== this.filterBU) {
+          return;
+        }
+      }
+      if (this.filterRisk >= 0) {
+        const setting = getCustomFieldDouble(item, '_risk');
+        if (setting && setting.value < this.filterRisk) {
+          return;
+        }
+      }
+      if (this.filterStrategicFit >= 0) {
+        const setting = getCustomFieldDouble(item, '_strategicFit');
+        if (setting && setting.value < this.filterStrategicFit) {
+          return;
+        }
+      }
+      listVPFilter.push(item);
+    })
+    return listVPFilter;
+  }
+
+  filterVPV(vpvList: VisboProjectVersion[]): VisboProjectVersion[] {
+    const filter = this.filter;
+
+    const vpvFiltered: VisboProjectVersion[] = [];
+    if (!vpvList) { return vpvFiltered }
+    vpvList.forEach(item => {
+      if (!item.vp) {
+        return;
+      }
+      if (item.vp.vpType != 0) {
+        return;
+      }
+      if (filter
+        && !(item.vp.name.toLowerCase().indexOf(filter) >= 0
+          || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
+          || (item.leadPerson || '').toLowerCase().indexOf(filter) >= 0
+          || (item.vp.description || '').toLowerCase().indexOf(filter) >= 0
+        )
+      ) {
+        return;
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = item.vp.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+          return;
+        }
+      }
+      if (this.filterBU) {
+        const setting = getCustomFieldString(item.vp, '_businessUnit');
+        if (setting && setting.value !== this.filterBU) {
+          return;
+        }
+      }
+      if (this.filterRisk >= 0) {
+        const setting = getCustomFieldDouble(item.vp, '_risk');
+        if (setting && setting.value < this.filterRisk) {
+          return;
+        }
+      }
+      if (this.filterStrategicFit >= 0) {
+        const setting = getCustomFieldDouble(item.vp, '_strategicFit');
+        if (setting && setting.value < this.filterStrategicFit) {
+          return;
+        }
+      }
+      vpvFiltered.push(item);
+    })
+    return vpvFiltered;
+  }
+
+  initFilter(vpList: VisboProject[]): void {
+    let lastValueRisk: number;
+    let lastValueSF: number;
+    let lastValueVPStatus: string;
+    let lastValueBU: string;
+    if (!vpList || vpList.length < 1) {
+      return;
+    }
+
+    vpList.forEach( item => {
+      this.log(`initFilter check vp ${item.name}`)
+      if (item.customFieldDouble) {
+        if (this.filterStrategicFit === undefined) {
+          const customField = getCustomFieldDouble(item, '_strategicFit');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} strategicFit ${customField}`);
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+              this.filterStrategicFit = 0;
+            }
+            lastValueSF = customField.value
+          }
+        }
+        if (this.filterRisk === undefined) {
+          const customField = getCustomFieldDouble(item, '_risk');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} risk ${customField}`);
+            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+              this.filterRisk = 0;
+            }
+            lastValueRisk = customField.value
+          }
+        }
+      }
+      if (item.customFieldString) {
+        if (this.filterBU === undefined) {
+          const customField = getCustomFieldString(item, '_businessUnit');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} BU ${customField}`);
+            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+              this.filterBU = '';
+            }
+            lastValueBU = customField.value
+          }
+        }
+      }
+      const vpStatus = item.vpStatus;
+      if (vpStatus) {
+        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          this.filterVPStatusIndex = 0;
+        }
+        lastValueVPStatus = vpStatus
+      }
+    });
+  }
+
+  checkFilter(): boolean {
+    if ( this.filter
+      || this.filterStrategicFit > 0
+      || this.filterRisk > 0
+      || this.filterBU
+      || this.filterVPStatusIndex > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  initBUDropDown(): void {
+    const listBU = this.customize?.value?.businessUnitDefinitions;
+    if (!listBU) return;
+    this.dropDownBU = [];
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } else {
+      this.dropDownBU = undefined;
+    }
+  }
+
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -336,12 +581,60 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     return (this.combinedPerm.vc & perm) > 0;
   }
-  
+
   getCapacity(): void {
     if ((this.drillDown == 2)|| (this.drillDown == 3)) {
       this.getProjectCapacity();
     } else {
       this.getCapacityOrga();
+    }
+  }
+
+  getProjectVersions(): void {
+    this.visboprojectversions = undefined;
+
+    if (this.vcActive ) {
+      this.log(`Get VPV of VC ${this.vcActive._id}`);
+      this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id)
+        .subscribe(
+          vpv => {
+            // map vp to the list
+            vpv.forEach(item => {
+              item.vp = this.listVP.find(element => element._id.toString() == item.vpid.toString());
+            })
+            this.visboprojectversions = vpv;
+          },
+          error => {
+            this.log(`get VC Project Versions failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpfActive) {
+      this.log(`Get VPV of VPF ${this.vpActive._id} VPF ${this.vpfActive._id}`);
+      this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id)
+        .subscribe(
+          vpv => {
+            // map vp to the list
+            vpv.forEach(item => {
+              item.vp = this.listVP.find(element => element._id.toString() == item.vpid.toString());
+            })
+            this.visboprojectversions = vpv;
+          },
+          error => {
+            this.log(`get VPF Project Versions failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCapacity.msg.errorPermCapacity', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
     }
   }
 
@@ -360,13 +653,19 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapacityChild = [];
             } else {
               this.log(`Store VC Project Capacity for Len ${visbocenter.capacity.length}`);
-              let capacity = visbocenter.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacity = capacity;
-              capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
+              let capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);
               capacity.forEach(item => {
-                item.vp = this.listVP?.find(vp => vp._id == item.vpid);
+                const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
+                item.vp = vpv && vpv.vp;
               });
+              capacity = capacity.filter(item => item.vp != undefined);
               this.visboCapacityChild = capacity;
+              if (this.checkFilter() && this.refPFV) {
+                this.visboCapacity = this.sumCapacityChild(this.visboCapacityChild);
+              } else {
+                this.visboCapacity = visbocenter.capacity.filter(item => item.vpid == undefined);
+              }
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -392,15 +691,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             if (!vp.capacity || vp.capacity.length === 0) {
               this.log(`get VPF Calc: Reset Capacity to empty `);
               this.visboCapacity = [];
+              this.visboCapacityChild = [];
             } else {
+              let capacity: VisboCapacity[];
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
-              let capacity = vp.capacity.filter(item => item.vpid == undefined);
-              this.visboCapacity = capacity;
               capacity = vp.capacity.filter(item => item.vpid != undefined);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);
               capacity.forEach(item => {
-                item.vp = this.listVP?.find(vp => vp._id == item.vpid);
+                const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
+                item.vp = vpv && vpv.vp;
               });
+              capacity = capacity.filter(item => item.vp != undefined);
               this.visboCapacityChild = capacity;
+              if (this.checkFilter() && this.refPFV) {
+                this.visboCapacity = this.sumCapacityChild(this.visboCapacityChild);
+              } else {
+                this.visboCapacity = vp.capacity.filter(item => item.vpid == undefined);
+              }
             }
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
@@ -416,6 +723,29 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
         );
     }
+  }
+
+  sumCapacityChild(capacityChild: VisboCapacity[]): VisboCapacity[] {
+    if (!capacityChild) { return undefined; }
+    const capacityParent: VisboCapacity[] = [];
+    capacityChild.forEach(item => {
+      let capacity = capacityParent.find(element => element.month == item.month);
+      if (!capacity) {
+        capacity = new VisboCapacity();
+        capacity.month = item.month;
+        capacity.roleID = item.roleID;
+        capacity.roleName = item.roleName;
+        capacity.name = 'All';
+        capacity.baselineCost = 0;
+        capacity.baselineCost_PT = 0;
+        capacityParent.push(capacity);
+      }
+      capacity.baselineCost += item.baselineCost;
+      capacity.baselineCost_PT += item.baselineCost_PT;
+
+      this.log(`Cumulate Child ${item.name} ${item.month}`);
+    });
+    return capacityParent;
   }
 
   getCapacityOrga(): void {
@@ -598,21 +928,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   visboViewOrganisationTree(): void {
-    this.log(`Show the OrgaTree of the VC `);
     const organisation = this.vcOrganisation;
 
     const allRoles = [];
     const allRoleNames = [];
-    this.log(`get all roles of the organisation, prepared for direct access`);
     const roles = organisation && organisation.value && organisation.value.allRoles;
     for (let  i = 0; i < roles.length; i++) {
       allRoles[roles[i].uid] = roles[i];
       allRoleNames[roles[i].name] = roles[i];
     }
-    this.log(`get all roles of the organisation, prepared for the TreeView`);
     this.topLevelNodes = this.buildTopNodes(allRoles);
     this.orgaTreeData = this.buildOrgaTree(this.topLevelNodes, allRoles);
-    this.log(`initialize the orgaTreeData with one of the topLevel`);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
     if (this.roleID >= 0 && this.roleID < allRoles.length) {
       this.currentLeaf = this.getMappingLeaf(allRoles[this.roleID].name);
@@ -623,7 +949,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.expandParentTree(this.currentLeaf);
     this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
   }
-
 
   initShowUnit(unit: string): void {
     if (!this.hasVPPerm(this.permVP.ViewAudit)) {
@@ -666,6 +991,39 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.getCapacity();
   }
 
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    // let keyCode = event.keyCode;
+    // if (keyCode == 13) {    // return key
+      this.updateUrlParam('filter', undefined)
+    // }
+    if (this.timeoutFilterID) { clearTimeout(this.timeoutFilterID); }
+    this.timeoutFilterID = setTimeout(() => {
+      this.getCapacity();
+      this.timeoutFilterID = undefined;
+    }, 500);
+  }
+
+  filterEventBU(index: number): void {
+    if (index <= 0 || index >= this.dropDownBU.length) {
+      this.filterBU = '';
+    } else {
+      this.filterBU = this.dropDownBU[index];
+    }
+    this.updateUrlParam('filter', undefined);
+    this.getCapacity();
+  }
+
+  filterEventVPStatus(index: number): void {
+    if (index <= 0 || index >= this.dropDownVPStatus.length) {
+      this.filterVPStatusIndex = 0;
+    } else {
+      this.filterVPStatusIndex = index;
+    }
+    this.updateUrlParam('filter', undefined);
+    this.getCapacity();
+  }
+
   updateUrlParam(type: string, value: string, history = false): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -682,6 +1040,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       queryParams.pfv = value;
     } else if (type == 'drillDown') {
       queryParams.drillDown = value == '0' ? undefined : value;
+    } if (type == 'filter') {
+      queryParams.filter = this.filter;
+      localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterVPStatus = this.getVPStatus(false);
+      localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
+      queryParams.filterBU = this.filterBU ? this.filterBU : undefined;
+      localStorage.setItem('vpfFilterBU', this.filterBU || '');
+      queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
+      localStorage.setItem('vpfFilterRisk', (this.filterRisk || 0).toString());
+      queryParams.filterStrategicFit = this.filterStrategicFit > 0 ? this.filterStrategicFit.toString() : undefined;
+      localStorage.setItem('vpfFilterStrategicFit', (this.filterStrategicFit || 0).toString());
     }
     this.router.navigate([url], {
       queryParams: queryParams,
@@ -709,7 +1078,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCapacity.yAxisCapaOverTime');
     this.graphOptionsComboChart.vAxis.format = optformat;
     // set the colors for the Chart
-    if (this.drillDown > 0) {
+    if (this.drillDown > 3) {
       delete this.graphOptionsComboChart.colors;
       this.graphOptionsComboChart.series = this.seriesPFV;
     } else if (this.refPFV) {
@@ -721,7 +1090,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
 
     this.log(`ViewCapacityOverTime Type ${this.drillDown ? 'DrillDown' : 'Plan/Ist'} resource ${this.currentLeaf.name}`);
-    if ((this.drillDown == 2)|| (this.drillDown == 3)) {
+    if ((this.drillDown == 2) || (this.drillDown == 3)) {
       this.visboViewProjectCapacityDrillDown()
     } else if (this.drillDown == 1) {
       this.visboViewCapacityDrillDown()
@@ -772,19 +1141,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // sorting the projects for capacity-chart view projects
     let sortedProjects: VisboCapacity[] = null;
     if (this.drillDown == 2) {
-      sortedProjects = this.visboSortProjects(this.visboCapacityChild, "cost"); 
+      sortedProjects = this.visboSortProjects(this.visboCapacityChild, "cost");
     } else {
       sortedProjects = this.visboSortProjects(this.visboCapacityChild, "businessUnit");
-    }    
-    console.log(sortedProjects);
+    }
     const childNodeList = this.calcChildNode(sortedProjects, 'name');
-    console.log(childNodeList);
     const mapNodeList = this.mapChildNode(childNodeList);
 
 
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
-      let capa = 0, plan = 0;
+      let capa = 0, capaIntern = 0, plan = 0;
       if (this.showUnit === 'PD') {
         plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
       } else {
@@ -798,30 +1165,33 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         }
       } else {
         if (this.showUnit === 'PD') {
-          capa = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
+          capaIntern = (item.internCapa_PT || 0);
+          capa = capaIntern + (item.externCapa_PT || 0);
         } else {
-          capa = (item.internCapa || 0) + (item.externCapa || 0);
+          capaIntern = (item.internCapa || 0);
+          capa = capaIntern + (item.externCapa || 0);
         }
       }
       this.sumCost += plan;
       this.sumBudget += capa;
 
-      
+
       const template: DrillDownElement[] = [];
       const elementDrill = new DrillDownElement();
       elementDrill.currentDate = currentDate;
       elementDrill.name = 'All';
       elementDrill.plan = plan;
       elementDrill.planTotal = plan;
-      elementDrill.budget = capa;     
+      elementDrill.budget = capa;
+      elementDrill.budgetIntern = capaIntern;
       template.push(elementDrill);
       childNodeList.forEach(element => {
-        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0, businessUnit: '', strategicFit: 0});
+        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: 0, budget: 0, budgetIntern: 0, businessUnit: '', strategicFit: 0});
       });
       drillDownCapacity.push(template);
     });
 
-    console.log(drillDownCapacity);
+    // console.log(drillDownCapacity);
 
     // now fill up with the Child Infos
     // this.visboCapacityChild.forEach(item => {
@@ -831,7 +1201,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (row) {
         const index = mapNodeList[item.name];
         if (index >= 0) {
-          let plan = 0, budget = 0;
+          let plan = 0,  capa = 0, capaIntern = 0;
           if (this.showUnit === 'PD') {
             plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
           } else {
@@ -839,21 +1209,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           }
           if (this.refPFV) {
             if (this.showUnit === 'PD') {
-              budget = (item.baselineCost_PT || 0);
+              capa = (item.baselineCost_PT || 0);
             } else {
-              budget = (item.baselineCost || 0);
+              capa = (item.baselineCost || 0);
             }
           } else {
             if (this.showUnit === 'PD') {
-              budget = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
+              capaIntern = (item.internCapa_PT || 0);
+              capa = capaIntern + (item.externCapa_PT || 0);
             } else {
-              budget = (item.internCapa || 0) + (item.externCapa || 0);
+              capaIntern = (item.internCapa || 0);
+              capa = capaIntern + (item.externCapa || 0);
             }
-          }         
-          row[index + 1].businessUnit = getCustomFieldString(item.vp, "_businessUnit")?.value; 
-          row[index + 1].strategicFit = getCustomFieldDouble(item.vp, "_strategicFit")?.value; 
+          }
+          row[index + 1].businessUnit = getCustomFieldString(item.vp, "_businessUnit")?.value;
+          row[index + 1].strategicFit = getCustomFieldDouble(item.vp, "_strategicFit")?.value;
           row[index + 1].plan = plan;
-          row[index + 1].budget = budget;
+          row[index + 1].budget = capa;
+          row[index + 1].budgetIntern = capaIntern;
           row[index + 1].variantName = item.variantName;
         }
       } else {
@@ -870,6 +1243,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(element[0].budget || 0); // parent planned cost
       const tooltip = this.createTooltipProjectDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
       rowMatrix.push(tooltip);
+      if (!this.refPFV) {
+        rowMatrix.push(element[0].budgetIntern || 0);
+        rowMatrix.push(tooltip);
+      }
       childNodeList.forEach((item, index) => {
         rowMatrix.push(element[index + initialOffset].plan);
         const currentElement = element[index + initialOffset];
@@ -893,7 +1270,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             rowMatrix.push(undefined)
           }
         }
-       
+
       });
       graphDataCapacity.push(rowMatrix);
     }
@@ -911,6 +1288,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(currentDate);
       rowMatrix.push(undefined);
       rowMatrix.push(undefined);
+      if (!this.refPFV) {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      }
       childNodeList.forEach(() => {
         rowMatrix.push(undefined);
         rowMatrix.push(undefined);
@@ -924,6 +1305,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     rowHeader.push('Month');
     rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacity.lbl.budget' : 'ViewCapacity.lbl.totalCapa'));
     rowHeader.push(tooltip);
+    if (!this.refPFV) {
+      rowHeader.push(this.translate.instant('ViewCapacity.lbl.internCapa'));
+      rowHeader.push(tooltip);
+    }
     childNodeList.forEach(item => {
       rowHeader.push(item);
       rowHeader.push(tooltip);
@@ -931,33 +1316,34 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     });
     graphDataCapacity.unshift(rowHeader);
 
-    // give the capacities colors   
-    let orgaColors =[];    
+    // give the capacities colors
+    let orgaColors =[];
     if (this.drillDown == 2) {
         // for cost coloring
-        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3)); 
-        // sorted - sum of Cost, the darkest color should be nearest to x-Axis       
-        orgaColors.reverse();  
-    } else { 
+        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeList.length + 3));
+        // sorted - sum of Cost, the darkest color should be nearest to x-Axis
+        orgaColors.reverse();
+    } else {
         // for BU coloring
         const drillDownElementSorted = drillDownCapacity.length> 0 && drillDownCapacity[0];
         const buDefs = [];
         for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
           buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
-        }        
+        }
         for (let s = 1; drillDownElementSorted && s < drillDownElementSorted.length; s++) {
           // s runs beginning as 1 because in the first element there is the sum over all projects
           const defaultColor = '#59a19e';
           const bu = drillDownElementSorted[s].businessUnit;
           const buColor = buDefs[bu];
-          const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;          
-          orgaColors.push(rgbHex);         
-        }    
-    }    
+          const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+          orgaColors.push(rgbHex);
+        }
+    }
     if (this.refPFV) {
       orgaColors.unshift(baselineColor);
     } else {
-      orgaColors.unshift(capaColor);
+      orgaColors.unshift(capaColor);   // color for Capa
+      orgaColors.unshift(capaColor);   // color for internal capa
     }
     this.graphOptionsComboChart.colors = orgaColors;
 
@@ -979,7 +1365,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const drillDownCapacity: DrillDownElement[][] = [];
     this.visboCapacity.forEach(item => {
       const currentDate = new Date(item.month);
-      let capa = 0, plan = 0;
+      let capa = 0, capaIntern = 0, plan = 0;
       if (this.showUnit === 'PD') {
         plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
       } else {
@@ -993,9 +1379,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         }
       } else {
         if (this.showUnit === 'PD') {
-          capa = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
+          capaIntern = (item.internCapa_PT || 0);
+          capa = capaIntern + (item.externCapa_PT || 0);
         } else {
-          capa = (item.internCapa || 0) + (item.externCapa || 0);
+          capaIntern = (item.internCapa || 0);
+          capa = capaIntern + (item.externCapa || 0);
         }
       }
       this.sumCost += plan;
@@ -1008,9 +1396,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       elementDrill.plan = plan;
       elementDrill.planTotal = plan;
       elementDrill.budget = capa;
+      elementDrill.budgetIntern = capaIntern;
       template.push(elementDrill)
       childNodeList.forEach(element => {
-        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0, businessUnit: '', strategicFit: 0});
+        template.push({currentDate: currentDate, name: element, variantName: '', plan: 0, planTotal: undefined, budget: 0, budgetIntern: 0, businessUnit: '', strategicFit: 0});
       });
       drillDownCapacity.push(template);
     });
@@ -1021,7 +1410,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (row) {
         const index = mapNodeList[item.roleName];
         if (index >= 0) {
-          let plan = 0, budget = 0;
+          let plan = 0, budget = 0 , capaIntern = 0;
           if (this.showUnit === 'PD') {
             plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
           } else {
@@ -1035,14 +1424,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             }
           } else {
             if (this.showUnit === 'PD') {
-              budget = (item.internCapa_PT || 0) + (item.externCapa_PT || 0);
+              capaIntern = (item.internCapa_PT || 0);
+              budget = capaIntern + (item.externCapa_PT || 0);
             } else {
-              budget = (item.internCapa || 0) + (item.externCapa || 0);
+              capaIntern = (item.internCapa || 0);
+              budget = capaIntern + (item.externCapa || 0);
             }
           }
 
           row[index + 1].plan = plan;
           row[index + 1].budget = budget;
+          row[index + 1].budgetIntern = capaIntern
           if (row[0].plan >= plan) {
             row[0].plan -= plan;
           } else {
@@ -1063,6 +1455,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(element[0].budget || 0);
       const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
       rowMatrix.push(tooltip);
+      if (!this.refPFV) {
+        rowMatrix.push(element[0].budgetIntern || 0);
+        rowMatrix.push(tooltip);
+      }
       rowMatrix.push(element[0].plan || 0); // parent planned cost
       rowMatrix.push(tooltip);
       childNodeList.forEach((item, index) => {
@@ -1091,6 +1487,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       rowMatrix.push(currentDate);
       rowMatrix.push(undefined);
       rowMatrix.push(undefined);
+      if (!this.refPFV) {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      }
       rowMatrix.push(undefined);
       rowMatrix.push(undefined);
       childNodeList.forEach(() => {
@@ -1106,6 +1506,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     rowHeader.push('Month');
     rowHeader.push(this.translate.instant(this.refPFV ? 'ViewCapacity.lbl.budget' : 'ViewCapacity.lbl.totalCapa'));
     rowHeader.push(tooltip);
+    if (!this.refPFV) {
+      rowHeader.push(this.translate.instant('ViewCapacity.lbl.internCapa'));
+      rowHeader.push(tooltip);
+    }
     rowHeader.push(this.currentLeaf.name);
     rowHeader.push(tooltip);
     childNodeList.forEach(item => {
@@ -1123,7 +1527,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // color for baseline
       orgaColors.unshift(baselineColor);
     } else {
-      // color for capa
+      // color for capa intern & total
+      orgaColors.unshift(capaColor);
       orgaColors.unshift(capaColor);
     }
     this.graphOptionsComboChart.colors = orgaColors;
@@ -1281,7 +1686,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.translate.instant('ViewCapacity.lbl.actualCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.cost'),
-        {type: 'string', role: 'tooltip', 'p': {'html': true}},        
+        {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacity.lbl.otherActivityCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
       ]);
@@ -1453,7 +1858,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       '<div><b>' + current + '</b></div>';
 
     const name = this.translate.instant('ViewCapacity.lbl.project');
-    let unit: string, strBudgetCost: string;
+    let unit: string, strBudgetCost: string, strInternCapa: string;
 
     const strFractionCost = this.translate.instant('ViewCapacity.lbl.fractionCost');
     const strCost = this.translate.instant('ViewCapacity.lbl.cost');
@@ -1464,6 +1869,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     if (refPFV) {
       strBudgetCost = this.translate.instant('ViewCapacity.lbl.budget');
+    } else {
+      strBudgetCost = this.translate.instant('ViewCapacity.lbl.totalCapa');
+      strInternCapa = this.translate.instant('ViewCapacity.lbl.internCapa');
     }
 
     let vpName = item.name;
@@ -1474,6 +1882,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
     if (refPFV) {
       result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+    } else {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
     }
     result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
 
@@ -1486,11 +1897,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         result = result + this.addTooltipRowString(strFractionCost, 'Unknown', false);
       }
     }
-    if (this.drillDown == 3) {
+    if ((this.drillDown == 3) && (vpName != "All")) {
       result = result + this.addTooltipRowString("BusinessUnit", item.businessUnit, false);
       result = result + this.addTooltipRowNumber("StrategicFit", item.strategicFit, 0, '', false);
     }
-    
+
     result = result + '</div>';
     return result;
   }
@@ -1501,7 +1912,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       '<div><b>' + current + '</b></div>';
 
     const roleName = this.translate.instant('ViewCapacity.lbl.roleName');
-    let unit: string, strBudgetCost: string;
+    let unit: string, strBudgetCost: string, strInternCapa: string;
 
     const strDiffCost = this.translate.instant('ViewCapacity.lbl.diffCost');
     const strCost = this.translate.instant('ViewCapacity.lbl.cost');
@@ -1514,11 +1925,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       strBudgetCost = this.translate.instant('ViewCapacity.lbl.budget');
     } else {
       strBudgetCost = this.translate.instant('ViewCapacity.lbl.totalCapa');
+      strInternCapa = this.translate.instant('ViewCapacity.lbl.internCapa');
     }
 
     result = result + this.addTooltipRowString(roleName, item.name, false);
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
-    result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+    if (refPFV) {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+    } else {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
+    }
     result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
@@ -1550,7 +1967,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-
   visboSortProjects(capacity:VisboCapacity[], criterion: "cost" | "businessUnit"): VisboCapacity[] {
     switch(criterion) {
       case "cost":
@@ -1558,59 +1974,47 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       case "businessUnit":
         return this.sortProjectsByBusinessUnit(capacity);
     }
-  }
-
-  sortProjectsByBusinessUnit(capacity: VisboCapacity[]): VisboCapacity[] {
-    const copiedCapacity = [...capacity];
-    const sortedValues = copiedCapacity.sort((a, z) => {
-      //const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
-      const zVP = this.listVP.find(item => item._id == z.vpid);
-      const aVP = this.listVP.find(item => item._id == a.vpid);
-      const zBU = getCustomFieldString(zVP, "_businessUnit")?.value;
-      const aBU = getCustomFieldString(aVP, "_businessUnit")?.value;
-      // sorts the businessUnit alphanumerical ascending
-      if(aBU < zBU) { return -1; }
-      if(aBU > zBU) { return 1; }
-      // sorts the strategicFit descending
-      const zStrategicFit = getCustomFieldDouble(zVP, "_strategicFit")?.value;
-      const aStrategicFit = getCustomFieldDouble(aVP, "_strategicFit")?.value;
-      if(aStrategicFit < zStrategicFit) { return 1; }
-      if(aStrategicFit > zStrategicFit) { return -1; }
-      // nur wenn gleich nach nächsten criterium sortieren
-      // if (a.criterium3 < z.criterium3) { return -1;}
-      // if (a.criterium3 > z.criterium3) { return 1;}
-      return 0;     
-    });
-    return sortedValues;
+    return capacity;
   }
 
   sortProjectsByCost(capacity:VisboCapacity[]): VisboCapacity[] {
-      // ------- SORT by sum value -------
-      const groupKey = (value: VisboCapacity) => value.name;
-      const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.actualCost_PT;
-      const capacityChildGroupedByProject = capacity.reduce((accumulator, elem) => {
-        const key = groupKey(elem);
-        if (!accumulator.has(key)) {
-          accumulator.set(key, {sum: 0, elems: []});
-        }
-        accumulator.get(key).elems.push(elem);
-        accumulator.get(key).sum += sumValue(elem);
-        return accumulator;
-      }, new Map<string, {sum: number; elems: VisboCapacity[]}>());
+    // ------- SORT by sum value -------
+    const groupKey = (value: VisboCapacity) => value.vpid;
+    const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.actualCost_PT;
+    const capacityChildGroupedByProject = capacity.reduce((accumulator, elem) => {
+      const key = groupKey(elem);
+      if (!accumulator.has(key)) {
+        accumulator.set(key, {sum: 0, vpid: key});
+      }
+      accumulator.get(key).sum += sumValue(elem);
+      return accumulator;
+    }, new Map<string, {sum: number, vpid: string}>());
 
-      console.log(capacityChildGroupedByProject);
+    // generate an indexed array based on vpid
+    const sumCapacityProject = [];
+    capacityChildGroupedByProject.forEach(item => sumCapacityProject[item.vpid] = item.sum);
 
-      const sortedValues = Array.from(capacityChildGroupedByProject.values())
-              .sort((a, z) => z.sum - a.sum);
-              //.sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
-      const sortedArray = sortedValues.map((item) => item.elems);    
-      const flatArray = [].concat([], ...sortedArray);
-      console.log(sortedValues);
-      const sortedProjects: VisboCapacity[] = flatArray;
-      return sortedProjects;
-      // ------ SORT END ------
+    capacity.sort((a, z) => (sumCapacityProject[z.vpid] || 0) - (sumCapacityProject[a.vpid] || 0));
+    return capacity;
+    // ------ SORT END ------
   }
 
+  sortProjectsByBusinessUnit(capacity: VisboCapacity[]): VisboCapacity[] {
+    const listVPProperties = this.listVPProperties;
+    capacity.sort((a, z) => {
+      // sorts the businessUnit alphanumerical ascending
+      const aBU = listVPProperties[a.vpid]?._bu || "zzzzzz";
+      const zBU = listVPProperties[z.vpid]?._bu || "zzzzzz";
+      if(aBU < zBU) { return -1; }
+      if(aBU > zBU) { return 1; }
+      // sorts the strategicFit descending
+      const aStrategicFit = listVPProperties[a.vpid]?._strategicFit || -1;
+      const zStrategicFit = listVPProperties[z.vpid]?._strategicFit || -1;
+      if(aStrategicFit != zStrategicFit) { return zStrategicFit - aStrategicFit; }
+      return 0
+    })
+    return capacity;
+  }
 
   visboRoundToString(value: number, fraction = 1): string {
     const result = value || 0;
@@ -1791,7 +2195,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
-    if (leaf.name !== this.currentLeaf.name ) {
+    if ((leaf.name !== this.currentLeaf.name)
+      || (leaf.parent && this.currentLeaf.parent && (leaf.parent.uid !== this.currentLeaf.parent.uid))) {
       this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
       this.updateUrlParam('roleID', leaf.uid.toString());
@@ -1906,7 +2311,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const header: any = {};
     let colName: number, colIndex = 0;
     for (const element in excel[0]) {
-      this.log(`Processing Header ${element}`);
+      // this.log(`Processing Header ${element}`);
       if (element == 'name') {
         colName = colIndex;
       }
@@ -1914,7 +2319,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       header[element] = this.translate.instant('ViewCapacity.lbl.'.concat(element))
     }
     excel.unshift(header);
-    this.log(`Header for Excel: ${JSON.stringify(header)}`)
+    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
     for (let index = 1; index <= len; index++) {
@@ -1953,6 +2358,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     window.URL.revokeObjectURL(url);
   }
 
+  getVPStatus(local: boolean, original: string = undefined): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (original) {
+      result = this.dropDownVPStatus.find(item => item.name == original) || result;
+    } else if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+      result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
+  }
+
   parseDate(dateString: string): Date {
      if (dateString) {
        const actDate = new Date(dateString);
@@ -1985,7 +2407,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompVisboViewCapcity:', message);
     this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 

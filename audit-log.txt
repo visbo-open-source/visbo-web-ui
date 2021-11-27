@@ -1,0 +1,19 @@
+# npm audit report
+
+ansi-regex  >2.1.1 <5.0.1
+Severity: moderate
+ Inefficient Regular Expression Complexity in chalk/ansi-regex - https://github.com/advisories/GHSA-93q8-gq69-wqmw
+fix available via `npm audit fix`
+node_modules/npm/node_modules/cli-table3/node_modules/ansi-regex
+node_modules/npm/node_modules/string-width/node_modules/ansi-regex
+  strip-ansi  4.0.0 - 5.2.0
+  Depends on vulnerable versions of ansi-regex
+  node_modules/npm/node_modules/string-width/node_modules/strip-ansi
+    string-width  2.1.0 - 4.1.0
+    Depends on vulnerable versions of strip-ansi
+    node_modules/npm/node_modules/string-width
+
+3 moderate severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix

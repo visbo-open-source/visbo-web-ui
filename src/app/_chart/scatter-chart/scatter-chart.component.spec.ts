@@ -8,8 +8,9 @@ describe('ScatterChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScatterChartComponent ]
-    })
+    declarations: [ScatterChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

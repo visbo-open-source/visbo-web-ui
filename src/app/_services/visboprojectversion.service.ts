@@ -280,7 +280,7 @@ export class VisboProjectVersionService {
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
-    }    
+    }
     if (parentID) {
       this.log(`Calling ParentID: ${parentID}`);
       params = params.append('parentID', parentID);
@@ -368,10 +368,13 @@ export class VisboProjectVersionService {
   }
 
   /** POST: copy a Visbo Project Version */
-  copyVisboProjectVersion(vpvid: string, variantName: string): Observable<VisboProjectVersion> {
+  copyVisboProjectVersion(vpvid: string, variantName: string, level: number = undefined): Observable<VisboProjectVersion> {
     const url = `${this.vpvUrl}/${vpvid}/copy`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const params = new HttpParams();
+    let params = new HttpParams();
+    if (variantName == 'pfv' && level > 0) {
+      params = params.append('level', level.toString());
+    }
 
     const newVPV = new VisboProjectVersion();
     newVPV.variantName = variantName;
