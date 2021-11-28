@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 
 import { VisboProjectVersion, VPVKeyMetricsCalc, VPVKeyMetrics } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
-import { VPParams, getCustomFieldDouble, getCustomFieldString } from '../_models/visboproject';
+import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -113,6 +113,11 @@ class CompareVPV {
   compare: VPVKeyMetricsCalc;
 }
 
+class DropDownStatus {
+  name: string;
+  localName: string;
+}
+
 @Component({
   selector: 'app-comp-viewbubblecmp',
   templateUrl: './comp-viewbubblecmp.component.html'
@@ -140,6 +145,8 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   filterStrategicFit: number;
   filterRisk: number;
   filterBU: string;
+  filterVPStatusIndex: number;
+  dropDownVPStatus: DropDownStatus[];
   dropDownBU: string[];
   visbokeymetrics: CompareVPV[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
@@ -325,9 +332,13 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     this.activeID = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
     const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
     const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
-    const filterRisk = (this.route.snapshot.queryParams['filterRisk'] || '0').valueOf() || undefined;
-    const filterStrategicFit = (this.route.snapshot.queryParams['filterStrategicFit'] || '0').valueOf() || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
     const metricX = this.route.snapshot.queryParams['metricX'] || undefined;
 
     this.metricX = this.getMetric(metricX, undefined, false).metric;
@@ -338,10 +349,16 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     this.filterBU = filterBU;
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
+    this.initVPStateDropDown();
   }
 
   initFilter(vpvList: VisboProjectVersion[][]): void {
+    let lastValueRisk: number;
+    let lastValueSF: number;
+    let lastValueVPStatus: string;
+    let lastValueBU: string;
     if (!vpvList) {
       return;
     }
@@ -350,12 +367,40 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
         if (item.vp?.customFieldDouble) {
           if (this.filterStrategicFit === undefined) {
             const customField = getCustomFieldDouble(item.vp, '_strategicFit');
-            if (customField) { this.filterStrategicFit = 0; }
+            if (customField) {
+              if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+                this.filterStrategicFit = 0;
+              }
+              lastValueSF = customField.value
+            }
           }
           if (this.filterRisk === undefined) {
             const customField = getCustomFieldDouble(item.vp, '_risk');
-            if (customField) { this.filterRisk = 0; }
+            if (customField) {
+              if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+                this.filterRisk = 0;
+              }
+              lastValueRisk = customField.value
+            }
           }
+        }
+        if (item.vp?.customFieldString) {
+          if (this.filterBU === undefined) {
+            const customField = getCustomFieldString(item.vp, '_businessUnit');
+            if (customField) {
+              if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+                this.filterBU = '';
+              }
+              lastValueBU = customField.value
+            }
+          }
+        }
+        const vpStatus = item.vp?.vpStatus;
+        if (vpStatus) {
+          if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+            this.filterVPStatusIndex = 0;
+          }
+          lastValueVPStatus = vpStatus
         }
       });
     });
@@ -373,6 +418,19 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
     } else {
       this.dropDownBU = undefined;
+    }
+  }
+
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
     }
   }
 
@@ -402,6 +460,16 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalc();
   }
 
+  filterEventVPStatus(index: number): void {
+    if (index <= 0 || index >= this.dropDownVPStatus.length) {
+      this.filterVPStatusIndex = 0;
+    } else {
+      this.filterVPStatusIndex = index;
+    }
+    this.updateUrlParam('filter', undefined);
+    this.visboKeyMetricsCalc();
+  }
+
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -410,6 +478,8 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     if (type == 'filter') {
       queryParams.filter = this.filter;
       localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterVPStatus = this.getVPStatus(false);
+      localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
       queryParams.filterBU = this.filterBU;
       localStorage.setItem('vpfFilterBU', this.filterBU || '');
       queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
@@ -439,10 +509,15 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
         || (vpv.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
         // || (vpv.leadPerson || '').toLowerCase().indexOf(filter) >= 0
         // || (vpv.description || '').toLowerCase().indexOf(filter) >= 0
-        || (vpv.status || '').toLowerCase().indexOf(filter) >= 0
       )
     ) {
       return undefined;
+    }
+    if (this.filterVPStatusIndex > 0) {
+      const setting = vpv.vp.vpStatus;
+      if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+        return undefined;
+      }
     }
     if (this.filterBU) {
       const setting = getCustomFieldString(vpv.vp, '_businessUnit');
@@ -568,7 +643,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       return;
     }
     // this.log(`calc keyMetrics LEN ${this.vpvList[0].length}`);
-    const filter = (this.filter || '').toLowerCase();
     const refList: number[] = []
     this.initFilter(this.vpvList);
     // add all original vpvs with calculated KeyMetrics to the list
@@ -1117,6 +1191,21 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     if (percentCalc <= 1) return 1;
     else if (percentCalc <= 1.05) return 2;
     else return 3;
+  }
+
+  getVPStatus(local: boolean): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+      result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
   }
 
   combineName(vpName: string, variantName: string): string {

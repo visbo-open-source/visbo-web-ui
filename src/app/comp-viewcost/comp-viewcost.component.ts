@@ -200,7 +200,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
     if (graphDataCost.length === 0) {
       this.log(`ViewCostOverTime Result empty`);
-      graphDataCost.push([new Date(), 0, '', 0, 0]);
+      graphDataCost.push([new Date(), 0, undefined, 0, '', 0, undefined]);
     }
     // graphDataCost.sort(function(a, b) { return a[0].getTime() - b[0].getTime(); });
     // we need at least 2 items for Line Chart and show the current status for today
@@ -214,7 +214,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       const currentDate = new Date(graphDataCost[0][0]);
       currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCost.push([
-        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     // header will be written in the array at the beginning

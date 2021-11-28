@@ -10,12 +10,13 @@ describe('VisbocenterAuditComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         VisbocenterAuditComponent,
         SysNavbarComponent,
         NavbarComponent
-      ]
-    })
+    ],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

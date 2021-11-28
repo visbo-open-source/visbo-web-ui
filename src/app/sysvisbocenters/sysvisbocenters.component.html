@@ -6,10 +6,12 @@
         Visbo Centers
       </h2>
     </div>
-    <div *ngIf="hasSystemPerm(permSystem.DeleteVC)" class='btn-group'>
+    <div class='btn-group'>
+      <div *ngIf="hasSystemPerm(permSystem.DeleteVC)">
         <button id="DeletedVC" *ngIf="!deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Deleted</button>
         <button id="UnDeletedVC" *ngIf="deleted" type="button" class="m-1 btn btn-secondary" (click)="toggleVisboCenters()">Show Existing</button>
-        <button id="CreateVC" *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
+      </div>
+      <button id="CreateVC" *ngIf="hasSystemPerm(permSystem.CreateVC)" type="button" class="m-1 btn btn-primary" data-toggle="modal" data-target="#VcModalCreate">Create New</button>
     </div>
   </div>
 

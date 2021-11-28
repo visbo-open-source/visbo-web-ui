@@ -66,6 +66,7 @@ export class VisboProject {
   variant: [VPVariant];
   lock: [VPLock];
   restrict: [VPRestrict];
+  vpStatus: string;
   customFieldDouble: VPCustomDouble[];
 	customFieldString: VPCustomString[];
   customFieldDate: VPCustomDate[];
@@ -136,6 +137,7 @@ export interface CreateProjectProperty {
 }
 
 export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit', '_PMCommit']
+export const constSystemVPStatus = ['initialized', 'proposed', 'ordered', 'paused', 'finished', 'stopped']
 
 export function getCustomFieldString(vp: VisboProject, name: string): VPCustomString {
   let result: VPCustomString;

@@ -50,6 +50,7 @@
 	},
 	"app": {
 		"product": "VISBO - the project warehouse",
+		"help": "Hilfe",
 		"support": "Support",
 		"impressum": "Impressum",
 		"terms": "Nutzungsbedingungen",
@@ -516,6 +517,7 @@
 			"scaleStartDate": "ab",
 			"value": "Wert",
 			"info": "Info",
+			"level": "Level",
 			"costTotalCommited": "Gesamtkosten",
 			"costActualCommited": "aufgelaufene Kosten",
 			"deadlinesCommited": "Termine",
@@ -524,11 +526,13 @@
 			"toBeDone": ", die zu erledigen waren bis",
 			"startDate": "Projekt Start",
 			"endDate": "Projekt Ende",
+			"actualDataUntil": "Ist Daten bis",
 			"savingED": "Änderung",
 			"leadPerson": "Projektverantwortlicher",
 			"description": "Beschreibung/Ziel",
 			"template": "Projektvorlage",
 			"bu": "Geschäftseinheit",
+			"vpStatus": "Status",
 			"weeksAhead": "Wochen voraus",
 			"weeksDelay": "Wochen verzögert",
 			"inTime": "pünktlich",
@@ -580,6 +584,7 @@
 		"btn": {
 			"vpView": "Details",
 			"vpViewAll": "Alle",
+			"vpViewProperties": "Eigenschaften",
 			"vpCapacity": "Ressourcen-Bedarf",
 			"vpKeyMetric": "Kennzahlen",
 			"allVersions": "Alle Versionen",
@@ -596,6 +601,7 @@
 			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
+			"reduce": "Projekt auf oberste Levels reduzieren",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
@@ -665,6 +671,11 @@
 			"drillProjectBU": "Projekte/BusinessUnit",
 			"name": "Project",
 			"noPFV": "keine BL",
+			"filter": "Filter Projekte",
+			"strategicFit": "Strategie Fit",
+			"risk": "Risiko",
+			"vpStatus": "Status",
+			"bu": "Business Unit",
 			"orgaValid": "Organisation von"
 		},
 		"btn": {
@@ -676,6 +687,7 @@
 		},
 		"msg": {
 			"calculating": "Berechnen der Kapazitäten ...",
+			"noFilter": "Für diese Ansicht werden alle Projekte des Portfolios angezeigt und nicht gefiltert.",
 			"noCapacity": "Keine Informationen zu dieser Organisations-Einheit im angegebenen Zeitraum",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Center",
 			"errorPermCapacity": "Keine Berechtigung für Kapazität von {{name}}",
@@ -755,6 +767,7 @@
 			"variant": "Variant",
 			"timestamp": "Zeitstempel",
 			"commit": "Bestätigung",
+			"vpStatus": "Status",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
 			"template": "Vorlage",
@@ -919,6 +932,7 @@
 	"compViewBoard": {
 		"lbl": {
 			"project": "Projekt",
+			"vpStatus": "Status",
 			"bu": "Business Unit",
 			"lead": "Projektleiter",
 			"template": "Vorlage",
@@ -1309,6 +1323,7 @@
 
 		"lbl": {
 			"trafficLight": "Ampel",
+			"vpStatus": "Status",
 			"info": "Info.",
 			"timeStamp": "Zeitstempel",
 			"shortcut": "Abkürzung",
@@ -1349,6 +1364,14 @@
 		"_risk": "Risiko",
 		"_strategicFit": "Strategic Fit",
 		"_PMCommit": "letzte Bestätigung"
+	},
+	"vpStatus": {
+		"initialized": "Initial",
+		"proposed": "Vorgeschlagen",
+		"ordered": "Beauftragt",
+		"paused": "Pausiert",
+		"finished": "Beendet",
+		"stopped": "Gestoppt"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Berechtigung",

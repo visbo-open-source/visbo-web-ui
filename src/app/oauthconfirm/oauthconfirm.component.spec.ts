@@ -8,8 +8,9 @@ describe('OauthconfirmComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OauthconfirmComponent ]
-    })
+    declarations: [OauthconfirmComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

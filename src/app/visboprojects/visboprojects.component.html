@@ -72,7 +72,7 @@
   <div *ngIf="viewMode == 'KeyMetrics'">
     <hr>
     <div *ngIf="viewCockpit == 'Capacity' && vcActive && vcOrga">
-      <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+      <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
@@ -131,7 +131,7 @@
             <!-- show only when Add Project is selected -->
             <div *ngIf="newVP.vpType == 0 && vpTemplates?.length > 0">
               <!-- Selection Template -->
-              <div class="form-group" *ngIf="hasVCPerm(permVC.Modify)">
+              <div class="form-group">
                 <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
                 <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">
                   <option *ngFor="let template of vpTemplates" value="{{ template._id }}">{{ template.name }}</option>
