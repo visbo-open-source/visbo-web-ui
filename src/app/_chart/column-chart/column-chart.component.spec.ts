@@ -8,8 +8,9 @@ describe('ColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ColumnChartComponent ]
-    })
+    declarations: [ColumnChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

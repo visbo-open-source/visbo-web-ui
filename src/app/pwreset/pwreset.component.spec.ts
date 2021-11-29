@@ -8,8 +8,9 @@ describe('PwresetComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PwresetComponent ]
-    })
+    declarations: [PwresetComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

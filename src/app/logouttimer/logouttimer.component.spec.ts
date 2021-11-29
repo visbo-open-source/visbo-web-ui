@@ -8,8 +8,9 @@ describe('LogoutTimerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LogoutTimerComponent ]
-    })
+    declarations: [LogoutTimerComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

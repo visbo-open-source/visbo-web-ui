@@ -8,7 +8,7 @@ import { TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject, CreateProjectProperty, getCustomFieldDate, VPCustomDate } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty, getCustomFieldDate } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -264,7 +264,7 @@ export class VisboProjectsComponent implements OnInit {
       const suggestedStartDate: Date = new Date();
 
       // if there are templates, then suggest the  first template in the list as the default template
-      let templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
+      const templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
 
       // suggest the first of next month as start of Project ...
       suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
@@ -507,7 +507,7 @@ export class VisboProjectsComponent implements OnInit {
   initTemplates(vps: VisboProject[]): void {
     this.vpTemplates = vps.filter(item => item.vpType == 2);
     if (this.vpTemplates.length > 0) {
-      let vp = new VisboProject();
+      const vp = new VisboProject();
       delete vp._id;
       vp.name = this.translate.instant('vp.lbl.noTemplate');
       this.vpTemplates.push(vp);

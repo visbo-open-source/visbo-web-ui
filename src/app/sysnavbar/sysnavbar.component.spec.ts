@@ -8,8 +8,9 @@ describe('SysNavbarComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SysNavbarComponent ]
-    })
+    declarations: [SysNavbarComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 

@@ -8,8 +8,9 @@ describe('VisboPortfolioCmpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ VisboPortfolioCmpComponent ]
-    })
+    declarations: [VisboPortfolioCmpComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   });
 

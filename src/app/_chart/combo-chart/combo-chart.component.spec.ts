@@ -8,8 +8,9 @@ describe('ComboChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ComboChartComponent ]
-    })
+    declarations: [ComboChartComponent],
+    teardown: { destroyAfterEach: false }
+})
     .compileComponents();
   }));
 
