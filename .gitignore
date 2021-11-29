@@ -1,9 +1,7 @@
 /.angular/cache
-
 node_modules
 dist/
 logs/
-.angular
 out-tsc
 src/env.js
 src/.DS_Store
