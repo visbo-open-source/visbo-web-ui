@@ -895,7 +895,7 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       this.getMetric(this.metricX).table,
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.cmpVersion + ' ' + this.getMetric(this.metricX).table,
-      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
     this.graphBarData = keyMetricsBar;
   }

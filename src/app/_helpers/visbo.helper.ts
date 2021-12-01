@@ -108,7 +108,11 @@ export function visboGetShortText(text: string, len: number, position?: string):
   if (len < 3) {
     return '...';
   }
-  if (position) {
+  if (position == 'middle') {
+    let partLen = Math.trunc((len - 3) / 2);
+    let result = text.substring(0, partLen).concat('...', text.substr(text.length - partLen));
+    return result;
+  } else if (position) {
     return '...'.concat(text.substr(text.length - len));
   } else {
     return text.substring(0, len - 3).concat('...');

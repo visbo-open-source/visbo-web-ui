@@ -65,7 +65,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     listVPFVariant: DropDown[] = [];
     activeVPFVariant: DropDown;
 
-    views = ['KeyMetrics', 'Capacity', 'ProjectBoard', 'List'];
+    views = ['KeyMetrics', 'KeyMetric', 'Capacity', 'ProjectBoard', 'List'];
 
     user: VisboUser;
     vpSelected: string;
