@@ -1,8 +1,8 @@
 <div *ngIf="hasDeadlines()" class='well' (resized)="onResized($event)">
-  <div *ngIf="displaySwitch()" class="container">
+  <div class="container">
     <div class="d-flex justify-content-center my-1">
       <button *ngIf="!getPreView()" type="button" class="btn btn-md btn-light mx-2 d-print-none" (click)="toggleGantt()">{{ buttonGantt }}</button>
-      <select class="col-3 form-control mx-2" name="type" [(ngModel)]="type" (change)="switchView()">
+      <select *ngIf="displaySwitch()" class="col-3 form-control mx-2" name="type" [(ngModel)]="type" (change)="switchView()">
         <option *ngFor="let item of listType" value="{{item.name}}">{{item.localName}}</option>
       </select>
     </div>
@@ -21,9 +21,9 @@
         <a (click)="ganttSelectPath(item, pathIndex)">{{item}}</a> /
       </span>
     </div>
-    <div *ngIf="graphDataDeadlinesGantt && graphDataDeadlinesGantt.length > 1" >
+    <div *ngIf="graphDataGantt && graphDataGantt.length > 1" >
       <div>
-        <app-timeline-chart [graphData]="graphDataDeadlinesGantt" [graphOptions]="graphOptionsDeadlinesGantt" [parentThis]="parentThis"></app-timeline-chart>
+        <app-timeline-chart [graphData]="graphDataGantt" [graphOptions]="ganttOptions" [parentThis]="parentThis"></app-timeline-chart>
       </div>
     </div>
   </div>

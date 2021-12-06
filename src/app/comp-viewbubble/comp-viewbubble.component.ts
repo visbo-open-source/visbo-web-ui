@@ -138,8 +138,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   graphBubbleData = [];
   graphBubbleOptions: BubbleChartOptions;
   defaultBubbleOptions: BubbleChartOptions = {
-      // 'chartArea':{'left':20,'top':0,'width':'100%','height':'100%'},
+      'chartArea':{'left':120,'top':50,'width':'100%', 'height': '80%'},
       'width': '100%',
+      'height': 600,
       // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
       // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
       'vAxis': {

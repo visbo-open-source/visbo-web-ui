@@ -119,10 +119,10 @@ class DropDownStatus {
 }
 
 @Component({
-  selector: 'app-comp-viewbubblecmp',
-  templateUrl: './comp-viewbubblecmp.component.html'
+  selector: 'app-comp-viewvpfcmp',
+  templateUrl: './comp-viewvpfcmp.component.html'
 })
-export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
+export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
 
   constructor(
     private messageService: MessageService,
@@ -184,9 +184,15 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
   graphBarData = [];
   graphBarOptions: BarChartOptions;
   defaultBarOptions: BarChartOptions = {
-    // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
-    width: '100%',
-    height: '1000px',
+    // height is calculated dynamically (also in chartArea)
+    // height: 800,
+    chartArea: {
+      left:400,
+      top:40,
+      // height: '80%',
+      width: '90%'
+    },
+    // width: '100%',
     // title: 'Comparison',
     animation: {startup: true, duration: 200},
     legend: {position: 'top'},
@@ -799,9 +805,6 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     let vpv: VPVKeyMetricsCalc;
     let costBaseLastTotal = 0;
 
-    this.graphBarOptions = Object.assign({}, this.defaultBarOptions);
-    this.graphBarAxis(); // set the Axis Description and properties
-
     const keyMetricsBar = [];
     if (!this.visbokeymetrics || this.visbokeymetrics.length == 0) {
       return;
@@ -897,6 +900,9 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
       this.cmpVersion + ' ' + this.getMetric(this.metricX).table,
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
+
+    this.graphBarOptions = this.copyGraphBarOptions(this.defaultBarOptions);
+    this.graphBarAxis(keyMetricsBar.length - 1); // set the Axis Description and height
     this.graphBarData = keyMetricsBar;
   }
 
@@ -938,11 +944,35 @@ export class VisboCompViewBubbleCmpComponent implements OnInit, OnChanges {
     return result;
   }
 
-  graphBarAxis(): void {
+  copyGraphBarOptions(source: BarChartOptions): BarChartOptions {
+    let result = Object.assign({}, this.defaultBarOptions);
+    // copy also child structures
+    result.chartArea = Object.assign({}, this.defaultBarOptions.chartArea);
+    result.hAxis = Object.assign({}, this.defaultBarOptions.hAxis);
+    return result;
+  }
+
+  graphBarAxis(len: number): void {
     if (!this.chart) {
       return;
     }
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
+    if (len > 0) {
+      this.graphBarOptions.height = 100 + len * 40;
+      let height = '80%'
+      if (len < 3) {
+        height = '30%'
+      } else if (len < 6) {
+        height = '50%'
+      } else if (len < 12) {
+        height = '60%'
+      } else if (len < 24) {
+        height = '70%'
+      } else {
+        height = '90%'
+      }
+      this.graphBarOptions.chartArea.height = height;
+    }
 
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {

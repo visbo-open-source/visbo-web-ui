@@ -71,6 +71,7 @@ class Metric {
   axis: string;
   bubble: string;
   table: string;
+  diff: string;
 }
 
 class DropDownStatus {
@@ -139,9 +140,15 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   graphBarData = [];
   graphBarOptions: BarChartOptions;
   defaultBarOptions: BarChartOptions = {
-    chartArea:{ left:400, top:40, width: '90%', height: '800px'},
+    // height is calculated dynamically (also in chartArea)
+    // height: 800,
+    chartArea: {
+      left:400,
+      top:40,
+      // height: '80%',
+      width: '90%'
+    },
     // width: '100%',
-    // height: '800px',
     // fontSize: 12,
     // title: 'Comparison',
     annotations: {
@@ -193,70 +200,80 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         metric: 'Cost',
         axis: this.translate.instant('compViewVpf.metric.costAxis'),
         bubble: this.translate.instant('compViewVpf.metric.costBubble'),
-        table: this.translate.instant('compViewVpf.metric.costTable')
+        table: this.translate.instant('compViewVpf.metric.costTable'),
+        diff: this.translate.instant('compViewVpf.metric.costDiff')
       },
       {
         name: this.translate.instant('compViewVpf.metric.endDateName'),
         metric: 'EndDate',
         axis: this.translate.instant('compViewVpf.metric.endDateAxis'),
         bubble: this.translate.instant('compViewVpf.metric.endDateBubble'),
-        table: this.translate.instant('compViewVpf.metric.endDateTable')
+        table: this.translate.instant('compViewVpf.metric.endDateTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.costActualName'),
         metric: 'ActualCost',
         axis: this.translate.instant('compViewVpf.metric.costActualAxis'),
         bubble: this.translate.instant('compViewVpf.metric.costActualBubble'),
-        table: this.translate.instant('compViewVpf.metric.costActualTable')
+        table: this.translate.instant('compViewVpf.metric.costActualTable'),
+        diff: this.translate.instant('compViewVpf.metric.costActualDiff')
       },
       {
         name: this.translate.instant('compViewVpf.metric.costPredictName'),
         metric: 'CostPredict',
         axis: this.translate.instant('compViewVpf.metric.costPredictAxis'),
         bubble: this.translate.instant('compViewVpf.metric.costPredictBubble'),
-        table: this.translate.instant('compViewVpf.metric.costPredictTable')
+        table: this.translate.instant('compViewVpf.metric.costPredictTable'),
+        diff: this.translate.instant('compViewVpf.metric.costPredictDiff')
       },
       {
         name: this.translate.instant('compViewVpf.metric.deadlineName'),
         metric: 'Deadline',
         axis: this.translate.instant('compViewVpf.metric.deadlineAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deadlineBubble'),
-        table: this.translate.instant('compViewVpf.metric.deadlineTable')
+        table: this.translate.instant('compViewVpf.metric.deadlineTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.deadlineFinishedDelayName'),
         metric: 'DeadlineFinishedDelay',
         axis: this.translate.instant('compViewVpf.metric.deadlineFinishedDelayAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deadlineFinishedDelayBubble'),
-        table: this.translate.instant('compViewVpf.metric.deadlineFinishedDelayTable')
+        table: this.translate.instant('compViewVpf.metric.deadlineFinishedDelayTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.deadlineUnFinishedDelayName'),
         metric: 'DeadlineUnFinishedDelay',
         axis: this.translate.instant('compViewVpf.metric.deadlineUnFinishedDelayAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deadlineUnFinishedDelayBubble'),
-        table: this.translate.instant('compViewVpf.metric.deadlineUnFinishedDelayTable')
+        table: this.translate.instant('compViewVpf.metric.deadlineUnFinishedDelayTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.deliveryName'),
         metric: 'Delivery',
         axis: this.translate.instant('compViewVpf.metric.deliveryAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deliveryBubble'),
-        table: this.translate.instant('compViewVpf.metric.deliveryTable')
+        table: this.translate.instant('compViewVpf.metric.deliveryTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.deliveryFinishedDelayName'),
         metric: 'DeliveryFinishedDelay',
         axis: this.translate.instant('compViewVpf.metric.deliveryFinishedDelayAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deliveryFinishedDelayBubble'),
-        table: this.translate.instant('compViewVpf.metric.deliveryFinishedDelayTable')
+        table: this.translate.instant('compViewVpf.metric.deliveryFinishedDelayTable'),
+        diff: undefined
       },
       {
         name: this.translate.instant('compViewVpf.metric.deliveryUnFinishedDelayName'),
         metric: 'DeliveryUnFinishedDelay',
         axis: this.translate.instant('compViewVpf.metric.deliveryUnFinishedDelayAxis'),
         bubble: this.translate.instant('compViewVpf.metric.deliveryUnFinishedDelayBubble'),
-        table: this.translate.instant('compViewVpf.metric.deliveryUnFinishedDelayTable')
+        table: this.translate.instant('compViewVpf.metric.deliveryUnFinishedDelayTable'),
+        diff: undefined
       }
     ];
 
@@ -706,8 +723,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   }
 
   visboKeyMetricsCalcVPF(): void {
-    this.graphBarOptions = Object.assign({}, this.defaultBarOptions);
-    this.graphBarAxis(); // set the Axis Description and properties
     const unitEuro = this.translate.instant('compViewVpf.lbl.keuro');
     const unitWeeks = this.translate.instant('compViewVpf.lbl.weeks');
 
@@ -753,7 +768,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
           break;
       }
 
-      const tooltip = this.createCustomHTMLContent(this.visbokeymetrics[item].name, valueX);
+      const tooltip = this.createCustomHTMLContent(this.visbokeymetrics[item], valueX, strAbs);
       let color = this.colorMetric[2].color;
       if (['EndDate', 'DeadlineFinishedDelay', 'DeadlineUnFinishedDelay'].includes(this.metricX)) {
         color = valueX > 0 ? this.colorMetric[0].color : color;
@@ -782,6 +797,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       { role: 'style' },
       { role: 'annotation' }
     ]);
+    this.graphBarOptions = this.copyGraphBarOptions(this.defaultBarOptions);
+    this.graphBarAxis(keyMetrics.length - 1); // set the Axis Description and height
     this.calcRangeAxis();
     this.graphBarData = keyMetrics;
   }
@@ -834,7 +851,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     }
   }
 
-  createCustomHTMLContent(name: string, valueX: number): string {
+  createCustomHTMLContent(item: VPVKeyMetricsCalc, valueX: number, strAbs: string): string {
 
     let format = '';
     switch (this.metricX) {
@@ -855,24 +872,61 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     }
 
     let result = '<div style="padding:5px 5px 5px 5px;">' +
-      '<div><b>' + name + '</b></div>' + '<div>' +
+      '<div><b>' + item.name + '</b></div>' + '<div>' +
       '<table>';
 
+    if (item.vpStatus) {
+      result = result + '<tr>' + '<td>' +
+                  this.translate.instant('compViewVpf.lbl.vpStatus') +
+                  ':</td>' + '<td><b>' +
+                  this.translate.instant('vpStatus.'.concat(item.vpStatus)) +
+                  '</b></td>' + '</tr>';
+    }
     result = result + '<tr>' + '<td>' +
                 this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
                 ':</td>' + '<td><b>' +
                 valueX + format +
                 '</b></td>' + '</tr>';
+    if (strAbs) {
+      result = result + '<tr>' + '<td>' +
+                  this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
+                  ':</td>' + '<td><b>' +
+                  strAbs.replace(/ /g, "&nbsp") +
+                  '</b></td>' + '</tr>';
+    }
     result = result + '</table>' + '</div>' + '</div>';
     return result;
   }
 
-  graphBarAxis(): void {
+  copyGraphBarOptions(source: BarChartOptions): BarChartOptions {
+    let result = Object.assign({}, this.defaultBarOptions);
+    // copy also child structures
+    result.chartArea = Object.assign({}, this.defaultBarOptions.chartArea);
+    result.hAxis = Object.assign({}, this.defaultBarOptions.hAxis);
+    return result;
+  }
+
+  graphBarAxis(len: number): void {
     if (!this.chart) {
       return;
     }
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
-
+    if (len > 0) {
+      this.graphBarOptions.height = 100 + len * 40;
+      let height = '80%'
+      if (len < 3) {
+        height = '30%'
+      } else if (len < 6) {
+        height = '50%'
+      } else if (len < 12) {
+        height = '60%'
+      } else if (len < 24) {
+        height = '70%'
+      } else {
+        height = '90%'
+      }
+      this.graphBarOptions.chartArea.height = height;
+    }
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
@@ -921,7 +975,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       queryParams: queryParams
     });
   }
-
 
   chartSelectRow(row: number, label: string): void {
     this.log(`Bubble Chart: ${row} ${label} ${this.visbokeymetrics[row].name}`);

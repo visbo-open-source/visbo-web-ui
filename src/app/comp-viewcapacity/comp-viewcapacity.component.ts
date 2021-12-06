@@ -181,7 +181,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           color: '#FFF',
           count: -1
         },
-        minorGridlines: {count: 0, color: 'none'}
+        minorGridlines: {count: 0, color: '#FFF'},
+        slantedText: true,
+        slantedTextAngle: 90
       }
     };
   currentLang: string;
@@ -885,8 +887,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return (cost / capa) - 1;
     }
 
+    // calculate the overload/underload only for current&future months if there were at least 1
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    let onlyFuture = false;
+    const first = new Date(capacity[0].month);
+    const last = new Date(capacity[capacity.length - 1].month);
+    if (first.getTime() >= startOfMonth.getTime() || last.getTime() >= startOfMonth.getTime()) {
+      let onlyFuture = true;
+    }
+
     let capaLoad: CapaLoad[] = [];
     for (let i=0; i < capacity.length; i++) {
+      const act = new Date(capacity[i].month);
+      if (onlyFuture && act.getTime() < startOfMonth.getTime()) {
+        continue;
+      }
       const capa = percentCalc(capacity[i], refPFV);
       const roleID = capacity[i].roleID;
       if (!capaLoad[roleID]) {
@@ -1346,6 +1363,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       orgaColors.unshift(capaColor);   // color for internal capa
     }
     this.graphOptionsComboChart.colors = orgaColors;
+    this.setGridline(graphDataCapacity.length);
 
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
@@ -1532,6 +1550,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       orgaColors.unshift(capaColor);
     }
     this.graphOptionsComboChart.colors = orgaColors;
+    this.setGridline(graphDataCapacity.length);
 
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
@@ -1663,7 +1682,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     }
     // set number of gridlines to a fixed count to avoid in between gridlines
-    // this.graphOptionsComboChart.hAxis.gridlines.count = graphDataCapacity.length;
+    this.setGridline(graphDataCapacity.length);
     if (this.refPFV) {
       graphDataCapacity.unshift([
         'Month',
@@ -1694,6 +1713,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
+    this.setGridline(graphDataCapacity.length);
     this.graphDataComboChart = graphDataCapacity;
     this.chartActive = new Date();
   }
@@ -1800,17 +1820,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
     }
     result = result + this.addTooltipRowString(roleName + ':', capacity.roleName, false);
-    result = result + this.addTooltipRowNumber(refPFV ? strBudget : strTotalCapa, totalCapa, PT ? 0 : 1, unit, false);
+    result = result + this.addTooltipRowNumber(refPFV ? strBudget : strTotalCapa, totalCapa, 1, unit, false);
     if (!refPFV) {
-      result = result + this.addTooltipRowNumber(strInternCapa, internCapa, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, internCapa, 1, unit, false);
     }
     if (actualCost !== 0) {
-      result = result + this.addTooltipRowNumber(strActualCost, actualCost, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strActualCost, actualCost, 1, unit, false);
     }
-    result = result + this.addTooltipRowNumber(strCost, plannedCost, PT ? 0 : 1, unit, false);
+    result = result + this.addTooltipRowNumber(strCost, plannedCost, 1, unit, false);
 
     if (otherActivityCost !== 0) {
-    result = result + this.addTooltipRowNumber(strOtherActivity, otherActivityCost, PT ? 0 : 1, unit, false);
+    result = result + this.addTooltipRowNumber(strOtherActivity, otherActivityCost, 1, unit, false);
     }
     let diff: number;
     if (!refPFV) {
@@ -1819,7 +1839,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       diff = actualCost + plannedCost - totalCapa;
     }
     if (diff != 0) {
-      result = result + this.addTooltipRowNumber(strDiffCost, diff, PT ? 0 : 1, unit, true);
+      result = result + this.addTooltipRowNumber(strDiffCost, diff, 1, unit, true);
     }
     result = result + '</div>';
 
@@ -1881,12 +1901,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     result = result + this.addTooltipRowString(name, vpName, false);
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
     if (refPFV) {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
     } else {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
-      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, 1, unit, false);
     }
-    result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
+    result = result + this.addTooltipRowNumber(strCost, plan, 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
     if (diff) {
@@ -1931,16 +1951,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     result = result + this.addTooltipRowString(roleName, item.name, false);
     const plan = item.planTotal > 0 ? item.planTotal : item.plan;
     if (refPFV) {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
     } else {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, PT ? 0 : 1, unit, false);
-      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, PT ? 0 : 1, unit, false);
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
+      result = result + this.addTooltipRowNumber(strInternCapa, item.budgetIntern, 1, unit, false);
     }
-    result = result + this.addTooltipRowNumber(strCost, plan, PT ? 0 : 1, unit, false);
+    result = result + this.addTooltipRowNumber(strCost, plan, 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
     if (diff != 0) {
-      result = result + this.addTooltipRowNumber(strDiffCost, diff, PT ? 0 : 1, unit, true);
+      result = result + this.addTooltipRowNumber(strDiffCost, diff, 1, unit, true);
       const diffPercent = this.calcLoadDiff(item, true);
       if (diffPercent == undefined) {
         const str = '> 999 %'
@@ -2372,6 +2392,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return result.localName;
     } else {
       return result.name;
+    }
+  }
+
+  setGridline(count: number): void {
+    if (count > 0 && count <= 18) {
+        // only majorGridlines
+        this.graphOptionsComboChart.hAxis.gridlines.count = count;
+        this.graphOptionsComboChart.hAxis.minorGridlines = {count: 0, color: 'none'};
+    } else {
+        // only majorGridlines
+        this.graphOptionsComboChart.hAxis.gridlines.count = -1;
+        this.graphOptionsComboChart.hAxis.minorGridlines = {count: count, color: '#FFF'};
     }
   }
 

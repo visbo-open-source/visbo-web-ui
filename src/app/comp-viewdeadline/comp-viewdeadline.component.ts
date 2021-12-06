@@ -15,6 +15,8 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboGetShortText, getPreView } from '../_helpers/visbo.helper';
 
+import {GanttChartOptions} from '../_models/_chart'
+
 @Component({
   selector: 'app-comp-viewdeadline',
   templateUrl: './comp-viewdeadline.component.html',
@@ -72,10 +74,17 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     };
   divAllPieChart = 'divAllDeadLinePieChart';
 
-  graphOptionsDeadlinesGantt = {
-    // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+  ganttOptions: GanttChartOptions;
+  ganttDefaultOptions: GanttChartOptions = {
+    // height is calculated dynamically (also in chartArea)
+    // height: 800,
+    chartArea: {
+      left:40,
+      top:40,
+      // height: '80%',
+      width: '90%'
+    },
     width: '100%',
-    // height: 500,
     timeline: {
       showRowLabels: false,
       showBarLabels: true
@@ -85,7 +94,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     },
     animation: {startup: true, duration: 200}
   };
-  graphDataDeadlinesGantt = [];
+  graphDataGantt = [];
 
   permVC = VGPVC;
   permVP = VGPVP;
@@ -361,16 +370,17 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         }
       }
     }
-    graphData.reverse();
-    graphData.push([
+    graphData.unshift([
       'Task ID',
       'Task Name',
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       'Start Date',
       'End Date'
     ]);
-    graphData.reverse();
-    this.graphDataDeadlinesGantt = graphData;
+
+    this.ganttOptions = this.copyGraphGanttOptions(this.ganttDefaultOptions);
+    this.setGraphGanttOptions(graphData.length - 1); // set the height
+    this.graphDataGantt = graphData;
   }
 
   createCustomHTMLContent(deadline: VPVDeadline): string {
@@ -403,6 +413,22 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     return result;
   }
 
+  copyGraphGanttOptions(source: GanttChartOptions): GanttChartOptions {
+    let result = Object.assign({}, this.ganttDefaultOptions);
+    // copy also child structures
+    result.chartArea = Object.assign({}, this.ganttDefaultOptions.chartArea);
+    result.timeline = Object.assign({}, this.ganttDefaultOptions.timeline);
+    return result;
+  }
+
+  setGraphGanttOptions(len: number): void {
+    if (len > 0) {
+      this.ganttOptions.height = 100 + len * 30;
+      let height = '80%'
+      this.ganttOptions.chartArea.height = height;
+    }
+  }
+
   chartSelectRow(row: number, label: string, value: number): void {
     this.log(`chart Select Row ${row} ${label} ${value} for Filter`);
     if (row === undefined) {
@@ -419,7 +445,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   timelineSelectRow(row: number): void {
-    const phase = this.graphDataDeadlinesGantt[row + 1][1];
+    const phase = this.graphDataGantt[row + 1][1];
     this.log(`timeline Select Row ${row} Phase ${phase}`);
     let index = this.hierarchyDeadline.findIndex(item => item.name === phase);
     if (index < 0) {

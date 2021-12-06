@@ -105,10 +105,10 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && hasListVPV()">
     <hr>
-    <app-comp-viewbubblecmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpvList]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+    <app-comp-viewvpfcmp [bubbleMode]="true" [vpfActive]="vpfActive" [vpvList]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpfcmp>
   </div>
   <div *ngIf="pageParams.view == 'List' && hasListVPV()">
     <hr>
-    <app-comp-viewbubblecmp [bubbleMode]="false" [vpfActive]="vpfActive" [vpvList]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewbubblecmp>
+    <app-comp-viewvpfcmp [bubbleMode]="false" [vpfActive]="vpfActive" [vpvList]="listCalcVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpfcmp>
   </div>
 </div>

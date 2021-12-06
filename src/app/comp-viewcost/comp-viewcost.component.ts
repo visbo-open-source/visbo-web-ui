@@ -63,9 +63,10 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
         gridlines: {
           color: '#FFF',
           count: -1
-        }
+        },
+        slantedText: true,
+        slantedTextAngle: 90
       },
-      minorGridlines: {count: 0, color: 'none'}
     };
   currentLang: string;
 

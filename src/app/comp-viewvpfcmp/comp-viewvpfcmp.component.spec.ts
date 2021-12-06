@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { VisboCompViewBubbleCmpComponent } from './comp-viewbubblecmp.component';
+import { VisboCompViewVpfCmpComponent } from './comp-viewvpfcmp.component';
 
-describe('VisboCompViewBubbleCmpComponent', () => {
-  let component: VisboCompViewBubbleCmpComponent;
-  let fixture: ComponentFixture<VisboCompViewBubbleCmpComponent>;
+describe('VisboCompViewVpfCmpComponent', () => {
+  let component: VisboCompViewVpfCmpComponent;
+  let fixture: ComponentFixture<VisboCompViewVpfCmpComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    declarations: [VisboCompViewBubbleCmpComponent],
+    declarations: [VisboCompViewVpfCmpComponent],
     teardown: { destroyAfterEach: false }
 })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboCompViewBubbleCmpComponent);
+    fixture = TestBed.createComponent(VisboCompViewVpfCmpComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
