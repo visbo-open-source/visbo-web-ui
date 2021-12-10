@@ -422,11 +422,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   setGraphGanttOptions(len: number): void {
-    if (len > 0) {
-      this.ganttOptions.height = 100 + len * 30;
-      let height = '80%'
-      this.ganttOptions.chartArea.height = height;
-    }
+    // correct calculation would be to count the number of rows that are required
+    // muliple phases with no overlap go to the same row, while overlapping phases generate a new row
+    len = Math.min(len, 10);
+    let height = 100 + len * 30
+    this.ganttOptions.height = 100 + len * 30;
+
+    let heightPercent = '80%'
+    this.ganttOptions.chartArea.height = heightPercent;
   }
 
   chartSelectRow(row: number, label: string, value: number): void {
@@ -498,7 +501,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getBreadCrumb(): string[] {
-    const path = this.getFullPath(this.hierarchyDeadline[0]);
+    const path = this.getFullPath(this.filteredDeadline[0]);
     const result = path.slice(0, path.length);
     if (result.length >= 0) {
       result[0] = this.vpvActive.name;
@@ -507,7 +510,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   showBreadCrumb(): boolean {
-    return this.getFullPath(this.hierarchyDeadline[0]).length > 0;
+    return this.getFullPath(this.filteredDeadline[0]).length > 0;
   }
 
   inFuture(ref: string): boolean {
