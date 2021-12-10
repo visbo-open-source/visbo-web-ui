@@ -297,7 +297,7 @@
 			"vpType2": "Template"
 		},
 		"btn": {
-			"showDefault": "Portfolio & Projekt",
+			"showDefault": "Portfolio & Project",
 			"showCockpit": "Cockpit",
 			"showPortfolio": "Portfolio",
 			"showTemplate": "Template",
@@ -505,7 +505,7 @@
 		"titleVPVCustomPredict": "Customer specific Prediction",
 		"lbl": {
 			"project": "Project",
-			"projectProperty": "Projekt Properties",
+			"projectProperty": "Project Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"plan": "Plan",

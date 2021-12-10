@@ -495,7 +495,7 @@
 		}
 	},
 	"vpKeyMetric": {
-		"title": "Projekt-Kennzahlen für",
+		"title": "Projekt Kennzahlen für",
 		"titleName": "Projekt {{name}}",
 		"titleVersion": "Version vom",
 		"titleBaseline": "Baseline vom",
