@@ -323,7 +323,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');    
+    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
     this.graphOptionsLineChart.vAxis.direction = 1;
     this.graphOptionsLineChart.colors = this.colorsDefault;
 
@@ -408,7 +408,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (predict) {
       keyMetricsCost.unshift([
         'Timestamp',
-        this.translate.instant('keyMetrics.shortAC'),
+        this.translate.instant('keyMetrics.shortCC'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('keyMetrics.shortPV'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
@@ -422,7 +422,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       keyMetricsCost.unshift([
         'Timestamp',
-        this.translate.instant('keyMetrics.shortAC'),
+        this.translate.instant('keyMetrics.shortCC'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('keyMetrics.shortPV'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
@@ -445,7 +445,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     const longEAC = this.translate.instant('keyMetrics.longEAC');
     const longPAC = this.translate.instant('keyMetrics.longPAC');
     const longBAC = this.translate.instant('keyMetrics.longBAC');
-    const planAC = this.translate.instant('keyMetrics.planAC');
+    const planCC = this.translate.instant('keyMetrics.planCC');
     const baselinePV = this.translate.instant('keyMetrics.baselinePV');
 
     result = result + '<tr>' + '<td>' + longEAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
@@ -453,7 +453,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       result = result + '<tr>' + '<td>' + longPAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotalPredict || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' + longBAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planCC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
 
@@ -623,7 +623,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     keyMetrics.unshift([
       'Timestamp',
-      this.translate.instant('keyMetrics.shortADV'),
+      this.translate.instant('keyMetrics.shortCDV'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortPDV'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
@@ -647,12 +647,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     const shortDVAC = this.translate.instant('keyMetrics.shortDVAC');
     const shortEDVC = this.translate.instant('keyMetrics.shortEDVC');
-    const planADV = this.translate.instant('keyMetrics.planADV');
+    const planCDV = this.translate.instant('keyMetrics.planCDV');
     const baselinePDV = this.translate.instant('keyMetrics.baselinePDV');
 
     result = result + '<tr>' + '<td>' + shortEDVC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionCurrentTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + shortDVAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionBaseLastTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + planADV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planCDV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + baselinePDV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.deliverableCompletionBaseLastActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
 
@@ -715,7 +715,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     keyMetrics.unshift([
       'Timestamp',
-      this.translate.instant('keyMetrics.shortAD'),
+      this.translate.instant('keyMetrics.shortCD'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortPD'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
@@ -736,12 +736,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     const shortDAC = this.translate.instant('keyMetrics.shortDAC');
     const shortEDC = this.translate.instant('keyMetrics.shortEDC');
-    const planAD = this.translate.instant('keyMetrics.planAD');
+    const planCD = this.translate.instant('keyMetrics.planCD');
     const baselinePD = this.translate.instant('keyMetrics.baselinePD');
 
     result = result + '<tr>' + '<td>' + shortEDC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionCurrentTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + shortDAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionBaseLastTotal || 0) * 10) / 10 + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + planAD + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + planCD + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionCurrentActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + baselinePD + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.timeCompletionBaseLastActual || 0) * 10) / 10 + '</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
 

@@ -411,7 +411,7 @@
                 </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.costCurrentActual">
-                <td>{{ 'vpKeyMetric.lbl.costActualCommited' | translate }}</td>
+                <td>{{ 'vpKeyMetric.lbl.costCurrentCommited' | translate }}</td>
                 <td>
                   <span> {{vpvActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - savingCostActual | number:'1.0-0'}} %)</span>
                 </td>

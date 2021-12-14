@@ -569,7 +569,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   checkCostAvailable(capacity: VisboCapacity[]): void {
     let result = false;
     if (capacity && capacity.length > 0) {
-      result = capacity[0].actualCost != undefined ||
+      result = capacity[0].currentCost != undefined ||
                 capacity[0].plannedCost != undefined ||
                 capacity[0].baselineCost != undefined;
     }
@@ -589,7 +589,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       } else {
         capa = (item?.internCapa_PT|| 0) + (item?.externCapa_PT || 0);
       }
-      cost = (item?.actualCost_PT|| 0) + (item?.plannedCost_PT || 0);
+      cost = (item?.currentCost_PT|| 0) + (item?.plannedCost_PT || 0);
 
       if (cost > 0 && capa === 0) {
         capa = 1;
@@ -800,9 +800,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     const currentDate = new Date(element.month);
     let capa = 0, plan = 0;
     if (this.showUnit === 'PD') {
-      plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+      plan = (element.currentCost_PT || 0) + (element.plannedCost_PT || 0);
     } else {
-      plan = (element.actualCost || 0) + (element.plannedCost || 0);
+      plan = (element.currentCost || 0) + (element.plannedCost || 0);
     }
     if (this.refPFV) {
       if (this.showUnit === 'PD') {
@@ -848,9 +848,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       const index = mapNodeList[element.name];
       if (index >= 0) {
         if (this.showUnit === 'PD') {
-          plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+          plan = (element.currentCost_PT || 0) + (element.plannedCost_PT || 0);
         } else {
-          plan = (element.actualCost || 0) + (element.plannedCost || 0);
+          plan = (element.currentCost || 0) + (element.plannedCost || 0);
         }
         if (this.refPFV) {
           if (this.showUnit === 'PD') {
@@ -1032,9 +1032,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     const currentDate = new Date(element.month);
     let capa = 0, plan = 0;
     if (this.showUnit === 'PD') {
-      plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+      plan = (element.currentCost_PT || 0) + (element.plannedCost_PT || 0);
     } else {
-      plan = (element.actualCost || 0) + (element.plannedCost || 0);
+      plan = (element.currentCost || 0) + (element.plannedCost || 0);
     }
     if (this.refPFV) {
       if (this.showUnit === 'PD') {
@@ -1080,9 +1080,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       const index = mapNodeList[element.roleName];
       if (index >= 0) {
         if (this.showUnit === 'PD') {
-          plan = (element.actualCost_PT || 0) + (element.plannedCost_PT || 0);
+          plan = (element.currentCost_PT || 0) + (element.plannedCost_PT || 0);
         } else {
-          plan = (element.actualCost || 0) + (element.plannedCost || 0);
+          plan = (element.currentCost || 0) + (element.plannedCost || 0);
         }
         if (this.refPFV) {
           if (this.showUnit === 'PD') {
@@ -1268,17 +1268,17 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         currentDate.setDate(currentDate.getDate() +5);
       }
       const roleID = this.currentLeaf.uid;
-      let budget: number, actualCost: number, plannedCost: number;
+      let budget: number, currentCost: number, plannedCost: number;
       let tooltip: string;
       if (this.refPFV) {
         // capa Values compared against baseline Values
         if (this.showUnit === 'PD') {
           budget = Math.round(element.baselineCost_PT * 10) / 10 || 0;
-          actualCost = Math.round(element.actualCost_PT * 10) / 10 || 0;
+          currentCost = Math.round(element.currentCost_PT * 10) / 10 || 0;
           plannedCost = Math.round(element.plannedCost_PT * 10) / 10 || 0;
           tooltip = this.createTooltipPlanActual(element, true, this.refPFV);
           if (source) {
-            this.sumCost0 += actualCost + plannedCost;
+            this.sumCost0 += currentCost + plannedCost;
             this.sumBudget0 += budget;
             list.push([
               currentDate,
@@ -1286,7 +1286,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               element.roleID == roleID ? tooltip : undefined,
               undefined,
               undefined,
-              actualCost,
+              currentCost,
               tooltip,
               plannedCost,
               tooltip,
@@ -1296,7 +1296,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               undefined
             ]);
           } else {
-            this.sumCost1 += actualCost + plannedCost;
+            this.sumCost1 += currentCost + plannedCost;
             this.sumBudget1 += budget;
             list.push([
               currentDate,
@@ -1308,7 +1308,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               undefined,
               undefined,
               undefined,
-              actualCost,
+              currentCost,
               tooltip,
               plannedCost,
               tooltip
@@ -1316,11 +1316,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
           }
         } else {
           const budget = Math.round((element.baselineCost * 10) / 10 || 0);
-          const actualCost = Math.round((element.actualCost * 10) / 10 || 0);
+          const currentCost = Math.round((element.currentCost * 10) / 10 || 0);
           const plannedCost = Math.round((element.plannedCost * 10) / 10 || 0);
           const tooltip = this.createTooltipPlanActual(element, false, this.refPFV);
           if (source) {
-            this.sumCost0 += actualCost + plannedCost;
+            this.sumCost0 += currentCost + plannedCost;
             this.sumBudget0 += budget;
             list.push([
               currentDate,
@@ -1328,7 +1328,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               element.roleID == roleID ? tooltip : undefined,
               undefined,
               undefined,
-              actualCost,
+              currentCost,
               tooltip,
               plannedCost,
               tooltip,
@@ -1338,7 +1338,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               undefined
             ]);
           } else {
-            this.sumCost1 += actualCost + plannedCost;
+            this.sumCost1 += currentCost + plannedCost;
             this.sumBudget1 += budget;
             list.push([
               currentDate,
@@ -1350,7 +1350,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
               undefined,
               undefined,
               undefined,
-              actualCost,
+              currentCost,
               tooltip,
               plannedCost,
               tooltip
@@ -1359,22 +1359,22 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         }
       } else {
         // capa Values compared against resources of organisation
-        let budgetIntern: number, budgetExtern: number, actualCost: number, plannedCost: number, actualCostCmp: number, plannedCostCmp: number
+        let budgetIntern: number, budgetExtern: number, currentCost: number, plannedCost: number, currentCostCmp: number, plannedCostCmp: number
         let tooltip: string, tooltipCmp: string;
         if (this.showUnit === 'PD') {
           if (source) {
             budgetIntern = Math.round((element.internCapa_PT * 10) / 10 || 0);
             budgetExtern = Math.round((element.externCapa_PT * 10) / 10 || 0);
-            actualCost = Math.round((element.actualCost_PT * 10) / 10 || 0);
+            currentCost = Math.round((element.currentCost_PT * 10) / 10 || 0);
             plannedCost = Math.round((element.plannedCost_PT * 10) / 10 || 0);
             tooltip = this.createTooltipPlanActual(element, true);
-            this.sumCost0 += actualCost + plannedCost;
+            this.sumCost0 += currentCost + plannedCost;
             this.sumBudget0 += budgetIntern + budgetExtern;
           } else {
-            actualCostCmp = Math.round((element.actualCost_PT * 10) / 10 || 0);
+            currentCostCmp = Math.round((element.currentCost_PT * 10) / 10 || 0);
             plannedCostCmp = Math.round((element.plannedCost_PT * 10) / 10 || 0);
             tooltipCmp = this.createTooltipPlanActual(element, true);
-            this.sumCost1 += actualCostCmp + plannedCostCmp;
+            this.sumCost1 += currentCostCmp + plannedCostCmp;
             const budgetInternCmp = Math.round((element.internCapa_PT * 10) / 10 || 0);
             const budgetExternCmp = Math.round((element.externCapa_PT * 10) / 10 || 0);
             this.sumBudget1 += budgetInternCmp + budgetExternCmp;
@@ -1385,11 +1385,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
             element.roleID == roleID ? tooltip : undefined,
             element.roleID == roleID ? budgetIntern : undefined,
             element.roleID == roleID ? tooltip : undefined,
-            actualCost,
+            currentCost,
             tooltip,
             plannedCost,
             tooltip,
-            actualCostCmp,
+            currentCostCmp,
             tooltipCmp,
             plannedCostCmp,
             tooltipCmp
@@ -1398,16 +1398,16 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
           if (source) {
             budgetIntern = Math.round((element.internCapa * 10) / 10 || 0);
             budgetExtern = Math.round((element.externCapa * 10) / 10 || 0);
-            actualCost = Math.round((element.actualCost * 10) / 10 || 0);
+            currentCost = Math.round((element.currentCost * 10) / 10 || 0);
             plannedCost = Math.round((element.plannedCost * 10) / 10 || 0);
             tooltip = this.createTooltipPlanActual(element, false);
-            this.sumCost0 += actualCost + plannedCost;
+            this.sumCost0 += currentCost + plannedCost;
             this.sumBudget0 += budgetIntern + budgetExtern;
           } else {
-            actualCostCmp = Math.round((element.actualCost * 10) / 10 || 0);
+            currentCostCmp = Math.round((element.currentCost * 10) / 10 || 0);
             plannedCostCmp = Math.round((element.plannedCost * 10) / 10 || 0);
             tooltipCmp = this.createTooltipPlanActual(element, false);
-            this.sumCost1 += actualCostCmp + plannedCostCmp;
+            this.sumCost1 += currentCostCmp + plannedCostCmp;
             const budgetInternCmp = Math.round((element.internCapa_PT * 10) / 10 || 0);
             const budgetExternCmp = Math.round((element.externCapa_PT * 10) / 10 || 0);
             this.sumBudget1 += budgetInternCmp + budgetExternCmp;
@@ -1418,11 +1418,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
             element.roleID == roleID ? tooltip : undefined,
             element.roleID == roleID ? budgetIntern : undefined,
             element.roleID == roleID ? tooltip : undefined,
-            actualCost,
+            currentCost,
             tooltip,
             plannedCost,
             tooltip,
-            actualCostCmp,
+            currentCostCmp,
             tooltipCmp,
             plannedCostCmp,
             tooltipCmp
@@ -1462,11 +1462,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.budgetCmp'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
-        this.translate.instant('ViewCapacityCmp.lbl.actualCost'),
+        this.translate.instant('ViewCapacityCmp.lbl.currentCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.cost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
-        this.translate.instant('ViewCapacityCmp.lbl.actualCostCmp'),
+        this.translate.instant('ViewCapacityCmp.lbl.currentCostCmp'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.costCmp'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
@@ -1478,11 +1478,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.internCapa'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
-        this.translate.instant('ViewCapacityCmp.lbl.actualCost'),
+        this.translate.instant('ViewCapacityCmp.lbl.currentCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.cost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
-        this.translate.instant('ViewCapacityCmp.lbl.actualCostCmp'),
+        this.translate.instant('ViewCapacityCmp.lbl.currentCostCmp'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}},
         this.translate.instant('ViewCapacityCmp.lbl.costCmp'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
@@ -1559,20 +1559,20 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
     const strTotalCapa = this.translate.instant(pd ? 'ViewCapacityCmp.lbl.totalCapa' : 'ViewCapacityCmp.lbl.totalCapa_PT');
     const strInternCapa = this.translate.instant(pd ? 'ViewCapacityCmp.lbl.internCapa' : 'ViewCapacityCmp.lbl.internCapa_PT');
-    const strActualCost = this.translate.instant('ViewCapacityCmp.lbl.actualCost');
+    const strCurrentCost = this.translate.instant('ViewCapacityCmp.lbl.currentCost');
     const strCost = this.translate.instant('ViewCapacityCmp.lbl.cost');
     const roleName = this.translate.instant('ViewCapacityCmp.lbl.roleName');
     const strBudget = this.translate.instant('ViewCapacityCmp.lbl.budget');
     const strDiffCost = this.translate.instant('ViewCapacityCmp.lbl.diffCost');
 
-    let totalCapa: number, internCapa: number, actualCost: number, plannedCost: number;
+    let totalCapa: number, internCapa: number, currentCost: number, plannedCost: number;
     const unit = ' ' + this.translate.instant(pd ? 'ViewCapacityCmp.lbl.pd' : 'ViewCapacityCmp.lbl.keuro');
 
     if (pd) {
-      actualCost = capacity.actualCost_PT || 0;
+      currentCost = capacity.currentCost_PT || 0;
       plannedCost = capacity.plannedCost_PT || 0;
     } else {
-      actualCost = capacity.actualCost || 0;
+      currentCost = capacity.currentCost || 0;
       plannedCost = capacity.plannedCost || 0;
     }
 
@@ -1597,11 +1597,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     if (!refPFV) {
       result = result + this.addTooltipRowNumber(strInternCapa, internCapa, pd ? 0 : 1, unit, false);
     }
-    if (actualCost !== 0) {
-      result = result + this.addTooltipRowNumber(strActualCost, actualCost, pd ? 0 : 1, unit, false);
+    if (currentCost !== 0) {
+      result = result + this.addTooltipRowNumber(strCurrentCost, currentCost, pd ? 0 : 1, unit, false);
     }
     result = result + this.addTooltipRowNumber(strCost, plannedCost, pd ? 0 : 1, unit, false);
-    const diff = actualCost + plannedCost - totalCapa;
+    const diff = currentCost + plannedCost - totalCapa;
     if (diff != 0) {
       result = result + this.addTooltipRowNumber(strDiffCost, diff, pd ? 0 : 1, unit, true);
     }
@@ -1738,7 +1738,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
  visboSortProjects(capacity:VisboCapacity[]): VisboCapacity[] {
     // ------- SORT by sum value -------
     const groupKey = (value: VisboCapacity) => value.name;
-    const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.actualCost_PT;
+    const sumValue = (value: VisboCapacity) => value.plannedCost_PT + value.currentCost_PT;
     const capacityChildGroupedByProject = capacity.reduce((accumulator, elem) => {
       const key = groupKey(elem);
       if (!accumulator.has(key)) {

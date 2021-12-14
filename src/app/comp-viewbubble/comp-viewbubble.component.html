@@ -109,8 +109,8 @@
               <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
 
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
+              <th *ngIf="selectedMetric('CurrentCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
+              <th *ngIf="selectedMetric('CurrentCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('CurrentCost').table}}</th>
               <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}}</th>
               <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
@@ -139,14 +139,14 @@
               <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td>
               <td>{{vp.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-              <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
-              <td *ngIf="selectedMetric('ActualCost') && vp.keyMetrics" class="text-right"
+              <td *ngIf="selectedMetric('CurrentCost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{(vp.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
+              <td *ngIf="selectedMetric('CurrentCost') && vp.keyMetrics" class="text-right"
                       title="{{(vp.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
                 <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vp.savingCostActual, 'percentOver')} " ></ng-container>
                 {{vp.savingCostActual*100 | number:'1.0-0'}} %
               </td>
-              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('ActualCost') && !vp.keyMetrics"></td>
+              <td *ngIf="selectedMetric('CurrentCost') && !vp.keyMetrics" class="text-right d-none d-md-table-cell"></td>
+              <td *ngIf="selectedMetric('CurrentCost') && !vp.keyMetrics"></td>
 
               <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right d-none d-md-table-cell">{{vp.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('Cost') && vp.keyMetrics" class="text-right"

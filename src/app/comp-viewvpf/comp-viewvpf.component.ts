@@ -212,12 +212,12 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         diff: undefined
       },
       {
-        name: this.translate.instant('compViewVpf.metric.costActualName'),
-        metric: 'ActualCost',
-        axis: this.translate.instant('compViewVpf.metric.costActualAxis'),
-        bubble: this.translate.instant('compViewVpf.metric.costActualBubble'),
-        table: this.translate.instant('compViewVpf.metric.costActualTable'),
-        diff: this.translate.instant('compViewVpf.metric.costActualDiff')
+        name: this.translate.instant('compViewVpf.metric.costCurrentName'),
+        metric: 'CurrentCost',
+        axis: this.translate.instant('compViewVpf.metric.costCurrentAxis'),
+        bubble: this.translate.instant('compViewVpf.metric.costCurrentBubble'),
+        table: this.translate.instant('compViewVpf.metric.costCurrentTable'),
+        diff: this.translate.instant('compViewVpf.metric.costCurrentDiff')
       },
       {
         name: this.translate.instant('compViewVpf.metric.costPredictName'),
@@ -626,7 +626,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     if (this.hasKMCost) {
       let item = this.metricList.find(item => item.metric === 'Cost');
       this.metricListFiltered.push(item);
-      item = this.metricList.find(item => item.metric === 'ActualCost');
+      item = this.metricList.find(item => item.metric === 'CurrentCost');
       this.metricListFiltered.push(item);
       if (this.hasKMCostPredict) {
         item = this.metricList.find(item => item.metric === 'CostPredict');
@@ -741,7 +741,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
           valueAbs = Math.round(((this.visbokeymetrics[item].keyMetrics.costCurrentTotal || 0) - this.visbokeymetrics[item].keyMetrics.costBaseLastTotal ) * 10) / 10;
           strAbs = valueAbs.toString().concat(" ", unitEuro);
           break;
-        case 'ActualCost':
+        case 'CurrentCost':
           valueX = Math.round((this.visbokeymetrics[item].savingCostActual * 100) || 0);
           valueAbs = Math.round(((this.visbokeymetrics[item].keyMetrics.costCurrentActual || 0) - (this.visbokeymetrics[item].keyMetrics.costBaseLastActual || 0) ) * 10) / 10;
           strAbs = valueAbs.toString().concat(" ", unitEuro);
@@ -814,7 +814,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         case 'Cost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
           break;
-        case 'ActualCost':
+        case 'CurrentCost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
         case 'CostPredict':
@@ -856,7 +856,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     let format = '';
     switch (this.metricX) {
       case 'Cost':
-      case 'ActualCost':
+      case 'CurrentCost':
       case 'CostPredict':
         format = '&nbsp' + '%';
         break;
@@ -930,7 +930,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
-      case 'ActualCost':
+      case 'CurrentCost':
       case 'CostPredict':
         this.graphBarOptions.hAxis.baseline = 100;
         this.graphBarOptions.hAxis.direction = -1;
