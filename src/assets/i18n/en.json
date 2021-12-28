@@ -191,7 +191,7 @@
 		"titlePermUser": "Permission for {{name}}",
 		"titleSettings": "Visbo Center Setting",
 		"titleEnableDisable": "Visbo Center Enable / Disable of functions",
-		"titleDeleteSettings": "Delete Visbo Center Setting",
+		"titleDeleteSetting": "Delete Visbo Center Setting",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -1463,7 +1463,7 @@
 		"ordered": "Ordered",
 		"paused": "Paused",
 		"finished": "Finished",
-		"stopped": "Stopped"
+		"stopped": "Canceled"
 	},
 	"perm": {
 		"titleSystemPerm": "VISBO System Permission",

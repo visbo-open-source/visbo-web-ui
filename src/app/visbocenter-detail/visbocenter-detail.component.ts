@@ -687,7 +687,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
       let organisation: OrganisationItem[] = [];
-      for (let i = 0; setting.value.allRoles && i < setting.value.allRoles.length; i++) {
+      for (let i = 0; i < setting.value.allRoles?.length; i++) {
         const role = setting.value.allRoles[i];
         const id = role.uid;
         if (!organisation[id]) {
@@ -713,7 +713,7 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[id].aliases = role.aliases[i];
           } else {
             organisation[id].aliases = organisation[id].aliases + '#' + role.aliases[i];
-          }          
+          }
         }
         // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
         if (role.isTeam) {
@@ -723,7 +723,7 @@ export class VisbocenterDetailComponent implements OnInit {
         } else {
           organisation[id].type = 1;
         }
-        for (let j = 0; j < role.subRoleIDs.length; j++) {
+        for (let j = 0; j < role.subRoleIDs?.length; j++) {
           const index = Number(role.subRoleIDs[j].key);
           if (index < 0) {
             this.log(`Inconsistent Org Structure Role ${id} SubRole ${role.subRoleIDs[j].key}`);
@@ -741,7 +741,7 @@ export class VisbocenterDetailComponent implements OnInit {
           if (!organisation[index].pid) {
             organisation[index].pid = id;
           }
-        }        
+        }
         organisation[id].isAggregationRole = role.isAggregationRole?'1': '';
         organisation[id].isSummaryRole = role.isSummaryRole?'1': '';
         organisation[id].isActDataRelevant = role.isActDataRelevant?'1': '';
@@ -777,11 +777,11 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
             if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
-            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }                                      
+            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
             if (userRole.isAggregationRole) { organisation[maxid].isAggregationRole = userRole.isAggregationRole }
             if (userRole.isSummaryRole) { organisation[maxid].isSummaryRole = userRole.isSummaryRole }
-            if (userRole.isActDataRelevant) { organisation[maxid].isActDataRelevant = userRole.isActDataRelevant }      
-            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;  
+            if (userRole.isActDataRelevant) { organisation[maxid].isActDataRelevant = userRole.isActDataRelevant }
+            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
           }
         }
       }

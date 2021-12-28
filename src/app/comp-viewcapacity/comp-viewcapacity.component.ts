@@ -2082,7 +2082,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       let i = 0;
       for (i = 0; allRoles &&  i <= allRoles.length; i++ ) {
         const hrole = allRoles[i];
-        if (hrole && hrole.subRoleIDs.length > 0 ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
+        if (hrole && (hrole.isTeam || hrole.isSummaryRole) ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
       }
       return summaryRoles;
     }
@@ -2179,7 +2179,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       leaf.name = hroleName;
       leaf.parent = parent;
       const children = hrole.subRoleIDs;
-      children.forEach(function(child) {
+      children && children.forEach(function(child) {
         leaf.children.push(makeLeaf(child, leaf));
       });
       return leaf;
