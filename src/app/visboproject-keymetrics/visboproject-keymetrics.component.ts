@@ -1023,7 +1023,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!(this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == ""))) {
       return false;
     }
-    if (!(this.vpActive.vpStatus == 'initialized' || this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered')) {
+    if (!(this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered')) {
       return false;
     }
     return true;

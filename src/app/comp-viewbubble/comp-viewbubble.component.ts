@@ -218,11 +218,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         table: this.translate.instant('compViewBubble.metric.endDateTable')
       },
       {
-        name: this.translate.instant('compViewBubble.metric.costCurrentName'),
-        metric: 'CurrentCost',
-        axis: this.translate.instant('compViewBubble.metric.costCurrentAxis'),
-        bubble: this.translate.instant('compViewBubble.metric.costCurrentBubble'),
-        table: this.translate.instant('compViewBubble.metric.costCurrentTable')
+        name: this.translate.instant('compViewBubble.metric.costActualName'),
+        metric: 'ActualCost',
+        axis: this.translate.instant('compViewBubble.metric.costActualAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.costActualBubble'),
+        table: this.translate.instant('compViewBubble.metric.costActualTable')
       },
       // {
       //   name: this.translate.instant('compViewBubble.metric.costPredictName'),
@@ -624,7 +624,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (this.hasKMCost) {
       let item = this.metricList.find(item => item.metric === 'Cost');
       this.metricListFiltered.push(item);
-      item = this.metricList.find(item => item.metric === 'CurrentCost');
+      item = this.metricList.find(item => item.metric === 'ActualCost');
       this.metricListFiltered.push(item);
       if (this.hasKMCostPredict) {
         item = this.metricList.find(item => item.metric === 'CostPredict');
@@ -748,7 +748,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           valueX = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
           colorValue += valueX <= 100 ? 1 : 0;
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           valueX = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
           colorValue += valueX <= 100 ? 1 : 0;
           break;
@@ -782,7 +782,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           valueY = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
           colorValue += valueY <= 100 ? 1 : 0;
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           valueY = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
           colorValue += valueY <= 100 ? 1 : 0;
           break;
@@ -838,7 +838,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'Cost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
         case 'CostPredict':
@@ -890,7 +890,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'Cost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
           break;
         case 'CostPredict':
@@ -935,7 +935,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
-      case 'CurrentCost':
+      case 'ActualCost':
       case 'CostPredict':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = -1;
@@ -959,7 +959,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
     switch (this.metricY) {
       case 'Cost':
-      case 'CurrentCost':
+      case 'ActualCost':
       case 'CostPredict':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = -1;

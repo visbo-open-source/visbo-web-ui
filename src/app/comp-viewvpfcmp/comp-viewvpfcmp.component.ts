@@ -249,11 +249,11 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
         table: this.translate.instant('compViewBubbleCmp.metric.endDateTable')
       },
       {
-        name: this.translate.instant('compViewBubbleCmp.metric.costCurrentName'),
-        metric: 'CurrentCost',
-        axis: this.translate.instant('compViewBubbleCmp.metric.costCurrentAxis'),
-        bubble: this.translate.instant('compViewBubbleCmp.metric.costCurrentBubble'),
-        table: this.translate.instant('compViewBubbleCmp.metric.costCurrentTable')
+        name: this.translate.instant('compViewBubbleCmp.metric.costActualName'),
+        metric: 'ActualCost',
+        axis: this.translate.instant('compViewBubbleCmp.metric.costActualAxis'),
+        bubble: this.translate.instant('compViewBubbleCmp.metric.costActualBubble'),
+        table: this.translate.instant('compViewBubbleCmp.metric.costActualTable')
       },
       {
         name: this.translate.instant('compViewBubbleCmp.metric.costPredictName'),
@@ -707,7 +707,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     if (this.hasKMCost) {
       let item = this.metricList.find(item => item.metric === 'Cost');
       this.metricListFiltered.push(item);
-      item = this.metricList.find(item => item.metric === 'CurrentCost');
+      item = this.metricList.find(item => item.metric === 'ActualCost');
       this.metricListFiltered.push(item);
       if (this.hasKMCostPredict) {
         item = this.metricList.find(item => item.metric === 'CostPredict');
@@ -822,7 +822,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
         case 'Cost':
           valueX = Math.round((vpv.savingCostTotal || 1) * 100);
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           valueX = Math.round((vpv.savingCostActual || 1) * 100);
           break;
         case 'CostPredict':
@@ -854,7 +854,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
         case 'Cost':
           valueY = Math.round((vpv.savingCostTotal || 1) * 100);
           break;
-        case 'CurrentCost':
+        case 'ActualCost':
           valueY = Math.round((vpv.savingCostActual || 1) * 100);
           break;
         case 'CostPredict':
@@ -911,7 +911,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     let format = '';
     switch (this.metricX) {
       case 'Cost':
-      case 'CurrentCost':
+      case 'ActualCost':
       case 'CostPredict':
         format = '&nbsp' + '%';
         break;
@@ -977,7 +977,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'Cost':
-      case 'CurrentCost':
+      case 'ActualCost':
       case 'CostPredict':
         this.graphBarOptions.hAxis.baseline = 100;
         this.graphBarOptions.hAxis.direction = -1;

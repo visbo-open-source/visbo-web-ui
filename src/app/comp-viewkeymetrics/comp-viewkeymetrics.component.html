@@ -20,7 +20,7 @@
             </ng-container></a>
           </td>
           <td (click)="switchView('Cost', true)"
-              title="{{ 'vpKeyMetric.lbl.currentCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastActual |  number:'1.0-0' }} T€">
+              title="{{ 'vpKeyMetric.lbl.actualCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastActual |  number:'1.0-0' }} T€">
             <a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
@@ -70,7 +70,7 @@
             </ng-container></a>
           </td>
           <td (click)="switchView('Deadline', true)">
-            <a title="{{ 'vpKeyMetric.lbl.currentDeadline' | translate }}">
+            <a title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}">
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDeadline} " ></ng-container>
               <span>
                 {{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}
@@ -106,7 +106,7 @@
                 text: 'vpKeyMetric.lbl.metricDelivery' | translate } " >
             </ng-container></a>
           </td>
-          <td (click)="switchView('Delivery', true)" title="{{ 'vpKeyMetric.lbl.currentDelivery' | translate }}">
+          <td (click)="switchView('Delivery', true)" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}">
             <a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDelivery} " ></ng-container>
               <span>
@@ -230,7 +230,7 @@
       <thead>
         <tr>
           <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-          <th class="text-right" (click)="sortKeyMetricsTable(7)" title="{{ 'keyMetrics.longCC' | translate }}">{{ 'keyMetrics.shortCC' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(7)" title="{{ 'keyMetrics.longAC' | translate }}">{{ 'keyMetrics.shortAC' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(2)" title="{{ 'keyMetrics.longPV' | translate }}">{{ 'keyMetrics.relativPV' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(8)" title="{{ 'keyMetrics.longEAC' | translate }}">{{ 'keyMetrics.shortEAC' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)" title="{{ 'keyMetrics.longBAC' | translate }}">{{ 'keyMetrics.baselineBAC' | translate }}</th>
@@ -294,11 +294,11 @@
       <thead>
         <tr>
           <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-          <th class="text-right" (click)="sortKeyMetricsTable(10)" title="{{ 'keyMetrics.longCD' | translate }}">{{ 'keyMetrics.shortCD' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(10)" title="{{ 'keyMetrics.longAD' | translate }}">{{ 'keyMetrics.shortAD' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(11)" title="{{ 'keyMetrics.longPD' | translate }}">{{ 'keyMetrics.shortPD' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longEDC' | translate }}">{{ 'keyMetrics.shortEDC' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(12)" title="{{ 'keyMetrics.longDAC' | translate }}">{{ 'keyMetrics.shortDAC' | translate }}</th>
-          <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'keyMetrics.lbl.currentDelay' | translate }}</th>
+          <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'keyMetrics.lbl.actualDelay' | translate }}</th>
           <th *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.totalDelay' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
         </tr>
@@ -331,7 +331,7 @@
       <thead>
         <tr>
           <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
-          <th class="text-right" (click)="sortKeyMetricsTable(21)" title="{{ 'keyMetrics.longCDV' | translate }}">{{ 'keyMetrics.shortCDV' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(21)" title="{{ 'keyMetrics.longADV' | translate }}">{{ 'keyMetrics.shortADV' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(20)" title="{{ 'keyMetrics.longPDV' | translate }}">{{ 'keyMetrics.shortPDV' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(26)" title="{{ 'keyMetrics.longEDVC' | translate }}">{{ 'keyMetrics.shortEDVC' | translate }}</th>
           <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)" title="{{ 'keyMetrics.longDVAC' | translate }}">{{ 'keyMetrics.shortDVAC' | translate }}</th>
@@ -375,8 +375,8 @@
           </thead>
           <tbody *ngIf="typeMetricChart == 'Cost'">
             <tr>
-              <td>{{ 'keyMetrics.shortCC' | translate }}</td>
-              <td>{{ 'keyMetrics.longCC' | translate }}</td>
+              <td>{{ 'keyMetrics.shortAC' | translate }}</td>
+              <td>{{ 'keyMetrics.longAC' | translate }}</td>
             </tr>
             <tr>
               <td>{{ 'keyMetrics.shortPV' | translate }}</td>
@@ -393,8 +393,8 @@
           </tbody>
           <tbody *ngIf="typeMetricChart == 'Deadline'">
             <tr>
-              <td>{{ 'keyMetrics.shortCD' | translate }}</td>
-              <td>{{ 'keyMetrics.longCD' | translate }}</td>
+              <td>{{ 'keyMetrics.shortAD' | translate }}</td>
+              <td>{{ 'keyMetrics.longAD' | translate }}</td>
             </tr>
             <tr>
               <td>{{ 'keyMetrics.shortPD' | translate }}</td>
@@ -423,8 +423,8 @@
 
           <tbody *ngIf="typeMetricChart == 'Delivery'">
             <tr>
-              <td>{{ 'keyMetrics.shortCDV' | translate }}</td>
-              <td>{{ 'keyMetrics.longCDV' | translate }}</td>
+              <td>{{ 'keyMetrics.shortADV' | translate }}</td>
+              <td>{{ 'keyMetrics.longADV' | translate }}</td>
             </tr>
             <tr>
               <td>{{ 'keyMetrics.shortPDV' | translate }}</td>
@@ -448,10 +448,10 @@
             <tr>
               <td>{{ 'keyMetrics.shortBED' | translate }}</td>
               <td>{{ 'keyMetrics.longBED' | translate }}</td>
-            </tr>
+            </tr>     
           </tbody>
 
-
+          
 
         </table>
         <div class="modal-footer align-items-end">

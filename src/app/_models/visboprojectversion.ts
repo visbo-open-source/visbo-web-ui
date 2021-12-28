@@ -8,12 +8,12 @@ export class VisboCapacity {
   roleID: number;
   roleName: string;
   variantName: string;
-  currentCost_PT: number;
+  actualCost_PT: number;
   plannedCost_PT: number;
   otherActivityCost_PT: number;
   internCapa_PT: number;
   externCapa_PT:	number;
-  currentCost: number;
+  actualCost: number;
   plannedCost: number;
   otherActivityCost: number;
   internCapa: number;
