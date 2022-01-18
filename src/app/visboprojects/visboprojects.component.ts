@@ -21,7 +21,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
-import { VisboSetting } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 class DropDown {
   name: string;
@@ -45,7 +45,7 @@ export class VisboProjectsComponent implements OnInit {
   dropDownVPType: DropDown[];
   viewMode = 'Default';
   hasOrga = false;
-  vcOrga: VisboSetting[];
+  vcOrga: VisboOrganisation[];
   customize: VisboSetting;
 
   visboprojectversions: VisboProjectVersion[];
@@ -407,15 +407,14 @@ export class VisboProjectsComponent implements OnInit {
 
   getVisboCenterOrga(): void {
     if (this.vcActive) {
-      if (this.vcOrga == undefined
-      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vcActive._id.toString())) {
+      if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vcActive._id}`);
         this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true)
           .subscribe(
-            vcsettings => {
-              this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+            organisation => {
+              this.vcOrga = organisation;
+              this.hasOrga = organisation.length > 0;
             },
             error => {
               if (error.status === 403) {

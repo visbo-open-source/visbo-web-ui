@@ -22,7 +22,7 @@ import { VisboProjectVersionService } from '../_services/visboprojectversion.ser
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, convertDate, visboIsToday, getPreView } from '../_helpers/visbo.helper';
-import { VisboSetting } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 class DropDown {
   name: string;
@@ -76,7 +76,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
   isGlobalChecked = false;
 
   hasOrga = false;
-  vcOrga: VisboSetting[];
+  vcOrga: VisboOrganisation[];
 
   combinedPerm: VGPermission = undefined;
   permVC = VGPVC;
@@ -158,15 +158,14 @@ export class VisboPortfolioCmpComponent implements OnInit {
 
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      if (this.vcOrga == undefined
-      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+      if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
         this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
           .subscribe(
-            vcsettings => {
-              this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0;
+            organisation => {
+              this.vcOrga = organisation;
+              this.hasOrga = organisation.length > 0;
             },
             error => {
               if (error.status === 403) {

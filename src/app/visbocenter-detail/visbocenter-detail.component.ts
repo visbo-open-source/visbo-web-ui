@@ -1003,7 +1003,13 @@ export class VisbocenterDetailComponent implements OnInit {
       }
     }
     if (this.sortSettingColumn === 1) {
-      this.vcSettings.sort(function(a, b) { return visboCmpString(a.name.toLowerCase(), b.name.toLowerCase()); });
+      this.vcSettings.sort(function(a, b) {
+        let result = visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
+        if (result == 0) {
+          result = -visboCmpDate(a.timestamp, b.timestamp);
+        }
+        return result;
+      });
     } else if (this.sortSettingColumn === 2) {
       this.vcSettings.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortSettingColumn === 3) {

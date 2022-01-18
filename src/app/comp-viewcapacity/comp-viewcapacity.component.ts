@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
 import { getCustomFieldDouble, getCustomFieldString, VisboProject, VPParams, constSystemVPStatus } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -82,7 +82,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() listVP: VisboProject[];
   @Input() customize: VisboSetting;
   @Input() vpvActive: VisboProjectVersion;
-  @Input() vcOrganisation: VisboSetting;
+  @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission;
 
@@ -949,8 +949,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     const allRoles = [];
     const allRoleNames = [];
-    const roles = organisation && organisation.value && organisation.value.allRoles;
-    for (let  i = 0; i < roles.length; i++) {
+    const roles = organisation?.allRoles;
+    for (let  i = 0; i < roles?.length; i++) {
       allRoles[roles[i].uid] = roles[i];
       allRoleNames[roles[i].name] = roles[i];
     }
@@ -2070,7 +2070,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       // value is the Id of one subrole
       const hroleID = value.key;
       const hrole = allRoles[hroleID];
-      if (hrole.subRoleIDs.length > 0) {
+      if (hrole.subRoleIDs?.length > 0) {
         summaryRoles[hroleID] = hrole;
         const shroles = hrole.subRoleIDs;
         shroles.forEach(findSummaryRoles);
@@ -2090,11 +2090,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // only summary roles that are children of the role roleID
     if (roleID && allRoles) {
       const role = allRoles[roleID];
-
-      if (role.subRoleIDs && role.subRoleIDs.length > 0) {
-
+      if (role.subRoleIDs?.length > 0) {
         const subRoles = role.subRoleIDs;
-        if (subRoles.length > 0 ) {
+        if (subRoles?.length > 0 ) {
           summaryRoles[role.uid] = role;
           subRoles.forEach(findSummaryRoles);
         }
@@ -2108,17 +2106,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     // this.log(`get the parentRole of roleID ${JSON.stringify(roleID)}`);
     if (allRoles[roleID]) {
-
-      let notFound = true;
       for (let k = 0; sumRoles && k < sumRoles.length; k++) {
         const hrole = sumRoles[k];
         if (hrole)	{
-          for ( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
+          for ( let i = 0; i < hrole.subRoleIDs?.length; i++ ) {
             // asked Philipp for the difference: hrole.subRoleIDs[i].key is a string with the value 'roleID' and roleID is a number
             // therefore it isn't possible to put === instead for ==, now the multiplikation with 1 makes a number of it
-            if ( hrole.subRoleIDs[i] && (hrole.subRoleIDs[i].key * 1 === roleID) ) {
+            if (hrole.subRoleIDs[i].key * 1 === roleID) {
               parentRole = hrole;
-              notFound = false;
+              break;
             }
           }
         }
@@ -2179,13 +2175,13 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       leaf.name = hroleName;
       leaf.parent = parent;
       const children = hrole.subRoleIDs;
-      children && children.forEach(function(child) {
+      children?.forEach(function(child) {
         leaf.children.push(makeLeaf(child, leaf));
       });
       return leaf;
     }
 
-    for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
+    for (let i = 0; i < topLevelNodes?.length; i++) {
       const topLevelLeaf = new VisboOrgaTreeLeaf();
       topLevelLeaf.parent = tree;
       topLevelLeaf.children = [];
@@ -2193,12 +2189,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       topLevelLeaf.name = topLevelNodes[i].name;
       topLevelLeaf.showChildren = false;
 
-      if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
-        const sRoles = topLevelNodes[i].subRoleIDs;
-        sRoles.forEach(function(sRole) {
-          topLevelLeaf.children.push(makeLeaf(sRole, topLevelLeaf));
-        });
-      }
+      const sRoles = topLevelNodes[i].subRoleIDs;
+      sRoles?.forEach(function(sRole) {
+        topLevelLeaf.children.push(makeLeaf(sRole, topLevelLeaf));
+      });
       tree.children.push(topLevelLeaf);
     }
     return tree;

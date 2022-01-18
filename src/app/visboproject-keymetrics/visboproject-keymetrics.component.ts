@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboSetting } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate, constSystemCustomName, constSystemVPStatus } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
@@ -52,7 +52,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownIndex: number;
   vcCustomize: VisboSetting[];
   vcEnableDisable: VisboSetting[];
-  vcOrga: VisboSetting[];
+  vcOrga: VisboOrganisation[];
 
   vpSelected: string;
   vpActive: VisboProject;
@@ -745,15 +745,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      if (this.vcOrga == undefined
-      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+      if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
         this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
           .subscribe(
-            vcsettings => {
-              this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
+            organisation => {
+              this.vcOrga = organisation;
+              this.hasOrga = organisation.length > 0 && organisation[0] != null;
             },
             error => {
               if (error.status === 403) {

@@ -6,7 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboSetting, VisboSettingResponse, VisboSettingListResponse } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingResponse, VisboSettingListResponse, VisboOrganisation, VisboOrgaListResponse } from '../_models/visbosetting';
 
 import { MessageService } from './message.service';
 
@@ -41,7 +41,7 @@ export class VisboSettingService  {
   }
 
    /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short = false): Observable<VisboSetting[]> {
+   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short = false): Observable<VisboOrganisation[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -56,10 +56,10 @@ export class VisboSettingService  {
       params = params.append('shortList', '1');
     }
     this.log(`Calling HTTP Request: ${url} ${short}`);
-    return this.http.get<VisboSettingListResponse>(url, { headers , params })
+    return this.http.get<VisboOrgaListResponse>(url, { headers , params })
       .pipe(
-        map(response => response.vcsetting),
-        tap(vcorganisations => this.log(`fetched ${vcorganisations.length} VCOrganisations `)),
+        map(response => response.organisation),
+        tap(organisation => this.log(`fetched ${organisation.length} VCOrganisations `)),
         catchError(this.handleError('getVCOrganisations', []))
       );
   }

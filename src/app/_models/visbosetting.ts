@@ -24,15 +24,17 @@ export class VisboSettingListResponse {
   vcsetting: [ VisboSetting ];
 }
 
-export class VisboOrganisationListResponse {
+export class VisboOrgaListResponse {
   state: string;
   message: string;
-  vcorganisation: [ VisboSetting ];
+  // eslint-disable-next-line
+  organisation: [ VisboOrganisation ];
 }
 
 export class VisboOrganisation {
   allCosts: [ VisboCost ];
   allRoles: [ VisboRole ];
+  validFrom: Date;
 }
 
 export class VisboCost {
@@ -65,7 +67,7 @@ export class VisboRole {
   tagessatz: number;
   kapazitaet: [number];
   timestamp: Date;
-  startOfCal: Date;  
+  startOfCal: Date;
   aliases: [string];
   isAggregationRole: boolean;
   isSummaryRole: boolean;

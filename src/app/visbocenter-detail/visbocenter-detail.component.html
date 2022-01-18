@@ -192,8 +192,10 @@
                   <td id="ColSettingDate" *ngIf="isToday(item.updatedAt)">{{item.updatedAt | date : 'HH:mm:ss'}}</td>
                   <td id="ColSettingDate" *ngIf="!isToday(item.updatedAt)">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
                   <td *ngIf="hasVCPerm(permVC.Modify)">
-                    <button id="ColDeleteSetting" class="Detail" (click)='initSetting(itemIndex)' title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
-                    data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
+                    <div *ngIf="item.type != 'organisation'">
+                      <button id="ColDeleteSetting" class="Detail" (click)='initSetting(itemIndex)' title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
+                      data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
