@@ -6,7 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboSetting, VisboSettingResponse, VisboSettingListResponse, VisboOrganisation, VisboOrgaListResponse } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingResponse, VisboSettingListResponse, VisboOrganisation,
+        VisboOrgaResponse, VisboReducedOrgaItem } from '../_models/visbosetting';
 
 import { MessageService } from './message.service';
 
@@ -41,7 +42,7 @@ export class VisboSettingService  {
   }
 
    /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short = false): Observable<VisboOrganisation[]> {
+   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, hierarchy = false, withCapa = false): Observable<VisboOrganisation[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -52,17 +53,38 @@ export class VisboSettingService  {
     if (refDate != undefined) {
       params = params.append('refDate', refDate);
     }
-    if (short) {
-      params = params.append('shortList', '1');
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
     }
-    this.log(`Calling HTTP Request: ${url} ${short}`);
-    return this.http.get<VisboOrgaListResponse>(url, { headers , params })
+    if (withCapa) {
+      params = params.append('withCapa', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} ${withCapa}`);
+    return this.http.get<VisboOrgaResponse>(url, { headers , params })
       .pipe(
         map(response => response.organisation),
         tap(organisation => this.log(`fetched ${organisation.length} VCOrganisations `)),
         catchError(this.handleError('getVCOrganisations', []))
       );
   }
+
+  /** Update/Create VCOrganisatios */
+  createVCOrganisation(vcid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
+   const url = `${this.vcUrl}/${vcid}/organisation`;
+   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+   let params = new HttpParams();
+
+   if (sysadmin) {
+     params = params.append('sysadmin', '1');
+   }
+   this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
+   return this.http.post<VisboOrgaResponse>(url, orga, { headers , params })
+     .pipe(
+       map(response => response.organisation[0]),
+       tap(organisation => this.log(`created VCOrganisation with ${organisation.allUnits?.length} items`)),
+       catchError(this.handleError<VisboOrganisation>('createVCOrganisation'))
+     );
+ }
 
   /** GET VCSetting by id. Will 404 if id not found */
   getVCSetting(vcid: string, id: string, sysadmin = false): Observable<VisboSetting> {

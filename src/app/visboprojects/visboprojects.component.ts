@@ -410,7 +410,7 @@ export class VisboProjectsComponent implements OnInit {
       if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vcActive._id}`);
-        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true)
+        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true, false)
           .subscribe(
             organisation => {
               this.vcOrga = organisation;

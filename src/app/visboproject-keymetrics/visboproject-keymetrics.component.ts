@@ -748,7 +748,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true, false)
           .subscribe(
             organisation => {
               this.vcOrga = organisation;

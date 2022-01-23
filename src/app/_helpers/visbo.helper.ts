@@ -79,6 +79,15 @@ export function validateDate(dateString: string, allowEmpty: boolean): string {
 	return dateValue.toISOString();
 }
 
+export function getJsDateFromExcel(excelDate: number): Date {
+  // excel date is number of days since 1.1.1900
+  // might be fixed by XLSX: plus 1 (Google "excel leap year bug")
+  // javascript date are milliseconds since 1.1.1970
+  let result = new Date((excelDate - 25567 - 2)*86400*1000);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
 export function visboIsToday(refDate: Date): boolean {
   const current = new Date();
   current.setHours(0, 0, 0, 0);

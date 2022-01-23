@@ -24,7 +24,7 @@ export class VisboSettingListResponse {
   vcsetting: [ VisboSetting ];
 }
 
-export class VisboOrgaListResponse {
+export class VisboOrgaResponse {
   state: string;
   message: string;
   // eslint-disable-next-line
@@ -32,16 +32,17 @@ export class VisboOrgaListResponse {
 }
 
 export class VisboOrganisation {
-  allCosts: [ VisboCost ];
+  _id: string;
+  name: string;
+  timestamp: Date;
   allRoles: [ VisboRole ];
-  validFrom: Date;
+  allCosts: [ VisboCost ];
+  allUnits: VisboReducedOrgaItem[];
 }
 
 export class VisboCost {
   name: string;
   uid: number;
-  farbe: number;
-  timestamp: Date;
 }
 
 export class VisboSubRole {
@@ -57,21 +58,38 @@ export class VisboRole {
   // eslint-disable-next-line
   teamIDs: [any];
   isTeam: boolean;
-  isTeamParent: boolean;
   isExternRole: boolean;
   entryDate: Date;
   exitDate: Date;
-  farbe: number;
   defaultDayCapa: number;
   defaultKapa: number;
   tagessatz: number;
-  kapazitaet: [number];
   timestamp: Date;
-  startOfCal: Date;
   aliases: [string];
   isAggregationRole: boolean;
   isSummaryRole: boolean;
-  isActDataRelevant: boolean;
+}
+
+export class VisboReducedOrgaItem {
+  uid: number;
+  pid: number;
+  calcid: number;
+  name: string;
+  type: number;
+  path: string;
+  level: number;
+  employeeNr: string;
+  isTeam: string;
+  isExternRole: string;
+  entryDate: Date;
+  exitDate: Date;
+  defaultDayCapa: number;
+  defaultKapa: number;
+  percent: number;
+  tagessatz: number;
+  aliases: string;
+  isAggregationRole: string;
+  isSummaryRole: string;
 }
 
 export class VisboOrgaTreeLeaf {

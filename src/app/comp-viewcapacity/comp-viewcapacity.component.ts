@@ -2082,7 +2082,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       let i = 0;
       for (i = 0; allRoles &&  i <= allRoles.length; i++ ) {
         const hrole = allRoles[i];
-        if (hrole && (hrole.isTeam || hrole.isSummaryRole) ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
+        if (hrole?.isSummaryRole) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
       }
       return summaryRoles;
     }

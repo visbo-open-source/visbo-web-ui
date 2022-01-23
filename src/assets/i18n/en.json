@@ -189,9 +189,11 @@
 		"titleDeleteGroup": "Delete a Group in the VISBO Center",
 		"titleProjectUsers": "VISBO Project Users",
 		"titlePermUser": "Permission for {{name}}",
-		"titleSettings": "Visbo Center Setting",
-		"titleEnableDisable": "Visbo Center Enable / Disable of functions",
-		"titleDeleteSetting": "Delete Visbo Center Setting",
+		"titleSettings": "VISBO Center Setting",
+		"titleEnableDisable": "VISBO Center Enable / Disable of functions",
+		"titleDeleteSetting": "Delete VISBO Center Setting",
+		"titleUploadSetting": "Import a Setting to the VISBO Center",
+		"titleSaveOrga": "Save VISBO Center Organisation",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -218,7 +220,11 @@
 			"timestamp": "Timestamp",
 			"updatedAt": "Changed",
 			"deleteSetting": "Delete",
-			"setting": "Name"
+			"setting": "Name",
+			"newOrga": "Create new Organisation",
+			"updateOrga": "Update existing Organisation",
+			"valid": "Valid from",
+			"nrRoles": "Number of Roles"
 		},
 		"btn": {
 			"viewAudit": "View Audit",
@@ -229,6 +235,7 @@
 			"ViewEnableDisable": "Enable / Disable",
 			"addUser": "Add User",
 			"addGroup": "Add Group",
+			"addSetting": "Add Setting",
 			"invite": "Invite",
 			"save": "Save",
 			"edit": "Edit",
@@ -236,7 +243,9 @@
 			"delete": "Delete",
 			"download": "Download",
 			"back": "Go Back",
-			"cancel": "Cancel"
+			"cancel": "Cancel",
+			"upload": "Import",
+			"finish": "Finish"
 		},
 		"msg": {
 			"removeUserConfirm": "Do you really want to remove this User from the Group?",
@@ -248,6 +257,7 @@
 			"invalidMessage": "Invalid Characters in Message",
 			"removeGroup": "Remove Group",
 			"detailGroup": "Details of Group",
+			"invalidOrgaStructure": "Errors in the structure of the organization",
 			"updateVCSuccess": "VISBO Center {{name}} was updated successfully",
 			"addUserSuccess": "User {{name}} was added to VISBO Center",
 			"removeUserSuccess": "User {{name}} was removed from Group",
@@ -263,7 +273,9 @@
 			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveSettingPerm": "No Permission to delete Setting‚ {{name}}",
-			"errorVCConflict": "A VISBO Center with {{name}} does already exist!"
+			"errorVCConflict": "A VISBO Center with {{name}} does already exist!",
+			"saveOrgaSuccess": "VISBO Center Organisation was saved successfully",
+			"errorList": "Errors during upload the organisation"
 		}
 	},
 	"vp": {

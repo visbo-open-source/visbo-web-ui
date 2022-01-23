@@ -189,9 +189,11 @@
 		"titleDeleteGroup": "Löschen einer Gruppe im VISBO Center",
 		"titleProjectUsers": "VISBO Projekt Benutzer",
 		"titlePermUser": "Berechtigung für {{name}}",
-		"titleSettings": "Visbo Center Setting",
-		"titleEnableDisable": "Visbo Center Enable / Disable von Funktionen",
-		"titleDeleteSetting": "Visbo Center Setting löschen",
+		"titleSettings": "VISBO Center Setting",
+		"titleEnableDisable": "VISBO Center Enable / Disable von Funktionen",
+		"titleDeleteSetting": "VISBO Center Setting löschen",
+		"titleUploadSetting": "VISBO Center Setting importieren",
+		"titleSaveOrga": "VISBO Center Organisation speichern",
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
@@ -218,7 +220,11 @@
 			"timestamp": "Zeitstempel",
 			"updatedAt": "Änderung",
 			"deleteSetting": "Löschen",
-			"setting": "Name"
+			"setting": "Name",
+			"newOrga": "Neue Organisation anlegen",
+			"updateOrga": "Existierende Organisation aktualisieren",
+			"valid": "Gültig ab",
+			"nrRoles": "Anzahl Rollen"
 		},
 		"btn": {
 			"viewAudit": "Audit",
@@ -229,6 +235,7 @@
 			"ViewEnableDisable": "Enable / Disable",
 			"addUser": "Benutzer einladen",
 			"addGroup": "Gruppe hinzufügen",
+			"addSetting": "Setting hinzufügen",
 			"invite": "Einladen",
 			"save": "Speichern",
 			"edit": "Ändern",
@@ -236,7 +243,9 @@
 			"delete": "Löschen",
 			"download": "Herunterladen",
 			"back": "Zurück",
-			"cancel": "Abbrechen"
+			"cancel": "Abbrechen",
+			"upload": "Importieren",
+			"finish": "Beenden"
 		},
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
@@ -248,6 +257,7 @@
 			"invalidMessage": "Fehlerhafter Inhalt",
 			"removeGroup": "Gruppe löschen",
 			"detailGroup": "Details zur Gruppe",
+			"invalidOrgaStructure": "Fehlerhafter Inhalt in der Organisationsstruktur",
 			"updateVCSuccess": "VISBO Center {{name}} wurde aktualisiert",
 			"addUserSuccess": "Benutzer {{name}} wurde zum VISBO Center hinzugefügt",
 			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
@@ -263,7 +273,9 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveSettingPerm": "Keine Berechtigung Setting {{name}} zu löschen",
-			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!"
+			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!",
+			"saveOrgaSuccess": "VISBO Center Organisation wurde erfolgreich gespeichert",
+			"errorList": "Fehler beim hochladen der Organisation"
 		}
 	},
 	"vp": {

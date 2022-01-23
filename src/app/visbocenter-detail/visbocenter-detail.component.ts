@@ -15,36 +15,13 @@ import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboSetting } from '../_models/visbosetting';
+import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation, VisboRole } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
-
-class OrganisationItem {
-  calcid: number;
-  uid: number;
-  pid: number;
-  type: number;
-  isTeam: string;
-  level: number;
-  name: string;
-  parent: string;
-  path: string;
-  employeeNr: string;
-  isExternRole: string;
-  defaultDayCapa: number;
-  defaultKapa: number;
-  tagessatz: number;
-  entryDate: Date;
-  exitDate: Date;
-  percent: number;
-  aliases: string;
-  isAggregationRole: string;
-  isSummaryRole: string;
-  isActDataRelevant: string;
-}
+const JSON_EXTENSION = '.json';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -75,6 +52,16 @@ export class VisbocenterDetailComponent implements OnInit {
 
   vcSettingsEnableDisable: VisboSetting[];
   indexEnableDisable: number;
+
+  newFile: any;
+  newOrgaName: string;
+  newOrgaList: VisboReducedOrgaItem[];
+  orgaSaveMode: string;
+  vcOrganisation: VisboSetting[];
+  currentOrgaTimestamp: Date;
+  newOrgaTimestamp: Date;
+  errorList: string[] = [];
+  isOrgaSaved: boolean;
 
   today: Date;
   sortUserColumn = 1;
@@ -320,6 +307,8 @@ export class VisbocenterDetailComponent implements OnInit {
           this.log(`fetched VC Settings ${vcSettings.length}`);
           this.vcSettings = vcSettings.filter(item => item.type != '_VCConfig');
           this.sortSettingTable();
+          this.vcOrganisation = vcSettings.filter(item => item.type == 'organisation');
+          this.vcOrganisation.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
         },
         error => {
           this.log(`Get VC Settings failed: error: ${error.status} message: ${error.error.message}`);
@@ -374,7 +363,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorAddUserPerm', {'name': this.visbocenter.name});
             this.alertService.error(message);
           } else if (error.error) {
-            this.log(`Error during add VC user ${error.error.message}`); // log to console instead
+            this.log(`Error during add VC user ${error.error.message}`);
             this.alertService.error(getErrorMessage(error));
           }
         }
@@ -458,7 +447,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorRemoveUserPerm', {'name': user.email});
             this.alertService.error(message);
           } else {
-            this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
+            this.log(`Error during remove VC user ${error.error.message}`);
             this.alertService.error(getErrorMessage(error));
           }
         }
@@ -576,7 +565,7 @@ export class VisbocenterDetailComponent implements OnInit {
               const message = this.translate.instant('vcDetail.msg.errorChangeGroupPerm', {'name': newGroup.name});
               this.alertService.error(message);
             } else {
-              this.log(`Error during modify VC Group ${error.error.message}`); // log to console instead
+              this.log(`Error during modify VC Group ${error.error.message}`);
               this.alertService.error(getErrorMessage(error));
             }
           }
@@ -599,7 +588,7 @@ export class VisbocenterDetailComponent implements OnInit {
               const message = this.translate.instant('vcDetail.msg.errorCreateGroupPerm', {'name': newGroup.name});
               this.alertService.error(message);
             } else {
-              this.log(`Error during add VC Group ${error.error.message}`); // log to console instead
+              this.log(`Error during add VC Group ${error.error.message}`);
               this.alertService.error(getErrorMessage(error));
             }
           }
@@ -625,7 +614,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorRemoveGroupPerm', {'name': group.name});
             this.alertService.error(message);
           } else {
-            this.log(`Error during remove VC user ${error.error.message}`); // log to console instead
+            this.log(`Error during remove VC user ${error.error.message}`);
             this.alertService.error(getErrorMessage(error));
           }
         }
@@ -653,26 +642,177 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.errorRemoveSettingPerm', {'name': setting.name});
             this.alertService.error(message);
           } else {
-            this.log(`Error during remove VC setting ${error.error.message}`); // log to console instead
+            this.log(`Error during remove VC setting ${error.error.message}`);
             this.alertService.error(getErrorMessage(error));
           }
         }
       );
   }
 
-  calcFullPath(id: number, organisation: OrganisationItem[]): void {
+  onFileSelected(event: any): void {
+      let file = event?.target?.files?.[0];
+      if (file?.name) {
+        this.newFile = file;
+      }
+  }
+
+  initOrganisation(): void {
+    this.errorList = [];
+    this.isOrgaSaved = false;
+  }
+
+  addSetting(): void {
+    if (!this.isValidSetting()) {
+      this.log(`Add Setting no valid file ${this.newFile?.name}`);
+      return;
+    }
+    this.newOrgaName = 'Organisation';
+    this.orgaSaveMode = 'new';
+    this.isOrgaSaved = false;
+    let beginningOfMonth = new Date();
+    beginningOfMonth.setDate(1);
+    beginningOfMonth.setHours(0, 0, 0, 0);
+    if (this.vcOrganisation) {
+      // set currentOrgaTimestamp to the newest Orga TS
+      // set newOrgaTimestamp to either the next month or to the beginning of current month
+      this.currentOrgaTimestamp = this.vcOrganisation[0].timestamp;
+      this.newOrgaTimestamp = new Date(this.currentOrgaTimestamp);
+      this.newOrgaTimestamp.setMonth(this.newOrgaTimestamp.getMonth() + 1);
+      if (this.newOrgaTimestamp < beginningOfMonth) {
+        this.newOrgaTimestamp = beginningOfMonth;
+      }
+    } else {
+      this.newOrgaTimestamp = beginningOfMonth;
+    }
+    let isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
+
+    let fileReader = new FileReader();
+    if (isExcel) {
+      // fileReader.readAsArrayBuffer(this.newFile);
+      fileReader.readAsArrayBuffer(this.newFile);
+    } else {
+      fileReader.readAsText(this.newFile);
+    }
+    fileReader.onloadend = (e) => {
+      console.log("File uploaded Length", fileReader.result.toString().length, this.newFile.size, "type", typeof fileReader.result);
+      let jsonSetting: string;
+      if (isExcel) {
+        let workbook = XLSX.read(e.target.result);
+        const first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        let worksheet = workbook.Sheets[first_sheet_name];
+        let listOrga = XLSX.utils.sheet_to_json(worksheet);
+        this.log(`Add Setting of XLSX Files not implemented ${this.newFile?.name} Sheet ${first_sheet_name} OrgaList Len: ${listOrga?.length}`);
+        this.newOrgaList = [];
+        listOrga.forEach(item => {this.newOrgaList.push(this.initItem(item))});
+        this.log(`Converted to ListOrga OrgaList Len: ${this.newOrgaList.length} First: ${JSON.stringify(this.newOrgaList[0])}`);
+      } else {
+        let jsonString = fileReader.result.toString();
+        try {
+          jsonSetting = JSON.parse(jsonString);
+        }
+        catch (e) {
+          const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+          this.alertService.error(message, true);
+        }
+        this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+      }
+    }
+  }
+
+  saveOrganisation(): void {
+    this.log(`Save organisation ${this.newOrgaList.length}  ${this.orgaSaveMode}`);
+    const vcid = this.visbocenter._id;
+    const organisation = new VisboOrganisation();
+    organisation.name = this.newOrgaName.trim() || 'Organisation';
+    // organisation.allUnits = [];
+    // this.newOrgaList.forEach(item => organisation.allUnits.push(item));
+    organisation.allUnits = this.newOrgaList;
+
+    this.isOrgaSaved = true;
+    if (this.orgaSaveMode == 'new') {
+      organisation.timestamp = this.newOrgaTimestamp;
+      this.visbosettingService.createVCOrganisation(vcid, false, organisation)
+        .subscribe(
+          orga => {
+            const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
+            this.alertService.success(message);
+            // add orga to the list of settings and to the list of orgs
+            let newSetting = new VisboSetting();
+            newSetting._id = orga._id;
+            newSetting.vcid = this.visbocenter._id;
+            newSetting.name = orga.name;
+            newSetting.timestamp = orga.timestamp;
+            newSetting.type = 'organisation';
+            newSetting.value = {allUnits: orga.allUnits, validFrom: orga.timestamp};
+            this.vcOrganisation.unshift(newSetting);
+            this.vcSettings.unshift(newSetting);
+          },
+          error => {
+            this.log(`Save VisboCenter Orga error: ${JSON.stringify(error)}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vcDetail.msg.errorPermVC', {'name': this.visbocenter.name});
+              this.alertService.error(message);
+            } else if (error.status === 400) {
+              const message = this.translate.instant('vcDetail.msg.invalidOrgaStructure');
+              this.errorList = error.error && error.error.error
+              this.alertService.error(message);
+            } else if (error.error) {
+              this.log(`Error during save VC Orga ${error.error.message}`);
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    } else {
+    }
+  }
+
+  getCurrentOrgaLength(): number {
+    let result = 0;
+    const currentOrga = this.vcOrganisation && this.vcOrganisation[0];
+    if (currentOrga?.value) {
+      result = (currentOrga.value.allRoles?.length || 0)
+              + (currentOrga.value.allCosts?.length || 0)
+              + (currentOrga.value.allUnits?.length || 0);
+    }
+    return result;
+  }
+
+  // eslint-disable-next-line
+  initItem(item: any): VisboReducedOrgaItem {
+    let result = new VisboReducedOrgaItem();
+    result.uid = item.uid;
+    result.path = item.path?.trim();
+    result.name = item.name?.trim();
+    result.type = item.type;
+    if (item.employeeNr) result.employeeNr = item.employeeNr;
+    result.isExternRole = item.isExternRole;
+    if (item.entryDate) {
+      result.entryDate = getJsDateFromExcel(item.entryDate);
+    }
+    if (item.exitDate) {
+      result.exitDate = getJsDateFromExcel(item.exitDate);
+    }
+    result.defaultDayCapa = item.defaultDayCapa;
+    result.defaultKapa = item.defaultDayCapa;
+    if (item.percent) result.percent = item.percent;
+    result.tagessatz = item.tagessatz;
+    if (item.aliases) result.aliases = item.aliases;
+    result.isSummaryRole = item.isSummaryRole;
+    return result;
+  }
+
+  isValidSetting(): boolean {
+    return this.newFile ? true : false;
+  }
+
+  calcFullPath(id: number, organisation: VisboReducedOrgaItem[]): void {
     if (!organisation || !(id >= 0)) {
       return;
     }
     let path = '';
-    let index = id;
+    let index = organisation[id].pid;
     let level = -1;
-    if (organisation[index]) {
-      const pid = organisation[index] && organisation[index].pid;
-      if (pid >= 0) {
-        organisation[index].parent = organisation[pid] && organisation[pid].name;
-      }
-    }
     while (index >= 0 && organisation[index]) {
       path = '/'.concat(organisation[index].name, path);
       index = organisation[index].pid;
@@ -686,12 +826,12 @@ export class VisbocenterDetailComponent implements OnInit {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
     if (setting.type == 'organisation' && setting.value?.allRoles) {
-      let organisation: OrganisationItem[] = [];
+      let organisation: VisboReducedOrgaItem[] = [];
       for (let i = 0; i < setting.value.allRoles?.length; i++) {
         const role = setting.value.allRoles[i];
         const id = role.uid;
         if (!organisation[id]) {
-          organisation[id] = new OrganisationItem()
+          organisation[id] = new VisboReducedOrgaItem()
           organisation[id].uid = id;
           organisation[id].calcid = id;
           organisation[id].pid = undefined;
@@ -699,7 +839,7 @@ export class VisbocenterDetailComponent implements OnInit {
         organisation[id].name = role.name;
         organisation[id].isExternRole = role.isExternRole?'1': '';
         organisation[id].defaultKapa = role.defaultKapa;
-        organisation[id].tagessatz = role.tagessatzIntern;
+        organisation[id].tagessatz = role.tagessatz;
         organisation[id].employeeNr = role.employeeNr;
         organisation[id].defaultDayCapa = role.defaultDayCapa;
         if (role.entryDate > "0001-01-01T00:00:00Z") {
@@ -719,7 +859,6 @@ export class VisbocenterDetailComponent implements OnInit {
         if (role.isTeam) {
           this.log("Skip Handling of Team Members");
           organisation[id].type = 2;
-          organisation[id].isTeam = '1';
         } else {
           organisation[id].type = 1;
         }
@@ -732,7 +871,7 @@ export class VisbocenterDetailComponent implements OnInit {
           }
           if (!organisation[index]) {
             // added by subrole
-            organisation[index] = new OrganisationItem();
+            organisation[index] = new VisboReducedOrgaItem();
             organisation[index].uid = index;
             organisation[index].calcid = index;
           } else {
@@ -744,7 +883,7 @@ export class VisbocenterDetailComponent implements OnInit {
         }
         organisation[id].isAggregationRole = role.isAggregationRole?'1': '';
         organisation[id].isSummaryRole = role.isSummaryRole?'1': '';
-        organisation[id].isActDataRelevant = role.isActDataRelevant?'1': '';
+        // organisation[id].isActDataRelevant = role.isActDataRelevant?'1': '';
       }
 
       // build team members Information by duplicating users with their percentage
@@ -753,23 +892,22 @@ export class VisbocenterDetailComponent implements OnInit {
       this.log(`MaxID ${maxid}`);
       for (let i = 0; i < setting.value.allRoles.length; i++) {
         const role = setting.value.allRoles[i];
-        if (role.isTeam && role.subRoleIDs && role.subRoleIDs.length > 0) {
+        if (role.type == 2 && role.subRoleIDs?.length > 0) {
           for (let j = 0; j < role.subRoleIDs.length; j++) {
             const index = role.subRoleIDs[j].key;
-            if (!organisation[index] || organisation[index].isTeam) {
-              // nothing to do
+            if (!organisation[index] || organisation[index].type == 2) {
+              // group in group: nothing to do
               continue;
             }
             const userRole = organisation[index];
             // now it is a user, add a new entry to the team
             maxid += 1;
-            organisation[maxid] = new OrganisationItem();
+            organisation[maxid] = new VisboReducedOrgaItem();
             organisation[maxid].uid = index;
             organisation[maxid].calcid = maxid;
             organisation[maxid].type = 2;
             organisation[maxid].pid = role.uid;
             organisation[maxid].name = userRole.name;
-            organisation[maxid].parent = role.name;
             if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
             if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole }
             if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
@@ -778,10 +916,9 @@ export class VisbocenterDetailComponent implements OnInit {
             if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
             if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
             if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
-            if (userRole.isAggregationRole) { organisation[maxid].isAggregationRole = userRole.isAggregationRole }
             if (userRole.isSummaryRole) { organisation[maxid].isSummaryRole = userRole.isSummaryRole }
-            if (userRole.isActDataRelevant) { organisation[maxid].isActDataRelevant = userRole.isActDataRelevant }
-            organisation[maxid].percent = Number(role.subRoleIDs[j].value) || 0;
+            organisation[maxid].percent = this.calcTeamPercentage(index, role.uid, setting.value.allRoles);
+              // Number(role.subRoleIDs[j].value) || 0;
           }
         }
       }
@@ -791,17 +928,17 @@ export class VisbocenterDetailComponent implements OnInit {
         if (a.type != b.type) {
           return a.type - b.type;
         } else {
-          return visboCmpString(a.path, b.path);
+          return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name));
         }
       });
 
       // build cost Information hierarchy
-      let listCost: OrganisationItem[] = [];
+      let listCost: VisboReducedOrgaItem[] = [];
       for (let i = 0; setting.value.allCosts && i < setting.value.allCosts.length; i++) {
         const cost = setting.value.allCosts[i];
         const id = cost.uid;
         if (!listCost[id]) {
-          listCost[id] = new OrganisationItem()
+          listCost[id] = new VisboReducedOrgaItem()
           listCost[id].uid = id;
           listCost[id].calcid = id;
           listCost[id].pid = undefined;
@@ -818,7 +955,7 @@ export class VisbocenterDetailComponent implements OnInit {
           }
           if (!listCost[index]) {
             // added by subCost
-            listCost[index] = new OrganisationItem();
+            listCost[index] = new VisboReducedOrgaItem();
             listCost[index].uid = index;
             listCost[index].calcid = index;
           } else {
@@ -834,7 +971,7 @@ export class VisbocenterDetailComponent implements OnInit {
         if (a.type != b.type) {
           return a.type - b.type;
         } else {
-          return visboCmpString(a.path, b.path);
+          return visboCmpString(a.path.concat('/', a.name), b.path.concat('/', b.name));
         }
       });
       // add the list to the orga list
@@ -842,41 +979,41 @@ export class VisbocenterDetailComponent implements OnInit {
 
       this.log(`Orga Structure ${JSON.stringify(organisation)}`);
       // cleanup unnecessary fields
-      // let cleanupEmployeeNr = true;
-      // let cleanupAliases = true;
-      // let cleanupIsTeam = true;
-      // if (organisation.find(item => item?.employeeNr != undefined)) {
-      //     cleanupEmployeeNr = false;
-      // }
-      // if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
-      //     cleanupAliases = false;
-      // }
-      // if (organisation.find(item => item?.isTeam != undefined)) {
-      //     cleanupIsTeam = false;
-      // }
+      let cleanupEmployeeNr = true;
+      let cleanupAliases = true;
+      let cleanupPercent = true;
+      if (organisation.find(item => item?.employeeNr != undefined)) {
+          cleanupEmployeeNr = false;
+      }
+      if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
+          cleanupAliases = false;
+      }
+      if (organisation.find(item => item?.percent != undefined)) {
+          cleanupPercent = false;
+      }
       organisation.forEach(item => {
         delete item.calcid;
         delete item.pid;
-        delete item.parent;
-        // cleanupEmployeeNr && delete item.employeeNr;
-        // cleanupAliases && delete item.aliases;
-        // cleanupIsTeam && delete item.isTeam;
-        // cleanupIsTeam && delete item.percent;
+        delete item.isAggregationRole;
+        cleanupEmployeeNr && delete item.employeeNr;
+        cleanupAliases && delete item.aliases;
+        cleanupPercent && delete item.percent;
         if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
         if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
         item.name = item.name.padStart(item.name.length + item.level, ' ');
+        delete item.level;
       });
 
       // export to Excel
       const len = organisation.length;
-      const width = Object.keys(organisation[0]).length;
+      const width = 13;
       const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
       const timestamp = new Date(setting.timestamp);
       const month = (timestamp.getMonth() + 1).toString();
       const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
       const name = 'VisboCenterOrganisation_' + strTimestamp;
 
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'entryDate', 'exitDate' , 'isExternRole', 'defaultKapa', 'tagessatz', 'employeeNr','defaultDayCapa','aliases']});
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'aliases']});
       worksheet['!autofilter'] = { ref: matrix };
       // eslint-disable-next-line
       const sheets: any = {};
@@ -908,6 +1045,14 @@ export class VisbocenterDetailComponent implements OnInit {
       a.click();
       window.URL.revokeObjectURL(url);
     }
+  }
+
+  calcTeamPercentage(uid: number, teamID: number, allRoles: VisboRole[]): number {
+    let result: number;
+    let role = allRoles?.find(role => role.uid == uid);
+    let team = role?.teamIDs?.find(item => item.key == teamID);
+    if (team) result = team.value;
+    return result || 0;
   }
 
   sortUserTable(n?: number): void {
@@ -957,7 +1102,7 @@ export class VisbocenterDetailComponent implements OnInit {
     } else if (this.sortVPUserColumn === 2) {
       this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.vp.name.toLowerCase(), b.vp.name.toLowerCase()); });
     }
-    this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`); // log to console instead
+    this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`);
     if (!this.sortVPUserAscending) {
       this.vgVPUsers.reverse();
     }
@@ -1006,7 +1151,7 @@ export class VisbocenterDetailComponent implements OnInit {
       this.vcSettings.sort(function(a, b) {
         let result = visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
         if (result == 0) {
-          result = -visboCmpDate(a.timestamp, b.timestamp);
+          result = visboCmpDate(b.timestamp, a.timestamp);
         }
         return result;
       });
@@ -1067,5 +1212,6 @@ export class VisbocenterDetailComponent implements OnInit {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);
+    console.log('VisboCenter Details: ' + message);
   }
 }
