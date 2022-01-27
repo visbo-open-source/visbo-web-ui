@@ -794,7 +794,7 @@ export class VisbocenterDetailComponent implements OnInit {
       result.exitDate = getJsDateFromExcel(item.exitDate);
     }
     result.defaultDayCapa = item.defaultDayCapa;
-    result.defaultKapa = item.defaultDayCapa;
+    result.defaultKapa = item.defaultKapa;
     if (item.percent) result.percent = item.percent;
     result.tagessatz = item.tagessatz;
     if (item.aliases) result.aliases = item.aliases;
