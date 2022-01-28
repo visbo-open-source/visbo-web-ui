@@ -60,6 +60,7 @@ export class VisbocenterDetailComponent implements OnInit {
   vcOrganisation: VisboSetting[];
   currentOrgaTimestamp: Date;
   newOrgaTimestamp: Date;
+  minOrgaTimestamp: Date;
   errorList: string[] = [];
   isOrgaSaved: boolean;
 
@@ -666,6 +667,7 @@ export class VisbocenterDetailComponent implements OnInit {
       this.log(`Add Setting no valid file ${this.newFile?.name}`);
       return;
     }
+    this.resetError();
     this.newOrgaName = 'Organisation';
     this.orgaSaveMode = 'new';
     this.isOrgaSaved = false;
@@ -681,8 +683,12 @@ export class VisbocenterDetailComponent implements OnInit {
       if (this.newOrgaTimestamp < beginningOfMonth) {
         this.newOrgaTimestamp = beginningOfMonth;
       }
+      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
     } else {
       this.newOrgaTimestamp = beginningOfMonth;
+      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
+      this.minOrgaTimestamp.setMonth(0);
+      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 1);
     }
     let isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
 
@@ -743,6 +749,8 @@ export class VisbocenterDetailComponent implements OnInit {
             newSetting.vcid = this.visbocenter._id;
             newSetting.name = orga.name;
             newSetting.timestamp = orga.timestamp;
+            newSetting.updatedAt = orga.updatedAt;
+
             newSetting.type = 'organisation';
             newSetting.value = {allUnits: orga.allUnits, validFrom: orga.timestamp};
             this.vcOrganisation.unshift(newSetting);
@@ -764,7 +772,34 @@ export class VisbocenterDetailComponent implements OnInit {
           }
         );
     } else {
+      const orgaid = this.vcOrganisation[0]?._id;
+      this.visbosettingService.updateVCOrganisation(vcid, orgaid, false, organisation)
+        .subscribe(
+          orga => {
+            const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
+            this.vcOrganisation[0].updatedAt = orga.updatedAt;
+            this.alertService.success(message);
+          },
+          error => {
+            this.log(`Update VisboCenter Orga error: ${JSON.stringify(error)}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vcDetail.msg.errorPermVC', {'name': this.visbocenter.name});
+              this.alertService.error(message);
+            } else if (error.status === 400) {
+              const message = this.translate.instant('vcDetail.msg.invalidOrgaStructure');
+              this.errorList = error.error && error.error.error
+              this.alertService.error(message);
+            } else if (error.error) {
+              this.log(`Error during update VC Orga ${error.error.message}`);
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
     }
+  }
+
+  resetError(): void {
+    this.errorList = [];
   }
 
   getCurrentOrgaLength(): number {
@@ -795,10 +830,13 @@ export class VisbocenterDetailComponent implements OnInit {
     }
     result.defaultDayCapa = item.defaultDayCapa;
     result.defaultKapa = item.defaultKapa;
-    if (item.percent) result.percent = item.percent;
     result.tagessatz = item.tagessatz;
-    if (item.aliases) result.aliases = item.aliases;
-    result.isSummaryRole = item.isSummaryRole;
+    if (item.alias) {
+      result.aliases = item.alias.split('#');
+      delete result.alias
+    }
+    result.isSummaryRole = item.isSummaryRole ? '1' : undefined;
+    result.isAggregationRole = item.isAggregationRole ? '1' : undefined;
     return result;
   }
 
@@ -848,16 +886,10 @@ export class VisbocenterDetailComponent implements OnInit {
         if (role.exitDate < "2200-11-30T23:00:00Z") {
           organisation[id].exitDate = role.exitDate;
         }
-        for (let i = 0; role.aliases && i < role.aliases.length; i++) {
-          if (i == 0) {
-            organisation[id].aliases = role.aliases[i];
-          } else {
-            organisation[id].aliases = organisation[id].aliases + '#' + role.aliases[i];
-          }
-        }
+        if (role.aliases?.length) organisation[id].alias = role.aliases.join('#');
         // this.log(`Add Orga Unit ${id} ${role.name} Children ${role.subRoleIDs.length}`);
         if (role.isTeam) {
-          this.log("Skip Handling of Team Members");
+          // this.log("Skip Handling of Team Members");
           organisation[id].type = 2;
         } else {
           organisation[id].type = 1;
@@ -875,18 +907,18 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[index].uid = index;
             organisation[index].calcid = index;
           } else {
-            this.log(`SubRole already exists ${id} SubRole ${index}`);
+            // this.log(`SubRole already exists ${id} SubRole ${index}`);
           }
           if (!organisation[index].pid) {
             organisation[index].pid = id;
           }
         }
-        organisation[id].isAggregationRole = role.isAggregationRole?'1': '';
-        organisation[id].isSummaryRole = role.isSummaryRole?'1': '';
+        organisation[id].isAggregationRole = role.isAggregationRole? '1' : '';
+        organisation[id].isSummaryRole = role.isSummaryRole? '1' : '';
         // organisation[id].isActDataRelevant = role.isActDataRelevant?'1': '';
       }
 
-      // build team members Information by duplicating users with their percentage
+      // build team members Information by duplicating users with their team parents
       let maxid = 0;
       setting.value.allRoles.forEach(element => { if (element.uid > maxid) maxid = element.uid; } );
       this.log(`MaxID ${maxid}`);
@@ -908,17 +940,14 @@ export class VisbocenterDetailComponent implements OnInit {
             organisation[maxid].type = 2;
             organisation[maxid].pid = role.uid;
             organisation[maxid].name = userRole.name;
-            if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
+            // if (userRole.employeeNr) { organisation[maxid].employeeNr = userRole.employeeNr; }
             if (userRole.isExternRole) { organisation[maxid].isExternRole = userRole.isExternRole }
-            if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
-            if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
-            if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
-            if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
-            if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
-            if (userRole.aliases) { organisation[maxid].aliases = userRole.aliases; }
+            // if (userRole.defaultDayCapa >= 0) { organisation[maxid].defaultDayCapa = userRole.defaultDayCapa; }
+            // if (userRole.defaultKapa >= 0) { organisation[maxid].defaultKapa = userRole.defaultKapa; }
+            // if (userRole.tagessatz >= 0) { organisation[maxid].tagessatz = userRole.tagessatz; }
+            // if (userRole.entryDate) { organisation[maxid].entryDate = userRole.entryDate; }
+            // if (userRole.exitDate) { organisation[maxid].exitDate = userRole.exitDate; }
             if (userRole.isSummaryRole) { organisation[maxid].isSummaryRole = userRole.isSummaryRole }
-            organisation[maxid].percent = this.calcTeamPercentage(index, role.uid, setting.value.allRoles);
-              // Number(role.subRoleIDs[j].value) || 0;
           }
         }
       }
@@ -977,30 +1006,25 @@ export class VisbocenterDetailComponent implements OnInit {
       // add the list to the orga list
       listCost.forEach(item => organisation.push(item));
 
-      this.log(`Orga Structure ${JSON.stringify(organisation)}`);
+      // this.log(`Orga Structure ${JSON.stringify(organisation)}`);
       // cleanup unnecessary fields
       let cleanupEmployeeNr = true;
       let cleanupAliases = true;
-      let cleanupPercent = true;
       if (organisation.find(item => item?.employeeNr != undefined)) {
           cleanupEmployeeNr = false;
       }
-      if (organisation.find(item => item?.aliases != undefined && item?.aliases.length > 0)) {
+      if (organisation.find(item => item.alias)) {
           cleanupAliases = false;
-      }
-      if (organisation.find(item => item?.percent != undefined)) {
-          cleanupPercent = false;
       }
       organisation.forEach(item => {
         delete item.calcid;
+        delete item.aliases;
         delete item.pid;
-        delete item.isAggregationRole;
         cleanupEmployeeNr && delete item.employeeNr;
-        cleanupAliases && delete item.aliases;
-        cleanupPercent && delete item.percent;
+        if (cleanupAliases) delete item.alias;
         if (item.entryDate) { item.entryDate = new Date(item.entryDate); }
         if (item.exitDate) { item.exitDate = new Date(item.exitDate); }
-        item.name = item.name.padStart(item.name.length + item.level, ' ');
+        item.name = item.name.padStart(item.name.length + item.level, '  ');
         delete item.level;
       });
 
@@ -1013,7 +1037,7 @@ export class VisbocenterDetailComponent implements OnInit {
       const strTimestamp = '' + timestamp.getFullYear() + '-' +  month.padStart(2, "0");
       const name = 'VisboCenterOrganisation_' + strTimestamp;
 
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'aliases']});
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias']});
       worksheet['!autofilter'] = { ref: matrix };
       // eslint-disable-next-line
       const sheets: any = {};
@@ -1045,14 +1069,6 @@ export class VisbocenterDetailComponent implements OnInit {
       a.click();
       window.URL.revokeObjectURL(url);
     }
-  }
-
-  calcTeamPercentage(uid: number, teamID: number, allRoles: VisboRole[]): number {
-    let result: number;
-    let role = allRoles?.find(role => role.uid == uid);
-    let team = role?.teamIDs?.find(item => item.key == teamID);
-    if (team) result = team.value;
-    return result || 0;
   }
 
   sortUserTable(n?: number): void {
@@ -1172,6 +1188,16 @@ export class VisbocenterDetailComponent implements OnInit {
     }
     // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
     return new Date(checkDate) >= this.today;
+  }
+
+  parseDate(dateString: string, beginningOfMonth = false): Date {
+     if (dateString) {
+       const actDate = new Date(dateString);
+       actDate.setHours(0, 0, 0, 0);
+       if (beginningOfMonth) actDate.setDate(1);
+       return actDate;
+    }
+    return null;
   }
 
   sortSettingEnabledDisabled(n?: number): void {

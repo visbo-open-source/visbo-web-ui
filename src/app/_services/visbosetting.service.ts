@@ -68,23 +68,41 @@ export class VisboSettingService  {
       );
   }
 
-  /** Update/Create VCOrganisatios */
+  /** Create VCOrganisation */
   createVCOrganisation(vcid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
-   const url = `${this.vcUrl}/${vcid}/organisation`;
-   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-   let params = new HttpParams();
+    const url = `${this.vcUrl}/${vcid}/organisation`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
 
-   if (sysadmin) {
+    if (sysadmin) {
      params = params.append('sysadmin', '1');
-   }
-   this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
-   return this.http.post<VisboOrgaResponse>(url, orga, { headers , params })
-     .pipe(
-       map(response => response.organisation[0]),
-       tap(organisation => this.log(`created VCOrganisation with ${organisation.allUnits?.length} items`)),
-       catchError(this.handleError<VisboOrganisation>('createVCOrganisation'))
-     );
- }
+    }
+    this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
+    return this.http.post<VisboOrgaResponse>(url, orga, { headers , params })
+      .pipe(
+        map(response => response.organisation[0]),
+        tap(organisation => this.log(`created VCOrganisation with ${organisation.allUnits?.length} items`)),
+        catchError(this.handleError<VisboOrganisation>('createVCOrganisation'))
+      );
+  }
+
+  /** Update VCOrganisation */
+  updateVCOrganisation(vcid: string, orgaid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
+    const url = `${this.vcUrl}/${vcid}/organisation/${orgaid}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) {
+     params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
+    return this.http.put<VisboOrgaResponse>(url, orga, { headers , params })
+      .pipe(
+        map(response => response.organisation[0]),
+        tap(organisation => this.log(`updated VCOrganisation with ${organisation.allUnits?.length} items`)),
+        catchError(this.handleError<VisboOrganisation>('updateVCOrganisation'))
+      );
+  }
 
   /** GET VCSetting by id. Will 404 if id not found */
   getVCSetting(vcid: string, id: string, sysadmin = false): Observable<VisboSetting> {

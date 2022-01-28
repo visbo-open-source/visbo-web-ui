@@ -245,7 +245,7 @@
 			"back": "Zurück",
 			"cancel": "Abbrechen",
 			"upload": "Importieren",
-			"finish": "Beenden"
+			"reset": "Zurücksetzen"
 		},
 		"msg": {
 			"removeUserConfirm": "Wollen Sie den Benutzer wirklich aus der Gruppe löschen?",
