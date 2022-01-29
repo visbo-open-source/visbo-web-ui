@@ -877,6 +877,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.graphBubbleOptions.hAxis.maxValue = rangeAxis;
     } else {
       rangeAxis *= 1.1;
+      rangeAxis = Math.max(rangeAxis, 20);
       this.graphBubbleOptions.hAxis.minValue = 100 - rangeAxis;
       this.graphBubbleOptions.hAxis.maxValue = 100 + rangeAxis;
     }
@@ -921,6 +922,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.graphBubbleOptions.vAxis.maxValue = rangeAxis;
     } else {
       rangeAxis *= 1.1;
+      rangeAxis = Math.max(rangeAxis, 20);
       this.graphBubbleOptions.vAxis.minValue = 100 - rangeAxis;
       this.graphBubbleOptions.vAxis.maxValue = 100 + rangeAxis;
     }
@@ -1213,6 +1215,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     }
     return title;
   }
+
   getPMCommitTooltip (vp: VisboProject): string {
     if (!vp) return '';
     let title = '';
@@ -1326,7 +1329,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    // console.log('CompViewBubble: ' + message);
+    console.log('CompViewBubble: ' + message);
     this.messageService.add('CompViewBubble: ' + message);
   }
 }

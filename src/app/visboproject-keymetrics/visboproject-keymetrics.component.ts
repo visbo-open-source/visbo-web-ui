@@ -1019,7 +1019,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // not the latest version
       return false;
     }
-    if (!(this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == ""))) {
+    if (!this.hasVPPerm(this.permVP.Modify) || this.vpvActive.variantName != "") {
       return false;
     }
     if (!(this.vpActive.vpStatus == 'initialized' || this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered')) {
@@ -1033,6 +1033,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       return true;
     }
     return false;
+  }
+
+  canChangeVPDetails(checkPMO = false): boolean {
+    let result = true;
+    if (!this.hasVPPerm(this.permVP.Modify)) {
+      result = false;
+    } else if (!this.canModifyVPProperties()) {
+      result = false;
+    } else if (checkPMO && !this.isPMO()) {
+      result = false;
+    }
+    return result;
   }
 
   canCopyVersion(): boolean {

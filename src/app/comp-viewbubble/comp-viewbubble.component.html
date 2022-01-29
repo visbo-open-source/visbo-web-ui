@@ -61,7 +61,6 @@
         {{ 'compViewBubble.metric.costName' | translate }}
       </h5>
       <div class="card-body p-2">
-        <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'compViewBubble.lbl.nrProjects', title: '', value: visboprojectversions.length }"></ng-container> -->
         <div class="row">
           <div class="col col-sm-8">
             {{ 'compViewBubble.lbl.nrProjects' | translate }}
@@ -88,7 +87,6 @@
             {{budgetAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
-        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
       </div>
     </div>
   </div>
@@ -123,10 +121,10 @@
               <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlineUnFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}}</th>
               <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }}</th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th> 
+              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th>
 
               <th class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
-             
+
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
               <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th>
               <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
