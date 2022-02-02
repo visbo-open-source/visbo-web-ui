@@ -948,13 +948,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const organisation = this.vcOrganisation;
 
     const allRoles = [];
-    const allRoleNames = [];
-    const roles = organisation?.allRoles;
-    for (let  i = 0; i < roles?.length; i++) {
-      allRoles[roles[i].uid] = roles[i];
-      allRoleNames[roles[i].name] = roles[i];
-    }
-    this.topLevelNodes = this.buildTopNodes(allRoles);
+    const roles = this.vcOrganisation?.allUnits?.filter(role => role.type == 1 || role.type == 2);
+    roles?.forEach(role => allRoles[role.uid] = role);
+
+    this.topLevelNodes = allRoles.filter(role => role.pid == undefined);
     this.orgaTreeData = this.buildOrgaTree(this.topLevelNodes, allRoles);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
     if (this.roleID >= 0 && this.roleID < allRoles.length) {

@@ -745,14 +745,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      if (this.vcOrga == undefined || this.vcOrga.length > 0) {
+      if (this.vcOrga == undefined) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true, false)
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), false, false)
           .subscribe(
             organisation => {
               this.vcOrga = organisation;
-              this.hasOrga = organisation.length > 0 && organisation[0] != null;
+              this.hasOrga = organisation.length > 0;
             },
             error => {
               if (error.status === 403) {
