@@ -179,6 +179,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     // this.showHistory(false);
     if (this.route.snapshot.queryParams.refDate) {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
+    } else {
+      this.refDate = undefined;
     }
     const newVariantID = this.route.snapshot.queryParams.variantID;
     if (newVariantID != this.variantID) {
@@ -295,17 +297,16 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.log(`calc keyMetrics Result LEN ${this.visbokeymetrics.length}`);
     if (this.visbokeymetrics.length > 0) {
-      this.sortKeyMetricsTable(undefined);
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
       let i = 0;
       // search the coresponding version for refDate
-      if (this.refDate && !this.sameDay(this.refDate, new Date())) {
-        for (; i < this.visbokeymetrics.length; i++) {
-          if (visboCmpDate(this.refDate, new Date(this.visbokeymetrics[i].timestamp)) >= 0) {
-            break;
-          }
+      let refDate = this.refDate || new Date();
+      for (; i < this.visbokeymetrics.length; i++) {
+        if (visboCmpDate(refDate, new Date(this.visbokeymetrics[i].timestamp)) >= 0) {
+          break;
         }
-        if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
       }
+      if (i >= this.visbokeymetrics.length) { i = this.visbokeymetrics.length - 1; }
       this.setVpvActive(this.visbokeymetrics[i]);
     } else {
       this.switchView('All');
@@ -323,7 +324,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   visboKeyMetricsCostOverTime(): void {
     this.graphOptionsLineChart.title = this.translate.instant('keyMetrics.chart.titleCostTrend');
-    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');    
+    this.graphOptionsLineChart.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisCostTrend');
     this.graphOptionsLineChart.vAxis.direction = 1;
     this.graphOptionsLineChart.colors = this.colorsDefault;
 
@@ -442,20 +443,20 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       '<div><b>' + ts + '</b></div>' + '<div>' +
       '<table>';
 
-    const longEAC = this.translate.instant('keyMetrics.longEAC');
-    const longPAC = this.translate.instant('keyMetrics.longPAC');
-    const longBAC = this.translate.instant('keyMetrics.longBAC');
-    const planAC = this.translate.instant('keyMetrics.planAC');
-    const baselinePV = this.translate.instant('keyMetrics.baselinePV');
+      const longEAC = this.translate.instant('keyMetrics.longEAC');
+      const longPAC = this.translate.instant('keyMetrics.longPAC');
+      const longBAC = this.translate.instant('keyMetrics.longBAC');
+      const planAC = this.translate.instant('keyMetrics.planAC');
+      const baselinePV = this.translate.instant('keyMetrics.baselinePV');
 
-    result = result + '<tr>' + '<td>' + longEAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    if (vpv.keyMetrics?.costCurrentTotalPredict !== undefined) {
-      result = result + '<tr>' + '<td>' + longPAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotalPredict || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    }
-    result = result + '<tr>' + '<td>' + longBAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastTotal || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastActual || 0) * 10) / 10 + ' T€</b></td>' + '</tr>';
-    result = result + '</table>' + '</div>' + '</div>';
+      result = result + '<tr>' + '<td>' + longEAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotal || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      if (vpv.keyMetrics?.costCurrentTotalPredict !== undefined) {
+        result = result + '<tr>' + '<td>' + longPAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentTotalPredict || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      }
+      result = result + '<tr>' + '<td>' + longBAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastTotal || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costCurrentActual || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.costBaseLastActual || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
 
     return result;
   }
@@ -1033,7 +1034,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     const delay1 = 7;
     this.vpvKeyMetricActive = vpv;
     this.log(`VPV Active: vpv: ${vpv._id} ${this.vpvKeyMetricActive._id} ${this.vpvKeyMetricActive.timestamp}`);
-    if (updateParent) this.updateUrlParam('refDate', vpv.timestamp.toString());
+    if (updateParent) {
+      this.updateUrlParam('refDate', vpv.timestamp.toString());
+    }
     index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1);
     if (index < 1 + level1) {
       this.qualityCost = 1;
@@ -1250,6 +1253,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('CompVisboViewCost: ' + message);
+    // console.log('CompVisboViewCost: ' + message);
   }
 
 }

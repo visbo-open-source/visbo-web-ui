@@ -84,7 +84,6 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <!-- <a class="dropdown-item">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a> -->
             <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
             <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
             <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
@@ -540,8 +539,7 @@
           </div>
           <div class="modal-footer align-items-end">
             <button id="vpvCopyCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
-            <button id="vpvCopyConfirm" *ngIf="!hasVariantChange()" type="submit" class="btn btn-primary disabled mx-1">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
-            <button id="vpvCopyConfirm" *ngIf="hasVariantChange()" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button>
+            <button id="vpvCopyConfirm" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</button>
           </div>
         </form>
       </div>
