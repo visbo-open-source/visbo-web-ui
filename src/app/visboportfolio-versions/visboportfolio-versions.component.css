@@ -2,3 +2,7 @@
        overflow-y: auto;
        max-height: 75vH;
    }
+   .dropdown-menu {
+        height:200px;
+        overflow-y:auto;
+    }

@@ -165,11 +165,27 @@
                   {{ 'vcDetail.titleSettings' | translate }}
               </h4>
             </div>
-            <div *ngIf="hasVCPerm(permVC.ManagePerm)" class='col'>
+            <div *ngIf="hasVCPerm(permVC.ManagePerm) && errorList.length == 0" class='col'>
               <!-- Button trigger modal -->
               <button id="AddSetting" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcSettingModalUpload">
                 {{ 'vcDetail.btn.addSetting' | translate }}
               </button>
+            </div>
+          </div>
+          <div *ngIf="errorList.length > 0" class="card col-10 px-0 mb-1">
+            <h5 class="card-header p-2">
+              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: 3}"></ng-container></strong>
+              {{ 'vcDetail.msg.errorList' | translate }}
+              <button id="AddSetting" type="button" class="my-1 btn btn-secondary float-right" (click)="resetError()">
+                {{ 'vcDetail.btn.reset' | translate }}
+              </button>
+            </h5>
+            <div class="card-body p-2">
+              <div *ngFor="let item of errorList" class="row">
+                <div class="col col-sm-8">
+                  {{item}}
+                </div>
+              </div>
             </div>
           </div>
           <div class='panel-body'>
@@ -682,7 +698,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addSetting()" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
+          <button *ngIf="newFile" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addSetting()" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
         </div>
       </div>
     </div>
@@ -703,39 +719,33 @@
             <option value = 'new'>{{ 'vcDetail.lbl.newOrga' | translate }}</option>
             <option value = 'update' *ngIf="vcOrganisation.length">{{ 'vcDetail.lbl.updateOrga' | translate }}</option>
           </select>
-          <form>
-            <div class="form-group">
-              <label for="nameOrga" class="col-4 col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
-              <input id="nameOrga" name=newOrgaName type="text" class="form-control" [(ngModel)]="newOrgaName" placeholder="Name">
+          <form class="mt-2">
+            <div class="form-group row">
+              <label for="nameOrga" class="col-4 col-form-label pt-2">{{ 'vcDetail.lbl.name' | translate }}:</label>
+              <input id="nameOrga" name=newOrgaName type="text" class="col-6 form-control" [(ngModel)]="newOrgaName" placeholder="Name">
             </div>
-            <div class="form-group">
+            <div class="form-group row">
               <label for="timestampOrga" class="col-4 col-form-label">{{ 'vcDetail.lbl.valid' | translate }}:</label>
-              <label *ngIf="orgaSaveMode == 'update'" id="timestampOrga" class="form-control-static">{{ currentOrgaTimestamp | date :'dd.MM.yyyy'}}</label>
-              <label *ngIf="orgaSaveMode == 'new'" id="timestampOrga" class="form-control-static">{{ newOrgaTimestamp | date :'dd.MM.yyyy'}}</label>
+              <label *ngIf="orgaSaveMode == 'update'" id="timestampOrga" class="form-control-static pt-2">{{ currentOrgaTimestamp | date :'dd.MM.yyyy'}}</label>
+              <!-- <label *ngIf="orgaSaveMode == 'new'" id="timestampOrga" class="form-control-static">{{ newOrgaTimestamp | date :'dd.MM.yyyy'}}</label> -->
+              <input *ngIf="orgaSaveMode == 'new'" id="timestampOrga" type="date" class="col-6 col-form-label" name="newOrgaTimestamp" [ngModel]="newOrgaTimestamp | date:'yyyy-MM-dd'"  min="{{minOrgaTimestamp | date:'yyyy-MM-dd'}}" (input)="newOrgaTimestamp=parseDate($event.target.value, true)">
             </div>
-            <div class="form-group">
+            <div class="form-group row">
               <label for="orgaUnits" class="col-4 col-form-label">{{ 'vcDetail.lbl.nrRoles' | translate }}:</label>
-              <label id="orgaUnits" class="form-control-static">{{ newOrgaList.length }}</label>
-            </div>
-            <div *ngIf="errorList.length > 0">
-              <div class="bg-warning">{{ 'vcDetail.msg.errorList' | translate}}:</div>
-              <div *ngFor="let item of errorList">
-                {{item}}
-              </div>
-            </div>
-            <div *ngIf="isOrgaSaved && errorList.length == 0">
-              <div class="bg-success">{{ 'vcDetail.msg.saveOrgaSuccess' | translate}}:</div>
+              <label id="orgaUnits" class="form-control-static pt-2">{{ newOrgaList.length }}</label>
             </div>
           </form>
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalUpload" (click)="initOrganisation()">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button *ngIf="!isOrgaSaved" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" [attr.data-dismiss]="errorList.length == 0" (click)="saveOrganisation()">{{ 'vcDetail.btn.save' | translate }}</button>
-          <button *ngIf="isOrgaSaved && errorList.length > 0" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button *ngIf="isOrgaSaved && errorList.length == 0" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.finish' | translate }}</button>
+          <button id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="saveOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.save' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
 
 </div>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>

@@ -35,6 +35,8 @@ export class VisboOrganisation {
   _id: string;
   name: string;
   timestamp: Date;
+  createdAt: Date;
+  updatedAt: Date;
   allRoles: [ VisboRole ];
   allCosts: [ VisboCost ];
   allUnits: VisboReducedOrgaItem[];
@@ -87,7 +89,8 @@ export class VisboReducedOrgaItem {
   defaultKapa: number;
   percent: number;
   tagessatz: number;
-  aliases: string;
+  alias: string;        // to be able to store both forms all combined or a list
+  aliases: [string];
   isAggregationRole: string;
   isSummaryRole: string;
 }

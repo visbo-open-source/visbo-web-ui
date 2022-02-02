@@ -9,11 +9,11 @@
               <label class="mr-2 pt-1">{{ 'ViewCapacityCmp.titleCapacity' | translate }}</label>
             </span>
             <span>
-              <input id="capacityFrom" type="date" class="border-1 font-weight-bold" name="capacityFrom" min= "2015-01-01" max="2050-01-01" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
+              <input id="capacityFrom" type="date" class="border-1 font-weight-bold" name="capacityFrom" min="2015-01-01" max="2050-01-01" [ngModel]="capacityFrom | date:'yyyy-MM-dd'" (input)="capacityFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
             </span>
             <span>
               <label class="mx-2 pt-1">{{ 'ViewCapacityCmp.titleTimeTo'  | translate }}</label>
-              <input id="capacityTo" type="date" class="border-1 font-weight-bold" name="capacityTo" min= "2015-01-01" max="2050-01-01" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="updateDateRange()" >
+              <input id="capacityTo" type="date" class="border-1 font-weight-bold" name="capacityTo" min="2015-01-01" max="2050-01-01" [ngModel]="capacityTo | date:'yyyy-MM-dd'" (input)="capacityTo=parseDate($event.target.value)" (change)="updateDateRange()" >
             </span>
             <div class="mx-2 pt-1">
               <span *ngIf="hasCost" class="mr-auto">{{ 'ViewCapacityCmp.title2'  | translate }}</span>
