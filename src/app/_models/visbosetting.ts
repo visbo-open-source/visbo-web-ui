@@ -105,6 +105,11 @@ export class VisboOrgaTreeLeaf {
   status: number;
 }
 
+export class VisboOrgaStructure {
+  tree: VisboOrgaTreeLeaf;
+  list: VisboOrgaTreeLeaf[]
+}
+
 export enum TreeLeafSelection {
   SELECTED = "SELECTED",
   NOT_SELECTED = "NOT_SELECTED",

@@ -724,7 +724,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
 
   visboKeyMetricsCalcVPF(): void {
     const unitEuro = this.translate.instant('compViewVpf.lbl.keuro');
-    const unitWeeks = this.translate.instant('compViewVpf.lbl.weeks');
+    // const unitWeeks = this.translate.instant('compViewVpf.lbl.weeks');
 
     const keyMetrics = [];
     if (!this.visbokeymetrics) {
@@ -775,7 +775,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       } else {
         color = valueX > 100 ? this.colorMetric[0].color : color;
       }
-      let name = this.combineName(this.visbokeymetrics[item].name, this.visbokeymetrics[item].variantName);
+      const name = this.combineName(this.visbokeymetrics[item].name, this.visbokeymetrics[item].variantName);
       // name = visboGetShortText(name, 30, 'middle');
       keyMetrics.push([
         name,
@@ -899,10 +899,10 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   }
 
   copyGraphBarOptions(source: BarChartOptions): BarChartOptions {
-    let result = Object.assign({}, this.defaultBarOptions);
+    const result = Object.assign({}, source);
     // copy also child structures
-    result.chartArea = Object.assign({}, this.defaultBarOptions.chartArea);
-    result.hAxis = Object.assign({}, this.defaultBarOptions.hAxis);
+    result.chartArea = Object.assign({}, source.chartArea);
+    result.hAxis = Object.assign({}, source.hAxis);
     return result;
   }
 

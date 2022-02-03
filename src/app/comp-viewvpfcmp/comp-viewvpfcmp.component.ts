@@ -945,10 +945,10 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
   }
 
   copyGraphBarOptions(source: BarChartOptions): BarChartOptions {
-    let result = Object.assign({}, this.defaultBarOptions);
+    const result = Object.assign({}, source);
     // copy also child structures
-    result.chartArea = Object.assign({}, this.defaultBarOptions.chartArea);
-    result.hAxis = Object.assign({}, this.defaultBarOptions.hAxis);
+    result.chartArea = Object.assign({}, source.chartArea);
+    result.hAxis = Object.assign({}, source.hAxis);
     return result;
   }
 

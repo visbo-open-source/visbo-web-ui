@@ -131,9 +131,9 @@
 
   <div>
     <div class="row">
-      <div *ngIf="orgaTreeData && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
+      <div *ngIf="orga && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
         <span class="pt-2 text-dark font-weight-bold" title="{{ 'ViewCapacity.lbl.orgaValid' | translate }} {{vcOrganisation.timestamp | date: 'dd.MM.yyyy'}}">{{ 'ViewCapacity.title1'  | translate }}</span>
-        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orgaTreeData.children, level: 0 }" ></ng-container>
+        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orga.tree.children, level: 0 }" ></ng-container>
       </div>
       <div *ngIf="!getPreView() && displayCapacity() > 0" class="col-9">
         <div *ngIf="graphDataComboChart.length > 2" >

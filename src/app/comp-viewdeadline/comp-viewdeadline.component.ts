@@ -414,10 +414,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   copyGraphGanttOptions(source: GanttChartOptions): GanttChartOptions {
-    let result = Object.assign({}, this.ganttDefaultOptions);
+    const result = Object.assign({}, source);
     // copy also child structures
-    result.chartArea = Object.assign({}, this.ganttDefaultOptions.chartArea);
-    result.timeline = Object.assign({}, this.ganttDefaultOptions.timeline);
+    result.chartArea = Object.assign({}, source.chartArea);
+    result.timeline = Object.assign({}, source.timeline);
     return result;
   }
 
@@ -425,11 +425,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // correct calculation would be to count the number of rows that are required
     // muliple phases with no overlap go to the same row, while overlapping phases generate a new row
     len = Math.min(len, 10);
-    let height = 100 + len * 30
     this.ganttOptions.height = 100 + len * 30;
-
-    let heightPercent = '80%'
-    this.ganttOptions.chartArea.height = heightPercent;
+    this.ganttOptions.chartArea.height = '80%';
   }
 
   chartSelectRow(row: number, label: string, value: number): void {

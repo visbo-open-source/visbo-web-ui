@@ -8,7 +8,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboSetting, VisboSubRole, VisboRole, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
+import { VisboOrganisation, VisboOrgaStructure, VisboReducedOrgaItem,
+          VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
 import { VisboProject } from '../_models/visboproject';
 import { VisboCenter } from '../_models/visbocenter';
 
@@ -23,6 +24,8 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpDate, convertDate, validateDate, getPreView }
             from '../_helpers/visbo.helper';
+import { buildOrgaTree, expandParentTree, setTreeLeafSelection, getLeafByID, getLeafByName,
+          isParentLeaf } from '../_helpers/orga.helper';
 
 import {ComboChartOptions} from '../_models/_chart'
 import { scale } from 'chroma-js';
@@ -74,7 +77,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   @Input() vpActive: VisboProject;
   @Input() vpfActive: VisboPortfolioVersion[];
   @Input() vpvActive: VisboProjectVersion;
-  @Input() vcOrganisation: VisboSetting;
+  @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date[];
   @Input() update: Date;
   @Input() combinedPerm: VGPermission;
@@ -107,12 +110,11 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   drillDownCapaFiltered: DrillDownCapa[];
   parentThis = this;
 
-  orgaTreeData: VisboOrgaTreeLeaf;
-  topLevelNodes: VisboRole[];
+  orga: VisboOrgaStructure;
+  topLevelNodes: VisboReducedOrgaItem[];
+
   colorsPFV = [baselineColor, '#BDBDBD', '#BDBDBD', '#458CCB', '#BDBDBD', 'gray'];
   colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB', '#BDBDBD', 'gray'];
-
-
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0},
     {type: 'line', lineWidth: 4, pointSize: 0}
@@ -641,29 +643,16 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
   visboViewOrganisationTree(): void {
     this.log(`Show the OrgaTree of the VC `);
-    const organisation = this.vcOrganisation;
-
     const allRoles = [];
-    const allRoleNames = [];
-    this.log(`get all roles of the organisation, prepared for direct access`);
-    const roles = organisation && organisation.value && organisation.value.allRoles;
-    for (let  i = 0; i < roles.length; i++) {
-      allRoles[roles[i].uid] = roles[i];
-      allRoleNames[roles[i].name] = roles[i];
-    }
-    this.log(`get all roles of the organisation, prepared for the TreeView`);
-    this.topLevelNodes = this.buildTopNodes(allRoles);
-    this.orgaTreeData = this.buildOrgaTree(this.topLevelNodes, allRoles);
-    this.log(`initialize the orgaTreeData with one of the topLevel`);
+    const roles = this.vcOrganisation?.allUnits?.filter(role => role.type == 1 || role.type == 2);
+    roles?.forEach(role => allRoles[role.uid] = role);
+    this.orga = buildOrgaTree(roles);
+
+    this.topLevelNodes = roles.filter(role => role.pid == undefined);
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
-    if (this.roleID >= 0 && this.roleID < allRoles.length) {
-      this.currentLeaf = this.getMappingLeaf(allRoles[this.roleID].name);
-    }
-    if (!this.currentLeaf) {
-      this.currentLeaf = this.orgaTreeData.children[0];
-    }
-    this.expandParentTree(this.currentLeaf);
-    this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
+    this.currentLeaf = getLeafByID(this.orga, this.roleID);
+    expandParentTree(this.currentLeaf);
+    setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
   }
 
   initShowUnit(unit: string): void {
@@ -957,7 +946,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         const currentElement = element[index + initialOffset];
         rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, this.showUnit === 'PD', this.refPFV));
         const diff = this.calcLoadDiff(currentElement, true);
-        if (diff == undefined && this.isParentLeaf(this.currentLeaf)){
+        if (diff == undefined && isParentLeaf(this.currentLeaf)){
           rowMatrix.push(strNoPFV)
         // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
         //   rowMatrix.push(strNoPFV)
@@ -1507,7 +1496,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
         const roleName = this.graphDataComboChart[0][label];
         const currentDate = this.graphDataComboChart[row + 1][0];
         this.log(`chart identified Row ${currentDate} Role: ${roleName}`);
-        const leaf = this.getMappingLeaf(roleName);
+        const leaf = getLeafByName(this.orga, roleName);
         if (leaf) {
           this.selectLeaf(leaf, true);
         }
@@ -1788,161 +1777,9 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     else return 3;
   }
 
-// find summary Roles
-  getSummaryRoles(allRoles: VisboRole[], roleID: number): VisboRole[] {
-    this.log(`get all summary roles of the organisation roleID ${{roleID}}`);
-    const summaryRoles = [];
-
-    function findSummaryRoles(value: VisboSubRole) {
-      // value is the Id of one subrole
-      const hroleID = value.key;
-      const hrole = allRoles[hroleID];
-      if (hrole.subRoleIDs.length > 0) {
-        summaryRoles[hroleID] = hrole;
-        const shroles = hrole.subRoleIDs;
-        shroles.forEach(findSummaryRoles);
-      }
-    }
-
-    // all summary roles
-    if (roleID === undefined && allRoles) {
-      let i = 0;
-      for (i = 0; allRoles &&  i <= allRoles.length; i++ ) {
-        const hrole = allRoles[i];
-        if (hrole && hrole.subRoleIDs.length > 0 ) { summaryRoles[allRoles[i].uid] = allRoles[i]; }
-      }
-      return summaryRoles;
-    }
-
-    // only summary roles that are children of the role roleID
-    if (roleID && allRoles) {
-      const role = allRoles[roleID];
-
-      if (role.subRoleIDs && role.subRoleIDs.length > 0) {
-
-        const subRoles = role.subRoleIDs;
-        if (subRoles.length > 0 ) {
-          summaryRoles[role.uid] = role;
-          subRoles.forEach(findSummaryRoles);
-        }
-      }
-      return summaryRoles;
-    }
-  }
-
-  getParentOfRole (roleID: number, allRoles: VisboRole[], sumRoles: VisboRole[]): unknown {
-    let parentRole;
-
-    // this.log(`get the parentRole of roleID ${JSON.stringify(roleID)}`);
-    if (allRoles[roleID]) {
-
-      let notFound = true;
-      for (let k = 0; sumRoles && k < sumRoles.length; k++) {
-        const hrole = sumRoles[k];
-        if (hrole)	{
-          for ( let i = 0; notFound && hrole && hrole.subRoleIDs && i < hrole.subRoleIDs.length; i++ ) {
-            // asked Philipp for the difference: hrole.subRoleIDs[i].key is a string with the value 'roleID' and roleID is a number
-            // therefore it isn't possible to put === instead for ==, now the multiplikation with 1 makes a number of it
-            if ( hrole.subRoleIDs[i] && (hrole.subRoleIDs[i].key * 1 === roleID) ) {
-              parentRole = hrole;
-              notFound = false;
-            }
-          }
-        }
-      }
-      return parentRole;
-    }
-  }
-
-  buildTopNodes(allRoles: VisboRole[]): VisboRole[] {
-    const topLevelNodes = [];
-    const topLevel = [];
-    let i = 1;
-
-    this.log(`get all TopNodes of the organisation`);
-
-    // find all summaryRoles
-    const sumRoles = this.getSummaryRoles(allRoles, undefined);
-
-    while (i <= allRoles.length) {
-      const currentRole = allRoles[i];
-      if (currentRole) {
-        // get parent of currentRole
-        const parent = this.getParentOfRole(currentRole.uid, allRoles, sumRoles);
-        if (!parent && !topLevel[currentRole.uid]) {
-          topLevel[currentRole.uid] = currentRole;
-          topLevelNodes.push(currentRole);
-        }
-      }
-      i++;
-    }
-    return topLevelNodes;
-  }
-
-  buildOrgaTree(topLevelNodes: VisboRole[], allRoles: VisboRole[]): VisboOrgaTreeLeaf {
-
-    class SubRole {
-      key: number;
-      value: number;
-    }
-
-    this.log(`build the OrgaTree used for the selectionTree of the organisation`);
-
-    const tree = new VisboOrgaTreeLeaf();
-    tree.uid = 0;
-    tree.name = 'root';
-    tree.parent = null;
-    tree.children = [];
-    tree.showChildren = true;
-
-    function makeLeaf(value: SubRole, parent:VisboOrgaTreeLeaf): VisboOrgaTreeLeaf {
-      const leaf = new VisboOrgaTreeLeaf();
-      const hroleID = value.key;
-      const hrole = allRoles[hroleID];
-      const hroleName = hrole?.name;
-      leaf.children = [];
-      leaf.uid = hroleID;
-      leaf.name = hroleName;
-      leaf.parent = parent;
-      const children = hrole.subRoleIDs;
-      children.forEach(function(child) {
-        leaf.children.push(makeLeaf(child, leaf));
-      });
-      return leaf;
-    }
-
-    for (let i = 0; topLevelNodes && i < topLevelNodes.length; i++) {
-      const topLevelLeaf = new VisboOrgaTreeLeaf();
-      topLevelLeaf.parent = tree;
-      topLevelLeaf.children = [];
-      topLevelLeaf.uid = topLevelNodes[i].uid;
-      topLevelLeaf.name = topLevelNodes[i].name;
-      topLevelLeaf.showChildren = false;
-
-      if (topLevelNodes && topLevelNodes[i].subRoleIDs && topLevelNodes[i].subRoleIDs.length > 0) {
-        const sRoles = topLevelNodes[i].subRoleIDs;
-        sRoles.forEach(function(sRole) {
-          topLevelLeaf.children.push(makeLeaf(sRole, topLevelLeaf));
-        });
-      }
-      tree.children.push(topLevelLeaf);
-    }
-    return tree;
-  }
-
-  setTreeLeafSelection(leaf: VisboOrgaTreeLeaf, value: TreeLeafSelection): void {
-    leaf.isSelected = value;
-    if (!leaf.children || leaf.children.length === 0) {
-      return;
-    }
-    leaf.children.forEach((child) => {
-      this.setTreeLeafSelection(child, value === TreeLeafSelection.SELECTED ? TreeLeafSelection.PARENT_SELECTED : value);
-    });
-  }
-
   selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
     if (leaf.name !== this.currentLeaf.name ) {
-      this.setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
+      setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
       this.updateUrlParam('roleID', leaf.uid.toString());
       this.getCapacity();
@@ -1950,7 +1787,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     if (showChildren) {
       leaf.showChildren = true;
     }
-    this.setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
+    setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
     return;
   }
 
@@ -1958,48 +1795,6 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     leaf.showChildren = !leaf.showChildren;
     this.selectLeaf(leaf, leaf.showChildren);
     return;
-  }
-
-  expandParentTree(leaf:VisboOrgaTreeLeaf): void {
-    if (leaf.parent === null) return;
-    leaf.parent.showChildren = true;
-    this.expandParentTree(leaf.parent);
-  }
-
-  getMappingLeaf(roleName: string): VisboOrgaTreeLeaf {
-    let resultLeaf;
-    const curLeaf = this.orgaTreeData;
-    let found = false;
-
-    function findMappingLeaf(value: VisboOrgaTreeLeaf) {
-      // value is the Id of one subrole
-      const leaf = value;
-      if (leaf.name === roleName) {
-        if (leaf && leaf.children && leaf.children.length > 0) {
-          leaf.showChildren = true;
-        }
-        resultLeaf = leaf;
-        found = true;
-      } else {
-        const children = leaf.children;
-        for ( let i = 0; !found && children && i < children.length; i++) {
-          findMappingLeaf(children[i]);
-        }
-      }
-    }
-
-    for (let j = 0; !found && curLeaf && curLeaf.children && j < curLeaf.children.length; j++) {
-      findMappingLeaf(curLeaf.children[j]);
-    }
-    return resultLeaf;
-  }
-
-  isParentLeaf(leaf: VisboOrgaTreeLeaf): boolean {
-    let result = false;
-    if (leaf && leaf.parent && leaf.parent.parent == null) {
-      result = true;
-    }
-    return result;
   }
 
   copyCapacity(vpv: VisboCapacity, name: string): VisboCapacity {

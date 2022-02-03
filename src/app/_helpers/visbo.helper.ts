@@ -83,7 +83,7 @@ export function getJsDateFromExcel(excelDate: number): Date {
   // excel date is number of days since 1.1.1900
   // might be fixed by XLSX: plus 1 (Google "excel leap year bug")
   // javascript date are milliseconds since 1.1.1970
-  let result = new Date((excelDate - 25567 - 2)*86400*1000);
+  const result = new Date((excelDate - 25567 - 2)*86400*1000);
   result.setHours(0, 0, 0, 0);
   return result;
 }
@@ -118,8 +118,8 @@ export function visboGetShortText(text: string, len: number, position?: string):
     return '...';
   }
   if (position == 'middle') {
-    let partLen = Math.trunc((len - 3) / 2);
-    let result = text.substring(0, partLen).concat('...', text.substr(text.length - partLen));
+    const partLen = Math.trunc((len - 3) / 2);
+    const result = text.substring(0, partLen).concat('...', text.substr(text.length - partLen));
     return result;
   } else if (position) {
     return '...'.concat(text.substr(text.length - len));

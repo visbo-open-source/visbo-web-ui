@@ -15,7 +15,7 @@ import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation, VisboRole } from '../_models/visbosetting';
+import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation } from '../_models/visbosetting';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
 
@@ -53,6 +53,7 @@ export class VisbocenterDetailComponent implements OnInit {
   vcSettingsEnableDisable: VisboSetting[];
   indexEnableDisable: number;
 
+  // eslint-disable-next-line
   newFile: any;
   newOrgaName: string;
   newOrgaList: VisboReducedOrgaItem[];
@@ -650,8 +651,9 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // eslint-disable-next-line
   onFileSelected(event: any): void {
-      let file = event?.target?.files?.[0];
+      const file = event?.target?.files?.[0];
       if (file?.name) {
         this.newFile = file;
       }
@@ -671,7 +673,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.newOrgaName = 'Organisation';
     this.orgaSaveMode = 'new';
     this.isOrgaSaved = false;
-    let beginningOfMonth = new Date();
+    const beginningOfMonth = new Date();
     beginningOfMonth.setDate(1);
     beginningOfMonth.setHours(0, 0, 0, 0);
     if (this.vcOrganisation) {
@@ -690,9 +692,9 @@ export class VisbocenterDetailComponent implements OnInit {
       this.minOrgaTimestamp.setMonth(0);
       this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 1);
     }
-    let isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
+    const isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
 
-    let fileReader = new FileReader();
+    const fileReader = new FileReader();
     if (isExcel) {
       // fileReader.readAsArrayBuffer(this.newFile);
       fileReader.readAsArrayBuffer(this.newFile);
@@ -703,17 +705,17 @@ export class VisbocenterDetailComponent implements OnInit {
       console.log("File uploaded Length", fileReader.result.toString().length, this.newFile.size, "type", typeof fileReader.result);
       let jsonSetting: string;
       if (isExcel) {
-        let workbook = XLSX.read(e.target.result);
+        const workbook = XLSX.read(e.target.result);
         const first_sheet_name = workbook.SheetNames[0];
         /* Get worksheet */
-        let worksheet = workbook.Sheets[first_sheet_name];
-        let listOrga = XLSX.utils.sheet_to_json(worksheet);
+        const worksheet = workbook.Sheets[first_sheet_name];
+        const listOrga = XLSX.utils.sheet_to_json(worksheet);
         this.log(`Add Setting of XLSX Files not implemented ${this.newFile?.name} Sheet ${first_sheet_name} OrgaList Len: ${listOrga?.length}`);
         this.newOrgaList = [];
         listOrga.forEach(item => {this.newOrgaList.push(this.initItem(item))});
         this.log(`Converted to ListOrga OrgaList Len: ${this.newOrgaList.length} First: ${JSON.stringify(this.newOrgaList[0])}`);
       } else {
-        let jsonString = fileReader.result.toString();
+        const jsonString = fileReader.result.toString();
         try {
           jsonSetting = JSON.parse(jsonString);
         }
@@ -744,7 +746,7 @@ export class VisbocenterDetailComponent implements OnInit {
             const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
             this.alertService.success(message);
             // add orga to the list of settings and to the list of orgs
-            let newSetting = new VisboSetting();
+            const newSetting = new VisboSetting();
             newSetting._id = orga._id;
             newSetting.vcid = this.visbocenter._id;
             newSetting.name = orga.name;
@@ -815,7 +817,7 @@ export class VisbocenterDetailComponent implements OnInit {
 
   // eslint-disable-next-line
   initItem(item: any): VisboReducedOrgaItem {
-    let result = new VisboReducedOrgaItem();
+    const result = new VisboReducedOrgaItem();
     result.uid = item.uid;
     result.path = item.path?.trim();
     result.name = item.name?.trim();
