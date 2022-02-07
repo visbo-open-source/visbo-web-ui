@@ -34,10 +34,11 @@
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
           <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
+          <th id="SortPM" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }}</th>
           <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
           <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
           <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
-          <th id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
+          <th *ngIf="!vcSelected" id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
           <!-- <th id="SortCommitDate" class="d-none d-xl-table-cell"  *ngIf="isViewWithCommit()  && hasCommitDate()"  (click)="sortVPTable(6)">{{ 'vp.lbl.commit' | translate }}</th> -->
           <th>Info</th>
         </tr>
@@ -47,12 +48,13 @@
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td id="ColName"><a>{{vp.name}}</a></td>
+          <td id="ColManager" title="{{getVPManager(vp)}}"><a>{{getVPManager(vp, false)}}</a></td>
           <td id="ColType" class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
           <td id="ColDate" class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td id="ColDate" class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>
           <td id="ColVersions" class="d-none d-lg-table-cell">{{vp.vpfCount || vp.vpvCount}}</td>
-          <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="vp.vc">{{vp.vc.name}}</td>
-          <td id="ColVC" class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td>
+          <td *ngIf="!vcSelected" id="ColVC" class="d-none d-lg-table-cell">{{vp.vc.name}}</td>
+          <!-- <td *ngIf="!vcSelected" id="ColVC" class="d-none d-lg-table-cell" *ngIf="!vp.vc"> </td> -->
           <!-- <td id="ColCommitDate" class="d-none d-xl-table-cell"*ngIf="isViewWithCommit() && hasCommitDate()" >{{getCommitDate(vp)  | date :'dd.MM.yyyy HH:mm'}}</td> -->
           <!-- <td id="ColCommitDate" class="d-none d-md-table-cell  d-lg-none" *ngIf="isViewWithCommit() && hasCommitDate" >{{getCommitDate(vp)  | date :'dd.MM.yy'}}</td> -->
           <td id="ColDetail">
@@ -75,13 +77,13 @@
       <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
-      <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'List' && visboprojectversions">
-      <app-comp-viewbubble [bubbleMode]="false" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="false" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
-      <app-comp-viewboard [listVPV]="visboprojectversions" [customize]="customize"></app-comp-viewboard>
+      <app-comp-viewboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewboard>
     </div>
   </div>
 

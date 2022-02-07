@@ -18,6 +18,7 @@ import { VisboProject, VPVariant, getCustomFieldDouble, constSystemVPStatus } fr
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFItem, VPFParams } from '../_models/visboportfolioversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
+import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -93,6 +94,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     pageParams = new VPFParams();
     isGlobalChecked = false;
+    vcUser = new Map<string, VisboUser>();
 
     sortAscending: boolean;
     sortColumn: number;
@@ -104,6 +106,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
     private visboprojectService: VisboProjectService,
+    private visbocenterService: VisboCenterService,
     private visbosettingService: VisboSettingService,
     private messageService: MessageService,
     private alertService: AlertService,
@@ -152,6 +155,22 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     }
   }
 
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp.managerId) {
+      const user = this.vcUser.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
+  }
+
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm?.vp & perm) > 0;
   }
@@ -179,6 +198,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.getVisboPortfolioVersions();
           this.getVisboCenterOrga();
           this.getVisboCenterCustomization();
+          this.getVisboCenterUsers();
         },
         error => {
           this.log(`get Portfolio VP failed: error: ${error.status} message: ${error.error.message}`);
@@ -191,6 +211,36 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       });
   }
 
+  getVisboCenterUsers(): void {
+    this.log(`VisboCenter UserList of: ${this.vpActive?.vcid} Deleted ${this.deleted}`);
+    if (!this.vpActive?.vcid) { return; }
+    this.visbocenterService.getVCUser(this.vpActive.vcid, false, this.deleted)
+      .subscribe(
+        user => {
+          user.forEach(user => this.vcUser.set(user._id, user));
+          this.updateVPManager();
+          this.log(`fetched Users ${this.vcUser.size}`);
+        },
+        error => {
+          this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  updateVPManager(): void {
+    if (!this.listVP || !this.vcUser) {
+      return;
+    }
+    this.listVP.forEach(vp => vp.manager = this.vcUser.get(vp.managerId));
+    this.vpActive.manager = this.vcUser.get(this.vpActive.managerId);
+  }
+
   initProjectList(vp: VisboProject): void {
     this.vpfListFilter = undefined;
     if (!vp && !vp.vcid) {
@@ -201,6 +251,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       .subscribe(
         visboprojects => {
           this.listVP = visboprojects;
+          this.updateVPManager();
           this.initVPF();
         },
         error => {
@@ -215,7 +266,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true, false)
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), false, false)
           .subscribe(
             organisation => {
               this.vcOrga = organisation;

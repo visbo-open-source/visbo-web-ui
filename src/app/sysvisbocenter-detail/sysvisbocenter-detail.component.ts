@@ -174,7 +174,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     this.log(`VisboCenter UserList of ${id} Deleted ${this.deleted}`);
-    this.visbocenterService.getVCUsers(id, true, this.deleted)
+    this.visbocenterService.getVCUserGroupPerm(id, true, this.deleted)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;

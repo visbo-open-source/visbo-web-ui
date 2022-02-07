@@ -204,7 +204,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
-    this.visboprojectService.getVPUsers(id, false, this.deleted)
+    this.visboprojectService.getVPUserGroupPerm(id, false, this.deleted)
       .subscribe(
         mix => {
           this.filterGroups(mix.groups);

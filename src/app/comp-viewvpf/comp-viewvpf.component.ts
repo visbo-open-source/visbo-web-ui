@@ -505,7 +505,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       if (filter
         && !((this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {

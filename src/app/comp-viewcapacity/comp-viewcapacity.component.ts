@@ -391,8 +391,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       if (filter
         && !(item.name.toLowerCase().indexOf(filter) >= 0
-          // || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          // || (item.leadPerson || '').toLowerCase().indexOf(filter) >= 0
           || (item.description || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {
@@ -442,7 +440,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (filter
         && !(item.vp.name.toLowerCase().indexOf(filter) >= 0
           || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          || (item.leadPerson || '').toLowerCase().indexOf(filter) >= 0
           || (item.vp.description || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {
@@ -950,7 +947,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboViewOrganisationTree(): void {
     const allRoles = [];
     const roles = this.vcOrganisation?.allUnits?.filter(role => role.type == 1 || role.type == 2);
-    roles?.forEach(role => allRoles[role.uid] = role);
+    if (!roles) return;
+
+    roles.forEach(role => allRoles[role.uid] = role);
     this.orga = buildOrgaTree(roles);
 
     this.topLevelNodes = roles.filter(role => role.pid == undefined);

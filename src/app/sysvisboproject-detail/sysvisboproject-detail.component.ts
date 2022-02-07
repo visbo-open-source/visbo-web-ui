@@ -108,8 +108,8 @@ export class SysvisboprojectDetailComponent implements OnInit {
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.log('VisboProject UserList of: ' + id);
-    this.visboprojectService.getVPUsers(id, true)
+    this.log('VisboProject User Group Perm List of: ' + id);
+    this.visboprojectService.getVPUserGroupPerm(id, true)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;

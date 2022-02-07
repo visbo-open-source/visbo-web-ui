@@ -9,21 +9,30 @@
     <div class="form-group row">
       <label for="VPName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }} ({{ getVPType(visboproject.vpType) }}):</label>
       <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
-      <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.name }} </label>
+      <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-plaintext pt-2">{{ visboproject.name }} </label>
+    </div>
+    <div *ngIf="!hasVPPerm(permVP.Modify) && vpManagerList" class="form-group row">
+      <label for="VPManager" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.manager' | translate }}:</label>
+      <label id="VPManager" class="col form-control-plaintext pt-2">{{ getFullUserName(undefined, true) }} </label>
+    </div>
+    <div *ngIf="hasVPPerm(permVP.Modify) && vpManagerList" class="form-group row">
+      <label class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.manager' | translate }}:</label>
+      <select class="form-select" style="border-width:0px" name="vpManagerEmail" [(ngModel)]="vpManagerEmail">
+        <option *ngFor="let user of vpManagerList" value="{{ user.email }}">{{ getFullUserName(user, true) }}</option>
+      </select>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify) || visboproject.description" class="form-group row">
       <label for="VPDesc" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
       <textarea id="VPDesc" *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
-      <label id="VPDesc" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-static">{{ visboproject.description }} </label>
+      <label id="VPDesc" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-plaintext pt-2">{{ visboproject.description }} </label>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
-      <label name=vpVersion class="col form-control-static col-form-label"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+      <label name=vpVersion class="col form-control-plaintext pt-2"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
     </div>
-    <div class="form-group row d-none d-md-block">
+    <div class="form-group row">
       <label for="VPCreated" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
-      <label id="VPCreated" class="col-4 form-control-static col-form-label">{{ visboproject.createdAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
-      <label id="VPUpdated" class="col-4 form-control-static col-form-label">{{ visboproject.updatedAt | date :'dd.MM.yyyy HH:mm:ss'}} </label>
+      <label id="VPCreated" class="col-8 form-control-plaintext" title="{{ visboproject.updatedAt | date :'dd.MM.yy HH:mm:ss'}} / {{ visboproject.createdAt | date :'dd.MM.yy HH:mm:ss'}}">{{ visboproject.updatedAt | date :'dd.MM.yyyy'}}</label>
     </div>
     <!-- <div *ngIf="hasVPPerm(permVP.Modify) && (visboproject.customFieldString?.length > 0 || visboproject.customFieldDouble?.length > 0)">
       <div class="mb-1">
@@ -75,8 +84,8 @@
             <thead id="UserHead">
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortUserTable(1)">{{ 'vpDetail.lbl.email' | translate }}</th>
-                <th (click)="sortUserTable(2)">{{ 'vpDetail.lbl.group' | translate }}</th>
+                <th (click)="sortUserPermTable(1)">{{ 'vpDetail.lbl.email' | translate }}</th>
+                <th (click)="sortUserPermTable(2)">{{ 'vpDetail.lbl.group' | translate }}</th>
                 <th class="d-none d-md-table-cell">{{ 'vpDetail.lbl.type' | translate }}</th>
                 <th *ngIf="!deleted && hasVPPerm(permVP.ManagePerm)">{{ 'vpDetail.lbl.delete' | translate }}</th>
               </tr>

@@ -12,6 +12,7 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboSetting } from '../_models/visbosetting';
 import { VPFParams } from '../_models/visboportfolioversion';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
+import { VisboUser } from '../_models/visbouser';
 
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
 import * as chroma from 'chroma-js';
@@ -36,6 +37,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   @Input() listVPV: VisboProjectVersion[];
   @Input() customize: VisboSetting;
   @Input() vpf: VisboProject;
+  @Input() vcUser: Map<string, VisboUser>;
 
   refDate: Date;
   filter: string;
@@ -218,7 +220,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       if (filter
         && !(this.listVPV[i].vp?.name.toLowerCase().indexOf(filter) >= 0
           || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
-          || this.listVPV[i].leadPerson?.toLowerCase().indexOf(filter) >= 0
+          || (this.getVPManager(this.listVPV[i].vp) || '').toLowerCase().indexOf(filter) >= 0
           || (this.listVPV[i].description || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {
@@ -352,6 +354,22 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.graphDataTimeline = graphDataTimeline;
   }
 
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp?.managerId) {
+      const user = this.vcUser?.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
+  }
+
   createCustomHTMLContent(vpv: VisboProjectVersion): string {
     const startDate = convertDate(new Date(vpv.startDate), 'fullDate', this.currentLang);
     const endDate = convertDate(new Date(vpv.endDate), 'fullDate', this.currentLang);
@@ -361,7 +379,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       '<table>';
     const status = this.translate.instant('compViewBoard.lbl.vpStatus')
     const bu = this.translate.instant('compViewBoard.lbl.bu');
-    const lead = this.translate.instant('compViewBoard.lbl.lead');
+    const lead = this.translate.instant('compViewBoard.lbl.manager');
     const template = this.translate.instant('compViewBoard.lbl.template');
     const start = this.translate.instant('compViewBoard.lbl.startDate');
     const end = this.translate.instant('compViewBoard.lbl.endDate');
@@ -378,8 +396,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
-    if (vpv.leadPerson) {
-      result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + vpv.leadPerson + '</b></td>' + '</tr>';
+    if (vpv.vp.managerId) {
+      result = result + '<tr>' + '<td>' + lead + ':</td>' + '<td><b>' + this.getVPManager(vpv.vp, false) + '</b></td>' + '</tr>';
     }
     if (vpv.VorlagenName) {
       result = result + '<tr>' + '<td>' + template + ':</td>' + '<td><b>' + vpv.VorlagenName + '</b></td>' + '</tr>';

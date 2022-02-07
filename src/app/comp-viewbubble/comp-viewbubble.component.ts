@@ -15,6 +15,7 @@ import { VisboSetting } from '../_models/visbosetting';
 import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
 import { VisboCenter } from '../_models/visbocenter';
+import { VisboUser } from '../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -99,6 +100,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   @Input() customize: VisboSetting;
   @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
+  @Input() vcUser: Map<string, VisboUser>;
 
   refDate: Date;
   filter: string;
@@ -503,7 +505,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       if (filter
         && !((this.visboprojectversions[item].vp?.name || this.visboprojectversions[item].name).toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          || (this.visboprojectversions[item].leadPerson || '').toLowerCase().indexOf(filter) >= 0
+          || (this.getVPManager(this.visboprojectversions[item].vp) || '').toLowerCase().indexOf(filter) >= 0
           || (this.visboprojectversions[item].description || '').toLowerCase().indexOf(filter) >= 0
         )
       ) {
@@ -1226,6 +1228,22 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return title;
   }
 
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp?.managerId) {
+      const user = this.vcUser?.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
+  }
+
   sortKeyMetricsTable(n: number): void {
     if (!this.visbokeymetrics) {
       return;
@@ -1301,6 +1319,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 19) {
       this.visbokeymetrics.sort(function(a, b) {
         return visboCmpString(a.vpStatus, b.vpStatus);
+      });
+    } else if (this.sortColumn === 20) {
+      this.visbokeymetrics.sort(function(a, b) {
+        let result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
+          || visboCmpString(a.vp?.manager?.profile?.firstName.toLowerCase() || '', b.vp?.manager?.profile?.firstName.toLowerCase() || '')
+          || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
+        return result;
       });
     }
 

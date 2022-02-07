@@ -513,8 +513,6 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     if (filter
       && !((vpv.vp?.name || vpv.name).toLowerCase().indexOf(filter) >= 0
         || (vpv.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-        // || (vpv.leadPerson || '').toLowerCase().indexOf(filter) >= 0
-        // || (vpv.description || '').toLowerCase().indexOf(filter) >= 0
       )
     ) {
       return undefined;

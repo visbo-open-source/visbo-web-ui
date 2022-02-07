@@ -112,7 +112,7 @@ export class SysvisbosystemComponent implements OnInit {
     const id = this.visbocenter._id;
 
     this.log('VisboCenter UserList of: ' + id);
-    this.visbocenterService.getVCUsers(id, true)
+    this.visbocenterService.getVCUserGroupPerm(id, true)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;

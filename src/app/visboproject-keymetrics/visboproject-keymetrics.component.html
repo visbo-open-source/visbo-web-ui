@@ -21,10 +21,15 @@
       <div *ngIf="dropDownIndex > 0">
         {{ dropDown[dropDownIndex].description }}
       </div>
-      <h5>{{ 'vpKeyMetric.lbl.vc' | translate }}:
-        <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
-        <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
-      </h5>
+      <div class="row">
+        <h5 class="col">{{ 'vpKeyMetric.lbl.vc' | translate }}:
+          <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+          <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
+        </h5>
+        <h5 class="col">{{ 'vpKeyMetric.lbl.manager' | translate }}:
+          <span>{{ getVPManager(vpActive) }}</span>
+        </h5>
+      </div>
     </div>
   </div>
 
@@ -243,12 +248,6 @@
                   {{ getMonthEnd(vpvActive.actualDataUntil) | date :'dd.MM.yyyy' }}
                 </td>
               </tr>
-              <tr *ngIf="vpvActive.leadPerson">
-                <td>{{ 'vpKeyMetric.lbl.leadPerson' | translate }}</td>
-                <td title="{{ vpvActive.leadPerson }}">
-                  {{ getShortText(vpvActive.leadPerson, 20) }}
-                </td>
-              </tr>
               <tr *ngIf="(vpActive.customFieldDate.length > 0 && customCommit) || customVPAdd">
                 <td>{{ 'customField._PMCommit' | translate }}</td>
                 <td>
@@ -268,6 +267,12 @@
               <tr *ngIf="vpActive.customFieldString.length > 0 || vpActive.customFieldDouble.length > 0">
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
                 <td></td>
+              </tr>
+              <tr *ngIf="vpActive.managerId">
+                <td>{{ 'vpKeyMetric.lbl.manager' | translate }}</td>
+                <td title="{{ getVPManager(vpActive) }}">
+                  {{ getVPManager(vpActive, false) }}
+                </td>
               </tr>
               <tr *ngIf="customVPStatus">
                 <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>

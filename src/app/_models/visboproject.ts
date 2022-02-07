@@ -1,3 +1,5 @@
+import { VisboUser } from '../_models/visbouser';
+
 export enum VPTYPE {
     'Project' = 0, 'Portfolio' = 1, 'Template' = 2
 }
@@ -59,6 +61,7 @@ export class VisboProject {
   vcid: string;
   name: string;
   description: string;
+  managerId: string;
   vpType: number;
   vpPublic: boolean;
   vpvCount: number;
@@ -70,14 +73,16 @@ export class VisboProject {
   customFieldDouble: VPCustomDouble[];
 	customFieldString: VPCustomString[];
   customFieldDate: VPCustomDate[];
-  // eslint-disable-next-line
-  capacity: any[];
   vc: {
     name: string;
     deletedAt: Date;
   };
-  perm: {system: number, vc: number, vp: number};
   deletedAt: Date;
+  // values outside of the ReST VP Definition
+  // eslint-disable-next-line
+  capacity: any[];
+  manager: VisboUser;
+  perm: {system: number, vc: number, vp: number};
 }
 
 export class VisboProjectResponse {

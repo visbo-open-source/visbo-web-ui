@@ -103,7 +103,6 @@ export class VPVKeyMetricsCalc {
   startDate: Date;
   Risiko: number;
   StrategicFit: number;
-  leadPerson: string;
   vpStatus: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -133,7 +132,6 @@ export class VisboProjectVersion {
   Risiko: number;
   StrategicFit: number;
   Erloes: number;
-  leadPerson: string;
   startDate: Date;
   endDate: Date;
   earliestStart: number;

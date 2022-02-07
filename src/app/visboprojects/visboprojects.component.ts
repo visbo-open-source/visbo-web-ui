@@ -13,6 +13,7 @@ import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 import { VPFParams } from '../_models/visboportfolioversion';
+import { VisboUser } from '../_models/visbouser';
 
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
@@ -27,7 +28,6 @@ class DropDown {
   name: string;
   id: string;
 }
-
 
 @Component({
   selector: 'app-visboprojects',
@@ -53,6 +53,7 @@ export class VisboProjectsComponent implements OnInit {
   vpvWithKM: number;
   vpvRefDate: Date = new Date();
   deleted = false;
+  vcUser = new Map<string, VisboUser>();
 
   sortAscending: boolean;
   sortColumn: number;
@@ -90,6 +91,9 @@ export class VisboProjectsComponent implements OnInit {
 
     this.log(`Init VP View: ${this.dropDownVPType} Cockpit ${this.viewCockpit}`);
     this.getVisboProjects(nextView == 'Deleted');
+    if (this.vcSelected) {
+      this.getVisboCenterUsers()
+    }
   }
 
   hasVPPerm(perm: number): boolean {
@@ -161,6 +165,7 @@ export class VisboProjectsComponent implements OnInit {
               .subscribe(
                 visboprojects => {
                   this.visboprojectsAll = visboprojects;
+                  this.updateVPManager();
                   this.filterVP();
                   this.initTemplates(visboprojects);
                   this.initDropDown();
@@ -236,6 +241,22 @@ export class VisboProjectsComponent implements OnInit {
     if (this.hasVPPerm(this.permVP.DeleteVP)) {
       this.dropDownVPType.push({name: this.translate.instant('vp.btn.showDeleted'), id: 'Deleted'});
     }
+  }
+
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp.managerId) {
+      const user = this.vcUser.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
   }
 
   switchView(): void {
@@ -376,7 +397,6 @@ export class VisboProjectsComponent implements OnInit {
       // nextVPV.timestamp = new Date(this.visboprojectversions[i].timestamp);
       // nextVPV.startDate = this.visboprojectversions[i].startDate;
       item.endDate = item.keyMetrics?.endDateCurrent || item.endDate;
-      // nextVPV.leadPerson = this.visboprojectversions[i].leadPerson;
       // nextVPV.VorlagenName = this.visboprojectversions[i].VorlagenName;
       // nextVPV.businessUnit = this.visboprojectversions[i].businessUnit;
       // nextVPV.status = this.visboprojectversions[i].status;
@@ -426,6 +446,38 @@ export class VisboProjectsComponent implements OnInit {
           });
       }
     }
+  }
+
+  getVisboCenterUsers(): void {
+    if (!this.vcSelected) {
+      this.vcUser.clear();
+      return;
+    }
+    this.log(`VisboCenter UserList of: ${this.vcSelected} Deleted ${this.deleted}`);
+    this.visbocenterService.getVCUser(this.vcSelected, false, this.deleted)
+      .subscribe(
+        user => {
+          user.forEach(user => this.vcUser.set(user._id, user));
+          this.updateVPManager();
+          this.log(`fetched Users ${this.vcUser.size}`);
+        },
+        error => {
+          this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  updateVPManager(): void {
+    if (!this.visboprojectsAll || !this.vcUser) {
+      return;
+    }
+    this.visboprojectsAll.forEach(vp => vp.manager = this.vcUser.get(vp.managerId));
   }
 
   gotoClickedRow(visboproject: VisboProject): void {
@@ -490,11 +542,18 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojects.sort(function(a, b) {
         return a.vpType - b.vpType;
       });
-    }  else if (this.sortColumn === 6) {
+    } else if (this.sortColumn === 6) {
       this.visboprojects.sort(function(a, b) {
         const aDate = getCustomFieldDate(a, '_PMCommit') ? new Date(getCustomFieldDate(a, '_PMCommit').value) : new Date('2001-01-01');
         const bDate = getCustomFieldDate(b, '_PMCommit') ? new Date(getCustomFieldDate(b, '_PMCommit').value) : new Date('2001-01-01');
         return visboCmpDate(aDate, bDate); });
+    } else if (this.sortColumn === 7) {
+      this.visboprojects.sort(function(a, b) {
+        let result = visboCmpString(a.manager?.profile?.lastName.toLowerCase() || '', b.manager?.profile?.lastName.toLowerCase() || '')
+          || visboCmpString(a.manager?.profile?.firstName.toLowerCase() || '', b.manager?.profile?.firstName.toLowerCase() || '')
+          || visboCmpString(a.manager?.email.toLowerCase() || '', b.manager?.email.toLowerCase() || '');
+        return result;
+      });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {

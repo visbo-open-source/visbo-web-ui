@@ -107,6 +107,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
   hasOrga = false;
+  vpUser = new Map<string, VisboUser>();
 
   currentLang: string;
 
@@ -160,6 +161,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.refDate = new Date(this.route.snapshot.queryParams.refDate);
     }
     this.getVisboProjectVersions();
+    this.getVisboProjectUsers();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -193,6 +195,44 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       return false;
     }
     return (this.combinedPerm.vp & perm) > 0;
+  }
+
+  getVisboProjectUsers(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUser(id, false, this.deleted)
+      .subscribe(
+        user => {
+          user.forEach(user => this.vpUser.set(user._id, user));
+          this.log(`fetched Users ${this.vpUser.size}`);
+        },
+        error => {
+          this.log(`Get VP Users failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp.managerId) {
+      const user = this.vpUser.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
   }
 
   getVariantInfo(item: DropDown): string {
