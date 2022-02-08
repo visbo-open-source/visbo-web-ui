@@ -64,6 +64,8 @@ export class TimelineChartComponent implements OnInit, OnChanges {
           const row = selectedItem.row;
           if (row >= 0) {
             parentThis.timelineSelectRow(row);
+          } else {
+            console.log(`Chart Timeline: The user clicked and row is ${row}`);
           }
         }
       }

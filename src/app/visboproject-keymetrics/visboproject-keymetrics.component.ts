@@ -21,7 +21,9 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
 import { UserService } from '../_services/user.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
+
+import {TimeLineOptions} from '../_models/_chart'
 
 class DropDown {
   name: string;
@@ -44,7 +46,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   visboprojectversions: VisboProjectVersion[];
   allVPVs: VisboProjectVersion[];
-
   currentUser: VisboUser;
   dropDown: DropDown[] = [];          // variants that have versions except pfv
   dropDownAll: DropDown[] = [];       // all variants including standard where the user can modify
@@ -108,6 +109,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   delayEndDate: number;
   hasOrga = false;
   vpUser = new Map<string, VisboUser>();
+
+  parentThis = this;
+
+  viewVersions = false;
+  viewAllVariants = false;
+  graphDataTimeline = [];
+  graphOptionsTimeline: TimeLineOptions;
+  defaultOptionsTimeline: TimeLineOptions = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      height: 150,
+      // colors:[],
+      tooltip: {
+        trigger: 'none'
+        // isHtml: true
+      },
+      timeline: {
+        showBarLabels: false
+      }
+      // animation: {startup: true, duration: 200}
+    };
 
   currentLang: string;
 
@@ -493,6 +515,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             if (this.vpvBaseline) {
               this.vpvBaselineNewestTS = new Date(this.vpvBaseline.timestamp);
             }
+            this.visboViewVPVOverTime();
             this.log(`get VPV All Key metrics: Get ${vpv.length} Project Versions`);
           },
           error => {
@@ -505,6 +528,97 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             }
           }
         );
+    }
+  }
+
+  visboViewVPVOverTime(): void {
+    let list = this.allVPVs?.filter(vpv => vpv.variantName != 'pfv');
+    if (!this.viewAllVariants && this.vpvActive) {
+      list = list?.filter(vpv => vpv.variantName == this.vpvActive.variantName);
+    }
+    if (!list) return;
+    list.sort(function(a, b) {
+      let result = visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
+      if (!result) {
+        result = visboCmpDate(a.timestamp, b.timestamp)
+      }
+      return result;
+    });
+    // MS TODO: remove multiple versions per day
+    this.graphDataTimeline = [];
+    const graphDataTimeline = [];
+    if (!(list?.length > 0)) return;
+
+    // process all except the last one
+    let index = 0;
+    let validUntil: Date;
+    for (; index < list.length - 1; index++) {
+      if (list[index].variantName != list[index+1].variantName) {
+        validUntil = new Date();
+        validUntil = visboGetBeginOfDay(validUntil, 7); // to make it visible it goes 7 days into future
+      } else {
+        validUntil = new Date(list[index + 1].timestamp);
+        validUntil = visboGetBeginOfDay(validUntil, - 1);
+      }
+      graphDataTimeline.push([
+        list[index].variantName || this.defaultVariant,
+        list[index].variantName,
+        new Date(list[index].timestamp),
+        validUntil
+      ]);
+    }
+    validUntil = new Date();
+    validUntil = visboGetBeginOfDay(validUntil, 7); // to make it visible it goes 7 days into future
+    graphDataTimeline.push([
+      list[index].variantName || this.defaultVariant,
+      list[index].variantName,
+      new Date(list[index].timestamp),
+      validUntil
+    ]);
+    graphDataTimeline.unshift([
+      'variantName',
+      'version',
+      'timestamp',
+      'validUntil'
+    ]);
+    this.graphDataTimeline = graphDataTimeline;
+
+    let rows = 1
+    if (this.viewAllVariants) {
+      let list = this.vpActive?.variant?.filter(variant => (variant.variantName != 'pfv' && variant.vpvCount > 0));
+      rows += list.length;
+    }
+    this.graphOptionsTimeline = Object.assign({}, this.defaultOptionsTimeline);
+    this.graphOptionsTimeline.height = 60 + 40 * rows;
+
+  }
+
+  changeViewVariant(): void {
+    // this.log(`changeViewVariant ${this.viewAllVariants}`);
+    this.visboViewVPVOverTime();
+  }
+
+  timelineSelectRow(row: number): void {
+    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
+    let variantName = '';
+    let item = this.graphDataTimeline[row + 1];
+    if (item[0] != this.defaultVariant) {
+      variantName = item[0];
+    }
+
+    let ts = new Date(item[2]);
+    let validUntil = new Date(item[3]);
+    this.log(`timeline Goto ${variantName} ${ts}`);
+    this.refDate = ts;
+    this.findVPV(ts);
+    // find out if it is the latest
+    if (visboCmpDate(new Date(), validUntil) <= 0) {
+      this.updateUrlParam('refDate', undefined);
+    } else {
+      this.updateUrlParam('refDate', ts.toISOString());
+    }
+    if (variantName != this.vpvActive.variantName) {
+      this.switchVariant(variantName);
     }
   }
 
@@ -568,6 +682,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
                   this.findVPV(this.refDate);
                   this.initVPStatusDropDown();
+                  this.visboViewVPVOverTime();
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -996,7 +1111,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (this.hasVCPerm(this.permVC.Modify) && this.hasVPPerm(this.permVP.Modify)) {
       result = true;
     }
-    this.log(`is PMO ${result}`);
     return result;
   }
 
@@ -1557,6 +1671,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectKeyMetrics: ' + message);
+    console.log('VisboProjectKeyMetrics: ' + message);
   }
 
 }

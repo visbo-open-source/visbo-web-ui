@@ -39,6 +39,9 @@
         <div>
           <div class="d-none d-lg-block" title="{{getTimestampTooltip(vpvActive)}}">
             {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
+            <a (click)="viewVersions = !viewVersions">
+              <i class="fas" [ngClass]="{'fa-caret-up': viewVersions == true, 'fa-caret-down': viewVersions == false}"></i>
+            </a>
             <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
               <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
             </a>
@@ -48,7 +51,7 @@
           </div>
         </div>
       </h4>
-      <div class="col-6 d-print-none" *ngIf="!getPreView()">
+      <!-- <div class="col-6 d-print-none" *ngIf="!getPreView()">
         <div class="row">
           <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="Previous Period before {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(-1)'></span>
           <select *ngIf="statusDirection != undefined" class="col-4 form-control d-none d-md-block" name="refDateInterval" [(ngModel)]="refDateInterval">
@@ -58,6 +61,17 @@
             <option value="quarter">{{ 'vpKeyMetric.lbl.quarter' | translate }}</option>
           </select>
           <span *ngIf="statusDirection <= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="Next Period after {{refDate | date :'dd.MM.'}}" (click)='getNextVersion(+1)'></span>
+        </div>
+      </div> -->
+    </div>
+    <div *ngIf="viewVersions && graphDataTimeline.length > 1" class="row mt-2">
+      <div class="col-10">
+        <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
+      </div>
+      <div class="col-2">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" (change)="changeViewVariant()" class="custom-control-input" id="allVariants" name="viewAllVariants" [(ngModel)]="viewAllVariants">
+            <label class="custom-control-label" for="allVariants">{{ 'vpKeyMetric.lbl.allVariants' | translate }}</label>
         </div>
       </div>
     </div>

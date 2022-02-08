@@ -23,7 +23,7 @@ import { VisboSettingService } from '../_services/visbosetting.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, validateDate, visboIsToday,
-          visboGetShortText, getPreView, excelColorToRGBHex } from '../_helpers/visbo.helper';
+          visboGetShortText, getPreView, excelColorToRGBHex, visboGetBeginOfMonth } from '../_helpers/visbo.helper';
 import { buildOrgaTree, expandParentTree, setTreeLeafSelection, getLeafByID, getLeafByName,
           isParentLeaf } from '../_helpers/orga.helper';
 
@@ -946,7 +946,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   visboViewOrganisationTree(): void {
     const allRoles = [];
-    const roles = this.vcOrganisation?.allUnits?.filter(role => role.type == 1 || role.type == 2);
+    const exitDate = visboGetBeginOfMonth(new Date(), -3);
+    const roles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
     if (!roles) return;
 
     roles.forEach(role => allRoles[role.uid] = role);

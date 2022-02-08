@@ -523,6 +523,7 @@
 			"projectProperty": "Project Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"allVariants": "All Variants",
 			"manager": "Manager",
 			"plan": "Plan",
 			"pfvVariant": "Baseline",

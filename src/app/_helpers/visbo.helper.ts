@@ -98,6 +98,21 @@ export function visboIsToday(refDate: Date): boolean {
   }
 }
 
+export function visboGetBeginOfMonth(refDate: Date, increment = 0): Date {
+  const current = new Date(refDate);
+  current.setDate(1);
+  current.setHours(0, 0, 0, 0);
+  current.setMonth(current.getMonth() + increment);
+  return current;
+}
+
+export function visboGetBeginOfDay(refDate: Date, increment = 0): Date {
+  const current = new Date(refDate);
+  current.setHours(0, 0, 0, 0);
+  current.setDate(current.getDate() + increment);
+  return current;
+}
+
 export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
   if (!dateA || !dateB) { return false; }
   const localA = new Date(dateA);
