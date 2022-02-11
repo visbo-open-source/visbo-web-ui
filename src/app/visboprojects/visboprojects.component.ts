@@ -12,7 +12,7 @@ import { VisboProject, CreateProjectProperty, getCustomFieldDate } from '../_mod
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
-import { VPFParams } from '../_models/visboportfolioversion';
+import { VPFParams } from '../_models/visboportfolio';
 import { VisboUser } from '../_models/visbouser';
 
 import { VisboCenter } from '../_models/visbocenter';

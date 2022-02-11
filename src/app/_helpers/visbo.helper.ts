@@ -11,6 +11,8 @@ export function visboCmpDate(first: Date, second: Date): number {
   let result = 0;
   if (first === undefined) { first = new Date(-8640000000000000); }
   if (second === undefined) { second = new Date(-8640000000000000); }
+  if (typeof first == "number" || typeof first == "string") first = new Date(first);
+	if (typeof second == "number" || typeof second == "string") second = new Date(second);
   if (first < second) {
     result = -1;
   } else if (first > second) {

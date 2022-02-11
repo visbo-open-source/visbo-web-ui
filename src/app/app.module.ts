@@ -17,23 +17,23 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 // import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 // Authentication
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './authentication/login/login.component';
 import { AlertComponent } from './_directives/alert.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
-import { RegisterComponent } from './register/register.component';
-import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
-import { OauthconfirmComponent } from './oauthconfirm/oauthconfirm.component';
-import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
-import { PwresetComponent } from './pwreset/pwreset.component';
+import { RegisterComponent } from './authentication/register/register.component';
+import { RegisterconfirmComponent } from './authentication/registerconfirm/registerconfirm.component';
+import { OauthconfirmComponent } from './authentication/oauthconfirm/oauthconfirm.component';
+import { PwforgottenComponent } from './authentication/pwforgotten/pwforgotten.component';
+import { PwresetComponent } from './authentication/pwreset/pwreset.component';
 
 import { AlertService } from './_services/alert.service';
 
 import { NavbarComponent } from './navbar/navbar.component';
 
-import { LogoutTimerComponent } from './logouttimer/logouttimer.component';
+import { LogoutTimerComponent } from './authentication/logouttimer/logouttimer.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './userprofile/userprofile.component';
 
@@ -55,16 +55,16 @@ import { VisboProjectsComponent } from './visboprojects/visboprojects.component'
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-audit.component';
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
-import { VisboCompViewKeyMetricsComponent } from './comp-viewkeymetrics/comp-viewkeymetrics.component';
-import { VisboCompViewDeliveryComponent } from './comp-viewdelivery/comp-viewdelivery.component';
-import { VisboCompViewDeadlineComponent } from './comp-viewdeadline/comp-viewdeadline.component';
-import { VisboCompViewCostComponent } from './comp-viewcost/comp-viewcost.component';
-import { VisboCompViewCapacityComponent } from './comp-viewcapacity/comp-viewcapacity.component';
-import { VisboCompViewCapacityCmpComponent } from './comp-viewcapacitycmp/comp-viewcapacitycmp.component';
-import { VisboCompViewBoardComponent } from './comp-viewboard/comp-viewboard.component';
-import { VisboCompViewBubbleComponent } from './comp-viewbubble/comp-viewbubble.component';
-import { VisboCompViewVPFComponent } from './comp-viewvpf/comp-viewvpf.component';
-import { VisboCompViewVpfCmpComponent } from './comp-viewvpfcmp/comp-viewvpfcmp.component';
+import { VisboCompViewKeyMetricsComponent } from './_components/comp-viewkeymetrics/comp-viewkeymetrics.component';
+import { VisboCompViewDeliveryComponent } from './_components/comp-viewdelivery/comp-viewdelivery.component';
+import { VisboCompViewDeadlineComponent } from './_components/comp-viewdeadline/comp-viewdeadline.component';
+import { VisboCompViewCostComponent } from './_components/comp-viewcost/comp-viewcost.component';
+import { VisboCompViewCapacityComponent } from './_components/comp-viewcapacity/comp-viewcapacity.component';
+import { VisboCompViewCapacityCmpComponent } from './_components/comp-viewcapacitycmp/comp-viewcapacitycmp.component';
+import { VisboCompViewBoardComponent } from './_components/comp-viewboard/comp-viewboard.component';
+import { VisboCompViewBubbleComponent } from './_components/comp-viewbubble/comp-viewbubble.component';
+import { VisboCompViewVPFComponent } from './_components/comp-viewvpf/comp-viewvpf.component';
+import { VisboCompViewVpfCmpComponent } from './_components/comp-viewvpfcmp/comp-viewvpfcmp.component';
 import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproject-restrict.component';
 
 // Visbo Project Versions
@@ -72,26 +72,26 @@ import { VisboProjectVersionService } from './_services/visboprojectversion.serv
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
 
 // Visbo Portfolio Versions
-import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
+import { VisboPortfolioVersionsComponent } from './visboportfolio/visboportfolio.component';
 import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Sys Admin / App Admin
-import { SysNavbarComponent } from './sysnavbar/sysnavbar.component';
-import { SysvisbosystemComponent } from './sysvisbosystem/sysvisbosystem.component';
-import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
-import { SysvisbocenterDetailComponent } from './sysvisbocenter-detail/sysvisbocenter-detail.component';
-import { SysVisboProjectsComponent } from './sysvisboprojects/sysvisboprojects.component';
-import { SysvisboprojectDetailComponent } from './sysvisboproject-detail/sysvisboproject-detail.component';
+import { SysNavbarComponent } from './visbosysadmin/sysnavbar/sysnavbar.component';
+import { SysvisbosystemComponent } from './visbosysadmin/sysvisbosystem/sysvisbosystem.component';
+import { SysVisboCentersComponent } from './visbosysadmin/sysvisbocenters/sysvisbocenters.component';
+import { SysvisbocenterDetailComponent } from './visbosysadmin/sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysVisboProjectsComponent } from './visbosysadmin/sysvisboprojects/sysvisboprojects.component';
+import { SysvisboprojectDetailComponent } from './visbosysadmin/sysvisboproject-detail/sysvisboproject-detail.component';
 
-import { SysauditComponent } from './sysaudit/sysaudit.component';
-import { SysuserComponent } from './sysuser/sysuser.component';
-import { SysLogComponent } from './syslog/syslog.component';
+import { SysauditComponent } from './visbosysadmin/sysaudit/sysaudit.component';
+import { SysuserComponent } from './visbosysadmin/sysuser/sysuser.component';
+import { SysLogComponent } from './visbosysadmin/syslog/syslog.component';
 import { SysLogService } from './_services/syslog.service';
-import { SystasksComponent } from './systasks/systasks.component';
-import { SysconfigComponent } from './sysconfig/sysconfig.component';
-import { SyssettingsComponent } from './syssettings/syssettings.component';
+import { SystasksComponent } from './visbosysadmin/systasks/systasks.component';
+import { SysconfigComponent } from './visbosysadmin/sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './visbosysadmin/syssettings/syssettings.component';
 
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 

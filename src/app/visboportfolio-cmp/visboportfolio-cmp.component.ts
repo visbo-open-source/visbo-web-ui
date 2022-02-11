@@ -16,7 +16,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboUser } from '../_models/visbouser';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, VPFParams } from '../_models/visboportfolio';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';

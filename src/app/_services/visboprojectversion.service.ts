@@ -9,7 +9,7 @@ import { EnvService } from './env.service';
 // import { VisboCenter } from '../_models/visbocenter';
 import { VisboProject } from '../_models/visboproject';
 import { VisboProjectVersion, VisboProjectVersionResponse } from '../_models/visboprojectversion';
-import { VisboPortfolioVersion, VisboPortfolioVersionResponse } from '../_models/visboportfolioversion';
+import { VisboPortfolioVersion, VisboPortfolioVersionResponse } from '../_models/visboportfolio';
 
 import { MessageService } from './message.service';
 

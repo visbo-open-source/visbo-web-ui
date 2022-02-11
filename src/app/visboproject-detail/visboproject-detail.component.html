@@ -28,7 +28,10 @@
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
-      <label name=vpVersion class="col form-control-plaintext pt-2"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+      <label *ngIf="visboproject.vpType != 1" name=vpVersion class="col form-control-plaintext pt-2"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+      <label *ngIf="visboproject.vpType == 1" name=vpVersion class="col form-control-plaintext pt-2"><a>{{ visboproject.vpfCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+
+
     </div>
     <div class="form-group row">
       <label for="VPCreated" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
@@ -202,7 +205,7 @@
                 <td id="ColDescription">{{variant.description}}</td>
                 <td id="ColEmail">{{variant.email}}</td>
                 <td class="d-none d-md-table-cell" title="{{ variant.createdAt | date :'dd.MM.yyyy HH:mm:ss'}}">{{variant.createdAt | date :'dd.MM.yy'}}</td>
-                <td class="d-none d-md-table-cell">{{variant.vpvCount}}</td>
+                <td class="d-none d-md-table-cell">{{variant.vpvCount || variant.vpfCount}}</td>
                 <td class="d-none d-md-table-cell">
                   <ng-container *ngTemplateOutlet="lockIndicator; context:{level: getLockStatus(variant)}"></ng-container>
                 </td>

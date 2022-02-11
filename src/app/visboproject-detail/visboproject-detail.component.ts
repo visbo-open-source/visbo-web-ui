@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
-import { VisboUser, VisboUserInvite } from '../_models/visbouser';
+import { VisboUser, VisboUserInvite, VisboUserProfile } from '../_models/visbouser';
 import { VisboProject, VPVariant, VPTYPE, constSystemCustomName } from '../_models/visboproject';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
@@ -209,6 +209,8 @@ export class VisboprojectDetailComponent implements OnInit {
             this.vpManagerEmail = user?.email;
           } else {
             const newUser = new VisboUser();
+            newUser.profile = new VisboUserProfile();
+            newUser.profile.lastName = this.translate.instant('vpDetail.lbl.noManager');
             newUser.email = '';
             this.vpManagerList.unshift(newUser);
             this.vpManagerEmail = '';
@@ -235,9 +237,9 @@ export class VisboprojectDetailComponent implements OnInit {
     }
     if (user) {
       if (user.profile) {
-        fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        fullName = ''.concat(user.profile.firstName || '', ' ', user.profile.lastName || '')
       }
-      if (!fullName || withEmail) {
+      if ((!fullName || withEmail) && user.email) {
         fullName = fullName.concat(' (', user.email, ')');
       }
     } else {
@@ -294,7 +296,7 @@ export class VisboprojectDetailComponent implements OnInit {
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
-    if (visboproject.vpType === VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE.PORTFOLIO) {
       url = 'vpf/';
     }
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
@@ -362,6 +364,9 @@ export class VisboprojectDetailComponent implements OnInit {
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
           this.sortUserPermTable();
+          if (group.name == 'VISBO Project Admin') {
+            this.getVisboProjectUsers();
+          }
           for (let i = 0; i < this.vgGroups.length; i++) {
             if (this.vgGroups[i]._id === group._id) {
               this.vgGroups[i] = group;
@@ -538,6 +543,9 @@ export class VisboprojectDetailComponent implements OnInit {
               }
               break;
             }
+          }
+          if (user.groupName == 'VISBO Project Admin') {
+            this.getVisboProjectUsers();
           }
           const message = this.translate.instant('vpDetail.msg.removeUserSuccess', {'name': user.email});
           this.alertService.success(message);
@@ -804,9 +812,13 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   getVPVersionsTotal(): number {
-    let totalVersions = this.visboproject.vpvCount || 0;
-    if (this.visboproject.variant) {
-      this.visboproject.variant.forEach(variant => totalVersions += variant.vpvCount || 0);
+    let totalVersions: number;
+    if (this.visboproject.vpType == VPTYPE.PORTFOLIO) {
+      totalVersions = this.visboproject.vpfCount || 0;
+      this.visboproject.variant?.forEach(variant => totalVersions += variant.vpfCount || 0);
+    } else {
+      totalVersions = this.visboproject.vpvCount || 0;
+      this.visboproject.variant?.forEach(variant => totalVersions += variant.vpvCount || 0);
     }
     return totalVersions;
   }
@@ -893,7 +905,7 @@ export class VisboprojectDetailComponent implements OnInit {
     } else if (this.sortVariantColumn === 3) {
       variant.sort(function(a, b) { return visboCmpDate(a.createdAt, b.createdAt); });
     } else if (this.sortVariantColumn === 4) {
-      variant.sort(function(a, b) { return b.vpvCount - a.vpvCount; });
+      variant.sort(function(a, b) { return (b.vpvCount || b.vpfCount) - (a.vpvCount || a.vpfCount); });
     }
     if (!this.sortVariantAscending) {
       variant.reverse();

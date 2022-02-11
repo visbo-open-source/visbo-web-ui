@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoClickedVp(visboproject: VisboProject): void {
-    if (visboproject.vpType === VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE.PORTFOLIO) {
       this.router.navigate(['vpf/' + visboproject._id]);
     } else {
       this.router.navigate(['vpKeyMetrics/' + visboproject._id]);

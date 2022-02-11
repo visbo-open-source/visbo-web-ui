@@ -285,7 +285,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.variantName = undefined;
       }
     }
-    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${this.variantID}/${this.variantName}`);
+    // this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${this.variantID}/${this.variantName}`);
     this.dropDownIndex = undefined;
     const len = this.vpActive.variant.length;
 
@@ -515,7 +515,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             if (this.vpvBaseline) {
               this.vpvBaselineNewestTS = new Date(this.vpvBaseline.timestamp);
             }
-            this.visboViewVPVOverTime();
+            this.viewVPVOverTime();
             this.log(`get VPV All Key metrics: Get ${vpv.length} Project Versions`);
           },
           error => {
@@ -531,7 +531,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  visboViewVPVOverTime(): void {
+  viewVPVOverTime(): void {
     let list = this.allVPVs?.filter(vpv => vpv.variantName != 'pfv');
     if (!this.viewAllVariants && this.vpvActive) {
       list = list?.filter(vpv => vpv.variantName == this.vpvActive.variantName);
@@ -567,8 +567,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         validUntil
       ]);
     }
-    validUntil = new Date();
-    validUntil = visboGetBeginOfDay(validUntil, 7); // to make it visible it goes 7 days into future
+    validUntil = visboGetBeginOfDay(new Date(), 7); // to make it visible it goes 7 days into future
     graphDataTimeline.push([
       list[index].variantName || this.defaultVariant,
       list[index].variantName,
@@ -591,11 +590,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.graphOptionsTimeline = Object.assign({}, this.defaultOptionsTimeline);
     this.graphOptionsTimeline.height = 60 + 40 * rows;
 
-  }
-
-  changeViewVariant(): void {
-    // this.log(`changeViewVariant ${this.viewAllVariants}`);
-    this.visboViewVPVOverTime();
   }
 
   timelineSelectRow(row: number): void {
@@ -682,7 +676,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                   this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
                   this.findVPV(this.refDate);
                   this.initVPStatusDropDown();
-                  this.visboViewVPVOverTime();
+                  this.viewVPVOverTime();
                 },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);

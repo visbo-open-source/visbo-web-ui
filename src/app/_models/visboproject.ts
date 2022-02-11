@@ -1,7 +1,7 @@
 import { VisboUser } from '../_models/visbouser';
 
 export enum VPTYPE {
-    'Project' = 0, 'Portfolio' = 1, 'Template' = 2
+    PROJECT = 0, PORTFOLIO = 1, TEMPLATE = 2
 }
 
 export class VPRestrict {
@@ -24,6 +24,7 @@ export class VPVariant {
   email: string;
   createdAt: Date;
   vpvCount: number;
+  vpfCount: number;
 }
 
 export class VPLock {
