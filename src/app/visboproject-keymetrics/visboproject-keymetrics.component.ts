@@ -3,6 +3,7 @@ import { DomSanitizer, Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -21,7 +22,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
 import { UserService } from '../_services/user.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, visboIsSameDay, visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
 
 import {TimeLineOptions} from '../_models/_chart'
 
@@ -54,6 +55,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   vcCustomize: VisboSetting[];
   vcEnableDisable: VisboSetting[];
   vcOrga: VisboOrganisation[];
+  timeoutID: number;
 
   vpSelected: string;
   vpActive: VisboProject;
@@ -122,8 +124,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       height: 150,
       // colors:[],
       tooltip: {
-        trigger: 'none'
-        // isHtml: true
+        trigger: 'focus',
+        isHtml: true
+      },
+      hAxis: {
+        format: 'dd.MM',
+        gridlines: {
+          color: '#FFF',
+          count: -1
+        }
       },
       timeline: {
         showBarLabels: false
@@ -189,6 +198,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
     this.findVPV(new Date(this.refDate));
+  }
+
+  onResized(event: ResizedEvent): void {
+    this.log('Resize');
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.viewVPVOverTime();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   switchViewParent(newParam: VPParams): void {
@@ -544,39 +563,46 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       }
       return result;
     });
-    // MS TODO: remove multiple versions per day
     this.graphDataTimeline = [];
     const graphDataTimeline = [];
     if (!(list?.length > 0)) return;
 
     // process all except the last one
     let index = 0;
-    let validUntil: Date;
+    let validUntil: Date, ts: Date;
     for (; index < list.length - 1; index++) {
+      ts = new Date(list[index].timestamp);
       if (list[index].variantName != list[index+1].variantName) {
         validUntil = new Date();
-        validUntil = visboGetBeginOfDay(validUntil, 7); // to make it visible it goes 7 days into future
+        validUntil = visboGetBeginOfDay(validUntil, 1); // to make it visible it goes 1 day into future
       } else {
+        if (visboIsSameDay(ts, new Date(list[index + 1].timestamp))) {
+          // skip multiple versions for same day and variant
+          continue
+        }
         validUntil = new Date(list[index + 1].timestamp);
-        validUntil = visboGetBeginOfDay(validUntil, - 1);
+        validUntil.setHours(validUntil.getHours() - 1);
       }
       graphDataTimeline.push([
         list[index].variantName || this.defaultVariant,
         list[index].variantName,
-        new Date(list[index].timestamp),
+        this.createCustomHTMLContent(list[index]),
+        ts,
         validUntil
       ]);
     }
-    validUntil = visboGetBeginOfDay(new Date(), 7); // to make it visible it goes 7 days into future
+    validUntil = visboGetBeginOfDay(new Date(), 1); // to make it visible it goes 1 day into future
     graphDataTimeline.push([
       list[index].variantName || this.defaultVariant,
       list[index].variantName,
+      this.createCustomHTMLContent(list[index]),
       new Date(list[index].timestamp),
       validUntil
     ]);
     graphDataTimeline.unshift([
       'variantName',
       'version',
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       'timestamp',
       'validUntil'
     ]);
@@ -589,19 +615,36 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.graphOptionsTimeline = Object.assign({}, this.defaultOptionsTimeline);
     this.graphOptionsTimeline.height = 60 + 40 * rows;
+  }
 
+  createCustomHTMLContent(vpv: VisboProjectVersion): string {
+    const strTimestamp = this.translate.instant('vpKeyMetric.lbl.timestamp');
+    const ts = new Date(vpv.timestamp);
+    const tsDate = convertDate(ts, 'fullDate', this.currentLang);
+    const tsTime = ts.toLocaleTimeString();
+
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + (vpv.variantName || this.defaultVariant)  + '</b></div>' + '<div>' +
+      '<table>';
+
+    result = result + '<tr>' + '<td>' + strTimestamp + ':</td>'
+                    + '<td align="right"><b>' + tsDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td></td>'
+                    + '<td align="right"><b>' + tsTime + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
   }
 
   timelineSelectRow(row: number): void {
-    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
+    // this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     let variantName = '';
     let item = this.graphDataTimeline[row + 1];
     if (item[0] != this.defaultVariant) {
       variantName = item[0];
     }
 
-    let ts = new Date(item[2]);
-    let validUntil = new Date(item[3]);
+    let ts = new Date(item[3]);
+    let validUntil = new Date(item[4]);
     this.log(`timeline Goto ${variantName} ${ts}`);
     this.refDate = ts;
     this.findVPV(ts);

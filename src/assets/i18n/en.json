@@ -190,9 +190,11 @@
 		"titleProjectUsers": "VISBO Project Users",
 		"titlePermUser": "Permission for {{name}}",
 		"titleSettings": "VISBO Center Setting",
+		"titleOrganisations": "VISBO Center Organisation",
 		"titleEnableDisable": "VISBO Center Enable / Disable of functions",
 		"titleDeleteSetting": "Delete VISBO Center Setting",
 		"titleUploadSetting": "Import a Setting to the VISBO Center",
+		"titleUploadOrga": "Import an Organisation to the VISBO Center",
 		"titleSaveOrga": "Save VISBO Center Organisation",
 		"lbl": {
 			"nr": "Nr.",
@@ -232,10 +234,12 @@
 			"viewUsers": "Show Users",
 			"viewProjectUsers": "Show Project Users",
 			"ViewSetting": "Settings",
+			"ViewOrganisation": "Organisation",
 			"ViewEnableDisable": "Enable / Disable",
 			"addUser": "Add User",
 			"addGroup": "Add Group",
 			"addSetting": "Add Setting",
+			"changeOrganisation": "Change Organisation",
 			"invite": "Invite",
 			"save": "Save",
 			"edit": "Edit",
@@ -524,6 +528,14 @@
 			"projectProperty": "Project Properties",
 			"name": "Name",
 			"defaultVariant": "Standard",
+			"timestamp": "Timestamp",
+			hAxis: {
+				format: 'dd.MM',
+				gridlines: {
+					color: '#FFF',
+					count: -1
+				}
+			},
 			"allVariants": "All Variants",
 			"manager": "Manager",
 			"plan": "Plan",
@@ -1187,6 +1199,7 @@
 			"name": "Project",
 			"variant": "Variant",
 			"modified": "Modified",
+			"timestamp": "Timestamp",
 			"filter": "Filter",
 			"defaultVariant": "Standard",
 			"nrOfItems": "Nr. of Projects",

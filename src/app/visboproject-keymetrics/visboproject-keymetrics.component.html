@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div class='well'>
+<div class='well' (resized)="onResized($event)">
   <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <h2 *ngIf="vpActive">

@@ -1,5 +1,5 @@
 <app-usernavbar></app-usernavbar>
-<div class='well'>
+<div class='well' (resized)="onResized($event)">
   <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <div class='row ml-1'>
@@ -8,7 +8,7 @@
           <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
           <span *ngIf="listVPFVariant.length > 1" class="dropdown ml-2">
             <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{getVariantName()}}</a>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu" (resized)="onResized($event)">
               <a *ngFor="let item of listVPFVariant" class="dropdown-item">
                 <div *ngIf="checkVPFActive(item) && item.version > 0" class="dropdown-item font-weight-bold" (click)="switchPFVariant(item.variantName)">{{ item.name }} </div>
                 <div *ngIf="!checkVPFActive(item) && item.version > 0" class="dropdown-item" (click)="switchPFVariant(item.variantName)">{{ item.name }} </div>

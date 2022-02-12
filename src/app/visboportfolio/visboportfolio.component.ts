@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -22,7 +23,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboIsSameDay, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboIsSameDay, visboGetBeginOfDay, convertDate, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 import {TimeLineOptions} from '../_models/_chart'
@@ -78,6 +79,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     scrollRefDate: Date;
     vpfid: string;
     deleted = false;
+    timeoutID: number;
+
     defaultVariant: string;
     currentLang: string;
     listCalcVPV: VisboProjectVersion[];
@@ -109,8 +112,15 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         height: 150,
         // colors:[],
         tooltip: {
-          trigger: 'none'
-          // isHtml: true
+          trigger: 'focus',
+          isHtml: true
+        },
+        hAxis: {
+          format: 'dd.MM',
+          gridlines: {
+            color: '#FFF',
+            count: -1
+          }
         },
         timeline: {
           showBarLabels: false
@@ -164,6 +174,16 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Portfolio Changes ${JSON.stringify(changes)}`);
+  }
+
+  onResized(event: ResizedEvent): void {
+    this.log('Resize');
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.viewVPFOverTime();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   initVPStateDropDown(): void {
@@ -355,39 +375,46 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       }
       return result;
     });
-    // MS TODO: remove multiple versions per day
     this.graphDataTimeline = [];
     const graphDataTimeline = [];
     if (!(list?.length > 0)) return;
 
     // process all except the last one
     let index = 0;
-    let validUntil: Date;
+    let validUntil: Date, ts:Date;
     for (; index < list.length - 1; index++) {
+      ts = new Date(list[index].timestamp);
       if (list[index].variantName != list[index+1].variantName) {
         validUntil = new Date();
-        validUntil = visboGetBeginOfDay(validUntil, 7); // to make it visible it goes 7 days into future
+        validUntil = visboGetBeginOfDay(validUntil, 1); // to make it visible it goes 1 day into future
       } else {
+        if (visboIsSameDay(new Date(list[index].timestamp), new Date(list[index + 1].timestamp))) {
+          // skip multiple versions for same day and variant
+          continue
+        }
         validUntil = new Date(list[index + 1].timestamp);
-        validUntil = visboGetBeginOfDay(validUntil, - 1);
+        validUntil.setHours(validUntil.getHours() - 4);
       }
       graphDataTimeline.push([
         list[index].variantName || this.defaultVariant,
         list[index].variantName,
-        new Date(list[index].timestamp),
+        this.createCustomHTMLContent(list[index]),
+        ts,
         validUntil
       ]);
     }
-    validUntil = visboGetBeginOfDay(new Date(), 7); // to make it visible it goes 7 days into future
+    validUntil = visboGetBeginOfDay(new Date(), 1); // to make it visible it goes 1 day into future
     graphDataTimeline.push([
       list[index].variantName || this.defaultVariant,
       list[index].variantName,
+      this.createCustomHTMLContent(list[index]),
       new Date(list[index].timestamp),
       validUntil
     ]);
     graphDataTimeline.unshift([
       'variantName',
       'version',
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       'timestamp',
       'validUntil'
     ]);
@@ -402,16 +429,33 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.graphOptionsTimeline.height = 60 + 40 * rows;
   }
 
+  createCustomHTMLContent(vpf: VisboPortfolioVersion): string {
+    const strTimestamp = this.translate.instant('vpfVersion.lbl.timestamp');
+    const ts = new Date(vpf.timestamp);
+    const tsDate = convertDate(ts, 'fullDate', this.currentLang);
+    const tsTime = ts.toLocaleTimeString();
+
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + (vpf.variantName || this.defaultVariant)  + '</b></div>' + '<div>' +
+      '<table>';
+
+    result = result + '<tr>' + '<td>' + strTimestamp + ':</td>'
+                    + '<td align="right"><b>' + tsDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td></td>'
+                    + '<td align="right"><b>' + tsTime + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
+  }
+
   timelineSelectRow(row: number): void {
-    this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
+    // this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     let variantName = '';
     let item = this.graphDataTimeline[row + 1];
     if (item[0] != this.defaultVariant) {
       variantName = item[0];
     }
 
-    let ts = new Date(item[2]);
-    let validUntil = new Date(item[3]);
+    let ts = new Date(item[3]);
     this.log(`timeline Goto ${variantName} ${ts}`);
     this.switchPFVariant(variantName, ts);
   }
@@ -886,7 +930,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   checkVPFActive(item: DropDown): boolean {
-    return this.vpfActive.variantName == item.variantName;
+    return this.vpfActive?.variantName == item.variantName;
   }
 
   switchVariantByName(name: string): void {

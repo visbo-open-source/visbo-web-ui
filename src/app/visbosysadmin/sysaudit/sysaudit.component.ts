@@ -372,7 +372,7 @@ export class SysauditComponent implements OnInit {
     }
 
     getUserAgent(userAgent: string): string {
-      const searchList = ['VISBO Projectboard', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
+      const searchList = ['VISBO Projectboard', 'VISBO RPA', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
       let result = 'Unknown';
       userAgent = userAgent || '';
       for (let i = 0; i < searchList.length; i++) {

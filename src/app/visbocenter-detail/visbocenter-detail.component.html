@@ -25,8 +25,15 @@
         <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
         <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('ProjectUsers')">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
-        <button id="ViewSetting" *ngIf="hasVCPerm(permVC.Modify)" type="button" class="btn btn-md btn-light mx-1" (click)="showSetting()">{{ 'vcDetail.btn.ViewSetting' | translate }}</button>
-        <button id="ViewEnable" type="button" class="btn btn-md btn-light mx-1" (click)="showEnableDisable()">{{ 'vcDetail.btn.ViewEnableDisable' | translate }}</button>
+        <div class="btn-group">
+          <button type="button" class="align-items-end btn btn-md btn-light" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
+          <div class="dropdown-toggle btn btn-light" data-toggle="dropdown">
+            <div class="dropdown-menu">
+              <div id="ViewSetting" class="dropdown-item" (click)="showSetting()" >{{ 'vcDetail.btn.ViewSetting' | translate }} </div>
+              <div id="ViewEnable" class="dropdown-item" (click)="showEnableDisable()" >{{ 'vcDetail.btn.ViewEnableDisable' | translate }} </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -156,106 +163,141 @@
       </div>
     </div>
 
-    <div>
-      <div *ngIf="showList == 'Settings'" >
-        <div >
-          <div class='row'>
-            <div class='col'>
-              <h4 class='panel-heading'>
-                  {{ 'vcDetail.titleSettings' | translate }}
-              </h4>
+    <div *ngIf="showList == 'Organisation'">
+      <div class='row'>
+        <div class='col'>
+          <h4 class='panel-heading'>
+              {{ 'vcDetail.titleOrganisations' | translate }}
+          </h4>
+        </div>
+        <div *ngIf="hasVCPerm(permVC.ManagePerm) && errorList.length == 0" class='col'>
+          <!-- Button trigger modal -->
+          <button id="AddOrganisation" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcOrganisationModalUpload">
+            {{ 'vcDetail.btn.changeOrganisation' | translate }}
+          </button>
+        </div>
+      </div>
+      <div *ngIf="errorList.length > 0" class="card col-10 px-0 mb-1">
+        <h5 class="card-header p-2">
+          <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: 3}"></ng-container></strong>
+          {{ 'vcDetail.msg.errorList' | translate }}
+          <button id="AddOrganisation" type="button" class="my-1 btn btn-secondary float-right" (click)="resetError()">
+            {{ 'vcDetail.btn.reset' | translate }}
+          </button>
+        </h5>
+        <div class="card-body p-2">
+          <div *ngFor="let item of errorList" class="row">
+            <div class="col col-sm-8">
+              {{item}}
             </div>
-            <div *ngIf="hasVCPerm(permVC.ManagePerm) && errorList.length == 0" class='col'>
-              <!-- Button trigger modal -->
-              <button id="AddSetting" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcSettingModalUpload">
-                {{ 'vcDetail.btn.addSetting' | translate }}
-              </button>
-            </div>
-          </div>
-          <div *ngIf="errorList.length > 0" class="card col-10 px-0 mb-1">
-            <h5 class="card-header p-2">
-              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: 3}"></ng-container></strong>
-              {{ 'vcDetail.msg.errorList' | translate }}
-              <button id="AddSetting" type="button" class="my-1 btn btn-secondary float-right" (click)="resetError()">
-                {{ 'vcDetail.btn.reset' | translate }}
-              </button>
-            </h5>
-            <div class="card-body p-2">
-              <div *ngFor="let item of errorList" class="row">
-                <div class="col col-sm-8">
-                  {{item}}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class='panel-body'>
-            <table class='table table-hover'>
-              <!--Table head-->
-              <thead id="SettingHead">
-                <tr>
-                  <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-                  <th (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
-                  <th (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
-                  <th (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
-                  <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
-                </tr>
-              </thead>
-              <!--Table body-->
-              <tbody id="SettingList">
-                <tr *ngFor="let item of vcSettings; let itemIndex=index">
-                  <td>{{itemIndex+1}}</td>
-                  <td id="ColSettingName" (click)='initSetting(itemIndex)' data-toggle="modal" data-target="#VcSettingDetail"><a>{{item.name}}</a></td>
-                  <td id="ColSettingTimestamp">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
-                  <td id="ColSettingDate" *ngIf="isToday(item.updatedAt)">{{item.updatedAt | date : 'HH:mm:ss'}}</td>
-                  <td id="ColSettingDate" *ngIf="!isToday(item.updatedAt)">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
-                  <td *ngIf="hasVCPerm(permVC.Modify)">
-                    <div *ngIf="item.type != 'organisationXXXXXXXX'">
-                      <button id="ColDeleteSetting" class="Detail" (click)='initSetting(itemIndex)' title="{{ 'vcDetail.lbl.deleteSetting' | translate }}" (click)='helperSettingIndex(itemIndex)'
-                      data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead id="OrganisationHead">
+            <tr>
+              <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+              <th (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
+              <th (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+              <th (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody id="OrganisationList">
+            <tr *ngFor="let item of vcOrganisations; let itemIndex=index">
+              <td>{{itemIndex+1}}</td>
+              <td id="ColOrganisationTimestamp" (click)='initOrganisation(itemIndex)' data-toggle="modal" data-target="#VcOrganisationDetail">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
+              <td id="ColOrganisationName" (click)='initOrganisation(itemIndex)' data-toggle="modal" data-target="#VcOrganisationDetail"><a>{{item.name}}</a></td>
+              <td id="ColOrganisationDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+              <td *ngIf="hasVCPerm(permVC.Modify)">
+                <div *ngIf="canDeleteOrga(item)">
+                  <button id="ColDeleteOrganisation" class="Detail" (click)='initOrganisation(itemIndex)' title="{{ 'vcDetail.lbl.deleteOrganisation' | translate }}"
+                  data-toggle="modal" data-target="#VcOrganisationRemove">&times;</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div *ngIf="showList == 'Settings'">
+      <div class='row'>
+        <div class='col'>
+          <h4 class='panel-heading'>
+              {{ 'vcDetail.titleSettings' | translate }}
+          </h4>
+        </div>
+        <!-- <div *ngIf="hasVCPerm(permVC.ManagePerm) && errorList.length == 0" class='col'>
+          <button id="AddSetting" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcSettingModalUpload">
+            {{ 'vcDetail.btn.addSetting' | translate }}
+          </button>
+        </div> -->
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead id="SettingHead">
+            <tr>
+              <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+              <th (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+              <th (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
+              <th (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody id="SettingList">
+            <tr *ngFor="let item of vcSettings; let itemIndex=index">
+              <td>{{itemIndex+1}}</td>
+              <td id="ColSettingName" (click)='initSetting(itemIndex)' data-toggle="modal" data-target="#VcSettingDetail"><a>{{item.name}}</a></td>
+              <td id="ColSettingTimestamp">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
+              <td id="ColSettingDate" *ngIf="isToday(item.updatedAt)">{{item.updatedAt | date : 'HH:mm:ss'}}</td>
+              <td id="ColSettingDate" *ngIf="!isToday(item.updatedAt)">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+              <td *ngIf="hasVCPerm(permVC.Modify)">
+                <button id="ColDeleteSetting" class="Detail" (click)='initSetting(itemIndex)' title="{{ 'vcDetail.lbl.deleteSetting' | translate }}"
+                data-toggle="modal" data-target="#VcSettingRemove">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div *ngIf="showList == 'SettingEnableDisable'">
-      <div >
-        <div class='row'>
-          <div class='col'>
-            <h5 class='panel-heading'>
-                {{ 'vcDetail.titleEnableDisable' | translate }}
-            </h5>
-          </div>
+      <div class='row'>
+        <div class='col'>
+          <h5 class='panel-heading'>
+              {{ 'vcDetail.titleEnableDisable' | translate }}
+          </h5>
         </div>
-        <div class='panel-body'>
-          <table class='table table-hover table-sortable'>
-            <!--Table head-->
-            <thead>
-              <tr>
-                <th (click)="sortSettingEnabledDisabled(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
-                <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(5)">{{ 'vcDetail.lbl.settingLimit' | translate }}</th>
-                <th class="d-none d-md-table-cell">{{ 'vcDetail.lbl.settingEnabled' | translate }}</th>
-                <th (click)="sortSettingEnabledDisabled(10)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
-              </tr>
-            </thead>
-            <!-- Table body -->
-            <tbody>
-              <tr *ngFor="let setting of vcSettingsEnableDisable; let settingIndex=index" (click)="editEnableDisable(settingIndex)" data-toggle="modal" data-target="#ViewEnableDisable">
-                <td><a>{{setting.name}}</a></td>
-                <td><a>
-                    <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.sysVCLimit == true}"></ng-container>
-                </a></td>
-                <td><a>
-                    <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.VCEnabled == true}"></ng-container>
-                </a></td>
-                <td>{{setting.updatedAt | date :'dd.MM HH:mm' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover table-sortable'>
+          <!--Table head-->
+          <thead>
+            <tr>
+              <th (click)="sortSettingEnabledDisabled(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+              <th class="d-none d-md-table-cell" (click)="sortSettingEnabledDisabled(5)">{{ 'vcDetail.lbl.settingLimit' | translate }}</th>
+              <th class="d-none d-md-table-cell">{{ 'vcDetail.lbl.settingEnabled' | translate }}</th>
+              <th (click)="sortSettingEnabledDisabled(10)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <tr *ngFor="let setting of vcSettingsEnableDisable; let settingIndex=index" (click)="editEnableDisable(settingIndex)" data-toggle="modal" data-target="#ViewEnableDisable">
+              <td><a>{{setting.name}}</a></td>
+              <td><a>
+                  <ng-container *ngTemplateOutlet="showLimit; context:{level: setting.value.sysVCLimit == true}"></ng-container>
+              </a></td>
+              <td><a>
+                  <ng-container *ngTemplateOutlet="showEnabled; context:{level: setting.value.VCEnabled == true}"></ng-container>
+              </a></td>
+              <td>{{setting.updatedAt | date :'dd.MM HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -681,12 +723,46 @@
     </div>
   </div>
 
-  <!-- Modal Upload Setting -->
-  <div class="modal fade" id="VcSettingModalUpload" tabindex="-1" role="dialog" aria-labelledby="VcSettingModalUploadTitle" aria-hidden="true">
+  <!-- Modal View VCOrganisation -->
+  <div class="modal fade" id="VcOrganisationDetail" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationDetailTitle" aria-hidden="true">
+    <div *ngIf="vcOrganisation" class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcOrganisationDetailTitle">{{ 'vcDetail.titleOrganisations' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="organisationDetail">
+            <div class="form-group">
+              <label for="OrganisationName" class="col-4 col-form-label">{{ 'vcDetail.lbl.settingName' | translate }}:</label>
+              <label id="OrganisationName" class="col-8 form-control-static">{{ vcOrganisation.name }} </label>
+            </div>
+            <div class="form-group">
+              <label for="Timestamp" class="col-4 col-form-label">{{ 'vcDetail.lbl.timestamp' | translate }}:</label>
+              <label id="Timestamp" class="col-8 form-control-static">{{ vcOrganisation.timestamp | date : 'dd.MM.yy' }} </label>
+            </div>
+            <div class="form-group">
+              <label for="updatedAt" class="col-4 col-form-label">{{ 'vcDetail.lbl.updatedAt' | translate }}:</label>
+              <label id="updatedAt" class="col-8 form-control-static">{{ vcOrganisation.updatedAt | date : 'dd.MM.yy'}} </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+          <button id="OrganisationDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Upload Organisation -->
+  <div class="modal fade" id="VcOrganisationModalUpload" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationModalUploadTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcSettingUploadTitle">{{ 'vcDetail.titleUploadSetting' | translate }}</h5>
+          <h5 class="modal-title" id="VcSettingUploadTitle">{{ 'vcDetail.titleUploadOrga' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -698,18 +774,18 @@
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button *ngIf="newFile" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addSetting()" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
+          <button *ngIf="newFile" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addOrganisation()" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Save Setting -->
-  <div class="modal fade" id="VcSettingModalSave" tabindex="-1" role="dialog" aria-labelledby="VcSettingModalSaveTitle" aria-hidden="true">
+  <!-- Modal Save Organisation -->
+  <div class="modal fade" id="VcOrganisationModalSave" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationModalSaveTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcSettingSaveTitle">{{ 'vcDetail.titleSaveOrga' | translate }}</h5>
+          <h5 class="modal-title" id="VcSOrganisationSaveTitle">{{ 'vcDetail.titleSaveOrga' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -717,7 +793,7 @@
         <div *ngIf="newOrgaList" class="modal-body">
           <select id="DropDownSave" class="form-control mx-1" name="orgaSaveMode" [(ngModel)]="orgaSaveMode">
             <option value = 'new'>{{ 'vcDetail.lbl.newOrga' | translate }}</option>
-            <option value = 'update' *ngIf="vcOrganisation.length">{{ 'vcDetail.lbl.updateOrga' | translate }}</option>
+            <option value = 'update' *ngIf="vcOrganisations.length">{{ 'vcDetail.lbl.updateOrga' | translate }}</option>
           </select>
           <form class="mt-2">
             <div class="form-group row">
@@ -726,7 +802,7 @@
             </div>
             <div class="form-group row">
               <label for="timestampOrga" class="col-4 col-form-label">{{ 'vcDetail.lbl.valid' | translate }}:</label>
-              <label *ngIf="orgaSaveMode == 'update'" id="timestampOrga" class="form-control-static pt-2">{{ currentOrgaTimestamp | date :'dd.MM.yyyy'}}</label>
+              <label *ngIf="orgaSaveMode == 'update'" id="timestampOrga" class="form-control-static pt-2">{{ latestOrgaTimestamp | date :'dd.MM.yyyy'}}</label>
               <!-- <label *ngIf="orgaSaveMode == 'new'" id="timestampOrga" class="form-control-static">{{ newOrgaTimestamp | date :'dd.MM.yyyy'}}</label> -->
               <input *ngIf="orgaSaveMode == 'new'" id="timestampOrga" type="date" class="col-6 col-form-label" name="newOrgaTimestamp" [ngModel]="newOrgaTimestamp | date:'yyyy-MM-dd'"  min="{{minOrgaTimestamp | date:'yyyy-MM-dd'}}" (input)="newOrgaTimestamp=parseDate($event.target.value, true)">
             </div>
@@ -737,8 +813,8 @@
           </form>
         </div>
         <div class="modal-footer align-items-end">
-          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalUpload" (click)="initOrganisation()">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="saveOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.save' | translate }}</button>
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalUpload" (click)="initOrganisationCreate()">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button id="AddOrganisationConfirm" type="button" class="btn btn-primary mx-1" (click)="saveOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.save' | translate }}</button>
         </div>
       </div>
     </div>
