@@ -497,17 +497,6 @@ export class VisboprojectDetailComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
-/*
-<button  *ngIf="!variant.vpvCount && hasVPPerm(permVP.Modify) && getLockStatus(variantIndex) <= 1" id="ColDeleteVariant" class="Detail"
-  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-  data-toggle="modal" data-target="#VpVariantRemove">&times;
-</button>
-<button  *ngIf="!variant.vpvCount && !hasVPPerm(permVP.Modify) && hasVPPerm(permVP.CreateVariant) && getLockStatus(variantIndex) <= 1 && variant.email == currentUser.email" id="ColDeleteVariant" class="Detail"
-  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-  data-toggle="modal" data-target="#VpVariantRemove">&times;
-</button>
-*/
-
   canDeleteVariant(variant: VPVariant): boolean {
     if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
       return false;

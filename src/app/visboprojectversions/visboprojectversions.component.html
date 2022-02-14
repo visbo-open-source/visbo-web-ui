@@ -31,12 +31,11 @@
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vpv.lbl.nr' | translate }}</th>
           <th (click)="sortVPVTable(1)">{{ 'vpv.lbl.timestamp' | translate }}</th>
-          <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.status' | translate }}</th>
           <th (click)="sortVPVTable(2)" class="d-none d-lg-table-cell">{{ 'vpv.lbl.endDate' | translate }}</th>
-          <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>                               
-          <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>          
+          <th *ngIf="hasVPPerm(permVP.ViewAudit)" (click)="sortVPVTable(3)">{{ 'vpv.lbl.trafficlight' | translate }}</th>
+          <th (click)="sortVPVTable(5)" class="d-none d-md-table-cell">{{ 'vpv.lbl.variant' | translate }}</th>
           <th class="d-none d-lg-table-cell">{{ 'vpv.lbl.locked' | translate }}</th>
-          <th *ngIf="hasVPPerm(permVP.DeleteVP) && canDeleteVersion()">{{ 'vpv.lbl.delete' | translate }}</th>
+          <th *ngIf="canDeleteVersion()">{{ 'vpv.lbl.delete' | translate }}</th>
         </tr>
       </thead>
       <!--Table body-->
@@ -44,17 +43,16 @@
         <tr *ngFor="let vpv of visboprojectversions; let vpvIndex=index">
           <td class="d-none d-md-table-cell">{{vpvIndex+1}}</td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" title="{{vpv.timestamp | date :'dd.MM.yyyy HH:mm'}}">{{vpv.timestamp | date :'dd.MM.yy'}}</td>
-          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">{{vpv.status}}</td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">{{vpv.endDate | date :'dd.MM.yy'}}</td>
           <td *ngIf="hasVPPerm(permVP.ViewAudit)">
             <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpv.ampelStatus} " ></ng-container>
-          </td>          
+          </td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-md-table-cell">{{vpv.variantName}}</td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">
             <span>{{checkLocked(vpv)}}</span>
           </td>
           <td>
-            <button *ngIf="hasVPPerm(permVP.DeleteVP) && !checkLocked(vpv, true) && canDeleteVersion()" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteVersion' | translate }}" (click)='helperSetVPV(vpvIndex)'
+            <button *ngIf="!checkLocked(vpv, true) && canDeleteVersion(vpvIndex)" id="ColDeleteVPV" class="Detail" title="{{ 'vpv.lbl.deleteVersion' | translate }}" (click)='helperSetVPV(vpvIndex)'
             data-toggle="modal" data-target="#VpvDelete">&times;</button>
           </td>
         </tr>

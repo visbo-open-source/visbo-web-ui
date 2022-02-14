@@ -393,7 +393,14 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           continue
         }
         validUntil = new Date(list[index + 1].timestamp);
-        validUntil.setHours(validUntil.getHours() - 4);
+        const diffHours = (validUntil.getTime() - ts.getTime()) / 1000 / 60 / 60;
+        if (diffHours > 48) {
+          validUntil.setHours(validUntil.getHours() - 24);
+        } else if (diffHours > 12) {
+          validUntil.setHours(validUntil.getHours() - 6);
+        } else {
+          validUntil.setHours(validUntil.getHours() - 1);
+        }
       }
       graphDataTimeline.push([
         list[index].variantName || this.defaultVariant,

@@ -26,8 +26,8 @@
           <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
           <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
         </h5>
-        <h5 class="col">{{ 'vpKeyMetric.lbl.manager' | translate }}:
-          <span>{{ getVPManager(vpActive) }}</span>
+        <h5 class="col" title="{{getVPManager(vpActive, true) }}">{{ 'vpKeyMetric.lbl.manager' | translate }}:
+          <span>{{ getVPManager(vpActive, false) }}</span>
         </h5>
       </div>
     </div>

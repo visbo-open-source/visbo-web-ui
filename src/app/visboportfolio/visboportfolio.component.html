@@ -30,8 +30,8 @@
           <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
           <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
         </h5>
-        <h5 class="col">{{ 'vpKeyMetric.lbl.manager' | translate }}:
-          <span>{{ getVPManager(vpActive) }}</span>
+        <h5 class="col" title="{{getVPManager(vpActive, true) }}">{{ 'vpKeyMetric.lbl.manager' | translate }}:
+          <span>{{ getVPManager(vpActive, false) }}</span>
         </h5>
       </div>
     </div>
@@ -47,19 +47,6 @@
         </div>
         <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM.'}}</div>
       </h3>
-      <!-- <div *ngIf="!getPreView()" class="col-4 d-print-none">
-        <div class="row">
-          <span *ngIf="statusDirection >= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-left" title="{{ 'vpfVersion.lbl.previousPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(-1)'></span>
-          <span class="col-3 text-dark mt-2" style="font-size: 1.2em">{{vpvRefDate | date :'dd.MM.YY'}} </span>
-          <select *ngIf="statusDirection != undefined" class="col-2 form-control" name="refDateInterval" [(ngModel)]="refDateInterval">
-            <option value="day">{{ 'vpfVersion.lbl.day' | translate }}</option>
-            <option value="week">{{ 'vpfVersion.lbl.week' | translate }}</option>
-            <option value="month">{{ 'vpfVersion.lbl.month' | translate }}</option>
-            <option value="quarter">{{ 'vpfVersion.lbl.quarter' | translate }}</option>
-          </select>
-          <span *ngIf="statusDirection <= 0" style="font-size: 2.2em" class="mx-1 fas fa-caret-square-right" title="{{ 'vpfVersion.lbl.nextPeriod' | translate:{'refDate': vpvRefDate | date :'dd.MM.'} }}" (click)='getNextVersion(1)'></span>
-        </div>
-      </div> -->
     </div>
     <div *ngIf="viewVersions && graphDataTimeline.length > 1" class="row mt-2">
       <div class="col-10">
@@ -79,7 +66,7 @@
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)='changeView("Capacity")'>{{ 'vpfVersion.btn.viewCapacity' | translate }}</button>
         <button type="button" class="btn btn-md btn-light mr-1" (click)='changeView("ProjectBoard")'>{{ 'vpfVersion.btn.viewProjectBoard' | translate }}</button>
       </div>
-      <div *ngIf="hasVPPerm(permVP.Modify)" class="align-items-end btn-toolbar" style="padding: unset;">
+      <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="align-items-end btn-toolbar" style="padding: unset;">
         <div class="btn-group">
           <button type="button" class="align-items-end btn btn-md btn-primary" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
           <div class="dropdown-toggle btn btn-primary" data-toggle="dropdown">
@@ -90,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="!hasVPPerm(permVP.Modify)" class="align-items-end btn-toolbar" style="padding: unset;">
+      <div *ngIf="!hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="align-items-end btn-toolbar" style="padding: unset;">
         <button type="button" class="align-items-end btn btn-md btn-primary" (click)="gotoCompareVPF()" >{{ 'vpfVersion.btn.compareVPF' | translate }}</button>
       </div>
     </div>
