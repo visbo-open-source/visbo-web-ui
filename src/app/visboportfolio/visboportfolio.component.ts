@@ -824,7 +824,16 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   initCreateVPF(): void {
-    this.newVPFVariant = this.activeVPFVariant;
+    this.newVPFVariant = this.activeVPFVariant
+    if (!this.newVPFVariant) {
+      this.newVPFVariant = new DropDown();
+      this.newVPFVariant.variantName = '';
+      this.newVPFVariant.name = this.defaultVariant;
+    }
+    if (!this.vpfActive) {
+      this.vpfActive = new VisboPortfolioVersion();
+      this.vpfActive.variantName = '';
+    }
   }
 
   createVPVariant(): void {

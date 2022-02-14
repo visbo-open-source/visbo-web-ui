@@ -30,7 +30,7 @@
           <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
           <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
         </h5>
-        <h5 class="col" title="{{getVPManager(vpActive, true) }}">{{ 'vpKeyMetric.lbl.manager' | translate }}:
+        <h5 *ngIf="vpActive.managerId" class="col" title="{{getVPManager(vpActive, true) }}">{{ 'vpKeyMetric.lbl.manager' | translate }}:
           <span>{{ getVPManager(vpActive, false) }}</span>
         </h5>
       </div>
@@ -291,7 +291,7 @@
               <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.from' | translate }}:</label>
               <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.timestamp | date: 'dd.MM.yyyy' }} </label>
             </div>
-            <div *ngIf="vpfActive.allItems.length > 0" class="form-group">
+            <div *ngIf="vpfActive.allItems?.length > 0" class="form-group">
               <label class="col-sm-4 col-form-label">{{ 'vpfVersion.lbl.nrOfItems' | translate }}:</label>
               <label class="col-sm-8 form-control-static text-dark">{{ vpfActive.allItems.length }}</label>
             </div>
