@@ -529,13 +529,6 @@
 			"name": "Name",
 			"defaultVariant": "Standard",
 			"timestamp": "Timestamp",
-			hAxis: {
-				format: 'dd.MM',
-				gridlines: {
-					color: '#FFF',
-					count: -1
-				}
-			},
 			"allVariants": "All Variants",
 			"manager": "Manager",
 			"plan": "Plan",
@@ -1189,6 +1182,7 @@
 		"titleVPList": "Project list for {{name}} from {{from}}",
 		"titleChangeVPVariant": "Change of Variant in the Portfolio List",
 		"titleShowVPFVersions": "Show/Hide Portfolio Versions",
+		"titleCreateVPFList": "Create a new Portfolio List",
 		"lbl": {
 			"day": "day",
 			"week": "week",
@@ -1204,9 +1198,11 @@
 			"defaultVariant": "Standard",
 			"nrOfItems": "Nr. of Projects",
 			"user": "Created by",
+			"description": "Description",
 			"from": "From",
 			"isChecked": "Selected",
 			"noKM": "No Baseline",
+			"vpStatus": "State",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
 			"changeVPVariant": "Change all available to this Variant"
@@ -1221,6 +1217,7 @@
 			"exportExcel": "Excel",
 			"update": "Change",
 			"create": "Create",
+			"save": "Save",
 			"delete": "Delete",
 			"back": "Back"
 		},

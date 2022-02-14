@@ -1182,6 +1182,7 @@
 		"titleVPList": "Projekt Liste für {{name}} vom {{from}}",
 		"titleChangeVPVariant": "Änderung der Variante in der Portfolio Liste",
 		"titleShowVPFVersions": "Ein-/Ausblenden der Portfolio Versionen",
+		"titleCreateVPFList": "Anlegen einer neuen Portfolio Liste",
 		"lbl": {
 			"day": "Tag",
 			"week": "Woche",
@@ -1197,9 +1198,11 @@
 			"defaultVariant": "Standard",
 			"nrOfItems": "Anzahl Projekte",
 			"user": "Erstellt von",
+			"description": "Beschreibung",
 			"from": "Vom",
 			"isChecked": "Ausgewählt",
 			"noKM": "Keine Baseline",
+			"vpStatus": "Status",
 			"strategicFit": "Strategie Fit",
 			"risk": "Risiko",
 			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
@@ -1214,6 +1217,7 @@
 			"exportExcel": "Excel",
 			"update": "Aktualisieren",
 			"create": "Anlegen",
+			"save": "Speichern",
 			"delete": "Löschen",
 			"back": "Zurück"
 		},

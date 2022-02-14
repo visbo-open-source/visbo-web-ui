@@ -1,5 +1,8 @@
-   .modal .modal-body {
-       overflow-y: auto;
-       max-height: 75vH;
-   }
-   
+.modal .modal-body {
+    overflow-y: auto;
+    max-height: 75vH;
+}
+
+.modal-scroll {
+  overflow-y: visible;
+}
