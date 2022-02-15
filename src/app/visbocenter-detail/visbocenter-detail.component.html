@@ -820,6 +820,43 @@
     </div>
   </div>
 
+  <!-- Modal Delete Organisation -->
+  <div class="modal fade" id="VcOrganisationRemove" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationRemoveTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="vcOrganisation">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcOrganisationRemoveTitle">{{ 'vcDetail.titleDeleteOrganisation' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label class="bg-warning">{{ 'vcDetail.msg.removeOrganisationConfirm' | translate }}</label>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="OrganisationName" class="col-4 col-form-label">{{ 'vcDetail.lbl.name' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcOrganisation.name }} </label>
+            </div>
+            <div *ngIf="vcOrganisation.timestamp" class="form-group">
+              <label for="OrganisationTS" class="col-4 col-form-label">{{ 'vcDetail.lbl.timestamp' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcOrganisation.timestamp | date : 'dd.MM.yyyy HH:mm' }} </label>
+            </div>
+            <div class="form-group">
+              <label for="OrganisationUpdated" class="col-4 col-form-label">{{ 'vcDetail.lbl.updatedAt' | translate }}:</label>
+              <label class="col-8 form-control-static">{{ vcOrganisation.updatedAt | date : 'dd.MM.yyyy HH:mm' }} </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button id="DeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCOrganisation(vcOrganisation)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <ng-template #indicator let-level="level">

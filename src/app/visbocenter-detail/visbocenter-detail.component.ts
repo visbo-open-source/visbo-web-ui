@@ -17,7 +17,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetBeginOfMonth, getJsDateFromExcel } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboGetBeginOfMonth, convertDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -38,6 +38,7 @@ export class VisbocenterDetailComponent implements OnInit {
   actGroup: VGGroupExpanded;
   vcSettings: VisboSetting[];
   vcSetting: VisboSetting;
+  currentLang: string;
 
   confirm: string;
   userIndex: number;
@@ -93,6 +94,7 @@ export class VisbocenterDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.currentLang = this.translate.currentLang;
     this.getVisboCenter();
     this.getVisboCenterUsers();
   }
@@ -664,6 +666,31 @@ export class VisbocenterDetailComponent implements OnInit {
       }
     }
     return result;
+  }
+
+  removeVCOrganisation(orga: VisboOrganisation ): void {
+    this.log(`Remove VisboCenter Organisation: ${orga.name} Timestamp: ${orga.timestamp}`);
+    this.visbosettingService.deleteVCOrganisation(orga, this.visbocenter._id)
+      .subscribe(
+        response => {
+          this.log(`Remove VisboCenter Organisation`);
+          this.vcOrganisations = this.vcOrganisations.filter(item => item._id !== orga._id)
+          const name = orga.name.concat('_', convertDate(orga.timestamp, 'fullDate', this.currentLang));
+          const message = this.translate.instant('vcDetail.msg.removeOrganisationSuccess', {'name': name});
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Remove VisboCenter Organisation error: ${error.error.message}`);
+          if (error.status === 403) {
+            const name = orga.name.concat('_', convertDate(orga.timestamp, 'fullDate', this.currentLang));
+            const message = this.translate.instant('vcDetail.msg.errorRemoveOrganisationPerm', {'name': name});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during remove VC Organisation ${error.error.message}`);
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
   }
 
   removeVCSetting(setting: VisboSetting ): void {

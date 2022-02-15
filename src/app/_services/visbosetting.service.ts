@@ -104,6 +104,25 @@ export class VisboSettingService  {
       );
   }
 
+  /** DELETE: delete a Visbo Center Organisation from the server */
+  deleteVCOrganisation (orga: VisboOrganisation, vcid: string, sysadmin = false): Observable<VisboOrganisation> {
+    const id = orga._id;
+    const url = `${this.vcUrl}/${vcid}/setting/${id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} `);
+
+    return this.http.delete<VisboOrganisation>(url, { headers , params })
+      .pipe(
+        tap(() => this.log(`deleted VCVisboOrganisation id=${id}`)),
+        catchError(this.handleError<VisboOrganisation>('deleteVCVisboOrganisation'))
+      );
+  }
+
   /** GET VCSetting by id. Will 404 if id not found */
   getVCSetting(vcid: string, id: string, sysadmin = false): Observable<VisboSetting> {
     const url = `${this.vcUrl}/${vcid}/setting/${id}`;

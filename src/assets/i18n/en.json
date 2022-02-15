@@ -255,6 +255,7 @@
 			"removeUserConfirm": "Do you really want to remove this User from the Group?",
 			"removeGroupConfirm": "Do you really want to remove this Group from VISBO Center?",
 			"removeSettingConfirm": "Do you really want to remove this Setting from VISBO Center?",
+			"removeOrganisationConfirm": "Do you really want to remove this Organisation from VISBO Center?",
 			"emailRequired": "A correct e-mail address is required!",
 			"groupRequired": "Group must be defined",
 			"groupNameRequired": "Group Name required",
@@ -269,6 +270,7 @@
 			"createGroupSuccess": "Group {{name}} was created successfully",
 			"removeGroupSuccess": "Group {{name}} was deleted successfully",
 			"removeSettingSuccess": "Setting {{name}} was deleted successfully",
+			"removeOrganisationSuccess": "Organisation {{name}} was deleted successfully",
 			"errorPerm": "No Permission for this VISBO Center",
 			"errorAddUserPerm": "No Permission to add Users to this VISBO Center",
 			"errorRemoveUserPerm": "No Permission to remove Users {{name}} from Group",
@@ -277,6 +279,7 @@
 			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveSettingPerm": "No Permission to delete Setting‚ {{name}}",
+			"errorRemoveOrganisationPerm": "No Permission to delete Organisation {{name}}",
 			"errorVCConflict": "A VISBO Center with {{name}} does already exist!",
 			"saveOrgaSuccess": "VISBO Center Organisation was saved successfully",
 			"errorList": "Errors during upload the organisation"
