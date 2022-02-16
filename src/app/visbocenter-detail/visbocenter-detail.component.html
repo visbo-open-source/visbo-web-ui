@@ -209,8 +209,9 @@
           <tbody id="OrganisationList">
             <tr *ngFor="let item of vcOrganisations; let itemIndex=index">
               <td>{{itemIndex+1}}</td>
-              <td id="ColOrganisationTimestamp" (click)='initOrganisation(itemIndex)' data-toggle="modal" data-target="#VcOrganisationDetail">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
-              <td id="ColOrganisationName" (click)='initOrganisation(itemIndex)' data-toggle="modal" data-target="#VcOrganisationDetail"><a>{{item.name}}</a></td>
+              <!-- <button id="OrganisationDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button> -->
+              <td id="ColOrganisationTimestamp" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
+              <td id="ColOrganisationName" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}"><a>{{item.name}}</a></td>
               <td id="ColOrganisationDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
               <td *ngIf="hasVCPerm(permVC.Modify)">
                 <div *ngIf="canDeleteOrga(item)">
@@ -718,40 +719,6 @@
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
           <button id="DeleteGroupConfirm" type="button" class="btn btn-warning mx-1" (click)="removeVCSetting(vcSetting)" data-dismiss="modal">{{ 'vcDetail.btn.delete' | translate }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal View VCOrganisation -->
-  <div class="modal fade" id="VcOrganisationDetail" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationDetailTitle" aria-hidden="true">
-    <div *ngIf="vcOrganisation" class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="VcOrganisationDetailTitle">{{ 'vcDetail.titleOrganisations' | translate }}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form name="organisationDetail">
-            <div class="form-group">
-              <label for="OrganisationName" class="col-4 col-form-label">{{ 'vcDetail.lbl.settingName' | translate }}:</label>
-              <label id="OrganisationName" class="col-8 form-control-static">{{ vcOrganisation.name }} </label>
-            </div>
-            <div class="form-group">
-              <label for="Timestamp" class="col-4 col-form-label">{{ 'vcDetail.lbl.timestamp' | translate }}:</label>
-              <label id="Timestamp" class="col-8 form-control-static">{{ vcOrganisation.timestamp | date : 'dd.MM.yy' }} </label>
-            </div>
-            <div class="form-group">
-              <label for="updatedAt" class="col-4 col-form-label">{{ 'vcDetail.lbl.updatedAt' | translate }}:</label>
-              <label id="updatedAt" class="col-8 form-control-static">{{ vcOrganisation.updatedAt | date : 'dd.MM.yy'}} </label>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer align-items-end">
-          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button id="OrganisationDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button>
         </div>
       </div>
     </div>

@@ -931,7 +931,8 @@ export class VisbocenterDetailComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  downloadOrganisation(): void {
+  downloadOrganisation(index: number): void {
+    this.vcOrganisation = this.vcOrganisations[index];
     this.log(`Download Organisation ${this.vcOrganisation.name} ${this.vcOrganisation.updatedAt}`);
     const minDate = new Date("0001-01-01T00:00:00Z");
     const maxDate = new Date("2200-11-30T23:00:00Z");
@@ -985,7 +986,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const tail = '_Orga_'.concat(timestamp.getFullYear().toString(), '-',  month.padStart(2, "0"));
     const name = this.visbocenter.name.substr(0, 25 - tail.length).concat(tail);
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['name', 'uid', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias']});
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['type', 'name', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias', 'uid']});
     worksheet['!autofilter'] = { ref: matrix };
     // eslint-disable-next-line
     const sheets: any = {};
