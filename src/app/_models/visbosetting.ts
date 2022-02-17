@@ -63,9 +63,9 @@ export class VisboRole {
   isExternRole: boolean;
   entryDate: Date;
   exitDate: Date;
-  defaultDayCapa: number;
-  defaultKapa: number;
-  tagessatz: number;
+  defCapaDay: number;
+  defCapaMonth: number;
+  dailyRate: number;
   timestamp: Date;
   aliases: [string];
   isAggregationRole: boolean;
@@ -85,10 +85,10 @@ export class VisboReducedOrgaItem {
   isExternRole: string;
   entryDate: Date;
   exitDate: Date;
-  defaultDayCapa: number;
-  defaultKapa: number;
+  defCapaDay: number;
+  defCapaMonth: number;
   percent: number;
-  tagessatz: number;
+  dailyRate: number;
   alias: string;        // to be able to store both forms all combined or a list
   aliases: [string];
   isAggregationRole: string;

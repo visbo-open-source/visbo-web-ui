@@ -881,9 +881,9 @@ export class VisbocenterDetailComponent implements OnInit {
     if (item.exitDate) {
       result.exitDate = getJsDateFromExcel(item.exitDate);
     }
-    result.defaultDayCapa = item.defaultDayCapa;
-    result.defaultKapa = item.defaultKapa;
-    result.tagessatz = item.tagessatz;
+    result.defCapaDay = item.defCapaDay;
+    result.defCapaMonth = item.defCapaMonth;
+    result.dailyRate = item.dailyRate;
     if (item.alias) {
       result.aliases = item.alias.split('#');
       delete result.alias
@@ -943,10 +943,10 @@ export class VisbocenterDetailComponent implements OnInit {
       newRole.name = role.name;
       newRole.path = role.path;
       newRole.isExternRole = role.isExternRole ? '1' : '';
-      newRole.defaultKapa = role.defaultKapa;
-      newRole.tagessatz = role.tagessatz;
+      newRole.defCapaMonth = role.defCapaMonth;
+      newRole.dailyRate = role.dailyRate;
       newRole.employeeNr = role.employeeNr;
-      newRole.defaultDayCapa = role.defaultDayCapa;
+      newRole.defCapaDay = role.defCapaDay;
       if (role.entryDate > minDate) {
         newRole.entryDate = new Date(role.entryDate);
       }
@@ -986,7 +986,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const tail = '_Orga_'.concat(timestamp.getFullYear().toString(), '-',  month.padStart(2, "0"));
     const name = this.visbocenter.name.substr(0, 25 - tail.length).concat(tail);
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['type', 'name', 'path', 'tagessatz', 'defaultKapa', 'defaultDayCapa', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias', 'uid']});
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['type', 'name', 'path', 'dailyRate', 'defCapaMonth', 'defCapaDay', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias', 'uid']});
     worksheet['!autofilter'] = { ref: matrix };
     // eslint-disable-next-line
     const sheets: any = {};
