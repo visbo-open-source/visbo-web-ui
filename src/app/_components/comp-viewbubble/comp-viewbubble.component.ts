@@ -1329,7 +1329,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       });
     } else if (this.sortColumn === 20) {
       this.visbokeymetrics.sort(function(a, b) {
-        let result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
+        const result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
           || visboCmpString(a.vp?.manager?.profile?.firstName.toLowerCase() || '', b.vp?.manager?.profile?.firstName.toLowerCase() || '')
           || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
         return result;

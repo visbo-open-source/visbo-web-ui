@@ -78,7 +78,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpfid: string;
     deleted = false;
     timeoutID: number;
-    initEnvironment: boolean = true;
+    initEnvironment = true;
 
     defaultVariant: string;
     currentLang: string;
@@ -447,7 +447,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     let rows = 1
     if (this.viewAllVariants) {
-      let list = this.vpActive?.variant?.filter(variant => (variant.variantName != 'pfv' && variant.vpfCount > 0));
+      const list = this.vpActive?.variant?.filter(variant => (variant.variantName != 'pfv' && variant.vpfCount > 0));
       rows += list.length;
     }
     this.graphOptionsTimeline = Object.assign({}, this.defaultOptionsTimeline);
@@ -475,12 +475,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   timelineSelectRow(row: number): void {
     // this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     let variantName = '';
-    let item = this.graphDataTimeline[row + 1];
+    const item = this.graphDataTimeline[row + 1];
     if (item[0] != this.defaultVariant) {
       variantName = item[0];
     }
 
-    let ts = new Date(item[3]);
+    const ts = new Date(item[3]);
     this.log(`timeline Goto ${variantName} ${ts}`);
     this.switchPFVersion(variantName, ts);
   }
@@ -641,7 +641,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getVPFVariantList(withVersion = true): DropDown[] {
+  getVPFVariantList(): DropDown[] {
     return this.listVPFVariant?.filter(item => item.version > 0);
   }
 
@@ -971,7 +971,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const from = this.datePipe.transform(vpf.timestamp, 'dd.MM.yy');
           // const from = vpf.timestamp.toISOString();
           const message = this.translate.instant('vpfVersion.msg.removeVPFSuccess', {'name': vpf.name, 'from': from });
-          let index = this.listVPF.findIndex(item => item._id == vpf._id);
+          const index = this.listVPF.findIndex(item => item._id == vpf._id);
           this.listVPF.splice(index, 1);
           // serach a VPF from same variant, if none available fall back to main
           const newVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
@@ -1120,7 +1120,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return this.vpfActive?.variantName == item.variantName;
   }
 
-  switchVariantByName(name: string, newVariant: boolean = false): void {
+  switchVariantByName(name: string, newVariant = false): void {
     let variant = this.listVPFVariant.find(variant => variant.variantName == name);
     if (!variant) {
       variant = this.listVPFVariant[0];
@@ -1138,10 +1138,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const versionList = this.listVPF?.filter(vpf => vpf.variantName == variantName && (!ts || visboCmpDate(ts, vpf.timestamp) == 0));
     versionList.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); })
 
-    this.switchVPF(versionList[0], true);
+    this.switchVPF(versionList[0]);
   }
 
-  switchVPF(vpf: VisboPortfolioVersion, refresh = false): void {
+  switchVPF(vpf: VisboPortfolioVersion): void {
     if (vpf) {
       this.vpfActive = vpf;
       this.switchVariantByName(this.vpfActive.variantName);

@@ -557,7 +557,7 @@ export class VisboProjectsComponent implements OnInit {
         return visboCmpDate(aDate, bDate); });
     } else if (this.sortColumn === 7) {
       this.visboprojects.sort(function(a, b) {
-        let result = visboCmpString(a.manager?.profile?.lastName.toLowerCase() || '', b.manager?.profile?.lastName.toLowerCase() || '')
+        const result = visboCmpString(a.manager?.profile?.lastName.toLowerCase() || '', b.manager?.profile?.lastName.toLowerCase() || '')
           || visboCmpString(a.manager?.profile?.firstName.toLowerCase() || '', b.manager?.profile?.firstName.toLowerCase() || '')
           || visboCmpString(a.manager?.email.toLowerCase() || '', b.manager?.email.toLowerCase() || '');
         return result;

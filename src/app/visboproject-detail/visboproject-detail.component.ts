@@ -11,7 +11,7 @@ import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboUser, VisboUserInvite, VisboUserProfile } from '../_models/visbouser';
 import { VisboProject, VPVariant, VPTYPE, constSystemCustomName } from '../_models/visboproject';
-import { VGGroup, VGGroupExpanded, VGPermission, VGUser, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
 
 @Component({

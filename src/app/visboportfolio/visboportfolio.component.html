@@ -9,7 +9,7 @@
           <span *ngIf="listVPFVariant.length > 1" class="dropdown ml-2">
             <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant.description}}">{{getVariantName()}}</a>
             <div class="dropdown-menu" (resized)="onResized($event)">
-              <a *ngFor="let item of getVPFVariantList(true)" class="dropdown-item">
+              <a *ngFor="let item of getVPFVariantList()" class="dropdown-item">
                 <div *ngIf="checkVPFActive(item) && item.version > 0" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.variantName)">{{ item.name }} </div>
                 <div *ngIf="!checkVPFActive(item) && item.version > 0" class="dropdown-item" (click)="switchPFVersion(item.variantName)">{{ item.name }} </div>
               </a>

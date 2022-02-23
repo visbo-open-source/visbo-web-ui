@@ -17,11 +17,11 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetBeginOfMonth, convertDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
-const JSON_EXTENSION = '.json';
+// const JSON_EXTENSION = '.json';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -682,7 +682,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Remove VisboCenter Organisation: ${orga.name} Timestamp: ${orga.timestamp}`);
     this.visbosettingService.deleteVCOrganisation(orga, this.visbocenter._id)
       .subscribe(
-        response => {
+        () => {
           this.log(`Remove VisboCenter Organisation`);
           this.vcOrganisations = this.vcOrganisations.filter(item => item._id !== orga._id)
           const name = orga.name.concat('_', convertDate(new Date(orga.timestamp), 'fullDate', this.currentLang));
@@ -792,16 +792,16 @@ export class VisbocenterDetailComponent implements OnInit {
         this.newOrgaList = [];
         listOrga.forEach(item => {this.newOrgaList.push(this.initItem(item))});
         this.log(`Converted to ListOrga OrgaList Len: ${this.newOrgaList.length} First: ${JSON.stringify(this.newOrgaList[0])}`);
-      } else {
-        const jsonString = fileReader.result.toString();
-        try {
-          jsonSetting = JSON.parse(jsonString);
-        }
-        catch (e) {
-          const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
-          this.alertService.error(message, true);
-        }
-        this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+      // } else {
+      //   const jsonString = fileReader.result.toString();
+      //   try {
+      //     jsonSetting = JSON.parse(jsonString);
+      //   }
+      //   catch (e) {
+      //     const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+      //     this.alertService.error(message, true);
+      //   }
+      //   this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
       }
     }
   }
@@ -950,7 +950,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Download Organisation ${this.vcOrganisation.name} ${this.vcOrganisation.updatedAt}`);
     const minDate = new Date("0001-01-01T00:00:00Z");
     const maxDate = new Date("2200-11-30T23:00:00Z");
-    let organisation: VisboReducedOrgaItem[] = [];
+    const organisation: VisboReducedOrgaItem[] = [];
     this.vcOrganisation?.allUnits?.forEach(role => {
       const newRole = new VisboReducedOrgaItem();
       newRole.uid = role.uid;
