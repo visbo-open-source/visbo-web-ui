@@ -3,11 +3,12 @@
   <div *ngIf="vpActive" class='row'>
     <div class='col'>
       <h2 *ngIf="vpActive">
-        {{ 'vpKeyMetric.title' | translate }}: <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
-        <span *ngIf="dropDown.length > 1" class="dropdown" class="ml-2">
+        {{ 'vpKeyMetric.title' | translate }}:
+        <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
+        <span *ngIf="getDropDownList(1, true).length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{getDropDown('description')}}">{{getDropDown('variantName')}}</a>
           <div class="dropdown-menu">
-            <div *ngFor="let item of dropDown">
+            <div *ngFor="let item of getDropDownList(1, true)">
               <a *ngIf="!isActiveVariant(item)" class="dropdown-item" (click)="switchVariant(item.variantName)" title="{{getVariantInfo(item)}}">{{ item.name }}</a>
             </div>
           </div>
@@ -26,8 +27,15 @@
           <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
           <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
         </h5>
-        <h5 *ngIf="vpActive.managerId" class="col" title="{{getVPManager(vpActive, true) }}">{{ 'vpKeyMetric.lbl.manager' | translate }}:
-          <span>{{ getVPManager(vpActive, false) }}</span>
+        <h5 *ngIf="vpActive.managerId" class="col">
+          <span title="{{getVPManager(vpActive, true) }}">
+            {{ 'vpKeyMetric.lbl.manager' | translate }}:
+            <span>{{ getVPManager(vpActive, false) }}, </span>
+          </span>
+          <span>
+            {{ 'vpKeyMetric.lbl.vpStatus' | translate }}:
+            <span>{{ getVPStatus() }}</span>
+          </span>
         </h5>
       </div>
     </div>
@@ -37,14 +45,19 @@
     <div class="row">
       <h4 class="col-6 text-dark">
         <div>
-          <div class="d-none d-lg-block" title="{{getTimestampTooltip(vpvActive)}}">
-            {{ 'vpKeyMetric.titleVersion' | translate }}: {{ vpvActive.timestamp | date :'dd.MM.yyyy'}}
-            <a (click)="viewVersions = !viewVersions" title="{{ 'vpKeyMetric.titleShowVPVersions' | translate }}">
-              <i class="fa fa-clock" [ngClass]="{'text-secondary': !viewVersions, 'text-success': viewVersions}"></i>
-            </a>
-            <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
-              <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
-            </a>
+          <div class="d-none d-lg-block">
+            <div class="form-group row">
+              <label for="vpvFrom" class="col col-form-label">{{ (isLatestVPV(vpvActive) ? 'vpKeyMetric.titleVersion' : 'vpKeyMetric.titleVersionOld') | translate }}:</label>
+              <input id="vpvFrom" type="date" class="col-4 form-control mt-2" name="refDateStr" [(ngModel)]="refDateStr" (change)="changeRefDate()" title="{{getTimestampTooltip(vpvActive)}}">
+              <div class="col-2 col-form-label">
+                <a (click)="viewVersions = !viewVersions" title="{{ 'vpKeyMetric.titleShowVPVersions' | translate }}">
+                  <i class="fa fa-clock" [ngClass]="{'text-secondary': !viewVersions, 'text-success': viewVersions}"></i>
+                </a>
+                <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
+                  <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
+                </a>
+              </div>
+            </div>
           </div>
           <div class="d-block d-lg-none" title="{{getTimestampTooltip(vpvActive)}}">
             V.: {{ vpvActive.timestamp | date :'dd.MM.'}}
@@ -84,24 +97,23 @@
             <a *ngIf="vpvActive" class="dropdown-item" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)">{{ 'vpKeyMetric.btn.vpViewProperties' | translate }}</a>
         </div>
         </div>
-        <!-- <div *ngIf="dropDownAll.length > 0 || canCommit || canCopyVersion" class="dropdown mr-1"> -->
-          <div *ngIf="dropDownAll.length > 0 && ( canCommit() || canCopyVersion())" class="dropdown mr-1">
-          <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
-            {{ 'vpKeyMetric.btn.vpvChange' | translate }}
-            <span class="caret"></span>
-          </button>
-          <div class="dropdown-menu">
-            <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
-            <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-            <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
-          </div>
+          <div *ngIf="canCommit() || canCopyVersion()" class="dropdown mr-1">
+            <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
+              {{ 'vpKeyMetric.btn.vpvChange' | translate }}
+              <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu">
+              <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+              <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+              <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
+            </div>
         </div>
       </div>
     </div>
     <hr>
 
     <div *ngIf="currentView == 'KeyMetrics' || currentViewKM">
-      <app-comp-viewkeymetrics [visboprojectversions]="visboprojectversions" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
+      <app-comp-viewkeymetrics [visboprojectversions]="activeVPVs" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
     </div>
 
     <div *ngIf="currentView == 'Capacity' && vcOrga">
@@ -266,23 +278,23 @@
                   {{ getShortText(vpvActive.VorlagenName, 20) }}
                 </td>
               </tr>
-              <tr *ngIf="vpActive.customFieldString.length > 0 || vpActive.customFieldDouble.length > 0">
+              <tr>
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
                 <td></td>
               </tr>
-              <tr *ngIf="vpActive.managerId">
+              <tr>
                 <td>{{ 'vpKeyMetric.lbl.manager' | translate }}</td>
                 <td title="{{ getVPManager(vpActive) }}">
                   {{ getVPManager(vpActive, false) }}
                 </td>
               </tr>
-              <tr *ngIf="customVPStatus">
+              <tr>
                 <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>
                 <td>
-                  <select *ngIf="canChangeVPDetails()" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">
+                  <select *ngIf="canChangeVPDetails(true)" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">
                     <option *ngFor="let item of dropDownVPStatus" value="{{item.name}}">{{ item.localName }}</option>
                   </select>
-                  <label id="VPStatus" *ngIf="!canChangeVPDetails()">{{ getShortText(getVPStatus(), 20) }} </label>
+                  <label id="VPStatus" *ngIf="!canChangeVPDetails(true)">{{ getShortText(getVPStatus(), 20) }} </label>
                 </td>
               </tr>
               <tr *ngIf="customBU != undefined || customVPAdd">
@@ -509,7 +521,7 @@
 
 <!-- Modal copy VPV -->
 <div *ngIf="vpvActive" class="modal fade" id="vpvModalCopy" tabindex="-1" role="dialog" aria-labelledby="vpvModalCopyTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="vpvModalCopyTitle">{{ 'vpKeyMetric.titleVPVCopy' | translate }}</h5>
@@ -523,22 +535,34 @@
         </div>
         <form *ngIf="newVPV && vpvActive" name="vpvCopy" #f3="ngForm" novalidate>
           <div class="form-group">
-            <div class="form-group">
-              <label for="sourceVariantID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.source' | translate }}:</label>
-              <label id="sourceVariantID" class="col-6 col-form-label">{{ getVariantName(vpvActive.variantName) }}</label>
-            </div>
-            <div class="form-group row ml-0">
+            <label for="sourceVariantID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.source' | translate }}:</label>
+            <label id="sourceVariantID" class="col-6 col-form-label">{{ getVariantName(vpvActive.variantName, true) }}</label>
+          </div>
+          <div class="form-group">
+            <div class="row ml-1 mt-1">
               <label for="variantNameID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.destination' | translate }}:</label>
-              <div id="variantNameID" *ngIf="newVPVdropDown.length > 1" class="col-6 col-form-label">
-                <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{getVariantName(newVPVvariantName)}}</a>
-                <div class="dropdown-menu">
-                  <a *ngFor="let item of newVPVdropDown; let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(variantIndex)">{{ item.name }}</a>
+              <div class="col-6 form-control">
+                <div *ngIf="getDropDownList(2, false).length > 1" class="dropdown ml-2 my-1">
+                  <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{getVariantName(newVPVvariantName)}}</a>
+                  <div class="dropdown-menu">
+                    <a *ngFor="let item of getDropDownList(2, false); let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(item)">{{ item.name }}</a>
+                  </div>
                 </div>
               </div>
+              <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="col-1 form-control">
+                <a data-dismiss="modal" data-toggle="modal" data-target="#CreateVPVariant" title="{{ 'vpKeyMetric.lbl.titleCreateVariant' | translate }}">
+                  <i class="fas fa-plus"></i>
+                </a>
+              </div>
             </div>
+          </div>
+          <div class="form-group">
             <div *ngIf="newVPVvariantName == 'pfv'">
-              <label>{{ 'vpKeyMetric.msg.reduce' | translate }}</label>
-              <div class="form-group row ml-0">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="reduceLevelID" [(ngModel)]="reduceLevel" name="reduceLevel" >
+                <label class="custom-control-label" for="reduceLevelID">{{ 'vpKeyMetric.msg.reduce' | translate }}</label>
+              </div>
+              <div *ngIf="reduceLevel" class="form-group row ml-0">
                 <label class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.level' | translate }}:</label>
                 <input id="levelID" type="number" class="col-2 form-control" name="level" [(ngModel)]="level">
               </div>
@@ -547,6 +571,38 @@
           <div class="modal-footer align-items-end">
             <button id="vpvCopyCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vpKeyMetric.btn.back' | translate }}</button>
             <button id="vpvCopyConfirm" type="submit" class="btn btn-primary mx-1" (click)="copyVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Create Project Variant -->
+<div *ngIf="vpActive" class="modal fade" id="CreateVPVariant" role="dialog" aria-labelledby="CreateVPVariantTitle" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="CreateVPVariantTitle">{{ 'vpKeyMetric.titleCreateVariant' | translate:{'name': vpActive.name } }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="newVariant" #f3="ngForm" novalidate>
+          <div class="form-group">
+            <label for="NewVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
+            <input id="NewVariantName" type="text" class="form-control" name="variantName" [(ngModel)]="newVariant.variantName" #variantName="ngModel" required>
+            <div *ngIf="f3.submitted && !variantName.valid" class="help-block">{{ 'vpDetail.msg.variantRequired' | translate }}</div>
+          </div>
+          <div class="form-group">
+            <label for="NewVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
+            <textarea id="NewVariantDesc" name=variantDesc class="form-control" name="description" [(ngModel)]="newVariant.description" #description="ngModel"></textarea>
+          </div>
+          <div class="modal-footer align-items-end">
+            <button class="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.back' | translate }}</button>
+            <button id="Change" *ngIf="!variantName.valid" type="submit" class="btn btn-primary mx-1">{{ 'vpKeyMetric.btn.add' | translate }}</button>
+            <button id="Change" *ngIf="variantName.valid" type="submit" class="btn btn-primary mx-1" (click)="createVPVariant()" data-dismiss="modal" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.add' | translate }}</button>
           </div>
         </form>
       </div>

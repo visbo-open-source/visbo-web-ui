@@ -236,7 +236,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         elementKeyMetric.startDate = this.visboprojectversions[i].startDate;
         elementKeyMetric.Risiko = this.visboprojectversions[i].Risiko;
         elementKeyMetric.StrategicFit = this.visboprojectversions[i].StrategicFit;
-        elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
+        elementKeyMetric.vpStatus = elementKeyMetric.vp?.vpStatus;
         elementKeyMetric.ampelStatus = this.visboprojectversions[i].ampelStatus;
         elementKeyMetric.ampelErlaeuterung = this.visboprojectversions[i].ampelErlaeuterung;
         elementKeyMetric.VorlagenName = this.visboprojectversions[i].VorlagenName;

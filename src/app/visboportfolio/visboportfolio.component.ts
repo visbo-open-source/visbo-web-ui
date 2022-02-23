@@ -75,12 +75,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpfActive: VisboPortfolioVersion;
     vpvRefDate: Date = new Date();
     vpvRefDateStr: string;
-    refDateInterval = 'month';
-    statusDirection: number;
-    scrollRefDate: Date;
     vpfid: string;
     deleted = false;
     timeoutID: number;
+    initEnvironment: boolean = true;
 
     defaultVariant: string;
     currentLang: string;
@@ -181,7 +179,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.setRefDateStr(this.vpvRefDate);
     this.changeView(nextView, refDate ? this.vpvRefDate : undefined, undefined, this.vpfid, false);
     this.initVPStateDropDown();
-    this.getVisboProject();
+    const id = this.route.snapshot.paramMap.get('id');
+    this.getVisboProject(id);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -239,8 +238,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getVisboProject(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+  getVisboProject(id): void {
     this.vpSelected = id;
     this.log(`get VP name if ID is used ${id}`);
     this.visboprojectService.getVisboProject(id)
@@ -251,10 +249,14 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpfVersion.titleName', {name: visboproject.name}));
           this.initProjectList(this.vpActive);
+          this.variantListInit();
           this.getVisboPortfolioVersions();
-          this.getVisboCenterOrga();
-          this.getVisboCenterCustomization();
-          this.getVisboCenterUsers();
+          if (this.initEnvironment) {
+            this.getVisboCenterUsers();
+            this.getVisboCenterOrga();
+            this.getVisboCenterCustomization();
+            this.initEnvironment = false;
+          }
         },
         error => {
           this.log(`get Portfolio VP failed: error: ${error.status} message: ${error.error.message}`);
@@ -293,7 +295,11 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     if (!this.listVP || !this.vcUser) {
       return;
     }
-    this.listVP.forEach(vp => vp.manager = this.vcUser.get(vp.managerId));
+    this.listVP.forEach(vp => {
+      vp.manager = this.vcUser.get(vp.managerId);
+      vp.vpStatusLocale = this.translate.instant('vpStatus.' + (vp.vpStatus || 'initialized'))
+    });
+
     this.vpActive.manager = this.vcUser.get(this.vpActive.managerId);
   }
 
@@ -353,7 +359,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           }
           if (listVPF.length > 0) {
             this.vpfActive = listVPF[index];
-            this.variantListInit();
             this.switchVariantByName(this.vpfActive.variantName);
             this.viewVPFOverTime();
             this.getVisboPortfolioKeyMetrics();
@@ -493,7 +498,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           if (listVPV.length > 0) {
             this.log(`First VPV: ${listVPV[0]._id} ${listVPV[0].timestamp} ${listVPV[0].keyMetrics?.endDateCurrent} `);
           }
-          this.evaluateDirection();
         },
         error => {
           this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
@@ -635,6 +639,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       result.sort(function (a, b) { return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase()); });
     }
     return result;
+  }
+
+  getVPFVariantList(withVersion = true): DropDown[] {
+    return this.listVPFVariant?.filter(item => item.version > 0);
   }
 
   getVariantName(): string {
@@ -852,7 +860,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         variant => {
           // Add Variant to list
           this.vpActive.variant.push(variant);
-          this.variantListInit();
+          this.variantListInit(variant.variantName);
           const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
           this.alertService.success(message);
         },
@@ -916,7 +924,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   createVPF(): void {
-    this.log(`init VPF Item List cor createVPF`);
+    this.log(`init VPF Item List cor CreateVPF`);
     const newVPF = new VisboPortfolioVersion();
     newVPF.allItems = [new VPFItem()];
     newVPF.allItems.pop();
@@ -939,12 +947,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         console.log("add VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
         const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
         this.alertService.success(message, true);
-        // Extend VPF List
-        this.listVPF.push(vpf);
-        this.vpfActive = vpf;
-        this.variantListInit();
-        this.viewVPFOverTime();
-        this.getVisboPortfolioKeyMetrics();
+
+        this.switchVPF(vpf);
+        this.getVisboProject(this.vpActive._id);
       },
       error => {
         this.log(`add VPF failed: error: ${error.status} messages: ${error.error.message}`);
@@ -968,18 +973,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpfVersion.msg.removeVPFSuccess', {'name': vpf.name, 'from': from });
           let index = this.listVPF.findIndex(item => item._id == vpf._id);
           this.listVPF.splice(index, 1);
-          if (index >= this.listVPF.length) {
-            index = this.listVPF.length - 1;
-          }
-          this.viewVPFOverTime();
-          // MS TODO: handle this correct after change
-          // if (index >= 0) {
-          //   this.variantListInit()
-          //   this.switchPFVersion(index);
-          // } else {
-          //   this.switchPFVersion(undefined);
-          //   this.getVisboPortfolioVersions();
-          // }
+          // serach a VPF from same variant, if none available fall back to main
+          const newVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
+          this.switchVPF(newVPF || this.listVPF[0]);
+          this.getVisboProject(this.vpActive._id);
           this.alertService.success(message);
         },
         error => {
@@ -993,26 +990,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           }
         }
       );
-  }
-
-  evaluateDirection(): void {
-    if (this.listVPV.length === 0) {
-      if (visboIsSameDay(this.vpvRefDate, new Date())) {
-        // no Versions for this Portfolio at all
-        this.statusDirection = undefined;
-      } else {
-        // no Versions before this timestamp
-        this.statusDirection = -1;
-      }
-    } else {
-      if (visboIsSameDay(this.vpvRefDate, new Date())) {
-        // refDate Today and Versions available, page into past
-        this.statusDirection = 1;
-      } else {
-        // refDate not Today and Versions available, page in both directions
-        this.statusDirection = 0;
-      }
-    }
   }
 
   changeView(nextView: string, refDate: Date = undefined, filter:string = undefined, vpfid:string = undefined, refreshPage = true): void {
@@ -1122,7 +1099,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     );
   }
 
-  variantListInit(): void {
+  variantListInit(variantName: string = undefined): void {
     this.log(`Init Drop Down List ${this.vpActive?.variant?.length}`);
     this.listVPFVariant = [];
 
@@ -1133,6 +1110,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     });
     this.listVPFVariant.sort(function (a, b) { return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase())});
     this.listVPFVariant.unshift({name: this.defaultVariant, version: this.vpActive.vpfCount, variantName: '', description: '', email: '' });
+    if (variantName) {
+      this.newVPFVariant = this.listVPFVariant.find(item => item.variantName == variantName);
+    }
     this.activeVPFVariant = this.listVPFVariant[0];
   }
 
@@ -1158,16 +1138,18 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const versionList = this.listVPF?.filter(vpf => vpf.variantName == variantName && (!ts || visboCmpDate(ts, vpf.timestamp) == 0));
     versionList.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); })
 
-    let vpfid: string = undefined;
-    if (versionList.length > 0) {
-        this.vpfActive = versionList[0];
-        vpfid = this.vpfActive._id;
-        this.changeView(undefined, undefined, undefined, vpfid);
-        this.switchVariantByName(this.vpfActive.variantName);
-        this.getVisboPortfolioKeyMetrics();
+    this.switchVPF(versionList[0], true);
+  }
+
+  switchVPF(vpf: VisboPortfolioVersion, refresh = false): void {
+    if (vpf) {
+      this.vpfActive = vpf;
+      this.switchVariantByName(this.vpfActive.variantName);
+      this.changeView(undefined, undefined, undefined, this.vpfActive._id);
+      this.getVisboPortfolioKeyMetrics();
     } else {
-        this.vpfActive = undefined;
-        this.listVPV = undefined;
+      this.vpfActive = undefined;
+      this.listVPV = undefined;
     }
     this.updateUrlParam();
   }
@@ -1254,7 +1236,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 7) {
       // sort by VP Status
       this.vpCheckListFiltered.sort(function(a, b) {
-        return visboCmpString(a.vp.vpStatus, b.vp.vpStatus);
+        return visboCmpString(b.vp.vpStatusLocale, a.vp.vpStatusLocale);
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)

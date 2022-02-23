@@ -10,7 +10,7 @@ import { AlertService } from '../../_services/alert.service';
 
 import { VisboSetting, VisboOrganisation, VisboOrgaStructure, VisboReducedOrgaItem,
           VisboOrgaTreeLeaf, TreeLeafSelection } from '../../_models/visbosetting';
-import { getCustomFieldDouble, getCustomFieldString, VisboProject, VPParams, constSystemVPStatus } from '../../_models/visboproject';
+import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboCenter } from '../../_models/visbocenter';
 
 import { VisboCapacity, VisboProjectVersion} from '../../_models/visboprojectversion';
@@ -71,6 +71,32 @@ class VPProperties {
   _bu: string;
   _strategicFit: number;
   _risk: number;
+}
+
+class exportCapacity {
+  name: string;
+  vpStatus: string;
+  strategicFit: number;
+  risk: number;
+  variantName: string;
+  ampelStatus: number;
+  ampelErlaeuterung: string;
+  vpid: string;
+  month: Date;
+  roleID: number;
+  roleName: string;
+  actualCost_PT: number;
+  plannedCost_PT: number;
+  otherActivityCost_PT: number;
+  internCapa_PT: number;
+  externCapa_PT:	number;
+  actualCost: number;
+  plannedCost: number;
+  otherActivityCost: number;
+  internCapa: number;
+  externCapa: number;
+  baselineCost: number;
+  baselineCost_PT: number;
 }
 
 @Component({
@@ -2074,10 +2100,37 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     return;
   }
 
-  copyCapacity(vpv: VisboCapacity, name: string): VisboCapacity {
-    const copy: VisboCapacity = Object.assign({}, vpv);
-    copy.month = new Date(vpv.month);
+  copyCapacity(vpv: VisboCapacity, name: string): exportCapacity {
+    const copy = new exportCapacity();
+
     copy.name = name;
+    copy.month = new Date(vpv.month);
+    copy.variantName = vpv.variantName;
+    copy.roleID = vpv.roleID;
+    copy.roleName = vpv.roleName;
+    copy.actualCost_PT = vpv.actualCost_PT;
+    copy.plannedCost_PT = vpv.plannedCost_PT;
+    copy.otherActivityCost_PT = vpv.otherActivityCost_PT;
+    copy.internCapa_PT = vpv.internCapa_PT;
+    copy.externCapa_PT = vpv.externCapa_PT;
+    copy.actualCost = vpv.actualCost;
+    copy.plannedCost = vpv.plannedCost;
+    copy.otherActivityCost = vpv.otherActivityCost;
+    copy.internCapa = vpv.internCapa;
+    copy.externCapa = vpv.externCapa;
+    copy.baselineCost = vpv.baselineCost;
+    copy.baselineCost_PT = vpv.baselineCost_PT;
+    // copy.ampelStatus = vpv.ampelStatus;
+    // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
+    if (vpv.vp) {
+      copy.vpStatus = vpv.vp.vpStatusLocale;
+      copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
+      copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+    } else {
+      copy.vpStatus = '';
+      copy.strategicFit = -1;
+      copy.risk = -1;
+    }
     delete copy.vpid;
 
     return copy;
@@ -2087,7 +2140,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     this.log(`Export Data to Excel ${this.visboCapacity?.length} ${this.visboCapacityChild?.length}`);
     // convert list to matix
 
-    const excel: VisboCapacity[] = [];
+    const excel: exportCapacity[] = [];
 
     let name = '';
     let urlWeb = ''

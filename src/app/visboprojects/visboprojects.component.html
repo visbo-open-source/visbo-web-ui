@@ -35,6 +35,7 @@
           <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
           <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
           <th id="SortPM" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }}</th>
+          <th id="SortStatus" (click)="sortVPTable(8)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
           <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
           <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
           <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
@@ -49,6 +50,7 @@
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td id="ColName"><a>{{vp.name}}</a></td>
           <td id="ColManager" title="{{getVPManager(vp)}}"><a>{{getVPManager(vp, false)}}</a></td>
+          <td id="ColVPStatus" class="d-none d-lg-table-cell">{{ getVPStatus(vp.vpStatus) }}</td>
           <td id="ColType" class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
           <td id="ColDate" class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
           <td id="ColDate" class="d-none d-md-table-cell d-lg-none">{{vp.updatedAt | date :'dd.MM.yy'}}</td>

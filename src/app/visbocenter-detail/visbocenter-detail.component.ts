@@ -315,7 +315,9 @@ export class VisbocenterDetailComponent implements OnInit {
           this.vcOrganisations = orgas;
           this.vcOrganisations.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
           // set latestOrgaTimestamp to the newest Orga TS
-          this.latestOrgaTimestamp = this.vcOrganisations[0].timestamp;
+          if (this.vcOrganisations[0]) {
+            this.latestOrgaTimestamp = this.vcOrganisations[0].timestamp;
+          }
         },
         error => {
           this.log(`Get VC Organisations failed: error: ${error.status} message: ${error.error.message}`);
@@ -660,10 +662,18 @@ export class VisbocenterDetailComponent implements OnInit {
     let result = false;
     if (orga?.timestamp) {
       const validFrom = new Date(orga.timestamp);
-      const current = visboGetBeginOfMonth(new Date());
-      if (validFrom >= current) {
+      let maxTS = validFrom.getTime();
+      this.vcOrganisations.forEach(item => {
+        maxTS = Math.max(maxTS, (new Date(item.timestamp)).getTime());
+      });
+      if (validFrom.getTime() == maxTS) {
         result = true;
       }
+      // allow only delete of orgas from current month or later
+      // const current = visboGetBeginOfMonth(new Date());
+      // if (validFrom >= current) {
+      //   result = true;
+      // }
     }
     return result;
   }
@@ -675,7 +685,7 @@ export class VisbocenterDetailComponent implements OnInit {
         response => {
           this.log(`Remove VisboCenter Organisation`);
           this.vcOrganisations = this.vcOrganisations.filter(item => item._id !== orga._id)
-          const name = orga.name.concat('_', convertDate(orga.timestamp, 'fullDate', this.currentLang));
+          const name = orga.name.concat('_', convertDate(new Date(orga.timestamp), 'fullDate', this.currentLang));
           const message = this.translate.instant('vcDetail.msg.removeOrganisationSuccess', {'name': name});
           this.alertService.success(message);
         },
@@ -742,11 +752,15 @@ export class VisbocenterDetailComponent implements OnInit {
     const beginningOfMonth = new Date();
     beginningOfMonth.setDate(1);
     beginningOfMonth.setHours(0, 0, 0, 0);
-    if (this.vcOrganisations) {
+    if (this.vcOrganisations?.length > 0) {
       // set newOrgaTimestamp to either the next month or to the beginning of current month
-      this.newOrgaTimestamp = new Date(this.latestOrgaTimestamp);
-      this.newOrgaTimestamp.setMonth(this.newOrgaTimestamp.getMonth() + 1);
-      if (this.newOrgaTimestamp < beginningOfMonth) {
+      if (this.latestOrgaTimestamp) {
+        this.newOrgaTimestamp = new Date(this.latestOrgaTimestamp);
+        this.newOrgaTimestamp.setMonth(this.newOrgaTimestamp.getMonth() + 1);
+        if (this.newOrgaTimestamp < beginningOfMonth) {
+          this.newOrgaTimestamp = beginningOfMonth;
+        }
+      } else {
         this.newOrgaTimestamp = beginningOfMonth;
       }
       this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);

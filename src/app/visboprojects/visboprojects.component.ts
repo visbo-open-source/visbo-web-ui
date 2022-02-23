@@ -165,7 +165,7 @@ export class VisboProjectsComponent implements OnInit {
               .subscribe(
                 visboprojects => {
                   this.visboprojectsAll = visboprojects;
-                  this.updateVPManager();
+                  this.updateVPProperties();
                   this.filterVP();
                   this.initTemplates(visboprojects);
                   this.initDropDown();
@@ -257,6 +257,11 @@ export class VisboProjectsComponent implements OnInit {
       }
     }
     return fullName || '';
+  }
+
+  getVPStatus(status: string): string {
+    if (!status) status = 'initialized';
+    return this.translate.instant('vpStatus.' + status)
   }
 
   switchView(): void {
@@ -458,7 +463,7 @@ export class VisboProjectsComponent implements OnInit {
       .subscribe(
         user => {
           user.forEach(user => this.vcUser.set(user._id, user));
-          this.updateVPManager();
+          this.updateVPProperties();
           this.log(`fetched Users ${this.vcUser.size}`);
         },
         error => {
@@ -473,11 +478,14 @@ export class VisboProjectsComponent implements OnInit {
       );
   }
 
-  updateVPManager(): void {
+  updateVPProperties(): void {
     if (!this.visboprojectsAll || !this.vcUser) {
       return;
     }
-    this.visboprojectsAll.forEach(vp => vp.manager = this.vcUser.get(vp.managerId));
+    this.visboprojectsAll.forEach(vp => {
+      vp.manager = this.vcUser.get(vp.managerId);
+      vp.vpStatusLocale = this.translate.instant('vpStatus.' + (vp.vpStatus || 'initialized'))
+    });
   }
 
   gotoClickedRow(visboproject: VisboProject): void {
@@ -553,6 +561,10 @@ export class VisboProjectsComponent implements OnInit {
           || visboCmpString(a.manager?.profile?.firstName.toLowerCase() || '', b.manager?.profile?.firstName.toLowerCase() || '')
           || visboCmpString(a.manager?.email.toLowerCase() || '', b.manager?.email.toLowerCase() || '');
         return result;
+      });
+    } else if (this.sortColumn === 8) {
+      this.visboprojects.sort(function(a, b) {
+        return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)

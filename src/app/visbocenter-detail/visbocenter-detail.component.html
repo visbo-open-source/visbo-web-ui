@@ -202,6 +202,7 @@
               <th (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
               <th (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
               <th (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th>{{ 'vcDetail.lbl.nrRoles' | translate }}</th>
               <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
             </tr>
           </thead>
@@ -213,6 +214,7 @@
               <td id="ColOrganisationTimestamp" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
               <td id="ColOrganisationName" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}"><a>{{item.name}}</a></td>
               <td id="ColOrganisationDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+              <td id="ColCount">{{item.allUnits?.length}}</td>
               <td *ngIf="hasVCPerm(permVC.Modify)">
                 <div *ngIf="canDeleteOrga(item)">
                   <button id="ColDeleteOrganisation" class="Detail" (click)='initOrganisation(itemIndex)' title="{{ 'vcDetail.lbl.deleteOrganisation' | translate }}"

@@ -9,10 +9,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
-import { VisboProject, getCustomFieldDate } from '../../_models/visboproject';
 import { VisboProjectVersion, VPVKeyMetricsCalc } from '../../_models/visboprojectversion';
 import { VisboSetting } from '../../_models/visbosetting';
-import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
+import { VisboProject, VPParams, getCustomFieldDate, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
 import { VisboCenter } from '../../_models/visbocenter';
 import { VisboUser } from '../../_models/visbouser';
@@ -28,11 +27,13 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 const EXCEL_EXTENSION = '.xlsx';
 
 class exportKeyMetric {
-  name: string;
+  project: string;
   timestamp: Date;
   baselineDate: Date;
-  variantName: string;
-  startDate: Date;
+  vpStatus: string;
+  strategicFit: number;
+  risk: number;
+  variant: string;
   ampelStatus: number;
   costCurrentActual: number;
   costCurrentTotal: number;
@@ -45,6 +46,7 @@ class exportKeyMetric {
   timeCompletionBaseLastTotal: number;
   timeDelayFinished: number;
   timeDelayUnFinished: number;
+  startDate: Date;
   endDateCurrent: Date;
   endDateBaseLast: Date;
   deliverableCompletionCurrentActual: number;
@@ -544,6 +546,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.vpid = this.visboprojectversions[item].vpid;
       elementKeyMetric.vp = this.visboprojectversions[item].vp;
       elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
+      elementKeyMetric.vpStatusLocale = elementKeyMetric.vp.vpStatusLocale;
+      elementKeyMetric.startDate = this.visboprojectversions[item].startDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
@@ -1039,13 +1043,15 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
     const element = new exportKeyMetric();
-    element.name = vpv.name;
-    element.timestamp = vpv.timestamp;
-    if (vpv.keyMetrics) {
-      element.baselineDate = vpv.keyMetrics.baselineDate;
+    element.project = vpv.name;
+    element.timestamp = new Date(vpv.timestamp);
+    if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
+      element.baselineDate = new Date(vpv.keyMetrics.baselineDate);
     }
-    element.variantName = vpv.variantName;
-    element.startDate = vpv.startDate;
+    element.variant = vpv.variantName;
+    element.vpStatus = vpv.vp.vpStatusLocale;
+    element.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
+    element.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
     element.ampelStatus = vpv.ampelStatus;
     if (vpv.keyMetrics) {
       element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000) / 1000;
@@ -1059,8 +1065,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       element.timeCompletionBaseLastTotal = vpv.keyMetrics.timeCompletionBaseLastTotal;
       element.timeDelayFinished = vpv.keyMetrics.timeDelayFinished && Math.round(vpv.keyMetrics.timeDelayFinished * 1000) / 1000;
       element.timeDelayUnFinished = vpv.keyMetrics.timeDelayUnFinished && Math.round(vpv.keyMetrics.timeDelayUnFinished * 1000) / 1000;
-      element.endDateCurrent = vpv.keyMetrics.endDateCurrent;
-      element.endDateBaseLast = vpv.keyMetrics.endDateBaseLast;
+      element.startDate = new Date(vpv.startDate);
+      element.endDateCurrent = new Date(vpv.keyMetrics.endDateCurrent);
+      element.endDateBaseLast = new Date(vpv.keyMetrics.endDateBaseLast);
       element.deliverableCompletionCurrentActual = vpv.keyMetrics.deliverableCompletionCurrentActual && Math.round(vpv.keyMetrics.deliverableCompletionCurrentActual * 1000) / 1000;
       element.deliverableCompletionCurrentTotal = vpv.keyMetrics.deliverableCompletionCurrentTotal;
       element.deliverableCompletionBaseLastActual = vpv.keyMetrics.deliverableCompletionBaseLastActual && Math.round(vpv.keyMetrics.deliverableCompletionBaseLastActual * 1000) / 1000;
@@ -1106,12 +1113,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const header: any = {};
     let colName: number, colIndex = 0;
     for (const element in excel[0]) {
-      if (element == 'name') {
+      if (element == 'project') {
         colName = colIndex;
       }
       colIndex++;
       header[element] = element;
-      // header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+      header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
     }
     excel.unshift(header);
     // this.log(`Header for Excel: ${JSON.stringify(header)}`)
@@ -1318,7 +1325,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         return visboCmpDate(aDate, bDate); });
     } else if (this.sortColumn === 19) {
       this.visbokeymetrics.sort(function(a, b) {
-        return visboCmpString(a.vpStatus, b.vpStatus);
+        return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
       });
     } else if (this.sortColumn === 20) {
       this.visbokeymetrics.sort(function(a, b) {
