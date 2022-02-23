@@ -47,16 +47,22 @@
         <div>
           <div class="d-none d-lg-block">
             <div class="form-group row">
-              <label for="vpvFrom" class="col col-form-label">{{ (isLatestVPV(vpvActive) ? 'vpKeyMetric.titleVersion' : 'vpKeyMetric.titleVersionOld') | translate }}:</label>
-              <input id="vpvFrom" type="date" class="col-4 form-control mt-2" name="refDateStr" [(ngModel)]="refDateStr" (change)="changeRefDate()" title="{{getTimestampTooltip(vpvActive)}}">
-              <div class="col-2 col-form-label">
+              <!-- <label for="vpvFrom" class="col col-form-label">{{ (isLatestVPV(vpvActive) ? 'vpKeyMetric.titleVersion' : 'vpKeyMetric.titleVersionOld') | translate }}:</label>
+              <input id="vpvFrom" type="date" class="col-4 form-control mt-2" name="refDateStr" [(ngModel)]="refDateStr" (change)="changeRefDate()" title="{{getTimestampTooltip(vpvActive)}}"> -->
+              <label class="ml-3" title="{{getTimestampTooltip(vpvActive)}}">
+                {{ (isLatestVPV(vpvActive) ? 'vpKeyMetric.titleVersion' : 'vpKeyMetric.titleVersionOld') | translate }}:
+                <span>
+                  {{vpvActive.timestamp | date: 'dd.MM.YYYY'}}
+                </span>
+              </label>
+              <label class="ml-3">
                 <a (click)="viewVersions = !viewVersions" title="{{ 'vpKeyMetric.titleShowVPVersions' | translate }}">
                   <i class="fa fa-clock" [ngClass]="{'text-secondary': !viewVersions, 'text-success': viewVersions}"></i>
                 </a>
                 <a *ngIf="!checkBaselineVersion(vpvActive)" title="{{ 'vpKeyMetric.lbl.newerBL' | translate }}: {{vpvBaselineNewestTS | date :'dd.MM.yyyy HH:mm'}}">
                   <ng-container *ngTemplateOutlet="indicator; context:{level: vpvActive.variantName == '' ? 3 : 2} " ></ng-container>
                 </a>
-              </div>
+              </label>
             </div>
           </div>
           <div class="d-block d-lg-none" title="{{getTimestampTooltip(vpvActive)}}">

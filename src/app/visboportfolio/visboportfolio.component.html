@@ -42,7 +42,7 @@
         <div class="d-none d-lg-block">
           <div *ngIf="vpvRefDate" class="form-group row">
             <label for="vpvFrom" class="col col-form-label">{{ 'vpfVersion.titleKM' | translate }}:</label>
-            <input id="vpvFrom" type="date" class="col-2 col-sm-4 form-control mt-2" name="vpvRefDateStr" [(ngModel)]="vpvRefDateStr" (change)="changeRefDate()">
+            <input id="vpvFrom" type="date" class="col-4 form-control mt-2" name="vpvRefDateStr" [(ngModel)]="vpvRefDateStr" (change)="changeRefDate()">
           </div>
         </div>
         <div class="d-block d-lg-none">{{ 'vpfVersion.titleKMShort' | translate }}: {{vpvRefDate | date: 'dd.MM.'}}</div>
