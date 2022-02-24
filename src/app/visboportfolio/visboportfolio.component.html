@@ -124,7 +124,7 @@
         </div>
         <div class="modal-body">
           <div class="d-flex">
-            <div *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1">
+            <div *ngIf="dropDownVPStatus" class="dropdown ml-2 my-1">
               <span> {{ 'vpfVersion.lbl.vpStatus' | translate }}: </span>
               <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
               <div class="dropdown-menu">
@@ -133,7 +133,7 @@
                 </a>
               </div>
             </div>
-            <div *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1">
+            <div *ngIf="dropDownBU" class="dropdown ml-2 my-1">
               <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
               <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
               <div class="dropdown-menu">
@@ -142,11 +142,11 @@
                 </a>
               </div>
             </div>
-            <div class="mb-1 ml-2" *ngIf="filterStrategicFit >= 0">
+            <div class="mb-1 ml-2">
               <span> {{ 'vpfVersion.lbl.strategicFit' | translate }} >=</span>
               <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
             </div>
-            <div class="ml-2" *ngIf="filterRisk >= 0">
+            <div class="ml-2">
               <span> {{ 'vpfVersion.lbl.risk' | translate }} >=</span>
               <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
             </div>
@@ -233,6 +233,9 @@
                     <div class="dropdown-menu">
                       <a *ngFor="let item of listVPFVariant" class="dropdown-item" (click)="switchVariantByName(item.variantName, true)"  title="{{item.description}}">{{ item.name }}</a>
                     </div>
+                  </div>
+                  <div *ngIf="listVPFVariant.length <= 1" >
+                    {{defaultVariant}}
                   </div>
                 </div>
                 <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="col-sm-1 mt-2">

@@ -1,3 +1,6 @@
+<div *ngIf="!displayDelivery()" class='well'>
+  {{'compViewDelivery.titleNoDeliveries' | translate }}
+</div>
 <div *ngIf="displayDelivery()" class='well' (resized)="onResized($event)">
   <div *ngIf="displaySwitch()" class="container">
     <div class="d-flex justify-content-left">
