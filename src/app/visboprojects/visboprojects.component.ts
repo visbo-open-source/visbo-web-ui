@@ -259,7 +259,11 @@ export class VisboProjectsComponent implements OnInit {
     return fullName || '';
   }
 
-  getVPStatus(status: string): string {
+  getVPStatus(vp: VisboProject): string {
+    if (vp?.vpType != 0) {
+      return '';
+    }
+    let status = vp?.vpStatus
     if (!status) status = 'initialized';
     return this.translate.instant('vpStatus.' + status)
   }

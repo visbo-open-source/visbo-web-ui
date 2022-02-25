@@ -406,17 +406,17 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         validUntil = new Date();
         validUntil = visboGetBeginOfDay(validUntil, 1); // to make it visible it goes 1 day into future
       } else {
-        if (visboIsSameDay(new Date(list[index].timestamp), new Date(list[index + 1].timestamp))) {
-          // skip multiple versions for same day and variant
-          continue
-        }
+        // if (visboIsSameDay(new Date(list[index].timestamp), new Date(list[index + 1].timestamp))) {
+        //   // skip multiple versions for same day and variant
+        //   continue
+        // }
         validUntil = new Date(list[index + 1].timestamp);
         const diffHours = (validUntil.getTime() - ts.getTime()) / 1000 / 60 / 60;
         if (diffHours > 48) {
           validUntil.setHours(validUntil.getHours() - 24);
         } else if (diffHours > 12) {
           validUntil.setHours(validUntil.getHours() - 6);
-        } else {
+        } else if (diffHours > 2) {
           validUntil.setHours(validUntil.getHours() - 1);
         }
       }
@@ -685,7 +685,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpCheckListAll.forEach( item => {
       if (vpfListFilter
       && !(item.vp.name.toLowerCase().indexOf(vpfListFilter) >= 0)
-      || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(vpfListFilter) >= 0) >= 0
+      || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(vpfListFilter) >= 0)
+      || this.getVPManager(item.vp, true).toLowerCase().indexOf(vpfListFilter) >= 0
       ) {
         return;
       }
