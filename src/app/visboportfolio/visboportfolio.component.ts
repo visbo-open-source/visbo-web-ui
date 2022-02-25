@@ -685,7 +685,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.vpCheckListAll.forEach( item => {
       if (vpfListFilter
       && !(item.vp.name.toLowerCase().indexOf(vpfListFilter) >= 0)
-      || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(vpfListFilter) >= 0)
+      || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(vpfListFilter) >= 0) >= 0
       || this.getVPManager(item.vp, true).toLowerCase().indexOf(vpfListFilter) >= 0
       ) {
         return;
