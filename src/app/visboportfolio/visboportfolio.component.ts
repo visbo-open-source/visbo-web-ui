@@ -351,18 +351,28 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.visboprojectversionService.getVisboPortfolioVersions(this.vpActive._id, this.deleted)
       .subscribe(
         listVPF => {
+          listVPF.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
           this.listVPF = listVPF;
-          let index = 0;
-          if (this.vpfid ) {
+          let index = -1;
+          if (this.vpfActive) {
+            // there is already a vpf selected in the UI
+            this.vpfid = this.vpfActive._id;
+            index = listVPF.findIndex(item => item._id.toString() === this.vpfActive._id);
+          } else if (index < 0 && this.vpfid ) {
+            // vpfid as url parameter defined
             index = listVPF.findIndex(item => item._id.toString() === this.vpfid);
-            if (index < 0) { index = 0; }
           }
+          if (index < 0) {
+            // nothing defined use the latest from standard variant
+            index = listVPF.findIndex(item => item.variantName === '');
+          }
+
           if (listVPF.length > 0) {
             this.vpfActive = listVPF[index];
             this.switchVariantByName(this.vpfActive.variantName);
             this.viewVPFOverTime();
             this.getVisboPortfolioKeyMetrics();
-            this.log(`get VPF Length ${this.listVPF.length}`);
+            // this.log(`get VPF Length ${this.listVPF.length}`);
           } else if (this.hasVPPerm(this.permVP.Modify)) {
             // initiate the edit if user has permission
             document.getElementById("editVPFList").click();
@@ -684,10 +694,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     const vpfListFilter = this.vpfListFilter ? this.vpfListFilter.toLowerCase() : undefined;
     this.vpCheckListAll.forEach( item => {
       if (vpfListFilter
-      && !(item.vp.name.toLowerCase().indexOf(vpfListFilter) >= 0)
+      && !(item.vp.name.toLowerCase().indexOf(vpfListFilter) >= 0
       || item.vp.variant.findIndex(variant => variant.variantName.toLowerCase().indexOf(vpfListFilter) >= 0) >= 0
       || this.getVPManager(item.vp, true).toLowerCase().indexOf(vpfListFilter) >= 0
-      ) {
+      )) {
         return;
       }
       if (this.filterVPStatusIndex > 0
@@ -948,7 +958,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         console.log("add VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
         const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
         this.alertService.success(message, true);
-
+        this.incrementVPFCount(this.vpActive, vpf.variantName, 1);
         this.switchVPF(vpf);
         this.getVisboProject(this.vpActive._id);
       },
@@ -964,6 +974,19 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     );
   }
 
+  incrementVPFCount(vp: VisboProject, variantName: string, inc: number): void {
+    if (vp) {
+      if (!variantName) {
+        vp.vpfCount += inc;
+      } else {
+        const variant = vp.variant.find(item => item.variantName == variantName);
+        if (variant) {
+          variant.vpfCount += inc;
+        }
+      }
+    }
+  }
+
   deleteVPF(vpf: VisboPortfolioVersion): void {
     this.log(`Remove VisboPortfolioVersion: ${vpf.name} from:  ${vpf.timestamp}`);
     this.visboprojectversionService.deleteVisboPortfolioVersion(vpf)
@@ -974,8 +997,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpfVersion.msg.removeVPFSuccess', {'name': vpf.name, 'from': from });
           const index = this.listVPF.findIndex(item => item._id == vpf._id);
           this.listVPF.splice(index, 1);
+          this.incrementVPFCount(this.vpActive, vpf.variantName, -1);
           // serach a VPF from same variant, if none available fall back to main
-          const newVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
+          let newVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
+          if (!newVPF) {
+            newVPF = this.listVPF.find(item => item.variantName == '') || this.listVPF.find(item => true);
+          }
           this.switchVPF(newVPF || this.listVPF[0]);
           this.getVisboProject(this.vpActive._id);
           this.alertService.success(message);
@@ -1014,7 +1041,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         this.pageParams.refDate = refDate.toISOString();
       }
     }
-    if (vpfid) {
+    if (vpfid || vpfid == null) {
       this.pageParams.vpfid = vpfid;
     }
     if (refreshPage) { this.updateUrlParam(); }
@@ -1122,6 +1149,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   switchVariantByName(name: string, newVariant = false): void {
+    this.log(`SwitchVariantByName: ${name}, ${newVariant}`)
     let variant = this.listVPFVariant.find(variant => variant.variantName == name);
     if (!variant) {
       variant = this.listVPFVariant[0];
@@ -1143,16 +1171,30 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   }
 
   switchVPF(vpf: VisboPortfolioVersion): void {
+    this.log(`SwitchVPF: ${vpf._id}, ${vpf.variantName}`);
     if (vpf) {
       this.vpfActive = vpf;
       this.switchVariantByName(this.vpfActive.variantName);
-      this.changeView(undefined, undefined, undefined, this.vpfActive._id);
+      if (this.vpfActive.variantName == '' && this.isLatestVPF(this.vpfActive)) {
+        this.changeView(undefined, undefined, undefined, null);
+      } else {
+        this.changeView(undefined, undefined, undefined, this.vpfActive._id);
+      }
       this.getVisboPortfolioKeyMetrics();
     } else {
       this.vpfActive = undefined;
       this.listVPV = undefined;
     }
     this.updateUrlParam();
+  }
+
+  isLatestVPF(vpf: VisboPortfolioVersion): boolean {
+    let result = true;
+    const latestVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
+    if (latestVPF) {
+      result = visboCmpDate(vpf.timestamp, latestVPF.timestamp) >= 0
+    }
+    return result;
   }
 
   getVPStatus(local: boolean, original: string = undefined): string {

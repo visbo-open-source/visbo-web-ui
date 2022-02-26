@@ -782,7 +782,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (this.vcActive ) {
       this.log(`Capacity Calc for VC ${this.vcActive._id} role ${this.roleID}`);
 
-      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
+      this.visbocenterService.getCapacity(this.vcActive._id, this.refDate, this.currentLeaf?.uid.toString(), this.currentLeaf?.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           visbocenter => {
             if (!visbocenter.capacity || visbocenter.capacity.length === 0) {
@@ -1745,7 +1745,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         const currentDate = this.graphDataComboChart[row + 1][0];
         this.log(`chart identified Row ${currentDate} Project: ${vpName}`);
         this.gotoClickedRow(vpName);
-      } else {
+      } else if (this.drillDown == 1) {
         const roleName = this.graphDataComboChart[0][label];
         const currentDate = this.graphDataComboChart[row + 1][0];
         this.log(`chart identified Row ${currentDate} Role: ${roleName}`);

@@ -150,6 +150,26 @@ export class VisboProjectsComponent implements OnInit {
     });
   }
 
+  getVisboProjectList(vcid: string, sysAdmin: boolean, deleted = false): void {
+    this.visboprojectService.getVisboProjects(vcid, sysAdmin, deleted)
+      .subscribe(
+        visboprojects => {
+          this.visboprojectsAll = visboprojects;
+          this.updateVPProperties();
+          this.filterVP();
+          this.initTemplates(visboprojects);
+          this.initDropDown();
+          this.switchView();
+          this.sortVPTable(1);
+          if (vcid && this.viewMode == 'Cockpit') { this.getVisboProjectKeyMetrics(); }
+        },
+        error => {
+          this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
+          this.alertService.error(getErrorMessage(error));
+        }
+      );
+  }
+
   getVisboProjects(deleted: boolean): void {
     this.deleted = deleted;
     if (this.vcSelected) {
@@ -161,23 +181,7 @@ export class VisboProjectsComponent implements OnInit {
             this.titleService.setTitle(this.translate.instant('vp.titleName', {name: this.vcActive.name}));
             this.getVisboCenterCustomization();
             this.getVisboCenterOrga();
-            this.visboprojectService.getVisboProjects(this.vcSelected, false, deleted)
-              .subscribe(
-                visboprojects => {
-                  this.visboprojectsAll = visboprojects;
-                  this.updateVPProperties();
-                  this.filterVP();
-                  this.initTemplates(visboprojects);
-                  this.initDropDown();
-                  this.switchView();
-                  this.sortVPTable(1);
-                  if (this.viewMode == 'Cockpit') { this.getVisboProjectKeyMetrics(); }
-                },
-                error => {
-                  this.log(`get VPs failed: error:  ${error.status} message: ${error.error.message}`);
-                  this.alertService.error(getErrorMessage(error));
-                }
-              );
+            this.getVisboProjectList(this.vcActive._id, false, this.deleted);
           },
           error => {
             this.log(`get VC failed: error:  ${error.status} message: ${error.error.message}`);
@@ -187,21 +191,7 @@ export class VisboProjectsComponent implements OnInit {
     } else {
       this.vcSelected = null;
       this.vcActive = null;
-      this.visboprojectService.getVisboProjects(null, false, deleted)
-        .subscribe(
-          visboprojects => {
-            this.visboprojectsAll = visboprojects;
-            this.filterVP();
-            this.initDropDown();
-            this.switchView();
-            this.sortVPTable(1);
-            // this.getVisboProjectKeyMetrics();
-          },
-          error => {
-            this.log(`get VPs all failed: error:  ${error.status} message: ${error.error.message}`);
-            this.alertService.error(getErrorMessage(error));
-          }
-        );
+      this.getVisboProjectList(null, false, deleted);
     }
   }
 
@@ -439,7 +429,7 @@ export class VisboProjectsComponent implements OnInit {
       if (this.vcOrga == undefined || this.vcOrga.length > 0) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vcActive._id}`);
-        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), true, false)
+        this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), false, false)
           .subscribe(
             organisation => {
               this.vcOrga = organisation;
@@ -488,7 +478,9 @@ export class VisboProjectsComponent implements OnInit {
     }
     this.visboprojectsAll.forEach(vp => {
       vp.manager = this.vcUser.get(vp.managerId);
-      vp.vpStatusLocale = this.translate.instant('vpStatus.' + (vp.vpStatus || 'initialized'))
+      if (vp.vpType == 0) {
+        vp.vpStatusLocale = this.translate.instant('vpStatus.' + (vp.vpStatus || 'initialized'))
+      }
     });
   }
 
@@ -561,14 +553,21 @@ export class VisboProjectsComponent implements OnInit {
         return visboCmpDate(aDate, bDate); });
     } else if (this.sortColumn === 7) {
       this.visboprojects.sort(function(a, b) {
-        const result = visboCmpString(a.manager?.profile?.lastName.toLowerCase() || '', b.manager?.profile?.lastName.toLowerCase() || '')
+        let result = visboCmpString(a.manager?.profile?.lastName.toLowerCase() || '', b.manager?.profile?.lastName.toLowerCase() || '')
           || visboCmpString(a.manager?.profile?.firstName.toLowerCase() || '', b.manager?.profile?.firstName.toLowerCase() || '')
           || visboCmpString(a.manager?.email.toLowerCase() || '', b.manager?.email.toLowerCase() || '');
+        if (result == 0) {
+          result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
+        }
         return result;
       });
     } else if (this.sortColumn === 8) {
       this.visboprojects.sort(function(a, b) {
-        return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
+        let result = visboCmpString(b.vpStatusLocale || '', a.vpStatusLocale || '');
+        if (result == 0) {
+          result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
+        }
+        return result
       });
     }
     // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)

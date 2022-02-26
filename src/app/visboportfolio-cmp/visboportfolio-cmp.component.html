@@ -4,7 +4,7 @@
     <div class='col'>
       <h2>
         {{ 'vpfCmp.title' | translate }}:
-        <a (click)="gotoVPDetail(vpActive)"> {{vpActive.name}}</a>
+        <a (click)="gotoVP(vpActive)"> {{vpActive.name}}</a>
       </h2>
     <!-- <div *ngIf="activeVPFVariant && activeVPFVariant.description">
       {{ activeVPFVariant.description }}
@@ -25,7 +25,7 @@
       <div class="col">
         <!-- Box for original version -->
         <div class="p-3 border">
-          <div *ngIf="activeVPFVariant[0] && dropDown.length > 1" class="dropdown mb-2">
+          <div *ngIf="activeVPFVariant[0] && listVPFVariant.length > 1" class="dropdown mb-2">
             <div class="row">
               <div class="col-4">
                 {{ 'vpfCmp.lbl.variant' | translate }}
@@ -33,9 +33,9 @@
               <div class="col-7 text-dark">
                 <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[0].description}}">{{displayVariantName(activeVPFVariant[0])}}</a>
                 <div class="dropdown-menu">
-                  <a *ngFor="let item of dropDown" class="dropdown-item">
-                    <div *ngIf="checkVPFActive(item, 0)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version, 0)">{{ item.name }} </div>
-                    <div *ngIf="!checkVPFActive(item, 0)" class="dropdown-item" (click)="switchPFVersion(item.version, 0)">{{ item.name }} </div>
+                  <a *ngFor="let item of getVariantList(true)" class="dropdown-item">
+                    <div *ngIf="checkVPFActive(item, 0)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.variantName, 0)">{{ item.name }} </div>
+                    <div *ngIf="!checkVPFActive(item, 0)" class="dropdown-item" (click)="switchPFVersion(item.variantName, 0)">{{ item.name }} </div>
                   </a>
                 </div>
               </div>
@@ -57,7 +57,7 @@
       <div class="col">
         <!-- Box for compare version -->
         <div class="p-3 border bg-light">
-          <div *ngIf="activeVPFVariant[1] && dropDown.length > 1" class="dropdown mb-2">
+          <div *ngIf="activeVPFVariant[1] && listVPFVariant.length > 1" class="dropdown mb-2">
             <div class="row">
               <div class="col-4">
                 {{ 'vpfCmp.lbl.variant' | translate }}
@@ -65,9 +65,9 @@
               <div class="col-7 text-dark">
                 <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{activeVPFVariant[1].description}}">{{displayVariantName(activeVPFVariant[1])}}</a>
                 <div class="dropdown-menu">
-                  <a *ngFor="let item of dropDown" class="dropdown-item">
-                    <div *ngIf="checkVPFActive(item, 1)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.version, 1)">{{ item.name }} </div>
-                    <div *ngIf="!checkVPFActive(item, 1)" class="dropdown-item" (click)="switchPFVersion(item.version, 1)">{{ item.name }} </div>
+                  <a *ngFor="let item of getVariantList(true)" class="dropdown-item">
+                    <div *ngIf="checkVPFActive(item, 1)" class="dropdown-item font-weight-bold" (click)="switchPFVersion(item.variantName, 1)">{{ item.name }} </div>
+                    <div *ngIf="!checkVPFActive(item, 1)" class="dropdown-item" (click)="switchPFVersion(item.variantName, 1)">{{ item.name }} </div>
                   </a>
                 </div>
               </div>

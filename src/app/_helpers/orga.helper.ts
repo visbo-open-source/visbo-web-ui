@@ -63,7 +63,7 @@ export function getLeafByID(orga: VisboOrgaStructure, roleID: number): VisboOrga
 }
 
 export function getLeafByName(orga: VisboOrgaStructure, roleName: string): VisboOrgaTreeLeaf {
-  const leaf = orga?.list.find(role => role.name == roleName);
+  const leaf = orga?.list.find(role => role?.name == roleName);
   return leaf;
 }
 

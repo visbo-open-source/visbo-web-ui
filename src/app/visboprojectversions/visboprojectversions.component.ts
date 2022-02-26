@@ -79,7 +79,10 @@ export class VisboProjectVersionsComponent implements OnInit {
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
             this.visboprojectversionService.getVisboProjectVersions(id, this.deleted)
               .subscribe(
-                visboprojectversions => this.visboprojectversions = visboprojectversions,
+                visboprojectversions => {
+                  this.visboprojectversions = visboprojectversions;
+                  this.sortVPVTable(1);
+                },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
@@ -105,7 +108,10 @@ export class VisboProjectVersionsComponent implements OnInit {
       this.vpActive = null;
       this.visboprojectversionService.getVisboProjectVersions(null)
         .subscribe(
-          visboprojectversions => this.visboprojectversions = visboprojectversions,
+          visboprojectversions => {
+            this.visboprojectversions = visboprojectversions;
+            this.sortVPVTable(1);
+          },
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {

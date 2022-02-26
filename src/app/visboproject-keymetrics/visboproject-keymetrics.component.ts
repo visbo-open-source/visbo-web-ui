@@ -575,6 +575,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   addVPVtoList(vpv: VisboProjectVersion): void {
     this.allVPVs.unshift(vpv);
+    if (this.activeVPVs?.length > 0 && this.activeVPVs[0].variantName == vpv.variantName) {
+      this.activeVPVs.unshift(vpv);
+    }
     this.updateVPVCount(this.vpActive, vpv.variantName, 1);
   }
 
@@ -609,13 +612,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         //   continue
         // }
         validUntil = new Date(list[index + 1].timestamp);
-        const diffHours = (validUntil.getTime() - ts.getTime()) / 1000 / 60 / 60;
+        const diffMinutes = (validUntil.getTime() - ts.getTime()) / 1000 / 60;
+        const diffHours = diffMinutes / 60;
         if (diffHours > 48) {
           validUntil.setHours(validUntil.getHours() - 24);
         } else if (diffHours > 12) {
           validUntil.setHours(validUntil.getHours() - 6);
         } else if (diffHours > 2) {
           validUntil.setHours(validUntil.getHours() - 1);
+        } else if (diffMinutes > 1) {
+          validUntil.setMinutes(validUntil.getMinutes() - diffMinutes / 2);
         }
       }
       graphDataTimeline.push([
