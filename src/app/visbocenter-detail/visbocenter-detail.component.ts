@@ -21,7 +21,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, getJsDateFr
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
-// const JSON_EXTENSION = '.json';
+const JSON_EXTENSION = '.json';
 
 @Component({
   selector: 'app-visbocenter-detail',
@@ -38,6 +38,7 @@ export class VisbocenterDetailComponent implements OnInit {
   actGroup: VGGroupExpanded;
   vcSettings: VisboSetting[];
   vcSetting: VisboSetting;
+  newVCSetting: VisboSetting;
   currentLang: string;
 
   confirm: string;
@@ -66,6 +67,7 @@ export class VisbocenterDetailComponent implements OnInit {
   minOrgaTimestamp: Date;
   errorList: string[] = [];
   isOrgaSaved: boolean;
+  isSettingSaved: boolean;
 
   today: Date;
   sortUserColumn = 1;
@@ -273,6 +275,10 @@ export class VisbocenterDetailComponent implements OnInit {
 
   gotoVPDetail(vpid: string): void {
     this.router.navigate(['vpDetail/'.concat(vpid)]);
+  }
+
+  gotoVCDetail(vcid: string): void {
+    this.router.navigate(['vcDetail/'.concat(vcid)]);
   }
 
   save(): void {
@@ -740,6 +746,83 @@ export class VisbocenterDetailComponent implements OnInit {
     this.isOrgaSaved = false;
   }
 
+  initSettingCreate(): void {
+    this.isSettingSaved = false;
+  }
+
+  addSetting(): void {
+    if (!this.isValidFile()) {
+      this.log(`Add Setting no valid file ${this.newFile?.name}`);
+      return;
+    }
+    this.newVCSetting = new VisboSetting();
+    this.newVCSetting.type = 'customization';
+    this.newVCSetting.name = 'customization';
+    const isJson = this.newFile?.name.slice(-JSON_EXTENSION.length) == JSON_EXTENSION;
+
+    const fileReader = new FileReader();
+    if (!isJson) {
+      // fileReader.readAsArrayBuffer(this.newFile);
+      fileReader.readAsArrayBuffer(this.newFile);
+    } else {
+      fileReader.readAsText(this.newFile);
+    }
+    fileReader.onloadend = (e) => {
+      console.log("File uploaded Length", fileReader.result.toString().length, this.newFile.size, "type", typeof fileReader.result);
+      let jsonSetting: string;
+      this.isSettingSaved = true;
+      if (isJson) {
+        const jsonString = fileReader.result.toString();
+        try {
+          jsonSetting = JSON.parse(jsonString);
+        }
+        catch (e) {
+          const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+          this.alertService.error(message, true);
+          this.isSettingSaved = false;
+        }
+        if (this.isSettingSaved) {
+          this.newVCSetting.value = jsonSetting;
+        }
+        this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+      } else {
+        this.log(`Add Setting of Unknown FileType not implemented ${this.newFile?.name}`);
+      }
+    }
+  }
+
+  saveSetting(): void {
+    this.log(`Save Setting ${this.newVCSetting.name} `);
+    const vcid = this.visbocenter._id;
+
+    this.visbosettingService.addVCSetting(vcid, this.newVCSetting, false)
+      .subscribe(
+        setting => {
+          const message = this.translate.instant('vcDetail.msg.saveSettingSuccess');
+          this.alertService.success(message);
+          this.vcSettings.unshift(setting);
+        },
+        error => {
+          this.log(`Save VisboCenter Setting error: ${JSON.stringify(error)}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vcDetail.msg.errorPermVC', {'name': this.visbocenter.name});
+            this.alertService.error(message);
+          } else if (error.status === 400) {
+            const message = this.translate.instant('vcDetail.msg.invalidSettingStructure');
+            this.errorList = error.error && error.error.error
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vcDetail.msg.duplicateSetting', {'name': this.newVCSetting.name});
+            this.errorList = error.error && error.error.error
+            this.alertService.error(message);
+          } else if (error.error) {
+            this.log(`Error during save VC Orga ${error.error.message}`);
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   addOrganisation(): void {
     if (!this.isValidFile()) {
       this.log(`Add Organisation no valid file ${this.newFile?.name}`);
@@ -792,16 +875,16 @@ export class VisbocenterDetailComponent implements OnInit {
         this.newOrgaList = [];
         listOrga.forEach(item => {this.newOrgaList.push(this.initItem(item))});
         this.log(`Converted to ListOrga OrgaList Len: ${this.newOrgaList.length} First: ${JSON.stringify(this.newOrgaList[0])}`);
-      // } else {
-      //   const jsonString = fileReader.result.toString();
-      //   try {
-      //     jsonSetting = JSON.parse(jsonString);
-      //   }
-      //   catch (e) {
-      //     const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
-      //     this.alertService.error(message, true);
-      //   }
-      //   this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+      } else {
+        const jsonString = fileReader.result.toString();
+        try {
+          jsonSetting = JSON.parse(jsonString);
+        }
+        catch (e) {
+          const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+          this.alertService.error(message, true);
+        }
+        this.log(`Add Organisation of JSON Files not implemented ${this.newFile?.name}`);
       }
     }
   }
@@ -1123,6 +1206,14 @@ export class VisbocenterDetailComponent implements OnInit {
       this.vcSettings.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
     } else if (this.sortSettingColumn === 3) {
       this.vcSettings.sort(function(a, b) { return visboCmpDate(a.updatedAt, b.updatedAt); });
+    } else if (this.sortSettingColumn === 4) {
+      this.vcSettings.sort(function(a, b) {
+        let result = visboCmpString(a.type.toLowerCase(), b.type.toLowerCase());
+        if (!result) {
+          result = visboCmpString(a.name.toLowerCase(), b.name.toLowerCase());
+        }
+        return result;
+      });
     }
     if (!this.sortSettingAscending) {
       this.vcSettings.reverse();

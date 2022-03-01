@@ -233,11 +233,11 @@
               {{ 'vcDetail.titleSettings' | translate }}
           </h4>
         </div>
-        <!-- <div *ngIf="hasVCPerm(permVC.ManagePerm) && errorList.length == 0" class='col'>
+        <div *ngIf="hasVCPerm(permVC.Modify)" class='col'>
           <button id="AddSetting" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcSettingModalUpload">
             {{ 'vcDetail.btn.addSetting' | translate }}
           </button>
-        </div> -->
+        </div>
       </div>
       <div class='panel-body'>
         <table class='table table-hover'>
@@ -246,6 +246,7 @@
             <tr>
               <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
               <th (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+              <th (click)="sortSettingTable(4)">{{ 'vcDetail.lbl.type' | translate }}</th>
               <th (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
               <th (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
               <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
@@ -256,6 +257,7 @@
             <tr *ngFor="let item of vcSettings; let itemIndex=index">
               <td>{{itemIndex+1}}</td>
               <td id="ColSettingName" (click)='initSetting(itemIndex)' data-toggle="modal" data-target="#VcSettingDetail"><a>{{item.name}}</a></td>
+              <td id="ColSettingType"><a>{{item.type}}</a></td>
               <td id="ColSettingTimestamp">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
               <td id="ColSettingDate" *ngIf="isToday(item.updatedAt)">{{item.updatedAt | date : 'HH:mm:ss'}}</td>
               <td id="ColSettingDate" *ngIf="!isToday(item.updatedAt)">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
@@ -726,12 +728,65 @@
     </div>
   </div>
 
+  <!-- Modal Setting Organisation -->
+  <div class="modal fade" id="VcSettingModalUpload" tabindex="-1" role="dialog" aria-labelledby="VcSettingModalUploadTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VcSettingUploadTitle">{{ 'vcDetail.titleUploadSetting' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="file" class="file-upload" (change)="onFileSelected($event)" accept=".json">
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+          <button *ngIf="newFile" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addSetting()" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Save Setting -->
+  <div class="modal fade" id="VcSettingModalSave" tabindex="-1" role="dialog" aria-labelledby="VcSettingModalSaveTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="VCSettingSaveTitle">{{ 'vcDetail.titleUploadSetting' | translate }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div *ngIf="newVCSetting" class="modal-body">
+          <form class="mt-2">
+            <div class="form-group row">
+              <label for="nameSetting" class="col-4 col-form-label pt-2">{{ 'vcDetail.lbl.name' | translate }}:</label>
+              <input id="nameSetting" name=newSettingName type="text" class="col-6 form-control" [(ngModel)]="newVCSetting.name" placeholder="Name">
+            </div>
+            <div class="form-group row">
+              <label for="typeSetting" class="col-4 col-form-label pt-2">{{ 'vcDetail.lbl.type' | translate }}:</label>
+              <input id="typeSetting" name=newSettingType type="text" class="col-6 form-control" [(ngModel)]="newVCSetting.type" placeholder="Type">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer align-items-end">
+          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal" data-toggle="modal" data-target="#VcSettingModalUpload" (click)="initSettingCreate()">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button *ngIf="isSettingSaved" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="saveSetting()" data-dismiss="modal">{{ 'vcDetail.btn.save' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Upload Organisation -->
   <div class="modal fade" id="VcOrganisationModalUpload" tabindex="-1" role="dialog" aria-labelledby="VcOrganisationModalUploadTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcSettingUploadTitle">{{ 'vcDetail.titleUploadOrga' | translate }}</h5>
+          <h5 class="modal-title" id="VcOrgaUploadTitle">{{ 'vcDetail.titleUploadOrga' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -743,7 +798,7 @@
         </div>
         <div class="modal-footer align-items-end">
           <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button *ngIf="newFile" id="AddSettingConfirm" type="button" class="btn btn-primary mx-1" (click)="addOrganisation()" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
+          <button *ngIf="newFile" id="AddOrgaConfirm" type="button" class="btn btn-primary mx-1" (click)="addOrganisation()" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
         </div>
       </div>
     </div>
@@ -754,7 +809,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="VcSOrganisationSaveTitle">{{ 'vcDetail.titleSaveOrga' | translate }}</h5>
+          <h5 class="modal-title" id="VCOrganisationSaveTitle">{{ 'vcDetail.titleSaveOrga' | translate }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

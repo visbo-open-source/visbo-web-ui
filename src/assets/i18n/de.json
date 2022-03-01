@@ -280,9 +280,12 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveSettingPerm": "Keine Berechtigung Setting {{name}} zu löschen",
+			"errorJSONFormat": "Setting enthält kein valides JSON Format",
 			"errorRemoveOrganisationPerm": "Keine Berechtigung die Organisation {{name}} zu löschen",
 			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!",
 			"saveOrgaSuccess": "VISBO Center Organisation wurde erfolgreich gespeichert",
+			"saveSettingSuccess": "VISBO Center Setting wurde erfolgreich gespeichert",
+			"duplicateSetting": "VISBO Center Setting {{name}} ist bereits vorhanden",
 			"errorList": "Fehler beim hochladen der Organisation"
 		}
 	},
