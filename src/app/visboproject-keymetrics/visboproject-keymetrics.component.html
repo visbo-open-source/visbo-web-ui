@@ -1,8 +1,14 @@
 <app-usernavbar></app-usernavbar>
 <div class='well' (resized)="onResized($event)">
+  <div class="row ml-1">
+    <h5 *ngIf="vpActive">{{ 'vpKeyMetric.lbl.vc' | translate }}:
+      <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
+      <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
+    </h5>
+  </div>
   <div *ngIf="vpActive" class='row'>
-    <div class='col'>
-      <h2 *ngIf="vpActive">
+    <div class='col-7'>
+      <h2 *ngIf="vpActive" class="ml-1">
         {{ 'vpKeyMetric.title' | translate }}:
         <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
         <span *ngIf="getDropDownList(1, true).length > 1" class="dropdown" class="ml-2">
@@ -19,25 +25,24 @@
           </small>
         </a>
       </h2>
-      <div *ngIf="dropDownIndex > 0">
+      <div *ngIf="vpvActive?.variantName == ''" class="ml-3">
+        {{ vpActive.description }}
+      </div>
+      <div *ngIf="dropDownIndex > 0" class="ml-3">
         {{ dropDown[dropDownIndex].description }}
       </div>
-      <div class="row">
-        <h5 class="col">{{ 'vpKeyMetric.lbl.vc' | translate }}:
-          <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVC(vpActive)">{{ vpActive.vc.name }}</a>
-          <span *ngIf="!hasVCPerm(permVC.View)">{{ vpActive.vc.name }}</span>
-        </h5>
-        <h5 *ngIf="vpActive.managerId" class="col">
-          <span title="{{getVPManager(vpActive, true) }}">
-            {{ 'vpKeyMetric.lbl.manager' | translate }}:
-            <span>{{ getVPManager(vpActive, false) }}, </span>
-          </span>
-          <span>
-            {{ 'vpKeyMetric.lbl.vpStatus' | translate }}:
-            <span>{{ getVPStatus() }}</span>
-          </span>
-        </h5>
-      </div>
+    </div>
+    <div class='col-5 mt-1'>
+      <h5 *ngIf="vpActive.managerId" class="col">
+        <span title="{{getVPManager(vpActive, true) }}">
+          {{ 'vpKeyMetric.lbl.manager' | translate }}:
+          <span>{{ getVPManager(vpActive, false) }}, </span>
+        </span>
+        <span>
+          {{ 'vpKeyMetric.lbl.vpStatus' | translate }}:
+          <span>{{ getVPStatus() }}</span>
+        </span>
+      </h5>
     </div>
   </div>
 

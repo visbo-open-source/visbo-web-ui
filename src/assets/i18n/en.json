@@ -521,7 +521,7 @@
 		}
 	},
 	"vpKeyMetric": {
-		"title": "Project Key Metrics for",
+		"title": "Project",
 		"titleName": "Project {{name}}",
 		"titleVersion": "Version of",
 		"titleVersionOld": "Old Version of",

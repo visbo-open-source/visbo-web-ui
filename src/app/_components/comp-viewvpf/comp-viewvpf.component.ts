@@ -871,7 +871,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       ]);
     }
     this.graphBarOptions = this.copyGraphBarOptions(this.defaultBarOptions);
-    // this.graphBarOptions.height = 100 + keyMetricsFiltered.length * 40;
     this.graphBarAxis(keyMetricsFiltered.length - 1); // set the Axis Description and height
     // this.calcRangeAxis();
     this.graphBarData = keyMetricsFiltered;
@@ -995,20 +994,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
     const euroFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.keuro');
     if (len > 0) {
-      this.graphBarOptions.height = 100 + len * 40;
-      let height = '80%'
-      if (len < 3) {
-        height = '30%'
-      } else if (len < 6) {
-        height = '50%'
-      } else if (len < 12) {
-        height = '60%'
-      } else if (len < 24) {
-        height = '70%'
-      } else {
-        height = '90%'
-      }
-      this.graphBarOptions.chartArea.height = height;
+      this.graphBarOptions.height = 100 + len * 80;
     }
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
