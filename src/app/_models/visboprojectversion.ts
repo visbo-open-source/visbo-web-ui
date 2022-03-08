@@ -26,6 +26,8 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
+  baseLineInvoice: number;
+  currentInvoice: number;
 }
 
 export class VPVDelivery {

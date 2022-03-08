@@ -67,7 +67,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     activeVPFVariant: DropDown;
     newVPFVariant: DropDown;
 
-    views = ['KeyMetrics', 'KeyMetric', 'Capacity', 'ProjectBoard', 'List'];
+    views = ['ProjectBoard', 'KeyMetrics', 'KeyMetric', 'Capacity', 'List', 'Overview'];
 
     user: VisboUser;
     vpSelected: string;
@@ -172,12 +172,12 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     localStorage.removeItem('vpfFilter');
     const refDate = this.route.snapshot.queryParams['refDate'];
     this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
-    const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
+    const nextView = this.route.snapshot.queryParams['view'] || this.views[0];
     this.vpfid = this.route.snapshot.queryParams['vpfid'] || undefined;
     // const filter = this.route.snapshot.queryParams['filter'] || null;
     this.vpvRefDate = Date.parse(refDate) > 0 ? new Date(refDate) : new Date();
     this.setRefDateStr(this.vpvRefDate);
-    this.changeView(nextView, refDate ? this.vpvRefDate : undefined, undefined, this.vpfid, false);
+    this.changeView(nextView, undefined, refDate ? this.vpvRefDate : undefined, this.vpfid, false);
     this.initVPStateDropDown();
     const id = this.route.snapshot.paramMap.get('id');
     this.getVisboProject(id);
@@ -524,7 +524,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   changeRefDate(): void {
     this.log(`changeRefDate ${this.vpvRefDateStr} ${this.vpvRefDate.toISOString()}`);
     this.vpvRefDate = new Date(this.vpvRefDateStr);
-    this.changeView(undefined, this.vpvRefDate);
+    this.changeView(undefined, undefined, this.vpvRefDate);
     this.getVisboPortfolioKeyMetrics();
 
   }
@@ -1020,20 +1020,17 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       );
   }
 
-  changeView(nextView: string, refDate: Date = undefined, filter:string = undefined, vpfid:string = undefined, refreshPage = true): void {
+  changeView(nextView: string, detailView: string = undefined, refDate: Date = undefined, vpfid:string = undefined, refreshPage = true): void {
     if (nextView) {
       if (this.views.findIndex(item => item === nextView) < 0) {
         nextView = this.views[0];
       }
       this.pageParams.view = nextView;
+      if (nextView == 'KeyMetric') {
+        this.pageParams.metricX = detailView || 'Cost';
+      }
     }
-    if (filter) {
-      this.pageParams.filter = filter.trim();
-    } else if (filter === null) {
-      delete this.pageParams.filter
-    } else {
-      this.pageParams.filter = localStorage.getItem('vpfFilter') || undefined;
-    }
+    this.pageParams.filter = localStorage.getItem('vpfFilter') || undefined;
     if (refDate) {
       if (visboIsToday(refDate)) {
         this.pageParams.refDate = undefined;
@@ -1054,6 +1051,9 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     queryParams.filter = this.pageParams.filter || null;
     queryParams.vpfid = this.pageParams.vpfid || null;
     queryParams.refDate = this.pageParams.refDate || null;
+    if (this.pageParams.metricX) {
+      queryParams.metricX = this.pageParams.metricX;
+    }
     queryParams.view = this.pageParams.view || null;
     this.router.navigate([url], {
       queryParams: queryParams,

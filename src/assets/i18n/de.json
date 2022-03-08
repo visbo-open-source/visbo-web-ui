@@ -640,13 +640,28 @@
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version vom",
 		"titleBox": "Gesamtkosten",
+		"lbl": {
+			"name": "Name",
+			"month": "Monat",
+			"baseLineCost": "Kosten (Baseline)",
+			"actualCost": "Actuelle Kosten",
+			"plannedCost": "Geplante Kosten",
+			"cost": "Kosten",
+			"baseLineInvoice": "Rechnungen (Baseline)",
+			"invoice": "Rechnungen",
+			"actualInvoice": "Aktuelle Rechnungen",
+			"plannedInvoice": "geplante Rechnungen",
+			"cumulatedCost": "kumulierte Kosten",
+			"cumulatedInvoice": "kumulierte Rechnungen"
+		},
 		"btn": {
 			"back": "Zurück"
 		},
 		"msg": {
 			"noCost": "Keine Kosteninformation für dieses Projekt",
 			"errorPerm": "Keine Berechtigung für dieses VISBO Projekt",
-			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}"
+			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
+			"viewWeb": "Anzeige der Projekt-Kosten Online"
 		}
 	},
 	"ViewCapacity": {
@@ -931,6 +946,12 @@
 			"weeks": "Wochen",
 			"keuro": "T€",
 			"show": "Anzeige",
+			"diff": "Abweichung",
+			"topX": "Top",
+			"absolute": "Absolut",
+			"percent": "Prozent",
+			"worst": "Schlechteste",
+			"best": "Beste",
 			"and": "und",
 			"from": "vom",
 			"planVsBase": "plan-to-date vs. baseline",
@@ -948,7 +969,8 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Kosten (gesamt)",
+			"pfvVariant": "Baseline",
+			"costName": "Gesamtkosten",
 			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
@@ -967,6 +989,7 @@
 			"endDateAxis": "Abweichung beim Projektende",
 			"endDateBubble": "Abweichung beim Projektende (Wochen)",
 			"endDateTable": "Änderung Projektende",
+			"endDateDiff": "Änderung Projektende",
 			"deadlineName": "Termine",
 			"deadlineAxis": "Abweichung bei den Terminen",
 			"deadlineBubble": "Erreichte Termine in %",
@@ -975,6 +998,7 @@
 			"deadlineFinishedDelayAxis": "Durchschnittliche Abweichung bei erledigten Terminen",
 			"deadlineFinishedDelayBubble": "Abweichung bei erledigten Terminen",
 			"deadlineFinishedDelayTable": "Erledigte",
+			"deadlineFinishedDelayDiff": "Abweichung bei erledigten Terminen",
 			"deadlineUnFinishedDelayName": "Terminabweichung (unerledigte)",
 			"deadlineUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Terminen",
 			"deadlineUnFinishedDelayBubble": "Abweichung bei unerledigten Terminen",
@@ -1020,6 +1044,7 @@
 			"deliveries": "Lieferungen (Baseline)",
 			"days": "Tage",
 			"weeks": "Wochen",
+			"keuro": "T€",
 			"compare": "Vergleich von",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "gefiltert mit",
@@ -1114,7 +1139,7 @@
 			"done": "Erledigt",
 			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
-			"PFV": "Zeige alle vom Auftrag",
+			"PFV": "Zeige alle der Baseline",
 			"All": "Zeige alle kombiniert"
 		},
 		"btn": {

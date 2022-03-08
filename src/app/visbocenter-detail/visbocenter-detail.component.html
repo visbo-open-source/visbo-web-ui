@@ -21,18 +21,25 @@
     </form>
     <div *ngIf="getVCPerm() != permVC.View">
       <div class="btn-toolbar" class="mb-2" style="">
+        <button id="ViewUser" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
+        <button id="ViewGroup" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
-        <button id="ViewGroup" *ngIf="showList == 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
-        <button id="ViewUser" *ngIf="showList != 'Users'" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
-        <button id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('ProjectUsers')">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</button>
-        <div class="btn-group">
-          <button type="button" class="align-items-end btn btn-md btn-light" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
-          <div class="dropdown-toggle btn btn-light" data-toggle="dropdown">
-            <div class="dropdown-menu">
-              <div id="ViewSetting" class="dropdown-item" (click)="showSetting()" >{{ 'vcDetail.btn.ViewSetting' | translate }} </div>
-              <div id="ViewEnable" class="dropdown-item" (click)="showEnableDisable()" >{{ 'vcDetail.btn.ViewEnableDisable' | translate }} </div>
-            </div>
-          </div>
+        <button id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVCDetailNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarVCDetailNavigation">
+          <ul class="navbar-nav mr-auto">
+            <li id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" class="nav-item">
+              <a class="nav-link bg-light " (click)="switchView('ProjectUsers')" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</a>
+            </li>
+            <li id="ViewSetting" class="nav-item">
+              <a class="nav-link bg-light " (click)="showSetting()" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.ViewSetting' | translate }}</a>
+            </li>
+            <li id="ViewEnable" class="nav-item">
+              <a class="nav-link bg-light " (click)="showEnableDisable()" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.ViewEnableDisable' | translate }}</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -793,12 +800,12 @@
         </div>
         <div class="modal-body">
           <form>
-            <input type="file" class="file-upload" (change)="onFileSelected($event)" accept=".json,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <input type="file" class="file-upload" (change)="onFileSelected($event)" (click)="$event.target.value=null" accept=".json,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <div class="modal-footer align-items-end">
+              <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
+              <button *ngIf="newFile" id="AddOrgaConfirm" type="button" class="btn btn-primary mx-1" (click)="addOrganisation()" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
+            </div>
           </form>
-        </div>
-        <div class="modal-footer align-items-end">
-          <button id="ButtonBack" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.cancel' | translate }}</button>
-          <button *ngIf="newFile" id="AddOrgaConfirm" type="button" class="btn btn-primary mx-1" (click)="addOrganisation()" data-dismiss="modal" data-toggle="modal" data-target="#VcOrganisationModalSave">{{ 'vcDetail.btn.upload' | translate }}</button>
         </div>
       </div>
     </div>

@@ -640,13 +640,28 @@
 		"title": "Monthly Cost for",
 		"titleVersion": "Version of",
 		"titleBox": "Total Cost",
+		"lbl": {
+			"name": "Name",
+			"month": "Month",
+			"baseLineCost": "Cost (Baseline)",
+			"actualCost": "Actual Cost",
+			"plannedCost": "Planned Cost",
+			"cost": "Cost",
+			"baseLineInvoice": "Invoices (Baseline)",
+			"invoice": "Invoices",
+			"actualInvoice": "Actual Invoices",
+			"plannedInvoice": "Planned Invoices",
+			"cumulatedCost": "cumulated Cost",
+			"cumulatedInvoice": "cumulated Invoices"
+		},
 		"btn": {
 			"back": "Back"
 		},
 		"msg": {
 			"noCost": "No Cost Information about the project",
 			"errorPerm": "Permission denied for this project",
-			"errorPermVersion": "Permission denied for project versions {{name}}"
+			"errorPermVersion": "Permission denied for project versions {{name}}",
+			"viewWeb": "View Project Cost Online"
 		}
 	},
 	"ViewCapacity": {
@@ -931,6 +946,12 @@
 			"weeks": "weeks",
 			"keuro": "T€",
 			"show": "Show",
+			"diff": "Deviation",
+			"topX": "Top",
+			"absolute": "Absolute",
+			"percent": "Percent",
+			"worst": "Worst",
+			"best": "Best",
 			"and": "and",
 			"from": "from",
 			"planVsBase": "plan-to-date vs. baseline",
@@ -948,6 +969,7 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
+			"pfvVariant": "Baseline",
 			"costName": "Cost (total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
@@ -967,6 +989,7 @@
 			"endDateAxis": "Deviation in End Date",
 			"endDateBubble": "Change of End Date in weeks",
 			"endDateTable": "Change of End Date",
+			"endDateDiff": "Change of End Date",
 			"deadlineName": "Deadlines",
 			"deadlineAxis": "Deviation in achieved Deadlines",
 			"deadlineBubble": "Achieved Deadlines in %",
@@ -975,6 +998,7 @@
 			"deadlineFinishedDelayAxis": "Average Deviation in finished Deadlines",
 			"deadlineFinishedDelayBubble": "Deviation in finished Deadlines",
 			"deadlineFinishedDelayTable": "finished Deadlines",
+			"deadlineFinishedDelayDiff": "Deviation in finished Deadlines",
 			"deadlineUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
 			"deadlineUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
 			"deadlineUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
@@ -1020,6 +1044,7 @@
 			"deliveries": "Deliveries (Baseline)",
 			"days": "days",
 			"weeks": "weeks",
+			"keuro": "T€",
 			"compare": "Compare of",
 			"planVsBase": "plan-to-date vs. baseline",
 			"filtered": "filtered with",
@@ -1114,7 +1139,7 @@
 			"done": "Done",
 			"vp": "VISBO Project",
 			"VPV": "Show all from Project",
-			"PFV": "Show all from Order",
+			"PFV": "Show all from Baseline",
 			"All": "Show all combined"
 		},
 		"btn": {

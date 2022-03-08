@@ -40,9 +40,9 @@
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
     <div class="btn-toolbar" style ="">
+      <button id="ViewUser" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
+      <button id="ViewGroup" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Group')">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
       <button id="ViewAudit" *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
-      <button id="ViewGroup" *ngIf="actView != 'Group'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Group')">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
-      <button id="ViewUser" *ngIf="actView != 'User'" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
       <button id="ViewRestrictUser" *ngIf="viewRestriction()" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPRestriction(visboproject)">{{ 'vpDetail.btn.viewRestriction' | translate }}</button>
       <button id="ViewVariant" *ngIf="actView != 'Variant' && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Variant')">{{ 'vpDetail.btn.viewVariant' | translate }}</button>
       <button id="ViewLock" *ngIf="actView != 'Lock' && hasVPPerm(permVP.Modify) && visboproject.lock.length && hasVPPerm(permVP.Modify + permVP.CreateVariant)" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Lock')">{{ 'vpDetail.btn.viewLock' | translate }}</button>

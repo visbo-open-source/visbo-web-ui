@@ -1,44 +1,17 @@
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
     <div class="col col-sm-12 col-lg-8">
-      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid text-dark d-print-none'>
-        <div class="my-1 ml-2 row">
-          <div class="ml-2 mt-1">
-            {{ 'compViewVpf.lbl.diff' | translate }}
+      <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
+        <div class="row text-dark hidden-print">
+          <div class="my-1 pl-1 col-11">
+              <span>{{ 'compViewVpf.lbl.show' | translate }} </span>
+              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
+              <span> {{ 'compViewVpf.lbl.planVsBase' | translate }}</span>
+              <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
           </div>
-          <span class="dropdown mx-1">
-            <select class="form-control" id="XLabel" (change)="filterKeyBoardEvent($event)" name="metricX" [(ngModel)]="metricX">
-              <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
-            </select>
-          </span>
-          <div class="ml-2 mt-1">
-            {{ 'compViewVpf.lbl.planVsBase' | translate }},
-          </div>
-          <div class="mx-1">
-            <span class="mr-1"> {{ 'compViewVpf.lbl.topX' | translate }}</span>
-            <input type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="topX" min=0 max=99>
-          </div>
-          <span class="dropdown ml-2 my-1">
-            <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{(topAbsolute ? 'compViewVpf.lbl.absolute' : 'compViewVpf.lbl.percent') | translate}}</a>
-            <div class="dropdown-menu">
-              <a><div class="dropdown-item" (click)="topAbsolute = !topAbsolute; filterKeyBoardEvent($event)">{{ 'compViewVpf.lbl.absolute' | translate }}</div></a>
-              <a><div class="dropdown-item" (click)="topAbsolute = !topAbsolute; filterKeyBoardEvent($event)">{{ 'compViewVpf.lbl.percent' | translate }}</div></a>
-            </div>
-          </span>
-          <span class="dropdown ml-2 my-1">
-            <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{(topWorst > 0 ? 'compViewVpf.lbl.worst' : 'compViewVpf.lbl.best') | translate}}</a>
-            <div class="dropdown-menu">
-              <a><div class="dropdown-item" (click)="topWorst = -topWorst; filterKeyBoardEvent($event)">{{ 'compViewVpf.lbl.worst' | translate }}</div></a>
-              <a><div class="dropdown-item" (click)="topWorst = -topWorst; filterKeyBoardEvent($event)">{{ 'compViewVpf.lbl.best' | translate }}</div></a>
-            </div>
-          </span>
-          <span class="ml-2 mt-1"><a>
-            <i class="fas" [ngClass]="{'fa-plus-circle': !showFilter, 'fa-minus-circle': showFilter}" (click)="showFilter = !showFilter"></i>
-          </a></span>
-
         </div>
       </div>
-      <div *ngIf="showFilter && (filter || !getPreView())" class='container-fluid text-dark'>
+      <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
         <div class="my-1 row">
           <div class="ml-2">
             <span> {{ 'compViewVpf.lbl.filter' | translate }}:</span>

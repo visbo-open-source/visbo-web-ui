@@ -13,7 +13,33 @@ import { VisboProjectVersionService } from '../../_services/visboprojectversion.
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
-import { convertDate, getErrorMessage } from '../../_helpers/visbo.helper';
+import { convertDate, getErrorMessage, visboGetShortText } from '../../_helpers/visbo.helper';
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
+class exportCost {
+  name: string;
+  vpStatus: string;
+  strategicFit: number;
+  risk: number;
+  variantName: string;
+  ampelStatus: number;
+  ampelErlaeuterung: string;
+  vpid: string;
+  month: Date;
+  baseLineCost: number;
+  actualCost: number;
+  plannedCost: number;
+  cost: number;
+  baseLineInvoice: number;
+  actualInvoice: number;
+  plannedInvoice: number;
+  invoice: number;
+  cumulatedCost: number;
+  cumulatedInvoice: number;
+}
 
 @Component({
   selector: 'app-comp-viewcost',
@@ -254,6 +280,130 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
                     + ':</td align="right">' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
+  }
+
+  copyCost(cost: VPVCost, name: string, cumulate: exportCost): exportCost {
+    const copy = new exportCost();
+    const actualDataUntilTime = this.vpvActualDataUntil.getTime();
+    const currentTime = (new Date()).getTime();
+
+    copy.name = name;
+    copy.month = new Date(cost.currentDate);
+    // copy.variantName = cost.variantName;
+
+    copy.baseLineCost = cost.baseLineCost;
+    if (copy.month.getTime() < actualDataUntilTime) {
+      copy.actualCost = cost.currentCost;
+      copy.plannedCost = 0;
+    } else {
+      copy.actualCost = 0;
+      copy.plannedCost = cost.currentCost;
+    }
+    copy.cost = copy.actualCost + copy.plannedCost;
+    copy.baseLineInvoice = cost.baseLineInvoice;
+    if (copy.month.getTime() < currentTime) {
+      copy.actualInvoice = cost.currentInvoice;
+      copy.plannedInvoice = 0;
+    } else {
+      copy.actualInvoice = 0;
+      copy.plannedInvoice = cost.currentInvoice;
+    }
+    copy.invoice = copy.actualInvoice + copy.plannedInvoice;
+    cumulate.cumulatedCost += copy.cost;
+    cumulate.cumulatedInvoice += copy.invoice;
+    copy.cumulatedCost = cumulate.cumulatedCost;
+    copy.cumulatedInvoice = cumulate.cumulatedInvoice;
+    // copy.ampelStatus = vpv.ampelStatus;
+    // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
+    // if (vpv.vp) {
+    //   copy.vpStatus = vpv.vp.vpStatusLocale;
+    //   copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
+    //   copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+    // } else {
+    //   copy.vpStatus = '';
+    //   copy.strategicFit = -1;
+    //   copy.risk = -1;
+    // }
+    // delete copy.vpid;
+
+    return copy;
+  }
+
+  exportExcel(): void {
+    this.log(`Export Cost to Excel ${this.vpvCost?.length}`);
+    // convert list to matix
+
+    const excel: exportCost[] = [];
+
+    let name = '';
+    let urlWeb = ''
+    const listURL: string[] = [];
+    const tooltip = this.translate.instant('compViewCost.msg.viewWeb');
+    if (this.vpvActive) {
+      name = this.vpvActive.name;
+      urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpvActive.vpid, '?view=Cost');
+    }
+    const cumulate = new exportCost();
+    cumulate.cumulatedCost = 0;
+    cumulate.cumulatedInvoice = 0;
+    this.vpvCost?.forEach(element => {
+      excel.push(this.copyCost(element, name, cumulate));
+      listURL.push(urlWeb);
+    });
+
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    this.log(`Export Data to Excel ${excel.length}`);
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    let colName: number, colIndex = 0;
+    for (const element in excel[0]) {
+      // this.log(`Processing Header ${element}`);
+      if (element == 'name') {
+        colName = colIndex;
+      }
+      colIndex++;
+      header[element] = this.translate.instant('compViewCost.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = listURL[index - 1];
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_Cost ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   getLevel(plan: number, baseline: number): number {

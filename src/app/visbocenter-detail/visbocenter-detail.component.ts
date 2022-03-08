@@ -56,7 +56,7 @@ export class VisbocenterDetailComponent implements OnInit {
   indexEnableDisable: number;
 
   // eslint-disable-next-line
-  newFile: any;
+  newFile: any; target: any;
   newOrgaName: string;
   newOrgaList: VisboReducedOrgaItem[];
   orgaSaveMode: string;
@@ -735,10 +735,13 @@ export class VisbocenterDetailComponent implements OnInit {
 
   // eslint-disable-next-line
   onFileSelected(event: any): void {
-      const file = event?.target?.files?.[0];
+    if (event?.target) {
+      const file = event.target.files?.[0];
       if (file?.name) {
         this.newFile = file;
       }
+      this.target = event.target;
+    }
   }
 
   initOrganisationCreate(): void {
@@ -952,6 +955,9 @@ export class VisbocenterDetailComponent implements OnInit {
 
   resetError(): void {
     this.errorList = [];
+    if (this.target) {
+      this.target.value = null;
+    }
   }
 
   getCurrentOrgaLength(): number {
