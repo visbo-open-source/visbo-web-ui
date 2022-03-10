@@ -85,10 +85,10 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       width: '90%'
     },
     width: '100%',
-    timeline: {
-      showRowLabels: false,
-      showBarLabels: true
-    },
+    // timeline: {
+    //   showRowLabels: false,
+    //   showBarLabels: true
+    // },
     tooltip: {
       isHtml: true
     },
