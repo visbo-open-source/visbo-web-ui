@@ -103,6 +103,7 @@ export class VPVKeyMetricsCalc {
   timestamp: Date;
   variantName: string;
   startDate: Date;
+  endDate: Date;
   Risiko: number;
   StrategicFit: number;
   vpStatus: string;

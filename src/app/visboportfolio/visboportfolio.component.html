@@ -127,7 +127,7 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetric' && vpfActive && listVPV">
     <hr>
-    <app-comp-viewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpf>
+    <app-comp-viewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [metric]="pageParams.metricX" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpf>
   </div>
   <div *ngIf="pageParams.view == 'List' && vpfActive && listCalcVPV">
     <hr>

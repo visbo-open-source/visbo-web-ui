@@ -119,8 +119,11 @@
 
   <div>
     <div *ngIf="chart" class='container-fluid'>
-      <div *ngIf="countKM > 0 && graphBarData">
+      <div *ngIf="countKM > 0 && graphBarData?.length > 1">
         <app-bar-chart [graphData]="graphBarData" [graphOptions]="graphBarOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
+      </div>
+      <div *ngIf="countKM <= 0 || graphBarData?.length <= 1" class="text-warning">
+        {{ 'compViewVpf.msg.errorNoMatchingProjects' | translate }}
       </div>
     </div>
 
