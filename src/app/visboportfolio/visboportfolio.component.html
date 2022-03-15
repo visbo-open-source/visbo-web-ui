@@ -36,11 +36,11 @@
     </div>
   </div>
   <div *ngIf="vpActive" class='row ml-2'>
-    <div *ngIf="activeVPFVariant?.variantName == ''" class="text-dark">
-      {{ vpActive.description }}
+    <div *ngIf="activeVPFVariant?.variantName == ''" class="text-dark" title="{{ vpActive.description }}">
+      {{ getShortText(vpActive.description, 100) }}
     </div>
-    <div *ngIf="activeVPFVariant?.description" class="text-dark">
-      {{ activeVPFVariant.description }}
+    <div *ngIf="activeVPFVariant?.description" class="text-dark" title="{{ activeVPFVariant.description }}">
+      {{ getShortText(activeVPFVariant.description, 100) }}
     </div>
   </div>
   <div *ngIf="vpfActive">

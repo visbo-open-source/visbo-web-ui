@@ -23,7 +23,8 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboIsSameDay, visboGetBeginOfDay, convertDate, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboIsSameDay, visboGetBeginOfDay,
+        convertDate, visboGetShortText, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 import {TimeLineOptions} from '../_models/_chart'
@@ -1225,6 +1226,10 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
        return actDate;
     }
     return null;
+  }
+
+  getShortText(text: string, len: number, position?: string): string {
+    return visboGetShortText(text, len, position);
   }
 
   sortVPTable(n: number): void {

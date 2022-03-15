@@ -1002,7 +1002,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     const weekFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.weeks');
     const euroFormat = '# ' + this.translate.instant('compViewBubbleCmp.lbl.keuro');
     if (len > 0) {
-      this.graphBarOptions.height = 100 + len * 80;
+      this.graphBarOptions.height = 140 + len * 60;
     }
     this.graphBarOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
