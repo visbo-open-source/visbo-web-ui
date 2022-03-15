@@ -123,6 +123,10 @@
     </div>
     <hr>
 
+    <div *ngIf="currentView == 'Overview'">
+      <app-comp-viewvp [visboprojectversions]="activeVPVs" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewvp>
+    </div>
+
     <div *ngIf="currentView == 'KeyMetrics' || currentViewKM">
       <app-comp-viewkeymetrics [visboprojectversions]="activeVPVs" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
     </div>

@@ -55,6 +55,7 @@ import { VisboProjectsComponent } from './visboprojects/visboprojects.component'
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-audit.component';
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
+import { VisboCompViewVPComponent } from './_components/comp-viewvp/comp-viewvp.component';
 import { VisboCompViewKeyMetricsComponent } from './_components/comp-viewkeymetrics/comp-viewkeymetrics.component';
 import { VisboCompViewDeliveryComponent } from './_components/comp-viewdelivery/comp-viewdelivery.component';
 import { VisboCompViewDeadlineComponent } from './_components/comp-viewdeadline/comp-viewdeadline.component';
@@ -110,6 +111,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboprojectDetailComponent,
     VisboprojectAuditComponent,
     VisboProjectKeyMetricsComponent,
+    VisboCompViewVPComponent,
     VisboCompViewKeyMetricsComponent,
     VisboCompViewDeliveryComponent,
     VisboCompViewDeadlineComponent,

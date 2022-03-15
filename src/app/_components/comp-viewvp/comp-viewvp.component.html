@@ -1,0 +1,64 @@
+<form>
+  <div class="container" (resized)="onResized($event)">
+  	<div class="row">
+  		<div class="card-group col-12">
+        <div class="col-12">
+          <div *ngIf="hasKM(vpvActive?.keyMetrics, 'Cost')" class="card mx-1" (click)="gotoClickedRow(vpvActive, 'Cost')">
+            <div class="card-body d-flex flex-column">
+              <!-- <h3 class="card-title" (click)="gotoClickedVc(vc)"><a>{{vc.name}}</a></h3> -->
+              <div class="card-title text-dark font-weight-bold text-center" (click)="gotoClickedRow(vpvActive, 'Cost')"><a>{{'compViewVp.lbl.compCost' | translate}}</a></div>
+              <!-- <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6> -->
+              <div class="card-text">
+                <div *ngIf="graphCostData?.length > 1">
+                  <app-bar-chart [graphData]="graphCostData" [graphOptions]="graphCostOptions" [parentThis]="parentThis" [language]="currentLang"></app-bar-chart>
+                </div>
+              </div>
+            </div> <!-- end of card-body -->
+          </div> <!-- end of card -->
+        </div>
+      </div> <!-- end of card group -->
+    </div> <!-- end of row -->
+    <div class="row">
+  		<div class="card-group col-12">
+        <div class="col-sm-12 col-md-8 col-lg-6 my-2">
+          <div class="card mx-1" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+            <div class="card-body d-flex flex-column">
+              <div class="card-title text-dark font-weight-bold text-center" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+                <a>{{'compViewVp.lbl.compDeadline' | translate}}</a>
+              </div>
+              <h6 class="card-subtitle text-center">
+                {{'compViewVp.lbl.endDate' | translate}}:
+                {{vpvActive.endDate | date :'dd.MM.yyyy'}}
+                {{getEndDateDelay()}}
+                <ng-container *ngTemplateOutlet="indicator; context:{level: indicatorEndDate} " ></ng-container>
+              </h6>
+              <div *ngIf="hasKM(vpvActive?.keyMetrics, 'Deadline')" class="card-text align-center">
+                <app-pie-chart [elementID]="divDeadlineChart" [graphData]="graphDeadlineData" [graphLegend]="graphDeadlineLegend" [graphOptions]="graphDeadlineOptions" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+              </div>
+            </div> <!-- end of card-body -->
+          </div> <!-- end of card -->
+        </div>
+        <div *ngIf="hasKM(vpvActive?.keyMetrics, 'Delivery')" class="col-sm-12 col-md-8 col-lg-6 my-2">
+          <div class="card mx-1" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+            <div class="card-body d-flex flex-column">
+              <div class="card-title text-dark font-weight-bold text-center" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+                <a>{{'compViewVp.lbl.compDelivery' | translate}}</a>
+              </div>
+              <div class="card-text align-center">
+                <app-pie-chart [elementID]="divDeliveryChart" [graphData]="graphDeliveryData" [graphLegend]="graphDeliveryLegend" [graphOptions]="graphDeliveryOptions" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+              </div>
+            </div> <!-- end of card-body -->
+          </div> <!-- end of card -->
+        </div>
+      </div> <!-- end of card group -->
+    </div> <!-- end of row -->
+
+    <h3 *ngIf="!vpvActive">
+      {{ 'compViewVp.msg.noKeyMetric' | translate }}
+    </h3>
+  </div>
+</form>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>

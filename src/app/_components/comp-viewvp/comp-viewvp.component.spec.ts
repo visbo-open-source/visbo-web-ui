@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import 'jasmine';
 
-import { VisboCompViewVPComponent } from './comp-viewvp.component';
+import { VisboCompViewKeyMetricsComponent } from './comp-viewkeymetrics.component';
 
-describe('VisboCompViewVPComponent', () => {
-  let component: VisboCompViewVPComponent;
-  let fixture: ComponentFixture<VisboCompViewVPComponent>;
+describe('VisboCompViewKeyMetricsComponent', () => {
+  let component: VisboCompViewKeyMetricsComponent;
+  let fixture: ComponentFixture<VisboCompViewKeyMetricsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
     declarations: [
-        VisboCompViewVPComponent
+        VisboProjectViewCostComponent
     ],
     teardown: { destroyAfterEach: false }
 })
@@ -18,7 +18,7 @@ describe('VisboCompViewVPComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisboCompViewVPComponent);
+    fixture = TestBed.createComponent(VisboCompViewKeyMetricsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

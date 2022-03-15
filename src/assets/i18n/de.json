@@ -636,6 +636,32 @@
 			"viewWeb": "Anzeige des Projekts Online"
 		}
 	},
+	"compViewVp": {
+		"titleVPCost": "Überblick Projektkosten",
+		"lbl": {
+			"status": "Status",
+			"count": "Anzahl",
+			"weeks": "Wochen",
+			"endDate": "Projekt-Ende",
+			"keuro": "T€",
+			"baseline": "Baseline",
+			"plan": "Plan",
+			"actualCost": "aktuelle Kosten",
+			"totalCost": "Gesamtkosten",
+			"compCost": "Zielerreichung: Kosten",
+			"compDeadline": "Zielerreichung: Termine",
+			"compDelivery": "Zielerreichung: Lieferungen"
+		},
+		"chart": {
+			"statusDeadlineAheadFinished": "Vorzeitig erledigt",
+			"statusDeadlineInTimeFinished": "Pünktlich erledigt",
+			"statusDeadlineDelayFinished": "Verspätet erledigt",
+			"statusDeadlineDelayNotFinished": "Nicht erledigt",
+			"statusDeadlineAheadUnfinished": "Vorzeitig geplant",
+			"statusDeadlineInTimeUnfinished": "Pünktlich geplant",
+			"statusDeadlineDelayUnfinished": "Verspätet geplant"
+		}
+	},
 	"compViewCost": {
 		"title": "Monatliche Kosten für",
 		"titleVersion": "Version vom",

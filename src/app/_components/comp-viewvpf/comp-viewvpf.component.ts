@@ -1054,7 +1054,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   }
 
   chartSelectRow(row: number, label: string): void {
-    this.log(`Bubble Chart: ${row} ${label} ${this.visbokeymetrics[row].name}`);
+    this.log(`Timeline Chart: ${row} ${label} ${this.visbokeymetrics[row].name}`);
     let vpv = this.visbokeymetrics.find(x => x.name === label);
     if (!vpv) {
       // label contains a variantName

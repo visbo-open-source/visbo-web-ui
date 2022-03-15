@@ -636,6 +636,32 @@
 			"viewWeb": "View Project Online"
 		}
 	},
+	"compViewVp": {
+		"titleVPCost": "Overview Project Cost",
+		"lbl": {
+			"status": "Status",
+			"count": "Count",
+			"weeks": "Weeks",
+			"endDate": "Project End",
+			"keuro": "T€",
+			"baseline": "Baseline",
+			"plan": "Plan",
+			"actualCost": "actual Cost",
+			"totalCost": "total Cost",
+			"compCost": "Goal achievement: Cost",
+			"compDeadline": "Goal achievement: Deadline",
+			"compDelivery": "Goal achievement: Delivery"
+		},
+		"chart": {
+			"statusDeadlineAheadFinished": "Done ahead",
+			"statusDeadlineInTimeFinished": "Done in time",
+			"statusDeadlineDelayFinished": "Done delayed",
+			"statusDeadlineDelayNotFinished": "Not Done",
+			"statusDeadlineAheadUnfinished": "Planned ahead",
+			"statusDeadlineInTimeUnfinished": "Planned in time",
+			"statusDeadlineDelayUnfinished": "Planned delayed"
+		}
+	},
 	"compViewCost": {
 		"title": "Monthly Cost for",
 		"titleVersion": "Version of",

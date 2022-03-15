@@ -109,7 +109,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   refDate: Date;
   refDateStr: string;
 
-  allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
+  allViews = ['Overview', 'KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
   hasOrga = false;
   vpUser = new Map<string, VisboUser>();
@@ -189,6 +189,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (this.allViews.find(item => item === view)) {
       this.currentView = view;
+    } else {
+      this.currentView = this.allViews[0];
     }
 
     const refDate = this.route.snapshot.queryParams.refDate;
