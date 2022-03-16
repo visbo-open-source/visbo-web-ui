@@ -9,9 +9,9 @@
   </div>
 
   <div *ngIf="fullList && refType != 'vpv'" class="container">
-    <div class="d-flex justify-content-center" *ngIf="graphAllDataPieChart.length > 1">
-      <div class="align-center" >
-        <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphDataBefore]="graphBeforeAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+    <div class="d-flex justify-content-center" *ngIf="graphDeadlineData.length >= 1">
+      <div class="align-center">
+        <app-pie-chart [elementID]="divDeadlineChart" [graphData]="graphDeadlineData" [graphLegend]="graphDeadlineLegend" [graphOptions]="graphDeadlineOptions" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
       </div>
     </div>
   </div>
@@ -47,15 +47,14 @@
       <tbody>
         <tr *ngFor="let deadlines of filteredDeadline; let deadlineIndex=index" (click)='helperDeadline(deadlineIndex)' data-toggle="modal" data-target="#detailDeadline">
           <td title="{{getFullName(deadlines)}}">
-            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatus(deadlines), text: getShortText(getFullName(deadlines), 100, 'right')} " ></ng-container>
+            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatusDeadline(vpvActive, deadlines), text: getShortText(getFullName(deadlines), 100, 'right')} " ></ng-container>
           </td>
           <td class="d-none d-lg-table-cell">{{deadlines.type}}</td>
           <td *ngIf="switchType" class="d-none d-xl-table-cell text-right">{{deadlines.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-md-table-cell text-right">{{deadlines.endDateVPV | date :'dd.MM.yy'}}</td>
           <td *ngIf="switchType" class="text-right" title="{{deadlines.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{deadlines.changeDays / 7 | number :'1.0-1'}}</td>
 
-          <td *ngIf="(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
-          <td *ngIf="!(inFuture(deadlines.endDateVPV) || deadlines.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td class="d-none d-md-table-cell text-right">{{deadlines.percentDone * 100 | number : '1.0-0'}} %</td>
           <td class="d-none d-md-table-cell" title="{{deadlines.trafficlightDesc}}">
             <ng-container *ngTemplateOutlet="trafficLight; context:{level: deadlines.trafficlight} " ></ng-container>
           </td>
@@ -67,13 +66,12 @@
 
   <ng-template #fontStyle let-level="level" let-text="text">
     <i [ngClass]="{
-      'font-weight-normal': level == -1,
-      'font-weight-bold': level >= 0,
-      'my_darkgreen': level == 0,
-      'my_green': level == 1,
-      'my_orange': level == 2,
-      'my_red': level == 3}
-      ">
+      'font-weight-normal': level == 0,
+      'font-weight-bold': level > 0,
+      'my_green': [1, 2, 5, 6].includes(level),
+      'my_orange': [3, 7].includes(level),
+      'my_red': [4].includes(level)
+      }">
       {{text}}
     </i>
   </ng-template>

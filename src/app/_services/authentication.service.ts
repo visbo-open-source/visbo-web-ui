@@ -115,7 +115,7 @@ export class AuthenticationService {
       return this.http.post<LoginResponse>(url, {})
         .pipe(
           map(result => {
-            console.log(`google Login :  ${JSON.stringify(result)}`);
+            // console.log(`google Login :  ${JSON.stringify(result)}`);
             // login successful if there's a jwt token in the response
             if (result && result.token) {
               this.log(`Login Request Successful:  ${result.user.email}`);

@@ -771,7 +771,7 @@ export class VisbocenterDetailComponent implements OnInit {
       fileReader.readAsText(this.newFile);
     }
     fileReader.onloadend = (e) => {
-      console.log("File uploaded Length", fileReader.result.toString().length, this.newFile.size, "type", typeof fileReader.result);
+      this.log(`File uploaded Length ${fileReader.result.toString().length}, ${this.newFile.size}, type: ${typeof fileReader.result}`);
       let jsonSetting: string;
       this.isSettingSaved = true;
       if (isJson) {
@@ -866,7 +866,7 @@ export class VisbocenterDetailComponent implements OnInit {
       fileReader.readAsText(this.newFile);
     }
     fileReader.onloadend = (e) => {
-      console.log("File uploaded Length", fileReader.result.toString().length, this.newFile.size, "type", typeof fileReader.result);
+      this.log(`File uploaded Length ${fileReader.result.toString().length}, ${this.newFile.size}, type: ${typeof fileReader.result}`);
       let jsonSetting: string;
       if (isExcel) {
         const workbook = XLSX.read(e.target.result);
@@ -1315,6 +1315,5 @@ export class VisbocenterDetailComponent implements OnInit {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);
-    console.log('VisboCenter Details: ' + message);
   }
 }

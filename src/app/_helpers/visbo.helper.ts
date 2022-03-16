@@ -175,7 +175,7 @@ export function getPreView(): boolean {
 export function switchPreView(): boolean {
   const result = !getPreView();
   localStorage.setItem('printPreView', result ? '1' : '0');
-  console.log("Switch PreView", result);
+  // console.log("Switch PreView", result);
   return result;
 }
 

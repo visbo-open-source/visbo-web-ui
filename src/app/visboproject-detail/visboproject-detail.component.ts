@@ -904,6 +904,5 @@ export class VisboprojectDetailComponent implements OnInit {
   /** Log a VisboProjectService message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectDetail: ' + message);
-    console.log('VisboProjectDetail: ' + message);
   }
 }

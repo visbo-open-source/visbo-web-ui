@@ -63,7 +63,6 @@ export class LogoutTimerComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    // console.log('logoutTimer: ' + message)
     this.messageService.add('logoutTimer: ' + message);
   }
 }

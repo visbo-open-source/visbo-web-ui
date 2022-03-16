@@ -53,25 +53,29 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   switchType = true;
 
   parentThis = this;
-  colors = ['#005600', 'green', 'orange', 'red'];
 
-  graphAllDataPieChart = [];
-  graphAllPieLegend = [
-    ['string', this.translate.instant('compViewDelivery.lbl.status')],
-    ['number', this.translate.instant('compViewDelivery.lbl.count')]
-  ];
-  graphAllOptionsPieChart = {
-      title: 'View Delivery Status',
+  graphDeliveryData = [];
+  colorsDelivery = ['gray', '#005600', 'green', 'orange', 'red', '#005600', 'green', 'orange', 'grey'];
+  graphDeliveryOptions = {
+      // title: 'View Delivery Status',
       titleTextStyle: {color: 'black', fontSize: '16'},
       // pieSliceText: 'value',
       pieSliceText: 'percentage',
       tooltip : {
         trigger: 'none'
       },
+      width: '600',
       // sliceVisibilityThreshold: .025
-      colors: this.colors
+      // pieHole: 0.25,
+      slices: {},
+      // sliceVisibilityThreshold: .025
+      colors: []
     };
-  divAllPieChart = 'divAllDeliveryPieChart';
+  graphDeliveryLegend = [
+    ['string', this.translate.instant('compViewDelivery.lbl.status')],
+    ['number', this.translate.instant('compViewDelivery.lbl.count')]
+  ];
+  divDeliveryChart = 'divDeliveryChart';
 
   permVC = VGPVC;
   permVP = VGPVP;
@@ -84,18 +88,21 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.statusList = [
-      this.translate.instant('keyMetrics.chart.statusDeliveryAhead'),
-      this.translate.instant('keyMetrics.chart.statusDeliveryInTime'),
-      this.translate.instant('keyMetrics.chart.statusDeliveryDelay'),
-      this.translate.instant('keyMetrics.chart.statusDeliveryNotCompleted'),
-      'Unknown'
+      'Unknown',
+      this.translate.instant('compViewVp.chart.statusFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusNotFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedDelay')
     ];
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
     this.visboDeliveryCalc();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}, Changes: ${JSON.stringify(changes)}`);
+    this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboDeliveryCalc();
     }
@@ -111,7 +118,6 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   }
 
   visboDeliveryCalc(): void {
-    // this.visboViewAllDeliveryPie = undefined;
     if (!this.vpvActive) {
       return;
     }
@@ -155,12 +161,11 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       return;
     }
     // generate long Names
-    for (let i = 0; i < this.allDelivery.length; i++) {
-      this.allDelivery[i].fullName = this.getFullName(this.allDelivery[i]);
-      const statusID = this.getStatus(this.allDelivery[i]);
-      this.allDelivery[i].statusID = statusID;
-      this.allDelivery[i].status = this.statusList[statusID];
-    }
+    this.allDelivery.forEach(delivery => {
+      delivery.fullName = this.getFullName(delivery);
+      delivery.statusID = this.getStatusDelivery(this.vpvActive, delivery);
+      delivery.status = this.statusList[delivery.statusID];
+    });
     this.filterDeliveries();
   }
 
@@ -212,56 +217,55 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
       return perm > 0;
   }
 
-  getStatus(element: VPVDelivery): number {
-
-    const refDate = this.vpvActive.timestamp;
-
+  getStatusDelivery(vpv: VisboProjectVersion, element: VPVDelivery): number {
+    const refDate = vpv.timestamp;
     let status = 0;
-    if (!element.endDatePFV) {
-      // no comparison with pfv
-      status = -1;
-    } else  if (element.endDatePFV <= refDate && element.percentDone < 1) {
-      status = 3;
-    } else if (element.changeDays < 0) {
-      status = 0;
-    } else if (element.changeDays === 0) {
-      status = 1;
-    } else {
-      status = 2;
+    const actualDate = new Date();
+    if (element.endDatePFV) {
+      if ((new Date(element.endDatePFV).getTime() < actualDate.getTime())) {
+        status = 1;
+      } else {
+        status = 5;
+      }
+      if (status == 5 || element.percentDone == 1) {
+        if (element.changeDays <= 0) { status += 1; }
+        if (element.changeDays > 0) { status += 2; }
+      } else if (status == 1 || element.percentDone < 1) {
+        status = 4;
+      }
     }
     return status;
   }
 
   visboViewAllDeliveryPie(): void {
-    // if (!this.filteredDelivery || this.filteredDelivery.length == 0) return;
-    this.graphAllOptionsPieChart.title = this.translate.instant('compViewDelivery.titleAllDelivery');
+    // this.graphDeliveryOptions.title = this.translate.instant('compViewDelivery.titleAllDelivery');
 
     const finishedDeliveryStatus = [];
     const graphData = [];
     let status;
-    for (let i = 0; i < this.statusList.length; i++) {
-      finishedDeliveryStatus[i] = 0;
-    }
+    this.statusList.forEach((status, index) => {
+      finishedDeliveryStatus[index] = 0;
+    });
     let nonEmpty = false;
-    for (let i = 0; i < this.filteredDelivery.length; i++) {
-      // ur: 29.02.2020: es werden nun alle Deliveries in einem PieChart dargestellt, also alle Deliveries in einem Status-Array aufgesammelt
-      // if (this.filteredDelivery[i].percentDone === 1) {
-      //   // finished entries
-        status = this.getStatus(this.filteredDelivery[i]);
-        finishedDeliveryStatus[status] += 1;
-        nonEmpty = true;
-      // }
-    }
-    for (let i = 0; i < finishedDeliveryStatus.length; i++) {
-      graphData.push([this.statusList[i], finishedDeliveryStatus[i]]);
-    }
+    this.filteredDelivery.forEach(item => {
+      status = this.getStatusDelivery(this.vpvActive, item);
+      finishedDeliveryStatus[status] += 1;
+      nonEmpty = true;
+    });
 
-    // this.graphBeforeAllDataPieChart = this.graphAllDataPieChart;
-    if (nonEmpty) {
-      this.graphAllDataPieChart = graphData;
-    } else {
-      this.graphAllDataPieChart = [];
-    }
+    const colors = [];
+    finishedDeliveryStatus.forEach( (item, index) => {
+      if (item > 0) {
+        graphData.push([this.statusList[index], item]);
+        colors.push(this.colorsDelivery[index]);
+        if (index < 5) {
+          // past deadlines
+          this.graphDeliveryOptions.slices[graphData.length - 1] = {offset: 0.2};
+        }
+      }
+    });
+    this.graphDeliveryOptions.colors = colors;
+    this.graphDeliveryData = nonEmpty ? graphData : [];
   }
 
   chartSelectRow(row: number, label: string, value: number): void {

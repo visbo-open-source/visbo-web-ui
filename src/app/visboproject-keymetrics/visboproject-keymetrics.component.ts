@@ -498,7 +498,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         url = url.concat(separator, 'ott:', ott);
         separator = '&'
     }
-    console.log("URL:", url);
+    this.log(`URL: ${url}`);
     return url;
   }
 
@@ -1596,7 +1596,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboProjectKeyMetrics: ' + message);
-    console.log('VisboProjectKeyMetrics: ' + message);
   }
 
 }

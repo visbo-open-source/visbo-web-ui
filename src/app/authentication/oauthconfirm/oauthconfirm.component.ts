@@ -26,10 +26,10 @@ export class OauthconfirmComponent implements OnInit {
 
   ngOnInit(): void {
     const hash = this.route.snapshot.queryParams.hash;
-    console.log(`Init OAuth Confirm Hash ${hash}`);
+    this.log(`Init OAuth Confirm Hash ${hash}`);
 
     this.authenticationService.oauthconfirm(hash);
-    console.log(`OAuth Confirm Success`);
+    this.log(`OAuth Confirm Success`);
     const message = this.translate.instant('oauthconfirm.msg.loginSuccess');
     this.alertService.success(message, true);
     this.router.navigate(['/']);

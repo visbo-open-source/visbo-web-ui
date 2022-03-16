@@ -654,13 +654,13 @@
 			"compDelivery": "Zielerreichung: Lieferungen"
 		},
 		"chart": {
-			"statusDeadlineAheadFinished": "Vorzeitig erledigt",
-			"statusDeadlineInTimeFinished": "Pünktlich erledigt",
-			"statusDeadlineDelayFinished": "Verspätet erledigt",
-			"statusDeadlineDelayNotFinished": "Nicht erledigt",
-			"statusDeadlineAheadUnfinished": "Vorzeitig geplant",
-			"statusDeadlineInTimeUnfinished": "Pünktlich geplant",
-			"statusDeadlineDelayUnfinished": "Verspätet geplant"
+			"statusFinishedAhead": "Vorzeitig erledigt",
+			"statusFinishedInTime": "Pünktlich erledigt",
+			"statusFinishedDelay": "Verspätet erledigt",
+			"statusNotFinishedDelay": "Nicht erledigt",
+			"statusUnFinishedAhead": "Vorzeitig geplant",
+			"statusUnFinishedInTime": "Pünktlich geplant",
+			"statusUnFinishedDelay": "Verspätet geplant"
 		}
 	},
 	"compViewCost": {

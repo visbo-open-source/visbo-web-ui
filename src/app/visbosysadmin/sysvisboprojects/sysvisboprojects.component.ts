@@ -44,7 +44,6 @@ export class SysVisboProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // console.log("Init VisboProjects");
     this.getVisboProjects();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }

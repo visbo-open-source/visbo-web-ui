@@ -10,10 +10,10 @@
     </div>
   </div>
 
-  <div *ngIf="!reducedList" class="container">
-    <div *ngIf="graphAllDataPieChart.length > 1" class="d-flex justify-content-center">
+  <div *ngIf="!reducedList" class="container mt-1">
+    <div *ngIf="graphDeliveryData.length >= 1" class="d-flex justify-content-center">
       <div class="align-center" >
-        <app-pie-chart [elementID]="divAllPieChart" [graphData]="graphAllDataPieChart" [graphLegend]="graphAllPieLegend" [graphOptions]="graphAllOptionsPieChart" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
+        <app-pie-chart [elementID]="divDeliveryChart" [graphData]="graphDeliveryData" [graphLegend]="graphDeliveryLegend" [graphOptions]="graphDeliveryOptions" [parentThis]="parentThis" [language]="currentLang"></app-pie-chart>
       </div>
     </div>
   </div>
@@ -35,15 +35,13 @@
       <tbody>
         <tr *ngFor="let delivery of filteredDelivery; let deliveryIndex=index" (click)='helperDelivery(deliveryIndex)' data-toggle="modal" data-target="#detailDelivery">
           <td title="{{delivery.description}}">
-            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatus(delivery), text: getShortText(delivery.description, 100)} " ></ng-container>
+            <ng-container *ngTemplateOutlet="fontStyle; context:{level: getStatusDelivery(vpvActive, delivery), text: getShortText(delivery.description, 100)} " ></ng-container>
           </td>
           <td class="d-none d-md-table-cell" title="{{getFullName(delivery)}}">{{getShortText(getFullName(delivery), 50, 'right')}}</td>
           <td *ngIf="!reducedList" class="d-none d-lg-table-cell text-right">{{delivery.endDatePFV | date :'dd.MM.yy'}}</td>
           <td class="d-none d-lg-table-cell text-right">{{delivery.endDateVPV | date :'dd.MM.yy'}}</td>
           <td *ngIf="!reducedList" class="text-right" title="{{delivery.endDatePFV | date :'dd.MM.yy'}} (baseline)">{{delivery.changeDays / 7 | number :'1.0-1'}}</td>
-
-          <td *ngIf="(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
-          <td *ngIf="!(inFuture(delivery.endDateVPV) || delivery.percentDone == 1)" class="d-none d-md-table-cell text-right my_bg_red">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
+          <td class="d-none d-md-table-cell text-right">{{delivery.percentDone * 100 | number : '1.0-0'}} %</td>
         </tr>
       </tbody>
     </table>
@@ -51,13 +49,12 @@
 
   <ng-template #fontStyle let-level="level" let-text="text">
     <i [ngClass]="{
-      'font-weight-normal': level == -1,
-      'font-weight-bold': level >= 0,
-      'my_darkgreen': level == 0,
-      'my_green': level == 1,
-      'my_orange': level == 2,
-      'my_red': level == 3}
-      ">
+      'font-weight-normal': level == 0,
+      'font-weight-bold': level > 0,
+      'my_green': [1, 2, 5, 6].includes(level),
+      'my_orange': [3, 7].includes(level),
+      'my_red': [4].includes(level)
+      }">
       {{text}}
     </i>
   </ng-template>

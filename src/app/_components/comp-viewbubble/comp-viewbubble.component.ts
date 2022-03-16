@@ -1361,7 +1361,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompViewBubble: ' + message);
     this.messageService.add('CompViewBubble: ' + message);
   }
 }

@@ -92,6 +92,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       tooltip : {
         trigger: 'none'
       },
+      width: '600',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
@@ -111,7 +112,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       tooltip : {
         trigger: 'none'
       },
-      pieHole: 0.25,
+      width: '600',
+      // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
       colors: []
@@ -135,13 +137,13 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     this.currentLang = this.translate.currentLang;
     this.statusList = [
       'Unknown',
-      this.translate.instant('compViewVp.chart.statusDeadlineAheadFinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineInTimeFinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineDelayFinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineDelayNotFinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineAheadUnfinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineInTimeUnfinished'),
-      this.translate.instant('compViewVp.chart.statusDeadlineDelayUnfinished')
+      this.translate.instant('compViewVp.chart.statusFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusNotFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedDelay')
     ];
     this.initSettings();
     this.visboVPVView();
@@ -305,7 +307,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       if (item > 0) {
         graphData.push([this.statusList[index], item]);
         colors.push(this.colorsDeadline[index]);
-        if (index >= 5) {
+        if (index < 5) {
           // past deadlines
           this.graphDeadlineOptions.slices[graphData.length - 1] = {offset: 0.2};
         }
@@ -340,7 +342,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       if (item > 0) {
         graphData.push([this.statusList[index], item]);
         colors.push(this.colorsDelivery[index]);
-        if (index >= 5) {
+        if (index < 5) {
           // past deadlines
           this.graphDeliveryOptions.slices[graphData.length - 1] = {offset: 0.2};
         }
@@ -597,7 +599,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('CompVisboViewVp: ' + message);
-    console.log('CompVisboViewVp: ' + message);
   }
 
 }

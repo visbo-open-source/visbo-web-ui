@@ -886,7 +886,6 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
     // let sortedProjects: VisboCapacity[] = null;
     // sortedProjects = this.visboSortProjects(this.visboCapacityChild.source);
     // const childNodeList = this.calcChildNode(sortedProjects, 'name');
-    // console.log(childNodeList);
     const childNodeList = this.calcChildNode(capacityChild, capacityChildCmp, 'name');
     const mapNodeList = this.mapChildNode(childNodeList);
 
@@ -1738,14 +1737,14 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
       return accumulator;
     }, new Map<string, {sum: number; elems: VisboCapacity[]}>());
 
-    console.log(capacityChildGroupedByProject);
+    this.log(JSON.stringify(capacityChildGroupedByProject));
 
     const sortedValues = Array.from(capacityChildGroupedByProject.values())
             .sort((a, z) => z.sum - a.sum);
             //.sort((a, z) => z.sum/z.elems.length - a.sum/a.elems.length);
     const sortedArray = sortedValues.map((item) => item.elems);
     const flatArray = [].concat([], ...sortedArray);
-    console.log(sortedValues);
+    this.log(JSON.stringify(sortedValues));
     const sortedProjects: VisboCapacity[] = flatArray;
     return sortedProjects;
     // ------ SORT END ------
@@ -1930,7 +1929,6 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('CompVisboViewCapcity:', message);
     this.messageService.add('CompVisboViewCapcity: ' + message);
   }
 

@@ -1252,7 +1252,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('CompVisboViewCost: ' + message);
-    // console.log('CompVisboViewCost: ' + message);
   }
 
 }

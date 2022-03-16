@@ -1434,7 +1434,6 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    // console.log('CompViewBubbleCmp: ' + message);
     this.messageService.add('CompViewBubbleCmp: ' + message);
   }
 }

@@ -269,7 +269,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
 
         bu = item ? item.value : undefined;
-        console.log("BusinessUnit %s", bu);
+        this.log(`BusinessUnit ${bu}`);
 
         if (bu) {
           buColor = buDefs[bu];
@@ -277,7 +277,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         } else {
           rgbHex = defaultColor;
         }
-        console.log("BusinessUnit - Color %s", rgbHex);
+        this.log(`BusinessUnit - Color ${rgbHex}`);
         let newColor = undefined;
 
         if (!this.listVPV[i].vp.vpStatus) {

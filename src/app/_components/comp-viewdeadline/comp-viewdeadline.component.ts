@@ -55,24 +55,25 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   statusList: string[];
 
-  colors = ['#005600', 'green', 'orange', 'red'];
-
-  graphAllDataPieChart = [];
-  graphBeforeAllDataPieChart = [];
-  graphAllPieLegend = [
+  graphDeadlineData = [];
+  colorsDeadline = ['gray', '#005600', 'green', 'orange', 'red', '#005600', 'green', 'orange', 'grey'];
+  graphDeadlineLegend = [
     ['string', this.translate.instant('compViewDeadline.lbl.status')],
     ['number', this.translate.instant('compViewDeadline.lbl.count')]
   ];
-  graphAllOptionsPieChart = {
-      title: 'View Deadlines',
+  graphDeadlineOptions = {
+      // title: 'View Deadlines',
       titleTextStyle: {color: 'black', fontSize: '16'},
       tooltip : {
         trigger: 'none'
       },
+      width: '600',
+      // pieHole: 0.25,
+      slices: {},
       // sliceVisibilityThreshold: .025
-      colors: this.colors
+      colors: []
     };
-  divAllPieChart = 'divAllDeadLinePieChart';
+  divDeadlineChart = 'divDeadLineChart';
 
   ganttOptions: GanttChartOptions;
   ganttDefaultOptions: GanttChartOptions = {
@@ -118,11 +119,14 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.statusList = [
-      this.translate.instant('keyMetrics.chart.statusDeadlineAhead'),
-      this.translate.instant('keyMetrics.chart.statusDeadlineInTime'),
-      this.translate.instant('keyMetrics.chart.statusDeadlineDelay'),
-      this.translate.instant('keyMetrics.chart.statusDeadlineNotCompleted'),
-      'Unknown'
+      'Unknown',
+      this.translate.instant('compViewVp.chart.statusFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusNotFinishedDelay'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedAhead'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedInTime'),
+      this.translate.instant('compViewVp.chart.statusUnFinishedDelay')
     ];
     this.buttonGantt = this.translate.instant('compViewDelivery.btn.buttonGanttOn');
     this.listType.forEach(item => item.localName = this.translate.instant('compViewDelivery.lbl.'.concat(item.name)));
@@ -198,12 +202,11 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // set the filter to the root, as the restricted user might not see this.
     this.filterPath = ['.'];
     // generate long Names
-    for (let i = 0; i < this.allDeadline.length; i++) {
-      this.allDeadline[i].fullName = this.getFullName(this.allDeadline[i]);
-      this.allDeadline[i].status = this.statusList[this.getStatus(this.allDeadline[i])];
-      this.allDeadline[i].statusID = this.getStatus(this.allDeadline[i]);
-      // check if the user can switch between pfv & vpv
-    }
+    this.allDeadline.forEach(deadline => {
+      deadline.fullName = this.getFullName(deadline);
+      deadline.statusID = this.getStatusDeadline(this.vpvActive, deadline);
+      deadline.status = this.statusList[deadline.statusID];
+    });
     this.filterDeadlines(change);
   }
 
@@ -280,61 +283,55 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       return perm > 0;
   }
 
-  getStatus(element: VPVDeadline): number {
-    const refDate = this.vpvActive.timestamp;
+  getStatusDeadline(vpv: VisboProjectVersion, element: VPVDeadline): number {
+    const refDate = vpv.timestamp;
     let status = 0;
-    if (!element.endDatePFV) {
-      // no comparison with pfv
-      status = -1;
-    } else  if (element.endDatePFV <= refDate && element.percentDone < 1) {
-      status = 3;
-    } else if (element.endDatePFV > refDate && element.percentDone === 1) {
-      status = 0;
-    } else if (element.endDatePFV <= refDate && element.percentDone === 1) {
-      if (element.changeDays < 0) { status = 0; }
-      if (element.changeDays === 0) { status = 1; }
-      if (element.changeDays > 0) { status = 2; }
-    } else if  (element.endDatePFV > refDate && element.percentDone < 1) {
-      if (element.changeDays < 0) { status = 0; }
-      if (element.changeDays === 0) { status = 1; }
-      if (element.changeDays > 0) { status = 2; }
-    } else {
-      status = 4;
+    const actualDate = new Date();
+    if (element.endDatePFV) {
+      if ((new Date(element.endDatePFV).getTime() < actualDate.getTime())) {
+        status = 1;
+      } else {
+        status = 5;
+      }
+      if (status == 5 || element.percentDone == 1) {
+        if (element.changeDays <= 0) { status += 1; }
+        if (element.changeDays > 0) { status += 2; }
+      } else if (status == 1 || element.percentDone < 1) {
+        status = 4;
+      }
     }
     return status;
   }
 
   visboViewAllDeadlinePie(change: boolean): void {
     // if (!this.filteredDeadline || this.filteredDeadline.length == 0) return;
-    this.graphAllOptionsPieChart.title = this.translate.instant('compViewDeadline.titleAllDeadlines');
+    // this.graphDeadlineOptions.title = this.translate.instant('compViewDeadline.titleAllDeadlines');
 
     const finishedDeadlineStatus = [];
     const graphData = [];
     let status;
-    for (let i = 0; i < this.statusList.length; i++) {
-      finishedDeadlineStatus[i] = 0;
-    }
+    this.statusList.forEach((status, index) => {
+      finishedDeadlineStatus[index] = 0;
+    });
     let nonEmpty = false;
-    for (let i = 0; i < this.filteredDeadline.length; i++) {
-      // ur:24.2.2020
-      // if (this.filteredDeadline[i].percentDone === 1) {
-        // all  entries
-        status = this.getStatus(this.filteredDeadline[i]);
-        finishedDeadlineStatus[status] += 1;
-        nonEmpty = true;
-      // }
-    }
-    for (let i = 0; i < finishedDeadlineStatus.length; i++) {
-      graphData.push([this.statusList[i], finishedDeadlineStatus[i]]);
-    }
-    // show the last PieChart as well
-    this.log(`PIE Chart change ${change}`)
-    // this.graphBeforeAllDataPieChart = change ? this.graphAllDataPieChart : undefined;
-    if (nonEmpty) {
-      this.graphAllDataPieChart = graphData;
-    } else {
-      this.graphAllDataPieChart = [];
-    }
+    this.filteredDeadline.forEach(item => {
+      status = this.getStatusDeadline(this.vpvActive, item);
+      finishedDeadlineStatus[status] += 1;
+      nonEmpty = true;
+    });
+    const colors = [];
+    finishedDeadlineStatus.forEach( (item, index) => {
+      if (item > 0) {
+        graphData.push([this.statusList[index], item]);
+        colors.push(this.colorsDeadline[index]);
+        if (index < 5) {
+          // past deadlines
+          this.graphDeadlineOptions.slices[graphData.length - 1] = {offset: 0.2};
+        }
+      }
+    });
+    this.graphDeadlineOptions.colors = colors;
+    this.graphDeadlineData = nonEmpty ? graphData : [];
   }
 
   getPhaseName(deadline: VPVDeadline): string {

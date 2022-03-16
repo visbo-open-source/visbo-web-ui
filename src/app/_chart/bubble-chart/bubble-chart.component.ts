@@ -58,7 +58,7 @@ export class BubbleChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const selectedItem = chart.getSelection()[0];
       if (parentThis === undefined) {
-        console.log(`Bubble: The user clicked and this is undefined`);
+        // console.log(`Bubble: The user clicked and this is undefined`);
       } else if (selectedItem) {
         const row = selectedItem.row;
         const label = data.getValue(selectedItem.row, 0);
@@ -70,11 +70,11 @@ export class BubbleChartComponent implements OnInit, OnChanges {
     // The click handler. Call the chart's getSelection() method
     function clickHandler(targetID: Target) {
       if (parentThis === undefined) {
-        console.log(`Bubble: The user clicked and this is undefined`);
+        // console.log(`Bubble: The user clicked and this is undefined`);
       } else if (targetID) {
         // console.log(`Bubble: The user clicked ${JSON.stringify(targetID)}`);
       } else {
-        console.log(`Bubble: The user clicked somewhere`);
+        // console.log(`Bubble: The user clicked somewhere`);
       }
     }
 

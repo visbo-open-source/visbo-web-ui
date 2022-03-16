@@ -34,7 +34,6 @@ export class SysNavbarComponent implements OnInit {
   }
 
   gotoClickedItem(action: string): void {
-    // console.log("clicked nav item %s", action);
     this.router.navigate([action]);
   }
 

@@ -1393,7 +1393,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    // console.log('compViewVpf: ' + message);
     this.messageService.add('compViewVpf: ' + message);
   }
 }

@@ -914,7 +914,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     newVPF._id = this.vpfActive._id;
     this.visboprojectversionService.updateVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
       vpf => {
-        console.log("update VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
+        this.log(`update VPF ${vpf.name} with ID ${vpf._id}, VPF Len ${vpf.allItems.length}`);
         const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
         this.alertService.success(message, true);
         // Update VPF List
@@ -956,7 +956,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     this.log(`create VPF List ${this.vpCheckListAll.length}`);
     this.visboprojectversionService.addVisboPortfolioVersion(this.vpActive, newVPF).subscribe(
       vpf => {
-        console.log("add VPF %s with ID %s VPF Len %s", vpf.name, vpf._id, vpf.allItems.length);
+        this.log(`add VPF ${vpf.name} with ID ${vpf._id}, VPF Len ${vpf.allItems.length}`);
         const message = this.translate.instant('vpfVersion.msg.createVPFSuccess', {name: this.vpActive.name});
         this.alertService.success(message, true);
         this.incrementVPFCount(this.vpActive, vpf.variantName, 1);
@@ -1248,7 +1248,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         this.sortAscending = !this.sortAscending;
       }
     }
-    // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn === 1) {
       // sort by VP Name
       this.vpCheckListFiltered.sort(function(a, b) {
@@ -1287,10 +1286,8 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
         return visboCmpString(b.vp.vpStatusLocale, a.vp.vpStatusLocale);
       });
     }
-    // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.vpCheckListFiltered.reverse();
-      // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 
@@ -1301,6 +1298,5 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string): void {
     this.messageService.add('VisboPortfolioVersion: ' + message);
-    console.log('VisboPortfolioVersion: ' + message)
   }
 }

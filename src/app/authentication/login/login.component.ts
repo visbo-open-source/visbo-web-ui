@@ -169,11 +169,11 @@ export class LoginComponent implements OnInit {
 
   loginGoogle(): void {
     this.loading = true;
-    console.log(`GoogleLogin Start `);
+    this.log(`GoogleLogin Start `);
     this.authenticationService.loginGoogle()
       .subscribe(
         user => {
-          console.log(`Google Login Success ${this.returnUrl} Role ${JSON.stringify(user)} `);
+          this.log(`Google Login Success ${this.returnUrl} Role ${JSON.stringify(user)} `);
           this.log(`Google Login Success Result ${JSON.stringify(user)}`);
           const lastLogin = new Date(user.status.lastLoginAt);
           const message = this.translate.instant('login.msg.loginSuccess', {lastLogin: lastLogin.toLocaleString()});

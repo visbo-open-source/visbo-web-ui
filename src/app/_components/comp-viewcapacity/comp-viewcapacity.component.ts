@@ -1226,8 +1226,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       drillDownCapacity.push(template);
     });
 
-    // console.log(drillDownCapacity);
-
     // now fill up with the Child Infos
     // this.visboCapacityChild.forEach(item => {
       sortedProjects.forEach(item => {
@@ -2290,7 +2288,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('CompVisboViewCapcity: ' + message);
-    // console.log('CompVisboViewCapcity: ' + message);
   }
 
 }

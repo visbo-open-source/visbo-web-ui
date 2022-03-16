@@ -654,13 +654,13 @@
 			"compDelivery": "Goal achievement: Delivery"
 		},
 		"chart": {
-			"statusDeadlineAheadFinished": "Done ahead",
-			"statusDeadlineInTimeFinished": "Done in time",
-			"statusDeadlineDelayFinished": "Done delayed",
-			"statusDeadlineDelayNotFinished": "Not Done",
-			"statusDeadlineAheadUnfinished": "Planned ahead",
-			"statusDeadlineInTimeUnfinished": "Planned in time",
-			"statusDeadlineDelayUnfinished": "Planned delayed"
+			"statusFinishedAhead": "Done ahead",
+			"statusFinishedInTime": "Done in time",
+			"statusFinishedDelay": "Done delayed",
+			"statusNotFinishedDelay": "Not Done",
+			"statusUnFinishedAhead": "Planned ahead",
+			"statusUnFinishedInTime": "Planned in time",
+			"statusUnFinishedDelay": "Planned delayed"
 		}
 	},
 	"compViewCost": {

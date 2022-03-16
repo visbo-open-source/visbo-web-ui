@@ -332,7 +332,6 @@ export class VisboProjectsComponent implements OnInit {
 
     this.visboprojectService.addVisboProject(this.newVP).subscribe(
       vp => {
-        // console.log("add VP %s with ID %s to VC %s", vp[0].name, vp[0]._id, vp[0].vcid);
         this.visboprojects.push(vp);
         this.sortVPTable(undefined);
         const vpType = this.translate.instant('vp.type.vpType'.concat(this.newVP.vpType.toString()));
@@ -523,7 +522,6 @@ export class VisboProjectsComponent implements OnInit {
         this.sortAscending = !this.sortAscending;
       }
     }
-    // console.log("Sort VP Column %d Asc %s", this.sortColumn, this.sortAscending)
     if (this.sortColumn === 1) {
       // sort by VP Name
       this.visboprojects.sort(function(a, b) {
@@ -570,10 +568,8 @@ export class VisboProjectsComponent implements OnInit {
         return result
       });
     }
-    // console.log("Sort VP Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.visboprojects.reverse();
-      // console.log("Sort VP Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

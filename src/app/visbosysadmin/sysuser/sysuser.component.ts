@@ -117,10 +117,8 @@ export class SysuserComponent implements OnInit {
         return visboCmpDate(aLastLoginFailedAt, bLastLoginFailedAt);
       });
     }
-    // console.log("Sort VC Column %d %s Reverse?", this.sortColumn, this.sortAscending)
     if (!this.sortAscending) {
       this.user.reverse();
-      // console.log("Sort VC Column %d %s Reverse", this.sortColumn, this.sortAscending)
     }
   }
 

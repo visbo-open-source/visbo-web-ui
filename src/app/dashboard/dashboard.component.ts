@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
           this.visbocenters = visbocenters.sort(function(vc1, vc2) { return vc1.updatedAt > vc2.updatedAt ? -1 : 1; }).slice(0, 3);
         },
         error => {
-          console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+          // console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(getErrorMessage(error));
         }
       );
@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
           this.visboprojects = visboprojects.sort(function(vp1, vp2) { return vp1.updatedAt > vp2.updatedAt ? -1 : 1; }).slice(0, 3);
         },
         error => {
-          console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+          // console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(getErrorMessage(error));
         }
       );

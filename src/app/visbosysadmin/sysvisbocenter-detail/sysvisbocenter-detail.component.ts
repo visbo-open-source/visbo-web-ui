@@ -677,7 +677,6 @@ export class SysvisbocenterDetailComponent implements OnInit {
 
   /** Log a message with the MessageService */
   private log(message: string) {
-    console.log('Sys VisboCenter Details: ', message)
     this.messageService.add('Sys VisboCenter Details: ' + message);
   }
 }
