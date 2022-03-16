@@ -62,6 +62,9 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         fontSize: 10
       }
     },
+    bar: {
+      groupWidth: '90%'
+    },
     animation: {startup: true, duration: 200},
     legend: {position: 'top'},
     explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
@@ -89,7 +92,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       tooltip : {
         trigger: 'none'
       },
-      pieHole: 0.25,
+      // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
       colors: []
@@ -302,9 +305,9 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       if (item > 0) {
         graphData.push([this.statusList[index], item]);
         colors.push(this.colorsDeadline[index]);
-        if (index < 5) {
-          // future deadlines
-          this.graphDeadlineOptions.slices[graphData.length - 1] = {offset: 0.1};
+        if (index >= 5) {
+          // past deadlines
+          this.graphDeadlineOptions.slices[graphData.length - 1] = {offset: 0.2};
         }
       }
     });
@@ -338,8 +341,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         graphData.push([this.statusList[index], item]);
         colors.push(this.colorsDelivery[index]);
         if (index >= 5) {
-          // future deadlines
-          this.graphDeliveryOptions.slices[graphData.length - 1] = {offset: 0.1};
+          // past deadlines
+          this.graphDeliveryOptions.slices[graphData.length - 1] = {offset: 0.2};
         }
       }
     });
@@ -396,22 +399,26 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     const graphCostData = [];
     if (this.hasKM(this.vpvActive?.keyMetrics, 'Cost')) {
       const km = this.vpvActive.keyMetrics;
-      let tooltip = this.createCostTooltip(km, 'baseline');
+      let tooltip = this.createCostTooltip(km, 'plan');
+      graphCostData.push([
+        this.translate.instant('compViewVp.lbl.'.concat('plan')),
+        Math.round(km.costCurrentActual * 10) / 10,
+        tooltip,
+        undefined,
+        Math.round(km.costCurrentTotal * 10) / 10,
+        tooltip,
+        undefined
+      ]);
+      tooltip = this.createCostTooltip(km, 'baseline');
       // baseline Values
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('baseline')),
         Math.round(km.costBaseLastActual * 10) / 10,
         tooltip,
+        'opacity: 0.4',
         Math.round(km.costBaseLastTotal * 10) / 10,
-        tooltip
-      ]);
-      tooltip = this.createCostTooltip(km, 'plan');
-      graphCostData.push([
-        this.translate.instant('compViewVp.lbl.'.concat('plan')),
-        Math.round(km.costCurrentActual * 10) / 10,
         tooltip,
-        Math.round(km.costCurrentTotal * 10) / 10,
-        tooltip
+        'opacity: 0.4'
       ]);
     }
     var len = graphCostData.length;
@@ -419,8 +426,10 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       'Type',
       this.translate.instant('compViewVp.lbl.actualCost'),
       { type: 'string', role: 'tooltip', 'p': {'html': true}},
+      { role: 'style' },
       this.translate.instant('compViewVp.lbl.totalCost'),
-      {type: 'string', role: 'tooltip', 'p': {'html': true}}
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      { role: 'style' }
     ]);
     this.graphCostOptions = this.copyGraphBarOptions(this.defaultCostOptions);
     this.graphCostAxis(len);
@@ -501,7 +510,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   graphCostAxis(len: number): void {
     const euroFormat = '# ' + this.translate.instant('compViewVp.lbl.keuro');
     if (len > 0) {
-      this.graphCostOptions.height = 80 + len * 40;
+      this.graphCostOptions.height = 90 + len * 30;
     }
     this.graphCostOptions.hAxis.format = euroFormat;
   }

@@ -6,7 +6,9 @@
         <tr>
           <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
           <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
+          <th class="d-none d-xl-table-cell">{{ 'vpKeyMetric.lbl.pfvVariant' | translate }}</th>
           <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
+          <th class="d-none d-xl-table-cell">{{ 'vpKeyMetric.lbl.pfvVariant' | translate }}</th>
           <th *ngIf="!getPreView()" class="d-none d-md-table-cell d-print-none">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
         </tr>
       </thead>
@@ -26,6 +28,9 @@
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostActual | number:'1.0-0'}} %) </span>
             </a>
           </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Cost', true)">
+            {{vpvKeyMetricActive.keyMetrics.costBaseLastActual |  number:'1.0-0' }} T€
+          </td>
           <td (click)="switchView('Cost', true)">
             <div title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€"><a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
@@ -36,6 +41,9 @@
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotalPredict | number:'1.0-0'}} %) </span>
               {{ 'vpKeyMetric.lbl.prediction' | translate }}
             </a></div>
+          </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Cost', true)">
+            {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€
           </td>
           <td *ngIf="!getPreView()" class="d-print-no"><a>
             <button type="button" class="btn" (click)="switchToHistory('Cost')" title="{{historyButton}}">i</button>
@@ -50,12 +58,16 @@
             </ng-container></a>
           </td>
           <td></td>
+          <td class="d-none d-xl-table-cell"></td>
           <td title="{{ 'vpKeyMetric.lbl.baselineEndDate' | translate }}: {{vpvKeyMetricActive.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}">
             <a (click)="switchToHistory('EndDate')">
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityEndDate} " ></ng-container>
               <span class="ml-1">{{vpvKeyMetricActive.keyMetrics.endDateCurrent | date :'dd.MM.yy'}} </span>
               <span *ngIf="qualityEndDiffWeeks" class="ml-1">({{qualityEndDiffWeeks | number :'1.1-1'}} W)</span>
             </a>
+          </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('EndDate', true)">
+            {{vpvKeyMetricActive.keyMetrics.endDateBaseLast | date :'dd.MM.yy' }}
           </td>
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('EndDate')" title="{{historyButton}}">i</button>
@@ -70,15 +82,16 @@
             </ng-container></a>
           </td>
           <td (click)="switchView('Deadline', true)">
-            <a title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}">
+            <a title="{{ 'vpKeyMetric.lbl.actualDeadline' | translate }}: {{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}} / {{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}">
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDeadline} " ></ng-container>
               <span>
                 {{vpvKeyMetricActive.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}
-                {{ 'vpKeyMetric.lbl.of' | translate }}
-                {{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}
                 ({{vpvKeyMetricActive.timeCompletionActual | number:'1.0-0'}} %)
               </span>
             </a>
+          </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Deadline', true)">
+            {{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}
           </td>
           <td (click)="switchView('Deadline', true)">
             <a>
@@ -89,10 +102,10 @@
                 ({{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal | number:'1.0-0'}}
                 {{ 'vpKeyMetric.lbl.missing' | translate }})
               </span>
-              <!-- <span *ngIf="vpvKeyMetricActive.keyMetrics.timeCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal" >
-                ({{ 'vpKeyMetric.lbl.inPlan' | translate }})
-              </span> -->
             </a>
+          </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Deadline', true)">
+            {{vpvKeyMetricActive.keyMetrics.timeCompletionBaseLastTotal | number:'1.0-0'}}
           </td>
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('Deadline')" title="{{historyButton}}">i</button>
@@ -106,31 +119,35 @@
                 text: 'vpKeyMetric.lbl.metricDelivery' | translate } " >
             </ng-container></a>
           </td>
-          <td (click)="switchView('Delivery', true)" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}">
+          <td (click)="switchView('Delivery', true)" title="{{ 'vpKeyMetric.lbl.actualDelivery' | translate }}: {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}} / {{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}">
             <a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityDelivery} " ></ng-container>
               <span>
                 {{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}
-                {{ 'vpKeyMetric.lbl.of' | translate }}
-                {{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}
                 ({{vpvKeyMetricActive.deliveryCompletionActual | number:'1.0-0'}} %)
               </span>
             </a>
           </td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Delivery', true)">
+            {{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}
+          </td>
           <td (click)="switchView('Delivery', true)"><a>
             <span>{{vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-0'}} </span>
             <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal < vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" class="text-danger">({{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal - vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal | number:'1.0-2'}} Missing)</span>
-            <!-- <span *ngIf="vpvKeyMetricActive.keyMetrics.deliverableCompletionCurrentTotal == vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal" >({{ 'vpKeyMetric.lbl.inPlan' | translate }})</span> -->
           </a></td>
+          <td class="d-none d-xl-table-cell" (click)="switchView('Delivery', true)">
+            {{vpvKeyMetricActive.keyMetrics.deliverableCompletionBaseLastTotal | number:'1.0-0'}}
+          </td>
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('Delivery')" title="{{historyButton}}">i</button>
           </td>
         </tr>
-
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay') || hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveryDelay')">
           <th></th>
           <th>{{ 'vpKeyMetric.lbl.finished' | translate }}</th>
+          <td class="d-none d-xl-table-cell"></td>
           <th>{{ 'vpKeyMetric.lbl.unfinished' | translate }}</th>
+          <td class="d-none d-xl-table-cell"></td>
           <th *ngIf="!getPreView()" class="d-print-no"></th>
         </tr>
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')">
@@ -146,12 +163,14 @@
               <span> {{vpvKeyMetricActive.keyMetrics.timeDelayFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
             </div>
           </a></td>
+          <td class="d-none d-xl-table-cell"></td>
           <td (click)="switchView('Deadline', true)" title="{{ 'vpKeyMetric.lbl.unfinishedDeadlineDelay' | translate }}"><a>
             <div *ngIf="vpvKeyMetricActive.keyMetrics.timeDelayUnFinished != undefined">
               <ng-container *ngTemplateOutlet="indicator; context:{level: delayTotalDeadline} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.timeDelayUnFinished | number:'1.0-0'}} {{ 'vpKeyMetric.lbl.unitsDelay' | translate }}</span>
             </div>
           </a></td>
+          <td class="d-none d-xl-table-cell"></td>
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('DeadlineDelay')" title="{{historyButton}}">i</button>
           </td>
@@ -448,10 +467,10 @@
             <tr>
               <td>{{ 'keyMetrics.shortBED' | translate }}</td>
               <td>{{ 'keyMetrics.longBED' | translate }}</td>
-            </tr>     
+            </tr>
           </tbody>
 
-          
+
 
         </table>
         <div class="modal-footer align-items-end">

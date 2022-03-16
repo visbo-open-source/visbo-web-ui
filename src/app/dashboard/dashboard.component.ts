@@ -13,7 +13,7 @@ import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-dashboard',
@@ -107,4 +107,9 @@ export class DashboardComponent implements OnInit {
   gotoClickedVpDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/' + visboproject._id]);
   }
+
+  getShortText(text: string, len: number): string {
+    return visboGetShortText(text, len);
+  }
+
 }

@@ -612,6 +612,7 @@
 			"vpViewProperties": "Properties",
 			"vpCapacity": "Resource-Needs",
 			"vpKeyMetric": "Key Metrics",
+			"vpOverview": "Overview",
 			"allVersions": "Show all Versions",
 			"vpvChange": "Change",
 			"vpvMove": "Move",

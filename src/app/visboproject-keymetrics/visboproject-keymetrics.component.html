@@ -92,6 +92,7 @@
   <div *ngIf="vpvActive" class="container-fluid">
     <div *ngIf="!getPreView()" class="row d-print-none">
       <div class="col-9 btn-toolbar" style="padding: unset;">
+        <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Overview')">{{ 'vpKeyMetric.btn.vpOverview' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
         <div class="dropdown mr-1">
