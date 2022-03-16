@@ -230,6 +230,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (newParam.viewKM) {
       this.currentView = newParam.viewKM;
       this.currentViewKM = true;
+      this.setActiveVPVs();
     }
   }
 

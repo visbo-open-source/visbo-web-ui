@@ -28,7 +28,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   vpvKeyMetricActive: VPVKeyMetricsCalc;
 
-  allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
+  allViews = ['Overview', 'KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   currentView = 'KeyMetrics';
   currentViewKM = false;
 

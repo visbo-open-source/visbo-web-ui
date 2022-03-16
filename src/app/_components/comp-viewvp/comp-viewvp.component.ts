@@ -443,7 +443,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   gotoClickedRow(vpv: VisboProjectVersion, view: string): void {
     this.log(`goto VP View ${vpv.name} (${vpv.vpid}) View ${view}`);
-    this.updateUrlParam('view', view, true);
+    this.updateUrlParam('view', view);
   }
 
   getEndDateDelay(): string {
@@ -559,7 +559,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     } else if (type == 'refDate') {
       queryParams.refDate = value;
     }
-    this.switchViewChild.emit(queryParams); //emmiting the event to update the refDate info in main.
+    this.switchViewChild.emit(queryParams); //emmiting the event to update the parameters info in main.
     this.router.navigate([url], {
       queryParams: queryParams,
       // no navigation back to old status, but to the page before

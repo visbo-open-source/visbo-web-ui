@@ -39,9 +39,9 @@
           </div> <!-- end of card -->
         </div>
         <div *ngIf="hasKM(vpvActive?.keyMetrics, 'Delivery')" class="col-sm-12 col-md-8 col-lg-6 my-2">
-          <div class="card mx-1" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+          <div class="card mx-1" (click)="gotoClickedRow(vpvActive, 'Delivery')">
             <div class="card-body d-flex flex-column">
-              <div class="card-title text-dark font-weight-bold text-center" (click)="gotoClickedRow(vpvActive, 'Deadline')">
+              <div class="card-title text-dark font-weight-bold text-center" (click)="gotoClickedRow(vpvActive, 'Delivery')">
                 <a>{{'compViewVp.lbl.compDelivery' | translate}}</a>
               </div>
               <div class="card-text align-center">
