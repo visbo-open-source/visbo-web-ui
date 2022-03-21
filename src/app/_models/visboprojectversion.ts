@@ -26,6 +26,8 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
+  baseLineInvoice: number;
+  currentInvoice: number;
 }
 
 export class VPVDelivery {
@@ -101,10 +103,11 @@ export class VPVKeyMetricsCalc {
   timestamp: Date;
   variantName: string;
   startDate: Date;
+  endDate: Date;
   Risiko: number;
   StrategicFit: number;
-  leadPerson: string;
   vpStatus: string;
+  vpStatusLocale: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
   VorlagenName: string;
@@ -133,7 +136,6 @@ export class VisboProjectVersion {
   Risiko: number;
   StrategicFit: number;
   Erloes: number;
-  leadPerson: string;
   startDate: Date;
   endDate: Date;
   earliestStart: number;

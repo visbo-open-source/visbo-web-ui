@@ -51,12 +51,12 @@ export class ComboChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const list = chart.getSelection();
       if (!list || list.length === 0 ) {
-         console.log(`Chart Combo: chartGetSelection is undefined`, list || list.length);
+         // console.log(`Chart Combo: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
         // console.log(`Chart Combo: The user selected ${JSON.stringify(selectedItem)}`);
         if (parentThis === undefined) {
-          console.log(`Chart Combo: The user clicked and this is undefined`);
+          // console.log(`Chart Combo: The user clicked and this is undefined`);
         } else if (selectedItem) {
           const row = selectedItem.row;
           const col = selectedItem.column;

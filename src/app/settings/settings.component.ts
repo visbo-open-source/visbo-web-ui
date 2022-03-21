@@ -24,11 +24,9 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.activateMessage = this.messageService.getstatus();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
-    // console.log('Sys Admin Role: ', JSON.stringify(this.combinedPerm));
   }
 
   toggleMessages(): void {
-    // console.log('Toggle Messages');
     this.activateMessage = this.messageService.toggle();
   }
 

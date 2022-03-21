@@ -10,6 +10,7 @@ import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VisboProject, VisboProjectResponse } from '../_models/visboproject';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 import { MessageService } from './message.service';
+import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -21,7 +22,8 @@ export class VisboCenterService  {
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService,
+    private messageService: MessageService
+    ,
     private env: EnvService
   ) { }
 
@@ -157,7 +159,7 @@ export class VisboCenterService  {
     if (roleID) {
       this.log(`Calling RoleID: ${roleID}`);
       params = params.append('roleID', roleID);
-    }    
+    }
     if (parentID) {
       this.log(`Calling ParentID: ${parentID}`);
       params = params.append('parentID', parentID);
@@ -244,7 +246,29 @@ export class VisboCenterService  {
   }
 
   // GET VisboCenter Users for a specified VC from the server
-  getVCUsers(vcid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
+  getVCUser(vcid: string, sysadmin = false, deleted = false): Observable<VisboUser[]> {
+    const url = `${this.vcUrl}/${vcid}/user`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request GET: ${url} `);
+    return this.http.get<VisboUsersResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+          return response.user;
+        }),
+        // tap(users => this.log(`fetched Users & Groups Users `)),
+        catchError(this.handleError<VisboUser[]>('getVPUsers'))
+      );
+  }
+
+  // GET VisboCenter Group / Users Permission for a specified VC from the server
+  getVCUserGroupPerm(vcid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
     const url = `${this.vcUrl}/${vcid}/group?userlist=1`;
     let params = new HttpParams();
     if (sysadmin) {

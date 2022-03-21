@@ -54,16 +54,18 @@ export class TimelineChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const list = chart.getSelection();
       if (!list || list.length === 0 ) {
-         console.log(`Chart Timeline: chartGetSelection is undefined`, list || list.length);
+         // console.log(`Chart Timeline: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
         // console.log(`Chart Timeline: The user selected ${JSON.stringify(selectedItem)}`);
         if (parentThis === undefined) {
-          console.log(`Chart Timeline: The user clicked and this is undefined`);
+          // console.log(`Chart Timeline: The user clicked and this is undefined`);
         } else if (selectedItem) {
           const row = selectedItem.row;
           if (row >= 0) {
             parentThis.timelineSelectRow(row);
+          } else {
+            // console.log(`Chart Timeline: The user clicked and row is ${row}`);
           }
         }
       }

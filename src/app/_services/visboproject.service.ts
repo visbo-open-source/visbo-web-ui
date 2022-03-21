@@ -8,6 +8,7 @@ import { EnvService } from './env.service';
 
 import { VisboProject, CreateProjectProperty, VisboProjectResponse, VPLock, VisboProjectLockResponse, VPRestrict, VisboRestrictResponse, VPVariant, VPVariantResponse } from '../_models/visboproject';
 import { VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
+import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
 
 import { MessageService } from './message.service';
 
@@ -206,7 +207,29 @@ export class VisboProjectService {
   }
 
   // GET VisboProject Users for a specified VP from the server
-  getVPUsers(vpid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
+  getVPUser(vpid: string, sysadmin = false, deleted = false): Observable<VisboUser[]> {
+    const url = `${this.vpUrl}/${vpid}/user`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    this.log(`Calling HTTP Request GET: ${url} `);
+    return this.http.get<VisboUsersResponse>(url, { headers , params })
+      .pipe(
+        map(response => {
+          return response.user;
+        }),
+        // tap(users => this.log(`fetched Users & Groups Users `)),
+        catchError(this.handleError<VisboUser[]>('getVPUsers'))
+      );
+  }
+
+  // GET VisboProject Group / Users Permission for a specified VP from the server
+  getVPUserGroupPerm(vpid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
     const url = `${this.vpUrl}/${vpid}/group?userlist=1`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();

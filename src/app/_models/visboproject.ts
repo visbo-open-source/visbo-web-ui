@@ -1,5 +1,7 @@
+import { VisboUser } from '../_models/visbouser';
+
 export enum VPTYPE {
-    'Project' = 0, 'Portfolio' = 1, 'Template' = 2
+    PROJECT = 0, PORTFOLIO = 1, TEMPLATE = 2
 }
 
 export class VPRestrict {
@@ -22,6 +24,7 @@ export class VPVariant {
   email: string;
   createdAt: Date;
   vpvCount: number;
+  vpfCount: number;
 }
 
 export class VPLock {
@@ -59,6 +62,7 @@ export class VisboProject {
   vcid: string;
   name: string;
   description: string;
+  managerId: string;
   vpType: number;
   vpPublic: boolean;
   vpvCount: number;
@@ -67,17 +71,20 @@ export class VisboProject {
   lock: [VPLock];
   restrict: [VPRestrict];
   vpStatus: string;
+  vpStatusLocale: string;
   customFieldDouble: VPCustomDouble[];
 	customFieldString: VPCustomString[];
   customFieldDate: VPCustomDate[];
-  // eslint-disable-next-line
-  capacity: any[];
   vc: {
     name: string;
     deletedAt: Date;
   };
-  perm: {system: number, vc: number, vp: number};
   deletedAt: Date;
+  // values outside of the ReST VP Definition
+  // eslint-disable-next-line
+  capacity: any[];
+  manager: VisboUser;
+  perm: {system: number, vc: number, vp: number};
 }
 
 export class VisboProjectResponse {
@@ -138,6 +145,7 @@ export interface CreateProjectProperty {
 
 export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit', '_PMCommit']
 export const constSystemVPStatus = ['initialized', 'proposed', 'ordered', 'paused', 'finished', 'stopped']
+export const constSystemVPStatusFrozen = ['paused', 'finished', 'stopped']
 
 export function getCustomFieldString(vp: VisboProject, name: string): VPCustomString {
   let result: VPCustomString;

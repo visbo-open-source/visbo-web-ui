@@ -6,7 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { EnvService } from './env.service';
 
-import { VisboSetting, VisboSettingResponse, VisboSettingListResponse } from '../_models/visbosetting';
+import { VisboSetting, VisboSettingResponse, VisboSettingListResponse, VisboOrganisation,
+        VisboOrgaResponse } from '../_models/visbosetting';
 
 import { MessageService } from './message.service';
 
@@ -41,7 +42,7 @@ export class VisboSettingService  {
   }
 
    /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, short = false): Observable<VisboSetting[]> {
+   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, hierarchy = false, withCapa = false): Observable<VisboOrganisation[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -52,15 +53,73 @@ export class VisboSettingService  {
     if (refDate != undefined) {
       params = params.append('refDate', refDate);
     }
-    if (short) {
-      params = params.append('shortList', '1');
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
     }
-    this.log(`Calling HTTP Request: ${url} ${short}`);
-    return this.http.get<VisboSettingListResponse>(url, { headers , params })
+    if (withCapa) {
+      params = params.append('withCapa', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} ${withCapa}`);
+    return this.http.get<VisboOrgaResponse>(url, { headers , params })
       .pipe(
-        map(response => response.vcsetting),
-        tap(vcorganisations => this.log(`fetched ${vcorganisations.length} VCOrganisations `)),
+        map(response => response.organisation),
+        tap(organisation => this.log(`fetched ${organisation.length} VCOrganisations `)),
         catchError(this.handleError('getVCOrganisations', []))
+      );
+  }
+
+  /** Create VCOrganisation */
+  createVCOrganisation(vcid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
+    const url = `${this.vcUrl}/${vcid}/organisation`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) {
+     params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
+    return this.http.post<VisboOrgaResponse>(url, orga, { headers , params })
+      .pipe(
+        map(response => response.organisation[0]),
+        tap(organisation => this.log(`created VCOrganisation with ${organisation.allUnits?.length} items`)),
+        catchError(this.handleError<VisboOrganisation>('createVCOrganisation'))
+      );
+  }
+
+  /** Update VCOrganisation */
+  updateVCOrganisation(vcid: string, orgaid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
+    const url = `${this.vcUrl}/${vcid}/organisation/${orgaid}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) {
+     params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} ${orga.allUnits?.length}`);
+    return this.http.put<VisboOrgaResponse>(url, orga, { headers , params })
+      .pipe(
+        map(response => response.organisation[0]),
+        tap(organisation => this.log(`updated VCOrganisation with ${organisation.allUnits?.length} items`)),
+        catchError(this.handleError<VisboOrganisation>('updateVCOrganisation'))
+      );
+  }
+
+  /** DELETE: delete a Visbo Center Organisation from the server */
+  deleteVCOrganisation (orga: VisboOrganisation, vcid: string, sysadmin = false): Observable<VisboOrganisation> {
+    const id = orga._id;
+    const url = `${this.vcUrl}/${vcid}/setting/${id}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    this.log(`Calling HTTP Request: ${url} `);
+
+    return this.http.delete<VisboOrganisation>(url, { headers , params })
+      .pipe(
+        tap(() => this.log(`deleted VCVisboOrganisation id=${id}`)),
+        catchError(this.handleError<VisboOrganisation>('deleteVCVisboOrganisation'))
       );
   }
 

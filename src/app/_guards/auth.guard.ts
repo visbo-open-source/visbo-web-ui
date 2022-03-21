@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
           if (params.length > 0) {
             ott = params.find(param => param.indexOf('ott=') == 0);
             if (ott) {
-              console.log("ott found, get a session");
+              // console.log("ott found, get a session");
               // not logged in so redirect to login page with the return url
               this.router.navigate(['login'], { queryParams: { ott: '1', returnUrl: state.url }});
               return false;
