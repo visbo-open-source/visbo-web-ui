@@ -104,6 +104,7 @@ export class VPVKeyMetricsCalc {
   variantName: string;
   startDate: Date;
   endDate: Date;
+  Erloes: number;
   Risiko: number;
   StrategicFit: number;
   vpStatus: string;
@@ -174,4 +175,50 @@ export class VisboProjectVersionResponse {
   message: string;
   vpv: [ VisboProjectVersion ];
   perm: {system: number, vc: number, vp: number};
+}
+
+export class ExportKeyMetric {
+  project: string;
+  timestamp: Date;
+  baselineDate: Date;
+  variant: string;
+  _strategicFit: number;
+  _risk: number;
+  _businessUnit: string;
+  vpStatus: string;
+  lead: string;
+  _PMCommit: Date;
+  startDate: Date;
+  trafficlight: number;
+  trafficlightDesc: string;
+  costCurrentActual: number;
+  costCurrentTotal: number;
+  costCurrentTotalPredict: number;
+  costBaseLastActual: number;
+  costBaseLastTotal: number;
+  rac: number;
+  timeCompletionCurrentActual: number;
+  timeCompletionCurrentTotal: number;
+  timeCompletionBaseLastActual: number;
+  timeCompletionBaseLastTotal: number;
+  timeDelayFinished: number;
+  timeDelayUnFinished: number;
+  endDateCurrent: Date;
+  endDateBaseLast: Date;
+  deliverableCompletionCurrentActual: number;
+  deliverableCompletionCurrentTotal: number;
+  deliverableCompletionBaseLastActual: number;
+  deliverableCompletionBaseLastTotal: number;
+  deliverableDelayFinished: number;
+  deliverableDelayUnFinished: number;
+  savingCostTotal: number;
+  savingCostTotalPredict: number;
+  savingCostActual: number;
+  savingEndDate: number;
+  timeCompletionTotal: number;
+  timeCompletionActual: number;
+  deliveryCompletionTotal: number;
+  deliveryCompletionActual: number;
+  vpid: string;
+  vpvid: string;
 }

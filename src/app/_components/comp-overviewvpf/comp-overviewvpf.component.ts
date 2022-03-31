@@ -15,6 +15,7 @@ import { VisboSetting } from '../../_models/visbosetting';
 import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
 import { VisboCenter } from '../../_models/visbocenter';
+import { VisboUser } from '../../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
@@ -99,6 +100,7 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() customize: VisboSetting;
   @Input() bubbleMode: boolean;
+  @Input() vcUser: Map<string, VisboUser>;
   @Input() combinedPerm: VGPermission;
 
   refDate: Date;

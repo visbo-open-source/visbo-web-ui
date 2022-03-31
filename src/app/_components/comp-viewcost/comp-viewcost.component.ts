@@ -90,6 +90,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
           color: '#FFF',
           count: -1
         },
+        minorGridlines: {count: 0, color: '#FFF'},
         slantedText: true,
         slantedTextAngle: 90
       },
@@ -291,41 +292,28 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     copy.month = new Date(cost.currentDate);
     // copy.variantName = cost.variantName;
 
-    copy.baseLineCost = cost.baseLineCost;
+    copy.baseLineCost = Math.round(cost.baseLineCost * 1000);
     if (copy.month.getTime() < actualDataUntilTime) {
-      copy.actualCost = cost.currentCost;
+      copy.actualCost = Math.round(cost.currentCost * 1000);
       copy.plannedCost = 0;
     } else {
       copy.actualCost = 0;
-      copy.plannedCost = cost.currentCost;
+      copy.plannedCost = Math.round(cost.currentCost * 1000);
     }
     copy.cost = copy.actualCost + copy.plannedCost;
-    copy.baseLineInvoice = cost.baseLineInvoice;
+    copy.baseLineInvoice = Math.round(cost.baseLineInvoice * 1000);
     if (copy.month.getTime() < currentTime) {
-      copy.actualInvoice = cost.currentInvoice;
+      copy.actualInvoice = Math.round(cost.currentInvoice * 1000);
       copy.plannedInvoice = 0;
     } else {
       copy.actualInvoice = 0;
-      copy.plannedInvoice = cost.currentInvoice;
+      copy.plannedInvoice = Math.round(cost.currentInvoice * 1000);
     }
     copy.invoice = copy.actualInvoice + copy.plannedInvoice;
     cumulate.cumulatedCost += copy.cost;
     cumulate.cumulatedInvoice += copy.invoice;
     copy.cumulatedCost = cumulate.cumulatedCost;
     copy.cumulatedInvoice = cumulate.cumulatedInvoice;
-    // copy.ampelStatus = vpv.ampelStatus;
-    // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
-    // if (vpv.vp) {
-    //   copy.vpStatus = vpv.vp.vpStatusLocale;
-    //   copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
-    //   copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
-    // } else {
-    //   copy.vpStatus = '';
-    //   copy.strategicFit = -1;
-    //   copy.risk = -1;
-    // }
-    // delete copy.vpid;
-
     return copy;
   }
 

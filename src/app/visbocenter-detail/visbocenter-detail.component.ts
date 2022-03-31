@@ -322,7 +322,7 @@ export class VisbocenterDetailComponent implements OnInit {
           this.vcOrganisations.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
           // set latestOrgaTimestamp to the newest Orga TS
           if (this.vcOrganisations[0]) {
-            this.latestOrgaTimestamp = this.vcOrganisations[0].timestamp;
+            this.latestOrgaTimestamp = new Date(this.vcOrganisations[0].timestamp);
           }
         },
         error => {
@@ -838,23 +838,20 @@ export class VisbocenterDetailComponent implements OnInit {
     const beginningOfMonth = new Date();
     beginningOfMonth.setDate(1);
     beginningOfMonth.setHours(0, 0, 0, 0);
-    if (this.vcOrganisations?.length > 0) {
-      // set newOrgaTimestamp to either the next month or to the beginning of current month
-      if (this.latestOrgaTimestamp) {
+    // set newOrgaTimestamp to either the beginning of current month or one month after the last orga
+    if (this.latestOrgaTimestamp) {
+      if (this.latestOrgaTimestamp.getTime() < beginningOfMonth.getTime()) {
+        this.newOrgaTimestamp = new Date(beginningOfMonth);
+      } else {
         this.newOrgaTimestamp = new Date(this.latestOrgaTimestamp);
         this.newOrgaTimestamp.setMonth(this.newOrgaTimestamp.getMonth() + 1);
-        if (this.newOrgaTimestamp < beginningOfMonth) {
-          this.newOrgaTimestamp = beginningOfMonth;
-        }
-      } else {
-        this.newOrgaTimestamp = beginningOfMonth;
       }
-      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
+      this.minOrgaTimestamp = new Date(this.latestOrgaTimestamp);
     } else {
       this.newOrgaTimestamp = beginningOfMonth;
-      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
+      this.minOrgaTimestamp = new Date(beginningOfMonth);
       this.minOrgaTimestamp.setMonth(0);
-      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 1);
+      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 2);
     }
     const isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
 
