@@ -9,7 +9,7 @@
   <div *ngIf="vpActive" class='row'>
     <div class='col-7'>
       <h2 *ngIf="vpActive" class="ml-1">
-        {{ 'vpKeyMetric.title' | translate }}:
+        {{ getVPType(vpActive.vpType) }}:
         <a (click)="gotoVPDetail(vpActive)">{{vpActive.name}}</a>
         <span *ngIf="getDropDownList(1, true).length > 1" class="dropdown" class="ml-2">
           <a class="dropdown-toggle" data-toggle="dropdown" style="!important" title="{{getDropDown('description')}}">{{getDropDown('variantName')}}</a>

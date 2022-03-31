@@ -1510,6 +1510,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return null;
   }
 
+  getVPType(vpType: number): string {
+    return this.translate.instant('vp.type.vpType' + vpType);
+  }
+
   getCustomFieldListString(vpOnly = true): VPCustomString[] {
     let list: VPCustomString[] = [];
     this.editCustomFieldString = [];

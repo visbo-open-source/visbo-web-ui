@@ -358,7 +358,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
         && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
           graphData.push([
-            i === 0 ? 'Root' : 'Children',
+            this.translate.instant(i === 0 ? 'compViewDeadline.lbl.rootPhase': 'compViewDeadline.lbl.subPhases'),
             phase,
             this.createCustomHTMLContent(deadline),
             startDate.getTime(),

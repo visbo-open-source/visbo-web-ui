@@ -4,10 +4,10 @@
     <a *ngIf="hasVCPerm(permVC.View)" (click)="gotoVCDetail(visboproject)">{{ visboproject.vc.name }}</a>
     <span *ngIf="!hasVCPerm(permVC.View)">{{ visboproject.vc.name }}</span>
   </h5>
-  <h3>{{ 'vpDetail.title' | translate }}: <a (click)="gotoVP(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
+  <h3>{{ getVPType(visboproject.vpType) }}: <a (click)="gotoVP(visboproject)">{{ visboproject.name | uppercase }}</a></h3>
   <form>
     <div class="form-group row">
-      <label for="VPName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }} ({{ getVPType(visboproject.vpType) }}):</label>
+      <label for="VPName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }}:</label>
       <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
       <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-plaintext pt-2">{{ visboproject.name }} </label>
     </div>

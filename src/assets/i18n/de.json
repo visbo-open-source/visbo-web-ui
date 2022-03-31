@@ -1243,7 +1243,9 @@
 			"vp": "VISBO Projekt",
 			"VPV": "Zeige alle vom Projekt",
 			"PFV": "Zeige alle der Baseline",
-			"All": "Zeige alle kombiniert"
+			"All": "Zeige alle kombiniert",
+			"rootPhase": "Phase",
+			"subPhases": "Unterphasen"
 		},
 		"btn": {
 			"detail": "Freigaben",
@@ -1456,7 +1458,7 @@
 		}
 	},
 	"vpAudit": {
-		"title": "VISBO Projekt Audit für",
+		"title": "VISBO Audit für",
 		"titleDetail": "Details zum Audit Eintrag",
 		"lbl": {
 			"from": "Von",
@@ -1508,7 +1510,7 @@
 			"back": "Zurück"
 		},
 		"msg": {
-			"auditSuccess": "VISBO Projekt Audit erfolgreich geladen",
+			"auditSuccess": "VISBO Audit erfolgreich geladen",
 			"noAudit": "Kein Audit Eintrag für den Zeitraum bzw. Filter",
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
