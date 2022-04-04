@@ -25,7 +25,7 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
 import { UserService } from '../_services/user.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, validateDate, convertDate, visboIsSameDay,
+import { getErrorMessage, visboCmpString, visboCmpDate, validateDate, convertDate,
           visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
 
 import {TimeLineOptions} from '../_models/_chart'

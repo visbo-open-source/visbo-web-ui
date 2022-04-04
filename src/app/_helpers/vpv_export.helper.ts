@@ -1,5 +1,5 @@
 import { VPVKeyMetricsCalc, ExportKeyMetric } from '../_models/visboprojectversion';
-import { getCustomFieldDouble, getCustomFieldString, getCustomFieldDate, constSystemVPStatus } from '../_models/visboproject';
+import { getCustomFieldDouble, getCustomFieldString, getCustomFieldDate } from '../_models/visboproject';
 import { VisboUser } from '../_models/visbouser';
 
 export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map<string, VisboUser>): ExportKeyMetric {
@@ -19,9 +19,9 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
       element._strategicFit = itemDouble?.value;
       itemDouble = getCustomFieldDouble(vpv.vp, '_risk');
       element._risk = itemDouble?.value;
-      let itemString = getCustomFieldString(vpv.vp, '_businessUnit');
+      const itemString = getCustomFieldString(vpv.vp, '_businessUnit');
       element._businessUnit = itemString?.value || '';
-      let itemDate = getCustomFieldDate(vpv.vp, '_PMCommit');
+      const itemDate = getCustomFieldDate(vpv.vp, '_PMCommit');
       element._PMCommit = itemDate ? new Date(itemDate.value) : undefined;
       if (vpv.vp.managerId) {
         const user = vcUser?.get(vpv.vp.managerId);

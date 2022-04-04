@@ -284,7 +284,6 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getStatusDeadline(vpv: VisboProjectVersion, element: VPVDeadline): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {

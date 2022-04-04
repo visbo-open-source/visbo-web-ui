@@ -9,12 +9,12 @@ import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
 import { VPParams } from '../../_models/visboproject';
-import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc, VPVDeadline, VPVDelivery } from '../../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetrics, VPVDeadline, VPVDelivery } from '../../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
-import { getErrorMessage, convertDate, visboCmpDate, visboIsToday, getPreView } from '../../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate, getPreView } from '../../_helpers/visbo.helper';
 import {BarChartOptions} from '../../_models/_chart'
 
 @Component({
@@ -358,7 +358,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   }
 
   getStatusDeadline(vpv: VisboProjectVersion, element: VPVDeadline): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
@@ -378,7 +377,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   }
 
   getStatusDelivery(vpv: VisboProjectVersion, element: VPVDelivery): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
@@ -423,7 +421,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         'opacity: 0.4'
       ]);
     }
-    var len = graphCostData.length;
     graphCostData.unshift([
       'Type',
       this.translate.instant('compViewVp.lbl.actualCost'),
@@ -434,7 +431,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       { role: 'style' }
     ]);
     this.graphCostOptions = this.copyGraphBarOptions(this.defaultCostOptions);
-    this.graphCostAxis(len);
+    this.graphCostAxis(graphCostData.length - 1);
     this.graphCostData = graphCostData;
   }
 
@@ -471,8 +468,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   createCostTooltip(km: VPVKeyMetrics, type: string): string {
 
-    const unitEuro = this.translate.instant('compViewVp.lbl.keuro');
-    let format = '&nbsp' + unitEuro;
+    // const unitEuro = this.translate.instant('compViewVp.lbl.keuro');
+    // let format = '&nbsp' + unitEuro;
     const name = this.translate.instant('compViewVp.lbl.'.concat(type)).replace(/ /g, "&nbsp");
     const actual = this.translate.instant('compViewVp.lbl.actualCost').replace(/ /g, "&nbsp");
     const total = this.translate.instant('compViewVp.lbl.totalCost').replace(/ /g, "&nbsp");

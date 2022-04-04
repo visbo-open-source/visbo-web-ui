@@ -710,7 +710,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
 
   visboKeyMetricsCalcVPF(): void {
     const unitEuro = this.translate.instant('compViewVpf.lbl.keuro');
-    const unitWeeks = this.translate.instant('compViewVpf.lbl.weeks');
     let viewBL = true;
 
     const keyMetrics: keyMetricCmp[] = [], keyMetricsFiltered = [];
@@ -724,7 +723,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       let value: number, valueBL: number, diffAbs: number, diffPercent: number, strAbs: string, strPercent: string;
       let duration = 4;
       if (this.visbokeymetrics[item].endDate && this.visbokeymetrics[item].startDate) {
-        let duration = ((new Date(this.visbokeymetrics[item].endDate)).getTime() - (new Date(this.visbokeymetrics[item].startDate)).getTime()) / 1000 / 60 / 60 / 24 / 7;
+        duration = ((new Date(this.visbokeymetrics[item].endDate)).getTime() - (new Date(this.visbokeymetrics[item].startDate)).getTime()) / 1000 / 60 / 60 / 24 / 7;
       }
       switch (this.metricX) {
         case 'Cost':
@@ -755,7 +754,6 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
           value = Math.round((this.visbokeymetrics[item].savingEndDate || 0) / 7 * 10) / 10;
           diffAbs = Math.round(value * 10) / 10;
           diffPercent = Math.round((diffAbs / duration) * 1000) / 10;
-          // strAbs = diffAbs.toString().concat(" ", unitWeeks);
           viewBL = false;
           break;
         case 'Deadline':
@@ -804,7 +802,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       keyMetrics.reverse();
     }
     for (let i = 0; (this.topX == 0 || i < this.topX) && i < keyMetrics.length; i++) {
-      let item = keyMetrics[i];
+      const item = keyMetrics[i];
       if (this.topX > 0 && item.diffAbs * this.topWorst <= 0) {
         break;
       }

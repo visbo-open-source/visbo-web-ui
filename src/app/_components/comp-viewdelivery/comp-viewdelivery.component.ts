@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
@@ -101,7 +101,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
     this.visboDeliveryCalc();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.log(`Delivery on Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
       this.visboDeliveryCalc();
@@ -218,7 +218,6 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   }
 
   getStatusDelivery(vpv: VisboProjectVersion, element: VPVDelivery): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
