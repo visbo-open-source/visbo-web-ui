@@ -624,6 +624,7 @@
 		},
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
+			"overwriteSTD": "Attention: Overwrite of actual Data?",
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
 			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"confirmCommit": "Do you really want to commit this current project plan?",

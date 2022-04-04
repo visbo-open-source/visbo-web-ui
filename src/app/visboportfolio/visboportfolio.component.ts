@@ -114,6 +114,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     viewAllVariants = false;
     graphDataTimeline = [];
     graphOptionsTimeline: TimeLineOptions;
+    divTimelineVersions = 'divTimelineVersions';
     defaultOptionsTimeline: TimeLineOptions = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',

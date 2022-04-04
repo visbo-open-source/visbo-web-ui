@@ -55,7 +55,7 @@
     </h5>
     <div *ngIf="viewVersions && graphDataTimeline.length > 1" class="row ml-1 mt-2">
       <div class="col-10">
-        <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
+        <app-timeline-chart [elementID]="divTimelineVersions" [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
       </div>
       <div class="col-2">
         <div class="custom-control custom-checkbox">

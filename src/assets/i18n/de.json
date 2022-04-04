@@ -624,6 +624,7 @@
 		},
 		"msg": {
 			"changePFV": "Vorsicht: Änderung der Baseline!",
+			"overwriteSTD": "Vorsicht: Überschreiben von aktuellen Daten?",
 			"changeVPVSuccess": "Projekt Version wurde erfolgreich zur Variante {{variantName}} kopiert!",
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
