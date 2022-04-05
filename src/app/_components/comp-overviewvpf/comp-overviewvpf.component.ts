@@ -546,6 +546,7 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
       elementKeyMetric.vp = this.visboprojectversions[item].vp;
       elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
+      elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;

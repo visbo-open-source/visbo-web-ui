@@ -759,8 +759,8 @@ export class VisbocenterDetailComponent implements OnInit {
       return;
     }
     this.newVCSetting = new VisboSetting();
-    this.newVCSetting.type = 'customization';
-    this.newVCSetting.name = 'customization';
+    // this.newVCSetting.type = 'customization';
+    // this.newVCSetting.name = 'customization';
     const isJson = this.newFile?.name.slice(-JSON_EXTENSION.length) == JSON_EXTENSION;
 
     const fileReader = new FileReader();
@@ -781,13 +781,14 @@ export class VisbocenterDetailComponent implements OnInit {
         }
         catch (e) {
           const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+          this.log(`Add Setting inconsistent JSON Format: ${jsonString}`);
           this.alertService.error(message, true);
           this.isSettingSaved = false;
         }
         if (this.isSettingSaved) {
           this.newVCSetting.value = jsonSetting;
         }
-        this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+        this.log(`Add Setting of JSON Files ${this.newFile?.name} ${this.isSettingSaved}`);
       } else {
         this.log(`Add Setting of Unknown FileType not implemented ${this.newFile?.name}`);
       }

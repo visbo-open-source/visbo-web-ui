@@ -231,6 +231,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         elementKeyMetric.name = this.visboprojectversions[i].name;
         elementKeyMetric._id = this.visboprojectversions[i]._id;
         elementKeyMetric.timestamp = this.visboprojectversions[i].timestamp;
+        elementKeyMetric.Erloes = this.visboprojectversions[i].Erloes;
         elementKeyMetric.vpid = this.visboprojectversions[i].vpid;
         elementKeyMetric.variantName = this.visboprojectversions[i].variantName;
         elementKeyMetric.startDate = this.visboprojectversions[i].startDate;

@@ -508,6 +508,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.vpStatusLocale = elementKeyMetric.vp.vpStatusLocale;
       elementKeyMetric.startDate = this.visboprojectversions[item].startDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
+      elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
