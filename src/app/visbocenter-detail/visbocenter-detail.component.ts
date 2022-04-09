@@ -1035,8 +1035,8 @@ export class VisbocenterDetailComponent implements OnInit {
   downloadOrganisation(index: number): void {
     this.vcOrganisation = this.vcOrganisations[index];
     this.log(`Download Organisation ${this.vcOrganisation.name} ${this.vcOrganisation.updatedAt}`);
-    const minDate = new Date("0001-01-01T00:00:00Z");
-    const maxDate = new Date("2200-11-30T23:00:00Z");
+    const minDate = "0001-01-01T00:00:00Z";
+    const maxDate = "2200-11-30T23:00:00Z";
     const organisation: VisboReducedOrgaItem[] = [];
     this.vcOrganisation?.allUnits?.forEach(role => {
       const newRole = new VisboReducedOrgaItem();
@@ -1048,10 +1048,10 @@ export class VisbocenterDetailComponent implements OnInit {
       newRole.dailyRate = role.dailyRate;
       newRole.employeeNr = role.employeeNr;
       newRole.defCapaDay = role.defCapaDay;
-      if (role.entryDate > minDate) {
+      if (role.entryDate?.toString() > minDate) {
         newRole.entryDate = new Date(role.entryDate);
       }
-      if (role.exitDate < maxDate) {
+      if (role.exitDate?.toString() < maxDate) {
         newRole.exitDate = new Date(role.exitDate);
       }
       if (role.aliases?.length) newRole.alias = role.aliases.join('#');
