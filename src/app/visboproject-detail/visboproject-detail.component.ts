@@ -812,6 +812,16 @@ export class VisboprojectDetailComponent implements OnInit {
     return totalVersions;
   }
 
+  getVariantName(name: string): string {
+    let result: string;
+    if (name == 'pfv') {
+      result = this.translate.instant('vpDetail.lbl.baseline');
+    } else {
+      result = name;
+    }
+    return result;
+  }
+
   sortUserPermTable(n?: number): void {
 
     if (!this.vgUsers) {
