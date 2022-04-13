@@ -26,7 +26,7 @@
 		"topvp": "Top VISBO Projects",
 		"projects": "Projects",
 		"versions": "Versions",
-		"detail": "Detail",
+		"detail": "Details",
 		"msg": {
 			"noVC": "You do not have access to a VISBO Center or a VISBO Project. Please contact your administrator for further help."
 		}
@@ -527,7 +527,7 @@
 		"titleVersion": "Version of",
 		"titleVersionOld": "Old Version of",
 		"titleBaseline": "Baseline of",
-		"titleDetailVersion": "Details about Version",
+		"titleDetailVersion": "Details for Version",
 		"titleVPVMove": "Copy & Move/Scale",
 		"titleVPVCopy": "Copy",
 		"titleVPVCustomPredict": "Customer specific Prediction",
@@ -611,7 +611,7 @@
 			"vpView": "Details",
 			"vpViewAll": "All",
 			"vpViewProperties": "Properties",
-			"vpCapacity": "Resource-Needs",
+			"vpCapacity": "Resource Needs",
 			"vpKeyMetric": "Key Metrics",
 			"vpOverview": "Overview",
 			"allVersions": "Show all Versions",
@@ -695,7 +695,7 @@
 	},
 	"ViewCapacity": {
 		"titleCapacity": "Capacity Utilisation - Timespan:",
-		"titleBox": "Sum Resource-Needs in time range",
+		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " From",
@@ -768,7 +768,7 @@
 	},
 	"ViewCapacityCmp": {
 		"titleCapacity": "Capacity Utilisation - Timespan:",
-		"titleBox": "Sum Resource-Needs in time range",
+		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " From",
@@ -1456,7 +1456,7 @@
 			"back": "Back"
 		},
 		"msg": {
-			"auditSuccess": "VISBO Center Audit successfully downloaded",
+			"auditSuccess": "VISBO Center Audit successfully loaded",
 			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}

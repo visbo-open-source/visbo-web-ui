@@ -930,7 +930,7 @@ export class VisbocenterDetailComponent implements OnInit {
         .subscribe(
           orga => {
             const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
-            this.vcOrganisations[0].updatedAt = orga.updatedAt;
+            this.vcOrganisations[0] = orga;
             this.alertService.success(message);
           },
           error => {
