@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboProjectService } from '../_services/visboproject.service';
-import { VisboUser, VisboUserInvite } from '../_models/visbouser';
+import { VisboUser, VisboUserInvite, VisboUserProfile } from '../_models/visbouser';
 import { VisboProject, VPVariant, VPTYPE, constSystemCustomName } from '../_models/visboproject';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo.helper';
@@ -33,6 +33,10 @@ export class VisboprojectDetailComponent implements OnInit {
   groupIndex: number;
   actView = 'User';
   expandProperties = false;
+
+  vpManagerEmail: string;
+  vpManagerList: VisboUser[];
+  vpUser: VisboUser[];
 
   currentUser: VisboUser;
   combinedPerm: VGPermission = undefined;
@@ -63,7 +67,6 @@ export class VisboprojectDetailComponent implements OnInit {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.getVisboProject();
-    this.getVisboProjectUsers();
   }
 
   getVisboProject(): void {
@@ -74,6 +77,7 @@ export class VisboprojectDetailComponent implements OnInit {
       .subscribe(
         visboproject => {
           this.visboproject = visboproject;
+          this.getVisboProjectPermission();
           this.translateCustomFields(this.visboproject);
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpDetail.titleName', {name: visboproject.name}));
@@ -158,20 +162,61 @@ export class VisboprojectDetailComponent implements OnInit {
     this.actView = newView;
   }
 
-  getVisboProjectUsers(): void {
+  getVisboProjectPermission(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
-    this.visboprojectService.getVPUsers(id, false, this.deleted)
+    this.log(`VisboProject UserGroupPermList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUserGroupPerm(id, false, this.deleted)
       .subscribe(
         mix => {
           this.vgUsers = mix.users;
           this.vgGroups = mix.groups;
           this.vgGroupsInvite = this.vgGroups.filter(vgGroup => vgGroup.groupType === 'VP');
-
+          this.getVisboProjectUsers();
           this.log(`fetched Users ${this.vgUsers.length}, Groups ${this.vgGroups.length}, Invite Groups ${this.vgGroupsInvite.length}`);
-          this.sortUserTable();
+          this.sortUserPermTable();
           this.sortGroupTable();
+        },
+        error => {
+          this.log(`Get VP Users Group Perm failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  getVisboProjectUsers(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUser(id, false, this.deleted)
+      .subscribe(
+        user => {
+          this.vpUser = user;
+          const admins = this.vgUsers.filter(item => item.groupType == 'VP' && item.internal && item.groupName == 'VISBO Project Admin');
+          this.vpManagerList = [];
+          this.vpUser.forEach(user => {
+            if (admins.find(admin => admin.userId == user._id)) {
+              this.vpManagerList.push(user);
+            }
+          })
+          if (this.visboproject?.managerId) {
+            const user = this.vpUser.find(item => item._id == this.visboproject.managerId);
+            this.vpManagerEmail = user?.email;
+          } else {
+            const newUser = new VisboUser();
+            newUser.profile = new VisboUserProfile();
+            newUser.profile.lastName = this.translate.instant('vpDetail.lbl.noManager');
+            newUser.email = '';
+            this.vpManagerList.unshift(newUser);
+            this.vpManagerEmail = '';
+          }
+          this.log(`fetched Users ${this.vpUser.length}`);
+          // this.sortUserTable();
         },
         error => {
           this.log(`Get VP Users failed: error: ${error.status} message: ${error.error.message}`);
@@ -183,6 +228,24 @@ export class VisboprojectDetailComponent implements OnInit {
           }
         }
       );
+  }
+
+  getFullUserName(user: VisboUser, withEmail: boolean): string {
+    let fullName = '';
+    if (!user && this.vpManagerEmail) {
+      user = this.vpManagerList.find(item => item.email == this.vpManagerEmail);
+    }
+    if (user) {
+      if (user.profile) {
+        fullName = ''.concat(user.profile.firstName || '', ' ', user.profile.lastName || '')
+      }
+      if ((!fullName || withEmail) && user.email) {
+        fullName = fullName.concat(' (', user.email, ')');
+      }
+    } else {
+      fullName = this.translate.instant('vpDetail.lbl.noManager');
+    }
+    return fullName;
   }
 
   goBack(): void {
@@ -233,7 +296,7 @@ export class VisboprojectDetailComponent implements OnInit {
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
-    if (visboproject.vpType === VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE.PORTFOLIO) {
       url = 'vpf/';
     }
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
@@ -247,6 +310,10 @@ export class VisboprojectDetailComponent implements OnInit {
   save(): void {
     if (this.visboproject.customFieldDouble) {
       this.visboproject.customFieldDouble = this.visboproject.customFieldDouble.filter(item => item.value != undefined);
+    }
+    const user = this.vpManagerList.find(user => user.email == this.vpManagerEmail);
+    if (user) {
+      this.visboproject.managerId = user._id;
     }
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
@@ -296,7 +363,10 @@ export class VisboprojectDetailComponent implements OnInit {
           newUserGroup.internal = inviteGroup.internal;
           this.log(`Add VisboCenter User Push: ${JSON.stringify(newUserGroup)}`);
           this.vgUsers.push(newUserGroup);
-          this.sortUserTable();
+          this.sortUserPermTable();
+          if (group.name == 'VISBO Project Admin') {
+            this.getVisboProjectUsers();
+          }
           for (let i = 0; i < this.vgGroups.length; i++) {
             if (this.vgGroups[i]._id === group._id) {
               this.vgGroups[i] = group;
@@ -427,17 +497,6 @@ export class VisboprojectDetailComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
-/*
-<button  *ngIf="!variant.vpvCount && hasVPPerm(permVP.Modify) && getLockStatus(variantIndex) <= 1" id="ColDeleteVariant" class="Detail"
-  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-  data-toggle="modal" data-target="#VpVariantRemove">&times;
-</button>
-<button  *ngIf="!variant.vpvCount && !hasVPPerm(permVP.Modify) && hasVPPerm(permVP.CreateVariant) && getLockStatus(variantIndex) <= 1 && variant.email == currentUser.email" id="ColDeleteVariant" class="Detail"
-  title="{{ 'vpDetail.lbl.deleteVariant' | translate }}" (click)='helperRemoveVariant(variantIndex)'
-  data-toggle="modal" data-target="#VpVariantRemove">&times;
-</button>
-*/
-
   canDeleteVariant(variant: VPVariant): boolean {
     if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
       return false;
@@ -473,6 +532,9 @@ export class VisboprojectDetailComponent implements OnInit {
               }
               break;
             }
+          }
+          if (user.groupName == 'VISBO Project Admin') {
+            this.getVisboProjectUsers();
           }
           const message = this.translate.instant('vpDetail.msg.removeUserSuccess', {'name': user.email});
           this.alertService.success(message);
@@ -628,7 +690,7 @@ export class VisboprojectDetailComponent implements OnInit {
                 this.vgUsers[i].groupName = group.name;
               }
             }
-            this.sortUserTable();
+            this.sortUserPermTable();
             this.sortGroupTable();
             const message = this.translate.instant('vpDetail.msg.changeGroupSuccess', {'name': group.name});
             this.alertService.success(message);
@@ -739,14 +801,18 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   getVPVersionsTotal(): number {
-    let totalVersions = this.visboproject.vpvCount || 0;
-    if (this.visboproject.variant) {
-      this.visboproject.variant.forEach(variant => totalVersions += variant.vpvCount || 0);
+    let totalVersions: number;
+    if (this.visboproject.vpType == VPTYPE.PORTFOLIO) {
+      totalVersions = this.visboproject.vpfCount || 0;
+      this.visboproject.variant?.forEach(variant => totalVersions += variant.vpfCount || 0);
+    } else {
+      totalVersions = this.visboproject.vpvCount || 0;
+      this.visboproject.variant?.forEach(variant => totalVersions += variant.vpvCount || 0);
     }
     return totalVersions;
   }
 
-  sortUserTable(n?: number): void {
+  sortUserPermTable(n?: number): void {
 
     if (!this.vgUsers) {
       return;
@@ -828,7 +894,7 @@ export class VisboprojectDetailComponent implements OnInit {
     } else if (this.sortVariantColumn === 3) {
       variant.sort(function(a, b) { return visboCmpDate(a.createdAt, b.createdAt); });
     } else if (this.sortVariantColumn === 4) {
-      variant.sort(function(a, b) { return b.vpvCount - a.vpvCount; });
+      variant.sort(function(a, b) { return (b.vpvCount || b.vpfCount) - (a.vpvCount || a.vpfCount); });
     }
     if (!this.sortVariantAscending) {
       variant.reverse();

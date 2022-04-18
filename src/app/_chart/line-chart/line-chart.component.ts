@@ -52,12 +52,12 @@ export class LineChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const list = chart.getSelection();
       if (!list || list.length === 0 ) {
-         console.log(`Chart Line: chartGetSelection is undefined`, list || list.length);
+         // console.log(`Chart Line: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
         // console.log(`Chart Line: The user selected ${JSON.stringify(selectedItem)} `);
         if (parentThis === undefined) {
-          console.log(`Chart Line: The user clicked and this is undefined`);
+          // console.log(`Chart Line: The user clicked and this is undefined`);
         } else if (selectedItem) {
           const row = selectedItem.row;
           const col = selectedItem.column;

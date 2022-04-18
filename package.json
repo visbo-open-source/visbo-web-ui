@@ -5,8 +5,8 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "npm audit >audit-log.txt; ng build --configuration production",
-        "audit": "npm audit >audit-log.txt",
+        "build": "npm audit >webui-audit-log.txt; ng build --configuration production",
+        "audit": "npm audit >webui-audit-log.txt",
         "lint": "eslint src/app --ext .ts"
     },
     "private": true,
@@ -44,7 +44,7 @@
         "rxjs": "^6.6.7",
         "rxjs-compat": "^6.6.7",
         "tslib": "^2.1.0",
-        "xlsx": "^0.17.0",
+        "xlsx": "^0.18.0",
         "zone.js": "~0.11.4"
     },
     "devDependencies": {

@@ -54,15 +54,15 @@ export class GanttChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const list = chart.getSelection();
       if (parentThis === undefined) {
-        console.log(`Chart Gantt: The user clicked and parentThis is undefined`);
+        // console.log(`Chart Gantt: The user clicked and parentThis is undefined`);
         return;
       }
       if (!list || list.length === 0 ) {
-         console.log(`Chart Gantt: chartGetSelection is undefined`, list || list.length);
+         // console.log(`Chart Gantt: chartGetSelection is undefined`, list || list.length);
          parentThis.ganttSelectRow(undefined, undefined);
       } else {
         const selectedItem = list[0];
-        console.log(`Chart Gantt: The user selected ${JSON.stringify(selectedItem)}`);
+        // console.log(`Chart Gantt: The user selected ${JSON.stringify(selectedItem)}`);
         const row = selectedItem.row;
         if (row != null && row >= 0) {
           const label = data.getValue(row, 0);

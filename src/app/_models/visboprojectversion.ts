@@ -26,6 +26,8 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
+  baseLineInvoice: number;
+  currentInvoice: number;
 }
 
 export class VPVDelivery {
@@ -101,10 +103,12 @@ export class VPVKeyMetricsCalc {
   timestamp: Date;
   variantName: string;
   startDate: Date;
+  endDate: Date;
+  Erloes: number;
   Risiko: number;
   StrategicFit: number;
-  leadPerson: string;
   vpStatus: string;
+  vpStatusLocale: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
   VorlagenName: string;
@@ -133,7 +137,6 @@ export class VisboProjectVersion {
   Risiko: number;
   StrategicFit: number;
   Erloes: number;
-  leadPerson: string;
   startDate: Date;
   endDate: Date;
   earliestStart: number;
@@ -172,4 +175,50 @@ export class VisboProjectVersionResponse {
   message: string;
   vpv: [ VisboProjectVersion ];
   perm: {system: number, vc: number, vp: number};
+}
+
+export class ExportKeyMetric {
+  project: string;
+  timestamp: Date;
+  baselineDate: Date;
+  variant: string;
+  _strategicFit: number;
+  _risk: number;
+  _businessUnit: string;
+  vpStatus: string;
+  lead: string;
+  _PMCommit: Date;
+  startDate: Date;
+  trafficlight: number;
+  trafficlightDesc: string;
+  costCurrentActual: number;
+  costCurrentTotal: number;
+  costCurrentTotalPredict: number;
+  costBaseLastActual: number;
+  costBaseLastTotal: number;
+  rac: number;
+  timeCompletionCurrentActual: number;
+  timeCompletionCurrentTotal: number;
+  timeCompletionBaseLastActual: number;
+  timeCompletionBaseLastTotal: number;
+  timeDelayFinished: number;
+  timeDelayUnFinished: number;
+  endDateCurrent: Date;
+  endDateBaseLast: Date;
+  deliverableCompletionCurrentActual: number;
+  deliverableCompletionCurrentTotal: number;
+  deliverableCompletionBaseLastActual: number;
+  deliverableCompletionBaseLastTotal: number;
+  deliverableDelayFinished: number;
+  deliverableDelayUnFinished: number;
+  savingCostTotal: number;
+  savingCostTotalPredict: number;
+  savingCostActual: number;
+  savingEndDate: number;
+  timeCompletionTotal: number;
+  timeCompletionActual: number;
+  deliveryCompletionTotal: number;
+  deliveryCompletionActual: number;
+  vpid: string;
+  vpvid: string;
 }

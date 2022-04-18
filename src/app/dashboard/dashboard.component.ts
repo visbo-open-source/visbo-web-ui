@@ -13,7 +13,7 @@ import { VisboProject, VPTYPE } from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboGetShortText } from '../_helpers/visbo.helper';
 
 @Component({
   selector: 'app-dashboard',
@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
           this.visbocenters = visbocenters.sort(function(vc1, vc2) { return vc1.updatedAt > vc2.updatedAt ? -1 : 1; }).slice(0, 3);
         },
         error => {
-          console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+          // console.log('get VCs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(getErrorMessage(error));
         }
       );
@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
           this.visboprojects = visboprojects.sort(function(vp1, vp2) { return vp1.updatedAt > vp2.updatedAt ? -1 : 1; }).slice(0, 3);
         },
         error => {
-          console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+          // console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
           this.alertService.error(getErrorMessage(error));
         }
       );
@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoClickedVp(visboproject: VisboProject): void {
-    if (visboproject.vpType === VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE.PORTFOLIO) {
       this.router.navigate(['vpf/' + visboproject._id]);
     } else {
       this.router.navigate(['vpKeyMetrics/' + visboproject._id]);
@@ -107,4 +107,9 @@ export class DashboardComponent implements OnInit {
   gotoClickedVpDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/' + visboproject._id]);
   }
+
+  getShortText(text: string, len: number): string {
+    return visboGetShortText(text, len);
+  }
+
 }

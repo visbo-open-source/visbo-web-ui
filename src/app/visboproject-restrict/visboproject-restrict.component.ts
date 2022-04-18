@@ -204,7 +204,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
-    this.visboprojectService.getVPUsers(id, false, this.deleted)
+    this.visboprojectService.getVPUserGroupPerm(id, false, this.deleted)
       .subscribe(
         mix => {
           this.filterGroups(mix.groups);
@@ -253,7 +253,7 @@ export class VisboprojectRestrictComponent implements OnInit {
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
-    if (visboproject.vpType === VPTYPE['Portfolio']) {
+    if (visboproject.vpType === VPTYPE.PORTFOLIO) {
       url = 'vpf/';
     }
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});

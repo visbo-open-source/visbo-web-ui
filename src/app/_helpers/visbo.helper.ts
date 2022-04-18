@@ -11,6 +11,8 @@ export function visboCmpDate(first: Date, second: Date): number {
   let result = 0;
   if (first === undefined) { first = new Date(-8640000000000000); }
   if (second === undefined) { second = new Date(-8640000000000000); }
+  if (typeof first == "number" || typeof first == "string") first = new Date(first);
+	if (typeof second == "number" || typeof second == "string") second = new Date(second);
   if (first < second) {
     result = -1;
   } else if (first > second) {
@@ -79,6 +81,15 @@ export function validateDate(dateString: string, allowEmpty: boolean): string {
 	return dateValue.toISOString();
 }
 
+export function getJsDateFromExcel(excelDate: number): Date {
+  // excel date is number of days since 1.1.1900
+  // might be fixed by XLSX: plus 1 (Google "excel leap year bug")
+  // javascript date are milliseconds since 1.1.1970
+  const result = new Date((excelDate - 25567 - 2)*86400*1000);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
 export function visboIsToday(refDate: Date): boolean {
   const current = new Date();
   current.setHours(0, 0, 0, 0);
@@ -87,6 +98,21 @@ export function visboIsToday(refDate: Date): boolean {
   } else {
     return false;
   }
+}
+
+export function visboGetBeginOfMonth(refDate: Date, increment = 0): Date {
+  const current = new Date(refDate);
+  current.setDate(1);
+  current.setHours(0, 0, 0, 0);
+  current.setMonth(current.getMonth() + increment);
+  return current;
+}
+
+export function visboGetBeginOfDay(refDate: Date, increment = 0): Date {
+  const current = new Date(refDate);
+  current.setHours(0, 0, 0, 0);
+  current.setDate(current.getDate() + increment);
+  return current;
 }
 
 export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
@@ -108,7 +134,11 @@ export function visboGetShortText(text: string, len: number, position?: string):
   if (len < 3) {
     return '...';
   }
-  if (position) {
+  if (position == 'middle') {
+    const partLen = Math.trunc((len - 3) / 2);
+    const result = text.substring(0, partLen).concat('...', text.substr(text.length - partLen));
+    return result;
+  } else if (position) {
     return '...'.concat(text.substr(text.length - len));
   } else {
     return text.substring(0, len - 3).concat('...');
@@ -145,7 +175,7 @@ export function getPreView(): boolean {
 export function switchPreView(): boolean {
   const result = !getPreView();
   localStorage.setItem('printPreView', result ? '1' : '0');
-  console.log("Switch PreView", result);
+  // console.log("Switch PreView", result);
   return result;
 }
 
