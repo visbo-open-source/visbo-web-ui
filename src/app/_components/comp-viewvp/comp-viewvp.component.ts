@@ -92,10 +92,11 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       tooltip : {
         trigger: 'none'
       },
-      width: '600',
+      // width: '600',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
+      // legend: {position: 'bottom', textStyle: {fontSize: 12}},
       colors: []
     };
   divDeadlineChart = 'divDeadLineChart';
@@ -112,7 +113,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       tooltip : {
         trigger: 'none'
       },
-      width: '600',
+      // width: '600',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
@@ -405,7 +406,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         Math.round(km.costCurrentActual * 10) / 10,
         tooltip,
         undefined,
-        Math.round(km.costCurrentTotal * 10) / 10,
+        Math.round((km.costCurrentTotal - km.costCurrentActual) * 10) / 10,
         tooltip,
         undefined
       ]);
@@ -416,7 +417,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         Math.round(km.costBaseLastActual * 10) / 10,
         tooltip,
         'opacity: 0.4',
-        Math.round(km.costBaseLastTotal * 10) / 10,
+        Math.round((km.costBaseLastTotal - km.costBaseLastActual) * 10) / 10,
         tooltip,
         'opacity: 0.4'
       ]);
