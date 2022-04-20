@@ -307,10 +307,10 @@
               <tr>
                 <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>
                 <td>
-                  <select *ngIf="canChangeVPDetails(true)" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">
+                  <select *ngIf="canChangeVPDetails(false)" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">
                     <option *ngFor="let item of dropDownVPStatus" value="{{item.name}}">{{ item.localName }}</option>
                   </select>
-                  <label id="VPStatus" *ngIf="!canChangeVPDetails(true)">{{ getShortText(getVPStatus(), 20) }} </label>
+                  <label id="VPStatus" *ngIf="!canChangeVPDetails(false)">{{ getShortText(getVPStatus(), 20) }} </label>
                 </td>
               </tr>
               <tr *ngIf="customBU != undefined || customVPAdd">
