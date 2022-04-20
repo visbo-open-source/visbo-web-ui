@@ -346,6 +346,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   visboViewDeadlineTimeline(): void {
     const graphData = [];
+    this.hierarchyDeadline.sort((a, b) => {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));})
     for (let i = 0; i < this.hierarchyDeadline.length; i++) {
       const deadline = this.hierarchyDeadline[i];
       if (deadline.type === "Phase") {
@@ -353,17 +354,13 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         const endDate = new Date(deadline.endDateVPV);
         const phase = this.getPhaseName(deadline);
         const path = this.getFullPath(deadline);
-        // filter Gantt Chart by Layer
-        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
-        && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
-          graphData.push([
-            this.translate.instant(i === 0 ? 'compViewDeadline.lbl.rootPhase': 'compViewDeadline.lbl.subPhases'),
-            phase,
-            this.createCustomHTMLContent(deadline),
-            startDate.getTime(),
-            endDate.getTime()
-          ]);
-        }
+        graphData.push([
+          this.translate.instant(i == 0 ? 'compViewDeadline.lbl.rootPhase': 'compViewDeadline.lbl.subPhases'),
+          phase,
+          this.createCustomHTMLContent(deadline),
+          startDate.getTime(),
+          endDate.getTime()
+        ]);
       }
     }
     graphData.unshift([

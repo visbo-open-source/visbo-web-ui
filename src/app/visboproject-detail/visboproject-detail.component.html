@@ -181,7 +181,7 @@
             <tbody id="VariantList">
               <tr *ngFor="let variant of visboproject.variant; let variantIndex=index" (click)='initVPVariant(variant)' data-toggle="modal" data-target="#VpVariantModalChange">
                 <td>{{variantIndex+1}}</td>
-                <td id="ColName">{{variant.variantName}}</td>
+                <td id="ColName">{{getVariantName(variant.variantName)}}</td>
                 <td id="ColDescription">{{variant.description}}</td>
                 <td id="ColEmail">{{variant.email}}</td>
                 <td class="d-none d-md-table-cell" title="{{ variant.createdAt | date :'dd.MM.yyyy HH:mm:ss'}}">{{variant.createdAt | date :'dd.MM.yy'}}</td>
@@ -226,7 +226,7 @@
             <tr *ngFor="let lock of visboproject.lock; let lockIndex=index">
               <td>{{visboproject.lock[lockIndex].email}}</td>
               <td>{{visboproject.lock[lockIndex].expiresAt | date :'dd.MM HH:mm'}}</td>
-              <td>{{visboproject.lock[lockIndex].variantName}}</td>
+              <td>{{getVariantName(visboproject.lock[lockIndex].variantName)}}</td>
               <td *ngIf="!deleted && hasVPPerm(permVP.Modify)">
                 <button class="btn btn-md" title="{{ 'vpDetail.lbl.unlock' | translate }}" (click)='unlockVP(lockIndex)'
                 data-toggle="modal" data-target="#VpUnlock">&times;</button>
@@ -590,7 +590,7 @@
           <form name="newVariant">
             <div class="form-group">
               <label for="ChangeVariantName" class="col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
-              <label id="ChangeVariantName" class="form-control">{{ newVariant.variantName }}</label>
+              <label id="ChangeVariantName" class="form-control">{{ getVariantName(newVariant.variantName) }}</label>
             </div>
             <div class="form-group">
               <label for="ChangeVariantDesc" class="col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
@@ -633,7 +633,7 @@
             </div>
             <div class="form-group">
               <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.variant' | translate }}:</label>
-              <label class="col-sm-8 form-control-static">{{ newVariant.variantName }}</label>
+              <label class="col-sm-8 form-control-static">{{ getVariantName(newVariant.variantName) }}</label>
             </div>
             <div class="form-group">
               <label class="col-sm-4 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
