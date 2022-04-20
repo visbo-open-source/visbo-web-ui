@@ -582,6 +582,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.activeVPVs.unshift(vpv);
     }
     this.updateVPVCount(this.vpActive, vpv.variantName, 1);
+    this.initVPStatusDropDown();
   }
 
   viewVPVOverTime(): void {
@@ -1177,9 +1178,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     let result = true;
     if (!this.hasVPPerm(this.permVP.Modify)) {
       result = false;
-    } else if (!checkPMO && !this.canModifyVPProperties()) {
-      result = false;
     } else if (checkPMO && !this.isPMO()) {
+      result = false;
+    } else if (!this.isPMO() && !this.canModifyVPProperties()) {
       result = false;
     }
     return result;
