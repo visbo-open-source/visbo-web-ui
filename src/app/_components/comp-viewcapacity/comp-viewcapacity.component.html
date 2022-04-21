@@ -90,7 +90,7 @@
       </div>
       <div *ngIf="visboCapacity && visboCapacity.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
         <h5 class="card-header p-2">
-          <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
+          <strong *ngIf="sumBudget > 0" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
           {{ 'ViewCapacity.titleBox' | translate }}</h5>
         <div class="card-body p-2">
           <div class="row">
@@ -103,13 +103,13 @@
               </div>
             </div>
             <div class="col col-sm-6 text-right">
-              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
+              <strong *ngIf="sumBudget > 0" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
               {{sumCost | number:'1.0-0'}}
               <span *ngIf="showUnit != 'PD'">T€</span>
               <span *ngIf="showUnit == 'PD'">{{ 'ViewCapacity.lbl.pd' | translate }}</span>
             </div>
           </div>
-          <div class="row">
+          <div *ngIf="sumBudget > 0" class="row">
             <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
               <div *ngIf="refPFV">
                 {{ 'ViewCapacity.lbl.budget' | translate }}
