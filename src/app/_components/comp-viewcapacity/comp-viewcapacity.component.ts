@@ -38,6 +38,7 @@ const capaColor = '#ff0000';
 
 class CapaLoad {
   uid: number;
+  isBooked: boolean;
   percentOver: number;
   rankOver: number;
   percentUnder: number;
@@ -910,7 +911,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (cost > 0 && capa === 0) {
         capa = 1;
       }
-      return (cost / capa) - 1;
+      return capa > 0 ? (cost / capa) - 1 : -1;
     }
 
     // calculate the overload/underload only for current&future months if there were at least 1
@@ -935,10 +936,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (!capaLoad[roleID]) {
         const load = new CapaLoad();
         load.uid = roleID;
+        load.isBooked = false;
         load.percentOver = 0;
         load.percentUnder = 0;
         capaLoad[roleID] = load;
       }
+      capaLoad[roleID].isBooked = capaLoad[roleID].isBooked || (!isNaN(capa) && capa != -1);
       if (capa > 0) {
         capaLoad[roleID].percentOver += capa;
       } else if (capa < 0) {
@@ -958,8 +961,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (capaLoad[i].percentOver <= 0) break;
       capaLoad[i].rankOver = markCount - i;
     }
-    capaLoad.sort(function(a, b) { return a.percentUnder - b.percentUnder; });
+    capaLoad.sort(function(a, b) {
+      if (a.isBooked || b.isBooked) {
+        return a.percentUnder - b.percentUnder;
+      } else {
+        return 0;
+      }
+    });
     for (let i=0; i < markCount; i++) {
+      if (capaLoad[i].percentUnder == -1) continue; // orga unit is not scheduled
       if (capaLoad[i].percentUnder >= 0) break; // no more items with under capacity
       if (capaLoad[i].rankOver > 0) continue;   // item is marked with rankOver, do not mark both
       capaLoad[i].rankUnder = markCount - i;
@@ -967,7 +977,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     for (let i=0; i < capaLoad.length; i++) {
       this.capaLoad[capaLoad[i].uid] = capaLoad[i];
     }
-    // this.log(`Calculated Overall CapaLoad ${this.capaLoad.length}`);
   }
 
   visboViewOrganisationTree(): void {

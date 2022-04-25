@@ -162,13 +162,13 @@
           <a (click)="$event.stopPropagation(); switchLeaf(item);">
             <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
           </a>
-          <span class="ml-sm-1">
+          <span class="ml-sm-1" [ngClass]="{'font-italic': capaLoad[item.uid] && !capaLoad[item.uid].isBooked}">
             {{item.name}} <!-- {{item.isSelected}} -->
           </span>
           <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankOver > 0" class="ml-sm-1">
             <strong class="fas fa-arrow-up" style="color:red"></strong>
           </span>
-          <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankUnder > 0" class="ml-sm-1">
+          <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].isBooked && capaLoad[item.uid].rankUnder > 0" class="ml-sm-1">
             <strong class="fas fa-arrow-down" style="color:green"></strong>
           </span>
         </span>
