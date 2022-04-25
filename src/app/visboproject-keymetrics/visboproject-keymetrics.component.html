@@ -561,7 +561,7 @@
             <div class="row ml-1 mt-1">
               <label for="variantNameID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.destination' | translate }}:</label>
               <div class="col-6 form-control">
-                <div *ngIf="getDropDownList(2, false).length > 1" class="dropdown ml-2 my-1">
+                <div *ngIf="getDropDownList(2, false).length >= 1" class="dropdown ml-2 my-1">
                   <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{getVariantName(newVPVvariantName)}}</a>
                   <div class="dropdown-menu">
                     <a *ngFor="let item of getDropDownList(2, false); let variantIndex=index" class="dropdown-item" (click)="switchCopyVariant(item)">{{ item.name }}</a>
