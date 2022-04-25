@@ -24,7 +24,7 @@
         <button id="ViewUser" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Users')">{{ 'vcDetail.btn.viewUsers' | translate }}</button>
         <button id="ViewGroup" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
-        <button id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
+        <button *ngIf="hasVCPerm(permVC.Modify)" id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVCDetailNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fas fa-bars"></i>
         </button>
@@ -33,10 +33,10 @@
             <li id="ViewProjectUser" *ngIf="vgVPUsers && vgVPUsers.length > 0" class="nav-item">
               <a class="nav-link bg-light " (click)="switchView('ProjectUsers')" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.viewProjectUsers' | translate }}</a>
             </li>
-            <li id="ViewSetting" class="nav-item">
+            <li *ngIf="hasVCPerm(permVC.Modify)" id="ViewSetting" class="nav-item">
               <a class="nav-link bg-light " (click)="showSetting()" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.ViewSetting' | translate }}</a>
             </li>
-            <li id="ViewEnable" class="nav-item">
+            <li *ngIf="hasVCPerm(permVC.Modify)" id="ViewEnable" class="nav-item">
               <a class="nav-link bg-light " (click)="showEnableDisable()" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vcDetail.btn.ViewEnableDisable' | translate }}</a>
             </li>
           </ul>
