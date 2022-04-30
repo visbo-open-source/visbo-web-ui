@@ -3,15 +3,19 @@ import { DomSanitizer, Title } from '@angular/platform-browser';
 import { DatePipe } from '@angular/common';
 
 import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboSetting } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
-import { VisboProject, VPParams, VPCustomString, VPCustomDouble, VPCustomDate, getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble, addCustomFieldDate, getCustomFieldDate, constSystemCustomName, constSystemVPStatus } from '../_models/visboproject';
+import { VisboProject, VPVariant, VPParams, VPCustomString, VPCustomDouble, VPCustomDate,
+          getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble,
+          addCustomFieldDate, getCustomFieldDate, constSystemCustomName,
+          constSystemVPStatus, constSystemVPStatusFrozen} from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
@@ -21,7 +25,10 @@ import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
 import { UserService } from '../_services/user.service';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText, visboIsToday, getPreView } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, validateDate, convertDate,
+          visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
+
+import {TimeLineOptions} from '../_models/_chart'
 
 class DropDown {
   name: string;
@@ -29,6 +36,7 @@ class DropDown {
   vpvCount?: number;
   description?: string;
   email?: string;
+  _id?: string;
 }
 
 class DropDownStatus {
@@ -42,25 +50,23 @@ class DropDownStatus {
 })
 export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
-  visboprojectversions: VisboProjectVersion[];
+  activeVPVs: VisboProjectVersion[];
   allVPVs: VisboProjectVersion[];
-
   currentUser: VisboUser;
-  dropDown: DropDown[] = [];          // variants that have versions except pfv
-  dropDownAll: DropDown[] = [];       // all variants including standard where the user can modify
-  newVPVdropDown: DropDown[];         // variants to create a new Version
+  dropDown: DropDown[] = [];          // all variants and default variant
   dropDownIndex: number;
   vcCustomize: VisboSetting[];
   vcEnableDisable: VisboSetting[];
-  vcOrga: VisboSetting[];
+  vcOrga: VisboOrganisation[];
+  timeoutID: number;
 
-  vpSelected: string;
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;
   vpvBaseline: VisboProjectVersion;
   vpvBaselineNewestTS: Date;
   variantID: string;
   variantName: string;
+  newVariant: VPVariant;
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
@@ -68,6 +74,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customPredict: string;
   calcPredict = false;
   level: number;
+  reduceLevel: false;
 
   customVPModified: boolean;
   customVPAdd: boolean;
@@ -90,7 +97,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   scaleFactor: number;
   changeStatus: boolean;
   newVPVvariantName: string;
-  newVPVdropDownIndex: number;
   allVersions: boolean;
 
   currentView = 'KeyMetrics';
@@ -100,13 +106,41 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   savingCostActual = undefined;
   deliveryCompletionActual = undefined;
   timeCompletionActual = undefined;
-  refDate = new Date();
-  refDateInterval = 'month';
-  statusDirection: number;
+  refDate: Date;
+  refDateStr: string;
 
-  allViews = ['KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
+  allViews = ['Overview', 'KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
   hasOrga = false;
+  vpUser = new Map<string, VisboUser>();
+
+  parentThis = this;
+
+  viewVersions = false;
+  viewAllVariants = false;
+  graphDataTimeline = [];
+  graphOptionsTimeline: TimeLineOptions;
+  defaultOptionsTimeline: TimeLineOptions = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      height: 150,
+      // colors:[],
+      tooltip: {
+        trigger: 'focus',
+        isHtml: true
+      },
+      hAxis: {
+        format: 'dd.MM',
+        gridlines: {
+          color: '#FFF',
+          count: -1
+        }
+      },
+      timeline: {
+        showBarLabels: false
+      }
+      // animation: {startup: true, duration: 200}
+    };
 
   currentLang: string;
 
@@ -134,6 +168,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.customVPToCommit = false;
+    this.newVariant = new VPVariant();
     this.currentLang = this.translate.currentLang;
     this.variantID = this.route.snapshot.queryParams['variantID'];
     this.variantName = this.route.snapshot.queryParams['variantName'];
@@ -154,17 +189,34 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (this.allViews.find(item => item === view)) {
       this.currentView = view;
+    } else {
+      this.currentView = this.allViews[0];
     }
 
-    if (this.route.snapshot.queryParams.refDate) {
-      this.refDate = new Date(this.route.snapshot.queryParams.refDate);
+    const refDate = this.route.snapshot.queryParams.refDate;
+    if (refDate && validateDate(refDate, false)) {
+      this.refDate = new Date(refDate);
+      this.setRefDateStr(this.refDate);
+    } else {
+      this.setRefDateStr(new Date());
     }
-    this.getVisboProjectVersions();
+    this.getVisboProject();
+    this.getVisboProjectUsers();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
     this.findVPV(new Date(this.refDate));
+  }
+
+  onResized(event: ResizedEvent): void {
+    this.log('Resize');
+    if (!event) { this.log('No event in Resize'); }
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.viewVPVOverTime();
+      this.timeoutID = undefined;
+    }, 500);
   }
 
   switchViewParent(newParam: VPParams): void {
@@ -178,6 +230,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (newParam.viewKM) {
       this.currentView = newParam.viewKM;
       this.currentViewKM = true;
+      this.setActiveVPVs();
     }
   }
 
@@ -195,6 +248,44 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  getVisboProjectUsers(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log(`VisboProject UserList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUser(id, false, this.deleted)
+      .subscribe(
+        user => {
+          user.forEach(user => this.vpUser.set(user._id, user));
+          this.log(`fetched Users ${this.vpUser.size}`);
+        },
+        error => {
+          this.log(`Get VP Users failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp.managerId) {
+      const user = this.vpUser.get(vp.managerId);
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
+  }
+
   getVariantInfo(item: DropDown): string {
       const result: string[] = []
       if (item.description) { result.push(item.description); }
@@ -204,8 +295,46 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       return result.join(' ');
   }
 
-  dropDownInit(): void {
+  createVPVariant(): void {
+    this.log(`Create Variant ${this.newVariant?.variantName}`);
+    this.newVariant.variantName = (this.newVariant.variantName || '').trim();
+    this.newVariant.description =  (this.newVariant.description || '').trim();
+    if (!this.newVariant?.variantName) {
+      // ignore empty variant
+      return;
+    } else if (this.vpActive.variant.find(item => item.variantName.toLowerCase() == this.newVariant.variantName.toLowerCase())) {
+      this.log(`Variant does already exists ${this.newVariant?.variantName}`);
+      return;
+    }
+    this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
+      .subscribe(
+        variant => {
+          // Add Variant to list
+          this.vpActive.variant.push(variant);
+          this.dropDownInit(variant._id);
+          this.newVPVvariantName = variant.variantName;
+          const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+          this.alertService.success(message);
+        },
+        error => {
+          this.log(`Create Variant error: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+            this.alertService.error(message);
+          } else if (error.status === 409) {
+            const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+            this.alertService.error(message);
+          } else {
+            this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  dropDownInit(id:string = undefined): void {
     const dropDown: DropDown[] = []
+    if (id) { this.variantID = id; }
     if (this.variantID) {
       // serach for the variant Name
       const index = this.vpActive.variant.findIndex(item => item._id.toString() === this.variantID);
@@ -223,66 +352,23 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.variantName = undefined;
       }
     }
-    this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${this.variantID}/${this.variantName}`);
+    // this.log(`Init Drop Down List ${this.vpActive.variant.length + 1} Variant ${this.variantID}/${this.variantName}`);
     this.dropDownIndex = undefined;
-    const len = this.vpActive.variant.length;
-
-    for (let i = 0; i < len; i++) {
-      let name = this.vpActive.variant[i].variantName;
-      if (name == 'pfv') {
-        name = this.pfvVariant;
-      }
+    this.vpActive.variant.forEach(variant => {
+      const name = variant.variantName == 'pfv' ? this.pfvVariant : variant.variantName;
       dropDown.push(
         {
           name: name,
-          variantName: this.vpActive.variant[i].variantName,
-          vpvCount: this.vpActive.variant[i].vpvCount,
-          description: this.vpActive.variant[i].description,
-          email: this.vpActive.variant[i].email
+          variantName: variant.variantName,
+          vpvCount: variant.vpvCount,
+          description: variant.description,
+          email: variant.email,
+          _id: variant._id
         }
       );
-    }
-    this.dropDownAll = dropDown.filter(item => item.name != ''); // make a copy
-    this.dropDownAll.splice(0, 0,
-      {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
-    );
-
-    this.dropDown = dropDown.filter(item => item.variantName != 'pfv' && item.vpvCount > 0);
-    let email: string;
-    if (this.isPMO()) {
-      email = undefined;
-    } else if (this.hasVPPerm(this.permVP.Modify)) {
-      email = '';
-    } else if (this.hasVPPerm(this.permVP.CreateVariant)) {
-      email = this.currentUser?.email;
-      this.dropDownAll = this.dropDownAll.filter(item => item.email === email); // filter only variants that the user can modify
-    } else {
-      email = ' UNKNOWN ';
-      this.dropDown = [];
-    }
-    if (email || email == '') {
-      this.newVPVdropDown = dropDown.filter(item => item.variantName != 'pfv' && (email == '' || item.email == email));
-      this.newVPVdropDown.splice(0, 0,
-        {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
-      );
-    } else {
-      this.newVPVdropDown = dropDown;
-    }
-    if (this.newVPVdropDown.length > 0) {
-      this.newVPVdropDown.splice(0, 0,
-        {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
-      );
-      this.newVPVdropDownIndex = 0;
-    }
-    if (this.dropDown.length > 0 ) {
-      this.dropDown.splice(0, 0,
-        {name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount}
-      );
-      this.dropDownIndex = 0;
-    }
-    if (this.variantName) {
-      this.dropDownIndex = this.dropDown.findIndex(item => item.variantName === this.variantName);
-    }
+    });
+    dropDown.unshift({name: this.defaultVariant, variantName: '', vpvCount: this.vpActive.vpvCount, _id: undefined});
+    this.dropDown = dropDown
   }
 
   getDropDown(type: string): string {
@@ -301,33 +387,60 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  findVPV(refDate: Date): void {
-    if (this.visboprojectversions.length > 0) {
-      let i = 0;
-      // search the coresponding version for refDate
-      if (refDate) {
-        for (; i < this.visboprojectversions.length; i++) {
-          if (refDate.toISOString() >= (new Date(this.visboprojectversions[i].timestamp)).toISOString() ) {
-            break;
-          }
-        }
-        if (i >= this.visboprojectversions.length) { i = this.visboprojectversions.length - 1; }
+  // calculate the dropDown List for type = 0 (all Variants), 1 (all Variants except baseline), 2 (variants the user could modify)
+  // withVersions restricts the variant List to only show variants that have versions
+  getDropDownList(type: number, withVersions: boolean): DropDown[] {
+    type = type || 0;
+    const email = this.currentUser?.email;
+    if (type == 2) {
+      // check the permission of the user
+      if (this.isPMO()) {
+        type = 0;
+      } else if (this.hasVPPerm(this.permVP.Modify)) {
+        type = 1
       }
-      this.setVpvActive(this.visboprojectversions[i]);
-      this.findBaseLine(this.vpvActive);
-      this.evaluateDirection(i);
     }
+    const result = this.dropDown?.filter(item => {
+      let ok = false;
+      if (type == 0) {
+        ok = true;
+      }
+      if (type == 1 && item.variantName != 'pfv') {
+        ok = true;
+      }
+      if (type == 2 && item.email == email) {
+        ok = true;
+      }
+      if (ok && withVersions) {
+        if (item.vpvCount == 0) {
+          ok = false;
+        }
+      }
+      return ok;
+    });
+    return result;
   }
 
-  evaluateDirection(index: number): void {
-    if (this.visboprojectversions.length === 1) {
-      this.statusDirection = undefined;
-    } else if (index <= 0) {
-      this.statusDirection = 1;
-    } else if (index >= this.visboprojectversions.length - 1) {
-      this.statusDirection = -1;
-    } else {
-      this.statusDirection = 0;
+  findVPV(refDate: Date, variantName: string = undefined): void {
+    if (!variantName) variantName = '';
+    let found: VisboProjectVersion;
+    this.activeVPVs.forEach(vpv => {
+      if (!found && vpv.variantName == variantName) { // still not found and variantName fits
+        if (refDate) {
+          if (visboCmpDate(refDate, vpv.timestamp) >= 0 && !found) {
+            found = vpv;
+          }
+        } else { // no refDate specified, take the newest/first one
+          found = vpv;
+        }
+      }
+    });
+    if (!found && this.activeVPVs.length > 0) {
+      found = this.activeVPVs[0];
+    }
+    if (found) {
+      this.setVpvActive(found);
+      this.findBaseLine(this.vpvActive);
     }
   }
 
@@ -339,34 +452,27 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.updateUrlParam('view', newView);
   }
 
-  switchVariant(name: string): void {
+  switchVariant(name: string, refDate: Date = undefined): void {
+    if (this.variantName != name) {
+      // if user switches between variants the refDate gets resetted so it shows the latest version
+      this.refDate = undefined;
+    }
+    this.log(`switch Variant ${name} refDate ${refDate}`);
+    if (refDate) this.refDate = refDate;
+    if (visboIsToday(this.refDate)) this.refDate = undefined;
+    this.setRefDateStr(this.refDate);
     const i = this.dropDown.findIndex(item => item.variantName === name);
-    if (i <= 0) {
-      // not found or the main variant
+    if (i <= 0) { // not found or the main variant
       this.dropDownIndex = undefined;
-    } else {
-      // Found
-      this.dropDownIndex = i;
-    }
-    this.log(`switch Variant ${name} index ${this.dropDownIndex}`);
-
-    if (this.dropDownIndex >= 0) {
-      const variant = this.vpActive.variant.find(item => item.variantName == name);
-      if (variant) {
-        this.variantName = variant.variantName;
-        this.variantID = variant._id;
-      } else {
-        this.variantName = undefined;
-        this.variantID = undefined;
-      }
-      this.updateUrlParam('variantID', variant && variant._id);
-    } else {
-      this.variantName = undefined;
+      this.variantName = '';
       this.variantID = undefined;
-      this.updateUrlParam('variantID', null);
+    } else { // Variant Found
+      this.dropDownIndex = i;
+      this.variantName = this.dropDown[i].variantName;
+      this.variantID = this.dropDown[i]._id;
     }
-    // fetch the project with Variant
-    this.getVisboProjectVersions();
+    this.updateUrlParam('variantID', this.variantID || null);
+    this.setActiveVPVs();
     return;
   }
 
@@ -392,7 +498,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         url = url.concat(separator, 'ott:', ott);
         separator = '&'
     }
-    console.log("URL:", url);
+    this.log(`URL: ${url}`);
     return url;
   }
 
@@ -404,11 +510,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'variantID') {
       queryParams.variantID = value;
       queryParams.variantName = null;
-    } else if (type == 'refDate') {
-      queryParams.refDate = value;
     } else if (type == 'view') {
       queryParams.view = value;
     }
+    queryParams.refDate = this.refDate?.toISOString();
     this.router.navigate([url], {
       queryParams: queryParams,
       // no navigation back to old status, but to the page before
@@ -444,15 +549,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getAllVersionsShort(): void {
     if (this.vpActive) {
-      this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, 0)
+      this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, this.calcPredict ? 2 : 1)
         .subscribe(
           vpv => {
             this.allVPVs = vpv;
+            this.allVPVs.forEach(vpv => {vpv.vp = this.vpActive;})
             this.allVPVs.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
             this.vpvBaseline = this.allVPVs.find(item => item.variantName === 'pfv');
             if (this.vpvBaseline) {
               this.vpvBaselineNewestTS = new Date(this.vpvBaseline.timestamp);
             }
+            this.switchVariant(this.variantName);
+            this.viewVPVOverTime();
             this.log(`get VPV All Key metrics: Get ${vpv.length} Project Versions`);
           },
           error => {
@@ -466,6 +574,124 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         );
     }
+  }
+
+  addVPVtoList(vpv: VisboProjectVersion): void {
+    this.allVPVs.unshift(vpv);
+    if (this.activeVPVs?.length > 0 && this.activeVPVs[0].variantName == vpv.variantName) {
+      this.activeVPVs.unshift(vpv);
+    }
+    this.updateVPVCount(this.vpActive, vpv.variantName, 1);
+    this.initVPStatusDropDown();
+  }
+
+  viewVPVOverTime(): void {
+    let list = this.allVPVs?.filter(vpv => vpv.variantName != 'pfv');
+    if (!this.viewAllVariants && this.vpvActive) {
+      list = list?.filter(vpv => vpv.variantName == this.vpvActive.variantName);
+    }
+    if (!list) return;
+    list.sort(function(a, b) {
+      let result = visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
+      if (!result) {
+        result = visboCmpDate(a.timestamp, b.timestamp)
+      }
+      return result;
+    });
+    this.graphDataTimeline = [];
+    const graphDataTimeline = [];
+    if (!(list?.length > 0)) return;
+
+    // process all except the last one
+    let index = 0;
+    let validUntil: Date, ts: Date;
+    for (; index < list.length - 1; index++) {
+      ts = new Date(list[index].timestamp);
+      if (list[index].variantName != list[index+1].variantName) {
+        validUntil = new Date();
+        validUntil = visboGetBeginOfDay(validUntil, 1); // to make it visible it goes 1 day into future
+      } else {
+        // if (visboIsSameDay(ts, new Date(list[index + 1].timestamp))) {
+        //   // skip multiple versions for same day and variant
+        //   continue
+        // }
+        validUntil = new Date(list[index + 1].timestamp);
+        const diffMinutes = (validUntil.getTime() - ts.getTime()) / 1000 / 60;
+        const diffHours = diffMinutes / 60;
+        if (diffHours > 48) {
+          validUntil.setHours(validUntil.getHours() - 24);
+        } else if (diffHours > 12) {
+          validUntil.setHours(validUntil.getHours() - 6);
+        } else if (diffHours > 2) {
+          validUntil.setHours(validUntil.getHours() - 1);
+        } else if (diffMinutes > 1) {
+          validUntil.setMinutes(validUntil.getMinutes() - diffMinutes / 2);
+        }
+      }
+      graphDataTimeline.push([
+        list[index].variantName || this.defaultVariant,
+        list[index].variantName,
+        this.createCustomHTMLContent(list[index]),
+        ts,
+        validUntil
+      ]);
+    }
+    validUntil = visboGetBeginOfDay(new Date(), 1); // to make it visible it goes 1 day into future
+    graphDataTimeline.push([
+      list[index].variantName || this.defaultVariant,
+      list[index].variantName,
+      this.createCustomHTMLContent(list[index]),
+      new Date(list[index].timestamp),
+      validUntil
+    ]);
+    graphDataTimeline.unshift([
+      'variantName',
+      'version',
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      'timestamp',
+      'validUntil'
+    ]);
+    this.graphDataTimeline = graphDataTimeline;
+
+    let rows = 1
+    if (this.viewAllVariants) {
+      const list = this.vpActive?.variant?.filter(variant => (variant.variantName != 'pfv' && variant.vpvCount > 0));
+      rows += list.length;
+    }
+    this.graphOptionsTimeline = Object.assign({}, this.defaultOptionsTimeline);
+    this.graphOptionsTimeline.height = 60 + 40 * rows;
+  }
+
+  createCustomHTMLContent(vpv: VisboProjectVersion): string {
+    const strTimestamp = this.translate.instant('vpKeyMetric.lbl.timestamp');
+    const ts = new Date(vpv.timestamp);
+    const tsDate = convertDate(ts, 'fullDate', this.currentLang);
+    const tsTime = ts.toLocaleTimeString();
+
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
+      '<div><b>' + (vpv.variantName || this.defaultVariant)  + '</b></div>' + '<div>' +
+      '<table>';
+
+    result = result + '<tr>' + '<td>' + strTimestamp + ':</td>'
+                    + '<td align="right"><b>' + tsDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td></td>'
+                    + '<td align="right"><b>' + tsTime + '</b></td>' + '</tr>';
+    result = result + '</table>' + '</div>' + '</div>';
+    return result;
+  }
+
+  timelineSelectRow(row: number): void {
+    // this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
+    let variantName = '';
+    const item = this.graphDataTimeline[row + 1];
+    if (item[0] != this.defaultVariant) {
+      variantName = item[0];
+    }
+
+    const refDate = new Date(item[3]);
+    // const validUntil = new Date(item[4]);
+    this.log(`timeline Goto ${variantName} ${refDate}`);
+    this.switchVariant(variantName, refDate);
   }
 
   findBaseLine(vpv: VisboProjectVersion): VisboProjectVersion {
@@ -492,56 +718,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result
   }
 
-  getVisboProjectVersions(): void {
+  getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    this.vpSelected = id;
-
-    this.log(`get VP name if ID is used ${id}`);
+    this.log(`get VP for vpID ${id}`);
     if (id) {
       this.visboprojectService.getVisboProject(id)
         .subscribe(
-          visboproject => {
-            this.vpActive = visboproject;
+          vp => {
+            this.vpActive = vp;
             this.translateCustomFields(this.vpActive);
             this.initCustomFields(this.vpActive);
-            this.combinedPerm = visboproject.perm;
-            this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: visboproject.name}));
+            this.combinedPerm = vp.perm;
+            this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: vp.name}));
             this.dropDownInit();
             this.getAllVersionsShort();
             this.getVisboCenterSettings();
-            // would be better to get the orga and deliver it to the component.
             this.getVisboCenterOrga();
-
-            const variantName = this.dropDownIndex > 0 ? this.dropDown[this.dropDownIndex].variantName : '';
-            let variantID = '';
-            if (variantName) {
-              const variant = this.vpActive.variant.find(item => item.variantName === variantName);
-              variantID = variant ? variant._id.toString() : '';
-            }
-            this.log(`get VP name if ID is used ${this.vpActive.name} Variant: ${variantName}/${variantID} Perm ${JSON.stringify(this.combinedPerm)}`);
-            this.visboprojectversionService.getVisboProjectVersions(id, this.deleted, variantID, this.calcPredict ? 2 : 1)
-              .subscribe(
-                visboprojectversions => {
-                  this.visboprojectversions = visboprojectversions;
-                  this.visboprojectversions.forEach(vpv => {vpv.vp = this.vpActive;})
-                  this.visboprojectversions.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
-                  this.log(`get VPV Key metrics: Get ${visboprojectversions.length} Project Versions`);
-                  this.findVPV(this.refDate);
-                  this.initVPStatusDropDown();
-                },
-                error => {
-                  this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
-                  if (error.status === 403) {
-                    const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
-                    this.alertService.error(message);
-                  } else {
-                    this.alertService.error(getErrorMessage(error));
-                  }
-                }
-              );
           },
           error => {
-            this.log(`get VPV VP failed: error: ${error.status} message: ${error.error.message}`);
+            this.log(`get VP failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
               const message = this.translate.instant('vpKeyMetric.msg.errorPerm');
               this.alertService.error(message);
@@ -552,6 +747,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.gotoRoot();
     }
+  }
+
+  setActiveVPVs(): void {
+    const variantName = this.variantName || '';
+    // MS TODO: calculate the correct variantName from name or id
+    this.activeVPVs = this.allVPVs.filter(vpv => vpv.variantName == variantName);
+    this.activeVPVs.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
+    this.findVPV(this.refDate, variantName);
+    this.initVPStatusDropDown();
   }
 
   translateCustomFields(vp: VisboProject): void {
@@ -576,7 +780,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   initCustomFields(vp: VisboProject): void {
-      this.customVPStatus = constSystemVPStatus.find(item => item == vp.vpStatus);
+      this.customVPStatus = constSystemVPStatus.find(item => item == vp.vpStatus) || constSystemVPStatus[0];
       const customFieldString = getCustomFieldString(vp, '_businessUnit');
       if (customFieldString) {
         this.customBU = customFieldString.value;
@@ -612,11 +816,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   addVPCustomValues(): void {
-    // if (this.vpActive.vpStatus == 'initialized' || this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered') {
+    if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
+      this.customVPAdd = false;
+    } else {
       this.customVPAdd = true;
-    // } else {
-    //   this.customVPAdd = false;
-    // }
+    }
   }
 
   setModified(): void {
@@ -652,108 +856,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  sameDay(dateA: Date, dateB: Date): boolean {
-    const localA = new Date(dateA);
-    const localB = new Date(dateB);
-    localA.setHours(0, 0, 0, 0);
-    localB.setHours(0, 0, 0, 0);
-    // return false;
-    return localA.getTime() === localB.getTime();
-  }
-
-  getRefDateVersions(increment: number): void {
-    this.log(`get getRefDateVersions current ${this.refDate} ${increment} ${this.refDateInterval}`);
-    const newRefDate = new Date(this.refDate);
-    let i = 0;
-    let quarter = 0;
-    switch (this.refDateInterval) {
-      case 'day':
-        newRefDate.setHours(0, 0, 0, 0); // beginning of day
-        if (increment > 0 || newRefDate.getTime() === this.refDate.getTime()) {
-          newRefDate.setDate(newRefDate.getDate() + increment);
-        }
-        break;
-      case 'week':
-        newRefDate.setHours(0, 0, 0, 0); // beginning of day
-        newRefDate.setDate(newRefDate.getDate() + increment * 7);
-        break;
-      case 'month':
-        newRefDate.setHours(0, 0, 0, 0); // beginning of day
-        newRefDate.setDate(1);
-        if (increment > 0 || newRefDate.getTime() === this.refDate.getTime()) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment);
-        }
-        break;
-      case 'quarter':
-        quarter = Math.trunc(newRefDate.getMonth() / 3);
-        if (increment > 0) {
-          quarter += increment;
-        }
-        newRefDate.setMonth(quarter * 3);
-        newRefDate.setDate(1);
-        newRefDate.setHours(0, 0, 0, 0);
-        if (newRefDate.getTime() === this.refDate.getTime()) {
-          newRefDate.setMonth(newRefDate.getMonth() + increment * 3);
-        }
-        break;
-    }
-    this.log(`get getRefDateVersions new ${newRefDate.toISOString()} ${this.refDate.toISOString()}`);
-    this.refDate = newRefDate;
-    let newVersionIndex;
-    if (increment > 0) {
-      const refDate = new Date(this.visboprojectversions[0].timestamp);
-      if (newRefDate.getTime() >= refDate.getTime()) {
-        newVersionIndex = 0;
-        this.refDate = new Date();
-      }
-    } else {
-      const refDate = new Date(this.visboprojectversions[this.visboprojectversions.length - 1].timestamp);
-      if (newRefDate.getTime() <= refDate.getTime()) {
-        newVersionIndex = this.visboprojectversions.length - 1;
-        this.refDate.setTime(refDate.getTime());
-      }
-    }
-    if (newVersionIndex === undefined) {
-      this.log(`get getRefDateVersions normalised ${(new Date(newRefDate)).toISOString()}`);
-      for (i = 0; i < this.visboprojectversions.length; i++) {
-        const cmpDate = new Date(this.visboprojectversions[i].timestamp);
-        // this.log(`Compare Date ${cmpDate.toISOString()} ${newRefDate.toISOString()}`);
-        if (cmpDate.getTime() <= newRefDate.getTime()) {
-          break;
-        }
-      }
-      newVersionIndex = i;
-    }
-    this.log(`get getRefDateVersions vpv timestamp ${this.visboprojectversions[newVersionIndex].timestamp}`);
-    this.setVpvActive(this.visboprojectversions[newVersionIndex]);
-    this.evaluateDirection(newVersionIndex);
-  }
-
-  getNextVersion(direction: number): void {
-    this.getRefDateVersions(direction);
-    if (visboIsToday(this.refDate)) {
-      this.updateUrlParam('refDate', undefined);
-    } else {
-      this.updateUrlParam('refDate', this.refDate.toISOString());
-    }
-  }
-
   gotoRoot(): void {
     this.log(`goto Root as no id is specified`);
     this.router.navigate(['/'], {});
   }
 
   getVisboCenterOrga(): void {
-    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
-      if (this.vcOrga == undefined
-      || (this.vcOrga.length > 0 && this.vcOrga[0].vcid.toString() != this.vpActive.vcid.toString())) {
+    if (this.vpActive && this.hasVCPerm(this.permVC.View)) {
+      if (this.vcOrga == undefined) {
         // check if Orga is available
         this.log(`get VC Orga ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), true)
+        this.visbosettingService.getVCOrganisations(this.vpActive.vcid, false, (new Date()).toISOString(), false, false)
           .subscribe(
-            vcsettings => {
-              this.vcOrga = vcsettings;
-              this.hasOrga = vcsettings.length > 0 && vcsettings[0] != null;
+            organisation => {
+              this.vcOrga = organisation;
+              this.hasOrga = organisation.length > 0;
             },
             error => {
               if (error.status === 403) {
@@ -768,9 +885,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   getVisboCenterSettings(): void {
-    if (this.vpActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
-      if (!this.vcCustomize
-      || (this.vcCustomize[0] && this.vcCustomize[0].vcid.toString() != this.vpActive.vcid.toString())) {
+    if (this.vpActive && this.hasVCPerm(this.permVC.View)) {
+      if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
         this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict')
@@ -899,7 +1015,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.updateUrlParam('view', 'All');
     }
     this.findBaseLine(vpv);
-    this.log(`VPV Active: vpv: ${vpv._id} ${vpv.timestamp}`);
+    this.log(`VPV Active: vpv: ${vpv._id} ${vpv.variantName} ${vpv.timestamp}`);
   }
 
   initCustomURL(): void {
@@ -947,7 +1063,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   getVPStatus(): string {
-    const result = this.customVPStatus ? this.dropDownVPStatus.find(item => item.name == this.customVPStatus) : undefined;
+    const result = this.customVPStatus ? this.dropDownVPStatus?.find(item => item.name == this.customVPStatus) : undefined;
 
     return result ? result.localName : undefined;
   }
@@ -957,26 +1073,49 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (this.hasVCPerm(this.permVC.Modify) && this.hasVPPerm(this.permVP.Modify)) {
       result = true;
     }
-    this.log(`is PMO ${result}`);
     return result;
   }
 
+  isLatestVPV(vpv: VisboProjectVersion): boolean {
+    let result = true;
+    const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName);
+    if (latestVPV) {
+      result = visboCmpDate(vpv.timestamp, latestVPV.timestamp) >= 0
+    }
+    return result;
+  }
+
+  changeRefDate(): void {
+    this.log(`changeRefDate ${this.refDateStr} ${this.refDate && this.refDate.toISOString()}`);
+    this.refDate = new Date(this.refDateStr);
+    this.switchVariant(this.variantName, this.refDate);
+  }
+
+  setRefDateStr(refDate: Date): void {
+    if (!refDate) refDate = new Date();
+    const offset = refDate.getTimezoneOffset()
+    const localDate = new Date(refDate.getTime() - (offset*60*1000))
+    this.refDateStr = localDate.toISOString().substr(0, 10);
+  }
+
   canModify(): boolean {
-    if (this.statusDirection != undefined && this.statusDirection != 1) {
-      // not the latest version
+    let result = false;
+    let allowedVariants: DropDown[];
+    let variantName = '';
+    if (this.dropDown && this.dropDownIndex > 0) {
+      variantName = this.dropDown[this.dropDownIndex]?.variantName
+    }
+    if (!this.isLatestVPV(this.vpvActive)) {
       return false;
     }
     if (this.hasVPPerm(this.permVP.Modify)) {
-      return true;
+      result = true;
     } else if (this.hasVPPerm(this.permVP.CreateVariant)) {
       // check if user can copy to a variant
-      if (this.dropDownAll.find(variant => variant.variantName == this.vpvActive.variantName)) {
-        return true;
-      } else {
-        return false;
-      }
+      allowedVariants = this.getDropDownList(2, false);
+      return allowedVariants.findIndex(item => item.variantName == variantName) >= 0
     }
-    return false;
+    return result;
   }
 
   canModifyDate(mode: string): boolean {
@@ -999,7 +1138,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // which have been proposed, by the time then been rejected but now should be initiated.
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
+      } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'proposed') {
         result = false;
       }
     } else if (mode == 'endDate') {
@@ -1007,7 +1146,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'geplant') {
+      } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'proposed') {
         result = false;
       }
     }
@@ -1016,28 +1155,39 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   canCommit(): boolean {
-    if (this.statusDirection != undefined && this.statusDirection != 1) {
-      // not the latest version
+    if (!this.hasVPPerm(this.permVP.Modify) || this.vpvActive.variantName != "") {
       return false;
     }
-    if (!(this.hasVPPerm(this.permVP.Modify) && (this.vpvActive.variantName == ""))) {
+    if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       return false;
     }
-    if (!(this.vpActive.vpStatus == 'proposed' || this.vpActive.vpStatus == 'ordered')) {
+    if (!this.isLatestVPV(this.vpvActive)) {
       return false;
     }
     return true;
   }
 
   canModifyVPProperties(): boolean {
-    if (this.customVPStatus == 'initialized' || this.customVPStatus == 'proposed' || this.customVPStatus == 'ordered') {
-      return true;
+    if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
+      return false;
     }
-    return false;
+    return true;
+  }
+
+  canChangeVPDetails(checkPMO = false): boolean {
+    let result = true;
+    if (!this.hasVPPerm(this.permVP.Modify)) {
+      result = false;
+    } else if (checkPMO && !this.isPMO()) {
+      result = false;
+    } else if (!this.isPMO() && !this.canModifyVPProperties()) {
+      result = false;
+    }
+    return result;
   }
 
   canCopyVersion(): boolean {
-    if (this.customVPStatus == 'paused' || this.customVPStatus == 'finished' || this.customVPStatus == 'stopped') {
+    if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       return false;
     }
     return true;
@@ -1071,36 +1221,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.changeStatus = false;
     if (mode == 'Move') {
-      if (this.isPMO() && this.vpvActive.variantName == "" && this.vpvActive.keyMetrics) {
-        let variantID: string = undefined;
-        if (this.vpActive && this.vpActive.variant) {
-          const variant = this.vpActive.variant.find(item => item.variantName = 'pfv');
-          if (variant) {
-            variantID = variant._id;
-          }
-        }
-        this.visboprojectversionService.getVisboProjectVersions(this.vpvActive.vpid, false, variantID, 1)
-          .subscribe(
-            vpv => {
-              vpv.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
-              if (vpv.length > 0) {
-                this.newVPV = vpv[0];
-                this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
-                this.newVPVstartDate = new Date(this.newVPV.startDate);
-                this.newVPVendDate = new Date(this.newVPV.endDate);
-                this.newVPVvariantName = 'pfv';
-              }
-            },
-            error => {
-              this.log(`get VPFs failed: error: ${error.status} message: ${error.error.message}`);
-              if (error.status === 403) {
-                const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
-                this.alertService.error(message);
-              } else {
-                this.alertService.error(getErrorMessage(error));
-              }
-            }
-          );
+      // in case of isPMO Move of the Standard Variant will move the baseline
+      const pfv = this.allVPVs.find(vpv => vpv.variantName == 'pfv');
+      if (this.isPMO() && this.vpvActive.variantName == "" && pfv) {
+        this.newVPV = pfv;
+        this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
+        this.newVPVstartDate = new Date(this.newVPV.startDate);
+        this.newVPVendDate = new Date(this.newVPV.endDate);
+        this.newVPVvariantName = 'pfv';
       } else {
         this.newVPV = this.vpvActive;
         this.newVPVstartDate = new Date(this.newVPV.startDate);
@@ -1114,7 +1242,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.scaleFactor = 0;
     } else if (mode == 'Copy') {
       this.newVPV = this.vpvActive;
-      this.newVPVvariantName = this.vpvActive.variantName;
+      const list = this.getDropDownList(2, false);
+      this.newVPVvariantName = list.length > 0 ? list[0].variantName : '';
     }
   }
 
@@ -1139,25 +1268,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate)
         .subscribe(
           vpv => {
+            this.addVPVtoList(vpv);
             if (vpv.variantName != 'pfv') {
-              this.visboprojectversions.splice(0, 0, vpv);
-              this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-              this.setVpvActive(vpv);
-              this.evaluateDirection(0);
+              this.switchVariant(vpv.variantName);
               const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
               this.alertService.success(message, true);
             } else {
               // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
-              this.updateVPVCount(this.vpActive, vpv.variantName, 1);
               this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
                 .subscribe(
                   vpv => {
+                    this.addVPVtoList(vpv);
+                    this.switchVariant(vpv.variantName);
                     const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                     this.alertService.success(message, true);
-                    this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-                    this.visboprojectversions.splice(0, 0, vpv);
-                    this.setVpvActive(vpv);
-                    this.evaluateDirection(0);
                   },
                   error => {
                     this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -1185,27 +1309,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   copyVPV(): void {
-    this.log(`Copye VPV ${this.vpvActive.name} with ${this.vpvActive.variantName} to ${this.newVPVvariantName} level ${this.level}`);
+    this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
     this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
       .subscribe(
         vpv => {
+          this.addVPVtoList(vpv);
           if (vpv.variantName != 'pfv') {
+            // no baseline copy, just create one new version
             const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
             this.alertService.success(message, true);
-            this.getVisboProjectVersions();
-
+            this.switchVariant(vpv.variantName);
           } else {
             // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
             this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
               .subscribe(
-                () => {
+                vpv => {
+                  this.addVPVtoList(vpv);
                   const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
                   this.alertService.success(message, true);
-                  // this.updateVPVCount(this.vpActive, vpv.variantName, 1);
-                  // this.visboprojectversions.splice(0, 0, vpv);
-                  // this.setVpvActive(vpv);
-                  // this.evaluateDirection(0);
-                  this.getVisboProjectVersions();
+                  this.switchVariant(vpv.variantName);
                 },
                 error => {
                   this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
@@ -1232,7 +1354,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   vpUpdate(): void {
-
     // project settings changed?!
     if (this.vpActive && this.customVPModified) {
       // set the changed custom customfields
@@ -1337,9 +1458,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  switchCopyVariant(index: number): void {
-    this.newVPVdropDownIndex = index;
-    this.newVPVvariantName = this.newVPVdropDown[index].variantName;
+  switchCopyVariant(item: DropDown): void {
+    this.newVPVvariantName = item?.variantName;
   }
 
   updateScaleFactor(): void {
@@ -1348,9 +1468,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  getVariantName(variantName: string): string {
-    const variant = this.dropDownAll.find(item => item.variantName == variantName);
-    return variant ? variant.name : '';
+  getVariantName(variantName: string, all = false): string {
+    let result = '';
+    if (all) {
+      const vpVariant = this.vpActive?.variant?.find(item => item.variantName == variantName);
+      result = vpVariant?.variantName || '';
+    } else {
+      const variant = this.dropDown.find(item => item.variantName == variantName);
+      result = variant?.name || '';
+    }
+    if (result == '') result = this.defaultVariant;
+    return result;
   }
 
   updateDateRange(): void {
@@ -1383,41 +1511,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return null;
   }
 
-  sortVPVTable(n?: number): void {
-    if (!this.visboprojectversions) {
-      return;
-    }
-    if (n !== undefined) {
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
-      }
-      if (this.sortAscending === undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = ( n === 5 ) ? true : false;
-      } else {
-        this.sortAscending = !this.sortAscending;
-      }
-    } else {
-      this.sortColumn = 1;
-      this.sortAscending = false;
-    }
-    if (this.sortColumn === 1) {
-      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-    } else if (this.sortColumn === 2) {
-      this.visboprojectversions.sort(function(a, b) { return visboCmpDate(a.endDate, b.endDate); });
-    } else if (this.sortColumn === 3) {
-      this.visboprojectversions.sort(function(a, b) { return a.ampelStatus - b.ampelStatus; });
-    } else if (this.sortColumn === 4) {
-      this.visboprojectversions.sort(function(a, b) { return a.Erloes - b.Erloes; });
-    } else if (this.sortColumn === 5) {
-      this.visboprojectversions.sort(function(a, b) {
-        return visboCmpString(a.variantName.toLowerCase(), b.variantName.toLowerCase());
-      });
-    }
-    if (!this.sortAscending) {
-      this.visboprojectversions.reverse();
-    }
+  getVPType(vpType: number): string {
+    return this.translate.instant('vp.type.vpType' + vpType);
   }
 
   getCustomFieldListString(vpOnly = true): VPCustomString[] {

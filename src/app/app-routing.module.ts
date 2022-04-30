@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { RegisterconfirmComponent } from './registerconfirm/registerconfirm.component';
-import { OauthconfirmComponent } from './oauthconfirm/oauthconfirm.component';
+import { LoginComponent } from './authentication/login/login.component';
+import { RegisterComponent } from './authentication/register/register.component';
+import { RegisterconfirmComponent } from './authentication/registerconfirm/registerconfirm.component';
+import { OauthconfirmComponent } from './authentication/oauthconfirm/oauthconfirm.component';
 import { AuthGuard } from './_guards/auth.guard';
-import { PwforgottenComponent } from './pwforgotten/pwforgotten.component';
-import { PwresetComponent } from './pwreset/pwreset.component';
+import { PwforgottenComponent } from './authentication/pwforgotten/pwforgotten.component';
+import { PwresetComponent } from './authentication/pwreset/pwreset.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { VisboCentersComponent } from './visbocenters/visbocenters.component';
@@ -18,7 +18,7 @@ import { VisboprojectAuditComponent } from './visboproject-audit/visboproject-au
 import { VisboProjectsComponent } from './visboprojects/visboprojects.component';
 import { VisboprojectDetailComponent } from './visboproject-detail/visboproject-detail.component';
 import { VisboProjectVersionsComponent } from './visboprojectversions/visboprojectversions.component';
-import { VisboPortfolioVersionsComponent } from './visboportfolio-versions/visboportfolio-versions.component';
+import { VisboPortfolioVersionsComponent } from './visboportfolio/visboportfolio.component';
 import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
 
 import { VisboProjectKeyMetricsComponent } from './visboproject-keymetrics/visboproject-keymetrics.component';
@@ -28,17 +28,17 @@ import { VisboprojectRestrictComponent } from './visboproject-restrict/visboproj
 import { SettingsComponent } from './settings/settings.component';
 import { UserProfileComponent } from './userprofile/userprofile.component';
 
-import { SysvisbosystemComponent } from './sysvisbosystem/sysvisbosystem.component';
-import { SysVisboCentersComponent } from './sysvisbocenters/sysvisbocenters.component';
-import { SysvisbocenterDetailComponent } from './sysvisbocenter-detail/sysvisbocenter-detail.component';
-import { SysVisboProjectsComponent } from './sysvisboprojects/sysvisboprojects.component';
-import { SysvisboprojectDetailComponent } from './sysvisboproject-detail/sysvisboproject-detail.component';
-import { SysauditComponent } from './sysaudit/sysaudit.component';
-import { SysuserComponent } from './sysuser/sysuser.component';
-import { SysLogComponent } from './syslog/syslog.component';
-import { SystasksComponent } from './systasks/systasks.component';
-import { SysconfigComponent } from './sysconfig/sysconfig.component';
-import { SyssettingsComponent } from './syssettings/syssettings.component';
+import { SysvisbosystemComponent } from './visbosysadmin/sysvisbosystem/sysvisbosystem.component';
+import { SysVisboCentersComponent } from './visbosysadmin/sysvisbocenters/sysvisbocenters.component';
+import { SysvisbocenterDetailComponent } from './visbosysadmin/sysvisbocenter-detail/sysvisbocenter-detail.component';
+import { SysVisboProjectsComponent } from './visbosysadmin/sysvisboprojects/sysvisboprojects.component';
+import { SysvisboprojectDetailComponent } from './visbosysadmin/sysvisboproject-detail/sysvisboproject-detail.component';
+import { SysauditComponent } from './visbosysadmin/sysaudit/sysaudit.component';
+import { SysuserComponent } from './visbosysadmin/sysuser/sysuser.component';
+import { SysLogComponent } from './visbosysadmin/syslog/syslog.component';
+import { SystasksComponent } from './visbosysadmin/systasks/systasks.component';
+import { SysconfigComponent } from './visbosysadmin/sysconfig/sysconfig.component';
+import { SyssettingsComponent } from './visbosysadmin/syssettings/syssettings.component';
 
 
 const routes: Routes = [

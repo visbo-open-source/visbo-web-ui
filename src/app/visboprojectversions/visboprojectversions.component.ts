@@ -11,6 +11,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
+import { VisboUser } from '../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
@@ -31,6 +32,7 @@ export class VisboProjectVersionsComponent implements OnInit {
   sortAscending: boolean;
   sortColumn: number;
 
+  currentUser: VisboUser;
   combinedPerm: VGPermission = undefined;
   permVC = VGPVC;
   permVP = VGPVP;
@@ -46,6 +48,7 @@ export class VisboProjectVersionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.getVisboProjectVersions();
   }
 
@@ -76,7 +79,10 @@ export class VisboProjectVersionsComponent implements OnInit {
             this.log(`get VP name if ID is used ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
             this.visboprojectversionService.getVisboProjectVersions(id, this.deleted)
               .subscribe(
-                visboprojectversions => this.visboprojectversions = visboprojectversions,
+                visboprojectversions => {
+                  this.visboprojectversions = visboprojectversions;
+                  this.sortVPVTable(1);
+                },
                 error => {
                   this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
                   if (error.status === 403) {
@@ -102,7 +108,10 @@ export class VisboProjectVersionsComponent implements OnInit {
       this.vpActive = null;
       this.visboprojectversionService.getVisboProjectVersions(null)
         .subscribe(
-          visboprojectversions => this.visboprojectversions = visboprojectversions,
+          visboprojectversions => {
+            this.visboprojectversions = visboprojectversions;
+            this.sortVPVTable(1);
+          },
           error => {
             this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
             if (error.status === 403) {
@@ -217,13 +226,30 @@ export class VisboProjectVersionsComponent implements OnInit {
   gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
-  
-  canDeleteVersion(): boolean {    
-    const customVPStatus = constSystemVPStatus.find(item => item == this.vpActive.vpStatus);
+
+  canDeleteVersion(index: number = undefined): boolean {
+    const customVPStatus = constSystemVPStatus.find(item => item == this.vpActive?.vpStatus);
     if (customVPStatus == 'paused' || customVPStatus == 'finished' || customVPStatus == 'stopped') {
       return false;
     }
-    return true;
+    if (this.hasVPPerm(this.permVP.DeleteVP)) {
+      return true;
+    }
+    if (!this.hasVPPerm(this.permVP.Modify + this.permVP.CreateVariant)) {
+      // no permission to delete at all
+      return false;
+    }
+    // user with VP.Modify or VP.CreateVariant permission can delete all versions from variants that were created by themself
+    const variantName = index >= 0 ? this.visboprojectversions[index]?.variantName : '';
+    // check if the vpv for this variant can be deleted
+    if (this.hasVPPerm(this.permVP.Modify + this.permVP.CreateVariant) && variantName && variantName != 'pfv') {
+      const variant = this.vpActive?.variant.find(variant => variant.variantName == variantName);
+      if (variant.email == this.currentUser.email) {
+        // user has Modify or CreateVariant Permission and it is his own variant
+        return true;
+      }
+    }
+    return false;
   }
 
   sortVPVTable(n: number): void {

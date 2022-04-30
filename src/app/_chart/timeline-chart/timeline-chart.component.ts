@@ -9,6 +9,7 @@ import { GoogleChartService } from '../service/google-chart.service';
 })
 export class TimelineChartComponent implements OnInit, OnChanges {
 
+  @Input() elementID: string;
   @Input() graphData: [];
   @Input() language: string;
 
@@ -30,6 +31,9 @@ export class TimelineChartComponent implements OnInit, OnChanges {
     this.gLib.charts.load('current', {'packages': ['timeline'], 'language': this.language});
     this.gLib.charts.setOnLoadCallback(this.drawChart.bind(this));
     // this.log(`Google Chart Timeline Chart Init ${JSON.stringify(this.graphData)}`);
+    if (!this.elementID || this.elementID === '') {
+      this.elementID = 'divTimelineChart';
+    }
   }
 
   ngOnChanges(): void {
@@ -41,7 +45,7 @@ export class TimelineChartComponent implements OnInit, OnChanges {
 
   private drawChart() {
     // this.log(`Google Chart Timeline Chart Draw ${this.graphData.length}`);
-    const chart = new this.gLib.visualization.Timeline(document.getElementById('divTimelineChart'));
+    const chart = new this.gLib.visualization.Timeline(document.getElementById(this.elementID));
     const data = new this.gLib.visualization.arrayToDataTable(this.graphData);
     const parentThis = this.parentThis;
 
@@ -54,16 +58,18 @@ export class TimelineChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const list = chart.getSelection();
       if (!list || list.length === 0 ) {
-         console.log(`Chart Timeline: chartGetSelection is undefined`, list || list.length);
+         // console.log(`Chart Timeline: chartGetSelection is undefined`, list || list.length);
       } else {
         const selectedItem = list[0];
         // console.log(`Chart Timeline: The user selected ${JSON.stringify(selectedItem)}`);
         if (parentThis === undefined) {
-          console.log(`Chart Timeline: The user clicked and this is undefined`);
+          // console.log(`Chart Timeline: The user clicked and this is undefined`);
         } else if (selectedItem) {
           const row = selectedItem.row;
           if (row >= 0) {
             parentThis.timelineSelectRow(row);
+          } else {
+            // console.log(`Chart Timeline: The user clicked and row is ${row}`);
           }
         }
       }

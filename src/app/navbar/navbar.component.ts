@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
   }
 
   gotoClickedItem(action: string): void {
-    // console.log("clicked nav item %s", action);
+    this.log(`clicked nav item ${action}`);
     this.router.navigate([action]);
   }
 

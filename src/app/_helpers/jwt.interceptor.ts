@@ -32,7 +32,7 @@ export class JwtInterceptor implements HttpInterceptor {
             catchError((error: HttpErrorResponse) => {
                   // 401 UNAUTHORIZED - SECTION 2
                   if (error && error.status === 401) {
-                      console.log('Interceptor: Session Expired, redirect to login');
+                      // console.log('Interceptor: Session Expired, redirect to login');
                       this.authenticationService.logout();
                       this.alertService.error("Session expired", true);
                       location.reload();

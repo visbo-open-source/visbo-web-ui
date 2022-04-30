@@ -13,7 +13,7 @@
           <div class="card-body d-flex flex-column">
             <h3 class="card-title" (click)="gotoClickedVc(vc)"><a>{{vc.name}}</a></h3>
             <h6 class="card-subtitle mb-2 text-muted">{{vc.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
-            <p class="card-text">{{vc.description}}</p>
+            <p class="card-text" title="{{vc.description}}">{{getShortText(vc.description, 200)}}</p>
             <!-- <p class="card-subtitle">{{vc.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
               <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVc(vc)">{{vc.vpCount}} {{'dashboard.projects' | translate}}</button>
@@ -40,7 +40,7 @@
             <h3 class="card-title" (click)="gotoClickedVp(vp)"><a>{{vp.name}}</a></h3>
             <h6 class="card-subtitle mb-2 text-black">{{vp.vc.name}}</h6>
             <h6 class="card-subtitle mb-2 text-muted">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</h6>
-            <p class="card-text">{{vp.description}}</p>
+            <p class="card-text" title="{{vp.description}}">{{getShortText(vp.description, 200)}}</p>
             <!-- <p class="card-subtitle">{{vp.users.length}} Users</p> -->
             <div class="align-self-bottom" style="margin-top: auto;">
               <button type="button" class="mx-1 btn btn-primary" (click)="gotoClickedVp(vp)">{{vp.vpfCount || vp.vpvCount}} {{'dashboard.versions' | translate}}</button>

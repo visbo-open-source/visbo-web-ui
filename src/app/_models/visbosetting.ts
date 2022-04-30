@@ -24,22 +24,27 @@ export class VisboSettingListResponse {
   vcsetting: [ VisboSetting ];
 }
 
-export class VisboOrganisationListResponse {
+export class VisboOrgaResponse {
   state: string;
   message: string;
-  vcorganisation: [ VisboSetting ];
+  // eslint-disable-next-line
+  organisation: [ VisboOrganisation ];
 }
 
 export class VisboOrganisation {
-  allCosts: [ VisboCost ];
+  _id: string;
+  name: string;
+  timestamp: Date;
+  createdAt: Date;
+  updatedAt: Date;
   allRoles: [ VisboRole ];
+  allCosts: [ VisboCost ];
+  allUnits: VisboReducedOrgaItem[];
 }
 
 export class VisboCost {
   name: string;
   uid: number;
-  farbe: number;
-  timestamp: Date;
 }
 
 export class VisboSubRole {
@@ -55,21 +60,39 @@ export class VisboRole {
   // eslint-disable-next-line
   teamIDs: [any];
   isTeam: boolean;
-  isTeamParent: boolean;
   isExternRole: boolean;
   entryDate: Date;
   exitDate: Date;
-  farbe: number;
-  defaultDayCapa: number;
-  defaultKapa: number;
-  tagessatz: number;
-  kapazitaet: [number];
+  defCapaDay: number;
+  defCapaMonth: number;
+  dailyRate: number;
   timestamp: Date;
-  startOfCal: Date;  
   aliases: [string];
   isAggregationRole: boolean;
   isSummaryRole: boolean;
-  isActDataRelevant: boolean;
+}
+
+export class VisboReducedOrgaItem {
+  uid: number;
+  pid: number;
+  calcid: number;
+  name: string;
+  type: number;
+  path: string;
+  level: number;
+  employeeNr: string;
+  isTeam: string;
+  isExternRole: string;
+  entryDate: Date;
+  exitDate: Date;
+  defCapaDay: number;
+  defCapaMonth: number;
+  percent: number;
+  dailyRate: number;
+  alias: string;        // to be able to store both forms all combined or a list
+  aliases: [string];
+  isAggregationRole: string;
+  isSummaryRole: string;
 }
 
 export class VisboOrgaTreeLeaf {
@@ -80,6 +103,11 @@ export class VisboOrgaTreeLeaf {
   showChildren: boolean;
   isSelected: TreeLeafSelection;
   status: number;
+}
+
+export class VisboOrgaStructure {
+  tree: VisboOrgaTreeLeaf;
+  list: VisboOrgaTreeLeaf[]
 }
 
 export enum TreeLeafSelection {

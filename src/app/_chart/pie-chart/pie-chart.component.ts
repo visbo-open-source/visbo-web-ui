@@ -47,7 +47,7 @@ export class PieChartComponent implements OnInit, OnChanges {
   }
 
   private drawChart() {
-    console.log(`Google Chart Pie Chart Draw ${this.graphData.length}`);
+    // console.log(`Google Chart Pie Chart Draw ${this.graphData.length}`);
     const chart = new this.gLib.visualization.PieChart(document.getElementById(this.elementID));
     const data = new this.gLib.visualization.DataTable();
     const dataBefore = new this.gLib.visualization.DataTable();
@@ -72,7 +72,7 @@ export class PieChartComponent implements OnInit, OnChanges {
     function selectHandler() {
       const selectedItem = chart.getSelection()[0];
       if (!parentThis) {
-        console.log(`The user clicked and this is undefined`);
+        // console.log(`The user clicked and this is undefined`);
         return;
       }
       // console.log(`Pie Chart Selected Item ${JSON.stringify(selectedItem)}`);
