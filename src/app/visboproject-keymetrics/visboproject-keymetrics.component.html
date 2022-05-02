@@ -20,7 +20,7 @@
           </div>
         </span>
         <a>
-          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung }}">
+          <small *ngIf="vpvActive" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)" class="mx-2" title="{{ vpvActive.ampelErlaeuterung || 'vpKeyMetric.lbl.noTrafficLight' | translate }}">
           <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpvActive.ampelStatus} " ></ng-container>
           </small>
         </a>
@@ -298,10 +298,15 @@
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
                 <td></td>
               </tr>
-              <tr>
+              <tr *ngIf="vpManagerEmail">
                 <td>{{ 'vpKeyMetric.lbl.manager' | translate }}</td>
-                <td title="{{ getVPManager(vpActive) }}">
+                <td *ngIf="!hasVPPerm(permVP.Modify)" title="{{ getVPManager(vpActive) }}">
                   {{ getVPManager(vpActive, false) }}
+                </td>
+                <td *ngIf="hasVPPerm(permVP.Modify)" title="{{ getVPManager(vpActive) }}">
+                  <select class="form-select" style="border-width:0px" name="vpManagerEmail" [(ngModel)]="vpManagerEmail" (change)="setModified()">
+                    <option *ngFor="let user of vpManagerList" value="{{ user.email }}">{{ getFullUserName(user, true) }}</option>
+                  </select>
                 </td>
               </tr>
               <tr>

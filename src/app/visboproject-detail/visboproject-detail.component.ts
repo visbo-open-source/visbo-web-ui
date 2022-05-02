@@ -203,7 +203,7 @@ export class VisboprojectDetailComponent implements OnInit {
             if (admins.find(admin => admin.userId == user._id)) {
               this.vpManagerList.push(user);
             }
-          })
+          });
           if (this.visboproject?.managerId) {
             const user = this.vpUser.find(item => item._id == this.visboproject.managerId);
             this.vpManagerEmail = user?.email;

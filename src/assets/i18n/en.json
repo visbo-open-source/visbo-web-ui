@@ -595,6 +595,7 @@
 			"totalDeadline": "planned achievement of total deadlines",
 			"baselineEndDate": "Project End (baseline)",
 			"newerBL": "newer Baseline available",
+			"noTrafficLight": "Traffic light description not set",
 			"inPlan": "in Plan",
 			"timeLag": "time lag",
 			"missing": "missing",
@@ -651,6 +652,7 @@
 			"plan": "Plan",
 			"actualCost": "actual Cost",
 			"totalCost": "total Cost",
+			"totalProfit": "Profit",
 			"compCost": "Goal achievement: Cost",
 			"compDeadline": "Goal achievement: Deadline",
 			"compDelivery": "Goal achievement: Delivery"

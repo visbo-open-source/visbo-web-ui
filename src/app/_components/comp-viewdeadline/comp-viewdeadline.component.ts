@@ -35,6 +35,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   buttonGantt: string;
   filterPath: string[];
   filterOldPath: string;
+  elementID = 'projectTimeLine';
 
   filterStatus: number;
   fullList: boolean;

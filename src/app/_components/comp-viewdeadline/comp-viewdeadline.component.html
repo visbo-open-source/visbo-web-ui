@@ -23,7 +23,7 @@
     </div>
     <div *ngIf="graphDataGantt && graphDataGantt.length > 1" >
       <div>
-        <app-timeline-chart [graphData]="graphDataGantt" [graphOptions]="ganttOptions" [parentThis]="parentThis"></app-timeline-chart>
+        <app-timeline-chart [graphData]="graphDataGantt" [graphOptions]="ganttOptions" [elementID]="elementID" [parentThis]="parentThis"></app-timeline-chart>
       </div>
     </div>
   </div>

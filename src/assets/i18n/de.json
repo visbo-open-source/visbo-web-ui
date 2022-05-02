@@ -595,6 +595,7 @@
 			"totalDeadline": "geplante Erreichung der Gesamttermine",
 			"baselineEndDate": "Projekt Ende (beauftragt)",
 			"newerBL": "neuere Beauftragung verfügbar",
+			"noTrafficLight": "Keine Ampelstatus Beschreibung gesetzt",
 			"inPlan": "im Plan",
 			"timeLag": "Verschiebung",
 			"missing": "fehlen",
@@ -651,6 +652,7 @@
 			"plan": "Plan",
 			"actualCost": "aktuelle Kosten",
 			"totalCost": "Gesamtkosten",
+			"totalProfit": "Gewinn",
 			"compCost": "Zielerreichung: Kosten",
 			"compDeadline": "Zielerreichung: Termine",
 			"compDelivery": "Zielerreichung: Lieferungen"

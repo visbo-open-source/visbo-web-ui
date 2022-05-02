@@ -408,6 +408,9 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         undefined,
         Math.round((km.costCurrentTotal - km.costCurrentActual) * 10) / 10,
         tooltip,
+        undefined,
+        Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10,
+        tooltip,
         undefined
       ]);
       tooltip = this.createCostTooltip(km, 'baseline');
@@ -419,6 +422,9 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         'opacity: 0.4',
         Math.round((km.costBaseLastTotal - km.costBaseLastActual) * 10) / 10,
         tooltip,
+        'opacity: 0.4',
+        Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10,
+        tooltip,
         'opacity: 0.4'
       ]);
     }
@@ -428,6 +434,9 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       { type: 'string', role: 'tooltip', 'p': {'html': true}},
       { role: 'style' },
       this.translate.instant('compViewVp.lbl.totalCost'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      { role: 'style' },
+      this.translate.instant('compViewVp.lbl.totalProfit'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       { role: 'style' }
     ]);
