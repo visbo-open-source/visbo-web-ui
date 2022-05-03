@@ -44,7 +44,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   graphCostData = [];
   graphCostOptions: BarChartOptions;
-  colorsCost = ['#458CCB', '#BDBDBD', '#F7941E'];
+  colorsCost = ['#BDBDBD', '#458CCB', '#F7941E'];
   defaultCostOptions: BarChartOptions = {
     // height is calculated dynamically (also in chartArea)
     // height: 800,

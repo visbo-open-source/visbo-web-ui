@@ -5,9 +5,9 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "npm audit | tee webui-audit-log.txt; ng build --configuration production",
-        "buildWin": "npm audit >webui-audit-log.txt; ng build --configuration production",
-        "audit": "npm audit | tee webui-audit-log.txt",
+        "build": "npm audit | tee test-webui-audit-log.txt; echo Executed on $(date) >> test-webui-audit-log.txt; ng build --configuration production",
+        "buildWin": "npm audit >test-webui-audit-log.txt; ng build --configuration production",
+        "audit": "npm audit | tee test-webui-audit-log.txt; echo Executed on $(date) >> test-webui-audit-log.txt",
         "lint": "eslint src/app --ext .ts"
     },
     "private": true,
