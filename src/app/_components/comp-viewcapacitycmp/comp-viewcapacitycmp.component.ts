@@ -30,9 +30,9 @@ import { buildOrgaTree, expandParentTree, setTreeLeafSelection, getLeafByID, get
 import {ComboChartOptions} from '../../_models/_chart'
 import { scale } from 'chroma-js';
 
-import * as XLSX from 'xlsx';
-const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-const EXCEL_EXTENSION = '.xlsx';
+// import * as XLSX from 'xlsx';
+// const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+// const EXCEL_EXTENSION = '.xlsx';
 
 const baselineColor = '#F7941E';
 const capaColor = '#ff0000';

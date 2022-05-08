@@ -31,6 +31,9 @@
       <div *ngIf="dropDownIndex > 0" class="ml-3" title="{{ dropDown[dropDownIndex].description }}">
         {{ getShortText(dropDown[dropDownIndex].description, 100) }}
       </div>
+      <div *ngIf="vpvActive?.description" class="ml-3" title="{{ vpvActive.description }}">
+        {{ getShortText(vpvActive.description, 100) }}
+      </div>
     </div>
     <div class='col-5 mt-1'>
       <h5 *ngIf="vpActive.managerId" class="col">

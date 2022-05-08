@@ -354,7 +354,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
         const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
         const endDate = new Date(deadline.endDateVPV);
         const phase = this.getPhaseName(deadline);
-        const path = this.getFullPath(deadline);
+        // const path = this.getFullPath(deadline);
         graphData.push([
           this.translate.instant(i == 0 ? 'compViewDeadline.lbl.rootPhase': 'compViewDeadline.lbl.subPhases'),
           phase,
