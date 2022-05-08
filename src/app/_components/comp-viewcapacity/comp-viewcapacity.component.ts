@@ -911,7 +911,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (cost > 0 && capa === 0) {
         capa = 1;
       }
-      return capa > 0 ? (cost / capa) - 1 : -1;
+      return (capa > 0 && cost > 0) ? (cost / capa) - 1 : undefined;
     }
 
     // calculate the overload/underload only for current&future months if there were at least 1
@@ -941,7 +941,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         load.percentUnder = 0;
         capaLoad[roleID] = load;
       }
-      capaLoad[roleID].isBooked = capaLoad[roleID].isBooked || (!isNaN(capa) && capa != -1);
+      capaLoad[roleID].isBooked = capaLoad[roleID].isBooked || !isNaN(capa);
       if (capa > 0) {
         capaLoad[roleID].percentOver += capa;
       } else if (capa < 0) {
@@ -1197,9 +1197,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       const currentDate = new Date(item.month);
       let capa = 0, capaIntern = 0, plan = 0;
       if (this.showUnit === 'PD') {
-        plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
+        plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0) + (item.otherActivityCost_PT || 0);
       } else {
-        plan = (item.actualCost || 0) + (item.plannedCost || 0);
+        plan = (item.actualCost || 0) + (item.plannedCost || 0) + (item.otherActivityCost || 0);
       }
       if (this.refPFV) {
         if (this.showUnit === 'PD') {
@@ -1245,9 +1245,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         if (index >= 0) {
           let plan = 0,  capa = 0, capaIntern = 0;
           if (this.showUnit === 'PD') {
-            plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
+            plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0) + (item.otherActivityCost_PT || 0);
           } else {
-            plan = (item.actualCost || 0) + (item.plannedCost || 0);
+            plan = (item.actualCost || 0) + (item.plannedCost || 0) + (item.otherActivityCost || 0);
           }
           if (this.refPFV) {
             if (this.showUnit === 'PD') {
@@ -1410,9 +1410,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       const currentDate = new Date(item.month);
       let capa = 0, capaIntern = 0, plan = 0;
       if (this.showUnit === 'PD') {
-        plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0);
+        plan = (item.actualCost_PT || 0) + (item.plannedCost_PT || 0) + (item.otherActivityCost_PT || 0);
       } else {
-        plan = (item.actualCost || 0) + (item.plannedCost || 0);
+        plan = (item.actualCost || 0) + (item.plannedCost || 0) + (item.otherActivityCost || 0);
       }
       if (this.refPFV) {
         if (this.showUnit === 'PD') {
