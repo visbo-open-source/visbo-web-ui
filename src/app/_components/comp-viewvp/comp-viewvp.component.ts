@@ -44,7 +44,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   graphCostData = [];
   graphCostOptions: BarChartOptions;
-  colorsCost = ['#BDBDBD', '#458CCB', '#F7941E'];
+  colorsCost = ['#BDBDBD', '#458CCB', 'green'];
   defaultCostOptions: BarChartOptions = {
     // height is calculated dynamically (also in chartArea)
     // height: 800,
@@ -401,6 +401,10 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     if (this.hasKM(this.vpvActive?.keyMetrics, 'Cost')) {
       const km = this.vpvActive.keyMetrics;
       let tooltip = this.createCostTooltip(km, 'plan');
+      const profitLossVPV = Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10;
+      const profitLossBL = Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
+      const profitColorVPV = profitLossVPV >= 0 ? 'color: green' : 'color: red';
+      const profitColorBL = profitLossBL >= 0 ? 'color: green' : 'color: red';
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('plan')),
         Math.round(km.costCurrentActual * 10) / 10,
@@ -411,7 +415,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         undefined,
         Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10,
         tooltip,
-        undefined
+        profitColorVPV,
       ]);
       tooltip = this.createCostTooltip(km, 'baseline');
       // baseline Values
@@ -425,7 +429,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         'opacity: 0.4',
         Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10,
         tooltip,
-        'opacity: 0.4'
+        profitColorBL + ';' + 'opacity: 0.4'
       ]);
     }
     graphCostData.unshift([

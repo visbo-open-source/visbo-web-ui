@@ -652,7 +652,7 @@
 			"plan": "Plan",
 			"actualCost": "aktuelle Kosten",
 			"totalCost": "Gesamtkosten",
-			"totalProfit": "Gewinn",
+			"totalProfit": "Gewinn/Verlust",
 			"compCost": "Zielerreichung: Kosten",
 			"compDeadline": "Zielerreichung: Termine",
 			"compDelivery": "Zielerreichung: Lieferungen"
