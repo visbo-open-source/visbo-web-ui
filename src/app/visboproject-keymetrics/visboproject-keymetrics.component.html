@@ -31,7 +31,7 @@
       <div *ngIf="dropDownIndex > 0" class="ml-3" title="{{ dropDown[dropDownIndex].description }}">
         {{ getShortText(dropDown[dropDownIndex].description, 100) }}
       </div>
-      <div *ngIf="vpvActive?.description" class="ml-3" title="{{ vpvActive.description }}">
+      <div *ngIf="vpvActive?.description && vpActive.description != vpvActive.description" class="ml-3" title="{{ vpvActive.description }}">
         {{ getShortText(vpvActive.description, 100) }}
       </div>
     </div>
@@ -346,6 +346,13 @@
                 <td>
                   <input id="VPRisk" *ngIf="canChangeVPDetails(true)" type="number" (change)="setModified()" name=customRisk [(ngModel)]="customRisk" min=0 max=10>
                   <label id="VPRisk" *ngIf="!canChangeVPDetails(true)">{{ customRisk }} </label>
+                </td>
+              </tr>
+              <tr *ngIf="vpActive.kundennummer || canChangeVPDetails(false)">
+                <td>{{ 'vpKeyMetric.lbl.customerID' | translate }}</td>
+                <td>
+                  <input id="VPCustomerID" *ngIf="canChangeVPDetails(false)" type="string" (change)="setModified()" name=customerID [(ngModel)]="customerID">
+                  <label id="VPCustomerID" *ngIf="!canChangeVPDetails(false)">{{ customerID }} </label>
                 </td>
               </tr>
               <tr *ngFor="let item of editCustomFieldString">

@@ -114,7 +114,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   budgetAtCompletion = 0;
   chart = true;
   parentThis = this;
-  colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  colors = ['#458CCB', '#F7941E', '#BDBDBD'];
   graphBarData = [];
   graphBarOptions: BarChartOptions;
   defaultBarOptions: BarChartOptions = {
@@ -923,26 +923,26 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     if (item.vpStatus) {
       result = result + '<tr>' + '<td>' +
                   this.translate.instant('compViewVpf.lbl.vpStatus') +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   this.translate.instant('vpStatus.'.concat(item.vpStatus)) +
                   '</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' +
                 this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
-                ':</td>' + '<td><b>' +
+                ':</td>' + '<td class="text-right"><b>' +
                 valueX + format +
                 '</b></td>' + '</tr>';
     if (strAbs) {
       result = result + '<tr>' + '<td>' +
                   this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   strAbs.replace(/ /g, "&nbsp") +
                   '</b></td>' + '</tr>';
     }
     if (strPercent) {
       result = result + '<tr>' + '<td>' +
                   this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   strPercent.replace(/ /g, "&nbsp")
                   '</b></td>' + '</tr>';
     }

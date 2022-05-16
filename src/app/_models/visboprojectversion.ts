@@ -30,6 +30,23 @@ export class VPVCost {
   currentInvoice: number;
 }
 
+export class VPVPhase {
+  // eslint-disable-next-line
+  AllRoles: any[];
+  // eslint-disable-next-line
+	AllCosts: any[];
+	percentDone: number;
+	responsible: string;
+	deliverables: string[];
+	ampelStatus: number;
+	ampelErlaeuterung: string;
+	startOffsetinDays: number;
+	dauerInDays: number;
+	name: string;
+	shortName: string;
+	originalName: string;
+}
+
 export class VPVDelivery {
   nameID: string;
   name: string;
@@ -47,7 +64,6 @@ export class VPVDelivery {
   statusID: number;
   status: string;
 }
-
 
 export class VPVDeadline {
   nameID: string;
@@ -152,7 +168,7 @@ export class VisboProjectVersion {
   Schriftfarbe: number;
   VorlagenName: string;
   Dauer: number;
-// Missing AllPhases
+  AllPhases: VPVPhase[];
   timestamp: Date;
   volumen: number;
   complexity: number;

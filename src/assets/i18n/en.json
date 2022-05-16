@@ -565,6 +565,7 @@
 			"template": "Project Template",
 			"bu": "Business Unit",
 			"vpStatus": "State",
+			"customerID": "Customer ID",
 			"weeksAhead": "Weeks Ahead",
 			"weeksDelay": "Weeks Delay",
 			"inTime": "in Time",

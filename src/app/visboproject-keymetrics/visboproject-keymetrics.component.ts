@@ -84,6 +84,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownVPStatus: DropDownStatus[];
   customStrategicFit: number;
   customRisk: number;
+  customerID: string;
   customCommit: Date;
   editCustomFieldString: VPCustomString[];
   editCustomFieldDouble: VPCustomDouble[];
@@ -853,6 +854,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (customFieldDate) {
         this.customCommit = new Date(customFieldDate.value);
       }
+      this.customerID = vp.kundennummer;
       this.editCustomFieldString = this.getCustomFieldListString(true);
       this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
       this.editCustomFieldDate = this.getCustomFieldListDate(true);
@@ -1416,6 +1418,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (this.customVPStatus) {
         this.vpActive.vpStatus = this.customVPStatus;
       }
+      this.vpActive.kundennummer = this.customerID;
       const newManager = this.vpManagerList?.find(item => item.email == this.vpManagerEmail);
       if (newManager && newManager._id != this.vpActive.managerId) {
         this.vpActive.managerId = newManager._id;

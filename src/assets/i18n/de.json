@@ -565,6 +565,7 @@
 			"template": "Projektvorlage",
 			"bu": "Geschäftseinheit",
 			"vpStatus": "Status",
+			"customerID": "Kunden ID",
 			"weeksAhead": "Wochen voraus",
 			"weeksDelay": "Wochen verzögert",
 			"inTime": "pünktlich",

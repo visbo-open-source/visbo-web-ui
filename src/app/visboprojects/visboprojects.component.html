@@ -17,7 +17,7 @@
         <option *ngFor="let item of dropDownVPType" value="{{item.id}}">{{item.name}}</option>
       </select>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='initCreateVP()' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
+        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='switchTemplate(true)' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
     <div class='container-fluid'></div>
@@ -137,7 +137,7 @@
               <!-- Selection Template -->
               <div class="form-group">
                 <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
-                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">
+                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID" (change)="switchTemplate(false)">
                   <option *ngFor="let template of vpTemplates" value="{{ template._id }}">{{ template.name }}</option>
                 </select>
               </div>
@@ -165,7 +165,7 @@
                   </div>
                 </div>
                 <!-- Edit RAC & BAC -->
-                <div class="form-group">
+                <div *ngIf="templateHasCost" class="form-group">
                   <div class="row">
                     <!-- RAC -->
                     <div class="col">
