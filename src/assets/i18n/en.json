@@ -530,6 +530,7 @@
 		"titleDetailVersion": "Details for Version",
 		"titleVPVMove": "Copy & Move/Scale",
 		"titleVPVCopy": "Copy",
+		"titleVPVEdit": "Edit",
 		"titleVPVCustomPredict": "Customer specific Prediction",
 		"titleShowVPVersions": "Show/Hide Project Versions",
 		"titleCreateVariant": "Create new Variant",
@@ -638,7 +639,8 @@
 			"errorPermVP": "Permission denied updating {{name}}",
 			"errorVPConflict": "Conflict happened during updating of {{name}}",
 			"errorPermVersion": "Permission denied for project versions {{name}}",
-			"viewWeb": "View Project Online"
+			"viewWeb": "View Project Online",
+			"localInstallationRequired": "Installation of VISBO Clients required"
 		}
 	},
 	"compViewVp": {

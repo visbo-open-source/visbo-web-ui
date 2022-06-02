@@ -70,8 +70,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
-  predictURL: string;
+  customURL: string;
   customPredict: string;
+  customEdit: string;
   calcPredict = false;
   level: number;
   reduceLevel: false;
@@ -540,8 +541,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getPredictURL(ott: string): string {
-    let url = 'visbo-predict://predict';
+  getCustomURL(type: string, ott: string): string {
+    let url: string;
+    if (type == 'predict') {
+      url = 'visbo-predict://predict';
+    } else {
+      url = 'visbo://'.concat(type);
+    }
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
@@ -947,14 +953,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict,CustomEdit')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
               this.vcEnableDisable = this.squeezeEnableDisable(vcsettings.filter(item => item.type == '_VCConfig'));
-              const customSetting = vcsettings.find(item => item.type == 'CustomPredict');
+              let customSetting = vcsettings.find(item => item.type == 'CustomPredict');
               if (customSetting) {
                 this.customPredict = customSetting.name;
+              }
+              customSetting = vcsettings.find(item => item.type == 'CustomEdit');
+              if (customSetting) {
+                this.customEdit = customSetting.name;
               }
               this.initBUDropDown();
             },
@@ -1076,13 +1086,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.variantName} ${vpv.timestamp}`);
   }
 
-  initCustomURL(): void {
-    this.predictURL = undefined;
-    // get the One Time Token and set the predictURL after getting it
+  initCustomURL(type: string): void {
+    this.customURL = undefined;
+    // get the One Time Token and set the customURL after getting it
     this.userService.getUserOTT()
       .subscribe(
         ott => {
-          this.predictURL = this.getPredictURL(ott);
+          this.customURL = this.getCustomURL(type, ott);
         },
         error => {
           if (error.status === 400) {

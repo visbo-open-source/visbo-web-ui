@@ -530,6 +530,7 @@
 		"titleDetailVersion": "Details zur Version",
 		"titleVPVMove": "Kopieren & Verschieben/Skalieren",
 		"titleVPVCopy": "Kopieren",
+		"titleVPVEdit": "Editieren",
 		"titleVPVCustomPredict": "Kundenspezifische Vorhersage",
 		"titleShowVPVersions": "Ein-/Ausblenden von Projekt Versionen",
 		"titleCreateVariant": "Neue Variante anlegen",
@@ -638,7 +639,8 @@
 			"errorPermVP": "Keine Berechtigung zum ändern von {{name}}",
 			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
-			"viewWeb": "Anzeige des Projekts Online"
+			"viewWeb": "Anzeige des Projekts Online",
+			"localInstallationRequired": "Installation der VISBO Clients erforderlich"
 		}
 	},
 	"compViewVp": {
