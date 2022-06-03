@@ -546,7 +546,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (type == 'predict') {
       url = 'visbo-predict://predict';
     } else {
-      url = 'visbo://'.concat(type);
+      url = 'visbo-connect://'.concat(type);
     }
     let separator = '?';
     if (this.vpActive) {
