@@ -507,6 +507,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
       elementKeyMetric.vpStatusLocale = elementKeyMetric.vp.vpStatusLocale;
       elementKeyMetric.startDate = this.visboprojectversions[item].startDate;
+      elementKeyMetric.endDate = this.visboprojectversions[item].endDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
       if (this.visboprojectversions[item].keyMetrics) {
@@ -648,8 +649,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (!metric) {
       metric = list.find(item => item.metric !== exclude);
     }
-    if (!metric) {
+    if (!metric && list.length > 0) {
       metric = list[0];
+    }
+    // if nothing is found, set to endDate
+    if (!metric) {
+      metric = this.metricList.find(item => item.metric == 'EndDate');
     }
     return metric;
   }
@@ -1200,7 +1205,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 4) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
     } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 7) {
