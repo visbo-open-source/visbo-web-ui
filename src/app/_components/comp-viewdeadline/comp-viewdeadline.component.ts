@@ -232,7 +232,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // filter by hierarchy
     for (let i = 0; i < this.allDeadline.length; i++) {
       const path = this.getFullPath(this.allDeadline[i]);
-      if (path.join(' / ').indexOf(strFilterPath) === 0) {  // sub item of filtered hierarchy
+      if (path?.join(' / ').indexOf(strFilterPath) === 0) {  // sub item of filtered hierarchy
         this.hierarchyDeadline.push(this.allDeadline[i]);
       }
     }
@@ -349,7 +349,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   visboViewDeadlineTimeline(): void {
     const graphData = [];
-    this.hierarchyDeadline.sort((a, b) => {return visboCmpString(a.fullPathVPV.join(' / '), b.fullPathVPV.join(' / '));})
+    this.hierarchyDeadline.sort((a, b) => {return visboCmpString((a.fullPathVPV || a.fullPathPFV).join(' / '), (b.fullPathVPV || b.fullPathPFV).join(' / '));})
     for (let i = 0; i < this.hierarchyDeadline.length; i++) {
       const deadline = this.hierarchyDeadline[i];
       if (deadline.type === "Phase") {

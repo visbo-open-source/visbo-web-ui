@@ -470,7 +470,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         ok = true;
       }
       if (ok && withVersions) {
-        if (item.vpvCount == 0) {
+        if (item.vpvCount == 0 && item.variantName != '') {
           ok = false;
         }
       }
