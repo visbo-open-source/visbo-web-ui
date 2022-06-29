@@ -15,6 +15,7 @@ import { VisboSetting } from '../../_models/visbosetting';
 import { VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
 import { VisboCenter } from '../../_models/visbocenter';
+import { VisboUser } from '../../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
@@ -99,6 +100,7 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() customize: VisboSetting;
   @Input() bubbleMode: boolean;
+  @Input() vcUser: Map<string, VisboUser>;
   @Input() combinedPerm: VGPermission;
 
   refDate: Date;
@@ -136,7 +138,8 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
   budgetAtCompletion = 0;
   chart = true;
   parentThis = this;
-  colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  // colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  colors = ['blue', 'yellow', 'red'];
   graphBarData = [];
   graphBarOptions: BarChartOptions;
   defaultBarOptions: BarChartOptions = {
@@ -544,6 +547,7 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
       elementKeyMetric.vp = this.visboprojectversions[item].vp;
       elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
+      elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
@@ -877,19 +881,19 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
     if (item.vpStatus) {
       result = result + '<tr>' + '<td>' +
                   this.translate.instant('compViewVpf.lbl.vpStatus') +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   this.translate.instant('vpStatus.'.concat(item.vpStatus)) +
                   '</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' +
                 this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
-                ':</td>' + '<td><b>' +
+                ':</td>' + '<td class="text-right"><b>' +
                 valueX + format +
                 '</b></td>' + '</tr>';
     if (strAbs) {
       result = result + '<tr>' + '<td>' +
                   this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   strAbs.replace(/ /g, "&nbsp") +
                   '</b></td>' + '</tr>';
     }

@@ -55,7 +55,7 @@
     </h5>
     <div *ngIf="viewVersions && graphDataTimeline.length > 1" class="row ml-1 mt-2">
       <div class="col-10">
-        <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
+        <app-timeline-chart [elementID]="divTimelineVersions" [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
       </div>
       <div class="col-2">
         <div class="custom-control custom-checkbox">
@@ -83,22 +83,17 @@
         <button class="btn btn-default" (click)='changeView("KeyMetrics")' title="{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}">
           <img src="assets/icons/noun-bubbles.svg" width="60" />
         </button>
+        <button class="btn btn-default" (click)='changeView("List")' title="{{ 'vpfVersion.btn.viewList' | translate }}">
+          <img src="assets/icons/noun-list.svg" width="60" />
+        </button>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVPFNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="btn btn-default" type="button" id="dropDownVPFNavigation" data-toggle="dropdown" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fas fa-bars"></i>
         </button>
-        <div class="collapse navbar-collapse" id="navbarVPFNavigation">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link bg-light " (click)='changeView("List")' data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vpfVersion.btn.viewList' | translate }}</a>
-            </li>
-            <li class="nav-item" *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)">
-              <a class="nav-link bg-light" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link bg-light " (click)="gotoCompareVPF()" data-toggle="collapse" data-target=".navbar-collapse.show">{{ 'vpfVersion.btn.compareVPF' | translate }}</a>
-            </li>
-          </ul>
+        <div class="dropdown-menu" aria-labelledby="dropDownVPFNavigation">
+          <!-- <button class="dropdown-item" type="button" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button> -->
+          <button *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="dropdown-item" type="button" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
+          <button class="dropdown-item" type="button" (click)="gotoCompareVPF()">{{ 'vpfVersion.btn.compareVPF' | translate }}</button>
         </div>
       </div>
     </div>
@@ -115,7 +110,7 @@
 
   <div *ngIf="pageParams.view == 'Overview' && vpActive && listVPV">
     <hr>
-    <app-comp-overviewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-overviewvpf>
+    <app-comp-overviewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcUser]="vcUser" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-overviewvpf>
   </div>
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
     <hr>
@@ -127,7 +122,7 @@
   </div>
   <div *ngIf="pageParams.view == 'KeyMetric' && vpfActive && listVPV">
     <hr>
-    <app-comp-viewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [metric]="pageParams.metricX" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpf>
+    <app-comp-viewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcUser]="vcUser" [metric]="pageParams.metricX" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewvpf>
   </div>
   <div *ngIf="pageParams.view == 'List' && vpfActive && listCalcVPV">
     <hr>

@@ -549,6 +549,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     elementKeyMetric._id = vpv._id;
     elementKeyMetric.vpid = vpv.vpid;
     elementKeyMetric.timestamp = vpv.timestamp;
+    elementKeyMetric.Erloes = vpv.Erloes;
     if (vpv.keyMetrics) {
       elementKeyMetric.keyMetrics = vpv.keyMetrics;
 

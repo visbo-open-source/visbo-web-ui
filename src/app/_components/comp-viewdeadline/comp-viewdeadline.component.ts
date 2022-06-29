@@ -35,6 +35,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   buttonGantt: string;
   filterPath: string[];
   filterOldPath: string;
+  elementID = 'projectTimeLine';
 
   filterStatus: number;
   fullList: boolean;
@@ -56,7 +57,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   statusList: string[];
 
   graphDeadlineData = [];
-  colorsDeadline = ['gray', '#005600', 'green', 'orange', 'red', '#005600', 'green', 'orange', 'grey'];
+  colorsDeadline = ['grey', '#005600', 'green', 'orange', 'red', '#005600', 'green', 'orange', 'grey'];
   graphDeadlineLegend = [
     ['string', this.translate.instant('compViewDeadline.lbl.status')],
     ['number', this.translate.instant('compViewDeadline.lbl.count')]
@@ -64,10 +65,12 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   graphDeadlineOptions = {
       // title: 'View Deadlines',
       titleTextStyle: {color: 'black', fontSize: '16'},
-      tooltip : {
-        trigger: 'none'
-      },
       width: '600',
+      tooltip : {
+        showColorCode: true,
+        text: 'both'
+      },
+      pieSliceText: 'percentage',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
@@ -229,7 +232,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     // filter by hierarchy
     for (let i = 0; i < this.allDeadline.length; i++) {
       const path = this.getFullPath(this.allDeadline[i]);
-      if (path.join(' / ').indexOf(strFilterPath) === 0) {  // sub item of filtered hierarchy
+      if (path?.join(' / ').indexOf(strFilterPath) === 0) {  // sub item of filtered hierarchy
         this.hierarchyDeadline.push(this.allDeadline[i]);
       }
     }
@@ -284,7 +287,6 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
   }
 
   getStatusDeadline(vpv: VisboProjectVersion, element: VPVDeadline): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
@@ -347,24 +349,21 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   visboViewDeadlineTimeline(): void {
     const graphData = [];
+    this.hierarchyDeadline.sort((a, b) => {return visboCmpString((a.fullPathVPV || a.fullPathPFV).join(' / '), (b.fullPathVPV || b.fullPathPFV).join(' / '));})
     for (let i = 0; i < this.hierarchyDeadline.length; i++) {
       const deadline = this.hierarchyDeadline[i];
       if (deadline.type === "Phase") {
         const startDate = deadline.startDateVPV ? new Date(deadline.startDateVPV) : new Date();
         const endDate = new Date(deadline.endDateVPV);
         const phase = this.getPhaseName(deadline);
-        const path = this.getFullPath(deadline);
-        // filter Gantt Chart by Layer
-        if ((path.join(' / ').indexOf(this.filterPath.join(' / ')) === 0   // childs of filter Path
-        && path.length <= this.filterPath.length + 1)) {  // in same hierarchy
-          graphData.push([
-            i === 0 ? 'Root' : 'Children',
-            phase,
-            this.createCustomHTMLContent(deadline),
-            startDate.getTime(),
-            endDate.getTime()
-          ]);
-        }
+        // const path = this.getFullPath(deadline);
+        graphData.push([
+          this.translate.instant(i == 0 ? 'compViewDeadline.lbl.rootPhase': 'compViewDeadline.lbl.subPhases'),
+          phase,
+          this.createCustomHTMLContent(deadline),
+          startDate.getTime(),
+          endDate.getTime()
+        ]);
       }
     }
     graphData.unshift([
@@ -391,20 +390,20 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
       '<div><b>' + name + '</b></div>' + '<div>' +
       '<table>';
 
-    const start = this.translate.instant('compViewDeadline.lbl.startDateTTVPV');
-    const end = this.translate.instant('compViewDeadline.lbl.endDateTTVPV');
-    const percentDone = this.translate.instant('compViewDeadline.lbl.percentDone');
-    const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight');
-    const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc');
+    const start = this.translate.instant('compViewDeadline.lbl.startDateTTVPV').replace(/ /g, "&nbsp");
+    const end = this.translate.instant('compViewDeadline.lbl.endDateTTVPV').replace(/ /g, "&nbsp");
+    const percentDone = this.translate.instant('compViewDeadline.lbl.percentDone').replace(/ /g, "&nbsp");
+    const trafficlight = this.translate.instant('compViewDeadline.lbl.trafficlight').replace(/ /g, "&nbsp");
+    const trafficlightDesc = this.translate.instant('compViewDeadline.lbl.trafficlightDesc').replace(/ /g, "&nbsp");
 
-    result = result + '<tr>' + '<td>' + start + ':</td>' + '<td class="align-right"><b>' + startDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + end + ':</td>' + '<td class="align-right"><b>' + endDate + '</b></td>' + '</tr>';
-    result = result + '<tr>' + '<td>' + percentDone + ':</td>' + '<td class="align-right"><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + start + ':</td>' + '<td class="text-right"><b>' + startDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + end + ':</td>' + '<td class="text-right"><b>' + endDate + '</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + percentDone + ':</td>' + '<td class="text-right"><b>' + Math.round(deadline.percentDone * 100) + '%</b></td>' + '</tr>';
     if (deadline.trafficlight) {
-      result = result + '<tr>' + '<td>' + trafficlight + ':</td>' + '<td class="align-right"><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + trafficlight + ':</td>' + '<td class="text-right"><b>' + deadline.trafficlight + '</b></td>' + '</tr>';
     }
     if (deadline.trafficlightDesc) {
-      result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td class="align-right"><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + trafficlightDesc + ':</td>' + '<td class="text-right"><b>' + deadline.trafficlightDesc + '</b></td>' + '</tr>';
     }
     result = result + '</table>' + '</div>' + '</div>';
     return result;

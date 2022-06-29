@@ -23,7 +23,7 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboIsSameDay, visboGetBeginOfDay,
+import { getErrorMessage, visboCmpString, visboCmpDate, visboIsToday, visboGetBeginOfDay,
         convertDate, visboGetShortText, getPreView } from '../_helpers/visbo.helper';
 import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
@@ -114,6 +114,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     viewAllVariants = false;
     graphDataTimeline = [];
     graphOptionsTimeline: TimeLineOptions;
+    divTimelineVersions = 'divTimelineVersions';
     defaultOptionsTimeline: TimeLineOptions = {
         // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
         width: '100%',
@@ -1002,7 +1003,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
           // serach a VPF from same variant, if none available fall back to main
           let newVPF = this.listVPF.find(item => item.variantName == vpf.variantName);
           if (!newVPF) {
-            newVPF = this.listVPF.find(item => item.variantName == '') || this.listVPF.find(item => true);
+            newVPF = this.listVPF.find(item => item.variantName == '') || this.listVPF.find(() => true);
           }
           this.switchVPF(newVPF || this.listVPF[0]);
           this.getVisboProject(this.vpActive._id);

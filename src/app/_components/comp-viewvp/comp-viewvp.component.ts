@@ -9,12 +9,12 @@ import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
 import { VPParams } from '../../_models/visboproject';
-import { VisboProjectVersion, VPVKeyMetrics, VPVKeyMetricsCalc, VPVDeadline, VPVDelivery } from '../../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetrics, VPVDeadline, VPVDelivery } from '../../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../../_services/visboprojectversion.service';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
-import { getErrorMessage, convertDate, visboCmpDate, visboIsToday, getPreView } from '../../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpDate, getPreView } from '../../_helpers/visbo.helper';
 import {BarChartOptions} from '../../_models/_chart'
 
 @Component({
@@ -44,7 +44,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   graphCostData = [];
   graphCostOptions: BarChartOptions;
-  colorsCost = ['#458CCB', '#BDBDBD', '#F7941E'];
+  colorsCost = ['#BDBDBD', '#458CCB', 'green'];
   defaultCostOptions: BarChartOptions = {
     // height is calculated dynamically (also in chartArea)
     // height: 800,
@@ -89,13 +89,16 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   colorsDeadline = ['gray', '#005600', 'green', 'orange', 'red', '#005600', 'green', 'orange', 'grey'];
   graphDeadlineOptions = {
       titleTextStyle: {color: 'black', fontSize: '16'},
+      // width: '600',
       tooltip : {
-        trigger: 'none'
+        showColorCode: true,
+        text: 'both'
       },
-      width: '600',
+      pieSliceText: 'percentage',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
+      // legend: {position: 'bottom', textStyle: {fontSize: 12}},
       colors: []
     };
   divDeadlineChart = 'divDeadLineChart';
@@ -110,9 +113,11 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   graphDeliveryOptions = {
       titleTextStyle: {color: 'black', fontSize: '16'},
       tooltip : {
-        trigger: 'none'
+        showColorCode: true,
+        text: 'both'
       },
-      width: '600',
+      pieSliceText: 'percentage',
+      // width: '600',
       // pieHole: 0.25,
       slices: {},
       // sliceVisibilityThreshold: .025
@@ -358,7 +363,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   }
 
   getStatusDeadline(vpv: VisboProjectVersion, element: VPVDeadline): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
@@ -378,7 +382,6 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   }
 
   getStatusDelivery(vpv: VisboProjectVersion, element: VPVDelivery): number {
-    const refDate = vpv.timestamp;
     let status = 0;
     const actualDate = new Date();
     if (element.endDatePFV) {
@@ -400,30 +403,39 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
   calcCost(): void {
     const graphCostData = [];
     if (this.hasKM(this.vpvActive?.keyMetrics, 'Cost')) {
+      let tooltip = this.createCostTooltip(this.vpvActive, 'plan');
       const km = this.vpvActive.keyMetrics;
-      let tooltip = this.createCostTooltip(km, 'plan');
+      const profitLossVPV = Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10;
+      const profitLossBL = Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
+      const profitColorVPV = profitLossVPV >= 0 ? 'color: green' : 'color: red';
+      const profitColorBL = profitLossBL >= 0 ? 'color: green' : 'color: red';
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('plan')),
         Math.round(km.costCurrentActual * 10) / 10,
         tooltip,
         undefined,
-        Math.round(km.costCurrentTotal * 10) / 10,
+        Math.round((km.costCurrentTotal - km.costCurrentActual) * 10) / 10,
         tooltip,
-        undefined
+        undefined,
+        Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10,
+        tooltip,
+        profitColorVPV,
       ]);
-      tooltip = this.createCostTooltip(km, 'baseline');
+      tooltip = this.createCostTooltip(this.vpvActive, 'baseline');
       // baseline Values
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('baseline')),
         Math.round(km.costBaseLastActual * 10) / 10,
         tooltip,
         'opacity: 0.4',
-        Math.round(km.costBaseLastTotal * 10) / 10,
+        Math.round((km.costBaseLastTotal - km.costBaseLastActual) * 10) / 10,
         tooltip,
-        'opacity: 0.4'
+        'opacity: 0.4',
+        Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10,
+        tooltip,
+        profitColorBL + ';' + 'opacity: 0.4'
       ]);
     }
-    var len = graphCostData.length;
     graphCostData.unshift([
       'Type',
       this.translate.instant('compViewVp.lbl.actualCost'),
@@ -431,10 +443,13 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       { role: 'style' },
       this.translate.instant('compViewVp.lbl.totalCost'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      { role: 'style' },
+      this.translate.instant('compViewVp.lbl.totalProfit'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       { role: 'style' }
     ]);
     this.graphCostOptions = this.copyGraphBarOptions(this.defaultCostOptions);
-    this.graphCostAxis(len);
+    this.graphCostAxis(graphCostData.length - 1);
     this.graphCostData = graphCostData;
   }
 
@@ -469,13 +484,19 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     return result
   }
 
-  createCostTooltip(km: VPVKeyMetrics, type: string): string {
+  createCostTooltip(vpv: VisboProjectVersion, type: string): string {
 
-    const unitEuro = this.translate.instant('compViewVp.lbl.keuro');
-    let format = '&nbsp' + unitEuro;
+    // const unitEuro = this.translate.instant('compViewVp.lbl.keuro');
+    // let format = '&nbsp' + unitEuro;
+    const km = vpv.keyMetrics;
     const name = this.translate.instant('compViewVp.lbl.'.concat(type)).replace(/ /g, "&nbsp");
     const actual = this.translate.instant('compViewVp.lbl.actualCost').replace(/ /g, "&nbsp");
     const total = this.translate.instant('compViewVp.lbl.totalCost').replace(/ /g, "&nbsp");
+    const totalProfit = this.translate.instant('compViewVp.lbl.totalProfit').replace(/ /g, "&nbsp");
+
+    const profitLoss = type == 'plan' ?
+        Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10 :
+        Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
 
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + name + '</b></div>' + '<div>' +
@@ -484,26 +505,31 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     if (type == 'baseline') {
       result = result + '<tr>' + '<td>' +
                   actual +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   Math.round(km.costBaseLastActual * 10) / 10 +
                   '</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' +
                   total +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   Math.round(km.costBaseLastTotal * 10) / 10 +
                   '</b></td>' + '</tr>';
     } else if (type == 'plan') {
-          result = result + '<tr>' + '<td>' +
-                      actual +
-                      ':</td>' + '<td><b>' +
-                      Math.round(km.costCurrentActual * 10) / 10 +
-                      '</b></td>' + '</tr>';
-          result = result + '<tr>' + '<td>' +
-                      total +
-                      ':</td>' + '<td><b>' +
-                      Math.round(km.costCurrentTotal * 10) / 10 +
-                      '</b></td>' + '</tr>';
-        }
+      result = result + '<tr>' + '<td>' +
+                  actual +
+                  ':</td>' + '<td class="text-right"><b>' +
+                  Math.round(km.costCurrentActual * 10) / 10 +
+                  '</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' +
+                  total +
+                  ':</td>' + '<td class="text-right"><b>' +
+                  Math.round(km.costCurrentTotal * 10) / 10 +
+                  '</b></td>' + '</tr>';
+    }
+    result = result + '<tr>' + '<td>' +
+              totalProfit +
+              ':</td>' + '<td class="text-right"><b>' +
+              profitLoss +
+              '</b></td>' + '</tr>';
 
     result = result + '</table>' + '</div>' + '</div>';
     return result;

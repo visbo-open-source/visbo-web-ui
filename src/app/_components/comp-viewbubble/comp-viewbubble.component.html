@@ -171,8 +171,8 @@
                       title="{{vpkm.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">{{vpkm.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}</td>
               <td *ngIf="selectedMetric('EndDate') && vpkm.keyMetrics" class="text-right"
                       title="{{vpkm.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingEndDate, 'delay')} " ></ng-container>
-                {{vpkm.savingEndDate | number:'1.0-0' }} W
+                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingEndDate / 7, 'delay')} " ></ng-container>
+                {{vpkm.savingEndDate / 7 | number:'1.0-0' }} W
               </td>
               <td *ngIf="selectedMetric('EndDate') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"
                   title="{{vpkm.endDate | date :'dd.MM.yyyy HH:mm'}}">{{vpkm.endDate | date :'dd.MM.yy'}}</td>

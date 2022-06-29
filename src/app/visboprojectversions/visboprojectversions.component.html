@@ -42,7 +42,7 @@
           <td *ngIf="hasVPPerm(permVP.ViewAudit)">
             <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpv.ampelStatus} " ></ng-container>
           </td>
-          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-md-table-cell">{{vpv.variantName}}</td>
+          <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-md-table-cell">{{getVariantName(vpv.variantName)}}</td>
           <td (click)="helperSetVPV(vpvIndex)" data-toggle="modal" data-target="#VpvDetails" class="d-none d-lg-table-cell">
             <span>{{checkLocked(vpv)}}</span>
           </td>
@@ -86,7 +86,7 @@
           </div>
           <div *ngIf="visboprojectversion.variantName" class="form-group v_compact_t row">
             <label for="VpvVariant" class="col-sm-4 col-form-label">{{ 'vpv.lbl.variantName' | translate }}:</label>
-            <label class="col-sm-8 form-control-static pt-2">{{ visboprojectversion.variantName }} </label>
+            <label class="col-sm-8 form-control-static pt-2">{{ getVariantName(visboprojectversion.variantName) }} </label>
           </div>
           <div *ngIf="visboprojectversion.startDate" class="form-group v_compact_t row">
             <label for="VpvStart" class="col-sm-4 col-form-label">{{ 'vpv.lbl.startDate' | translate }}:</label>

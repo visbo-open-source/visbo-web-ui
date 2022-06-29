@@ -322,7 +322,7 @@ export class VisbocenterDetailComponent implements OnInit {
           this.vcOrganisations.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
           // set latestOrgaTimestamp to the newest Orga TS
           if (this.vcOrganisations[0]) {
-            this.latestOrgaTimestamp = this.vcOrganisations[0].timestamp;
+            this.latestOrgaTimestamp = new Date(this.vcOrganisations[0].timestamp);
           }
         },
         error => {
@@ -759,8 +759,8 @@ export class VisbocenterDetailComponent implements OnInit {
       return;
     }
     this.newVCSetting = new VisboSetting();
-    this.newVCSetting.type = 'customization';
-    this.newVCSetting.name = 'customization';
+    // this.newVCSetting.type = 'customization';
+    // this.newVCSetting.name = 'customization';
     const isJson = this.newFile?.name.slice(-JSON_EXTENSION.length) == JSON_EXTENSION;
 
     const fileReader = new FileReader();
@@ -770,7 +770,7 @@ export class VisbocenterDetailComponent implements OnInit {
     } else {
       fileReader.readAsText(this.newFile);
     }
-    fileReader.onloadend = (e) => {
+    fileReader.onloadend = () => {
       this.log(`File uploaded Length ${fileReader.result.toString().length}, ${this.newFile.size}, type: ${typeof fileReader.result}`);
       let jsonSetting: string;
       this.isSettingSaved = true;
@@ -781,13 +781,14 @@ export class VisbocenterDetailComponent implements OnInit {
         }
         catch (e) {
           const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
+          this.log(`Add Setting inconsistent JSON Format: ${jsonString}`);
           this.alertService.error(message, true);
           this.isSettingSaved = false;
         }
         if (this.isSettingSaved) {
           this.newVCSetting.value = jsonSetting;
         }
-        this.log(`Add Setting of JSON Files not implemented ${this.newFile?.name}`);
+        this.log(`Add Setting of JSON Files ${this.newFile?.name} ${this.isSettingSaved}`);
       } else {
         this.log(`Add Setting of Unknown FileType not implemented ${this.newFile?.name}`);
       }
@@ -838,23 +839,20 @@ export class VisbocenterDetailComponent implements OnInit {
     const beginningOfMonth = new Date();
     beginningOfMonth.setDate(1);
     beginningOfMonth.setHours(0, 0, 0, 0);
-    if (this.vcOrganisations?.length > 0) {
-      // set newOrgaTimestamp to either the next month or to the beginning of current month
-      if (this.latestOrgaTimestamp) {
+    // set newOrgaTimestamp to either the beginning of current month or one month after the last orga
+    if (this.latestOrgaTimestamp) {
+      if (this.latestOrgaTimestamp.getTime() < beginningOfMonth.getTime()) {
+        this.newOrgaTimestamp = new Date(beginningOfMonth);
+      } else {
         this.newOrgaTimestamp = new Date(this.latestOrgaTimestamp);
         this.newOrgaTimestamp.setMonth(this.newOrgaTimestamp.getMonth() + 1);
-        if (this.newOrgaTimestamp < beginningOfMonth) {
-          this.newOrgaTimestamp = beginningOfMonth;
-        }
-      } else {
-        this.newOrgaTimestamp = beginningOfMonth;
       }
-      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
+      this.minOrgaTimestamp = new Date(this.latestOrgaTimestamp);
     } else {
       this.newOrgaTimestamp = beginningOfMonth;
-      this.minOrgaTimestamp = new Date(this.newOrgaTimestamp);
+      this.minOrgaTimestamp = new Date(beginningOfMonth);
       this.minOrgaTimestamp.setMonth(0);
-      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 1);
+      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 2);
     }
     const isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
 
@@ -887,7 +885,7 @@ export class VisbocenterDetailComponent implements OnInit {
           const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
           this.alertService.error(message, true);
         }
-        this.log(`Add Organisation of JSON Files not implemented ${this.newFile?.name}`);
+        this.log(`Add Organisation of JSON Files not implemented ${this.newFile?.name} ${JSON.stringify(jsonSetting)}`);
       }
     }
   }
@@ -932,7 +930,7 @@ export class VisbocenterDetailComponent implements OnInit {
         .subscribe(
           orga => {
             const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
-            this.vcOrganisations[0].updatedAt = orga.updatedAt;
+            this.vcOrganisations[0] = orga;
             this.alertService.success(message);
           },
           error => {
@@ -1037,8 +1035,8 @@ export class VisbocenterDetailComponent implements OnInit {
   downloadOrganisation(index: number): void {
     this.vcOrganisation = this.vcOrganisations[index];
     this.log(`Download Organisation ${this.vcOrganisation.name} ${this.vcOrganisation.updatedAt}`);
-    const minDate = new Date("0001-01-01T00:00:00Z");
-    const maxDate = new Date("2200-11-30T23:00:00Z");
+    const minDate = "0001-01-01T00:00:00Z";
+    const maxDate = "2200-11-30T23:00:00Z";
     const organisation: VisboReducedOrgaItem[] = [];
     this.vcOrganisation?.allUnits?.forEach(role => {
       const newRole = new VisboReducedOrgaItem();
@@ -1050,10 +1048,10 @@ export class VisbocenterDetailComponent implements OnInit {
       newRole.dailyRate = role.dailyRate;
       newRole.employeeNr = role.employeeNr;
       newRole.defCapaDay = role.defCapaDay;
-      if (role.entryDate > minDate) {
+      if (role.entryDate?.toString() > minDate) {
         newRole.entryDate = new Date(role.entryDate);
       }
-      if (role.exitDate < maxDate) {
+      if (role.exitDate?.toString() < maxDate) {
         newRole.exitDate = new Date(role.exitDate);
       }
       if (role.aliases?.length) newRole.alias = role.aliases.join('#');

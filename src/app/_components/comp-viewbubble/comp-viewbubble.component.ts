@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
-import { VisboProjectVersion, VPVKeyMetricsCalc } from '../../_models/visboprojectversion';
+import { VisboProjectVersion, VPVKeyMetricsCalc, ExportKeyMetric } from '../../_models/visboprojectversion';
 import { VisboSetting } from '../../_models/visbosetting';
 import { VisboProject, VPParams, getCustomFieldDate, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
@@ -19,54 +19,13 @@ import { VisboUser } from '../../_models/visbouser';
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
 import { visboCmpString, visboCmpDate, visboIsToday, getPreView, visboGetShortText } from '../../_helpers/visbo.helper';
+import { copyKeyMetrics } from '../../_helpers/vpv_export.helper';
 
 import {BubbleChartOptions} from '../../_models/_chart'
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
-
-class exportKeyMetric {
-  project: string;
-  timestamp: Date;
-  baselineDate: Date;
-  vpStatus: string;
-  strategicFit: number;
-  risk: number;
-  variant: string;
-  ampelStatus: number;
-  costCurrentActual: number;
-  costCurrentTotal: number;
-  costCurrentTotalPredict: number;
-  costBaseLastActual: number;
-  costBaseLastTotal: number;
-  timeCompletionCurrentActual: number;
-  timeCompletionCurrentTotal: number;
-  timeCompletionBaseLastActual: number;
-  timeCompletionBaseLastTotal: number;
-  timeDelayFinished: number;
-  timeDelayUnFinished: number;
-  startDate: Date;
-  endDateCurrent: Date;
-  endDateBaseLast: Date;
-  deliverableCompletionCurrentActual: number;
-  deliverableCompletionCurrentTotal: number;
-  deliverableCompletionBaseLastActual: number;
-  deliverableCompletionBaseLastTotal: number;
-  deliverableDelayFinished: number;
-  deliverableDelayUnFinished: number;
-  savingCostTotal: number;
-  savingCostTotalPredict: number;
-  savingCostActual: number;
-  savingEndDate: number;
-  timeCompletionTotal: number;
-  timeCompletionActual: number;
-  deliveryCompletionTotal: number;
-  deliveryCompletionActual: number;
-  vpid: string;
-  vpvid: string;
-  ampelErlaeuterung: string;
-}
 
 class Metric {
   name: string;
@@ -548,7 +507,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.vpStatus = elementKeyMetric.vp.vpStatus;
       elementKeyMetric.vpStatusLocale = elementKeyMetric.vp.vpStatusLocale;
       elementKeyMetric.startDate = this.visboprojectversions[item].startDate;
+      elementKeyMetric.endDate = this.visboprojectversions[item].endDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
+      elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
@@ -688,8 +649,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (!metric) {
       metric = list.find(item => item.metric !== exclude);
     }
-    if (!metric) {
+    if (!metric && list.length > 0) {
       metric = list[0];
+    }
+    // if nothing is found, set to endDate
+    if (!metric) {
+      metric = this.metricList.find(item => item.metric == 'EndDate');
     }
     return metric;
   }
@@ -1041,103 +1006,60 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     return result;
   }
 
-  copyKeyMetrics(vpv: VPVKeyMetricsCalc): exportKeyMetric {
-    const element = new exportKeyMetric();
-    element.project = vpv.name;
-    element.timestamp = new Date(vpv.timestamp);
-    if (vpv.keyMetrics && vpv.keyMetrics.baselineDate) {
-      element.baselineDate = new Date(vpv.keyMetrics.baselineDate);
-    }
-    element.variant = vpv.variantName;
-    element.vpStatus = vpv.vp.vpStatusLocale;
-    element.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
-    element.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
-    element.ampelStatus = vpv.ampelStatus;
-    if (vpv.keyMetrics) {
-      element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000) / 1000;
-      element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000) / 1000;
-      element.costCurrentTotalPredict = vpv.keyMetrics.costCurrentTotalPredict && Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000) / 1000;
-      element.costBaseLastActual = vpv.keyMetrics.costBaseLastActual && Math.round(vpv.keyMetrics.costBaseLastActual * 1000) / 1000;
-      element.costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000) / 1000;
-      element.timeCompletionCurrentActual = vpv.keyMetrics.timeCompletionCurrentActual && Math.round(vpv.keyMetrics.timeCompletionCurrentActual * 1000) / 1000;
-      element.timeCompletionCurrentTotal = vpv.keyMetrics.timeCompletionCurrentTotal;
-      element.timeCompletionBaseLastActual = vpv.keyMetrics.timeCompletionBaseLastActual && Math.round(vpv.keyMetrics.timeCompletionBaseLastActual * 1000) / 1000;
-      element.timeCompletionBaseLastTotal = vpv.keyMetrics.timeCompletionBaseLastTotal;
-      element.timeDelayFinished = vpv.keyMetrics.timeDelayFinished && Math.round(vpv.keyMetrics.timeDelayFinished * 1000) / 1000;
-      element.timeDelayUnFinished = vpv.keyMetrics.timeDelayUnFinished && Math.round(vpv.keyMetrics.timeDelayUnFinished * 1000) / 1000;
-      element.startDate = new Date(vpv.startDate);
-      element.endDateCurrent = new Date(vpv.keyMetrics.endDateCurrent);
-      element.endDateBaseLast = new Date(vpv.keyMetrics.endDateBaseLast);
-      element.deliverableCompletionCurrentActual = vpv.keyMetrics.deliverableCompletionCurrentActual && Math.round(vpv.keyMetrics.deliverableCompletionCurrentActual * 1000) / 1000;
-      element.deliverableCompletionCurrentTotal = vpv.keyMetrics.deliverableCompletionCurrentTotal;
-      element.deliverableCompletionBaseLastActual = vpv.keyMetrics.deliverableCompletionBaseLastActual && Math.round(vpv.keyMetrics.deliverableCompletionBaseLastActual * 1000) / 1000;
-      element.deliverableCompletionBaseLastTotal = vpv.keyMetrics.deliverableCompletionBaseLastTotal;
-      element.deliverableDelayFinished = vpv.keyMetrics.deliverableDelayFinished && Math.round(vpv.keyMetrics.deliverableDelayFinished * 1000) / 1000;
-      element.deliverableDelayUnFinished = vpv.keyMetrics.deliverableDelayUnFinished && Math.round(vpv.keyMetrics.deliverableDelayUnFinished * 1000) / 1000;
-    }
-    element.savingCostTotal = vpv.savingCostTotal && Math.round(vpv.savingCostTotal * 100) / 100;
-    element.savingCostTotalPredict = vpv.savingCostTotalPredict && Math.round(vpv.savingCostTotalPredict * 100) / 100;
-    element.savingCostActual = vpv.savingCostActual && Math.round(vpv.savingCostActual * 100) / 100;
-    element.savingEndDate = vpv.savingEndDate && Math.round(vpv.savingEndDate * 100) / 100;
-    element.timeCompletionTotal = vpv.timeCompletionTotal && Math.round(vpv.timeCompletionTotal * 100) / 100;
-    element.timeCompletionActual = vpv.timeCompletionActual && Math.round(vpv.timeCompletionActual * 100) / 100;
-    element.deliveryCompletionTotal = vpv.deliveryCompletionTotal && Math.round(vpv.deliveryCompletionTotal * 100) / 100;
-    element.deliveryCompletionActual = vpv.deliveryCompletionActual && Math.round(vpv.deliveryCompletionActual * 100) / 100;
-    // element.vpid = vpv.vpid;
-    // element.vpvid = vpv._id;
-    element.ampelErlaeuterung = vpv.ampelErlaeuterung;
-
-    return element;
-  }
-
   exportExcel(): void {
     this.log(`Export Data to Excel ${this.visbokeymetrics?.length}`);
 
-    const excel: exportKeyMetric[] = [];
-
-    if (this.visbokeymetrics) {
-      this.visbokeymetrics.forEach(element => {
-        excel.push(this.copyKeyMetrics(element));
-      });
-    }
-    const len = excel.length;
-    const width = Object.keys(excel[0]).length;
-    let name = '';
-    if (this.vpfActive) {
-      name = this.vpfActive.name
-    } else if (this.vcActive) {
-      name = this.vcActive.name;
-    }
-    // Add Localised header to excel
-    // eslint-disable-next-line
-    const header: any = {};
-    let colName: number, colIndex = 0;
-    for (const element in excel[0]) {
-      if (element == 'project') {
-        colName = colIndex;
-      }
-      colIndex++;
-      header[element] = element;
-      header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
-    }
-    excel.unshift(header);
-    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
-    // generate link for VP Name
-    const tooltip = this.translate.instant('vpKeyMetric.msg.viewWeb');
-    for (let index = 1; index <= len; index++) {
-      const address = XLSX.utils.encode_cell({r: index, c: colName});
-      const url = window.location.origin.concat('/vpKeyMetrics/', this.visbokeymetrics[index - 1].vpid);
-      worksheet[address].l = { Target: url, Tooltip: tooltip };
-    }
-    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
-    worksheet['!autofilter'] = { ref: matrix };
+    const exportType = ['Project', 'Cost', 'Deadline', 'Delivery'];
     // eslint-disable-next-line
     const sheets: any = {};
-    const sheetName = visboGetShortText(name, 30);
-    sheets[sheetName] = worksheet;
-    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    const sheetNames = [];
+
+    exportType.forEach(type => {
+      const excel: ExportKeyMetric[] = [];
+
+      this.visbokeymetrics?.forEach(element => {
+        excel.push(copyKeyMetrics(element, type, this.vcUser));
+      });
+      const len = excel.length;
+      const width = Object.keys(excel[0]).length;
+      let name = type;
+      if (type == 'Project') {
+        if (this.vpfActive) {
+          name = this.vpfActive.name
+        } else if (this.vcActive) {
+          name = this.vcActive.name;
+        }
+      }
+      // Add Localised header to excel
+      // eslint-disable-next-line
+      const header: any = {};
+      let colName: number, colIndex = 0;
+      for (const element in excel[0]) {
+        if (element == 'project') {
+          colName = colIndex;
+        }
+        colIndex++;
+        header[element] = element;
+        header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+      }
+      excel.unshift(header);
+      // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+      // generate link for VP Name
+      const tooltip = this.translate.instant('vpKeyMetric.msg.viewWeb');
+      for (let index = 1; index <= len; index++) {
+        const address = XLSX.utils.encode_cell({r: index, c: colName});
+        const url = window.location.origin.concat('/vpKeyMetrics/', this.visbokeymetrics[index - 1].vpid);
+        worksheet[address].l = { Target: url, Tooltip: tooltip };
+      }
+      const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+      worksheet['!autofilter'] = { ref: matrix };
+      const sheetName = visboGetShortText(name, 30);
+      sheets[sheetName] = worksheet;
+      sheetNames.push(sheetName);
+    });
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: sheetNames };
     // eslint-disable-next-line
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const actDate = new Date();
@@ -1148,7 +1070,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       '_',
       actDate.getDate().toString().padStart(2, "0"),
       '_Cockpit ',
-      (name || '')
+      (sheetNames[0] || '')
     );
 
     const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
@@ -1283,7 +1205,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 4) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
     } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 7) {

@@ -26,7 +26,7 @@
 		"topvp": "Top VISBO Projects",
 		"projects": "Projects",
 		"versions": "Versions",
-		"detail": "Detail",
+		"detail": "Details",
 		"msg": {
 			"noVC": "You do not have access to a VISBO Center or a VISBO Project. Please contact your administrator for further help."
 		}
@@ -394,6 +394,7 @@
 			"expires": "Expires",
 			"lock": "Lock",
 			"variant": "Variant",
+			"baseline": "Baseline",
 			"variantDescription": "Description",
 			"versions": "Versions",
 			"ofTotal": "of total",
@@ -526,9 +527,10 @@
 		"titleVersion": "Version of",
 		"titleVersionOld": "Old Version of",
 		"titleBaseline": "Baseline of",
-		"titleDetailVersion": "Details about Version",
+		"titleDetailVersion": "Details for Version",
 		"titleVPVMove": "Copy & Move/Scale",
 		"titleVPVCopy": "Copy",
+		"titleVPVEdit": "Edit",
 		"titleVPVCustomPredict": "Customer specific Prediction",
 		"titleShowVPVersions": "Show/Hide Project Versions",
 		"titleCreateVariant": "Create new Variant",
@@ -564,6 +566,7 @@
 			"template": "Project Template",
 			"bu": "Business Unit",
 			"vpStatus": "State",
+			"customerID": "Customer ID",
 			"weeksAhead": "Weeks Ahead",
 			"weeksDelay": "Weeks Delay",
 			"inTime": "in Time",
@@ -594,6 +597,7 @@
 			"totalDeadline": "planned achievement of total deadlines",
 			"baselineEndDate": "Project End (baseline)",
 			"newerBL": "newer Baseline available",
+			"noTrafficLight": "Traffic light description not set",
 			"inPlan": "in Plan",
 			"timeLag": "time lag",
 			"missing": "missing",
@@ -610,7 +614,7 @@
 			"vpView": "Details",
 			"vpViewAll": "All",
 			"vpViewProperties": "Properties",
-			"vpCapacity": "Resource-Needs",
+			"vpCapacity": "Resource Needs",
 			"vpKeyMetric": "Key Metrics",
 			"vpOverview": "Overview",
 			"allVersions": "Show all Versions",
@@ -624,6 +628,7 @@
 		},
 		"msg": {
 			"changePFV": "Attention: Change of Baseline!",
+			"overwriteSTD": "Attention: Overwrite of actual Data?",
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
 			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"confirmCommit": "Do you really want to commit this current project plan?",
@@ -634,7 +639,8 @@
 			"errorPermVP": "Permission denied updating {{name}}",
 			"errorVPConflict": "Conflict happened during updating of {{name}}",
 			"errorPermVersion": "Permission denied for project versions {{name}}",
-			"viewWeb": "View Project Online"
+			"viewWeb": "View Project Online",
+			"localInstallationRequired": "Installation of VISBO Clients required"
 		}
 	},
 	"compViewVp": {
@@ -649,6 +655,7 @@
 			"plan": "Plan",
 			"actualCost": "actual Cost",
 			"totalCost": "total Cost",
+			"totalProfit": "Profit/Loss",
 			"compCost": "Goal achievement: Cost",
 			"compDeadline": "Goal achievement: Deadline",
 			"compDelivery": "Goal achievement: Delivery"
@@ -693,7 +700,7 @@
 	},
 	"ViewCapacity": {
 		"titleCapacity": "Capacity Utilisation - Timespan:",
-		"titleBox": "Sum Resource-Needs in time range",
+		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " From",
@@ -766,7 +773,7 @@
 	},
 	"ViewCapacityCmp": {
 		"titleCapacity": "Capacity Utilisation - Timespan:",
-		"titleBox": "Sum Resource-Needs in time range",
+		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
 		"titleTimeFrom": " From",
@@ -848,6 +855,7 @@
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
 			"bac": "Total Cost (Baseline)",
+			"rac": "Revenue",
 			"pv": "Cost (Baseline)",
 			"deadlines": "Deadlines (Baseline)",
 			"deliveries": "Deliveries (Baseline)",
@@ -891,7 +899,13 @@
 			"deliveryCompletionTotal": "Deviation Deliveries",
 			"deliveryCompletionActual": "Deviation actual Deliveries",
 			"ampelStatus": "Traffic Light",
-			"ampelErlaeuterung": "Traffic light description"
+			"ampelErlaeuterung": "Traffic light description",
+			"trafficlight": "Traffic Light",
+			"trafficlightDesc": "Traffic Light Description",
+			"_strategicFit": "Strategic Fit",
+			"_risk": "Risk",
+			"_businessUnit": "Business Unit",
+			"_PMCommit": "Commit"
 		},
 		"btn": {
 			"showChart": "View Chart",
@@ -959,6 +973,10 @@
 			"commit": "Commit",
 			"vpStatus": "State",
 			"bu": "Business Unit",
+			"_businessUnit": "Business Unit",
+			"_risk": "Risk",
+			"_strategicFit": "Strategic Fit",
+			"_PMCommit": "Commit",
 			"lead": "Project Manager",
 			"template": "Template",
 			"startDate": "Project start date",
@@ -978,12 +996,13 @@
 			"costBaseLastActual": "Actual Cost (Baseline)",
 			"costBaseLastTotal": "Total Cost (Baseline)",
 			"savingCostTotal": "Deviation Total Cost",
+			"rac": "Order Value",
 			"savingCostTotalPredict": "Deviation Total Cost (Predict)",
 			"savingCostActual": "Deviation Actual Cost",
-			"endDateCurrent": "Actual End Date",
+			"endDateCurrent": "Planned End Date",
 			"endDateBaseLast": "End Date (Baseline)",
 			"timeCompletionCurrentActual": "Actual Achieved Deadlines",
-			"timeCompletionCurrentTotal": "Achieved Deadlines",
+			"timeCompletionCurrentTotal": "All Deadlines",
 			"timeCompletionBaseLastActual": "Achieved Deadlines (Baseline)",
 			"timeCompletionBaseLastTotal": "All Deadlines (Baseline)",
 			"timeDelayFinished": "Deviation in finished Deadlines",
@@ -1165,7 +1184,7 @@
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
-			"vpStatus": "Status",
+			"vpStatus": "State",
 			"bu": "Business Unit",
 			"manager": "Manager",
 			"template": "Template",
@@ -1232,7 +1251,9 @@
 			"vp": "VISBO Project",
 			"VPV": "View all from Project",
 			"PFV": "View all from Baseline",
-			"All": "View all combined"
+			"All": "View all combined",
+			"rootPhase": "Phase",
+			"subPhases": "Sub Phases"
 		},
 		"btn": {
 			"detail": "Restrictions",
@@ -1261,6 +1282,7 @@
 			"trafficlight": "Traffic Light",
 			"budget": "Budget",
 			"variant": "Variant",
+			"baseline": "Baseline",
 			"locked": "Lock",
 			"delete": "Delete",
 			"deleteVersion": "Delete Version",
@@ -1439,13 +1461,13 @@
 			"back": "Back"
 		},
 		"msg": {
-			"auditSuccess": "VISBO Center Audit successfully downloaded",
+			"auditSuccess": "VISBO Center Audit successfully loaded",
 			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Center"
 		}
 	},
 	"vpAudit": {
-		"title": "VISBO Project Audit for",
+		"title": "VISBO Audit for",
 		"titleDetail": "Detail of Audit Entry",
 		"lbl": {
 			"from": "From",
@@ -1497,7 +1519,7 @@
 			"back": "Back"
 		},
 		"msg": {
-			"auditSuccess": "VISBO Project Audit successfully downloaded",
+			"auditSuccess": "VISBO Audit successfully downloaded",
 			"noAudit": "No Audit Entry for the time frame or the filter condition",
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
