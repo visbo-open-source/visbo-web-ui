@@ -1,2 +1,2 @@
 found 0 vulnerabilities
-Executed on Fr 3 Jun 2022 09:21:26 CEST
+Executed on 13.07.2022 10:20:42,16  
