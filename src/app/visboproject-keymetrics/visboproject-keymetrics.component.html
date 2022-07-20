@@ -107,7 +107,8 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <a *ngIf="customEdit" class="dropdown-item" (click)="initCustomURL('edit')" data-toggle="modal" data-target="#vpvModalEdit">{{customEdit}}</a>
+            <a *ngIf="customEdit" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <!-- <a [href]="customURL" class="dropdown-item" (click)="initCustomURL('edit')" >{{customEdit}}</a> -->
             <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL('predict')" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a>
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
             <a *ngIf="vpvActive" class="dropdown-item" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)">{{ 'vpKeyMetric.btn.vpViewProperties' | translate }}</a>
@@ -646,7 +647,7 @@
 </div>
 
 <!-- Modal call Edit URL -->
-<div *ngIf="vpvActive" class="modal fade" id="vpvModalEdit" tabindex="-1" role="dialog" aria-labelledby="vpvModalEditTitle" aria-hidden="true">
+<!-- div *ngIf="vpvActive" class="modal fade" id="vpvModalEdit" tabindex="-1" role="dialog" aria-labelledby="vpvModalEditTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -668,7 +669,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- Modal call Custom URL -->
 <div *ngIf="vpvActive" class="modal fade" id="vpvModalCustomURL" tabindex="-1" role="dialog" aria-labelledby="vpvModalCustomURLTitle" aria-hidden="true">

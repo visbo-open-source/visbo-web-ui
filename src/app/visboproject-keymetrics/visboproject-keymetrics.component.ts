@@ -1093,6 +1093,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       .subscribe(
         ott => {
           this.customURL = this.getCustomURL(type, ott);
+          if (type == 'edit') {
+            // opens a new Window with the this.customURL - visbo-connect://eidt?...
+            window.location.href =this.customURL;
+          }          
         },
         error => {
           if (error.status === 400) {
