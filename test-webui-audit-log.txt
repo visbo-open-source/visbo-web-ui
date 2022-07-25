@@ -1,2 +1,16 @@
-found 0 vulnerabilities
-Executed on 13.07.2022 10:20:42,16  
+# npm audit report
+
+terser  5.0.0 - 5.14.1
+Severity: high
+Terser insecure use of regular expressions before v4.8.1 and v5.14.2 leads to ReDoS - https://github.com/advisories/GHSA-4wf5-vphf-c2xc
+fix available via `npm audit fix`
+node_modules/terser
+  @angular-devkit/build-angular  0.1001.0-next.0 - 12.2.17 || 13.0.0-next.0 - 13.3.8 || 14.0.0-next.0 - 14.1.0-rc.3
+  Depends on vulnerable versions of terser
+  node_modules/@angular-devkit/build-angular
+
+2 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+Executed on 25.07.2022 21:04:11,18  
