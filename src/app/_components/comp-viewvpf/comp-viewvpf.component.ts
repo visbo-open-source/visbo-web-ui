@@ -114,7 +114,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
   budgetAtCompletion = 0;
   chart = true;
   parentThis = this;
-  colors = ['#458CCB', '#BDBDBD', '#F7941E'];
+  colors = ['#458CCB', '#F7941E', '#BDBDBD'];
   graphBarData = [];
   graphBarOptions: BarChartOptions;
   defaultBarOptions: BarChartOptions = {
@@ -654,8 +654,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     this.metricListSorted.sort(function(a, b) { return visboCmpString(a.name, b.name); });
 
     // set the X & Y Axis to values that are available
-    this.metricX = this.getMetric(this.metricX, this.metricY, true).metric;
-    this.metricY = this.getMetric(this.metricY, this.metricX, true).metric;
+    this.metricX = this.getMetric(this.metricX, this.metricY, true)?.metric;
+    this.metricY = this.getMetric(this.metricY, this.metricX, true)?.metric;
   }
 
   // getMetrics returns always a metric
@@ -668,8 +668,12 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     if (!metric) {
       metric = list.find(item => item.metric !== exclude);
     }
-    if (!metric) {
+    if (!metric && list.length > 0) {
       metric = list[0];
+    }
+    // if nothing is found, set to endDate
+    if (!metric) {
+      metric = this.metricList.find(item => item.metric == 'EndDate');
     }
     return metric;
   }
@@ -923,26 +927,26 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     if (item.vpStatus) {
       result = result + '<tr>' + '<td>' +
                   this.translate.instant('compViewVpf.lbl.vpStatus') +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   this.translate.instant('vpStatus.'.concat(item.vpStatus)) +
                   '</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' +
                 this.getMetric(this.metricX).table.replace(/ /g, "&nbsp") +
-                ':</td>' + '<td><b>' +
+                ':</td>' + '<td class="text-right"><b>' +
                 valueX + format +
                 '</b></td>' + '</tr>';
     if (strAbs) {
       result = result + '<tr>' + '<td>' +
                   this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   strAbs.replace(/ /g, "&nbsp") +
                   '</b></td>' + '</tr>';
     }
     if (strPercent) {
       result = result + '<tr>' + '<td>' +
                   this.getMetric(this.metricX).diff.replace(/ /g, "&nbsp") +
-                  ':</td>' + '<td><b>' +
+                  ':</td>' + '<td class="text-right"><b>' +
                   strPercent.replace(/ /g, "&nbsp")
                   '</b></td>' + '</tr>';
     }
@@ -1227,7 +1231,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     } else if (this.sortColumn === 4) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
     } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
+      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
     } else if (this.sortColumn === 6) {
       this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
     } else if (this.sortColumn === 7) {

@@ -203,7 +203,7 @@ export class VisboprojectDetailComponent implements OnInit {
             if (admins.find(admin => admin.userId == user._id)) {
               this.vpManagerList.push(user);
             }
-          })
+          });
           if (this.visboproject?.managerId) {
             const user = this.vpUser.find(item => item._id == this.visboproject.managerId);
             this.vpManagerEmail = user?.email;
@@ -810,6 +810,16 @@ export class VisboprojectDetailComponent implements OnInit {
       this.visboproject.variant?.forEach(variant => totalVersions += variant.vpvCount || 0);
     }
     return totalVersions;
+  }
+
+  getVariantName(name: string): string {
+    let result: string;
+    if (name == 'pfv') {
+      result = this.translate.instant('vpDetail.lbl.baseline');
+    } else {
+      result = name;
+    }
+    return result;
   }
 
   sortUserPermTable(n?: number): void {

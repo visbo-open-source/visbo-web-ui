@@ -63,6 +63,7 @@ export class VisboProject {
   name: string;
   description: string;
   managerId: string;
+  kundennummer: string;
   vpType: number;
   vpPublic: boolean;
   vpvCount: number;

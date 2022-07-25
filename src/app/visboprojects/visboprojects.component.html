@@ -17,7 +17,7 @@
         <option *ngFor="let item of dropDownVPType" value="{{item.id}}">{{item.name}}</option>
       </select>
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
-        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='initCreateVP()' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
+        <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='switchTemplate(true)' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
     </div>
     <div class='container-fluid'></div>
@@ -34,8 +34,8 @@
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
           <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
-          <th id="SortPM" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }}</th>
-          <th id="SortStatus" (click)="sortVPTable(8)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
+          <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }}</th>
+          <th id="SortStatus" class="d-none d-lg-table-cell" (click)="sortVPTable(8)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
           <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
           <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
           <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
@@ -49,7 +49,7 @@
         <tr *ngFor="let vp of visboprojects; let vpIndex=index" (click)="gotoClickedRow(vp)">
           <td class="d-none d-md-table-cell">{{vpIndex+1}}</td>
           <td id="ColName"><a>{{vp.name}}</a></td>
-          <td id="ColManager" title="{{getVPManager(vp)}}"><a>{{getVPManager(vp, false)}}</a></td>
+          <td id="ColManager" class="d-none d-lg-table-cell" title="{{getVPManager(vp)}}"><a>{{getVPManager(vp, false)}}</a></td>
           <td id="ColVPStatus" class="d-none d-lg-table-cell">{{ getVPStatus(vp) }}</td>
           <td id="ColType" class="d-none d-md-table-cell">{{getVPType(vp.vpType)}}</td>
           <td id="ColDate" class="d-none d-lg-table-cell">{{vp.updatedAt | date :'dd.MM.yyyy HH:mm'}}</td>
@@ -137,7 +137,7 @@
               <!-- Selection Template -->
               <div class="form-group">
                 <label for="type" class="col-form-label">{{ 'vp.lbl.template' | translate }}:</label>
-                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID">
+                <select id="selectVPTemplate" class="form-control" name="vpTemplate" [(ngModel)]="newVP.templateID" (change)="switchTemplate(false)">
                   <option *ngFor="let template of vpTemplates" value="{{ template._id }}">{{ template.name }}</option>
                 </select>
               </div>
@@ -165,7 +165,7 @@
                   </div>
                 </div>
                 <!-- Edit RAC & BAC -->
-                <div class="form-group">
+                <div *ngIf="templateHasCost" class="form-group">
                   <div class="row">
                     <!-- RAC -->
                     <div class="col">

@@ -42,6 +42,7 @@ export class VisboProjectsComponent implements OnInit {
   vcSelected: string;
   vcActive: VisboCenter;
   newVP: CreateProjectProperty;
+  templateHasCost: Boolean
   dropDownVPType: DropDown[];
   viewMode = 'Default';
   hasOrga = false;
@@ -279,19 +280,24 @@ export class VisboProjectsComponent implements OnInit {
     this.updateUrlParam('view', this.viewMode);
   }
 
-  initCreateVP(): void {
+  switchTemplate(init: Boolean): void {
 
-      const suggestedStartDate: Date = new Date();
+      let templateID: string;
 
       // if there are templates, then suggest the  first template in the list as the default template
-      const templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
+      if (init) {
+        templateID = this.visboprojectsAll?.filter(item => item.vpType == 2)[0]?._id;
+      } else {
+        templateID = this.visboprojectsAll?.filter(item => item.vpType == 2 && item._id == this.newVP.templateID)[0]?._id;
+      }
 
       // suggest the first of next month as start of Project ...
-      suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
-      suggestedStartDate.setDate(1);
-
-      const suggestedEndDate: Date = new Date(suggestedStartDate);
-      suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
+      // const suggestedStartDate: Date = new Date();
+      // suggestedStartDate.setMonth(suggestedStartDate.getMonth() + 1 );
+      // suggestedStartDate.setDate(1);
+      //
+      // const suggestedEndDate: Date = new Date(suggestedStartDate);
+      // suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
 
       this.newVP = {
         name: '',
@@ -301,12 +307,55 @@ export class VisboProjectsComponent implements OnInit {
         // endDate: suggestedEndDate,
         templateID: templateID
       };
+      this.checkTemplateCost(templateID);
+  }
+
+  checkTemplateCost(templateID: string): void {
+    let vpv: VisboProjectVersion;
+    this.templateHasCost = false;
+    if (templateID) {
+      this.visboprojectversionService.getVisboProjectVersions(templateID, false, '', undefined, true)
+        .subscribe(
+          visboprojectversions => {
+            if (visboprojectversions?.length === 0) {
+              this.log(`No Template Versions`);
+            } else {
+              this.log(`get VPV Template: Get ${visboprojectversions[0].vpid}${visboprojectversions.length} Project Versions`);
+              this.templateHasCost = this.hasCost(visboprojectversions[0]);
+            }
+          },
+          error => {
+            this.log(`get VPVs failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vp.msg.errorPermVC');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }
+        );
+    }
+  }
+
+  hasCost(vpv: VisboProjectVersion): Boolean {
+    let result = false;
+    if (vpv) {
+      vpv.AllPhases?.forEach(phase => {
+        if (phase.AllRoles?.length > 0) {
+          result = result || true;
+        }
+        if (phase.AllCosts?.length > 0) {
+          result = result || true;
+        }
+      });
+    }
+    this.log(`hasCost: ${vpv?.vpid}: ${result}`);
+    return result;
   }
 
   datesAreInvalid(): boolean {
     // const result = !(this.newVP.startDate < this.newVP.endDate);
     const result = !(this.newVP?.startDate && this.newVP.endDate && (visboCmpDate(this.newVP.startDate, this.newVP.endDate) < 0));
-    // visboCmpDate
     return result;
   }
 

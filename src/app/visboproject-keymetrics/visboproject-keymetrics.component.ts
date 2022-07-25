@@ -21,7 +21,7 @@ import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
-import { VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
+import { VGGroup, VGUserGroup, VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboUser } from '../_models/visbouser';
 import { UserService } from '../_services/user.service';
 
@@ -70,8 +70,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   deleted = false;
   defaultVariant: string;
   pfvVariant: string;
-  predictURL: string;
+  customURL: string;
   customPredict: string;
+  customEdit: string;
   calcPredict = false;
   level: number;
   reduceLevel: false;
@@ -84,6 +85,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDownVPStatus: DropDownStatus[];
   customStrategicFit: number;
   customRisk: number;
+  customerID: string;
   customCommit: Date;
   editCustomFieldString: VPCustomString[];
   editCustomFieldDouble: VPCustomDouble[];
@@ -113,6 +115,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   delayEndDate: number;
   hasOrga = false;
   vpUser = new Map<string, VisboUser>();
+  vgUsers: VGUserGroup[];
+  vgGroups: VGGroup[];
+  vpManagerEmail: string;
+  vpManagerList: VisboUser[];
 
   parentThis = this;
 
@@ -201,7 +207,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.setRefDateStr(new Date());
     }
     this.getVisboProject();
-    this.getVisboProjectUsers();
+    this.getVisboProjectPermission();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -248,6 +254,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  getVisboProjectPermission(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log(`VisboProject UserGroupPermList of: ${id} Deleted ${this.deleted}`);
+    this.visboprojectService.getVPUserGroupPerm(id, false, this.deleted)
+      .subscribe(
+        mix => {
+          this.vgUsers = mix.users;
+          this.vgGroups = mix.groups;
+          this.getVisboProjectUsers();
+        },
+        error => {
+          this.log(`Get VP Users Group Perm failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -256,6 +285,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       .subscribe(
         user => {
           user.forEach(user => this.vpUser.set(user._id, user));
+          const admins = this.vgUsers.filter(item => item.groupType == 'VP' && item.internal && item.groupName == 'VISBO Project Admin');
+          this.vpManagerList = [];
+          user.forEach(item => {
+            if (admins.find(admin => admin.userId == item._id)) {
+              this.vpManagerList.push(item);
+            }
+          });
+          if (this.vpActive?.managerId) {
+            const user = this.vpManagerList.find(item => item._id == this.vpActive.managerId);
+            this.vpManagerEmail = user?.email;
+          }
           this.log(`fetched Users ${this.vpUser.size}`);
         },
         error => {
@@ -284,6 +324,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       }
     }
     return fullName || '';
+  }
+
+  getFullUserName(user: VisboUser, withEmail: boolean): string {
+    let fullName = '';
+    if (!user && this.vpManagerEmail) {
+      user = this.vpManagerList.find(item => item.email == this.vpManagerEmail);
+    }
+    if (user) {
+      if (user.profile) {
+        fullName = ''.concat(user.profile.firstName || '', ' ', user.profile.lastName || '')
+      }
+      if ((!fullName || withEmail) && user.email) {
+        fullName = fullName.concat(' (', user.email, ')');
+      }
+    } else {
+      fullName = this.translate.instant('vpDetail.lbl.noManager');
+    }
+    return fullName;
   }
 
   getVariantInfo(item: DropDown): string {
@@ -412,7 +470,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         ok = true;
       }
       if (ok && withVersions) {
-        if (item.vpvCount == 0) {
+        if (item.vpvCount == 0 && item.variantName != '') {
           ok = false;
         }
       }
@@ -483,8 +541,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getPredictURL(ott: string): string {
-    let url = 'visbo-predict://predict';
+  getCustomURL(type: string, ott: string): string {
+    let url: string;
+    if (type == 'predict') {
+      url = 'visbo-predict://predict';
+    } else {
+      url = 'visbo-connect://'.concat(type);
+    }
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
@@ -797,6 +860,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (customFieldDate) {
         this.customCommit = new Date(customFieldDate.value);
       }
+      this.customerID = vp.kundennummer;
       this.editCustomFieldString = this.getCustomFieldListString(true);
       this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
       this.editCustomFieldDate = this.getCustomFieldListDate(true);
@@ -889,14 +953,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict,CustomEdit')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
               this.vcEnableDisable = this.squeezeEnableDisable(vcsettings.filter(item => item.type == '_VCConfig'));
-              const customSetting = vcsettings.find(item => item.type == 'CustomPredict');
+              let customSetting = vcsettings.find(item => item.type == 'CustomPredict');
               if (customSetting) {
                 this.customPredict = customSetting.name;
+              }
+              customSetting = vcsettings.find(item => item.type == 'CustomEdit');
+              if (customSetting) {
+                this.customEdit = customSetting.name;
               }
               this.initBUDropDown();
             },
@@ -1018,13 +1086,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.variantName} ${vpv.timestamp}`);
   }
 
-  initCustomURL(): void {
-    this.predictURL = undefined;
-    // get the One Time Token and set the predictURL after getting it
+  initCustomURL(type: string): void {
+    this.customURL = undefined;
+    // get the One Time Token and set the customURL after getting it
     this.userService.getUserOTT()
       .subscribe(
         ott => {
-          this.predictURL = this.getPredictURL(ott);
+          this.customURL = this.getCustomURL(type, ott);
+          if (type == 'edit') {
+            // opens a new Window with the this.customURL - visbo-connect://eidt?...
+            window.location.href =this.customURL;
+          }          
         },
         error => {
           if (error.status === 400) {
@@ -1359,6 +1431,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // set the changed custom customfields
       if (this.customVPStatus) {
         this.vpActive.vpStatus = this.customVPStatus;
+      }
+      this.vpActive.kundennummer = this.customerID;
+      const newManager = this.vpManagerList?.find(item => item.email == this.vpManagerEmail);
+      if (newManager && newManager._id != this.vpActive.managerId) {
+        this.vpActive.managerId = newManager._id;
       }
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
