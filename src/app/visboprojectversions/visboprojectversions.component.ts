@@ -252,6 +252,16 @@ export class VisboProjectVersionsComponent implements OnInit {
     return false;
   }
 
+  getVariantName(name: string): string {
+    let result: string;
+    if (name == 'pfv') {
+      result = this.translate.instant('vpv.lbl.baseline');
+    } else {
+      result = name;
+    }
+    return result;
+  }
+
   sortVPVTable(n: number): void {
     if (!this.visboprojectversions) {
       return;

@@ -770,7 +770,7 @@ export class VisbocenterDetailComponent implements OnInit {
     } else {
       fileReader.readAsText(this.newFile);
     }
-    fileReader.onloadend = (e) => {
+    fileReader.onloadend = () => {
       this.log(`File uploaded Length ${fileReader.result.toString().length}, ${this.newFile.size}, type: ${typeof fileReader.result}`);
       let jsonSetting: string;
       this.isSettingSaved = true;
@@ -885,7 +885,7 @@ export class VisbocenterDetailComponent implements OnInit {
           const message = this.translate.instant('vcDetail.msg.errorJSONFormat');
           this.alertService.error(message, true);
         }
-        this.log(`Add Organisation of JSON Files not implemented ${this.newFile?.name}`);
+        this.log(`Add Organisation of JSON Files not implemented ${this.newFile?.name} ${JSON.stringify(jsonSetting)}`);
       }
     }
   }
@@ -930,7 +930,7 @@ export class VisbocenterDetailComponent implements OnInit {
         .subscribe(
           orga => {
             const message = this.translate.instant('vcDetail.msg.saveOrgaSuccess');
-            this.vcOrganisations[0].updatedAt = orga.updatedAt;
+            this.vcOrganisations[0] = orga;
             this.alertService.success(message);
           },
           error => {
