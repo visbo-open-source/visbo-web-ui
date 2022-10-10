@@ -1,11 +1,11 @@
 
-Initial Chunk Files           | Names         |      Size
-main.bae762c1865a8fd1.js      | main          |   2.83 MB
-polyfills.df92fdb7b0fcc50b.js | polyfills     |  36.87 kB
-scripts.89fb26d303a01d2f.js   | scripts       |  19.74 kB
-runtime.3184e4f500ad876c.js   | runtime       | 920 bytes
-styles.6f3ed61430ed969e.css   | styles        | 805 bytes
+Initial Chunk Files           | Names         |  Raw Size | Estimated Transfer Size
+main.35721a10813e19ff.js      | main          |   1.98 MB |               340.04 kB
+polyfills.1b70badd99e3c958.js | polyfills     |  33.70 kB |                10.84 kB
+scripts.89fb26d303a01d2f.js   | scripts       |  19.79 kB |                 6.24 kB
+runtime.ec6f461188526c78.js   | runtime       | 917 bytes |               523 bytes
+styles.6f3ed61430ed969e.css   | styles        | 805 bytes |               280 bytes
 
-| Initial Total |   2.89 MB
+| Initial Total |   2.03 MB |               357.90 kB
 
-Build at: 2022-07-13T08:21:15.591Z - Hash: b97351f4750a86be - Time: 25896ms
+Build at: 2022-10-10T13:55:20.951Z - Hash: 92088dcdc103cddb - Time: 31380ms
