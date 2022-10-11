@@ -1233,7 +1233,7 @@
 		"titleDetailDeadline": "Details about Deadline",
 		"lbl": {
 			"status": "Status",
-			"count": "Anzahl",
+			"count": "Count",
 			"planElement": "Plan Element",
 			"type": "Type",
 			"percentDone": "Done",
@@ -1525,7 +1525,7 @@
 		}
 	},
 	"keyMetrics": {
-		"shortRAC": "RAC",
+		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",
 		"shortPAC": "PAC",
