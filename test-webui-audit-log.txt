@@ -1,2 +1,0 @@
-found 0 vulnerabilities
-Executed on 10.10.2022 15:54:45,67  
