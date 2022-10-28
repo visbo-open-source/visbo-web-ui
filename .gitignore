@@ -6,3 +6,5 @@ out-tsc
 src/env.js
 src/.DS_Store
 .DS_Store
+test-webui-audit-log.txt
+test-webui-build-log.txt
