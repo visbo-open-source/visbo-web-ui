@@ -411,13 +411,13 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       const profitColorBL = profitLossBL >= 0 ? 'color: green' : 'color: red';
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('plan')),
-        Math.round(km.costCurrentActual * 10) / 10,
+        Math.round((km.costCurrentActual || 0) * 10) / 10,   // here to change
         tooltip,
         undefined,
-        Math.round((km.costCurrentTotal - km.costCurrentActual) * 10) / 10,
+        Math.round(((km.costCurrentTotal || 0) - (km.costCurrentActual || 0)) * 10) / 10,
         tooltip,
         undefined,
-        Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10,
+        Math.round(((this.vpvActive.Erloes || (km.costCurrentTotal || 0))  - (km.costCurrentTotal || 0)) * 10) / 10,
         tooltip,
         profitColorVPV,
       ]);
@@ -425,13 +425,13 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       // baseline Values
       graphCostData.push([
         this.translate.instant('compViewVp.lbl.'.concat('baseline')),
-        Math.round(km.costBaseLastActual * 10) / 10,
+        Math.round((km.costBaseLastActual || 0) * 10) / 10,
         tooltip,
         'opacity: 0.4',
-        Math.round((km.costBaseLastTotal - km.costBaseLastActual) * 10) / 10,
+        Math.round(((km.costBaseLastTotal || 0) - (km.costBaseLastActual || 0)) * 10) / 10,
         tooltip,
         'opacity: 0.4',
-        Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10,
+        Math.round(((this.vpvActive.Erloes || (km.costBaseLastTotal || 0)) - (km.costBaseLastTotal || 0)) * 10) / 10,
         tooltip,
         profitColorBL + ';' + 'opacity: 0.4'
       ]);
@@ -506,23 +506,23 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       result = result + '<tr>' + '<td>' +
                   actual +
                   ':</td>' + '<td class="text-right"><b>' +
-                  Math.round(km.costBaseLastActual * 10) / 10 +
+                  Math.round((km.costBaseLastActual || 0) * 10) / 10 +
                   '</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' +
                   total +
                   ':</td>' + '<td class="text-right"><b>' +
-                  Math.round(km.costBaseLastTotal * 10) / 10 +
+                  Math.round((km.costBaseLastTotal || 0) * 10) / 10 +
                   '</b></td>' + '</tr>';
     } else if (type == 'plan') {
       result = result + '<tr>' + '<td>' +
                   actual +
                   ':</td>' + '<td class="text-right"><b>' +
-                  Math.round(km.costCurrentActual * 10) / 10 +
+                  Math.round((km.costCurrentActual || 0) * 10) / 10 +
                   '</b></td>' + '</tr>';
       result = result + '<tr>' + '<td>' +
                   total +
                   ':</td>' + '<td class="text-right"><b>' +
-                  Math.round(km.costCurrentTotal * 10) / 10 +
+                  Math.round((km.costCurrentTotal || 0) * 10) / 10 +
                   '</b></td>' + '</tr>';
     }
     result = result + '<tr>' + '<td>' +
