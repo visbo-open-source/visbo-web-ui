@@ -300,7 +300,7 @@ export class VisboProjectsComponent implements OnInit {
       // suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
 
       this.newVP = {
-        name: '',
+        name: this.newVP?.name || '',
         vcid: this.vcActive?._id,
         vpType: 0,
         // startDate: suggestedStartDate,

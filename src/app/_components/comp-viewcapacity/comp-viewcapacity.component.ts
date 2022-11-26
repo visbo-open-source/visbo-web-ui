@@ -1602,8 +1602,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
           const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
-          this.sumCost += actualCost + plannedCost + otherActiviyCost;
-          this.sumBudget += budget;
+          this.sumCost += (capacity[i].actualCost_PT || 0)+ (capacity[i].plannedCost_PT || 0) + (capacity[i].otherActivityCost_PT || 0);
+          // this.sumCost += actualCost + plannedCost + otherActiviyCost;          
+          this.sumBudget += (capacity[i].baselineCost_PT || 0);
+          // this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], true, this.refPFV);
           graphDataCapacity.push([
             currentDate,
@@ -1617,12 +1619,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip
           ]);
         } else {
-          const budget = Math.round((capacity[i].baselineCost * 10) / 10 || 0);
-          const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
-          const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0);
-          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
-          this.sumCost += actualCost + plannedCost + otherActiviyCost;
-          this.sumBudget += budget;
+          const budget = Math.round(capacity[i].baselineCost * 10) / 10 || 0;
+          const actualCost = Math.round(capacity[i].actualCost * 10) / 10 || 0;
+          const plannedCost = Math.round(capacity[i].plannedCost * 10) / 10 || 0;
+          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;          
+          this.sumCost += (capacity[i].actualCost || 0)+ (capacity[i].plannedCost || 0) + (capacity[i].otherActivityCost || 0);
+          // this.sumCost += actualCost + plannedCost + otherActiviyCost;          
+          this.sumBudget += (capacity[i].baselineCost || 0);
+          // this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], false, this.refPFV);
           graphDataCapacity.push([
             currentDate,
@@ -1644,8 +1648,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
           const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
-          this.sumCost += actualCost + plannedCost;
-          this.sumBudget += budgetIntern + budgetExtern;
+          this.sumCost += (capacity[i].actualCost_PT || 0) + (capacity[i].plannedCost_PT || 0);
+          // this.sumCost += actualCost + plannedCost;
+          this.sumBudget += (capacity[i].internCapa_PT || 0) + (capacity[i].externCapa_PT || 0);
+          // this.sumBudget += budgetIntern + budgetExtern;
           const tooltip = this.createTooltipPlanActual(capacity[i], true);
           graphDataCapacity.push([
             currentDate,
@@ -1661,13 +1667,15 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip
           ]);
         } else {
-          const budgetIntern = Math.round((capacity[i].internCapa * 10) / 10 || 0);
-          const budgetExtern = Math.round((capacity[i].externCapa * 10) / 10 || 0);
-          const actualCost = Math.round((capacity[i].actualCost * 10) / 10 || 0);
-          const plannedCost = Math.round((capacity[i].plannedCost * 10) / 10 || 0);
+          const budgetIntern = Math.round(capacity[i].internCapa * 10) / 10 || 0;
+          const budgetExtern = Math.round(capacity[i].externCapa * 10) / 10 || 0;
+          const actualCost = Math.round(capacity[i].actualCost * 10)/ 10 || 0;
+          const plannedCost = Math.round(capacity[i].plannedCost * 10) / 10 || 0;
           const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
-          this.sumCost += actualCost + plannedCost;
-          this.sumBudget += budgetIntern + budgetExtern;
+          this.sumCost += (capacity[i].actualCost || 0) + (capacity[i].plannedCost || 0);
+          // this.sumCost += actualCost + plannedCost;
+          this.sumBudget += (capacity[i].internCapa || 0) + (capacity[i].externCapa || 0);
+          // this.sumBudget += budgetIntern + budgetExtern;
           const tooltip = this.createTooltipPlanActual(capacity[i], false);
           graphDataCapacity.push([
             currentDate,
@@ -1734,7 +1742,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         this.translate.instant('ViewCapacity.lbl.otherActivityCost'),
         {type: 'string', role: 'tooltip', 'p': {'html': true}}
       ]);
-    }
+    };
+    // round the sum
+    this.sumCost = Math.round(this.sumCost * 10) / 10 || 0;
+    this.sumBudget = Math.round(this.sumBudget * 10) / 10 || 0;
 
     // graphDataCapacity.reverse();
     // this.log(`view Capacity VP Capacity budget  ${JSON.stringify(graphDataCost)}`);
