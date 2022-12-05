@@ -212,6 +212,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
     // } else if (type === 'PAC') {
     //   result = km.costCurrentTotalPredict !== undefined;
+    
     }
     return result;
   }
