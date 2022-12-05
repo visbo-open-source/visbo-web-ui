@@ -36,11 +36,11 @@
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCost} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotal |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotal | number:'1.0-0'}} %) </span>
             </a></div>
-            <div *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict" title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€"><a>
+            <!-- <div *ngIf="vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict" title="{{ 'vpKeyMetric.lbl.totalCost' | translate }}: {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€"><a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityTotalCostPredict} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.costCurrentTotalPredict |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingCostTotalPredict | number:'1.0-0'}} %) </span>
               {{ 'vpKeyMetric.lbl.prediction' | translate }}
-            </a></div>
+            </a></div> -->
           </td>
           <td class="d-none d-xl-table-cell" (click)="switchView('Cost', true)">
             {{vpvKeyMetricActive.keyMetrics.costBaseLastTotal |  number:'1.0-0' }} T€
