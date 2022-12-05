@@ -105,6 +105,7 @@
     }
   },
   "schematics": {
+    "defaultProject": "visbo-client",
     "@schematics/angular:component": {
       "prefix": "app",
       "style": "css"
