@@ -544,11 +544,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getCustomURL(type: string, ott: string): string {
     let url: string;
-    if (type == 'predict') {
-      url = 'visbo-predict://predict';
-    } else {
+    if (type == 'edit') {
       url = 'visbo-connect://'.concat(type);
     }
+    // ur: 2022-12-05 prediction cancelled
+    // } else {
+    //   url = 'visbo-predict://predict';
+
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
