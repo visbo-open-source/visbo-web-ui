@@ -210,8 +210,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
-    } else if (type === 'PAC') {
-      result = km.costCurrentTotalPredict !== undefined;
+    // } else if (type === 'PAC') {
+    //   result = km.costCurrentTotalPredict !== undefined;
     }
     return result;
   }
@@ -333,11 +333,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       return;
     }
     let predict = false;
-    this.visboprojectversions.forEach(vpv => {
-      if (vpv.keyMetrics) {
-        predict = predict || this.hasKM(vpv.keyMetrics, 'PAC');
-      }
-    });
+    // this.visboprojectversions.forEach(vpv => {
+    //   if (vpv.keyMetrics) {
+    //     predict = predict || this.hasKM(vpv.keyMetrics, 'PAC');
+    //   }
+    // });
 
     for (let i = 0; i < this.visboprojectversions.length; i++) {
       if (!this.visboprojectversions[i].keyMetrics) {
