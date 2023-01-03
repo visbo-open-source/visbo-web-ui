@@ -855,7 +855,7 @@
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
 			"bac": "Gesamtkosten (Baseline)",
-			"rac": "Umsatz",
+			"rac": "Auftragswert",
 			"pv": "Kosten (Baseline)",
 			"deadlines": "Termine (Baseline)",
 			"deliveries": "Lieferungen (Baseline)",
