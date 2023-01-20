@@ -111,7 +111,7 @@
             <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
             <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
             <!-- old -- <a [href]="customURL" class="dropdown-item" (click)="initCustomURL('edit')" >{{customEdit}}</a> -->
-            <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL('predict')" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a>
+            <!-- <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL('predict')" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a> -->
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
             <a *ngIf="vpvActive" class="dropdown-item" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)">{{ 'vpKeyMetric.btn.vpViewProperties' | translate }}</a>
         </div>
@@ -303,20 +303,19 @@
               </tr>
               <tr>
                 <td><b>{{ 'vpKeyMetric.lbl.projectProperty' | translate }}</b></td>
-                <td></td>
-              </tr>
-              <tr *ngIf="vpManagerEmail">
+                <td>              
+                </td>
+              </tr>  
+              <tr *ngIf="vpManagerEmail"> 
                 <td>{{ 'vpKeyMetric.lbl.manager' | translate }}</td>
-                <td *ngIf="!hasVPPerm(permVP.Modify)" title="{{ getVPManager(vpActive) }}">
-                  {{ getVPManager(vpActive, false) }}
-                </td>
-                <td *ngIf="hasVPPerm(permVP.Modify)" title="{{ getVPManager(vpActive) }}">
-                  <select class="form-select" style="border-width:0px" name="vpManagerEmail" [(ngModel)]="vpManagerEmail" (change)="setModified()">
-                    <option *ngFor="let user of vpManagerList" value="{{ user.email }}">{{ getFullUserName(user, true) }}</option>
+                <td>
+                  <select *ngIf="hasVPPerm(permVP.Modify)" id="VPManager" class="dropdown-item px-1" id="vpManagerEmail" name="vpManagerEmail" [(ngModel)]="vpManagerEmail" (change)="setModified()">
+                    <option *ngFor="let item of vpManagerList" value="{{item.email}}">{{ item.email }}</option>
                   </select>
+                  <label id="VPManager" *ngIf="!hasVPPerm(permVP.Modify)">{{ getVPManager(vpActive) }} </label>
                 </td>
-              </tr>
-              <tr>
+              </tr> 
+              <tr> 
                 <td>{{ 'vpKeyMetric.lbl.vpStatus' | translate }}</td>
                 <td>
                   <select *ngIf="canChangeVPDetails(false)" id="VPstatus" class="dropdown-item px-1" id="customVPStatus" name="customVPStatus" [(ngModel)]="customVPStatus" (change)="setModifiedVPStatus()">

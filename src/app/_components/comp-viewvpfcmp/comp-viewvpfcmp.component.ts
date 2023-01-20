@@ -175,6 +175,8 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
   estimateAtCompletion1 = 0;
   budgetAtCompletion0 = 0;
   budgetAtCompletion1 = 0;
+  RACSum0 = 0;
+  RACSum1 = 0;
   emptyVPV = new VPVKeyMetricsCalc();
 
   chart = true;
@@ -634,6 +636,8 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
     this.budgetAtCompletion1 = 0;
     this.estimateAtCompletion0 = 0;
     this.estimateAtCompletion1 = 0;
+    this.RACSum0 = 0;
+    this.RACSum1 = 0;
 
     this.hasKMCost = false;
     this.hasKMCostPredict = false;
@@ -660,6 +664,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
         itemMin.compare = this.convertMinVPVKeyMetric(element);
         this.visbokeymetrics.push(itemMin);
         refList[element.vpid] = this.visbokeymetrics.length - 1;
+        this.RACSum0 += element.Erloes || 0;
       }
       if (item.keyMetrics) {
         this.countKM0 += 1;
@@ -683,6 +688,7 @@ export class VisboCompViewVpfCmpComponent implements OnInit, OnChanges {
           itemMin.compare = element;
           this.visbokeymetrics.push(itemMin);
           refList[element.vpid] = this.visbokeymetrics.length - 1;
+          this.RACSum1 += element.Erloes || 0;
         }
       }
       if (item.keyMetrics) {

@@ -87,6 +87,14 @@
             {{budgetAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
+        <div class="row">
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
+            {{ 'keyMetrics.shortRAC' | translate }} ({{ 'keyMetrics.longRAC' | translate }})
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{RACSum | number:'1.0-0'}} T€
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -107,7 +115,8 @@
               <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
               <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
-              <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }}</th>
+              <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }}</th>              
+              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.rac' | translate }}</th>
 
               <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
               <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
@@ -140,6 +149,7 @@
               <td>{{vpkm.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vpkm.variantName}}</td>
               <td id="ColManager" class="d-none d-lg-table-cell" title="{{getVPManager(vpkm.vp)}}"><a>{{getVPManager(vpkm.vp, false)}}</a></td>
+              <td id="ColRAC" class="text-right d-none d-md-table-cell">{{(vpkm.Erloes || 0) | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right"
                       title="{{(vpkm.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">

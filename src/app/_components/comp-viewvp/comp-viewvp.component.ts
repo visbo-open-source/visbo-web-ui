@@ -210,8 +210,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
       result = km.deliverableCompletionCurrentTotal > 0 || km.deliverableCompletionBaseLastTotal > 0;
     } else if (type === 'DeliveryDelay') {
       result = km.deliverableDelayFinished !== undefined || km.deliverableDelayUnFinished !== undefined;
-    } else if (type === 'PAC') {
-      result = km.costCurrentTotalPredict !== undefined;
+    // } else if (type === 'PAC') {
+    //   result = km.costCurrentTotalPredict !== undefined;
     }
     return result;
   }
