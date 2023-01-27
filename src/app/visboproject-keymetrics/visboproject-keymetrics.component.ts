@@ -1213,7 +1213,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // which have been proposed, by the time then been rejected but now should be initiated.
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (startDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'proposed') {
+      }
+      if ((startDate.getTime() < beginMonth.getTime()) && ((this.newVPV.status != 'initialized') && (this.newVPV.status != 'proposed'))) {
         result = false;
       }
     } else if (mode == 'endDate') {
@@ -1221,7 +1222,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      } else if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status != 'proposed') {
+      } else if ((startDate.getTime() < beginMonth.getTime()) && ((this.newVPV.status != 'initialized') && (this.newVPV.status != 'proposed'))) {
         result = false;
       }
     }
@@ -1294,18 +1295,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (!this.vpvActive) {
       return;
     }
+    
     this.changeStatus = false;
     if (mode == 'Move') {
       // in case of isPMO Move of the Standard Variant will move the baseline
       const pfv = this.allVPVs.find(vpv => vpv.variantName == 'pfv');
       if (this.isPMO() && this.vpvActive.variantName == "" && pfv) {
         this.newVPV = pfv;
+        this.newVPV.status = this.customVPStatus;
         this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = 'pfv';
       } else {
-        this.newVPV = this.vpvActive;
+        this.newVPV = this.vpvActive;        
+        this.newVPV.status = this.customVPStatus;
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = this.vpvActive.variantName;
@@ -1317,6 +1321,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.scaleFactor = 0;
     } else if (mode == 'Copy') {
       this.newVPV = this.vpvActive;
+      this.newVPV.status = this.customVPStatus;
       const list = this.getDropDownList(2, false);
       this.newVPVvariantName = list.length > 0 ? list[0].variantName : '';
     }
@@ -1339,7 +1344,6 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
     || endDate.toISOString() !== this.newVPVendDate.toISOString()
     || scaleFactor !== 1) {
-      this.log(`Execute Move VPV ${this.newVPV.name} from old  start ${startDate.toISOString()} end ${endDate.toISOString()} to new start ${this.newVPVstartDate.toISOString()} end ${this.newVPVendDate.toISOString()} scale ${scaleFactor} from ${newVPVscaleStartDate?.toISOString()}`);
       this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate)
         .subscribe(
           vpv => {
