@@ -112,6 +112,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
 
   estimateAtCompletion = 0;
   budgetAtCompletion = 0;
+  RACSum = 0;
   chart = true;
   parentThis = this;
   colors = ['#458CCB', '#F7941E', '#BDBDBD'];
@@ -458,6 +459,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     this.countKM = 0;
     this.budgetAtCompletion = 0;
     this.estimateAtCompletion = 0;
+    this.RACSum = 0;
 
     this.hasKMCost = false;
     this.hasKMCostPredict = false;
@@ -585,6 +587,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
       }
+      this.RACSum += elementKeyMetric.Erloes || 0;
+
       this.visbokeymetrics.push(elementKeyMetric);
       if (this.visboprojectversions[item].variantName) {
         this.hasVariant = true;

@@ -311,10 +311,11 @@ export class VisboprojectDetailComponent implements OnInit {
     if (this.visboproject.customFieldDouble) {
       this.visboproject.customFieldDouble = this.visboproject.customFieldDouble.filter(item => item.value != undefined);
     }
-    const user = this.vpManagerList.find(user => user.email == this.vpManagerEmail);
+    const user = this.vpManagerList?.find(user => user.email == this.vpManagerEmail);
     if (user) {
       this.visboproject.managerId = user._id;
     }
+    
     this.visboprojectService.updateVisboProject(this.visboproject, this.deleted)
       .subscribe(
         () => {

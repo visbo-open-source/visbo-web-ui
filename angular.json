@@ -104,8 +104,8 @@
       }
     }
   },
-  "defaultProject": "visbo-client",
   "schematics": {
+    "defaultProject": "visbo-client",
     "@schematics/angular:component": {
       "prefix": "app",
       "style": "css"
@@ -113,5 +113,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

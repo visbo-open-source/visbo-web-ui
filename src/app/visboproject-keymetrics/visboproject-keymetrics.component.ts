@@ -312,17 +312,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVPManager(vp: VisboProject, withEmail = true): string {
     let fullName = '';
-    if (vp.managerId) {
-      const user = this.vpUser.get(vp.managerId);
-      if (user) {
-        if (user.profile) {
-          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+    if (vp.managerId) {      
+        const user = this.vpManagerList.find(item => item._id == vp.managerId);
+        //this.vpManagerEmail = user?.email;
+        if (user) {
+          if (user.profile) {
+            fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+          }
+          if (!fullName || withEmail) {
+            fullName = fullName.concat(' (', user.email, ')');
+          }
         }
-        if (!fullName || withEmail) {
-          fullName = fullName.concat(' (', user.email, ')');
-        }
-      }
-    }
+      }   
     return fullName || '';
   }
 
@@ -543,11 +544,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getCustomURL(type: string, ott: string): string {
     let url: string;
-    if (type == 'predict') {
-      url = 'visbo-predict://predict';
-    } else {
+    if (type == 'edit') {
       url = 'visbo-connect://'.concat(type);
     }
+    // ur: 2022-12-05 prediction cancelled
+    // } else {
+    //   url = 'visbo-predict://predict';
+
     let separator = '?';
     if (this.vpActive) {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
@@ -890,7 +893,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   setModified(): void {
     this.customVPModified = true;
   }
-
+ 
   setModifiedVPStatus(): void {
     this.customVPModified = true;
   }
@@ -1433,10 +1436,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.vpActive.vpStatus = this.customVPStatus;
       }
       this.vpActive.kundennummer = this.customerID;
-      const newManager = this.vpManagerList?.find(item => item.email == this.vpManagerEmail);
-      if (newManager && newManager._id != this.vpActive.managerId) {
-        this.vpActive.managerId = newManager._id;
+        
+      const user = this.vpManagerList?.find(user => user.email == this.vpManagerEmail);
+      if (user) {
+        this.vpActive.managerId = user._id;
       }
+      
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
@@ -1492,11 +1497,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     this.visboprojectService.updateVisboProject(this.vpActive)
-      .subscribe(
-        (vp) => {
-          this.vpActive = vp;
+      .subscribe(       
+        (vp) => { 
           const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
-          this.alertService.success(message, true);
+          this.alertService.success(message, true);                   
+          this.vpActive = vp;
         },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);

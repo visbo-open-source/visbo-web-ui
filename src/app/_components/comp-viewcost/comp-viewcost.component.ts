@@ -132,7 +132,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       return;
     }
     if (this.timeoutID) { clearTimeout(this.timeoutID); }
-    this.timeoutID = setTimeout(() => {
+      this.timeoutID = setTimeout(() => {
       this.visboCostCalc();
       this.timeoutID = undefined;
     }, 500);
