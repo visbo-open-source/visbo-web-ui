@@ -712,8 +712,6 @@
 		"lbl": {
 			"month": "Month",
 			"variantName": "Variant",
-			"strategicFit": "Strategic Fit",
-			"risk": "Risk",
 			"totalCost": "Plan ",
 			"totalCapa": "Capacity",
 			"baselineCost": "Baseline Cost",
@@ -1524,7 +1522,9 @@
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},
-	"keyMetrics": {
+	"keyMetrics": {	
+		"longCostCurrBase": "Plan / Baseline",
+		"longRACCurrBase": "Revenue: Plan / Baseline",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",
