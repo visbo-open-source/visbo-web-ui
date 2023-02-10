@@ -95,8 +95,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   countKM: number;
 
   estimateAtCompletion = 0;
-  budgetAtCompletion = 0;
-  RACSum = 0;
+  budgetAtCompletion = 0; 
+  RACSumCurrent = 0;
+  RACSumBaseline = 0;
+
   chart = true;
   parentThis = this;
   graphBubbleData = [];
@@ -444,7 +446,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.countKM = 0;
     this.budgetAtCompletion = 0;
     this.estimateAtCompletion = 0;
-    this.RACSum = 0;
+    
+    this.RACSumCurrent = 0;
+    this.RACSumBaseline = 0;
 
     this.hasKMCost = false;
     this.hasKMCostPredict = false;
@@ -573,8 +577,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
+    
+      
+        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || 0;
+        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || 0;
+
       }
-      this.RACSum += elementKeyMetric.Erloes || 0;
+      this.RACSumCurrent += elementKeyMetric.Erloes || 0;
+      this.RACSumBaseline += elementKeyMetric.Erloes || 0;
       
       this.visbokeymetrics.push(elementKeyMetric);
       if (this.visboprojectversions[item].variantName) {
