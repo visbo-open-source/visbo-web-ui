@@ -405,8 +405,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     if (this.hasKM(this.vpvActive?.keyMetrics, 'Cost')) {
       let tooltip = this.createCostTooltip(this.vpvActive, 'plan');
       const km = this.vpvActive.keyMetrics;
-      const profitLossVPV = Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10;
-      const profitLossBL = Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
+      const profitLossVPV = Math.round(((km.RACCurrent? km.RACCurrent : this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10;
+      const profitLossBL = Math.round(((km.RACBaseLast? km.RACBaseLast : this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
       const profitColorVPV = profitLossVPV >= 0 ? 'color: green' : 'color: red';
       const profitColorBL = profitLossBL >= 0 ? 'color: green' : 'color: red';
       graphCostData.push([
@@ -417,7 +417,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         Math.round(((km.costCurrentTotal || 0) - (km.costCurrentActual || 0)) * 10) / 10,
         tooltip,
         undefined,
-        Math.round(((this.vpvActive.Erloes || (km.costCurrentTotal || 0))  - (km.costCurrentTotal || 0)) * 10) / 10,
+        Math.round(((km.RACCurrent? km.RACCurrent : this.vpvActive.Erloes|| (km.costCurrentTotal || 0))  - (km.costCurrentTotal || 0)) * 10) / 10,
         tooltip,
         profitColorVPV,
       ]);
@@ -431,7 +431,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
         Math.round(((km.costBaseLastTotal || 0) - (km.costBaseLastActual || 0)) * 10) / 10,
         tooltip,
         'opacity: 0.4',
-        Math.round(((this.vpvActive.Erloes || (km.costBaseLastTotal || 0)) - (km.costBaseLastTotal || 0)) * 10) / 10,
+        Math.round(((km.RACBaseLast? km.RACBaseLast : this.vpvActive.Erloes || (km.costBaseLastTotal || 0)) - (km.costBaseLastTotal || 0)) * 10) / 10,
         tooltip,
         profitColorBL + ';' + 'opacity: 0.4'
       ]);
@@ -495,8 +495,8 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
     const totalProfit = this.translate.instant('compViewVp.lbl.totalProfit').replace(/ /g, "&nbsp");
 
     const profitLoss = type == 'plan' ?
-        Math.round(((this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10 :
-        Math.round(((this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
+        Math.round(((km.RACCurrent? km.RACCurrent : this.vpvActive.Erloes || km.costCurrentTotal) - km.costCurrentTotal) * 10) / 10 :
+        Math.round(((km.RACBaseLast? km.RACBaseLast : this.vpvActive.Erloes || km.costBaseLastTotal) - km.costBaseLastTotal) * 10) / 10;
 
     let result = '<div style="padding:5px 5px 5px 5px;">' +
       '<div><b>' + name + '</b></div>' + '<div>' +

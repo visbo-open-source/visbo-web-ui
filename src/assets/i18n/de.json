@@ -712,13 +712,11 @@
 		"lbl": {
 			"month": "Monat",
 			"variantName": "Variante",
-			"strategicFit": "Strategic Fit",
-			"risk": "Risiko",
-			"totalCost": "Plan",
+			"totalCost": "Plan ",
 			"totalCapa": "Kapazität",
 			"baselineCost": "Baseline-Kosten",
 			"baselineCost_PT": "Baseline-Aufwand",
-			"totalCostPT": "Plan",
+			"totalCostPT": "Plan ",
 			"internCapa": "Interne Kapazität",
 			"internCapa_PT": "Interne Kapazität (PT)",
 			"externCapa": "Externe Kapazität",
@@ -1524,7 +1522,9 @@
 			"errorPerm": "Keine Berechtigung für Audit für dieses VISBO Projekt"
 		}
 	},
-	"keyMetrics": {
+	"keyMetrics": {		
+		"longCostCurrBase": "Plan / Baseline",
+		"longRACCurrBase": "Revenue: Plan / Baseline",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

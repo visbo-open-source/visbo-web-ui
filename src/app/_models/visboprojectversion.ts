@@ -89,6 +89,8 @@ export class VPVDeadline {
 }
 
 export class VPVKeyMetrics {
+  RACBaseLast: number;
+  RACCurrent: number;
   baselineDate: Date;
   costCurrentActual: number;
   costCurrentTotal: number;
