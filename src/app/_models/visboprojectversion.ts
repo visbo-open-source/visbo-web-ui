@@ -138,6 +138,7 @@ export class VPVKeyMetricsCalc {
   savingCostTotalPredict: number;
   savingCostActual: number;
   savingEndDate: number;
+  savingRAC : number;
   timeCompletionTotal: number;
   timeCompletionActual: number;
   deliveryCompletionTotal: number;
@@ -214,7 +215,8 @@ export class ExportKeyMetric {
   costCurrentTotalPredict: number;
   costBaseLastActual: number;
   costBaseLastTotal: number;
-  rac: number;
+  racBaseLast: number;  
+  racCurrent: number;
   timeCompletionCurrentActual: number;
   timeCompletionCurrentTotal: number;
   timeCompletionBaseLastActual: number;

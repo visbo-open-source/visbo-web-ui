@@ -91,6 +91,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   hasKMEndDate = false;
   hasKMDeadlineDelay = false;
   hasKMDeliveryDelay = false;
+  hasKMRAC = false;
   hasVariant: boolean;
   countKM: number;
 
@@ -189,14 +190,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         axis: this.translate.instant('compViewBubble.metric.costActualAxis'),
         bubble: this.translate.instant('compViewBubble.metric.costActualBubble'),
         table: this.translate.instant('compViewBubble.metric.costActualTable')
-      },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.costPredictName'),
-      //   metric: 'CostPredict',
-      //   axis: this.translate.instant('compViewBubble.metric.costPredictAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.costPredictBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.costPredictTable')
-      // },
+      },      
       {
         name: this.translate.instant('compViewBubble.metric.deadlineName'),
         metric: 'Deadline',
@@ -238,6 +232,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         axis: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayAxis'),
         bubble: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayBubble'),
         table: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayTable')
+      },
+      {
+        name: this.translate.instant('compViewBubble.metric.RACName'),
+        metric: 'Revenue',
+        axis: this.translate.instant('compViewBubble.metric.RACAxis'),
+        bubble: this.translate.instant('compViewBubble.metric.RACBubble'),
+        table: this.translate.instant('compViewBubble.metric.RACTable')
       }
     ];
 
@@ -457,6 +458,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.hasKMDeadlineDelay = false;
     this.hasKMDeliveryDelay = false;
     this.hasKMEndDate = false;
+    this.hasKMRAC = false;
     this.hasVariant = false;
 
     if (!this.visboprojectversions) {
@@ -531,6 +533,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
                                   || elementKeyMetric.keyMetrics.deliverableDelayUnFinished != undefined;
         this.hasKMEndDate = this.hasKMEndDate || elementKeyMetric.keyMetrics.endDateBaseLast.toString().length > 0;
 
+        this.hasKMRAC = this.hasKMRAC || elementKeyMetric.keyMetrics.RACBaseLast != undefined || elementKeyMetric.keyMetrics.RACBaseLast > 0;
+
         this.budgetAtCompletion += elementKeyMetric.keyMetrics.costBaseLastTotal || 0;
         this.estimateAtCompletion += elementKeyMetric.keyMetrics.costCurrentTotal || 0;
 
@@ -550,6 +554,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
                                             / elementKeyMetric.keyMetrics.costBaseLastActual;
         } else {
           elementKeyMetric.savingCostActual = 1;
+        }
+        if (elementKeyMetric.keyMetrics.RACBaseLast > 0) {
+          elementKeyMetric.savingRAC = (elementKeyMetric.keyMetrics.RACCurrent || 0)
+                                      / elementKeyMetric.keyMetrics.RACBaseLast;
         }
 
         // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
@@ -638,6 +646,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryUnFinishedDelay');
       this.metricListFiltered.push(item);
     }
+    if (this.hasKMRAC) {
+      let item = this.metricList && this.metricList.find(item => item.metric === 'Revenue');
+      this.metricListFiltered.push(item);      
+    }
+
 
     if (this.metricListFiltered.length < 2) {
       this.chart = false;
@@ -720,7 +733,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     } else {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
-    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in k\u20AC']);
+    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status', 'Total Cost (Base Line) in T\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].keyMetrics) {
         continue;
@@ -761,6 +774,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           valueX = Math.round(this.visbokeymetrics[item].deliveryCompletionActual * 100);
           colorValue += valueX >= 100 ? 1 : 0;
           break;
+        case 'Revenue':
+          valueX = Math.round(this.visbokeymetrics[item].savingRAC * 100);
+          colorValue += valueX >= 100 ? 1 : 0;
+          break;
       }
       switch (this.metricY) {
         case 'Cost':
@@ -794,6 +811,10 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'Delivery':
           valueY = Math.round(this.visbokeymetrics[item].deliveryCompletionActual * 100);
           colorValue += valueY >= 100 ? 1 : 0;
+          break;
+        case 'Revenue':
+          valueY = Math.round(this.visbokeymetrics[item].savingRAC * 100);
+          colorValue += valueX >= 100 ? 1 : 0;
           break;
       }
 
@@ -843,6 +864,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           break;
         case 'Delivery':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].deliveryCompletionActual - 1) * 100));
+          break;
+        case 'Revenue':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingRAC - 1) * 100));
           break;
       }
     }
@@ -897,6 +921,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         case 'Delivery':
           rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].deliveryCompletionActual - 1) * 100));
           break;
+        case 'Revenue':
+          rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
+          break;
       }
     }
     if (this.metricY === 'EndDate'
@@ -924,6 +951,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
+      case 'Revenue':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# '%'";
@@ -948,6 +976,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
+      case 'Revenue':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# '%'";
