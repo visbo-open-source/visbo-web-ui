@@ -853,7 +853,9 @@
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
 			"bac": "Gesamtkosten (Baseline)",
-			"rac": "Auftragswert",
+			"rac": "Auftragswert",			
+			"racBase": "Auftragswert (Baseline)",			
+			"racPlan": "Auftragswert",
 			"pv": "Kosten (Baseline)",
 			"deadlines": "Termine (Baseline)",
 			"deliveries": "Lieferungen (Baseline)",
@@ -863,7 +865,7 @@
 			"show": "Anzeige",
 			"and": "und",
 			"from": "vom",
-			"planVsBase": "plan-to-date vs. baseline",
+			"planVsBase": "plan-to-date vs. baseline of ",
 			"filtered": "gefiltert mit",
 			"filter": "Filter Projekte",
 			"strategicFit": "Strategie Fit",
@@ -952,7 +954,12 @@
 			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
 			"deliveryUnFinishedDelayAxis": "Mittlere Abweichung bei unerledigten Lieferungen",
 			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
-			"deliveryUnFinishedDelayTable": "Unerledigte"
+			"deliveryUnFinishedDelayTable": "Unerledigte",
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "Revenue at Completion (%)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",
@@ -1020,7 +1027,7 @@
 			"weeks": "Wochen",
 			"keuro": "T€",
 			"show": "Anzeige",
-			"diff": "Abweichung",
+			"diff": "Abweichung   ",
 			"topX": "Top",
 			"absolute": "Absolut",
 			"percent": "Prozent",
@@ -1088,7 +1095,12 @@
 			"deliveryUnFinishedDelayName": "Abweichung bei Lieferungen (unerledigte)",
 			"deliveryUnFinishedDelayAxis": "Geplante durchschnittliche Abweichung bei unerledigten Lieferungen",
 			"deliveryUnFinishedDelayBubble": "Abweichung bei unerledigten Lieferungen",
-			"deliveryUnFinishedDelayTable": "Unerledigte"
+			"deliveryUnFinishedDelayTable": "Unerledigte",
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "RAC (Revenue at Completion)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "Keine Projekte zu diesen Kriterien",

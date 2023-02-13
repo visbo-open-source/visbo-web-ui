@@ -30,13 +30,14 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
     }
   }
   if (vpv.keyMetrics) {
-    if (type == 'Cost') {
+    if (type == 'Cost') {      
+      if (vpv.keyMetrics.RACBaseLast) element.racBaseLast = vpv.keyMetrics.RACBaseLast && Math.round(vpv.keyMetrics.RACBaseLast * 1000);
+      if (vpv.keyMetrics.RACCurrent) element.racCurrent = vpv.keyMetrics.RACCurrent && Math.round(vpv.keyMetrics.RACCurrent * 1000);
       element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000);
       element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000);
       if (vpv.keyMetrics.costCurrentTotalPredict) element.costCurrentTotalPredict = Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000);
       element.costBaseLastActual = vpv.keyMetrics.costBaseLastActual && Math.round(vpv.keyMetrics.costBaseLastActual * 1000);
       element.costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000);
-      element.rac = vpv.Erloes && Math.round(vpv.Erloes * 1000);
       element.savingCostTotal = Math.round((vpv.savingCostTotal || 0) * 1000);
       element.savingCostActual = Math.round((vpv.savingCostActual || 0) * 1000);
       if (vpv.savingCostTotalPredict) element.savingCostTotalPredict = Math.round(vpv.savingCostTotalPredict * 1000);

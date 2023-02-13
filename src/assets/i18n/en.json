@@ -854,6 +854,8 @@
 			"yAxis": "Y-Axis",
 			"bac": "Total Cost (Baseline)",
 			"rac": "Revenue",
+			"racBaseLast": "Revenue (Baseline)",			
+			"racCurrent": "Revenue",
 			"pv": "Cost (Baseline)",
 			"deadlines": "Deadlines (Baseline)",
 			"deliveries": "Deliveries (Baseline)",
@@ -863,7 +865,7 @@
 			"show": "Show",
 			"and": "and",
 			"from": "from",
-			"planVsBase": "plan-to-date vs. baseline",
+			"planVsBase": "plan-to-date vs. baseline of ",
 			"filtered": "filtered with",
 			"filter": "Filter Projects",
 			"strategicFit": "Strategic fit",
@@ -952,7 +954,12 @@
 			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
 			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
 			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
-			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines",
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "Revenue at Completion (%)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
@@ -1020,7 +1027,7 @@
 			"weeks": "weeks",
 			"keuro": "T€",
 			"show": "Show",
-			"diff": "Deviation",
+			"diff": "Deviation   ",
 			"topX": "Top",
 			"absolute": "Absolute",
 			"percent": "Percent",
@@ -1088,7 +1095,12 @@
 			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
 			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
 			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
-			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines",			
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "RAC (Revenue at Completion)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
