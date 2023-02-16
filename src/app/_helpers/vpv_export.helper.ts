@@ -32,7 +32,12 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
   if (vpv.keyMetrics) {
     if (type == 'Cost') {      
       if (vpv.keyMetrics.RACBaseLast) element.racBaseLast = vpv.keyMetrics.RACBaseLast && Math.round(vpv.keyMetrics.RACBaseLast * 1000);
-      if (vpv.keyMetrics.RACCurrent) element.racCurrent = vpv.keyMetrics.RACCurrent && Math.round(vpv.keyMetrics.RACCurrent * 1000);
+      
+      if (vpv.keyMetrics.RACCurrent) {
+        element.racCurrent = vpv.keyMetrics.RACCurrent && Math.round(vpv.keyMetrics.RACCurrent * 1000);
+      } else {
+        element.racCurrent = vpv.Erloes;
+      }
       element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000);
       element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000);
       if (vpv.keyMetrics.costCurrentTotalPredict) element.costCurrentTotalPredict = Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000);
