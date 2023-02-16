@@ -147,7 +147,7 @@
               <td id="ColManager" class="d-none d-lg-table-cell" title="{{getVPManager(vpkm.vp)}}"><a>{{getVPManager(vpkm.vp, false)}}</a></td>
               <td id="ColRACBase"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACBaseLast || vpkm.Erloes) | number:'1.0-0'}} T€</td> 
               <td id="ColRACBase"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>              
-              <td id="ColRACPlan"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACCurrent || 0) | number:'1.0-0'}} T€</td>
+              <td id="ColRACPlan"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACCurrent || vpkm.Erloes) | number:'1.0-0'}} T€</td>
               <td id="ColRACPlan"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>  
 
               <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>

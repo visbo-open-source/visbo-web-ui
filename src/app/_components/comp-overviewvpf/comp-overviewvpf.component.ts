@@ -588,6 +588,14 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
         } else {
           elementKeyMetric.savingCostActual = 1;
         }
+        if (elementKeyMetric.keyMetrics.RACBaseLast && elementKeyMetric.keyMetrics.RACBaseLast > 0) {
+          elementKeyMetric.savingRAC = (elementKeyMetric.keyMetrics.RACCurrent || 0)
+                                      / elementKeyMetric.keyMetrics.RACBaseLast;
+        }
+        if (!elementKeyMetric.keyMetrics.RACBaseLast && elementKeyMetric.Erloes > 0 ) {
+          elementKeyMetric.savingRAC = (elementKeyMetric.Erloes || 0)
+                                      / elementKeyMetric.Erloes;
+        }
 
         // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
         // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
@@ -614,13 +622,14 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
           this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
+    
+        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || elementKeyMetric.Erloes|| 0;
+        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || elementKeyMetric.Erloes||0;
 
-        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || 0;
-        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || 0;
-
+      } else {
+        this.RACSumCurrent += elementKeyMetric.Erloes || 0;
+        this.RACSumBaseline += elementKeyMetric.Erloes || 0;
       }
-      this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-      this.RACSumBaseline += elementKeyMetric.Erloes || 0;
 
       this.visbokeymetrics.push(elementKeyMetric);
       if (this.visboprojectversions[item].variantName) {

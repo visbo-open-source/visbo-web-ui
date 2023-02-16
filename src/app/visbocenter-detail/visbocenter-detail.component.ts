@@ -834,7 +834,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
     this.resetError();
     this.newOrgaName = 'Organisation';
-    this.orgaSaveMode = 'new';
+    this.orgaSaveMode = 'update';
     this.isOrgaSaved = false;
     const beginningOfMonth = new Date();
     beginningOfMonth.setDate(1);

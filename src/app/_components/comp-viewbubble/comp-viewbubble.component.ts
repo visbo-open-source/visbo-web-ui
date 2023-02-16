@@ -555,9 +555,13 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         } else {
           elementKeyMetric.savingCostActual = 1;
         }
-        if (elementKeyMetric.keyMetrics.RACBaseLast > 0) {
+        if (elementKeyMetric.keyMetrics.RACBaseLast && elementKeyMetric.keyMetrics.RACBaseLast > 0) {
           elementKeyMetric.savingRAC = (elementKeyMetric.keyMetrics.RACCurrent || 0)
                                       / elementKeyMetric.keyMetrics.RACBaseLast;
+        }
+        if (!elementKeyMetric.keyMetrics.RACBaseLast && elementKeyMetric.Erloes > 0 ) {
+          elementKeyMetric.savingRAC = (elementKeyMetric.Erloes || 0)
+                                      / elementKeyMetric.Erloes;
         }
 
         // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
@@ -585,14 +589,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           this.calcPercent(km.deliverableCompletionCurrentTotal, km.deliverableCompletionBaseLastTotal);
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
-    
-      
-        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || 0;
-        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || 0;
+          
+        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || elementKeyMetric.Erloes|| 0;
+        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || elementKeyMetric.Erloes||0;
 
+      } else {
+        this.RACSumCurrent += elementKeyMetric.Erloes || 0;
+        this.RACSumBaseline += elementKeyMetric.Erloes || 0;
       }
-      this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-      this.RACSumBaseline += elementKeyMetric.Erloes || 0;
       
       this.visbokeymetrics.push(elementKeyMetric);
       if (this.visboprojectversions[item].variantName) {
@@ -814,7 +818,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           break;
         case 'Revenue':
           valueY = Math.round(this.visbokeymetrics[item].savingRAC * 100);
-          colorValue += valueX >= 100 ? 1 : 0;
+          colorValue += valueY >= 100 ? 1 : 0;
           break;
       }
 
@@ -951,7 +955,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
-      case 'Revenue':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# '%'";
@@ -964,7 +967,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         this.graphBubbleOptions.hAxis.format = weekFormat;
         break;
       case 'Deadline':
-      case 'Delivery':
+      case 'Delivery':        
+      case 'Revenue':
         this.graphBubbleOptions.hAxis.baseline = 100;
         this.graphBubbleOptions.hAxis.direction = 1;
         this.graphBubbleOptions.hAxis.format = "# '%'";
@@ -976,7 +980,6 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       case 'Cost':
       case 'ActualCost':
       case 'CostPredict':
-      case 'Revenue':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# '%'";
@@ -990,6 +993,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         break;
       case 'Deadline':
       case 'Delivery':
+      case 'Revenue':
         this.graphBubbleOptions.vAxis.baseline = 100;
         this.graphBubbleOptions.vAxis.direction = 1;
         this.graphBubbleOptions.vAxis.format = "# '%'";
