@@ -822,9 +822,9 @@
           </button>
         </div>
         <div *ngIf="newOrgaList" class="modal-body">
-          <select id="DropDownSave" class="form-control mx-1" name="orgaSaveMode" [(ngModel)]="orgaSaveMode">
-            <option value = 'new'>{{ 'vcDetail.lbl.newOrga' | translate }}</option>
+          <select id="DropDownSave" class="form-control mx-1" name="orgaSaveMode" [(ngModel)]="orgaSaveMode">            
             <option value = 'update' *ngIf="vcOrganisations.length">{{ 'vcDetail.lbl.updateOrga' | translate }}</option>
+            <option value = 'new'>{{ 'vcDetail.lbl.newOrga' | translate }}</option>
           </select>
           <form class="mt-2">
             <div class="form-group row">
