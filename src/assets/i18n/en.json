@@ -699,7 +699,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleCapacity": "Capacity Utilisation - Timespan:",
+		"titleCapacity": "Capacity Utilization - Timespan:",
 		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
@@ -761,7 +761,7 @@
 			"to": "to:"
 		},
 		"msg": {
-			"calculating": "Calculating Capacity ...",
+			"calculating": "Calculating Capacity Utilization ...",
 			"noFilter": "All projects of the portfolio were shown without filter!",
 			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
@@ -770,7 +770,7 @@
 		}
 	},
 	"ViewCapacityCmp": {
-		"titleCapacity": "Capacity Utilisation - Timespan:",
+		"titleCapacity": "Capacity Utilization - Timespan:",
 		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
@@ -826,8 +826,8 @@
 			"to": "to:"
 		},
 		"msg": {
-			"calculating": "Calculating Capacity ...",
-			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
+			"calculating": "Calculating Capacity Utilization ...",
+			"noCapacity": "No Capacity/Workload Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
 			"errorPermCapacity": "Permission denied for  {{name}} Capacity",
 			"errorPermOrganisation": "No organisation in VISBO Center {{name}}"
