@@ -580,7 +580,7 @@
 			"unfinished": "State: unfinished",
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
-			"metricCost": "Cost",
+			"metricCost": "Resource- and Other Costs",
 			"metricDelivery": "Deliveries",
 			"metricEndDate": "Project End",
 			"metricDeadline": "Deadlines",
@@ -699,7 +699,7 @@
 		}
 	},
 	"ViewCapacity": {
-		"titleCapacity": "Capacity Utilisation - Timespan:",
+		"titleCapacity": "Capacity Utilization - Timespan:",
 		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
@@ -712,13 +712,11 @@
 		"lbl": {
 			"month": "Month",
 			"variantName": "Variant",
-			"strategicFit": "Strategic Fit",
-			"risk": "Risk",
-			"totalCost": "Plan Cost",
+			"totalCost": "Plan ",
 			"totalCapa": "Capacity",
 			"baselineCost": "Baseline Cost",
 			"baselineCost_PT": "Baseline Workload",
-			"totalCostPT": "Plan Workload",
+			"totalCostPT": "Plan ",
 			"internCapa": "Internal Capacity",
 			"internCapa_PT": "Internal Capacity (PD)",
 			"externCapa": "External Capacity",
@@ -763,7 +761,7 @@
 			"to": "to:"
 		},
 		"msg": {
-			"calculating": "Calculating Capacity ...",
+			"calculating": "Calculating Capacity Utilization ...",
 			"noFilter": "All projects of the portfolio were shown without filter!",
 			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
@@ -772,7 +770,7 @@
 		}
 	},
 	"ViewCapacityCmp": {
-		"titleCapacity": "Capacity Utilisation - Timespan:",
+		"titleCapacity": "Capacity Utilization - Timespan:",
 		"titleBox": "Sum Resource Needs in time range",
 		"title1": "Orga Unit",
 		"title2": " expressed in ",
@@ -828,8 +826,8 @@
 			"to": "to:"
 		},
 		"msg": {
-			"calculating": "Calculating Capacity ...",
-			"noCapacity": "No Capacity Information for this Organisation Unit during the period fixed",
+			"calculating": "Calculating Capacity Utilization ...",
+			"noCapacity": "No Capacity/Workload Information for this Organisation Unit during the period fixed",
 			"errorPerm": "Permission denied for this VISBO Center",
 			"errorPermCapacity": "Permission denied for  {{name}} Capacity",
 			"errorPermOrganisation": "No organisation in VISBO Center {{name}}"
@@ -856,6 +854,8 @@
 			"yAxis": "Y-Axis",
 			"bac": "Total Cost (Baseline)",
 			"rac": "Revenue",
+			"racBaseLast": "Revenue (Baseline)",			
+			"racCurrent": "Revenue",
 			"pv": "Cost (Baseline)",
 			"deadlines": "Deadlines (Baseline)",
 			"deliveries": "Deliveries (Baseline)",
@@ -865,7 +865,7 @@
 			"show": "Show",
 			"and": "and",
 			"from": "from",
-			"planVsBase": "plan-to-date vs. baseline",
+			"planVsBase": "plan-to-date vs. baseline of ",
 			"filtered": "filtered with",
 			"filter": "Filter Projects",
 			"strategicFit": "Strategic fit",
@@ -954,7 +954,12 @@
 			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
 			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
 			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
-			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines",
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "Revenue at Completion (%)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
@@ -1022,7 +1027,7 @@
 			"weeks": "weeks",
 			"keuro": "T€",
 			"show": "Show",
-			"diff": "Deviation",
+			"diff": "Deviation   ",
 			"topX": "Top",
 			"absolute": "Absolute",
 			"percent": "Percent",
@@ -1090,7 +1095,12 @@
 			"deliveryUnFinishedDelayName": "Time (Unfinished Deadline Achievement)",
 			"deliveryUnFinishedDelayAxis": "Average Deviation in unfinished Deadlines",
 			"deliveryUnFinishedDelayBubble": "Deviation in unfinished Deadlines",
-			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
+			"deliveryUnFinishedDelayTable": "unfinished Deadlines",			
+			"RACName": "Revenue",
+			"RACAxis": "RAC (Revenue at Completion)",
+			"RACBubble": "RAC (Revenue at Completion)",
+			"RACTable": "Revenue at Completion",
+			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
 			"noVersions": "No Project Versions related to this Date",
@@ -1524,7 +1534,9 @@
 			"errorPerm": "No Permission for Audit for this VISBO Project"
 		}
 	},
-	"keyMetrics": {
+	"keyMetrics": {	
+		"longCostCurrBase": "Plan / Baseline",
+		"longRACCurrBase": "Revenue: Plan / Baseline",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

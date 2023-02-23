@@ -5,10 +5,10 @@
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-1 col-11">
               <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
+              <span> {{ 'compViewBubble.lbl.planVsBase' | translate }}</span>
               <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
               <span> {{ 'compViewBubble.lbl.and' | translate }} </span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricY).name}}</a></span>
-              <span> {{ 'compViewBubble.lbl.planVsBase' | translate }}</span>
+              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricY).name}}</a></span>             
               <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
           </div>
         </div>
@@ -61,7 +61,7 @@
         {{ 'compViewBubble.metric.costName' | translate }}
       </h5>
       <div class="card-body p-2">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col col-sm-8">
             {{ 'compViewBubble.lbl.nrProjects' | translate }}
           </div>
@@ -69,32 +69,28 @@
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
             {{countKM}} / {{visbokeymetrics.length}}
           </div>
-        </div>
+        </div> -->
         <div class="row">
-          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
-            {{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }})
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">   
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>          -->
+            {{ 'keyMetrics.longCostCurrBase' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong> -->
             {{estimateAtCompletion | number:'1.0-0'}} T€
-          </div>
-        </div>
-        <div class="row">
-          <div class="col col-sm-8" title="{{ 'keyMetrics.longBAC' | translate }}">
-            {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longBAC' | translate }})
-          </div>
-          <div class="col col-sm-4 text-right">
-            {{budgetAtCompletion | number:'1.0-0'}} T€
+             / {{budgetAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
-            {{ 'keyMetrics.shortRAC' | translate }} ({{ 'keyMetrics.longRAC' | translate }})
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(RACSumCurrent, RACSumBaseline)}"></ng-container></strong> -->
+            {{ 'keyMetrics.longRACCurrBase' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            {{RACSum | number:'1.0-0'}} T€
+            {{RACSumCurrent | number:'1.0-0'}} T€
+             / {{RACSumBaseline | number:'1.0-0'}} T€
           </div>
-        </div>
+        </div>               
       </div>
     </div>
   </div>
@@ -116,14 +112,14 @@
               <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
               <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
               <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }}</th>              
-              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.rac' | translate }}</th>
-
+              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.racBaseLast' | translate }}</th>              
+              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.racCurrent' | translate }}</th>
               <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
               <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
               <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}}</th>
-              <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
-              <th *ngIf="selectedMetric('CostPredict')" class="text-right" (click)="sortKeyMetricsTable(17)">{{getMetric('CostPredict').table}}</th>
+              <!-- <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
+              <th *ngIf="selectedMetric('CostPredict')" class="text-right" (click)="sortKeyMetricsTable(17)">{{getMetric('CostPredict').table}}</th> -->
 
               <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }}</th>
               <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{getMetric('EndDate').table}}</th>
@@ -149,7 +145,11 @@
               <td>{{vpkm.name }}</td>
               <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vpkm.variantName}}</td>
               <td id="ColManager" class="d-none d-lg-table-cell" title="{{getVPManager(vpkm.vp)}}"><a>{{getVPManager(vpkm.vp, false)}}</a></td>
-              <td id="ColRAC" class="text-right d-none d-md-table-cell">{{(vpkm.Erloes || 0) | number:'1.0-0'}} T€</td>
+              <td id="ColRACBase"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACBaseLast || vpkm.Erloes) | number:'1.0-0'}} T€</td> 
+              <td id="ColRACBase"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>              
+              <td id="ColRACPlan"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACCurrent || vpkm.Erloes) | number:'1.0-0'}} T€</td>
+              <td id="ColRACPlan"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>  
+
               <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
               <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right"
                       title="{{(vpkm.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
