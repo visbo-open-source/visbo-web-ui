@@ -798,6 +798,7 @@
 			"plannedCost": "Forecast Cost",
 			"plannedCost_PT": "Forecast Workload",
 			"cost": "Cost",
+			"costTotal": "Cost(total)",
 			"costCmp": "Compare Cost",
 			"diffCost": "Deviation",
 			"fractionCost": "Share",

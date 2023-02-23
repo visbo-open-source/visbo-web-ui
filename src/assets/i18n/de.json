@@ -798,6 +798,7 @@
 			"plannedCost": "Prognose-Kosten",
 			"plannedCost_PT": "Prognose-Aufwand",
 			"cost": "Kosten",
+			"costTotal": "Kosten(gesamt)",
 			"costCmp": "Vergleich Kosten",
 			"diffCost": "Abweichung",
 			"fractionCost": "Anteil",
