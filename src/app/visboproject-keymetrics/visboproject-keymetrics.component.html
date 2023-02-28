@@ -271,7 +271,13 @@
                    / {{ vpvActive.keyMetrics.RACBaseLast | number:'1.0-0' }} T€
                 </td>
               </tr>            
-              <tr *ngIf="!vpvActive.keyMetrics || (vpvActive.keyMetrics && vpvActive.keyMetrics.RACBaseLast)">
+              <tr *ngIf="vpvActive.keyMetrics && !vpvActive.keyMetrics.RACBaseLast">
+                <td title="{{ 'keyMetrics.longRAC' | translate }}">{{ 'keyMetrics.shortRAC' | translate }}</td>
+                <td>
+                  {{ vpvActive.Erloes | number:'1.0-0' }} T€
+                </td>
+              </tr>
+              <tr *ngIf="!vpvActive.keyMetrics">
                 <td title="{{ 'keyMetrics.longRAC' | translate }}">{{ 'keyMetrics.shortRAC' | translate }}</td>
                 <td>
                   {{ vpvActive.Erloes | number:'1.0-0' }} T€
