@@ -48,6 +48,7 @@ class DropDownStatus {
   selector: 'app-visboproject-keymetrics',
   templateUrl: './visboproject-keymetrics.component.html'
 })
+
 export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   activeVPVs: VisboProjectVersion[];
@@ -312,7 +313,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVPManager(vp: VisboProject, withEmail = true): string {
     let fullName = '';
-    if (vp.managerId) {      
+    if (vp.managerId && this.vpManagerList) {      
         const user = this.vpManagerList.find(item => item._id == vp.managerId);
         //this.vpManagerEmail = user?.email;
         if (user) {
@@ -775,8 +776,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
       if (latestVPV?._id.toString() == vpv._id.toString()) {
         // check only the latest version if a newer PFV exists
-        if (this.vpvBaseline
-        && new Date(vpv.timestamp).getTime() < this.vpvBaselineNewestTS.getTime()){
+        if (this.vpvBaseline && this.vpvBaselineNewestTS && new Date(vpv.timestamp).getTime() < this.vpvBaselineNewestTS.getTime()){
             result = false
         }
       }
