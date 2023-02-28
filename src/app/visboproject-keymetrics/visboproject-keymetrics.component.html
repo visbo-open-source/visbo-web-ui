@@ -200,7 +200,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -265,14 +264,14 @@
                   <span> {{ vpvActive.endDate | date :'dd.MM.yyyy'}}</span>
                 </td>
               </tr>
-              <tr *ngIf="vpvActive.keyMetrics.RACCurrent && vpvActive.keyMetrics.RACBaseLast">
+              <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.RACCurrent && vpvActive.keyMetrics.RACBaseLast">
                 <td title="{{ 'keyMetrics.longRACCurrBase' | translate }}">{{ 'keyMetrics.longRACCurrBase' | translate }}</td>
                 <td>
                   {{ vpvActive.keyMetrics.RACCurrent | number:'1.0-0' }} T€
                    / {{ vpvActive.keyMetrics.RACBaseLast | number:'1.0-0' }} T€
                 </td>
               </tr>            
-              <tr *ngIf="!vpvActive.keyMetrics.RACBaseLast">
+              <tr *ngIf="!vpvActive.keyMetrics || (vpvActive.keyMetrics && vpvActive.keyMetrics.RACBaseLast)">
                 <td title="{{ 'keyMetrics.longRAC' | translate }}">{{ 'keyMetrics.shortRAC' | translate }}</td>
                 <td>
                   {{ vpvActive.Erloes | number:'1.0-0' }} T€
@@ -561,7 +560,7 @@
 </div>
 
 <!-- Modal copy VPV -->
-<div *ngIf="vpvActive" class="modal fade" id="vpvModalCopy" tabindex="-1" role="dialog" aria-labelledby="vpvModalCopyTitle" aria-hidden="true">
+<div  *ngIf="vpvActive" class="modal fade" id="vpvModalCopy" tabindex="-1" role="dialog" aria-labelledby="vpvModalCopyTitle" aria-hidden="true">
   <div class="modal-dialog modal-md modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

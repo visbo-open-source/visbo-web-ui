@@ -728,6 +728,7 @@
 			"otherActivityCost": "weitere Aktivitäten",
 			"otherActivityCost_PT": "weitere Aktivitäten",
 			"cost": "Kosten",
+			"costTotal": "Kosten (gesamte Einheit)",
 			"diffCost": "Abweichung",
 			"fractionCost": "Anteil",
 			"budgetPT": "Baseline",
