@@ -593,8 +593,10 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || 0;
 
       } else {
-        this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-        this.RACSumBaseline += elementKeyMetric.Erloes || 0;
+        // this.RACSumCurrent += elementKeyMetric.Erloes || 0;
+        // this.RACSumBaseline += elementKeyMetric.Erloes || 0;
+        this.RACSumCurrent += 0;
+        this.RACSumBaseline += 0;
       }
 
       this.visbokeymetrics.push(elementKeyMetric);
