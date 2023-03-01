@@ -589,8 +589,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
         elementKeyMetric.deliveryCompletionActual =
           this.calcPercent(km.deliverableCompletionCurrentActual, km.deliverableCompletionBaseLastActual);
       
-        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || 0;
-        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || 0;
+        this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent  || elementKeyMetric.Erloes || 0;
+        this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast  || elementKeyMetric.Erloes || 0;
 
       } else {
         // this.RACSumCurrent += elementKeyMetric.Erloes || 0;
