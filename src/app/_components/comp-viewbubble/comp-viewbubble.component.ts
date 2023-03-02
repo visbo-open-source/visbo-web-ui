@@ -1306,10 +1306,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
         return result;
       });
-    }   else if (this.sortColumn === 21) {
+    } else if (this.sortColumn === 22) {
       this.visbokeymetrics.sort(function(a, b) {
-        return a.Erloes - b.Erloes;
+         return (a.keyMetrics?.RACCurrent || a.Erloes || 0) - (b.keyMetrics?.RACCurrent || b.Erloes || 0);         
       });
+    } else if (this.sortColumn === 21) {
+      this.visbokeymetrics.sort(function(a, b) { 
+        return (a.keyMetrics?.RACBaseLast || a.Erloes || 0) - (b.keyMetrics?.RACBaseLast || b.Erloes || 0);         
+     });
     }
 
     if (!this.sortAscending) {

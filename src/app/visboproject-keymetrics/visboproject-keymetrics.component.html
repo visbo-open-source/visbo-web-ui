@@ -265,10 +265,10 @@
                 </td>
               </tr>
               <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.RACCurrent && vpvActive.keyMetrics.RACBaseLast">
-                <td title="{{ 'keyMetrics.longRACCurrBase' | translate }}">{{ 'keyMetrics.longRACCurrBase' | translate }}</td>
+                <td title="{{ 'keyMetrics.longRACBaseCurr' | translate }}">{{ 'keyMetrics.longRACBaseCurr' | translate }}</td>
                 <td>
-                  {{ vpvActive.keyMetrics.RACCurrent | number:'1.0-0' }} T€
-                   / {{ vpvActive.keyMetrics.RACBaseLast | number:'1.0-0' }} T€
+                  {{ vpvActive.keyMetrics.RACBaseLast | number:'1.0-0' }} T€
+                   / {{ vpvActive.keyMetrics.RACCurrent | number:'1.0-0' }} T€
                 </td>
               </tr>            
               <tr *ngIf="vpvActive.keyMetrics && !vpvActive.keyMetrics.RACBaseLast">

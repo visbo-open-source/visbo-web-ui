@@ -71,12 +71,12 @@
         </div> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
-            {{ 'keyMetrics.longCostCurrBase' | translate }} 
+            {{ 'keyMetrics.longCostBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
-            {{estimateAtCompletion | number:'1.0-0'}} T€
-             / {{budgetAtCompletion | number:'1.0-0'}} T€
+            {{ budgetAtCompletion | number:'1.0-0'}} T€
+             / {{estimateAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
         <!-- <div class="row">
@@ -89,11 +89,11 @@
         </div> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
-            {{ 'keyMetrics.longRACCurrBase' | translate }} 
+            {{ 'keyMetrics.longRACBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            {{RACSumCurrent | number:'1.0-0'}} T€
-             / {{RACSumBaseline | number:'1.0-0'}} T€
+            {{RACSumBaseline | number:'1.0-0'}} T€
+             / {{RACSumCurrent | number:'1.0-0'}} T€
           </div>
         </div>
       </div>
