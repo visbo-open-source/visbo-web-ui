@@ -579,9 +579,9 @@
         <div *ngIf="newVPVvariantName == 'pfv'">
           <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
         </div>
-        <div *ngIf="vpvActive.variantName != '' && newVPVvariantName == ''">
+        <!-- <div *ngIf="vpvActive.variantName != '' && newVPVvariantName == ''">
           <label class="bg-warning">{{ 'vpKeyMetric.msg.overwriteSTD' | translate }}</label>
-        </div>
+        </div> -->
         <form *ngIf="newVPV && vpvActive" name="vpvCopy" #f3="ngForm" novalidate>
           <div class="form-group">
             <label for="sourceVariantID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.source' | translate }}:</label>
