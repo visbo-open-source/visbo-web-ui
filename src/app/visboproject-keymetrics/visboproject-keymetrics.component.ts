@@ -48,6 +48,7 @@ class DropDownStatus {
   selector: 'app-visboproject-keymetrics',
   templateUrl: './visboproject-keymetrics.component.html'
 })
+
 export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   activeVPVs: VisboProjectVersion[];
@@ -312,7 +313,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getVPManager(vp: VisboProject, withEmail = true): string {
     let fullName = '';
-    if (vp.managerId) {      
+    if (vp.managerId && this.vpManagerList) {      
         const user = this.vpManagerList.find(item => item._id == vp.managerId);
         //this.vpManagerEmail = user?.email;
         if (user) {
@@ -775,8 +776,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName)
       if (latestVPV?._id.toString() == vpv._id.toString()) {
         // check only the latest version if a newer PFV exists
-        if (this.vpvBaseline
-        && new Date(vpv.timestamp).getTime() < this.vpvBaselineNewestTS.getTime()){
+        if (this.vpvBaseline && this.vpvBaselineNewestTS && new Date(vpv.timestamp).getTime() < this.vpvBaselineNewestTS.getTime()){
             result = false
         }
       }
@@ -1213,22 +1213,44 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // which have been proposed, by the time then been rejected but now should be initiated.
       if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
         result = false;
-      }
-      if ((startDate.getTime() < beginMonth.getTime()) && ((this.newVPV.status != 'initialized') && (this.newVPV.status != 'proposed'))) {
+      } 
+      if (startDate.getTime() < beginMonth.getTime() && (this.newVPV.status == 'ordered')) {
+        result = false;
+      }      
+      if (startDate.getTime() < beginMonth.getTime() && (this.newVPV.status == 'paused')) {
+        result = false;
+      }      
+      if (startDate.getTime() < beginMonth.getTime() && (this.newVPV.status == 'stopped')) {
         result = false;
       }
+      if (startDate.getTime() < beginMonth.getTime() && (this.newVPV.status == 'finished')) {
+        result = false;
+      }
+
     } else if (mode == 'endDate') {
       // the reasons not to allow to move endDate:
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
-      if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
+
+      // if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
+      //   result = false;
+      // } 
+      // if (endDate.getTime() < beginMonth.getTime() && this.newVPV.vp.vpStatus != 'ordered') {
+      //   result = false;
+      // }
+      if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status == 'paused') {
         result = false;
-      } else if ((startDate.getTime() < beginMonth.getTime()) && ((this.newVPV.status != 'initialized') && (this.newVPV.status != 'proposed'))) {
+      }
+      if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status == 'stopped') {
+        result = false;
+      }
+      if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status == 'finished') {
         result = false;
       }
     }
     // always returns false : return result && false;
     return result;
   }
+
 
   canCommit(): boolean {
     if (!this.hasVPPerm(this.permVP.Modify) || this.vpvActive.variantName != "") {

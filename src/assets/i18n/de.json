@@ -728,6 +728,7 @@
 			"otherActivityCost": "weitere Aktivitäten",
 			"otherActivityCost_PT": "weitere Aktivitäten",
 			"cost": "Kosten",
+			"costTotal": "Kosten (gesamte Einheit)",
 			"diffCost": "Abweichung",
 			"fractionCost": "Anteil",
 			"budgetPT": "Baseline",
@@ -798,6 +799,7 @@
 			"plannedCost": "Prognose-Kosten",
 			"plannedCost_PT": "Prognose-Aufwand",
 			"cost": "Kosten",
+			"costTotal": "Kosten(gesamt)",
 			"costCmp": "Vergleich Kosten",
 			"diffCost": "Abweichung",
 			"fractionCost": "Anteil",
@@ -1535,8 +1537,8 @@
 		}
 	},
 	"keyMetrics": {		
-		"longCostCurrBase": "Plan / Baseline",
-		"longRACCurrBase": "Revenue: Plan / Baseline",
+		"longCostBaseCurr": "Baseline / Plan",
+		"longRACBaseCurr": "Revenue: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

@@ -12,12 +12,12 @@
       <div class="card-body p-2">
         <div class="row">
           <div class="col col-sm-8">
-            {{ 'keyMetrics.longCostCurrBase' | translate }}            
+            {{ 'keyMetrics.longCostBaseCurr' | translate }}            
           </div>
           <div class="col col-sm-4 text-right">
             <!-- <strong *ngIf="vpvActive.keyMetrics" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine)}"></ng-container></strong> -->
-            {{vpvTotalCostCurrent | number:'1.0-0'}} T€
-            /  {{vpvTotalCostBaseLine | number:'1.0-0'}} T€
+            {{vpvTotalCostBaseLine | number:'1.0-0'}} T€
+            /  {{vpvTotalCostCurrent | number:'1.0-0'}} T€
           </div>
         </div>
         <!-- <div *ngIf="vpvActive.keyMetrics" class="row">
@@ -31,11 +31,15 @@
         </div> -->
         <div *ngIf="vpvActive.keyMetrics" class="row">
           <div class="col col-sm-8">
-            {{ 'keyMetrics.longRACCurrBase' | translate }}
+            {{ 'keyMetrics.longRACBaseCurr' | translate }}
           </div>
-          <div class="col col-sm-4 text-right">
-            {{vpvActive.keyMetrics.RACCurrent | number:'1.0-0'}} T€
-            /  {{vpvActive.keyMetrics.RACBaseLast | number:'1.0-0'}} T€
+          <div *ngIf="vpvActive.keyMetrics.RACBaseLast" class="col col-sm-4 text-right">
+            {{vpvActive.keyMetrics.RACBaseLast | number:'1.0-0'}} T€
+            /  {{vpvActive.keyMetrics.RACCurrent | number:'1.0-0'}} T€
+          </div>
+          <div *ngIf="!vpvActive.keyMetrics.RACBaseLast" class="col col-sm-4 text-right">
+            {{vpvActive.Erloes | number:'1.0-0'}} T€
+            /  {{vpvActive.Erloes | number:'1.0-0'}} T€
           </div>
         </div> 
         <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->

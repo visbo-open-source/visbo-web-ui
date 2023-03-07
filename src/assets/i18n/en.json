@@ -728,6 +728,7 @@
 			"otherActivityCost": "other Activities",
 			"otherActivityCost_PT": "other Activities",
 			"cost": "Cost",
+			"costTotal":"Cost (total Unit)",
 			"diffCost": "Deviation",
 			"fractionCost": "Share",
 			"budgetPT": "Baseline",
@@ -798,6 +799,7 @@
 			"plannedCost": "Forecast Cost",
 			"plannedCost_PT": "Forecast Workload",
 			"cost": "Cost",
+			"costTotal": "Cost(total)",
 			"costCmp": "Compare Cost",
 			"diffCost": "Deviation",
 			"fractionCost": "Share",
@@ -1535,8 +1537,8 @@
 		}
 	},
 	"keyMetrics": {	
-		"longCostCurrBase": "Plan / Baseline",
-		"longRACCurrBase": "Revenue: Plan / Baseline",
+		"longCostBaseCurr": "Baseline / Plan",
+		"longRACBaseCurr": "Revenue: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

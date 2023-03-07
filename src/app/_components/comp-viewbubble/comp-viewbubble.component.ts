@@ -593,9 +593,12 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         this.RACSumCurrent += elementKeyMetric.keyMetrics.RACCurrent || elementKeyMetric.Erloes|| 0;
         this.RACSumBaseline += elementKeyMetric.keyMetrics.RACBaseLast || elementKeyMetric.Erloes||0;
 
-      } else {
-        this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-        this.RACSumBaseline += elementKeyMetric.Erloes || 0;
+      } else {  
+        this.RACSumCurrent += 0;
+        this.RACSumBaseline += 0;
+      // 
+      //   this.RACSumCurrent += elementKeyMetric.Erloes || 0;
+      //   this.RACSumBaseline += elementKeyMetric.Erloes || 0;
       }
       
       this.visbokeymetrics.push(elementKeyMetric);
@@ -1303,10 +1306,14 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
           || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
         return result;
       });
-    }   else if (this.sortColumn === 21) {
+    } else if (this.sortColumn === 22) {
       this.visbokeymetrics.sort(function(a, b) {
-        return a.Erloes - b.Erloes;
+         return (a.keyMetrics?.RACCurrent || a.Erloes || 0) - (b.keyMetrics?.RACCurrent || b.Erloes || 0);         
       });
+    } else if (this.sortColumn === 21) {
+      this.visbokeymetrics.sort(function(a, b) { 
+        return (a.keyMetrics?.RACBaseLast || a.Erloes || 0) - (b.keyMetrics?.RACBaseLast || b.Erloes || 0);         
+     });
     }
 
     if (!this.sortAscending) {
