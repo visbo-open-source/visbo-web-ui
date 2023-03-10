@@ -5,8 +5,8 @@
         <div class="row text-dark hidden-print">
           <div class="my-1 pl-1 col-11">
               <span>{{ 'compViewVpf.lbl.show' | translate }} </span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
-              <span> {{ 'compViewVpf.lbl.planVsBase' | translate }}</span>
+              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>                 
+              <span> {{ 'compViewVpf.lbl.planVsBase' | translate }}</span>           
               <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
           </div>
         </div>
@@ -59,8 +59,8 @@
         {{ 'compViewVpf.metric.costName' | translate }}
       </h5>
       <div class="card-body p-2">
-        <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'compViewVpf.lbl.nrProjects', title: '', value: visboprojectversions.length }"></ng-container> -->
-        <div class="row">
+        <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'compViewVpf.lbl.nrProjects', title: '', value: visboprojectversions.length }"></ng-container>  -->
+        <!-- <div class="row">
           <div class="col col-sm-8">
             {{ 'compViewVpf.lbl.nrProjects' | translate }}
           </div>
@@ -68,30 +68,32 @@
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
             {{countKM}} / {{visbokeymetrics.length}}
           </div>
-        </div>
+        </div> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
-            {{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }})
+            {{ 'keyMetrics.longCostBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
-            {{estimateAtCompletion | number:'1.0-0'}} T€
+            {{ budgetAtCompletion | number:'1.0-0'}} T€
+             / {{estimateAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longBAC' | translate }}">
             {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longBAC' | translate }})
           </div>
           <div class="col col-sm-4 text-right">
             {{budgetAtCompletion | number:'1.0-0'}} T€
           </div>
-        </div>
+        </div> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
-            {{ 'keyMetrics.shortRAC' | translate }} ({{ 'keyMetrics.longRAC' | translate }})
+            {{ 'keyMetrics.longRACBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            {{RACSum | number:'1.0-0'}} T€
+            {{RACSumBaseline | number:'1.0-0'}} T€
+             / {{RACSumCurrent | number:'1.0-0'}} T€
           </div>
         </div>
       </div>

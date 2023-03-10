@@ -11,9 +11,9 @@
               <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
             </select>
           </span>
-          <div class="ml-2 mt-1">
+          <!-- <div class="ml-2 mt-1">
             {{ 'compViewVpf.lbl.planVsBase' | translate }},
-          </div>
+          </div> -->
           <div class="mx-1">
             <span class="mr-1"> {{ 'compViewVpf.lbl.topX' | translate }}</span>
             <input type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="topX" min=0 max=99>
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost " class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
       <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">
         <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
@@ -87,7 +87,7 @@
       </h5>
       <div class="card-body p-2">
         <!-- <ng-container *ngTemplateOutlet="cardRow; context:{label: 'compViewVpf.lbl.nrProjects', title: '', value: visboprojectversions.length }"></ng-container> -->
-        <div class="row">
+        <!-- <div class="row">
           <div class="col col-sm-8">
             {{ 'compViewVpf.lbl.nrProjects' | translate }}
           </div>
@@ -95,32 +95,36 @@
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
             {{countKM}} / {{visbokeymetrics.length}}
           </div>
-        </div>
+        </div> -->
         <div class="row">
-          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">
-            {{ 'keyMetrics.shortEAC' | translate }} ({{ 'keyMetrics.longEAC' | translate }})
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">   
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>          -->
+            {{ 'keyMetrics.longCostBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>
-            {{estimateAtCompletion | number:'1.0-0'}} T€
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong> -->
+            {{ budgetAtCompletion | number:'1.0-0'}} T€
+             / {{estimateAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longBAC' | translate }}">
             {{ 'keyMetrics.shortBAC' | translate }} ({{ 'keyMetrics.longBAC' | translate }})
           </div>
           <div class="col col-sm-4 text-right">
             {{budgetAtCompletion | number:'1.0-0'}} T€
           </div>
-        </div>
+        </div> -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
-            {{ 'keyMetrics.shortRAC' | translate }} ({{ 'keyMetrics.longRAC' | translate }})
+            <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(RACSumCurrent, RACSumBaseline)}"></ng-container></strong> -->
+            {{ 'keyMetrics.longRACBaseCurr' | translate }} 
           </div>
           <div class="col col-sm-4 text-right">
-            {{RACSum | number:'1.0-0'}} T€
+            {{RACSumBaseline | number:'1.0-0'}} T€
+             / {{RACSumCurrent | number:'1.0-0'}} T€
           </div>
-        </div>
+        </div>               
       </div>
     </div>
   </div>
