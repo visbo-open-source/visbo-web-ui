@@ -40,6 +40,12 @@ class DropDownStatus {
   localName: string;
 }
 
+class CustomUserFields {
+  uid: string;
+  name: string;  
+  type: string;
+}
+
 @Component({
   selector: 'app-comp-viewbubble',
   templateUrl: './comp-viewbubble.component.html'
@@ -58,7 +64,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpfActive: VisboPortfolioVersion;
   @Input() visboprojectversions: VisboProjectVersion[];
-  @Input() customize: VisboSetting;
+  @Input() customize: VisboSetting;  
+  @Input() userCustomfields: CustomUserFields[];
   @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
   @Input() vcUser: Map<string, VisboUser>;
@@ -294,6 +301,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
     this.initVPStateDropDown();
+    // this.initUserCustomFields();
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
@@ -374,6 +382,21 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.dropDownVPStatus = undefined;
     }
   }
+
+  
+  
+  // initUserCustomFields(): void {
+  //   const listCF = this.customfields?.value?.liste;
+  //   if (!listCF) return;
+  //   this.userCustomfields = [];
+  //   listCF.forEach(item => {
+  //     this.userCustomfields.push(item.name);
+  //   });
+  //   if (this.userCustomfields.length < 1) { 
+  //     this.userCustomfields = undefined;
+  //   }
+  // }
+
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
@@ -518,6 +541,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.endDate = this.visboprojectversions[item].endDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
+      elementKeyMetric.customDblFields = this.visboprojectversions[item].customDblFields;
+      elementKeyMetric.customStringFields = this.visboprojectversions[item].customStringFields;
+      elementKeyMetric.customBoolFields = this.visboprojectversions[item].customBoolFields;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
@@ -1083,15 +1109,23 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       // Add Localised header to excel
       // eslint-disable-next-line
       const header: any = {};
-      let colName: number, colIndex = 0;
+      let colName: number, colIndex = 0, ind = 0 ;
       for (const element in excel[0]) {
+       
         if (element == 'project') {
           colName = colIndex;
         }
         colIndex++;
-        header[element] = element;
-        header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+        if (element.includes("custom")) {
+          const customUid = element.slice(6);
+          let eleCF = this.userCustomfields.find(item => item.uid == customUid);
+          header[element] = eleCF.name;                   
+        } else {
+          header[element] = element;
+          header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+        } 
       }
+
       excel.unshift(header);
       // this.log(`Header for Excel: ${JSON.stringify(header)}`)
 

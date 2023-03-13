@@ -3,7 +3,8 @@ import { getCustomFieldDouble, getCustomFieldString, getCustomFieldDate } from '
 import { VisboUser } from '../_models/visbouser';
 
 export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map<string, VisboUser>): ExportKeyMetric {
-  const element = new ExportKeyMetric();
+  //const element = new ExportKeyMetric();
+  const element:  ExportKeyMetric = {};
   element.project = vpv.name;
   element.variant = vpv.variantName;
   if (type == 'Project') {
@@ -13,6 +14,7 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
     }
     element.trafficlight = vpv.ampelStatus;
     element.trafficlightDesc = vpv.ampelErlaeuterung;
+   
     if (vpv.vp) {
       element.vpStatus = vpv.vp.vpStatus;
       let itemDouble = getCustomFieldDouble(vpv.vp, '_strategicFit');
@@ -28,7 +30,25 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
         element.lead = user?.email;
       }
     }
+    let indl: number = 0;
+    vpv.customDblFields?.forEach((elem, index) => {
+      indl += index;
+      element[`custom${elem.str}`] = elem.dbl.toString();
+      })
+    //indl = vpv.customDblFields.length-1;
+
+    vpv.customStringFields?.forEach((elem, index) => {
+      indl += index;
+      element[`custom${elem.strkey}`] = elem.strvalue;
+      })
+  
+    //indl += vpv.customStringFields.length-1;
+    vpv.customBoolFields?.forEach((elem, index) => {
+      indl += index;
+      element[`custom${elem.str}`] = elem.bool && 'true' || 'false';
+      })    
   }
+
   if (vpv.keyMetrics) {
     if (type == 'Cost') {      
       if (vpv.keyMetrics.RACBaseLast) element.racBaseLast = vpv.keyMetrics.RACBaseLast && Math.round(vpv.keyMetrics.RACBaseLast * 1000);

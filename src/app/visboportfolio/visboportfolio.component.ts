@@ -29,6 +29,12 @@ import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
 
 import {TimeLineOptions} from '../_models/_chart'
 
+class CustomUserFields {
+  uid: string;
+  name: string;  
+  type: string;
+}
+
 class DropDown {
   name: string;
   version?: number;
@@ -98,6 +104,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     dropDownVPStatus: DropDownStatus[];
     filterBU: string;
     dropDownBU: string[];
+    userCustomfields: CustomUserFields[];
 
     hasOrga = false;
     vcOrga: VisboOrganisation[];
@@ -257,6 +264,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
             this.getVisboCenterUsers();
             this.getVisboCenterOrga();
             this.getVisboCenterCustomization();
+            this.getVisboCenterUserCustomFields();
             this.initEnvironment = false;
           }
         },
@@ -536,11 +544,34 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       // check if appearance is available
       this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
       this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customization')
-        .subscribe(
+        .subscribe(          
           vcsettings => {
             if (vcsettings.length > 0) {
               this.customize = vcsettings[0];
               this.initBUDropDown();
+            }
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
+  }
+  getVisboCenterUserCustomFields(): void {
+    if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vpActive.vcid}`);
+      this.visbosettingService.getVCSettingByName(this.vpActive.vcid, 'customfields')
+        .subscribe(          
+          vcsettings => {
+            if (vcsettings.length > 0) {
+              this.userCustomfields = vcsettings[0]?.value?.liste;
+              // this.userCustomfields = this.customfields?.value?.liste;
+              // this.initUserCustomfields()
             }
           },
           error => {
@@ -795,6 +826,21 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
       this.dropDownBU = undefined;
     }
   }
+  
+  // initUserCustomfields(): void {
+  //   if (!this.customfields) {
+  //     return
+  //   }
+  //   const listCF = this.customfields.value?.liste;
+  //   if (!listCF) return;
+  //   this.userCustomfields = [];
+  //   listCF.forEach(item => {
+  //     this.userCustomfields.push(item.name);
+  //   });
+  //   if (this.userCustomfields.length < 1) { 
+  //     this.userCustomfields = undefined;
+  //   }
+  // }
 
   changeVPVariant(): void {
     this.log(`Change Variant ${this.switchVariant || 'Standard'} of ${this.switchVariantCount} VPs`);

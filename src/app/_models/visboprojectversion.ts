@@ -88,6 +88,21 @@ export class VPVDeadline {
   status: string;
 }
 
+export  class VPVDblFields {
+  str: string;
+  dbl: number;
+}
+
+export  class VPVStrFields {
+  strkey: string;
+  strvalue: string;
+}
+
+export class VPVBoolFields {
+  str: string;
+  bool: boolean;
+}
+
 export class VPVKeyMetrics {
   RACBaseLast: number;
   RACCurrent: number;
@@ -125,6 +140,9 @@ export class VPVKeyMetricsCalc {
   Erloes: number;
   Risiko: number;
   StrategicFit: number;
+  customDblFields: VPVDblFields[];
+  customStringFields: VPVStrFields[];
+  customBoolFields: VPVBoolFields[];
   vpStatus: string;
   vpStatusLocale: string;
   ampelStatus: number;
@@ -155,6 +173,9 @@ export class VisboProjectVersion {
   variantDescription: string;
   Risiko: number;
   StrategicFit: number;
+  customDblFields: VPVDblFields[];  
+  customStringFields: VPVStrFields[];  
+  customBoolFields: VPVBoolFields[];
   Erloes: number;
   startDate: Date;
   endDate: Date;
@@ -196,49 +217,50 @@ export class VisboProjectVersionResponse {
   perm: {system: number, vc: number, vp: number};
 }
 
-export class ExportKeyMetric {
-  project: string;
-  timestamp: Date;
-  baselineDate: Date;
-  variant: string;
-  _strategicFit: number;
-  _risk: number;
-  _businessUnit: string;
-  vpStatus: string;
-  lead: string;
-  _PMCommit: Date;
-  startDate: Date;
-  trafficlight: number;
-  trafficlightDesc: string;
-  costCurrentActual: number;
-  costCurrentTotal: number;
-  costCurrentTotalPredict: number;
-  costBaseLastActual: number;
-  costBaseLastTotal: number;
-  racBaseLast: number;  
-  racCurrent: number;
-  timeCompletionCurrentActual: number;
-  timeCompletionCurrentTotal: number;
-  timeCompletionBaseLastActual: number;
-  timeCompletionBaseLastTotal: number;
-  timeDelayFinished: number;
-  timeDelayUnFinished: number;
-  endDateCurrent: Date;
-  endDateBaseLast: Date;
-  deliverableCompletionCurrentActual: number;
-  deliverableCompletionCurrentTotal: number;
-  deliverableCompletionBaseLastActual: number;
-  deliverableCompletionBaseLastTotal: number;
-  deliverableDelayFinished: number;
-  deliverableDelayUnFinished: number;
-  savingCostTotal: number;
-  savingCostTotalPredict: number;
-  savingCostActual: number;
-  savingEndDate: number;
-  timeCompletionTotal: number;
-  timeCompletionActual: number;
-  deliveryCompletionTotal: number;
-  deliveryCompletionActual: number;
-  vpid: string;
-  vpvid: string;
+
+export interface ExportKeyMetric extends Record<`custom${string}`, string> {
+  project?: string;
+  timestamp?: Date;
+  baselineDate?: Date;
+  variant?: string;
+  _strategicFit?: number;
+  _risk?: number;
+  _businessUnit?: string;  
+  vpStatus?: string;
+  lead?: string;
+  _PMCommit?: Date;
+  startDate?: Date;
+  trafficlight?: number;
+  trafficlightDesc?: string;
+  costCurrentActual?: number;
+  costCurrentTotal?: number;
+  costCurrentTotalPredict?: number;
+  costBaseLastActual?: number;
+  costBaseLastTotal?: number;
+  racBaseLast?: number;  
+  racCurrent?: number;
+  timeCompletionCurrentActual?: number;
+  timeCompletionCurrentTotal?: number;
+  timeCompletionBaseLastActual?: number;
+  timeCompletionBaseLastTotal?: number;
+  timeDelayFinished?: number;
+  timeDelayUnFinished?: number;
+  endDateCurrent?: Date;
+  endDateBaseLast?: Date;
+  deliverableCompletionCurrentActual?: number;
+  deliverableCompletionCurrentTotal?: number;
+  deliverableCompletionBaseLastActual?: number;
+  deliverableCompletionBaseLastTotal?: number;
+  deliverableDelayFinished?: number;
+  deliverableDelayUnFinished?: number;
+  savingCostTotal?: number;
+  savingCostTotalPredict?: number;
+  savingCostActual?: number;
+  savingEndDate?: number;
+  timeCompletionTotal?: number;
+  timeCompletionActual?: number;
+  deliveryCompletionTotal?: number;
+  deliveryCompletionActual?: number;
+  vpid?: string;
+  vpvid?: string;
 }
