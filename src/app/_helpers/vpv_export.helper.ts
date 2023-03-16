@@ -92,7 +92,8 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
 
       element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000);
       element.costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000);
-      element.savingCostTotal = Math.round((vpv.savingCostTotal || 0) * 100);
+      // element.savingCostTotal = Math.round((vpv.savingCostTotal || 0) * 100);
+      element.savingCostTotal = element.costBaseLastTotal - element.costCurrentTotal;
      
       if (vpv.keyMetrics.costCurrentTotalPredict) element.costCurrentTotalPredict = Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000);
       if (vpv.savingCostTotalPredict) element.savingCostTotalPredict = Math.round(vpv.savingCostTotalPredict * 100);

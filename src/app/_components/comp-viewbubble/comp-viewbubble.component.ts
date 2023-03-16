@@ -1174,6 +1174,17 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     else if (percentCalc <= 1.05) return 2;
     else return 3;
   }
+  
+  getFinancalLevel(cost: number, revenue: number): number {
+    if (cost && revenue) {
+      if (cost + revenue == 2) return 1;
+      if (cost + revenue == 6) return 3;
+      if ((cost + revenue > 2) && (cost + revenue < 6)) return 2;
+    } else {
+      return 2;
+    }
+      
+  }
 
   getVPStatus(local: boolean, original: string = undefined): string {
     if (!this.dropDownVPStatus) {

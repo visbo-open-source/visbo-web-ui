@@ -919,7 +919,7 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Kosten (gesamt)",
+			"costName": "Finanzübersicht",
 			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
@@ -1055,7 +1055,7 @@
 		},
 		"metric": {
 			"pfvVariant": "Baseline",
-			"costName": "Gesamtkosten",
+			"costName": "Finanzübersicht",
 			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
@@ -1149,7 +1149,7 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Kosten (gesamt)",
+			"costName": "Finanzübersicht",
 			"costAxis": "Erwartete Gesamtkosten",
 			"costBubble": "Erwartete Gesamtkosten (%)",
 			"costTable": "Erwartete Gesamtkosten",
