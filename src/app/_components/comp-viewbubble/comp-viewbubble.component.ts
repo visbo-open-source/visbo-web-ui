@@ -14,6 +14,8 @@ import { VisboSetting } from '../../_models/visbosetting';
 import { VisboProject, VPParams, getCustomFieldDate, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
 import { VisboCenter } from '../../_models/visbocenter';
+
+import { VisboCustomUserFields } from '../../_models/visbosetting';
 import { VisboUser } from '../../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
@@ -40,11 +42,6 @@ class DropDownStatus {
   localName: string;
 }
 
-class CustomUserFields {
-  uid: string;
-  name: string;  
-  type: string;
-}
 
 @Component({
   selector: 'app-comp-viewbubble',
@@ -65,7 +62,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   @Input() vpfActive: VisboPortfolioVersion;
   @Input() visboprojectversions: VisboProjectVersion[];
   @Input() customize: VisboSetting;  
-  @Input() userCustomfields: CustomUserFields[];
+  @Input() userCustomfields: VisboCustomUserFields[];
   @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
   @Input() vcUser: Map<string, VisboUser>;
@@ -1094,7 +1091,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       const excel: ExportKeyMetric[] = [];
 
       this.visbokeymetrics?.forEach(element => {
-        excel.push(copyKeyMetrics(element, type, this.vcUser));
+        excel.push(copyKeyMetrics(element, type, this.vcUser, this.userCustomfields));
       });
       const len = excel.length;
       const width = Object.keys(excel[0]).length;

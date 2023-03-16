@@ -220,6 +220,7 @@ export class VisboProjectVersionResponse {
 
 export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   project?: string;
+  description?:string;
   timestamp?: Date;
   baselineDate?: Date;
   variant?: string;
@@ -256,6 +257,7 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   savingCostTotal?: number;
   savingCostTotalPredict?: number;
   savingCostActual?: number;
+  savingRac?: number;
   savingEndDate?: number;
   timeCompletionTotal?: number;
   timeCompletionActual?: number;

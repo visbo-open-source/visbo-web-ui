@@ -1074,7 +1074,7 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
 
       if (this.visbokeymetrics) {
         this.visbokeymetrics.forEach(element => {
-          excel.push(copyKeyMetrics(element, type, this.vcUser));
+          excel.push(copyKeyMetrics(element, type, this.vcUser, undefined));
         });
       }
       const len = excel.length;
