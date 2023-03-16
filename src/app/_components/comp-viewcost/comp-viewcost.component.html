@@ -7,7 +7,7 @@
     <div *ngIf="vpHasCost('')" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
       <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">
-        <strong *ngIf="vpvActive.keyMetrics" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine),getLevel(vpvActive.keyMetrics.RACBaseLast, vpvActive.keyMetrics.RACCurrent))}"></ng-container></strong>
+        <strong *ngIf="vpvActive.keyMetrics" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(vpvTotalCostCurrent, vpvTotalCostBaseLine),getLevel(vpvActive.keyMetrics.RACCurrent, vpvActive.keyMetrics.RACBaseLast))}"></ng-container></strong>
         {{ 'compViewCost.titleBox' | translate }}</h5>
       <div class="card-body p-2">
         <div class="row">
@@ -31,7 +31,7 @@
         </div> -->
         <div *ngIf="vpvActive.keyMetrics" class="row">
           <div class="col col-sm-8">
-            <strong *ngIf="vpvActive.keyMetrics" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level:getLevel(vpvActive.keyMetrics.RACBaseLast, vpvActive.keyMetrics.RACCurrent) }"></ng-container></strong>
+            <strong *ngIf="vpvActive.keyMetrics" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level:getLevel(vpvActive.keyMetrics.RACCurrent, vpvActive.keyMetrics.RACBaseLast) }"></ng-container></strong>
             {{ 'keyMetrics.longRACBaseCurr' | translate }}
           </div>
           <div *ngIf="vpvActive.keyMetrics.RACBaseLast" class="col col-sm-4 text-right">

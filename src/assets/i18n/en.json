@@ -919,7 +919,8 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Financial Summary",
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
@@ -1054,8 +1055,9 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"pfvVariant": "Baseline",
-			"costName": "Financial Summary",
+			"pfvVariant": "Baseline",			
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
@@ -1149,7 +1151,8 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Financial Summary",
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
