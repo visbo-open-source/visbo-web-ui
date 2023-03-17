@@ -84,24 +84,27 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
       } else {
         element.racBaseLast = undefined;
       }
-      element.savingRac = Math.round((vpv.savingRAC || 0) * 100)
+      // element.savingRac = Math.round((vpv.savingRAC || 0) * 100)
+      element.savingRac = element.racBaseLast && element.racCurrent && element.racBaseLast - element.racCurrent;
 
       element.costCurrentActual = vpv.keyMetrics.costCurrentActual && Math.round(vpv.keyMetrics.costCurrentActual * 1000);
       element.costBaseLastActual = vpv.keyMetrics.costBaseLastActual && Math.round(vpv.keyMetrics.costBaseLastActual * 1000);
-      element.savingCostActual = Math.round((vpv.savingCostActual || 0) * 100);
+      // element.savingCostActual = Math.round((vpv.savingCostActual || 0) * 100);
+      element.savingCostActual = element.costBaseLastActual && element.costCurrentActual && element.costBaseLastActual - element.costCurrentActual;
 
       element.costCurrentTotal = vpv.keyMetrics.costCurrentTotal && Math.round(vpv.keyMetrics.costCurrentTotal * 1000);
       element.costBaseLastTotal = vpv.keyMetrics.costBaseLastTotal && Math.round(vpv.keyMetrics.costBaseLastTotal * 1000);
       // element.savingCostTotal = Math.round((vpv.savingCostTotal || 0) * 100);
-      element.savingCostTotal = element.costBaseLastTotal - element.costCurrentTotal;
+      element.savingCostTotal = element.costBaseLastTotal && element.costCurrentTotal && element.costBaseLastTotal - element.costCurrentTotal;
      
-      if (vpv.keyMetrics.costCurrentTotalPredict) element.costCurrentTotalPredict = Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000);
-      if (vpv.savingCostTotalPredict) element.savingCostTotalPredict = Math.round(vpv.savingCostTotalPredict * 100);
+      // if (vpv.keyMetrics.costCurrentTotalPredict) element.costCurrentTotalPredict = Math.round(vpv.keyMetrics.costCurrentTotalPredict * 1000);
+      // if (vpv.savingCostTotalPredict) element.savingCostTotalPredict = Math.round(vpv.savingCostTotalPredict * 100);
     }
     if (type == 'Deadline') {
       element.startDate = new Date(vpv.startDate);
       element.endDateCurrent = new Date(vpv.keyMetrics.endDateCurrent);
       element.endDateBaseLast = new Date(vpv.keyMetrics.endDateBaseLast);
+      element.savingEndDate = vpv.savingEndDate && Math.round(vpv.savingEndDate);
       element.timeCompletionCurrentActual = vpv.keyMetrics.timeCompletionCurrentActual && Math.round(vpv.keyMetrics.timeCompletionCurrentActual * 10) / 10;
       element.timeCompletionCurrentTotal = vpv.keyMetrics.timeCompletionCurrentTotal;
       element.timeCompletionBaseLastActual = vpv.keyMetrics.timeCompletionBaseLastActual && Math.round(vpv.keyMetrics.timeCompletionBaseLastActual * 10) / 10;
@@ -118,8 +121,7 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
       element.deliverableDelayUnFinished = vpv.keyMetrics.deliverableDelayUnFinished && Math.round(vpv.keyMetrics.deliverableDelayUnFinished * 10) / 10;
     }
   }
-  if (type == 'Deadline') {
-    element.savingEndDate = vpv.savingEndDate && Math.round(vpv.savingEndDate);
+  if (type == 'Deadline') {  
     element.timeCompletionActual = vpv.timeCompletionActual && Math.round(vpv.timeCompletionActual) * 100;
   }
   if (type == 'Delivery') {

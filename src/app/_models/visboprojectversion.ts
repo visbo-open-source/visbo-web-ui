@@ -248,6 +248,7 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   timeDelayUnFinished?: number;
   endDateCurrent?: Date;
   endDateBaseLast?: Date;
+  savingEndDate?: number;
   deliverableCompletionCurrentActual?: number;
   deliverableCompletionCurrentTotal?: number;
   deliverableCompletionBaseLastActual?: number;
@@ -258,7 +259,6 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   savingCostTotalPredict?: number;
   savingCostActual?: number;
   savingRac?: number;
-  savingEndDate?: number;
   timeCompletionTotal?: number;
   timeCompletionActual?: number;
   deliveryCompletionTotal?: number;

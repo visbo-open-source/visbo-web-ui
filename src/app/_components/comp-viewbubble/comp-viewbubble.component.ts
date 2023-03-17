@@ -590,7 +590,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
         // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
 
-        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
+        // Calculate Saving EndDate in number of days related to BaseLine, limit the results to be between -20 and 20
         if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
           elementKeyMetric.savingEndDate = this.helperDateDiff(
             (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
