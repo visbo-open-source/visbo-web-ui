@@ -870,6 +870,7 @@
 			"planVsBase": "plan-to-date vs. baseline of ",
 			"filtered": "filtered with",
 			"filter": "Filter Projects",
+			"description": "Project Description",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
 			"all": "All",
@@ -896,6 +897,7 @@
 			"savingCostTotal": "Deviation Total Cost",
 			"savingCostTotalPredict": "Deviation Total Cost (Predict)",
 			"savingCostActual": "Deviation Actual Cost",
+			"savingRac": "Deviation Revenue",
 			"timeCompletionTotal": "Deviation Deadlines",
 			"timeCompletionActual": "Deviation actual Deadlines",
 			"deliveryCompletionTotal": "Deviation Deliveries",
@@ -917,7 +919,8 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Cost (total)",
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
@@ -1052,8 +1055,9 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"pfvVariant": "Baseline",
-			"costName": "Cost (total)",
+			"pfvVariant": "Baseline",			
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",
@@ -1147,7 +1151,8 @@
 			"exportExcel": "Excel"
 		},
 		"metric": {
-			"costName": "Cost (total)",
+			"financialSummary": "Financial Summary",
+			"costName": "Cost (Total)",
 			"costAxis": "Total Cost at completion",
 			"costBubble": "Total Cost at completion (%)",
 			"costTable": "Total Cost at completion",

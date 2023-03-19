@@ -24,6 +24,12 @@ export class VisboSettingListResponse {
   vcsetting: [ VisboSetting ];
 }
 
+export class VisboCustomUserFields {
+  uid: string;
+  name: string;  
+  type: string;
+}
+
 export class VisboOrgaResponse {
   state: string;
   message: string;
