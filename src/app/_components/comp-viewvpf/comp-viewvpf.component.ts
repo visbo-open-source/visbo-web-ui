@@ -1067,7 +1067,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     const exportType = ['Project', 'Cost', 'Deadline', 'Delivery'];
     // eslint-disable-next-line
     const sheets: any = {};
-    const sheetNames = [];
+    const sheetNames = [];       
+    let nameOfExcelfile = '';
 
     exportType.forEach(type => {
       const excel: ExportKeyMetric[] = [];
@@ -1082,9 +1083,11 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       let name = type;
       if (type == 'Project') {
         if (this.vpfActive) {
-          name = this.vpfActive.name
-        } else if (this.vcActive) {
-          name = this.vcActive.name;
+          name = "Overview Portfolio"
+          nameOfExcelfile = this.vpfActive.name
+        } else if (this.vcActive) {          
+          name = "Overview VisboCenter"
+          nameOfExcelfile= this.vcActive.name;
         }
       }
       // Add Localised header to excel
@@ -1127,7 +1130,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       '_',
       actDate.getDate().toString().padStart(2, "0"),
       '_Cockpit ',
-      (sheetNames[0] || '')
+      (nameOfExcelfile || '')      
+      // (sheetnames[0] || '')
     );
 
     const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
