@@ -1285,7 +1285,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
     });
     
-    // hier muss gecheckt werden, welche Projekte überhaupt Daten haben über den ganzen angegebenen Zeitraum
+    // here you have to check which projects have data at all over the entire specified period
     let  childNodeListNew:   DrillDownUsedElements[];     
     childNodeListNew = this.onlyProjectsWithNeeds(sortedProjects, childNodeList);
 
@@ -1386,14 +1386,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
         // for BU coloring
         const drillDownElementSorted = drillDownCapacity.length> 0 && drillDownCapacity[0];
+        
+        // for only the projects with values
+        let drillDownElementReduced: DrillDownElement[]=[];  
+        drillDownElementSorted.forEach((item) => {
+          if (item.name == 'All') {
+            drillDownElementReduced.push(item)
+          } else {
+            let prj = childNodeListNew.find(proj => proj.name === item.name);  
+            if (prj)  {drillDownElementReduced.push(item)};
+          }
+        }); 
+
         const buDefs = [];
         for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
           buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
         }
-        for (let s = 1; drillDownElementSorted && s < drillDownElementSorted.length; s++) {
+        for (let s = 1; drillDownElementReduced && s < drillDownElementReduced.length; s++) {
           // s runs beginning as 1 because in the first element there is the sum over all projects
           const defaultColor = '#59a19e';
-          const bu = drillDownElementSorted[s].businessUnit;
+          const bu = drillDownElementReduced[s].businessUnit;
           const buColor = buDefs[bu];
           const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
           orgaColors.push(rgbHex);
