@@ -109,6 +109,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   savingCostActual = undefined;
   deliveryCompletionActual = undefined;
   timeCompletionActual = undefined;
+  savingRAC = undefined;
   refDate: Date;
   refDateStr: string;
 
@@ -921,6 +922,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.timeCompletionActual = Math.round((this.vpvActive.keyMetrics.timeCompletionCurrentActual || 0)
                                                         / this.vpvActive.keyMetrics.timeCompletionBaseLastActual * 100);
     }
+    // Calculate Saving RAC in % of Total, limit the results to be between -100 and 100
+    this.savingRAC = Math.round((1 - (this.vpvActive.keyMetrics.RACCurrent || 0)
+    / (this.vpvActive.keyMetrics.RACBaseLast || 1)) * 100) || 0;
+
+
   }
 
   gotoRoot(): void {
