@@ -33,6 +33,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   currentViewKM = false;
 
   qualityCost: number;
+  qualityRAC: number;
   qualityTotalCost: number;
   qualityTotalCostPredict: number;
   qualityEndDate: number;
@@ -54,8 +55,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
   historyButton: string;
   parentThis = this;
 
-  typeMetricList = [
+  typeMetricList = [    
     {name: 'Total & Actual Cost', metric: 'Cost'},
+    {name: 'Revenue Benefit', metric: 'RAC'},    
     {name: 'Delivery Completion', metric: 'Delivery'},
     {name: 'Reached Deadlines', metric: 'Deadline'},
     {name: 'Ahead/Delay Deadlines', metric: 'DeadlineDelay'},
@@ -67,6 +69,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   colors = [];
   colorsDefault = ['#458CCB', '#F7941E', '#458CCB', '#F7941E', '#996600', '#996600'];
+  colorsRAC = ['#458CCB', '#F7941E'];
   colorsDelay = ['#BDBDBD', '#458CCB'];
   colorsEndDate = ['#458CCB', '#F7941E'];
   seriesDefault =  {
@@ -76,6 +79,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined  },
     '4': { lineWidth: 4, pointShape: 'circle', lineDashStyle: [6, 2, 2, 6], pointSize: 6 },
     '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
+  };
+  seriesRAC =  {
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [6, 2, 2, 6], pointSize: undefined },
+    '1': { lineWidth: 1, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined }
   };
   seriesEndDate =  {
     '0': { lineWidth: 4, pointShape: 'star' , lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
@@ -145,6 +152,37 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       colors: this.colorsEndDate
     };
 
+    graphOptionsLineChartRAC = {
+      // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
+      width: '100%',
+      title: 'Comparison: plan-to-date vs. baseline',
+      animation: {startup: true, duration: 200},
+      legend: {position: 'top'},
+      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      tooltip: {
+        isHtml: true
+      },
+      vAxis: {
+        minValue: undefined,
+        maxValue: undefined,
+        direction: 1,
+        title: 'KeyMetrics',
+        minorGridlines: {count: 0, color: 'none'},
+        ticks: undefined
+      },
+      hAxis: {
+        format: 'MMM yy',
+        gridlines: {
+          count: -1
+        },
+        minorGridlines: {count: 0, color: 'none'}
+      },
+      pointSize: 14,
+      curveType: 'function',
+      series: this.seriesRAC,
+      colors: this.colorsRAC
+    };
+
   sortAscending = false;
   sortColumn = 1;
 
@@ -195,7 +233,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (!km) {
       return false;
     }
-    if (type == 'Cost') {
+    if (type == 'RAC') {
+      result = km.RACCurrent > 0 || km.RACBaseLast > 0;
+    } else if (type == 'Cost') {
       result = km.costCurrentTotal > 0 || km.costBaseLastTotal > 0;
     } else if (type == 'Deadline') {
       // check for dedline in addition to project end
@@ -256,6 +296,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
         // elementKeyMetric.savingCostTotal = Math.round(elementKeyMetric.savingCostTotal);
         elementKeyMetric.savingCostActual = ((1 - (elementKeyMetric.keyMetrics.costCurrentActual || 0)
                                             / (elementKeyMetric.keyMetrics.costBaseLastActual || 1)) * 100) || 0;
+
+        elementKeyMetric.savingRAC = ((1 - (elementKeyMetric.keyMetrics.RACCurrent || 0)
+        / (elementKeyMetric.keyMetrics.RACBaseLast || 1)) * 100) || 0;
 
         // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
         if (elementKeyMetric.keyMetrics.endDateBaseLast && elementKeyMetric.keyMetrics.endDateCurrent) {
@@ -461,6 +504,87 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     return result;
   }
+// ???? TODO
+  visboKeyMetricsRACOverTime(): void { 
+    this.graphOptionsLineChartRAC.title = this.translate.instant('keyMetrics.chart.titleRACTrend');
+    this.graphOptionsLineChartRAC.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisRACTrend');
+    this.graphOptionsLineChartRAC.vAxis.direction = 1;
+    this.graphOptionsLineChartRAC.colors = this.colorsRAC;
+
+    const keyMetricsRAC = [];
+    if (!this.visboprojectversions) {
+      return;
+    }
+    
+    for (let i = 0; i < this.visboprojectversions.length; i++) {
+      if (!this.visboprojectversions[i].keyMetrics) {
+        // this.visboprojectversions[i].keyMetrics =  new VPVKeyMetrics;
+        continue;
+      }
+      // skip multiple versions per day
+      if (i > 0
+      && this.sameDay(this.visboprojectversions[i].timestamp, this.visboprojectversions[i - 1].timestamp)) {
+        this.log(`visboKeyMetrics Skip Same Day ${this.visboprojectversions[i].timestamp}  ${this.visboprojectversions[i - 1].timestamp}`);
+        continue;
+      }
+      // this.log(`visboKeyMetrics Push  ${this.visboprojectversions[i].timestamp}`);
+      const tooltip = this.createTooltipRAC(this.visboprojectversions[i]);      
+      keyMetricsRAC.push([
+        new Date(this.visboprojectversions[i].timestamp),
+        Math.round(this.visboprojectversions[i].keyMetrics.RACCurrent || 0),
+        tooltip,
+        Math.round(this.visboprojectversions[i].keyMetrics.RACBaseLast || 0),         
+        tooltip
+      ]);
+     
+    }
+    if (keyMetricsRAC.length === 0) {
+      this.log(`keyMetricsCost empty`);
+      
+      keyMetricsRAC.push([new Date(), 0, undefined, 0, undefined]);
+      }
+   
+      keyMetricsRAC.sort(function(a, b) { return a[0] - b[0]; });
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = keyMetricsRAC.length;
+    // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      const currentDate = new Date(keyMetricsRAC[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      
+      keyMetricsRAC.push([
+        currentDate, undefined, undefined, undefined, undefined]);      
+    }   
+    keyMetricsRAC.unshift([
+      'Timestamp',
+      this.translate.instant('keyMetrics.shortRevPlan'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.shortRevBase'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
+    ]);
+
+    
+    this.graphDataLineChart = keyMetricsRAC;
+  }
+
+
+  createTooltipRAC(vpv: VisboProjectVersion): string {
+    const ts = convertDate(new Date(vpv.timestamp), 'fullDateTime', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:220px;">' +
+      '<div><b>' + ts + '</b></div>' + '<div>' +
+      '<table>';
+      
+      const planAC = this.translate.instant('keyMetrics.planRev');
+      const baselinePV = this.translate.instant('keyMetrics.baselineRev');
+
+      result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACCurrent || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLast || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '</table>' + '</div>' + '</div>';
+
+    return result;
+  }
+  // ???? TODO
 
   visboKeyMetricsEndDateOverTime(): void {
     this.graphOptionsLineChartEndDate.title = this.translate.instant('keyMetrics.chart.titleEndDateTrend');
@@ -949,6 +1073,9 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.typeMetric = newTypeMetric;
       this.showHistory(true);
       switch (metric) {
+        case 'RAC':
+          this.visboKeyMetricsRACOverTime();
+          break;
         case 'Cost':
           this.visboKeyMetricsCostOverTime();
           break;
@@ -1054,6 +1181,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.qualityTotalCost = 2;
     } else {
       this.qualityTotalCost = 3;
+    }
+    index = keyMetrics.RACCurrent / (keyMetrics.RACBaseLast || 1);
+    if (index >= 1 - level1) {
+      this.qualityRAC = 1;
+    } else if (index > 1 - level2) {
+      this.qualityRAC = 2;
+    } else {
+      this.qualityRAC = 3;
     }
 
     if (keyMetrics.costCurrentTotalPredict) {
