@@ -575,11 +575,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       '<div><b>' + ts + '</b></div>' + '<div>' +
       '<table>';
       
-      const planAC = this.translate.instant('keyMetrics.planRev');
-      const baselinePV = this.translate.instant('keyMetrics.baselineRev');
+      const planRev = this.translate.instant('keyMetrics.planRev');
+      const baselineRev = this.translate.instant('keyMetrics.baselineRev');
 
-      result = result + '<tr>' + '<td>' + planAC + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACCurrent || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + baselinePV + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLast || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + planRev + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACCurrent || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + baselineRev + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLast || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
       result = result + '</table>' + '</div>' + '</div>';
 
     return result;
