@@ -504,7 +504,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     return result;
   }
-// ???? TODO
+
   visboKeyMetricsRACOverTime(): void { 
     this.graphOptionsLineChartRAC.title = this.translate.instant('keyMetrics.chart.titleRACTrend');
     this.graphOptionsLineChartRAC.vAxis.title = this.translate.instant('keyMetrics.chart.yAxisRACTrend');
@@ -539,12 +539,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
      
     }
     if (keyMetricsRAC.length === 0) {
-      this.log(`keyMetricsCost empty`);
-      
+      this.log(`keyMetricsCost empty`);      
       keyMetricsRAC.push([new Date(), 0, undefined, 0, undefined]);
-      }
-   
-      keyMetricsRAC.sort(function(a, b) { return a[0] - b[0]; });
+    }   
+    keyMetricsRAC.sort(function(a, b) { return a[0] - b[0]; });
+
     // we need at least 2 items for Line Chart and show the current status for today
     const len = keyMetricsRAC.length;
     // this.log(`visboKeyMetrics len ${len} ${JSON.stringify(this.visboprojectversions[len - 1])}`);
@@ -563,7 +562,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.translate.instant('keyMetrics.shortRevBase'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
-
     
     this.graphDataLineChart = keyMetricsRAC;
   }
@@ -584,7 +582,6 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
     return result;
   }
-  // ???? TODO
 
   visboKeyMetricsEndDateOverTime(): void {
     this.graphOptionsLineChartEndDate.title = this.translate.instant('keyMetrics.chart.titleEndDateTrend');
