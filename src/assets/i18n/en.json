@@ -555,7 +555,8 @@
 			"costTotalCommited": "Final Cost",
 			"costActualCommited": "Actual Cost",
 			"deadlinesCommited": "finished Deadlines",
-			"deliveriesCommited": "finished Deliveries",
+			"deliveriesCommited": "finished Deliveries",			
+			"racCurrentCommited": "Final Revenue",
 			"ofUntilToday": "of",
 			"toBeDone": ", to be done until",
 			"startDate": "Start of Project",
@@ -580,6 +581,7 @@
 			"unfinished": "State: unfinished",
 			"xAxis": "X-Axis",
 			"yAxis": "Y-Axis",
+			"metricRAC": "Revenue / Benefit",
 			"metricCost": "Resource- and Other Costs",
 			"metricDelivery": "Deliveries",
 			"metricEndDate": "Project End",
@@ -591,6 +593,7 @@
 			"actualCost": "actual achievement of costs",
 			"actualDelivery": "actual achievement of deliveries",
 			"actualDeadline": "actual achievement of deadlines",
+			"totalRAC": "planned achievement of revenue",
 			"totalCost": "planned achievement of total cost",
 			"prediction": "Prediction",
 			"totalDelivery": "planned achievement of total deliveries",
@@ -1565,6 +1568,11 @@
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
 
+		"shortRevPlan": "Revenue (Plan)",
+		"planRev": "Revenue, plan-to-date",
+		"shortRevBase": "Revenue (Base)",
+		"baselineRev": "Revenue, baseline",
+		
 		"shortEED": "EED",
 		"longEED": "Estimated End Date",
 		"shortBED": "BED",
@@ -1633,7 +1641,9 @@
 			"titleEndDateTrend": "Historical development project end date: plan-to-date vs. baseline",
 			"yAxisEndDateTrend": "End of Project",
 			"yAxisCostTrend": "Cost in T€",
-			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline"
+			"titleCostTrend": "Historical Cost comparison: plan-to-date vs. baseline",
+			"yAxisRACTrend": "Renveue/Benefit in T€",
+			"titleRACTrend": "Historical Renveue/Benefit comparison : plan-to-date vs. baseline"
 		},
 		"versus": "vs."
 	},

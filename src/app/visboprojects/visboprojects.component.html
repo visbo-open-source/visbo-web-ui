@@ -19,15 +19,32 @@
       <div *ngIf="vcActive && hasVCPerm(permVC.CreateVP)">
         <button id="CreateVP" type="button" class="m-2 btn btn-primary" (click)='switchTemplate(true)' data-toggle="modal" data-target="#VpModalCreate">{{ 'vp.btn.create' | translate }}</button>
       </div>
-    </div>
-    <div class='container-fluid'></div>
-    <div *ngIf="viewMode == 'KeyMetrics'" class="btn-toolbar" >
-        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KeyMetric")'>{{ 'vp.btn.viewKeyMetrics' | translate }}</button>
-        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("List")'>{{ 'vp.btn.viewList' | translate }}</button>
-        <button *ngIf="hasVCPerm(permVC.ViewAudit + permVC.Modify) && hasOrga" type="button" class="btn btn-md btn-light ml-2" (click)='changeView("Capacity")'>{{ 'vp.btn.viewCapacity' | translate }}</button>
-        <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")'>{{ 'vp.btn.viewProjectBoard' | translate }}</button>
+    </div>    
+  </div>
+  
+  <div *ngIf="vcActive && viewMode == 'KeyMetrics'" class="row">      
+    <div class="col btn-toolbar" style="padding: unset;">
+      <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")' title="{{ 'vp.btn.viewProjectBoard' | translate }}">
+        <img src="assets/icons/noun-board.svg" width="60" />
+      </button>
+      <!-- <button class="btn btn-default" (click)='changeView("KeyMetric", "Cost")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
+        <img src="assets/icons/noun-money.svg" width="60" />
+      </button> -->
+      <!-- <button class="btn btn-default" (click)='changeView("KeyMetric", "EndDate")' title="{{ 'vpfVersion.btn.viewEndDate' | translate }}">
+        <img src="assets/icons/noun-stopwatch.svg" width="60" />
+      </button> -->
+      <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" (click)='changeView("Capacity")' title="{{ 'vpfVersion.btn.viewCapacity' | translate }}" class="btn btn-default">
+        <img src="assets/icons/noun-bottleneck.svg" width="60" />
+      </button>
+      <button class="btn btn-default" (click)='changeView("KeyMetric")' title="{{ 'vp.btn.viewKeyMetrics' | translate }}">
+        <img src="assets/icons/noun-bubbles.svg" width="60" />
+      </button>
+      <button class="btn btn-default" (click)='changeView("List")' title="{{ 'vp.btn.viewList' | translate }}">
+        <img src="assets/icons/noun-list.svg" width="60" />
+      </button>    
     </div>
   </div>
+
   <div *ngIf="viewMode != 'KeyMetrics'" class='panel-body'>
     <table class='table table-hover table-sortable'>
       <thead id="VPHead">
@@ -79,10 +96,10 @@
       <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
-      <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [userCustomfields]="userCustomfields" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'List' && visboprojectversions">
-      <app-comp-viewbubble [bubbleMode]="false" [vcActive]="vcActive" [customize]="customize" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+      <app-comp-viewbubble [bubbleMode]="false" [vcActive]="vcActive" [customize]="customize" [userCustomfields]="userCustomfields" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
       <app-comp-viewboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewboard>

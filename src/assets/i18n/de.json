@@ -556,6 +556,7 @@
 			"costActualCommited": "aufgelaufene Kosten",
 			"deadlinesCommited": "Termine",
 			"deliveriesCommited": "Lieferungen",
+			"racCurrentCommited": "Revenue/Benefit",
 			"ofUntilToday": "von",
 			"toBeDone": ", die zu erledigen waren bis",
 			"startDate": "Projekt Start",
@@ -580,6 +581,7 @@
 			"unfinished": "Status: offen",
 			"xAxis": "X-Achse",
 			"yAxis": "Y-Achse",
+			"metricRAC": "Revenue / Benefit",
 			"metricCost": "Personal- und andere Kosten",
 			"metricDelivery": "Lieferungen",
 			"metricEndDate": "Projekt Ende",
@@ -591,6 +593,7 @@
 			"actualCost": "bisherige Erreichung der Kosten",
 			"actualDelivery": "bisherige Erreichung der Lieferungen",
 			"actualDeadline": "bisherige Erreichung der Termine",
+			"totalRAC": "geplante Erreichung des Benefit",
 			"totalCost": "geplante Erreichung der Gesamtkosten",
 			"prediction": "Vorhersage",
 			"totalDelivery": "geplante Erreichung der Gesamtlieferungen",
@@ -1565,6 +1568,11 @@
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
 
+		"shortRevPlan": "Revenue (Plan)",
+		"planRev": "Revenue, plan-to-date",
+		"shortRevBase": "Revenue (Base)",
+		"baselineRev": "Revenue, baseline",
+
 		"shortEED": "EED",
 		"longEED": "Estimated End Date",
 		"shortBED": "BED",
@@ -1633,7 +1641,9 @@
 			"titleEndDateTrend": "Historische Entwicklung vom Projektende: plan-to-date vs. baseline",
 			"yAxisEndDateTrend": "Projekt Ende",
 			"yAxisCostTrend": "Kosten in T€",
-			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline"
+			"titleCostTrend": "Vergleich der Kosten: plan-to-date vs. baseline",
+			"yAxisRACTrend": "Reneue/Benefit in T€",
+			"titleRACTrend": "Vergleich der Reneue/Benefit: plan-to-date vs. baseline"
 		},
 		"versus": "vs."
 	},
