@@ -1353,6 +1353,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
     } else if (this.sortColumn === 14) {
       this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0); });
+    } else if (this.sortColumn === 15) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.RACCurrent || 0) - (b.keyMetrics?.RACCurrent || 0); });
+    } else if (this.sortColumn === 16) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.RACBaseLast || 0) - (b.keyMetrics?.RACBaseLast || 0); });
+    } else if (this.sortColumn === 17) {
+      this.visbokeymetrics.sort(function(a, b) { return (a.savingRAC || 0) - (b.savingRAC || 0); });
     } else if (this.sortColumn === 20) {
       this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
     } else if (this.sortColumn === 21) {

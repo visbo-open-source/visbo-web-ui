@@ -15,7 +15,7 @@
       <!--Table body-->
       <tbody>
         <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'RAC')">
-          <td (click)="switchView('RAC', true)">
+          <td (click)="switchToHistory('RAC')">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
                 selected: typeMetricChart == 'RAC',
                 text: 'vpKeyMetric.lbl.metricRAC' | translate } " >
@@ -244,10 +244,14 @@
 </ng-template>
 
 <div *ngIf="history && currentView == 'KeyMetrics'">
-  <div class="btn-group row">
+  <div *ngIf="typeMetricChart == 'RAC'" class="btn-group row">
     <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
     <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
-    <h3 class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
+  </div>
+  <div *ngIf="typeMetricChart != 'RAC'" class="btn-group row">
+    <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
+    <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
+    <h3  class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
   </div>
   <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
     <div *ngIf="typeMetricChart == 'Cost'">
@@ -270,6 +274,36 @@
     </div>
   </div>
   <div *ngIf="!chart && graphDataLineChart.length > 0" >
+    <table *ngIf="typeMetricChart == 'RAC'" class='table table-hover table-sortable'>
+      <!--Table head-->
+      <thead>
+        <tr>
+          <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(15)" title="{{ 'keyMetrics.shortRevPlan' | translate }}">{{ 'keyMetrics.shortRevPlan' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(16)" title="{{ 'keyMetrics.shortRevBase' | translate }}">{{ 'keyMetrics.shortRevBase' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(17)">{{ 'keyMetrics.baselineRAC' | translate }}</th>
+          <th class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(6)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
+        </tr>
+      </thead>
+      <!--Table body-->
+      <tbody>
+        <tr *ngFor="let vp of visbokeymetrics; let vpIndex=index" (click)='listSelectRow(vp)'
+        data-toggle="modal" data-target="#ProjectDetail">
+          <td>
+            <a><ng-container *ngTemplateOutlet="highlight; context:{
+                selected: vp.timestamp == vpvKeyMetricActive.timestamp,
+                text: vp.timestamp | date :'dd.MM.yyyy HH:mm' } " >
+            </ng-container></a>
+          </td>
+          <td class="text-right">{{vp.keyMetrics.RACCurrent | number:'1.0-0'}} T€</td>          
+          <td class="text-right">{{vp.keyMetrics.RACBaseLast | number:'1.0-0'}} T€</td>
+          <td class="text-right" title="{{ 'keyMetrics.shortRAC' | translate }}: {{vp.keyMetrics.RACBaseLast | number:'1.0-0'}} T€">{{100 - vp.savingRAC | number:'1.0-0'}} %</td>
+          <td class="text-right" title="{{ vp.ampelErlaeuterung }}">
+            <ng-container *ngTemplateOutlet="trafficLight; context:{level: vp.ampelStatus} " ></ng-container>
+          </td>        
+        </tr>
+      </tbody>
+    </table>
     <table *ngIf="typeMetricChart == 'Cost'" class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
@@ -302,7 +336,7 @@
         </tr>
       </tbody>
     </table>
-
+    
     <table *ngIf="typeMetricChart == 'EndDate'" class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
