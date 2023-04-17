@@ -1067,14 +1067,15 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     const exportType = ['Project', 'Cost', 'Deadline', 'Delivery'];
     // eslint-disable-next-line
     const sheets: any = {};
-    const sheetNames = [];
+    const sheetNames = [];       
+    let nameOfExcelfile = '';
 
     exportType.forEach(type => {
       const excel: ExportKeyMetric[] = [];
 
       if (this.visbokeymetrics) {
         this.visbokeymetrics.forEach(element => {
-          excel.push(copyKeyMetrics(element, type, this.vcUser));
+          excel.push(copyKeyMetrics(element, type, this.vcUser, undefined));
         });
       }
       const len = excel.length;
@@ -1082,9 +1083,11 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       let name = type;
       if (type == 'Project') {
         if (this.vpfActive) {
-          name = this.vpfActive.name
-        } else if (this.vcActive) {
-          name = this.vcActive.name;
+          name = "Overview Portfolio"
+          nameOfExcelfile = this.vpfActive.name
+        } else if (this.vcActive) {          
+          name = "Overview VisboCenter"
+          nameOfExcelfile= this.vcActive.name;
         }
       }
       // Add Localised header to excel
@@ -1127,7 +1130,8 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
       '_',
       actDate.getDate().toString().padStart(2, "0"),
       '_Cockpit ',
-      (sheetNames[0] || '')
+      (nameOfExcelfile || '')      
+      // (sheetnames[0] || '')
     );
 
     const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
@@ -1151,6 +1155,16 @@ export class VisboCompViewVPFComponent implements OnInit, OnChanges {
     else return 3;
   }
 
+  getFinancalLevel(cost: number, revenue: number): number {
+    if (cost && revenue) {
+      if (cost + revenue == 2) return 1;
+      if (cost + revenue == 6) return 3;
+      if ((cost + revenue > 2) && (cost + revenue < 6)) return 2;
+    } else {
+      return 2;
+    }
+      
+  }
   getVPStatus(local: boolean, original: string = undefined): string {
     if (!this.dropDownVPStatus) {
       return undefined;

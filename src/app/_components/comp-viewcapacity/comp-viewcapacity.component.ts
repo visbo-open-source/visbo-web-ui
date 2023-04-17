@@ -144,8 +144,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   currentRefDate: Date
   currentName: string;
 
-  sumCost = 0;
-  sumBudget = 0;
+  sumCost: number;
+  sumBudget: number;
 
   filter: string;
   filterStrategicFit: number;
@@ -774,12 +774,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         capacity.roleID = item.roleID;
         capacity.roleName = item.roleName;
         capacity.name = 'All';
+        capacity.plannedCost = 0;
+        capacity.plannedCost_PT = 0;
+        capacity.actualCost = 0;
+        capacity.actualCost_PT = 0;
+        capacity.otherActivityCost = 0;
+        capacity.otherActivityCost_PT = 0;
         capacity.baselineCost = 0;
         capacity.baselineCost_PT = 0;
+        
         capacityParent.push(capacity);
       }
+      capacity.plannedCost += item.plannedCost;
+      capacity.plannedCost_PT += item.plannedCost_PT;
+      capacity.actualCost += item.actualCost;
+      capacity.actualCost_PT += item.actualCost_PT;
+      capacity.otherActivityCost += item.otherActivityCost;
+      capacity.otherActivityCost_PT += item.otherActivityCost_PT;
       capacity.baselineCost += item.baselineCost;
       capacity.baselineCost_PT += item.baselineCost_PT;
+
 
       this.log(`Cumulate Child ${item.name} ${item.month}`);
     });
@@ -1285,7 +1299,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
     });
     
-    // hier muss gecheckt werden, welche Projekte überhaupt Daten haben über den ganzen angegebenen Zeitraum
+    // here you have to check which projects have data at all over the entire specified period
     let  childNodeListNew:   DrillDownUsedElements[];     
     childNodeListNew = this.onlyProjectsWithNeeds(sortedProjects, childNodeList);
 
@@ -1386,14 +1400,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
         // for BU coloring
         const drillDownElementSorted = drillDownCapacity.length> 0 && drillDownCapacity[0];
+        
+        // for only the projects with values
+        let drillDownElementReduced: DrillDownElement[]=[];  
+        drillDownElementSorted.forEach((item) => {
+          if (item.name == 'All') {
+            drillDownElementReduced.push(item)
+          } else {
+            let prj = childNodeListNew.find(proj => proj.name === item.name);  
+            if (prj)  {drillDownElementReduced.push(item)};
+          }
+        }); 
+
         const buDefs = [];
         for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
           buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
         }
-        for (let s = 1; drillDownElementSorted && s < drillDownElementSorted.length; s++) {
+        for (let s = 1; drillDownElementReduced && s < drillDownElementReduced.length; s++) {
           // s runs beginning as 1 because in the first element there is the sum over all projects
           const defaultColor = '#59a19e';
-          const bu = drillDownElementSorted[s].businessUnit;
+          const bu = drillDownElementReduced[s].businessUnit;
           const buColor = buDefs[bu];
           const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
           orgaColors.push(rgbHex);
@@ -1690,7 +1716,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
           const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
-          this.sumCost += (capacity[i].actualCost_PT || 0)+ (capacity[i].plannedCost_PT || 0) + (capacity[i].otherActivityCost_PT || 0);
+          this.sumCost += (capacity[i].actualCost_PT || 0) + (capacity[i].plannedCost_PT || 0) + (capacity[i].otherActivityCost_PT || 0);
           // this.sumCost += actualCost + plannedCost + otherActiviyCost;          
           this.sumBudget += (capacity[i].baselineCost_PT || 0);
           // this.sumBudget += budget;
