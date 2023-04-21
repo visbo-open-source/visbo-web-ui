@@ -974,6 +974,7 @@ export class VisbocenterDetailComponent implements OnInit {
     result.path = item.path?.trim();
     result.name = item.name?.trim();
     result.type = item.type;
+    if (item.email) result.email = item.email?.trim();
     if (item.employeeNr) result.employeeNr = item.employeeNr;
     result.isExternRole = item.isExternRole;
     if (item.entryDate) {
@@ -1043,6 +1044,9 @@ export class VisbocenterDetailComponent implements OnInit {
       newRole.uid = role.uid;
       newRole.name = role.name;
       newRole.path = role.path;
+      if (role.email) {
+        newRole.email = role.email
+      }
       newRole.isExternRole = role.isExternRole ? '1' : '';
       newRole.defCapaMonth = role.defCapaMonth;
       newRole.dailyRate = role.dailyRate;
@@ -1087,7 +1091,7 @@ export class VisbocenterDetailComponent implements OnInit {
     const tail = '_Orga_'.concat(timestamp.getFullYear().toString(), '-',  month.padStart(2, "0"));
     const name = this.visbocenter.name.substr(0, 25 - tail.length).concat(tail);
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['type', 'name', 'path', 'dailyRate', 'defCapaMonth', 'defCapaDay', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias', 'uid']});
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(organisation, {header:['type', 'name', 'path', 'email', 'dailyRate', 'defCapaMonth', 'defCapaDay', 'entryDate', 'exitDate', 'employeeNr', 'isExternRole', 'alias', 'uid']});
     worksheet['!autofilter'] = { ref: matrix };
     // eslint-disable-next-line
     const sheets: any = {};
