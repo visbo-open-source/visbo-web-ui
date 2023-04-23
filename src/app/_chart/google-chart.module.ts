@@ -10,6 +10,7 @@ import { GanttChartComponent } from './gantt-chart/gantt-chart.component';
 import { ColumnChartComponent } from './column-chart/column-chart.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { TimelineChartComponent } from './timeline-chart/timeline-chart.component';
+import { PortfolioChartComponent } from './portfolio-chart/portfolio-chart.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { TimelineChartComponent } from './timeline-chart/timeline-chart.componen
     GanttChartComponent,
     ColumnChartComponent,
     BarChartComponent,
-    TimelineChartComponent
+    TimelineChartComponent,
+    PortfolioChartComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +38,8 @@ import { TimelineChartComponent } from './timeline-chart/timeline-chart.componen
     GanttChartComponent,
     ColumnChartComponent,
     BarChartComponent,
-    TimelineChartComponent
+    TimelineChartComponent,
+    PortfolioChartComponent
   ],
   providers : []
 })
