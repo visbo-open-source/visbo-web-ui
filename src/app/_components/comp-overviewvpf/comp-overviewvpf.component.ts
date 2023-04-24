@@ -114,7 +114,7 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
-  timeoutID: number;
+  timeoutID: NodeJS.Timeout;
 
   colorMetric = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 

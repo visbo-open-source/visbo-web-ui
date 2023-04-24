@@ -40,7 +40,7 @@ export class VisboCompViewVPComponent implements OnInit, OnChanges {
 
   statusList: string[];
   chartActive: Date;
-  timeoutID: number;
+  timeoutID: NodeJS.Timeout;
 
   graphCostData = [];
   graphCostOptions: BarChartOptions;

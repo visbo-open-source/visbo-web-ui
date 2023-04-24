@@ -41,7 +41,7 @@ export class VisboCompViewDeliveryComponent implements OnInit, OnChanges {
   reducedList: boolean;
   statusList: string[];
   deliveryIndex: number;
-  timeoutID: number;
+  timeoutID: NodeJS.Timeout;
 
   listType = [
     {name: 'PFV', ref: 'pfv', localName: ''},

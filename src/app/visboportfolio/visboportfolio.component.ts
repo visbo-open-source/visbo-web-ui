@@ -84,7 +84,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     vpvRefDateStr: string;
     vpfid: string;
     deleted = false;
-    timeoutID: number;
+    timeoutID: NodeJS.Timeout;
     initEnvironment = true;
 
     defaultVariant: string;

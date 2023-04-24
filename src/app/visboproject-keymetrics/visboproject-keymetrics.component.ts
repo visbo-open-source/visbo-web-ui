@@ -59,7 +59,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   vcCustomize: VisboSetting[];
   vcEnableDisable: VisboSetting[];
   vcOrga: VisboOrganisation[];
-  timeoutID: number;
+  timeoutID: NodeJS.Timeout;
 
   vpActive: VisboProject;
   vpvActive: VisboProjectVersion;

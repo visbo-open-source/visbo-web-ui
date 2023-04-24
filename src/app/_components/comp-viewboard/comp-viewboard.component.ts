@@ -48,7 +48,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   filterVPStatusIndex: number;
   dropDownVPStatus: DropDownStatus[];
   activeID: string; // either VP ID of Portfolio or VC ID
-  timeoutID: number;
+  timeoutID: NodeJS.Timeout;
 
   parentThis = this;
 
@@ -125,7 +125,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     // const keyCode = event ? event.keyCode : 0;
     // if (keyCode == 13) {    // only return key
       // add parameter to URL
-      this.updateUrlParam('filter', undefined)
+    this.updateUrlParam('filter', undefined)
     // }
     this.visboViewBoardOverTime();
   }
