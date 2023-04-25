@@ -1,8 +1,22 @@
-<p>portfolio-chart works!</p>
-<ul #chart>
+<div #chart (resized)="onResize($event)" [style.height]="height">
+</div>
+
+
+<div (resized)="onResize($event)" *ngIf="useTemplate">
+    <svg [attr.height]="height" [attr.width]="width" [style.border]="'1px solid black'">
     
-</ul>
-<ul>
-    <li *ngFor="let projectVersion of projectVersions"> {{projectVersion.name}} </li>
-</ul>
+        <ng-container *ngFor="let projectVersion of projectVersions">
+            <g [attr.transform]="'translate(' + x(projectVersion.startDate) + ', ' + yScale(projectVersion._id)  + ')'">
+                <rect x="0" y="0" [attr.width]="x(projectVersion.endDate) - x(projectVersion.startDate)" [attr.height]="yScale.bandwidth()" fill="#cd7436"></rect>
+                <text text-anchor="start" dominant-baseline="hanging" x="10" y="7" fill="white" font-size="12">{{projectVersion.name}}</text>
+            </g>
+        </ng-container>
+    
+        <g #xAxis [attr.transform]="'translate(0, ' + (height - margin.bottom) + ')'"></g>
+    
+    </svg>
+</div>
+
+
+
 
