@@ -89,6 +89,11 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       svg.append("g")
         .attr("transform", `translate(0, ${this.height - this.margin.bottom})`)
         .call(d3.axisBottom(this.xScale));
+
+      // svg.append("g")
+      //   .attr("transform", `translate( ${this.margin.left}, 0)`)
+      //   .call(d3.axisLeft(this.yScale));
+
     } else {
       d3.select(this.xAxisElement.nativeElement)
         .call(d3.axisBottom(this.xScale));
