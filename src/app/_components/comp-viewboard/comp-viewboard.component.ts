@@ -48,7 +48,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   filterVPStatusIndex: number;
   dropDownVPStatus: DropDownStatus[];
   activeID: string; // either VP ID of Portfolio or VC ID
-  timeoutID: NodeJS.Timeout;
+  timeoutID: ReturnType<typeof setTimeout>;
 
   parentThis = this;
 
