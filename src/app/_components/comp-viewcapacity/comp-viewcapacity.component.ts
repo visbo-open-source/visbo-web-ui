@@ -132,7 +132,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboprojectversions: VisboProjectVersion[];
 
   capaLoad: CapaLoad[];
-  timeoutID: NodeJS.Timeout;
+  timeoutID: ReturnType<typeof setTimeout>;
   timeoutFilterID: number;
   hasCost: boolean;
   printView = false;

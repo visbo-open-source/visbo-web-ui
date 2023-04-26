@@ -86,7 +86,7 @@ export class VisboCompViewCapacityCmpComponent implements OnInit, OnChanges {
   visboCapacity = new CompareCapa();
   visboCapacityChild = new CompareCapa();
   capaLoad: CapaLoad[];
-  timeoutID: NodeJS.Timeout;
+  timeoutID: ReturnType<typeof setTimeout>;
   hasCost: boolean;
   printView = false;
 

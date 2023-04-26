@@ -58,7 +58,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   vpvTotalCostCurrent: number;
 
   parentThis = this;
-  timeoutID: NodeJS.Timeout;
+  timeoutID: ReturnType<typeof setTimeout>;
 
   colors = ['#F7941E', '#BDBDBD', '#458CCB'];
 

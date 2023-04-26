@@ -39,7 +39,7 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
 
   filterStatus: number;
   fullList: boolean;
-  timeoutID: NodeJS.Timeout;
+  timeoutID: ReturnType<typeof setTimeout>;
 
   deadlineIndex: number;
 
