@@ -21,7 +21,7 @@
           </tr>
       </thead>
       <tbody>
-          <tr class="col-center" *ngFor="let user of timeTrackerRows; let vpIndex=index" (click)="selectRow(user)">
+          <tr class="col-center" *ngFor="let user of rows; let vpIndex=index" (click)="selectRow(user)">
               <!-- <td>{{user.userId}}</td> -->
               <td class="d-none d-md-table-cell">{{user.vcid}}</td>
               <td class="d-none d-md-table-cell">{{user.vpid}}</td>
@@ -33,7 +33,7 @@
           </tr>
         
       </tbody>
-      <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-target="#VtrModalCreate" (click)="openModal()"><i class="fa fa-plus" style="font-size:16px;" *ngIf="userForm.valid"></i></button>
+      <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-target="#VtrModalCreate" (click)="openModal()"><i class="fa fa-plus" style="font-size:16px;"></i></button>
   </table>
 
 
@@ -58,18 +58,18 @@
       <div class="modal-body">
       <form [(formGroup)]="userForm" (ngSubmit)="addEmployee()">
        
-        <!-- <div class="form-group">
+        <div class="form-group">
           <label for="centerName">{{"vtr.mdl.Centre" | translate}}</label>
-          <select  formControlName="centerName" class="form-control">
-            <option *ngFor="let center of centerNames" [value]="center">{{ center }}</option>
+          <select  formControlName="vcid" class="form-control" >
+            <option *ngFor="let center of visbocenters" [value]="center._id">{{ center.name }}</option>
           </select>
         </div>
         <div class="form-group">
           <label for="projectName">{{"vtr.mdl.Project" | translate}}</label>
-          <select  formControlName="projectName" class="form-control w-100">
-            <option *ngFor="let project of projectNames" [value]="project">{{ project}}</option>
+          <select  formControlName="vpid" class="form-control w-100">
+            <option *ngFor="let project of visboprojects" [value]="project._id">{{ project.name }}</option>
           </select>
-        </div> -->
+        </div>
         <div class="form-group">
           <label for="date">{{"vtr.mdl.Date" | translate}}</label>
           <input type="date" class="form-control" formControlName="date">
@@ -113,11 +113,11 @@
       <div class="modal-body" >
         <form [formGroup]="editForm">
           <div class="form-group">
-            <div> {{editForm.get('userId').value}}</div>
-            <div> {{editForm.get('vcid').value}}</div>
-            <div> {{editForm.get('vpid').value}}</div>
-            <div> {{editForm.get('notes').value}}</div>
-            <div> {{editForm.get('time').value}}</div>
+            <div> Name - <b>{{editForm.get('userId').value}}</b></div>
+            <div> Visbo Center - <b>{{editForm.get('vcid').value}}</b></div>
+            <div> Visbo Project - <b>{{editForm.get('vpid').value}}</b></div>
+            <div> Description - <b>{{editForm.get('notes').value}}</b></div>
+            <div> Hours - <b>{{editForm.get('time').value}}</b></div>
           </div>
           
           <div class="form-group">

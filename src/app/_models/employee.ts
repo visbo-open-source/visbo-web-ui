@@ -18,9 +18,7 @@ export interface VtrVisboTracker {
     date: string;
     time: number;
     notes: string;
-    approvalDate: string;
     approvalId: string;
     status: string;
-    aggreUID: string;
-    aggreDate: string;
   }
+  
