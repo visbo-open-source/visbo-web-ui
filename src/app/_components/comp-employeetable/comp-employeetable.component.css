@@ -1,0 +1,64 @@
+.date-block{
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+.short{
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    width: 120px; 
+    white-space: nowrap;
+    margin: 0 auto;
+}
+.col-center{
+    text-align: center;
+}
+.cld-date{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    margin: 20px 0;
+}
+.calendar{
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    margin: 20px 0;
+}
+.calendar input{
+    max-width: 155px;
+}
+.btn-circle {
+    position: absolute;
+    bottom: -15px;
+    left: 260px;
+    width: 30px;
+    height: 30px;
+    padding: 6px 0px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.42857;
+}
+.btn-warning:hover {
+    color: #fff;
+    background-color: #d1673a;
+    border-color: #d1673a;
+}
+.btn-warning {
+    color: #fff;
+    background-color: #f17a47;
+    border-color: #f17a47;
+}
+tr:last-child{
+    border-bottom: 1px solid #dee2e6;
+}
+table{
+    position: relative;
+}

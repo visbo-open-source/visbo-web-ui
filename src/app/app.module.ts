@@ -2,7 +2,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 // import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { SafeUrlPipe } from './_guards/safe-url.pipe';
@@ -98,10 +98,13 @@ import { SyssettingsComponent } from './visbosysadmin/syssettings/syssettings.co
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
 import { GoogleChartModule } from './_chart/google-chart.module';
+import { EmployeeComponent } from './_components/comp-employeetable/comp-employeetable.component';
+import { VisboTimeTracking } from './_services/visbotimetracker.service';
 
 @NgModule({
   declarations: [
     AppComponent,
+    EmployeeComponent,
     SafeUrlPipe,
     AlertComponent,
     VisboCentersComponent,
@@ -154,6 +157,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
   imports: [
     BrowserModule,
     // NgbModule,
+    ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,
     AngularResizeEventModule,
@@ -180,6 +184,7 @@ import { GoogleChartModule } from './_chart/google-chart.module';
     VisboSettingService,
     VisboProjectService,
     VisboProjectVersionService,
+    VisboTimeTracking,
     VisboAuditService,
     SysUserService,
     SysLogService,

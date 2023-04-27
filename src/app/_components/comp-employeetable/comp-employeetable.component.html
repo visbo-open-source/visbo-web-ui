@@ -1,0 +1,141 @@
+<app-usernavbar></app-usernavbar>
+    <div class="cld-date" > 
+     <div class="calendar">
+      {{"vtr.fromDate" | translate}} <input type="date" [(ngModel)]="startDate" id="startDate" class="col-2 col-sm-2 form-control" value="startDate" (ngModelChange)="updateFilter()">
+      {{"vtr.toDate" | translate}} <input type="date" value="endDate" id="endDate" [(ngModel)]="endDate"  class="col-2 col-sm-2 form-control"(ngModelChange)="updateFilter()">
+     </div>
+      <button (click)="updateButtonValue()">{{"vtr.approveAll" | translate}}</button>
+    </div> 
+
+    <table class="table table-hover table-sortable" style="width:100%" >
+      <thead>
+          <tr class="col-center">
+              <!-- <th (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th> -->
+              <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
+              <th class="d-none d-md-table-cell" (click)="sortVTRTable(2)">{{'vtr.titleProject' | translate}} <i class="fa fa-sort"></i></th>
+              <th class="d-none d-md-table-cell" (click)="sortVTRTable(3)">{{'vtr.titleDate' | translate}}</th>
+              <th class="d-none d-md-table-cell">{{'vtr.titleDescription' | translate}}</th>
+              <th class="d-none d-md-table-cell" (click)="sortVTRTable(4)">{{'vtr.titleHours' | translate}} <i class="fa fa-sort"></i></th>
+              <th class="d-none d-md-table-cell" (click)="sortVTRTable(5)">{{'vtr.titleApprove' | translate}} <i class="fa fa-sort"></i></th>
+              <!-- <th class="d-none d-md-table-cell"></th> -->
+          </tr>
+      </thead>
+      <tbody>
+          <tr class="col-center" *ngFor="let user of timeTrackerRows; let vpIndex=index" (click)="selectRow(user)">
+              <!-- <td>{{user.userId}}</td> -->
+              <td class="d-none d-md-table-cell">{{user.vcid}}</td>
+              <td class="d-none d-md-table-cell">{{user.vpid}}</td>
+              <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
+              <td class="d-none d-md-table-cell"><span class="short" >{{user.notes}}</span></td>
+              <td class="d-none d-md-table-cell">{{user.time}}</td>
+              <td class="d-none d-md-table-cell">{{user.status}}</td>
+              <!-- <td> <button (click)="openEditModal(user)" data-toggle="modal" data-target="#VtrModalEdit">Edit</button></td> -->
+          </tr>
+        
+      </tbody>
+      <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-target="#VtrModalCreate" (click)="openModal()"><i class="fa fa-plus" style="font-size:16px;" *ngIf="userForm.valid"></i></button>
+  </table>
+
+
+  
+<!-- Button to Open the Modal -->
+
+<!-- <button type="button" class="m-2 btn btn-primary"  >{{ 'vp.btn.create' | translate }}</button> -->
+
+<!-- The Modal Employee -->
+<div class="modal fade" id="VtrModalCreate" tabindex="-1" role="dialog" aria-hidden="true" *ngIf="showModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{"vtr.mdl.addNewEmployee" | translate}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+      <form [(formGroup)]="userForm" (ngSubmit)="addEmployee()">
+       
+        <!-- <div class="form-group">
+          <label for="centerName">{{"vtr.mdl.Centre" | translate}}</label>
+          <select  formControlName="centerName" class="form-control">
+            <option *ngFor="let center of centerNames" [value]="center">{{ center }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="projectName">{{"vtr.mdl.Project" | translate}}</label>
+          <select  formControlName="projectName" class="form-control w-100">
+            <option *ngFor="let project of projectNames" [value]="project">{{ project}}</option>
+          </select>
+        </div> -->
+        <div class="form-group">
+          <label for="date">{{"vtr.mdl.Date" | translate}}</label>
+          <input type="date" class="form-control" formControlName="date">
+        </div>
+        <div class="form-group">
+          <label for="notes">{{"vtr.mdl.Description" | translate}}</label>
+          <textarea class="form-control" formControlName="notes"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="time">{{"vtr.mdl.Hours" | translate}}</label>
+          <input type="number" class="form-control" formControlName="time">
+        </div>
+      </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button  type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vtr.btn.cancel' | translate }}</button>
+        <button id="AddGroupConfirm" type="button" class="btn btn-primary mx-1" (click)="addEmployee()" data-dismiss="modal">{{ 'vtr.btn.save' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- The Modal Manager-->
+<div class="modal fade" id="VtrModalEdit" tabindex="-1" role="dialog" aria-labelledby="VtrModalEditLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <!-- [disabled]="userForm.invalid" -->
+      <!-- Modal body -->
+      <div class="modal-body" >
+        <form [formGroup]="editForm">
+          <div class="form-group">
+            <div> {{editForm.get('userId').value}}</div>
+            <div> {{editForm.get('vcid').value}}</div>
+            <div> {{editForm.get('vpid').value}}</div>
+            <div> {{editForm.get('notes').value}}</div>
+            <div> {{editForm.get('time').value}}</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="approve">{{"vtr.mdl.Approve" | translate}}</label>
+            <select formControlName="status" class="form-control">
+              <option *ngFor="let status of vtrApprove" [ngValue]="status" [selected]="status === editForm.value.status">{{ status }}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary"  data-dismiss="modal" (click)="saveChanges()" *ngIf="userForm.valid">{{'vtr.btn.save' | translate}}</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+  
+    
