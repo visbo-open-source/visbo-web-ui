@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
-import { VisboProjectVersion } from '../../_models/visboprojectversion';
+import { VPVPhase, VisboProjectVersion } from '../../_models/visboprojectversion';
 import { VisboSetting } from '../../_models/visbosetting';
 import { VPFParams } from '../../_models/visboportfolio';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
@@ -213,6 +213,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let rgbHex = defaultColor;
     const colorArray = [];
 
+
+    //const listPHases = this.getAllPhases(this.listVPV);
+
+
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
         continue;
@@ -222,6 +226,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
           || (this.getVPManager(this.listVPV[i].vp) || '').toLowerCase().indexOf(filter) >= 0
           || (this.listVPV[i].description || '').toLowerCase().indexOf(filter) >= 0
+          || (this.listVPV[i].AllPhases.find(x => x.originalName.toLowerCase().indexOf(filter) >= 0))
         )
       ) {
         // ignore projects not matching filter
@@ -515,6 +520,18 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         lastValueVPStatus = vpStatus
       }
     });
+  }
+
+  getAllPhases(vpvList: VisboProjectVersion[]): VPVPhase[] {
+    let listPhases: VPVPhase[]= [];
+    for (let i=0; i < vpvList.length; i++) {
+      for (let j=0; j< vpvList[i].AllPhases.length; j++) {
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        listPhases.push(vpvList[i].AllPhases[j]);
+      }
+    }    
+    console.log( 'alldifferentphases', listPhases);
+    return listPhases;
   }
 
   initBUDropDown(): void {
