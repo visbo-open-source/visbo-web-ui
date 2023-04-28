@@ -60,6 +60,7 @@ export class VisboSubRole {
 
 export class VisboRole {
   name: string;
+  email: string;
   employeeNr: string;
   uid: number;
   subRoleIDs: VisboSubRole[];
@@ -83,6 +84,7 @@ export class VisboReducedOrgaItem {
   pid: number;
   calcid: number;
   name: string;
+  email: string;
   type: number;
   path: string;
   level: number;
