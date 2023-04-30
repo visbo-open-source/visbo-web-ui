@@ -31,7 +31,7 @@
       <div *ngIf="dropDownIndex > 0" class="ml-3" title="{{ dropDown[dropDownIndex].description }}">
         {{ getShortText(dropDown[dropDownIndex].description, 100) }}
       </div>
-      <div *ngIf="vpvActive?.description && vpActive.description != vpvActive.description" class="ml-3" title="{{ vpvActive.description }}">
+      <div *ngIf="vpvActive?.description && !vpActive.description.includes(vpvActive.description)" class="ml-3" title="{{ vpvActive.description }}">
         {{ getShortText(vpvActive.description, 100) }}
       </div>
     </div>
@@ -496,6 +496,18 @@
                   </span>
                 </td>
               </tr>
+              <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.RACCurrent">
+                <td>{{ 'vpKeyMetric.lbl.racCurrentCommited' | translate }}</td>
+                <td>
+                   <span> {{ vpvActive.keyMetrics.RACCurrent |  number:'1.0-0' }} T€ ({{100 - savingRAC | number:'1.0-0'}} %)</span>
+                </td>
+              </tr>
+              <!-- <tr *ngIf="vpvActive.keyMetrics && vpvActive.keyMetrics.RACBaseLast">
+                <td>{{ 'vpKeyMetric.lbl.racBaseLastCommited' | translate }}</td>
+                <td>
+                  <span> {{vpvActive.keyMetrics.RACBaseLast |  number:'1.0-0' }} T€ ({{100 - savingCostActual | number:'1.0-0'}} %)</span>
+                </td>
+              </tr> -->
               <tr *ngFor="let item of editCustomFieldDate">
                 <td>{{ item.name }}</td>
                 <td *ngIf="!hasVPPerm(permVP.Modify) || customVPToCommit">{{ item.value }}</td>

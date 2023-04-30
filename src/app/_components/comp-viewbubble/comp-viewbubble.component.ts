@@ -14,6 +14,8 @@ import { VisboSetting } from '../../_models/visbosetting';
 import { VisboProject, VPParams, getCustomFieldDate, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
 import { VisboCenter } from '../../_models/visbocenter';
+
+import { VisboCustomUserFields } from '../../_models/visbosetting';
 import { VisboUser } from '../../_models/visbouser';
 
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
@@ -40,6 +42,7 @@ class DropDownStatus {
   localName: string;
 }
 
+
 @Component({
   selector: 'app-comp-viewbubble',
   templateUrl: './comp-viewbubble.component.html'
@@ -58,7 +61,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   @Input() vcActive: VisboCenter;
   @Input() vpfActive: VisboPortfolioVersion;
   @Input() visboprojectversions: VisboProjectVersion[];
-  @Input() customize: VisboSetting;
+  @Input() customize: VisboSetting;  
+  @Input() userCustomfields: VisboCustomUserFields[];
   @Input() bubbleMode: boolean;
   @Input() combinedPerm: VGPermission;
   @Input() vcUser: Map<string, VisboUser>;
@@ -294,6 +298,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
     this.initVPStateDropDown();
+    // this.initUserCustomFields();
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
@@ -374,6 +379,21 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       this.dropDownVPStatus = undefined;
     }
   }
+
+  
+  
+  // initUserCustomFields(): void {
+  //   const listCF = this.customfields?.value?.liste;
+  //   if (!listCF) return;
+  //   this.userCustomfields = [];
+  //   listCF.forEach(item => {
+  //     this.userCustomfields.push(item.name);
+  //   });
+  //   if (this.userCustomfields.length < 1) { 
+  //     this.userCustomfields = undefined;
+  //   }
+  // }
+
 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
@@ -518,6 +538,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       elementKeyMetric.endDate = this.visboprojectversions[item].endDate;
       elementKeyMetric.timestamp = this.visboprojectversions[item].timestamp;
       elementKeyMetric.Erloes = this.visboprojectversions[item].Erloes;
+      elementKeyMetric.customDblFields = this.visboprojectversions[item].customDblFields;
+      elementKeyMetric.customStringFields = this.visboprojectversions[item].customStringFields;
+      elementKeyMetric.customBoolFields = this.visboprojectversions[item].customBoolFields;
       if (this.visboprojectversions[item].keyMetrics) {
         this.countKM += 1;
         elementKeyMetric.keyMetrics = this.visboprojectversions[item].keyMetrics;
@@ -567,7 +590,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
         // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
 
-        // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
+        // Calculate Saving EndDate in number of days related to BaseLine, limit the results to be between -20 and 20
         if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
           elementKeyMetric.savingEndDate = this.helperDateDiff(
             (new Date(elementKeyMetric.keyMetrics.endDateCurrent).toISOString()),
@@ -1062,36 +1085,48 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     const exportType = ['Project', 'Cost', 'Deadline', 'Delivery'];
     // eslint-disable-next-line
     const sheets: any = {};
-    const sheetNames = [];
+    const sheetNames = [];    
+    let nameOfExcelfile = '';
 
     exportType.forEach(type => {
       const excel: ExportKeyMetric[] = [];
 
       this.visbokeymetrics?.forEach(element => {
-        excel.push(copyKeyMetrics(element, type, this.vcUser));
+        excel.push(copyKeyMetrics(element, type, this.vcUser, this.userCustomfields));
       });
       const len = excel.length;
       const width = Object.keys(excel[0]).length;
       let name = type;
+      
       if (type == 'Project') {
         if (this.vpfActive) {
-          name = this.vpfActive.name
-        } else if (this.vcActive) {
-          name = this.vcActive.name;
+          name = "Overview Portfolio"
+          nameOfExcelfile = this.vpfActive.name
+        } else if (this.vcActive) {          
+          name = "Overview VisboCenter"
+          nameOfExcelfile= this.vcActive.name;
         }
       }
       // Add Localised header to excel
       // eslint-disable-next-line
       const header: any = {};
-      let colName: number, colIndex = 0;
+      let colName: number, colIndex = 0, ind = 0 ;
       for (const element in excel[0]) {
+       
         if (element == 'project') {
           colName = colIndex;
         }
         colIndex++;
-        header[element] = element;
-        header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+        if (element.includes("custom")) {
+          const customUid = element.slice(6);
+          let eleCF = this.userCustomfields.find(item => item.uid == customUid);
+          header[element] = eleCF.name;                   
+        } else {
+          header[element] = element;
+          header[element] = this.translate.instant('compViewBubble.lbl.'.concat(element))
+        } 
       }
+
       excel.unshift(header);
       // this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
@@ -1120,7 +1155,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       '_',
       actDate.getDate().toString().padStart(2, "0"),
       '_Cockpit ',
-      (sheetNames[0] || '')
+      (nameOfExcelfile || '')      
+      // (sheetnames[0] || '')
     );
 
     const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
@@ -1142,6 +1178,17 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     if (percentCalc <= 1) return 1;
     else if (percentCalc <= 1.05) return 2;
     else return 3;
+  }
+  
+  getFinancalLevel(cost: number, revenue: number): number {
+    if (cost && revenue) {
+      if (cost + revenue == 2) return 1;
+      if (cost + revenue == 6) return 3;
+      if ((cost + revenue > 2) && (cost + revenue < 6)) return 2;
+    } else {
+      return 2;
+    }
+      
   }
 
   getVPStatus(local: boolean, original: string = undefined): string {

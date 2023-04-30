@@ -29,6 +29,12 @@ class DropDown {
   id: string;
 }
 
+class CustomUserFields {
+  uid: string;
+  name: string;  
+  type: string;
+}
+
 @Component({
   selector: 'app-visboprojects',
   styleUrls: ['./visboprojects.component.css'],
@@ -48,6 +54,7 @@ export class VisboProjectsComponent implements OnInit {
   hasOrga = false;
   vcOrga: VisboOrganisation[];
   customize: VisboSetting;
+  userCustomfields: CustomUserFields[];
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -151,6 +158,32 @@ export class VisboProjectsComponent implements OnInit {
     });
   }
 
+  
+  getVisboCenterUserCustomFields(): void {
+    if (this.vcActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting Customization ${this.vcActive._id}`);
+      this.visbosettingService.getVCSettingByName(this.vcActive._id, 'customfields')
+        .subscribe(          
+          vcsettings => {
+            if (vcsettings.length > 0) {
+              this.userCustomfields = vcsettings[0]?.value?.liste;
+              // this.userCustomfields = this.customfields?.value?.liste;
+              // this.initUserCustomfields()
+            }
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vpfVersion.msg.errorPermVP');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
+  }
+
+
   getVisboProjectList(vcid: string, sysAdmin: boolean, deleted = false): void {
     this.visboprojectService.getVisboProjects(vcid, sysAdmin, deleted)
       .subscribe(
@@ -182,6 +215,7 @@ export class VisboProjectsComponent implements OnInit {
             this.titleService.setTitle(this.translate.instant('vp.titleName', {name: this.vcActive.name}));
             this.getVisboCenterCustomization();
             this.getVisboCenterOrga();
+            this.getVisboCenterUserCustomFields();
             this.getVisboProjectList(this.vcActive._id, false, this.deleted);
           },
           error => {
