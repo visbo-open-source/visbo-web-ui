@@ -77,7 +77,7 @@ export function copyKeyMetrics(vpv: VPVKeyMetricsCalc, type: string, vcUser: Map
       if (vpv.keyMetrics.RACCurrent) {
         element.racCurrent = vpv.keyMetrics.RACCurrent && Math.round(vpv.keyMetrics.RACCurrent * 1000);
       } else {
-        element.racCurrent = vpv.Erloes;
+        element.racCurrent = vpv.Erloes * 1000;
       }
       if (vpv.keyMetrics.RACBaseLast) {
         element.racBaseLast = vpv.keyMetrics.RACBaseLast && Math.round(vpv.keyMetrics.RACBaseLast * 1000);

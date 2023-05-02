@@ -1572,7 +1572,7 @@
 		}
 	},
 	"keyMetrics": {	
-		"longCostBaseCurr": "Baseline / Plan",
+		"longCostBaseCurr": "Cost: Baseline / Plan",
 		"longRACBaseCurr": "Revenue: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
