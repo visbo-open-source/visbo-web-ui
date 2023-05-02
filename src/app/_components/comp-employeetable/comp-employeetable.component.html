@@ -21,10 +21,10 @@
           </tr>
       </thead>
       <tbody>
-          <tr class="col-center" *ngFor="let user of rows; let vpIndex=index" (click)="selectRow(user)">
+          <tr class="col-center" *ngFor="let user of originalColumns; let vpIndex=index" (click)="selectRow(user)">
               <!-- <td>{{user.userId}}</td> -->
               <td class="d-none d-md-table-cell">{{user.vcid}}</td>
-              <td class="d-none d-md-table-cell">{{user.vpid}}</td>
+              <td class="d-none d-md-table-cell" >{{user.vpid}}</td>
               <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
               <td class="d-none d-md-table-cell"><span class="short" >{{user.notes}}</span></td>
               <td class="d-none d-md-table-cell">{{user.time}}</td>
@@ -60,14 +60,14 @@
        
         <div class="form-group">
           <label for="centerName">{{"vtr.mdl.Centre" | translate}}</label>
-          <select  formControlName="vcid" class="form-control" >
+          <select  formControlName="vcid" class="form-control" (change)="onCenterChange($event)">
             <option *ngFor="let center of visbocenters" [value]="center._id">{{ center.name }}</option>
           </select>
         </div>
         <div class="form-group">
           <label for="projectName">{{"vtr.mdl.Project" | translate}}</label>
           <select  formControlName="vpid" class="form-control w-100">
-            <option *ngFor="let project of visboprojects" [value]="project._id">{{ project.name }}</option>
+            <option *ngFor="let project of selectedCenterProjects" [value]="project._id">{{ project.name }}</option>
           </select>
         </div>
         <div class="form-group">
@@ -88,7 +88,7 @@
       <!-- Modal footer -->
       <div class="modal-footer">
         <button  type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vtr.btn.cancel' | translate }}</button>
-        <button id="AddGroupConfirm" type="button" class="btn btn-primary mx-1" (click)="addEmployee()" data-dismiss="modal">{{ 'vtr.btn.save' | translate }}</button>
+        <button id="AddGroupConfirm" type="button" class="btn btn-primary mx-1" (click)="addEmployee()" data-dismiss="modal" [disabled]="userForm.invalid || !userForm.value.vpid || !userForm.value.vcid || !userForm.value.time">{{ 'vtr.btn.save' | translate }}</button>
       </div>
     </div>
   </div>
