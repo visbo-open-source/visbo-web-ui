@@ -21,6 +21,10 @@ export class VisboTimeTracking {
     const url = `${this.baseUrl}/user/timetracker`;
     return this.http.post(url, data);
   }
-}
 
-  
+  editUserTimeTracker(data: VtrVisboTracker, id: number): Observable<any> {
+    const url = `${this.baseUrl}/user/timetracker/${id}`;
+    console.log('id parameter:', id);
+    return this.http.patch(url, data);
+  }
+}

@@ -1,14 +1,3 @@
-// export interface Employee {
-//   _id: string;
-//   employee: string;
-//   centerName: string[];
-//   projectName: string[];
-//   emplDate: Date;
-//   description: string;
-//   hours:number;
-//   approve: string;
-// }
-
 export interface VtrVisboTracker {
     userId: string;
     vpid: string;
@@ -19,5 +8,7 @@ export interface VtrVisboTracker {
     notes: string;
     approvalId: string;
     status: string;
+    approvalDate: string;
   }
+  
   

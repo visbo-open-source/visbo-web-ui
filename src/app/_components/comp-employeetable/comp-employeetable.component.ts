@@ -26,6 +26,7 @@ rows: VtrVisboTracker[]=[];
 originalColumns: VtrVisboTracker[]=[];
 startDate: string;
 endDate:string;
+selectedCenterId: string;
 sortAscending: boolean;
 sortColumn: number;
 filteredColumns = [];
@@ -56,12 +57,13 @@ vcActive: VisboCenter;
       userId: [''],
       vpid: [''],
       vcid: [''],
-      roleId: ["5a1f1b0b1c9d440000e1b1b1"],
+      roleId: [""],
       date: [''],
       time: [''],
       notes: [""],
       approvalId: ["5a1f1b0b1c9d440000e1b1b2"],
       status: [""],
+      approvalDate: ['']
     });
 
     this.editForm = this.fb.group({
@@ -72,16 +74,14 @@ vcActive: VisboCenter;
       date: [""],
       time: [''],
       notes: [""],
-      approvalId: [""],
+      approvalId: ["5a1f1b0b1c9d440000e1b1b2"],
       status: [""],
+      approvalDate: [""]
     });
     
   }
 
-// getRoleId(orgName: string): string {
-//     const org = this.vcOrga.find(org => org.name === orgName);
-//     return org ? org._id : this.vcActive._id;
-//   }
+  
   
   ngOnInit(): void {
     // this.getRoleId('Organisation');
@@ -105,50 +105,45 @@ vcActive: VisboCenter;
           }
         );
 
-  
-  // if (this.vcActive) {
-  //   if (this.vcOrga == undefined || this.vcOrga.length > 0) {
-  //     // check if Orga is available
-  //     this.visbosettingService.getVCOrganisations(this.vcActive._id, false, (new Date()).toISOString(), false, false)
-  //       .subscribe(
-  //         organisation => {
-  //           this.vcOrga = organisation;
-  //           this.hasOrga = organisation.length > 0;
-            
-  //           const roleId = this.getRoleId('Organisation');
-  //         },
-  //         error => {
-            
-  //       });
-  //   }
-  // }
-  
+        
+
+        // this.userForm.patchValue({
+        //   userId: item.userId,
+        //   roleId: item.roleId,
+        //   notes: item.notes,
+        //   status: item.status,
+        //   time: item.time.$numberDecimal,
+        //   date: item.date,
+        //   approvalId: item.approvalId,
+        //   approvalDate: item.approvalDate
+        // })
+
 
         this.userService.getUserProfile()
         .pipe(switchMap(user => this.trackerService.getUserTimeTracker(user._id)))
         .subscribe(data => {
+          console.log(data)
           this.rows = data.timeEntries.map(item => {
             const centerName = this.visbocenters.find(vc => vc._id === item.vcid)?.name ?? '';
             const projectName = this.visboprojects.find(vp => vp._id === item.vpid)?.name ?? '';
-            // const roleId = this.getRoleId('Organisation');
-            
-
-      return {
-        userId: item.userId,
-        vcid: centerName,
-        vpid: projectName,
-        roleId: item.roleId,
-        notes: item.notes,
-        status: item.status,
-        time: item.time.$numberDecimal,
-        date: item.date
-      }
-    });
-    
+            return {
+              userId: item.userId,
+              vcid: centerName,
+              vpid: projectName,
+              roleId: item.roleId,
+              notes: item.notes,
+              status: item.status,
+              time: item.time.$numberDecimal,
+              date: item.date,
+              approvalId: item.approvalId,
+              approvalDate: item.approvalDate
+            }
+          });
           this.originalColumns = this.rows;
           this.sortVTRTable(undefined);
           this.updateFilter();
         });
+
   }
   
 
@@ -158,20 +153,36 @@ vcActive: VisboCenter;
  
   
   onCenterChange(event: any): void {
-    this.visboprojectService.getVisboProjects(event.target.value)
-      .subscribe(
-        visboprojects => {
-          this.selectedCenterProjects = visboprojects;
-        },
+    const selectedCenterId = event.target.value;
+    // const currentUser = this.userService.getUserProfile()
+    this.visboprojectService.getVisboProjects(selectedCenterId).subscribe(
+      
+      visboprojects => {
+        this.selectedCenterProjects = visboprojects.filter(project => project.vpType === 0);
+        console.log(this.selectedCenterProjects)
+        // set the value of the vcid field to the selected center's _id
+      },
         error => {
           
         }
       );
+      this.visbosettingService.getVCOrganisations(selectedCenterId, false, (new Date()).toISOString(), true, false)
+        .subscribe(
+          organisation => {
+           
+            this.vcOrga = organisation;
+            this.hasOrga = organisation.length > 0;
+          },
+          error => {
+            
+        })
   }
+
 
   addEmployee() {
     this.showModal = true;
     this.userService.getUserProfile().subscribe(user => {
+      const approvalDate = this.userForm.value.approvalDate ? new Date(this.userForm.value.approvalDate).toISOString() : new Date().toISOString();
       const newRow = {
         userId: user._id,
         vpid: this.userForm.value.vpid,
@@ -180,10 +191,13 @@ vcActive: VisboCenter;
         date: new Date(this.userForm.value.date).toISOString(),
         time: this.userForm.value.time,
         notes: this.userForm.value.notes,
-        approvalId: this.userForm.value.approvalId,
+        approvalId: this.editForm.value.approvalId,
         status: "No",
+        approvalDate: approvalDate
       };
+      console.log(newRow)
         
+      
       this.trackerService.addUserTimeTracker(newRow).subscribe(response => {
         console.log('Response:', response);
       }, error => {
@@ -197,30 +211,33 @@ vcActive: VisboCenter;
         vcid: centerName,
         vpid: projectName,
       });
-  
-      this.userForm.reset();
+     
       this.showModal = false;
     });
+    
   }
 
   onRowEdit(event: any) {
     const index = this.rows.findIndex((item) => item.userId === event.userId);
     this.rows[index].userId = event.userId;
-    console.log(index);
+    console.log(index, 'here');
   
-    const _id = this.editForm.get('_id').value;
   }
 
 openEditModal(user: VtrVisboTracker) {
-  console.log(user)
+  // console.log(user)
   this.editForm.patchValue({
     userId: user.userId,
     vcid: user.vcid,
     vpid: user.vpid,
     date: user.date,
     time: user.time,
-    notes:user.notes
+    notes:user.notes,
+    roleId: this.userForm.value.roleId,
+    approvalId: user.approvalId,
+    approvalDate: this.userForm.value.approvalDate
   });
+  console.log(this.editForm, 'check')
   // this.userForm.reset(); 
 }
 
@@ -230,16 +247,28 @@ saveChanges() {
     vcid: this.editForm.value.vcid,
     vpid: this.editForm.value.vpid,
     date: this.editForm.value.date,
-    roleId: this.editForm.value.date,
+    roleId: this.editForm.value.roleId,
     notes: this.editForm.value.notes,
     time: this.editForm.value.time,
     status: this.editForm.value.status,
     approvalId: this.editForm.value.approvalId,
+    approvalDate: new Date().toISOString(),
 
   };
+  console.log(updatedRow, 'here')
+ const id = this.selectedRow.userId;
+  this.trackerService.editUserTimeTracker(updatedRow, id)
+  .subscribe(
+    (response) => {
+      console.log(response)
+      const index = this.rows.indexOf(this.selectedRow);
+      this.rows.splice(index, 1, updatedRow);
+    },
+    (error) => {
+      console.error('Error updating row:', error);
+    }
+  )
   
-  const index = this.rows.findIndex(c => c.userId === this.selectedRow.userId);
-  this.rows.splice(index, 1, updatedRow);
 
 }
 
@@ -257,6 +286,7 @@ selectRow(user) {
     time: user.time,
     status: user.status,
     approvalId: user.approvalId,
+    approvalDate: user && user.approvalDate ? user.approvalDate : ''
   });
 }
   
