@@ -10,5 +10,9 @@ export interface VtrVisboTracker {
     status: string;
     approvalDate: string;
   }
-  
-  
+
+  export interface VtrVisboTrackerExtended extends VtrVisboTracker {
+    vcName: string,
+    vpName: string,
+    timeTrackerId: number
+  }

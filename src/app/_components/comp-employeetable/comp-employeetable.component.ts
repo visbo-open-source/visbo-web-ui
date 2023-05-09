@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { visboCmpString } from '../../_helpers/visbo.helper';
-import { VtrVisboTracker } from 'src/app/_models/employee';
+import { VtrVisboTrackerExtended } from 'src/app/_models/employee';
 import { VisboTimeTracking } from 'src/app/_services/visbotimetracker.service';
 import { UserService } from 'src/app/_services/user.service';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
@@ -20,10 +20,8 @@ import { VisboOrganisation } from 'src/app/_models/visbosetting';
 
 export class EmployeeComponent implements OnInit {
   @ViewChild('VtrModalCreate') VtrModalCreate: HTMLElement;
-  // rows: VtrVisboTracker[] = [];
-  rows = [];
-  // originalColumns: VtrVisboTracker[] = [];
-  originalColumns = [];
+  rows: VtrVisboTrackerExtended[] = [];
+  originalColumns: VtrVisboTrackerExtended[] = [];
   startDate: string;
   endDate: string;
   sortAscending: boolean;
@@ -40,19 +38,17 @@ export class EmployeeComponent implements OnInit {
     approvalId: new FormControl(null),
     approvalDate: new FormControl(null)
   });
-  selectedRow: any;
+  selectedRow: VtrVisboTrackerExtended;
   showModal = false;
-  // vtrApprove = ['No', 'Yes'];
   vtrApprove = ['New', 'InQuestion', 'Approved', 'Rejected'];
   visboCentersList: VisboCenter[] = [];
   visboProjectsList: VisboProject[] = [];
   selectedCenterProjects: VisboProject[];
-  visboSetting: VisboOrganisation[];
   hasOrga = false;
   vcOrga: VisboOrganisation[] = [];
   vcActive: VisboCenter;
   isCreatorOfRecord: boolean;
-  managerTimeTrackerList: any;
+  managerTimeTrackerList: VtrVisboTrackerExtended[];
   private userId: string;
 
   constructor(
@@ -83,7 +79,7 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  onCenterChange(selectedCenterId: any): void {
+  onCenterChange(selectedCenterId: string): void {
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => project.vpType === 0);
@@ -117,7 +113,7 @@ export class EmployeeComponent implements OnInit {
     this.showModal = false;
   }
 
-  openEditModal(user: VtrVisboTracker, isCreator?) {
+  openEditModal(user: VtrVisboTrackerExtended, isCreator?) {
     if (isCreator) {
       this.showModal = true;
       this.isCreatorOfRecord = true;
@@ -294,7 +290,7 @@ export class EmployeeComponent implements OnInit {
       approvalDate: new Date().toISOString(),
       approvalList: timeTrackerIds
     };
-    this.trackerService.approveAllTimeRecords(requestBody).subscribe(response => {
+    this.trackerService.approveAllTimeRecords(requestBody).subscribe(() => {
       this.getTimeTrackerList();
     });
   }
