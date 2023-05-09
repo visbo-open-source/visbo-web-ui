@@ -34,12 +34,12 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
 
   ngOnChanges(): void {
     console.log("change");
+    this.drawChart();
   }
 
   ngAfterViewInit(): void {
     console.log("after view init");
     this.drawChart();
-
   }
 
   drawChart() {

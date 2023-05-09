@@ -52,6 +52,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   parentThis = this;
 
+  listVPVfiltered = [];
   graphDataTimeline = [];
   graphOptionsTimeline = {
       // 'chartArea':{'left':20,'top':0,width:'800','height':'100%'},
@@ -125,7 +126,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     // const keyCode = event ? event.keyCode : 0;
     // if (keyCode == 13) {    // only return key
       // add parameter to URL
-    this.updateUrlParam('filter', undefined)
+      this.updateUrlParam('filter', undefined)
     // }
     this.visboViewBoardOverTime();
   }
@@ -179,7 +180,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   visboViewBoardOverTime(): void {
     const defaultColor = '#59a19e';
     const headLineColor = '#808080';
-    const graphDataTimeline = [];
+    const graphDataTimeline = [];   
+    this.listVPVfiltered = [];
 
     if (!this.listVPV || this.listVPV.length === 0 ) {
       this.graphDataTimeline = [];
@@ -260,7 +262,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       const startDate = this.listVPV[i].startDate;
       const endDate = this.listVPV[i].endDate;
 
-      if (startDate && endDate && startDate <= endDate) {
+      if (startDate && endDate && startDate <= endDate) {     
+        
+        this.listVPVfiltered.push(this.listVPV[i]);
         // we have a start & end date for the project, add it to the Timeline
 
         graphDataTimeline.push([
