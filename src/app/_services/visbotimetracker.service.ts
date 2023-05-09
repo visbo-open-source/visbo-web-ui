@@ -27,4 +27,9 @@ export class VisboTimeTracking {
     console.log('id parameter:', id);
     return this.http.patch(url, data);
   }
+
+  approveAllTimeRecords(requestBody: any) {
+    const url = `${this.baseUrl}/user/timetracker`;
+    return this.http.patch(url, requestBody);
+  }
 }
