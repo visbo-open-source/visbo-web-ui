@@ -17,8 +17,12 @@
       id="endDate"
       type="date">
   </div>
-  <button (click)="approveAllTimeRecords()"
-          [disabled]="!managerTimeTrackerList?.length">{{"vtr.approveAll" | translate}}</button>
+  <button
+    (click)="approveAllTimeRecords()"
+    [disabled]="!managerTimeTrackerList?.length"
+  >
+    {{"vtr.approveAll" | translate}}
+  </button>
 </div>
 
 <table class="table table-hover table-sortable" style="width:100%">
