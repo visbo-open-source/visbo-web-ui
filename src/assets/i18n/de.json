@@ -487,8 +487,11 @@
 		"fromDate": "Datensätze anzeigen Zeit",
 		"toDate": "An",
 		"approveAll":"Genehmigen Sie alle",
+		"edit": "Ändern",
 		"mdl":{
 			"addNewEmployee":"Neuer Mitarbeiter",
+			"record": "Ändern Rekord",
+			"Employee": "Mitarbeiter",
 			"Centre":"Zentrum Name",
 			"Project":"Projekt Name",
 			"Date":"Datum",

@@ -40,7 +40,7 @@ export class EmployeeComponent implements OnInit {
   });
   selectedRow: VtrVisboTrackerExtended;
   showModal = false;
-  vtrApprove = ['New', 'InQuestion', 'Approved', 'Rejected'];
+  vtrApprove = ['No', 'Yes'];
   visboCentersList: VisboCenter[] = [];
   visboProjectsList: VisboProject[] = [];
   selectedCenterProjects: VisboProject[];
@@ -104,7 +104,7 @@ export class EmployeeComponent implements OnInit {
 
   addEmployee() {
     this.showModal = true;
-    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'New'}).subscribe(() => {
+    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No'}).subscribe(() => {
       this.userForm.reset();
       this.getTimeTrackerList();
     }, error => {
@@ -197,7 +197,7 @@ export class EmployeeComponent implements OnInit {
         case 4:
           return a.time - b.time;
         case 5:
-          return a.status[0].localeCompare(b.status[0]);
+          return a.status.localeCompare(b.status);
       }
     });
     if (!this.sortAscending) {
@@ -264,7 +264,8 @@ export class EmployeeComponent implements OnInit {
           approvalDate: record.approvalDate,
           vcName: centerName,
           vpName: projectName,
-          timeTrackerId: record._id
+          timeTrackerId: record._id,
+          // userName: userName
         };
       });
       this.managerTimeTrackerList = this.rows?.filter(timeTrackerElem => timeTrackerElem.userId !== this.userId);
@@ -285,7 +286,7 @@ export class EmployeeComponent implements OnInit {
       this.managerTimeTrackerList
         .map(timeTrackerElem => timeTrackerElem.timeTrackerId);
     const requestBody = {
-      status: "Approved",
+      status: "Yes",
       approvalId: this.userId,
       approvalDate: new Date().toISOString(),
       approvalList: timeTrackerIds

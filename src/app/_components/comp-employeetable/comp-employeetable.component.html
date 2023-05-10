@@ -17,14 +17,14 @@
       id="endDate"
       type="date">
   </div>
-  <button (click)="approveAllTimeRecords()"
-          [disabled]="!managerTimeTrackerList?.length">{{"vtr.approveAll" | translate}}</button>
+  <button *ngIf="managerTimeTrackerList?.length"
+          (click)="approveAllTimeRecords()">{{"vtr.approveAll" | translate}}</button>
 </div>
 
 <table class="table table-hover table-sortable" style="width:100%">
   <thead>
   <tr class="col-center">
-    <!-- <th (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th> -->
+    <th *ngIf="managerTimeTrackerList?.length" (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
     <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
       {{'vtr.titleProject' | translate}}
@@ -52,12 +52,11 @@
       <i class="fa fa-sort"></i>
     </th>
     <th></th>
-    <!-- <th class="d-none d-md-table-cell"></th> -->
   </tr>
   </thead>
   <tbody>
   <tr (click)="selectRow(user)" *ngFor="let user of originalColumns; let vpIndex=index" class="col-center">
-    <!-- <td>{{user.userId}}</td> -->
+    <td *ngIf="managerTimeTrackerList?.length">{{user.userName}}</td>
     <td class="d-none d-md-table-cell">{{user.vcName}}</td>
     <td class="d-none d-md-table-cell">{{user.vpName}}</td>
     <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
@@ -68,24 +67,25 @@
       <button
         (click)="openEditModal(user)"
         *ngIf="!checkIsCreatorOfRecord(user)"
-        [disabled]="user.status === 'Approved'"
+        [disabled]="user.status === 'Yes'"
         data-target="#VtrModalEdit"
         data-toggle="modal">
-        Edit
+        {{ 'vtr.edit' | translate }}
       </button>
       <button
         (click)="openEditModal(user, true)"
         *ngIf="checkIsCreatorOfRecord(user)"
-        [disabled]="user.status === 'Approved'"
+        [disabled]="user.status === 'Yes'"
         data-target="#VtrModalCreate"
         data-toggle="modal">
-        Edit
+        {{ 'vtr.edit' | translate }}
       </button>
     </td>
   </tr>
 
   </tbody>
   <button
+    *ngIf="!managerTimeTrackerList?.length"
     (click)="this.clearEditModal()"
     class="btn btn-warning btn-circle"
     data-target="#VtrModalCreate"
@@ -114,7 +114,7 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">{{!isCreatorOfRecord ? ("vtr.mdl.addNewEmployee" | translate) : 'Edit Record'}}</h4>
+        <h4 class="modal-title">{{!isCreatorOfRecord ? ("vtr.mdl.addNewEmployee" | translate) : ("vtr.mdl.record" | translate)}}</h4>
         <button (click)="clearEditModal()" aria-label="Close" class="close" data-dismiss="modal" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -129,18 +129,18 @@
               class="form-control"
               formControlName="vcid"
               id="visboCenterSelect">
-              <option *ngFor="let center of visboCentersList" [value]="center._id">{{ center.name }}</option>
+              <option *ngFor="let center of visboCentersList" [value]="center._id" [attr.disabled]="isCreatorOfRecord && userForm.controls.vcid.value ? 'disabled' : null">{{ center.name }}</option>
             </select>
           </div>
           <div class="form-group">
             <label for="projectNameSelect">{{"vtr.mdl.Project" | translate}}</label>
             <select class="form-control w-100" formControlName="vpid" id="projectNameSelect">
-              <option *ngFor="let project of selectedCenterProjects" [value]="project?._id">{{ project.name }}</option>
+              <option *ngFor="let project of selectedCenterProjects" [value]="project?._id" [attr.disabled]="isCreatorOfRecord && userForm.controls.vpid.value ? 'disabled' : null">{{ project.name }}</option>
             </select>
           </div>
           <div class="form-group">
             <label for="date">{{"vtr.mdl.Date" | translate}}</label>
-            <input class="form-control" formControlName="date" id="date" type="date">
+            <input class="form-control" formControlName="date" id="date" type="date" [attr.disabled]="isCreatorOfRecord && userForm.controls.date.value ? 'disabled' : null">
           </div>
           <div class="form-group">
             <label for="notes">{{"vtr.mdl.Description" | translate}}</label>
@@ -148,7 +148,7 @@
           </div>
           <div class="form-group">
             <label for="time">{{"vtr.mdl.Hours" | translate}}</label>
-            <input class="form-control" formControlName="time" id="time" type="number">
+            <input class="form-control" formControlName="time" id="time" type="number" >
           </div>
         </form>
       </div>
@@ -201,11 +201,11 @@
       <div class="modal-body">
         <form [formGroup]="userForm">
           <div class="form-group">
-            <div> Name - <b>{{userForm.get('userId').value}}</b></div>
-            <div> Visbo Center - <b>{{userForm.get('vcid').value}}</b></div>
-            <div> Visbo Project - <b>{{userForm.get('vpid').value}}</b></div>
-            <div> Description - <b>{{userForm.get('notes').value}}</b></div>
-            <div> Hours - <b>{{userForm.get('time').value}}</b></div>
+            <div> {{"vtr.mdl.Employee" | translate}} - <b>{{userForm.get('userId').value}}</b></div>
+            <div> {{"vtr.mdl.Centre" | translate}} - <b>{{userForm.get('vcid').value}}</b></div>
+            <div> {{"vtr.mdl.Project" | translate}} - <b>{{userForm.get('vpid').value}}</b></div>
+            <div> {{"vtr.mdl.Description" | translate}} - <b>{{userForm.get('notes').value}}</b></div>
+            <div> {{"vtr.mdl.Hours" | translate}} - <b>{{userForm.get('time').value}}</b></div>
           </div>
 
           <div class="form-group">

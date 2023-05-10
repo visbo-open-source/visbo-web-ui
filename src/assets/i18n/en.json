@@ -487,8 +487,12 @@
 		"fromDate": "Show Records From",
 		"toDate": "To",
 		"approveAll":"Approve All",
+		"edit": "Edit",
+
 		"mdl":{
 			"addNewEmployee":"New Employee",
+			"record": "Edit Record",
+			"Employee": "Employee",
 			"Centre":"Center Name",
 			"Project":"Project Name",
 			"Date":"Date",
