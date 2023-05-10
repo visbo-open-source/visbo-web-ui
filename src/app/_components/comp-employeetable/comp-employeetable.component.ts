@@ -50,6 +50,7 @@ export class EmployeeComponent implements OnInit {
   isCreatorOfRecord: boolean;
   managerTimeTrackerList: VtrVisboTrackerExtended[];
   private userId: string;
+  private userName: string;
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -104,7 +105,7 @@ export class EmployeeComponent implements OnInit {
 
   addEmployee() {
     this.showModal = true;
-    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No'}).subscribe(() => {
+    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {
       this.userForm.reset();
       this.getTimeTrackerList();
     }, error => {
@@ -241,6 +242,7 @@ export class EmployeeComponent implements OnInit {
     this.userService.getUserProfile()
       .subscribe(user => {
         this.userId = user._id;
+        this.userName = user.profile.firstName + ' ' + user.profile.lastName;
         this.userForm.get('userId').setValue(user._id);
         this.getTimeTrackerList();
       });
@@ -265,7 +267,7 @@ export class EmployeeComponent implements OnInit {
           vcName: centerName,
           vpName: projectName,
           timeTrackerId: record._id,
-          // userName: userName
+          userName: record.name
         };
       });
       this.managerTimeTrackerList = this.rows?.filter(timeTrackerElem => timeTrackerElem.userId !== this.userId);

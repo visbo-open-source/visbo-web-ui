@@ -15,4 +15,5 @@ export interface VtrVisboTracker {
     vcName: string,
     vpName: string,
     timeTrackerId: number
+    userName: string,
   }
