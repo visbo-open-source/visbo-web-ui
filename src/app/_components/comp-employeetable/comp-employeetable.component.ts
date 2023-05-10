@@ -284,7 +284,12 @@ export class EmployeeComponent implements OnInit {
   approveAllTimeRecords() {
     const timeTrackerIds =
       this.managerTimeTrackerList
-        .map(timeTrackerElem => timeTrackerElem.timeTrackerId);
+        .map(timeTrackerElem => {
+          return {
+            id: timeTrackerElem.timeTrackerId,
+            vpid: timeTrackerElem.vpid,
+          }
+        });
     const requestBody = {
       status: "Yes",
       approvalId: this.userId,
