@@ -10,7 +10,7 @@
       type="date">
     {{"vtr.toDate" | translate}}
     <input
-      (ngModelChange)="updateFilter()"
+      (change)="updateFilter()"
       [(ngModel)]="endDate"
       [min]="startDate"
       class="col-2 col-sm-2 form-control"
@@ -34,6 +34,7 @@
       (click)="sortVTRTable(3)"
       class="d-none d-md-table-cell">
       {{'vtr.titleDate' | translate}}
+      <i class="fa fa-sort"></i>
     </th>
     <th
       class="d-none d-md-table-cell">
