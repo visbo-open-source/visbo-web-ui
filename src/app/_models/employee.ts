@@ -2,7 +2,7 @@ export interface VtrVisboTracker {
     userId: string;
     vpid: string;
     vcid: string;
-    roleId: string;
+    roleId: number;
     date: string;
     time: number;
     notes: string;
