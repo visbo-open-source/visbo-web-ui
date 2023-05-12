@@ -21,10 +21,76 @@
           (click)="approveAllTimeRecords()">{{"vtr.approveAll" | translate}}</button>
 </div>
 
-<table class="table table-hover table-sortable" style="width:100%">
+<table *ngIf="!managerTimeTrackerList?.length" class="table table-hover table-sortable" style="width:100%">
   <thead>
   <tr class="col-center">
-    <th *ngIf="managerTimeTrackerList?.length" (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
+    <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
+    <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
+      {{'vtr.titleProject' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(3)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDate' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDescription' | translate}}
+    </th>
+    <th
+      (click)="sortVTRTable(4)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleHours' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(5)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleApprove' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th>
+      <button
+        (click)="this.clearEditModal()"
+        class="my-1 btn btn-primary float-right"
+        data-target="#VtrModalCreate"
+        data-toggle="modal"
+        type="button"
+      >
+        Add
+      </button>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr (click)="selectRow(user)" *ngFor="let user of originalColumns; let vpIndex=index" class="col-center">
+    <td class="d-none d-md-table-cell">{{user.vcName}}</td>
+    <td class="d-none d-md-table-cell">{{user.vpName}}</td>
+    <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
+    <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
+    <td class="d-none d-md-table-cell">{{user.time}}</td>
+    <td class="d-none d-md-table-cell">{{user.status}}</td>
+    <td>
+      <button
+        (click)="openEditModal(user, true)"
+        *ngIf="checkIsCreatorOfRecord(user)"
+        [disabled]="user.status === 'Yes'"
+        data-target="#VtrModalCreate"
+        data-toggle="modal">
+        {{ 'vtr.edit' | translate }}
+      </button>
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+
+<table *ngIf="managerTimeTrackerList?.length" class="table table-hover table-sortable" style="width:100%">
+  <thead>
+  <tr class="col-center">
+    <th (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
     <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
       {{'vtr.titleProject' | translate}}
@@ -56,8 +122,8 @@
   </tr>
   </thead>
   <tbody>
-  <tr (click)="selectRow(user)" *ngFor="let user of originalColumns; let vpIndex=index" class="col-center">
-    <td *ngIf="managerTimeTrackerList?.length">{{user.userName}}</td>
+  <tr (click)="selectRow(user)" *ngFor="let user of managerTimeTrackerList; let vpIndex=index" class="col-center">
+    <td class="d-none d-md-table-cell">{{user.userName}}</td>
     <td class="d-none d-md-table-cell">{{user.vcName}}</td>
     <td class="d-none d-md-table-cell">{{user.vpName}}</td>
     <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
@@ -67,17 +133,8 @@
     <td>
       <button
         (click)="openEditModal(user)"
-        *ngIf="!checkIsCreatorOfRecord(user)"
         [disabled]="user.status === 'Yes'"
         data-target="#VtrModalEdit"
-        data-toggle="modal">
-        {{ 'vtr.edit' | translate }}
-      </button>
-      <button
-        (click)="openEditModal(user, true)"
-        *ngIf="checkIsCreatorOfRecord(user)"
-        [disabled]="user.status === 'Yes'"
-        data-target="#VtrModalCreate"
         data-toggle="modal">
         {{ 'vtr.edit' | translate }}
       </button>
@@ -85,16 +142,6 @@
   </tr>
 
   </tbody>
-  <button
-    *ngIf="!managerTimeTrackerList?.length"
-    (click)="this.clearEditModal()"
-    class="btn btn-warning btn-circle"
-    data-target="#VtrModalCreate"
-    data-toggle="modal"
-    type="button"
-  >
-    <i class="fa fa-plus" style="font-size:16px;"></i>
-  </button>
 </table>
 
 

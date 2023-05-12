@@ -51,6 +51,8 @@ export class EmployeeComponent implements OnInit {
   managerTimeTrackerList: VtrVisboTrackerExtended[];
   private userId: string;
   private userName: string;
+  private vcOrganisationListWithOrga: any[];
+  private userEmail: string;
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -60,12 +62,16 @@ export class EmployeeComponent implements OnInit {
     private visboProjectService: VisboProjectService,
     private visboSettingService: VisboSettingService,
   ) {
+    this.userForm.valueChanges.subscribe(() => {
+      console.log(this.userForm);
+    });
   }
 
   ngOnInit(): void {
     this.visboCenterWs.getVisboCenters().subscribe(
       visboCentersList => {
         this.visboCentersList = visboCentersList;
+        this.getOrgaList(visboCentersList);
         this.getProfile();
       },
       error => {
@@ -93,9 +99,10 @@ export class EmployeeComponent implements OnInit {
       selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
       organisation => {
         this.vcOrga = organisation;
-        this.hasOrga = organisation.length > 0;
+        this.hasOrga = organisation?.length > 0;
+        const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
         if (this.hasOrga) {
-          this.userForm.get('roleId').setValue(this.vcOrga[0]?._id);
+          this.userForm.get('roleId').setValue(roleId);
         }
       },
       error => {
@@ -243,13 +250,14 @@ export class EmployeeComponent implements OnInit {
       .subscribe(user => {
         this.userId = user._id;
         this.userName = user.profile.firstName + ' ' + user.profile.lastName;
+        this.userEmail = user.email;
         this.userForm.get('userId').setValue(user._id);
         this.getTimeTrackerList();
       });
   }
 
   private getTimeTrackerList() {
-    this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries}) => {
+    this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {
       this.rows = timeEntries?.map(record => {
         const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
         const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
@@ -270,7 +278,26 @@ export class EmployeeComponent implements OnInit {
           userName: record.name
         };
       });
-      this.managerTimeTrackerList = this.rows?.filter(timeTrackerElem => timeTrackerElem.userId !== this.userId);
+      this.managerTimeTrackerList = managerView?.map(record => {
+        const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
+        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
+        return {
+          userId: record.userId,
+          vcid: record.vcid,
+          vpid: record.vpid,
+          roleId: record.roleId,
+          notes: record.notes,
+          status: record.status,
+          time: record.time.$numberDecimal,
+          date: record.date?.split('T')[0],
+          approvalId: record.approvalId,
+          approvalDate: record.approvalDate,
+          vcName: centerName,
+          vpName: projectName,
+          timeTrackerId: record._id,
+          userName: record.name
+        };
+      });
       this.originalColumns = this.rows;
       this.sortVTRTable(undefined);
       this.updateFilter();
@@ -290,7 +317,7 @@ export class EmployeeComponent implements OnInit {
           return {
             id: timeTrackerElem.timeTrackerId,
             vpid: timeTrackerElem.vpid,
-          }
+          };
         });
     const requestBody = {
       status: "Yes",
@@ -305,5 +332,16 @@ export class EmployeeComponent implements OnInit {
 
   checkIsCreatorOfRecord({userId}) {
     return userId === this.userId;
+  }
+
+  private getOrgaList(visboCentersList: VisboCenter[]) {
+    this.vcOrganisationListWithOrga = [];
+    visboCentersList.map(vCenter => {
+      this.visboSettingService.getVCOrganisations(
+        vCenter._id, false, new Date().toISOString(), true, false).subscribe(organisationList => {
+        this.vcOrganisationListWithOrga.push({...vCenter, organisation: organisationList.length ? organisationList[0] : ''});
+      });
+    });
+    console.log(this.vcOrganisationListWithOrga);
   }
 }

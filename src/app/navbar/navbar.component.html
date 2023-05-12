@@ -17,6 +17,9 @@
       <li class="nav-item">
         <a class="nav-link bg-light "  (click)="gotoClickedItem('vtr')">{{ 'navbar.vtr' | translate }}</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link bg-light "  (click)="gotoClickedItem('profile')">{{ 'navbar.profile' | translate }}</a>
+      </li>
       <li *ngIf="hasSystemPerm(permSystem.View)" class="nav-item dropdown">
         <a class="nav-link dropdown-toggle bg-light " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{ 'navbar.others' | translate }}
