@@ -6,8 +6,8 @@
 .short{
     display: block;
     text-overflow: ellipsis;
-    overflow: hidden; 
-    width: 120px; 
+    overflow: hidden;
+    width: 120px;
     white-space: nowrap;
     margin: 0 auto;
 }
@@ -61,4 +61,9 @@ tr:last-child{
 }
 table{
     position: relative;
+}
+.table-custom {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
 }

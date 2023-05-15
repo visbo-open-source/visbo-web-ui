@@ -51,8 +51,8 @@ export class EmployeeComponent implements OnInit {
   managerTimeTrackerList: VtrVisboTrackerExtended[];
   private userId: string;
   private userName: string;
-  private vcOrganisationListWithOrga: any[];
   private userEmail: string;
+  originalManagerList: VtrVisboTrackerExtended[];
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -71,7 +71,6 @@ export class EmployeeComponent implements OnInit {
     this.visboCenterWs.getVisboCenters().subscribe(
       visboCentersList => {
         this.visboCentersList = visboCentersList;
-        this.getOrgaList(visboCentersList);
         this.getProfile();
       },
       error => {
@@ -214,6 +213,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   updateFilter() {
+    this.managerTimeTrackerList = this.originalManagerList
     this.originalColumns = this.rows;
     if (!!this.startDate?.length || !!this.endDate?.length) {
       console.log(!!this.startDate?.length, !!this.endDate?.length);
@@ -221,6 +221,16 @@ export class EmployeeComponent implements OnInit {
       const endDate = this.endDate?.length ? new Date(this.endDate) : null;
 
       this.originalColumns = this.originalColumns.filter(item => {
+        const date = new Date(item.date);
+        if (startDate && !endDate) {
+          return date >= startDate;
+        } else if (!startDate && endDate) {
+          return date <= endDate;
+        } else {
+          return date >= startDate && date <= endDate;
+        }
+      });
+      this.managerTimeTrackerList = this.managerTimeTrackerList.filter(item => {
         const date = new Date(item.date);
         if (startDate && !endDate) {
           return date >= startDate;
@@ -298,6 +308,7 @@ export class EmployeeComponent implements OnInit {
           userName: record.name
         };
       });
+      this.originalManagerList = this.managerTimeTrackerList;
       this.originalColumns = this.rows;
       this.sortVTRTable(undefined);
       this.updateFilter();
@@ -332,16 +343,5 @@ export class EmployeeComponent implements OnInit {
 
   checkIsCreatorOfRecord({userId}) {
     return userId === this.userId;
-  }
-
-  private getOrgaList(visboCentersList: VisboCenter[]) {
-    this.vcOrganisationListWithOrga = [];
-    visboCentersList.map(vCenter => {
-      this.visboSettingService.getVCOrganisations(
-        vCenter._id, false, new Date().toISOString(), true, false).subscribe(organisationList => {
-        this.vcOrganisationListWithOrga.push({...vCenter, organisation: organisationList.length ? organisationList[0] : ''});
-      });
-    });
-    console.log(this.vcOrganisationListWithOrga);
   }
 }

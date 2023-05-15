@@ -17,11 +17,9 @@
       id="endDate"
       type="date">
   </div>
-  <button *ngIf="managerTimeTrackerList?.length"
-          (click)="approveAllTimeRecords()">{{"vtr.approveAll" | translate}}</button>
 </div>
-
-<table *ngIf="!managerTimeTrackerList?.length" class="table table-hover table-sortable" style="width:100%">
+<div class="text-center" *ngIf="originalManagerList?.length"><h1>Employee List</h1></div>
+<table *ngIf="rows?.length" class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
@@ -83,11 +81,21 @@
       </button>
     </td>
   </tr>
+  <tr style="text-align: center" *ngIf="!originalColumns.length">
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>No Data</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
   </tbody>
 </table>
-
-<table *ngIf="managerTimeTrackerList?.length" class="table table-hover table-sortable" style="width:100%">
+<div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div>
+<table *ngIf="originalManagerList?.length" class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
     <th (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
@@ -118,11 +126,14 @@
       {{'vtr.titleApprove' | translate}}
       <i class="fa fa-sort"></i>
     </th>
-    <th></th>
+    <th>
+      <button *ngIf="managerTimeTrackerList?.length"
+              (click)="approveAllTimeRecords()">{{"vtr.approveAll" | translate}}</button>
+    </th>
   </tr>
   </thead>
   <tbody>
-  <tr (click)="selectRow(user)" *ngFor="let user of managerTimeTrackerList; let vpIndex=index" class="col-center">
+  <tr (click)="selectRow(user)" *ngFor="let user of managerTimeTrackerList" class="col-center">
     <td class="d-none d-md-table-cell">{{user.userName}}</td>
     <td class="d-none d-md-table-cell">{{user.vcName}}</td>
     <td class="d-none d-md-table-cell">{{user.vpName}}</td>
@@ -140,7 +151,16 @@
       </button>
     </td>
   </tr>
-
+  <tr style="text-align: center" *ngIf="!managerTimeTrackerList.length">
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>No Data</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
   </tbody>
 </table>
 
