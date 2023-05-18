@@ -3,6 +3,28 @@ import * as d3 from 'd3';
 import { VisboProjectVersion } from 'src/app/_models/visboprojectversion';
 import { ResizedEvent } from 'angular-resize-event';
 
+
+
+export interface TimelineProject {
+  id: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  phases: Phase[];
+  milestones: Milestone[];
+}
+
+export interface Phase {
+  name: string;
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface Milestone {
+  name: string;
+  date: Date;
+}
+
 @Component({
   selector: 'app-portfolio-chart',
   templateUrl: './portfolio-chart.component.html',
@@ -21,8 +43,11 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
 
   constructor() { }
 
+  // @Input()
+  // projectVersions: VisboProjectVersion[]; // VPVs
+
   @Input()
-  projectVersions: VisboProjectVersion[]; // VPVs
+  projects: TimelineProject[];
 
   @ViewChild('chart')
   private chartElement: ElementRef;
@@ -46,13 +71,13 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
     const elem = this.chartElement.nativeElement;
     this.width = elem.offsetWidth;
 
-    const minDate = d3.min(this.projectVersions, d => new Date(d.startDate));
-    const maxDate = d3.max(this.projectVersions, d => new Date(d.endDate));
+    const minDate = d3.min(this.projects, d => new Date(d.startDate));
+    const maxDate = d3.max(this.projects, d => new Date(d.endDate));
 
     this.xScale.domain([minDate, maxDate])
       .range([this.margin.left, this.width - this.margin.left - this.margin.right]);
 
-    this.yScale.domain(this.projectVersions.map(d => d._id))
+    this.yScale.domain(this.projects.map(d => d.id))
       .range([this.height - this.margin.top - this.margin.bottom, this.margin.top])
       .padding(0.3);
 
@@ -65,19 +90,20 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .attr("height", this.height)
         .style("border", '1px solid black');
 
-      const projectVersions = svg.selectAll("g.project-version").data(this.projectVersions)
+      const projects = svg.selectAll("g.project").data(this.projects)
         .join("g")
-        .classed("project-version", true)
-        .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d._id)})`);
+        .classed("project", true)
+        .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`);
 
-      projectVersions.append("rect")
+      // add rectangles for project spans
+      projects.append("rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("fill", "#cd7436")
         .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
         .attr("height", this.yScale.bandwidth());
-    
-      projectVersions.append("text")
+
+      projects.append("text")
         .attr("x", 10)
         .attr("y", 7)
         .attr("text-anchor", "start")
@@ -85,6 +111,21 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .attr("fill", "white")
         .attr("font-size", "12")
         .text(d => d.name);
+
+      // add rectangles for phase spans
+      const phases = projects.selectAll("g.phase").data(project => project.phases)
+        .join("g")
+        .classed("phase", true)
+        .attr("transform", d => `translate(${this.x(d.startDate)}, 0)`);
+      
+      phases.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("fill", "#34ab1c")
+        .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
+        .attr("height", this.yScale.bandwidth());
+
+
 
       svg.append("g")
         .attr("transform", `translate(0, ${this.height - this.margin.bottom})`)
