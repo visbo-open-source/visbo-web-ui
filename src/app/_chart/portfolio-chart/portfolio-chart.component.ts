@@ -49,6 +49,13 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   @Input()
   projects: TimelineProject[];
 
+  @Input()
+  minDate: Date;
+
+  @Input()
+  maxDate: Date;
+  
+
   @ViewChild('chart')
   private chartElement: ElementRef;
 
@@ -70,16 +77,19 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   drawChart() {
     const elem = this.chartElement.nativeElement;
     this.width = elem.offsetWidth;
+    const projectHeight = 30;
+    const innerHeight = this.projects.length * projectHeight;
+    const outerHeight = innerHeight + this.margin.top + this.margin.bottom;
 
-    const minDate = d3.min(this.projects, d => new Date(d.startDate));
-    const maxDate = d3.max(this.projects, d => new Date(d.endDate));
+    // const minDate = d3.min(this.projects, d => new Date(d.startDate));
+    // const maxDate = d3.max(this.projects, d => new Date(d.endDate));
 
-    this.xScale.domain([minDate, maxDate])
+    this.xScale.domain([this.minDate, this.maxDate])
       .range([this.margin.left, this.width - this.margin.left - this.margin.right]);
 
     this.yScale.domain(this.projects.map(d => d.id))
-      .range([this.height - this.margin.top - this.margin.bottom, this.margin.top])
-      .padding(0.3);
+      .range([this.margin.top + innerHeight, this.margin.top])
+      .padding(0);
 
     if (!this.useTemplate) {
       const chartDiv = d3.select(elem);
@@ -87,25 +97,57 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
 
       const svg = chartDiv.append("svg")
         .attr("width", this.width)
-        .attr("height", this.height)
+        .attr("height", outerHeight)
         .style("border", '1px solid black');
 
       const projects = svg.selectAll("g.project").data(this.projects)
         .join("g")
         .classed("project", true)
-        .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`);
+        .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`)
+        .on("mouseover", (event, d) => console.log(d));
 
       // add rectangles for project spans
       projects.append("rect")
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", this.yScale.bandwidth() * 0.1)
         .attr("fill", "#cd7436")
         .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
-        .attr("height", this.yScale.bandwidth());
+        .attr("height", this.yScale.bandwidth() * 0.8);
+
+      const self = this;
+      projects.each(function(project) {
+        const phases = d3.select(this)
+          .selectAll("g.phase").data((project: TimelineProject) => project.phases)
+          .join("g")
+          .classed("phase", true)
+          .attr("transform", d => `translate(${self.x(d.startDate) - self.x(project.startDate)}, 0)`);
+
+        phases.append("rect")
+          .attr("x", 0)
+          .attr("y", self.yScale.bandwidth() * 0.25)
+          .attr("fill", "#34ab1c")
+          .attr("width", d => self.x(d.endDate) - self.x(d.startDate))
+          .attr("height", self.yScale.bandwidth() * 0.5);
+      })
+
+      projects.each(function(project) {
+        const milestones = d3.select(this)
+          .selectAll("g.milestone").data((project: TimelineProject) => project.milestones)
+          .join("g")
+          .classed("milestone", true)
+          .attr("transform", d => `translate(${self.x(d.date) - self.x(project.startDate)}, 0)`);
+
+          milestones.append("path")
+          .attr("d", d3.symbol().type(d3.symbolTriangle)())
+          .attr("x", 0)
+          .attr("transform", `translate(0, 5) rotate(180)`)
+          // .attr("transform", `translate(0, ${self.yScale.bandwidth() * 0.5})`)
+          .attr("fill", "#000000");
+      })
 
       projects.append("text")
         .attr("x", 10)
-        .attr("y", 7)
+        .attr("y", 10)
         .attr("text-anchor", "start")
         .attr("dominant-baseline", "hanging")
         .attr("fill", "white")
@@ -113,22 +155,22 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .text(d => d.name);
 
       // add rectangles for phase spans
-      const phases = projects.selectAll("g.phase").data(project => project.phases)
-        .join("g")
-        .classed("phase", true)
-        .attr("transform", d => `translate(${this.x(d.startDate)}, 0)`);
+      // const phases = projects.selectAll("g.phase").data(project => project.phases)
+      //   .join("g")
+      //   .classed("phase", true)
+      //   .attr("transform", d => `translate(${this.x(d.startDate)}, 0)`);
       
-      phases.append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("fill", "#34ab1c")
-        .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
-        .attr("height", this.yScale.bandwidth());
+      // phases.append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("fill", "#34ab1c")
+      //   .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
+      //   .attr("height", this.yScale.bandwidth());
 
 
 
       svg.append("g")
-        .attr("transform", `translate(0, ${this.height - this.margin.bottom})`)
+        .attr("transform", `translate(0, ${this.margin.top + innerHeight})`)
         .call(d3.axisBottom(this.xScale));
 
       // svg.append("g")

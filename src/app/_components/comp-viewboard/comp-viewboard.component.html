@@ -65,7 +65,7 @@
 
   <div *ngIf="graphDataTimeline.length > 1" class="mt-2">
     <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>    
-    <app-portfolio-chart [projects]="timelineProjects"></app-portfolio-chart>
+    <app-portfolio-chart [projects]="timelineProjects" [minDate]="timelineMinAndMaxDate.start" [maxDate]="timelineMinAndMaxDate.end"></app-portfolio-chart>
   </div>
   <h5 *ngIf="graphDataTimeline.length == 1" class="mt-2">
     {{ 'compViewBoard.msg.errorNoMatchingProjects' | translate }}

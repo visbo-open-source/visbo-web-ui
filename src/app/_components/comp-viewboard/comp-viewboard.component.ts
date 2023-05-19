@@ -18,7 +18,7 @@ import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, ex
 import * as chroma from 'chroma-js';
 import { Milestone, Phase, TimelineProject } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
 
-class startAndEndDate {
+interface startAndEndDate {
   start: Date;
   end: Date;
 }
@@ -58,6 +58,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   parentThis = this;
 
   timelineProjects: TimelineProject[];
+  timelineMinAndMaxDate: startAndEndDate;
 
   graphDataTimeline = [];
   graphOptionsTimeline = {
@@ -247,6 +248,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const filterPH = this.filterPH ? this.filterPH.toLowerCase() : undefined;
     const filterMS = this.filterMS ? this.filterMS.toLowerCase() : undefined;
     const minAndMaxDate = this.getMinAndMaxDate(this.listVPV);
+    this.timelineMinAndMaxDate = minAndMaxDate;
     this.initFilter(this.listVPV);
 
     // variables to count the number of sameBu's
@@ -674,13 +676,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   getMinAndMaxDate(vpvList: VisboProjectVersion[]): startAndEndDate {
 
-    const minMaxDate = new startAndEndDate();
+    const minMaxDate: startAndEndDate = {start: null, end: null};
     let newStartDate = new Date(8640000000000000);
     let newEndDate =  new Date(-8640000000000000);
 
     if (!vpvList && vpvList.length < 1) {
       return undefined;
     }
+    
     vpvList.forEach( item => {
       const startDate = new Date(item.startDate);
       const endDate = new Date(item.endDate);
@@ -716,14 +719,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd)};
           filteredPhases.push(phase);
         }  
-        ph.AllResults.forEach (ms => {
-          if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
-            const msDate = new Date(tag);
-            msDate.setDate(msDate.getDate() + ms.startOffsetinDays);
-            const milestone:Milestone = {name: ph.originalName, date: new Date(msDate)};
-            filteredMilestones.push(milestone);
-          }
-        })     
+        // ph.AllResults.forEach (ms => {
+        //   if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
+        //     const msDate = new Date(tag);
+        //     msDate.setDate(msDate.getDate() + ms.startOffsetinDays);
+        //     const milestone:Milestone = {name: ph.originalName, date: new Date(msDate)};
+        //     filteredMilestones.push(milestone);
+        //   }
+        // })     
      })      
     }
 
