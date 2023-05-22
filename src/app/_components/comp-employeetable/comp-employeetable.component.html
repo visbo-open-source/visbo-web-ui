@@ -216,7 +216,7 @@
           </div>
           <div class="form-group">
             <label for="time">{{"vtr.mdl.Hours" | translate}}</label>
-            <input class="form-control" formControlName="time" id="time" type="number" >
+            <input class="form-control" (keyup)="checkHours($event)" formControlName="time" id="time" type="number" >
           </div>
         </form>
       </div>

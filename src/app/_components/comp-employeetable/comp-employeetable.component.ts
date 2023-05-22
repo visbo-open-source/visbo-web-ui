@@ -22,8 +22,8 @@ export class EmployeeComponent implements OnInit {
   @ViewChild('VtrModalCreate') VtrModalCreate: HTMLElement;
   rows: VtrVisboTrackerExtended[] = [];
   originalColumns: VtrVisboTrackerExtended[] = [];
-  startDate: string;
-  endDate: string;
+  startDate: string = new Date(Date.now() - 12096e5).toISOString().slice(0, 10);
+  endDate: string = new Date().toISOString().slice(0, 10);
   sortAscending: boolean;
   sortColumn: number;
   userForm: FormGroup = new FormGroup({
@@ -62,9 +62,6 @@ export class EmployeeComponent implements OnInit {
     private visboProjectService: VisboProjectService,
     private visboSettingService: VisboSettingService,
   ) {
-    this.userForm.valueChanges.subscribe(() => {
-      console.log(this.userForm);
-    });
   }
 
   ngOnInit(): void {
@@ -216,7 +213,6 @@ export class EmployeeComponent implements OnInit {
     this.managerTimeTrackerList = this.originalManagerList
     this.originalColumns = this.rows;
     if (!!this.startDate?.length || !!this.endDate?.length) {
-      console.log(!!this.startDate?.length, !!this.endDate?.length);
       const startDate = this.startDate?.length ? new Date(this.startDate) : null;
       const endDate = this.endDate?.length ? new Date(this.endDate) : null;
 
@@ -289,8 +285,8 @@ export class EmployeeComponent implements OnInit {
         };
       });
       this.managerTimeTrackerList = managerView?.map(record => {
-        const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
-        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
+        const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
+        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
         return {
           userId: record.userId,
           vcid: record.vcid,
@@ -343,5 +339,13 @@ export class EmployeeComponent implements OnInit {
 
   checkIsCreatorOfRecord({userId}) {
     return userId === this.userId;
+  }
+
+  protected readonly event = event;
+
+  checkHours(event: Event) {
+    if (event.target['value'] > 24) {
+      event.target['value'] = 24;
+    }
   }
 }
