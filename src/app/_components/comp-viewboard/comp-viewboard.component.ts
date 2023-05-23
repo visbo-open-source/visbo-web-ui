@@ -122,9 +122,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     this.refDate = refDate ? new Date(refDate) : new Date();
     this.filter = filter;
-    this.filterPH = filterPH;
-    this.filterMS = filterMS;
-    this.filterBU = filterBU;
+    this.filterPH = filterPH?.replace("%20", " ");
+    this.filterMS = filterMS?.replace("%20", " ");;
+    this.filterBU = filterBU?.replace("%20", " ");;
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
@@ -255,9 +255,6 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let bu = '';
     let rgbHex = defaultColor;
     const colorArray = [];
-
-
-    //const listPHases = this.getAllPhases(this.listVPV);
 
 
     for (let i = 0; i < this.listVPV.length; i++) {
@@ -701,6 +698,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   private makeTimelineProject(vpv: VisboProjectVersion, phase: string, milestone: string): TimelineProject {
 
+   
+    let rgbHex:string = undefined;
+    const defaultColor = '#59a19e';
+    const headLineColor = '#808080';
+
     const tag = new Date(vpv.startDate);
     // tag.setDate(tag.getDate())
     const etag = new Date(vpv.endDate);
@@ -742,12 +744,58 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         })     
       })
     }
+
+    let buColor = 0;
+    const item = getCustomFieldString(vpv.vp, '_businessUnit');
+    
+
+    const bu = item ? item.value : undefined;    
+    const buDefs = [];
+
+    for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
+      buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
+    }
+   
+    if (bu) {
+      buColor = buDefs[bu];
+      rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+    } else {
+      rgbHex = defaultColor;
+    }
+    this.log(`BusinessUnit - Color ${rgbHex}`);
+    let newColor:string = undefined;
+
+    if (!vpv.vp.vpStatus) {
+        newColor = chroma(rgbHex).brighten(3).hex();
+    }
+    switch (vpv.vp.vpStatus) {
+      case 'initialized':
+        newColor = chroma(rgbHex).brighten(3).hex();
+        break;
+      case 'proposed':
+        newColor = chroma(rgbHex).brighten(3).hex();
+        break;
+      case 'ordered':
+        newColor = chroma(rgbHex).brighten().hex();
+        break;
+      case 'paused':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+      case 'finished':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+      case 'stopped':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+    }
+    
     
     const timelineProject:TimelineProject = {
       id:vpv._id,
       name:vpv.name,
       startDate: vpv.startDate,
       endDate: vpv.endDate,
+      color: newColor,
       phases:filteredPhases,
       milestones: filteredMilestones
     };

@@ -8,6 +8,7 @@ import { ResizedEvent } from 'angular-resize-event';
 export interface TimelineProject {
   id: string;
   name: string;
+  color: string;
   startDate: Date;
   endDate: Date;
   phases: Phase[];
@@ -110,7 +111,8 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       projects.append("rect")
         .attr("x", 0)
         .attr("y", this.yScale.bandwidth() * 0.1)
-        .attr("fill", "#cd7436")
+        .attr("fill", d => d.color)
+        .attr("opacity", "2.5")   // has to be between 0 - 1
         .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
         .attr("height", this.yScale.bandwidth() * 0.8);
 
@@ -150,7 +152,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .attr("y", 10)
         .attr("text-anchor", "start")
         .attr("dominant-baseline", "hanging")
-        .attr("fill", "white")
+        .attr("fill", "black")
         .attr("font-size", "12")
         .text(d => d.name);
 
