@@ -488,6 +488,25 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
   }
 
+  
+  timelineSelectVPName(vpName: string): void {
+    this.log(`timeline Select Project ${vpName} `);    
+    // vpName can contain variantName split it and check if it fits
+    const vp = this.findProject(vpName);
+
+    if (vp) {
+      this.log(`Navigate to: ${vp.vpid} ${vp.name} ${vp.variantName}`);
+      const queryParams = new VPParams();
+      queryParams.variantName = vp.variantName || null;
+      if (this.refDate && !visboIsToday(this.refDate)) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: queryParams });
+    } else {
+      this.log(`VP not found: ${vpName}`);
+    }
+  }
+
   getVPStatus(local: boolean): string {
     if (!this.dropDownVPStatus) {
       return undefined;
@@ -789,10 +808,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         break;
     }
     
-    
     const timelineProject:TimelineProject = {
       id:vpv._id,
-      name:vpv.name,
+      name:this.combineName(vpv.name, vpv.variantName),
       startDate: vpv.startDate,
       endDate: vpv.endDate,
       color: newColor,

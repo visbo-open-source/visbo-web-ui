@@ -55,7 +55,9 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
 
   @Input()
   maxDate: Date;
-  
+
+  @Input()
+  parentThis: any;  
 
   @ViewChild('chart')
   private chartElement: ElementRef;
@@ -81,6 +83,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
     const projectHeight = 30;
     const innerHeight = this.projects.length * projectHeight;
     const outerHeight = innerHeight + this.margin.top + this.margin.bottom;
+    const parentThis = this.parentThis;
 
     // const minDate = d3.min(this.projects, d => new Date(d.startDate));
     // const maxDate = d3.max(this.projects, d => new Date(d.endDate));
@@ -105,7 +108,9 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .join("g")
         .classed("project", true)
         .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`)
-        .on("mouseover", (event, d) => console.log(d));
+        // .on("mouseover", (event, d) => console.log(d));
+        .on("mouseover", (event, d) => parentThis.timelineSelectVPName(d.name));
+       
 
       // add rectangles for project spans
       projects.append("rect")
