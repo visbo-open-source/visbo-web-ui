@@ -78,8 +78,8 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   }
 
   drawChart() {
-    const elem = this.chartElement.nativeElement;
-    this.width = elem.offsetWidth;
+    const elem = this.chartElement?.nativeElement;
+    this.width = elem?.offsetWidth;
     const projectHeight = 30;
     const innerHeight = this.projects.length * projectHeight;
     const outerHeight = innerHeight + this.margin.top + this.margin.bottom;
@@ -108,8 +108,8 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .join("g")
         .classed("project", true)
         .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`)
-        // .on("mouseover", (event, d) => console.log(d));
-        .on("mouseover", (event, d) => parentThis.timelineSelectVPName(d.name));
+        .on("mouseover", (event, d) => console.log(d))
+        .on("click", (event, d) => parentThis.timelineSelectVPName(d.name));
        
 
       // add rectangles for project spans
