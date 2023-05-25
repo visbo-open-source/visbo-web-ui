@@ -1212,6 +1212,8 @@
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
 			"filter": "Filter",
+			"filterPh": "Phase",
+			"filterMS": "Milestone",
 			"strategicFit": "Strategie Fit",
 			"risk": "Risiko",
 			"all": "Alle"
