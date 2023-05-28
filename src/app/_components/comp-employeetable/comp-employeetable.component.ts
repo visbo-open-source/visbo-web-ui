@@ -53,6 +53,7 @@ export class EmployeeComponent implements OnInit {
   private userName: string;
   private userEmail: string;
   originalManagerList: VtrVisboTrackerExtended[];
+  private managerUid: number;
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -91,19 +92,7 @@ export class EmployeeComponent implements OnInit {
         console.log(error);
       }
     );
-    this.visboSettingService.getVCOrganisations(
-      selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
-      organisation => {
-        this.vcOrga = organisation;
-        this.hasOrga = organisation?.length > 0;
-        const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
-        if (this.hasOrga) {
-          this.userForm.get('roleId').setValue(roleId);
-        }
-      },
-      error => {
-        console.log(error);
-      });
+    this.getOrganizationList(selectedCenterId);
   }
 
   addEmployee() {
@@ -144,7 +133,7 @@ export class EmployeeComponent implements OnInit {
     };
     if (!this.isCreatorOfRecord) {
       updatedRow.approvalDate = new Date().toISOString();
-      updatedRow.approvalId = null; // here must be id of the manager who approved the request
+      updatedRow.approvalId = this.managerUid;
     }
     this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
       .subscribe(
@@ -245,8 +234,8 @@ export class EmployeeComponent implements OnInit {
         visboProjectsList => {
           this.visboProjectsList = visboProjectsList;
         },
-        error => {
-          console.log('get VPs failed: error: %d message: %s', error.status, error.error.message); // log to console instead
+        ({error, status}) => {
+          console.log('get VPs failed: error: %d message: %s', status, error.message); // log to console instead
         }
       );
   }
@@ -304,6 +293,9 @@ export class EmployeeComponent implements OnInit {
           userName: record.name
         };
       });
+      if (this.managerTimeTrackerList.length) {
+        this.getOrganizationList(this.visboCentersList[0]._id);
+      }
       this.originalManagerList = this.managerTimeTrackerList;
       this.originalColumns = this.rows;
       this.sortVTRTable(undefined);
@@ -326,9 +318,10 @@ export class EmployeeComponent implements OnInit {
             vpid: timeTrackerElem.vpid,
           };
         });
+    console.log(this.managerTimeTrackerList);
     const requestBody = {
       status: "Yes",
-      approvalId: this.userId,
+      approvalId: this.managerUid,
       approvalDate: new Date().toISOString(),
       approvalList: timeTrackerIds
     };
@@ -347,5 +340,24 @@ export class EmployeeComponent implements OnInit {
     if (event.target['value'] > 24) {
       event.target['value'] = 24;
     }
+  }
+
+  private getOrganizationList(selectedCenterId: string) {
+    this.visboSettingService.getVCOrganisations(
+      selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
+      organisation => {
+        this.vcOrga = organisation;
+        this.hasOrga = organisation?.length > 0;
+        const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
+        if (this.managerTimeTrackerList) {
+          this.managerUid = roleId;
+        }
+        if (this.hasOrga) {
+          this.userForm.get('roleId').setValue(roleId);
+        }
+      },
+      error => {
+        console.log(error);
+      });
   }
 }
