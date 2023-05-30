@@ -41,7 +41,7 @@
             </span>
             <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
               <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
-              <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="font-weight: bold;" >{{filterBU || dropDownBU[0]}}</a>
               <div class="dropdown-menu">
                 <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                   <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>

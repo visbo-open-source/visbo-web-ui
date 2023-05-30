@@ -16,7 +16,7 @@ import { VisboUser } from '../../_models/visbouser';
 
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../../_helpers/visbo.helper';
 import * as chroma from 'chroma-js';
-import { Milestone, Phase, TimelineProject } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
+import { Milestone, Phase, TimelineProject, TooltipItem } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
 
 interface startAndEndDate {
   start: Date;
@@ -741,7 +741,18 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           phStart.setDate(phStart.getDate() + ph.startOffsetinDays);
           const phEnd = new Date(tag);
           phEnd.setDate(phEnd.getDate() + ph.startOffsetinDays+ ph.dauerInDays - 1);
-          const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd)};
+
+          let phtooltipList: TooltipItem[] = [];        
+          // let phTooltip: TooltipItem = {key: "Phase Name:", value: ph.originalName};
+          // phtooltipList.push(phTooltip);
+
+          let phTooltip: TooltipItem = {key: "Phase Start:", value: convertDate(new Date(phStart), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          phTooltip = {key: "Phase End:", value: convertDate(new Date(phEnd), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd),tooltipItems: phtooltipList};
           filteredPhases.push(phase);
         }  
         // ph.AllResults.forEach (ms => {

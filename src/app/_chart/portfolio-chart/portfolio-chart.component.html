@@ -8,3 +8,12 @@
         <div style="text-align:right; color: black" class="font-weight-bold">{{tooltipItem.value}}</div>
     </div>
 </div>
+
+
+<div #tooltip *ngIf="hoveredPhase" [style]="tooltipStyle" class="portfolio-chart_Phase__tooltip">
+    <div style="color: black" class="font-weight-bold">{{hoveredPhase.name}}</div>
+    <div *ngFor="let tooltipItem of hoveredPhase.tooltipItems" class="d-flex justify-content-between">
+        <div>{{tooltipItem.key}}:</div>
+        <div style="text-align:right; color: black" class="font-weight-bold">{{tooltipItem.value}}</div>
+    </div>
+</div>

@@ -19,12 +19,14 @@ export interface TimelineProject {
 export interface Phase {
   name: string;
   startDate: Date;
-  endDate: Date;
+  endDate: Date;  
+  tooltipItems?: TooltipItem[];
 }
 
 export interface Milestone {
   name: string;
-  date: Date;
+  date: Date;  
+  tooltipItems?: TooltipItem[];
 }
 
 export interface TooltipItem {
@@ -46,7 +48,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   public width: number = 1000;
   public hoveredProject: TimelineProject = null;
   public tooltipStyle: Record<string, string>;
-
+  public hoveredPhase: Phase = null;
   public someDate: Date = new Date();
 
   constructor() { }
@@ -117,15 +119,15 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       .join("g")
       .classed("project", true)
       .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`)
-      .on("mousemove", (event, d) => { 
-        this.hoveredProject = d;
-        this.tooltipStyle = {
-          top: (event.layerY) + "px",
-          left: (event.layerX + 30) + "px"
-        };
-        console.log(event)
-      })
-      .on("mouseout", (event, d) => { this.hoveredProject = null; })
+      // .on("mousemove", (event, d) => { 
+      //   this.hoveredProject = d;
+      //   this.tooltipStyle = {
+      //     top: (event.layerY) + "px",
+      //     left: (event.layerX + 30) + "px"
+      //   };
+      //   //console.log(event)
+      // })
+      // .on("mouseout", (event, d) => { this.hoveredProject = null; })
       // .on("click", (event, d) => parentThis.timelineSelectVPName(d.name));
       .on('click', (event, d) => this.projectSelected.emit(d.name));
 
@@ -137,7 +139,16 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       .attr("fill", d => d.color)
       .attr("opacity", "2.5")   // has to be between 0 - 1
       .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
-      .attr("height", this.yScale.bandwidth() * 0.8);
+      .attr("height", this.yScale.bandwidth() * 0.8)
+      .on("mousemove", (event, d) => { 
+        this.hoveredProject = d;
+        this.tooltipStyle = {
+          top: (event.layerY) + "px",
+          left: (event.layerX + 30) + "px"
+        };
+        //console.log(event)
+      })
+      .on("mouseout", (event, d) => { this.hoveredProject = null; });
 
     const self = this;
     projects.each(function (project) {
@@ -145,14 +156,32 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .selectAll("g.phase").data((project: TimelineProject) => project.phases)
         .join("g")
         .classed("phase", true)
-        .attr("transform", d => `translate(${self.x(d.startDate) - self.x(project.startDate)}, 0)`);
+        .attr("transform", d => `translate(${self.x(d.startDate) - self.x(project.startDate)}, 0)`)
+        // .on("mousemove", (event, d) => { 
+        //   self.hoveredPhase = d;
+        //   self.tooltipStyle = {
+        //     top: (event.layerY) + "px",
+        //     left: (event.layerX + 30) + "px"
+        //   };
+        //   console.log(event)
+        // })
+        .on("mouseout", (event, d) => { self.hoveredPhase = null; });
 
       phases.append("rect")
         .attr("x", 0)
         .attr("y", self.yScale.bandwidth() * 0.25)
         .attr("fill", "#34ab1c")
         .attr("width", d => self.x(d.endDate) - self.x(d.startDate))
-        .attr("height", self.yScale.bandwidth() * 0.5);
+        .attr("height", self.yScale.bandwidth() * 0.5)
+        .on("mousemove", (event, d) => { 
+          self.hoveredPhase = d;
+          self.tooltipStyle = {
+            top: (event.layerY) + "px",
+            left: (event.layerX + 30) + "px"
+          };
+          console.log(event)
+        })
+        .on("mouseout", (event, d) => { self.hoveredPhase = null; });
     })
 
     projects.each(function (project) {
@@ -170,29 +199,16 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .attr("fill", "#000000");
     })
 
-    projects.append("text")
-      .attr("x", 10)
-      .attr("y", 10)
-      .attr("text-anchor", "start")
-      .attr("dominant-baseline", "hanging")
-      .attr("fill", "black")
-      .attr("font-size", "12")
-      .text(d => d.name);
+    // projects.append("text")
+    //   .attr("x", 10)
+    //   .attr("y", 10)
+    //   .attr("text-anchor", "start")
+    //   .attr("dominant-baseline", "hanging")
+    //   .attr("fill", "black")
+    //   .attr("font-size", "12")
+    //   .text(d => d.name);
 
-    // add rectangles for phase spans
-    // const phases = projects.selectAll("g.phase").data(project => project.phases)
-    //   .join("g")
-    //   .classed("phase", true)
-    //   .attr("transform", d => `translate(${this.x(d.startDate)}, 0)`);
-
-    // phases.append("rect")
-    //   .attr("x", 0)
-    //   .attr("y", 0)
-    //   .attr("fill", "#34ab1c")
-    //   .attr("width", d => this.x(d.endDate) - this.x(d.startDate))
-    //   .attr("height", this.yScale.bandwidth());
-
-
+ 
 
     svg.append("g")
       .attr("transform", `translate(0, ${this.margin.top + innerHeight})`)
