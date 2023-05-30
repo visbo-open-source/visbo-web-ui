@@ -1,6 +1,10 @@
 <div #chart (resized)="onResize($event)" [style.height]="height">
 </div>
 
-
-
-
+<div #tooltip *ngIf="hoveredProject" [style]="tooltipStyle" class="portfolio-chart__tooltip">
+    <div style="color: black" class="font-weight-bold">{{hoveredProject.name}}</div>
+    <div *ngFor="let tooltipItem of hoveredProject.tooltipItems" class="d-flex justify-content-between">
+        <div>{{tooltipItem.key}}:</div>
+        <div style="text-align:right; color: black" class="font-weight-bold">{{tooltipItem.value}}</div>
+    </div>
+</div>

@@ -13,6 +13,7 @@ export interface TimelineProject {
   endDate: Date;
   phases: Phase[];
   milestones: Milestone[];
+  tooltipItems?: TooltipItem[];
 }
 
 export interface Phase {
@@ -24,6 +25,11 @@ export interface Phase {
 export interface Milestone {
   name: string;
   date: Date;
+}
+
+export interface TooltipItem {
+  key: string;
+  value: string;
 }
 
 @Component({
@@ -38,6 +44,8 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   public margin = { top: 10, right: 10, bottom: 30, left: 10 };
   public height: number = 500;
   public width: number = 1000;
+  public hoveredProject: TimelineProject = null;
+  public tooltipStyle: Record<string, string>;
 
   public someDate: Date = new Date();
 
@@ -109,7 +117,15 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       .join("g")
       .classed("project", true)
       .attr("transform", d => `translate(${this.x(d.startDate)}, ${this.yScale(d.id)})`)
-      .on("mouseover", (event, d) => console.log(d))
+      .on("mousemove", (event, d) => { 
+        this.hoveredProject = d;
+        this.tooltipStyle = {
+          top: (event.layerY) + "px",
+          left: (event.layerX + 30) + "px"
+        };
+        console.log(event)
+      })
+      .on("mouseout", (event, d) => { this.hoveredProject = null; })
       // .on("click", (event, d) => parentThis.timelineSelectVPName(d.name));
       .on('click', (event, d) => this.projectSelected.emit(d.name));
 
