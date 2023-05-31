@@ -49,6 +49,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
   public hoveredProject: TimelineProject = null;
   public tooltipStyle: Record<string, string>;
   public hoveredPhase: Phase = null;
+  public hoveredMS: Milestone = null;
   public someDate: Date = new Date();
 
   constructor() { }
@@ -169,17 +170,16 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
 
       phases.append("rect")
         .attr("x", 0)
-        .attr("y", self.yScale.bandwidth() * 0.25)
+        .attr("y", self.yScale.bandwidth() * 0.2)
         .attr("fill", "#34ab1c")
         .attr("width", d => self.x(d.endDate) - self.x(d.startDate))
-        .attr("height", self.yScale.bandwidth() * 0.5)
+        .attr("height", self.yScale.bandwidth() * 0.6)
         .on("mousemove", (event, d) => { 
           self.hoveredPhase = d;
           self.tooltipStyle = {
             top: (event.layerY) + "px",
             left: (event.layerX + 30) + "px"
           };
-          console.log(event)
         })
         .on("mouseout", (event, d) => { self.hoveredPhase = null; });
     })
@@ -190,23 +190,34 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .join("g")
         .classed("milestone", true)
         .attr("transform", d => `translate(${self.x(d.date) - self.x(project.startDate)}, 0)`);
-
+      
       milestones.append("path")
         .attr("d", d3.symbol().type(d3.symbolTriangle)())
         .attr("x", 0)
         .attr("transform", `translate(0, 5) rotate(180)`)
         // .attr("transform", `translate(0, ${self.yScale.bandwidth() * 0.5})`)
-        .attr("fill", "#000000");
+        .attr("fill", "#000000")
+        .on("mouseover", (event, d) => { 
+          self.hoveredMS = d;
+          self.tooltipStyle = {
+            top: (event.layerY) + "px",
+            left: (event.layerX + 30) + "px"
+          };
+          console.log(event)
+        })
+        .on("mouseout", (event, d) => { self.hoveredMS = null; });        
+       
     })
 
-    // projects.append("text")
-    //   .attr("x", 10)
-    //   .attr("y", 10)
-    //   .attr("text-anchor", "start")
-    //   .attr("dominant-baseline", "hanging")
-    //   .attr("fill", "black")
-    //   .attr("font-size", "12")
-    //   .text(d => d.name);
+    projects.append("text")
+      .attr('class', 'text')
+      .attr("x", 10)
+      .attr("y", 10)
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "hanging")
+      .attr("fill", "black")
+      .attr("font-size", "11")
+      .text(d => d.name);
 
  
 

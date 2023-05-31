@@ -17,3 +17,11 @@
         <div style="text-align:right; color: black" class="font-weight-bold">{{tooltipItem.value}}</div>
     </div>
 </div>
+
+<div #tooltip *ngIf="hoveredMS" [style]="tooltipStyle" class="portfolio-chart_MS__tooltip">
+    <div style="color: black" class="font-weight-bold">{{hoveredMS.name}}</div>
+    <div *ngFor="let tooltipItem of hoveredMS.tooltipItems" class="d-flex justify-content-between">
+        <div>{{tooltipItem.key}}:</div>
+        <div style="text-align:right; color: black" class="font-weight-bold">{{tooltipItem.value}}</div>
+    </div>
+</div>
