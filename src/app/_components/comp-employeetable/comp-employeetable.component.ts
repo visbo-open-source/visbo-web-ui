@@ -215,7 +215,7 @@ export class EmployeeComponent implements OnInit {
           return date >= startDate && date <= endDate;
         }
       });
-      this.managerTimeTrackerList = this.managerTimeTrackerList.filter(item => {
+      this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
         const date = new Date(item.date);
         if (startDate && !endDate) {
           return date >= startDate;
@@ -293,7 +293,7 @@ export class EmployeeComponent implements OnInit {
           userName: record.name
         };
       });
-      if (this.managerTimeTrackerList.length) {
+      if (this.managerTimeTrackerList?.length) {
         this.getOrganizationList(this.visboCentersList[0]._id);
       }
       this.originalManagerList = this.managerTimeTrackerList;
