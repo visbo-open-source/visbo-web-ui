@@ -10,7 +10,7 @@
             <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">                 
             <span *ngIf="dropDownPH" class="dropdown ml-2 my-1 d-print-none">
               <span> {{ 'compViewBoard.lbl.filterPh' | translate }}: </span>
-              <a class="dropdown-toggle" data-toggle="dropdown" role="button">{{filterPH || dropDownPH[0]}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterPH }}</a>
               <div class="dropdown-menu dropdown-menue-end">
                 <a *ngFor="let item of dropDownPH; let itemIndex = index" class="dropdown-item">
                   <div class="dropdown-item" (click)="filterEventPH(itemIndex)">{{ item }}</div>
@@ -21,7 +21,7 @@
             <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filterPH" placeholder="Phase Name"> -->
             <span *ngIf="dropDownMS" class="dropdown ml-2 my-1 d-print-none">
               <span> {{ 'compViewBoard.lbl.filterMS' | translate }}: </span>
-              <a class="dropdown-toggle" data-toggle="dropdown" role="button">{{filterMS || dropDownMS[0]}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterMS}}</a>
               <div class="dropdown-menu dropdown-menue-end">
                 <a *ngFor="let item of dropDownMS; let itemIndex = index" class="dropdown-item">
                   <div class="dropdown-item" (click)="filterEventMS(itemIndex)">{{ item }}</div>
@@ -32,7 +32,7 @@
             <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filterMS" placeholder="Milestone Name"> -->
             <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
               <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
-              <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(false) }}</a>
               <div class="dropdown-menu">
                 <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
                   <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
@@ -41,7 +41,7 @@
             </span>
             <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
               <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
-              <a class="dropdown-toggle" data-toggle="dropdown" style="font-weight: bold;" >{{filterBU || dropDownBU[0]}}</a>
+              <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
               <div class="dropdown-menu">
                 <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                   <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
