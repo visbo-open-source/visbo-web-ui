@@ -746,10 +746,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           // let phTooltip: TooltipItem = {key: "Phase Name:", value: ph.originalName};
           // phtooltipList.push(phTooltip);
 
-          let phTooltip: TooltipItem = {key: "Phase Start:", value: convertDate(new Date(phStart), "fullDate", this.currentLang)};
+          let phTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.phaseStart'), value: convertDate(new Date(phStart), "fullDate", this.currentLang)};
           phtooltipList.push(phTooltip);
 
-          phTooltip = {key: "Phase End:", value: convertDate(new Date(phEnd), "fullDate", this.currentLang)};
+          phTooltip = {key: this.translate.instant('compViewBoard.lbl.phaseEnd'), value: convertDate(new Date(phEnd), "fullDate", this.currentLang)};
           phtooltipList.push(phTooltip);
 
           const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd),tooltipItems: phtooltipList};
@@ -772,7 +772,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
             const msDate = new Date(tag);
             msDate.setDate(msDate.getDate() + ph.startOffsetinDays + ms.offset);
-            const milestone:Milestone = {name: ms.originalName, date: new Date(msDate)};
+
+            let mstooltipList: TooltipItem[] = []; 
+  
+            let msTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.milestoneDate'), value: convertDate(new Date(msDate), "fullDate", this.currentLang)};
+            mstooltipList.push(msTooltip);    
+
+            const milestone:Milestone = {name: ms.originalName, date: new Date(msDate),tooltipItems: mstooltipList};
             filteredMilestones.push(milestone);
           }
         })     

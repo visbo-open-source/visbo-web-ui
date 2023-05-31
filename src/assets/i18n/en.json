@@ -1216,7 +1216,10 @@
 			"filterMS": "Milestone",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
-			"all": "All"
+			"all": "All",			
+			"phaseStart": "Phase start date",
+			"phaseEnd": "Phase end date",
+			"milestoneDate": "Date"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
