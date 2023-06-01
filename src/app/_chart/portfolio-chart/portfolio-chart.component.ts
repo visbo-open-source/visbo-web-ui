@@ -157,21 +157,13 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .selectAll("g.phase").data((project: TimelineProject) => project.phases)
         .join("g")
         .classed("phase", true)
-        .attr("transform", d => `translate(${self.x(d.startDate) - self.x(project.startDate)}, 0)`)
-        // .on("mousemove", (event, d) => { 
-        //   self.hoveredPhase = d;
-        //   self.tooltipStyle = {
-        //     top: (event.layerY) + "px",
-        //     left: (event.layerX + 30) + "px"
-        //   };
-        //   console.log(event)
-        // })
-        .on("mouseout", (event, d) => { self.hoveredPhase = null; });
+        .attr("transform", d => `translate(${self.x(d.startDate) - self.x(project.startDate)}, 0)`);
 
       phases.append("rect")
         .attr("x", 0)
         .attr("y", self.yScale.bandwidth() * 0.2)
-        .attr("fill", "#34ab1c")
+        // .attr("fill", "#34ab1c")
+        .attr("fill", "#E8E8E8")
         .attr("width", d => self.x(d.endDate) - self.x(d.startDate))
         .attr("height", self.yScale.bandwidth() * 0.6)
         .on("mousemove", (event, d) => { 
@@ -195,7 +187,6 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
         .attr("d", d3.symbol().type(d3.symbolTriangle)())
         .attr("x", 0)
         .attr("transform", `translate(0, 5) rotate(180)`)
-        // .attr("transform", `translate(0, ${self.yScale.bandwidth() * 0.5})`)
         .attr("fill", "#000000")
         .on("mouseover", (event, d) => { 
           self.hoveredMS = d;
@@ -203,7 +194,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
             top: (event.layerY) + "px",
             left: (event.layerX + 30) + "px"
           };
-          console.log(event)
+          // console.log(event)
         })
         .on("mouseout", (event, d) => { self.hoveredMS = null; });        
        
