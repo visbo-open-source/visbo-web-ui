@@ -16,7 +16,7 @@ import { VisboUser } from '../../_models/visbouser';
 
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../../_helpers/visbo.helper';
 import * as chroma from 'chroma-js';
-import { Milestone, Phase, TimelineProject } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
+import { Milestone, Phase, TimelineProject, TooltipItem } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
 
 interface startAndEndDate {
   start: Date;
@@ -454,6 +454,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (vpstatus) {
       result = result + '<tr>' + '<td>' + status + ':</td>' + '<td><b>' + localVPStatus + '</b></td>' + '</tr>';
     }
+     
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
@@ -717,10 +718,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   private makeTimelineProject(vpv: VisboProjectVersion, phase: string, milestone: string): TimelineProject {
 
-   
     let rgbHex:string = undefined;
     const defaultColor = '#59a19e';
     const headLineColor = '#808080';
+    
+    
+    let tooltipItemsList: any[] = [];
+
 
     const tag = new Date(vpv.startDate);
     // tag.setDate(tag.getDate())
@@ -737,7 +741,18 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           phStart.setDate(phStart.getDate() + ph.startOffsetinDays);
           const phEnd = new Date(tag);
           phEnd.setDate(phEnd.getDate() + ph.startOffsetinDays+ ph.dauerInDays - 1);
-          const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd)};
+
+          let phtooltipList: TooltipItem[] = [];        
+          // let phTooltip: TooltipItem = {key: "Phase Name:", value: ph.originalName};
+          // phtooltipList.push(phTooltip);
+
+          let phTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.phaseStart'), value: convertDate(new Date(phStart), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          phTooltip = {key: this.translate.instant('compViewBoard.lbl.phaseEnd'), value: convertDate(new Date(phEnd), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd),tooltipItems: phtooltipList};
           filteredPhases.push(phase);
         }  
         // ph.AllResults.forEach (ms => {
@@ -757,7 +772,13 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
             const msDate = new Date(tag);
             msDate.setDate(msDate.getDate() + ph.startOffsetinDays + ms.offset);
-            const milestone:Milestone = {name: ms.originalName, date: new Date(msDate)};
+
+            let mstooltipList: TooltipItem[] = []; 
+  
+            let msTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.milestoneDate'), value: convertDate(new Date(msDate), "fullDate", this.currentLang)};
+            mstooltipList.push(msTooltip);    
+
+            const milestone:Milestone = {name: ms.originalName, date: new Date(msDate),tooltipItems: mstooltipList};
             filteredMilestones.push(milestone);
           }
         })     
@@ -807,6 +828,38 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         newColor = chroma(rgbHex).darken(1).hex();
         break;
     }
+
+    const status = this.translate.instant('compViewBoard.lbl.vpStatus')
+    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";
+    const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
+    const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
+    if (vpstatus){
+      tooltipItemsList.push({key: status, value: vpstatus});
+    }
+    // get businessUnit of vp
+    const buText = this.translate.instant('compViewBoard.lbl.bu');
+    const buitem = getCustomFieldString(vpv.vp, '_businessUnit');
+    const businessUnit = buitem ? buitem.value : undefined;
+    if (businessUnit) {    
+      tooltipItemsList.push({key: buText, value: businessUnit});
+    }
+    // get Manager of vp
+    const lead = this.translate.instant('compViewBoard.lbl.manager');
+    if (vpv.vp.managerId) {
+      tooltipItemsList.push({key: lead, value: this.getVPManager(vpv.vp, false)});
+    }
+    // get template of vp
+    const template = this.translate.instant('compViewBoard.lbl.template');
+    if (vpv.VorlagenName) {   
+      tooltipItemsList.push({key: template, value: vpv.VorlagenName});      
+    }
+
+    const start = this.translate.instant('compViewBoard.lbl.startDate');
+    const end = this.translate.instant('compViewBoard.lbl.endDate');
+    tooltipItemsList.push({key: start, value: convertDate(new Date(vpv.startDate), "fullDate", this.currentLang)});    
+    tooltipItemsList.push({key: end, value: convertDate(new Date(vpv.endDate), "fullDate", this.currentLang)});
+    
+    
     
     const timelineProject:TimelineProject = {
       id:vpv._id,
@@ -815,7 +868,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       endDate: vpv.endDate,
       color: newColor,
       phases:filteredPhases,
-      milestones: filteredMilestones
+      milestones: filteredMilestones,
+      tooltipItems: tooltipItemsList
     };
     return timelineProject;
   }
