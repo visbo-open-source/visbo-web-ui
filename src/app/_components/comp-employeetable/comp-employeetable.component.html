@@ -129,7 +129,9 @@
     </th>
     <th>
       <button *ngIf="managerTimeTrackerList?.length"
-              (click)="approveAllTimeRecords()">{{"vtr.approveAll" | translate}}</button>
+              (click)="approveAllTimeRecords()" 
+              class="my-1 btn btn-primary float-right">
+              {{"vtr.approveAll" | translate}}</button>
     </th>
   </tr>
   </thead>
