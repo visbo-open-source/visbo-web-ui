@@ -1204,6 +1204,7 @@
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
+			"nrProjects":"Number of projects",
 			"vpStatus": "State",
 			"bu": "Business Unit",
 			"manager": "Manager",

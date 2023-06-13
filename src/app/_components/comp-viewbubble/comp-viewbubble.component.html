@@ -61,7 +61,7 @@
         {{ 'compViewBubble.metric.financialSummary' | translate }}
       </h5>
       <div class="card-body p-2">
-        <!-- <div class="row">
+        <div class="row">
           <div class="col col-sm-8">
             {{ 'compViewBubble.lbl.nrProjects' | translate }}
           </div>
@@ -69,7 +69,7 @@
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
             {{countKM}} / {{visbokeymetrics.length}}
           </div>
-        </div> -->
+        </div>
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">   
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>         
