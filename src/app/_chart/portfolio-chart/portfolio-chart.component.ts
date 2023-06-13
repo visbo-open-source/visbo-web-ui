@@ -208,6 +208,7 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       .attr("dominant-baseline", "hanging")
       .attr("fill", "black")
       .attr("font-size", "11")
+      .style("pointer-events", "none")
       .text(d => d.name);
 
  

@@ -97,9 +97,9 @@
         </div>
       </div>
     </div>
-    <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
+    <!-- <div class="align-items-end text-warning text-right" *ngIf="isVersionMismatch()">
         {{ 'vpfVersion.msg.warningVersionMismatch' | translate:{'count': this.vpvCount, 'total': vpfActive.allItems.length} }}
-    </div>
+    </div> -->
   </div>
   <div *ngIf="!vpfActive" class="container-fluid text-danger">
     {{ 'vpfVersion.msg.noProjectList' | translate }}
