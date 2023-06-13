@@ -129,8 +129,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     this.filterStrategicFit = filterStrategicFit;
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
-    this.initPHDropDown();
-    this.initMSDropDown();
+    this.initPHDropDown(this.listVPV);
+    this.initMSDropDown(this.listVPV);
     this.initVPStateDropDown();
   }
 
@@ -255,7 +255,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let bu = '';
     let rgbHex = defaultColor;
     const colorArray = [];
-
+    let newlistVPV: VisboProjectVersion[] = [];
 
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
@@ -266,12 +266,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
           || (this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0)
           || (this.getVPManager(this.listVPV[i].vp) || '').toLowerCase().indexOf(filter) >= 0
           || (this.listVPV[i].description || '').toLowerCase().indexOf(filter) >= 0
-          // || (this.listVPV[i].AllPhases.find(x => x.originalName.toLowerCase().indexOf(filter) >= 0))
-          // || (this.listVPV[i].AllPhases.find(x => x.AllResults.find(ms => ms.originalName.toLowerCase().indexOf(filter) >= 0)))
+          || (this.listVPV[i].AllPhases.find(x => x.originalName.toLowerCase().indexOf(filter) >= 0))
+          || (this.listVPV[i].AllPhases.find(x => x.AllResults.find(ms => ms.originalName.toLowerCase().indexOf(filter) >= 0)))
         )
       ) {
         // ignore projects not matching filter
         continue;
+      } else {
+          newlistVPV.push(this.listVPV[i]);
       }
 
       if (filterPH 
@@ -371,6 +373,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         }
       }      
     }    
+
+    this.initPHDropDown(newlistVPV);
+    this.initMSDropDown(newlistVPV);
+    
     //colorArray = colorArray.concat(nobuArray);
 
     this.graphOptionsTimeline.colors = colorArray;
@@ -598,8 +604,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  initPHDropDown(): void {
-    const listPH = this.getAllPhases(this.listVPV);
+  initPHDropDown(vpvList: VisboProjectVersion[]): void {
+    const listPH = this.getAllPhases(vpvList);
     if (!listPH) return;
     this.dropDownPH = [];
     listPH.forEach(item => {           
@@ -608,7 +614,11 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (this.dropDownPH.length > 1) {
       this.dropDownPH.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
       this.dropDownPH.unshift(this.translate.instant('compViewBoard.lbl.all'));
-    } else {
+    }   
+    if (this.dropDownPH.length == 1) {    
+      this.dropDownPH.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } 
+    if (this.dropDownPH.length <= 0) {   
       this.dropDownPH = undefined;
     }
   } 
@@ -629,8 +639,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     return listPhases;
   }
 
-  initMSDropDown(): void {
-    const listMS = this.getAllMilstones(this.listVPV);
+  initMSDropDown(vpvList: VisboProjectVersion[]): void {
+    const listMS = this.getAllMiletones(vpvList);
     if (!listMS) return;
     this.dropDownMS = [];
     listMS.forEach(item => {
@@ -639,12 +649,16 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (this.dropDownMS.length > 1) {
       this.dropDownMS.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
       this.dropDownMS.unshift(this.translate.instant('compViewBoard.lbl.all'));
-    } else {
+    } 
+    if (this.dropDownMS.length == 1) {    
+      this.dropDownMS.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } 
+    if (this.dropDownMS.length <= 0) {   
       this.dropDownMS = undefined;
     }
   }
 
-  getAllMilstones(vpvList: VisboProjectVersion[]): any[] {
+  getAllMiletones(vpvList: VisboProjectVersion[]): any[] {
     let listMS: any[] = [];
     for (let i=0; i < vpvList.length; i++) {      
         const curProj = vpvList[i];
@@ -754,15 +768,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
           const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd),tooltipItems: phtooltipList};
           filteredPhases.push(phase);
-        }  
-        // ph.AllResults.forEach (ms => {
-        //   if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
-        //     const msDate = new Date(tag);
-        //     msDate.setDate(msDate.getDate() + ms.startOffsetinDays);
-        //     const milestone:Milestone = {name: ph.originalName, date: new Date(msDate)};
-        //     filteredMilestones.push(milestone);
-        //   }
-        // })     
+        } 
      })      
     }
 
