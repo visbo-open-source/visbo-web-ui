@@ -40,13 +40,17 @@ export class EmployeeComponent implements OnInit {
   });
   selectedRow: VtrVisboTrackerExtended;
   showModal = false;
-  vtrApprove = ['No', 'Yes'];
+  vtrApprove = ['Yes', 'No'];
   visboCentersList: VisboCenter[] = [];
-  visboProjectsList: VisboProject[] = [];
+  visboProjectsList: VisboProject[] = [];  
+  indexedProjectsList: VisboProject[] = [];
   selectedCenterProjects: VisboProject[];
   hasOrga = false;
   vcOrga: VisboOrganisation[] = [];
   vcActive: VisboCenter;
+  vpActiveName: string;
+  vcActiveName: string;
+  vtrActiveUserName: string;
   isCreatorOfRecord: boolean;
   managerTimeTrackerList: VtrVisboTrackerExtended[];
   private userId: string;
@@ -111,6 +115,10 @@ export class EmployeeComponent implements OnInit {
       this.showModal = true;
       this.isCreatorOfRecord = true;
     }
+    this.vpActiveName = user.vpName;
+    this.vcActiveName = user.vcName;
+    this.vtrActiveUserName = user.userName;
+
     this.userForm.patchValue({
       userId: user.userId,
       vcid: user.vcid,
@@ -232,7 +240,9 @@ export class EmployeeComponent implements OnInit {
     this.visboProjectService.getVisboProjects(null)
       .subscribe(
         visboProjectsList => {
+          visboProjectsList.forEach(vp => this.indexedProjectsList[vp._id] = vp)
           this.visboProjectsList = visboProjectsList;
+          // this.visboProjectsList = visboProjectsList.filter(item => item.vpType == 0);
         },
         ({error, status}) => {
           console.log('get VPs failed: error: %d message: %s', status, error.message); // log to console instead
@@ -339,6 +349,9 @@ export class EmployeeComponent implements OnInit {
   checkHours(event: Event) {
     if (event.target['value'] > 24) {
       event.target['value'] = 24;
+    } 
+    if (event.target['value'] < 0) {
+      event.target['value'] = 0;
     }
   }
 
@@ -360,4 +373,12 @@ export class EmployeeComponent implements OnInit {
         console.log(error);
       });
   }
+  
+
+getProjectName(vpid:string) {
+  var projIndex = this.visboProjectsList.findIndex(item => item._id == vpid);
+  return (this.visboProjectsList[projIndex].name);
 }
+
+}
+

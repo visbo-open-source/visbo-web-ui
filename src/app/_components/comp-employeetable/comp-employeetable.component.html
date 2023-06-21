@@ -193,14 +193,15 @@
 
       <div class="modal-body">
         <form [formGroup]="userForm">
-
           <div class="form-group">
             <label for="visboCenterSelect">{{"vtr.mdl.Centre" | translate}}</label>
-            <select
+            <select  
               class="form-control"
               formControlName="vcid"
               id="visboCenterSelect">
-              <option *ngFor="let center of visboCentersList" [value]="center._id" [attr.disabled]="isCreatorOfRecord && userForm.controls.vcid.value ? 'disabled' : null">{{ center.name }}</option>
+              <option *ngFor="let center of visboCentersList" 
+              [value]="center._id"   
+              [attr.disabled]="isCreatorOfRecord && userForm.controls.vcid.value ? 'disabled' : null">{{ center.name }}</option>
             </select>
           </div>
           <div class="form-group">
@@ -272,9 +273,10 @@
       <div class="modal-body">
         <form [formGroup]="userForm">
           <div class="form-group">
-            <div> {{"vtr.mdl.Employee" | translate}} - <b>{{userForm.get('userId').value}}</b></div>
-            <div> {{"vtr.mdl.Centre" | translate}} - <b>{{userForm.get('vcid').value}}</b></div>
-            <div> {{"vtr.mdl.Project" | translate}} - <b>{{userForm.get('vpid').value}}</b></div>
+            <div> {{"vtr.mdl.Employee" | translate}} - <b>{{this.vtrActiveUserName}}</b></div>
+            <div> {{"vtr.mdl.Centre" | translate}} - <b>{{this.vcActiveName}}</b></div>
+            <div> {{"vtr.mdl.Project" | translate}} - <b>{{this.vpActiveName}}</b></div>
+            <!-- <div> {{"vtr.mdl.Project" | translate}} - <b>{{getProjectName(userForm.get('vpid').value)}}</b></div> -->
             <div> {{"vtr.mdl.Description" | translate}} - <b>{{userForm.get('notes').value}}</b></div>
             <div> {{"vtr.mdl.Hours" | translate}} - <b>{{userForm.get('time').value}}</b></div>
           </div>
