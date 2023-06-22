@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
 
-import { VisboProjectVersion } from '../../_models/visboprojectversion';
+import { VPVPhase, VisboProjectVersion } from '../../_models/visboprojectversion';
 import { VisboSetting } from '../../_models/visbosetting';
 import { VPFParams } from '../../_models/visboportfolio';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
@@ -16,8 +16,9 @@ import { VisboUser } from '../../_models/visbouser';
 
 import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../../_helpers/visbo.helper';
 import * as chroma from 'chroma-js';
+import { Milestone, Phase, TimelineProject, TooltipItem } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
 
-class startAndEndDate {
+interface startAndEndDate {
   start: Date;
   end: Date;
 }
@@ -41,6 +42,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   refDate: Date;
   filter: string;
+  filterPH: string;
+  dropDownPH: string[];
+  filterMS: string;
+  dropDownMS: string[];
   filterStrategicFit: number;
   filterRisk: number;
   filterBU: string;
@@ -51,6 +56,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   timeoutID: ReturnType<typeof setTimeout>;
 
   parentThis = this;
+
+  timelineProjects: TimelineProject[];
+  timelineMinAndMaxDate: startAndEndDate;
 
   graphDataTimeline = [];
   graphOptionsTimeline = {
@@ -101,7 +109,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   initSetting(): void {
     this.activeID = this.route.snapshot.paramMap.get('id');
     const refDate = this.route.snapshot.queryParams['refDate'];
-    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;    
+    const filterPH = this.route.snapshot.queryParams['filterPH'] || undefined;    
+    const filterMS = this.route.snapshot.queryParams['filterMS'] || undefined;
     const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
     const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
     const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
@@ -112,11 +122,15 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
     this.refDate = refDate ? new Date(refDate) : new Date();
     this.filter = filter;
-    this.filterBU = filterBU;
+    this.filterPH = filterPH?.replace("%20", " ");
+    this.filterMS = filterMS?.replace("%20", " ");;
+    this.filterBU = filterBU?.replace("%20", " ");;
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
+    this.initPHDropDown(this.listVPV);
+    this.initMSDropDown(this.listVPV);
     this.initVPStateDropDown();
   }
 
@@ -125,8 +139,28 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     // const keyCode = event ? event.keyCode : 0;
     // if (keyCode == 13) {    // only return key
       // add parameter to URL
-    this.updateUrlParam('filter', undefined)
+      this.updateUrlParam('filter', undefined)
     // }
+    this.visboViewBoardOverTime();
+  }
+ 
+  filterEventPH(index: number): void {
+    if (index <= 0 || index >= this.dropDownPH.length) {
+      this.filterPH = undefined;
+    } else {
+      this.filterPH = this.dropDownPH[index];
+    }
+    this.updateUrlParam('filter', undefined);
+    this.visboViewBoardOverTime();
+  }
+
+  filterEventMS(index: number): void {
+    if (index <= 0 || index >= this.dropDownMS.length) {
+      this.filterMS = undefined;
+    } else {
+      this.filterMS = this.dropDownMS[index];
+    }
+    this.updateUrlParam('filter', undefined);
     this.visboViewBoardOverTime();
   }
 
@@ -160,6 +194,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       localStorage.setItem('vpfFilter', this.filter || '');
       queryParams.filterVPStatus = this.getVPStatus(false);
       localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
+      queryParams.filterPH = this.filterPH;
+      localStorage.setItem('vpfFilterPH', this.filterPH || '');
+      queryParams.filterMS = this.filterMS;
+      localStorage.setItem('vpfFilterMS', this.filterMS || '');
       queryParams.filterBU = this.filterBU;
       localStorage.setItem('vpfFilterBU', this.filterBU || '');
       queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
@@ -179,7 +217,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   visboViewBoardOverTime(): void {
     const defaultColor = '#59a19e';
     const headLineColor = '#808080';
-    const graphDataTimeline = [];
+    const graphDataTimeline = [];   
+    this.timelineProjects = [];
 
     if (!this.listVPV || this.listVPV.length === 0 ) {
       this.graphDataTimeline = [];
@@ -204,14 +243,19 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       return result;
     });
 
+    
     const filter = this.filter ? this.filter.toLowerCase() : undefined;
+    const filterPH = this.filterPH ? this.filterPH.toLowerCase() : undefined;
+    const filterMS = this.filterMS ? this.filterMS.toLowerCase() : undefined;
     const minAndMaxDate = this.getMinAndMaxDate(this.listVPV);
+    this.timelineMinAndMaxDate = minAndMaxDate;
     this.initFilter(this.listVPV);
 
     // variables to count the number of sameBu's
     let bu = '';
     let rgbHex = defaultColor;
     const colorArray = [];
+    let newlistVPV: VisboProjectVersion[] = [];
 
     for (let i = 0; i < this.listVPV.length; i++) {
       if (this.listVPV[i].vp?.vpType != 0) {
@@ -219,14 +263,28 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       }
       if (filter
         && !(this.listVPV[i].vp?.name.toLowerCase().indexOf(filter) >= 0
-          || this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0
+          || (this.listVPV[i].VorlagenName?.toLowerCase().indexOf(filter) >= 0)
           || (this.getVPManager(this.listVPV[i].vp) || '').toLowerCase().indexOf(filter) >= 0
           || (this.listVPV[i].description || '').toLowerCase().indexOf(filter) >= 0
+          || (this.listVPV[i].AllPhases.find(x => x.originalName.toLowerCase().indexOf(filter) >= 0))
+          || (this.listVPV[i].AllPhases.find(x => x.AllResults.find(ms => ms.originalName.toLowerCase().indexOf(filter) >= 0)))
         )
       ) {
         // ignore projects not matching filter
         continue;
+      } else {
+          newlistVPV.push(this.listVPV[i]);
       }
+
+      if (filterPH 
+        && !(this.listVPV[i].AllPhases.find(x => x.originalName.toLowerCase().indexOf(filterPH) >= 0))) {        
+          continue;
+        }
+      
+      if (filterMS
+        && !(this.listVPV[i].AllPhases.find(x => x.AllResults.find(ms => ms.originalName.toLowerCase().indexOf(filterMS) >= 0)))){
+          continue;
+        }      
 
       if (this.filterBU) {
         const item = getCustomFieldString(this.listVPV[i].vp, '_businessUnit');
@@ -255,7 +313,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       const startDate = this.listVPV[i].startDate;
       const endDate = this.listVPV[i].endDate;
 
-      if (startDate && endDate && startDate <= endDate) {
+      if (startDate && endDate && startDate <= endDate) {     
+        
+        
+        this.timelineProjects.push(this.makeTimelineProject(this.listVPV[i], filterPH, filterMS));
         // we have a start & end date for the project, add it to the Timeline
 
         graphDataTimeline.push([
@@ -310,8 +371,12 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
             colorArray.push(newColor)
             break;
         }
-      }
-    }
+      }      
+    }    
+
+    this.initPHDropDown(newlistVPV);
+    this.initMSDropDown(newlistVPV);
+    
     //colorArray = colorArray.concat(nobuArray);
 
     this.graphOptionsTimeline.colors = colorArray;
@@ -329,7 +394,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         new Date(minAndMaxDate.start),
         new Date(minAndMaxDate.end)
       ]);
+
     }
+  
 
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
 
@@ -393,6 +460,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     if (vpstatus) {
       result = result + '<tr>' + '<td>' + status + ':</td>' + '<td><b>' + localVPStatus + '</b></td>' + '</tr>';
     }
+     
     if (businessUnit) {
       result = result + '<tr>' + '<td>' + bu + ':</td>' + '<td><b>' + businessUnit + '</b></td>' + '</tr>';
     }
@@ -411,6 +479,25 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   timelineSelectRow(row: number): void {
     this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     const vpName = this.graphDataTimeline[row + 1][1];
+    // vpName can contain variantName split it and check if it fits
+    const vp = this.findProject(vpName);
+
+    if (vp) {
+      this.log(`Navigate to: ${vp.vpid} ${vp.name} ${vp.variantName}`);
+      const queryParams = new VPParams();
+      queryParams.variantName = vp.variantName || null;
+      if (this.refDate && !visboIsToday(this.refDate)) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      this.router.navigate(['vpKeyMetrics/'.concat(vp.vpid)], { queryParams: queryParams });
+    } else {
+      this.log(`VP not found: ${vpName}`);
+    }
+  }
+
+  
+  timelineSelectVPName(vpName: string): void {
+    this.log(`timeline Select Project ${vpName} `);    
     // vpName can contain variantName split it and check if it fits
     const vp = this.findProject(vpName);
 
@@ -517,6 +604,79 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     });
   }
 
+  initPHDropDown(vpvList: VisboProjectVersion[]): void {
+    const listPH = this.getAllPhases(vpvList);
+    if (!listPH) return;
+    this.dropDownPH = [];
+    listPH.forEach(item => {           
+      this.dropDownPH.push(item.originalName);   
+    });
+    if (this.dropDownPH.length > 1) {
+      this.dropDownPH.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownPH.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    }   
+    if (this.dropDownPH.length == 1) {    
+      this.dropDownPH.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } 
+    if (this.dropDownPH.length <= 0) {   
+      this.dropDownPH = undefined;
+    }
+  } 
+
+  getAllPhases(vpvList: VisboProjectVersion[]): VPVPhase[] {
+    let listPhases: VPVPhase[]= [];
+    for (let i=0; i < vpvList.length; i++) {
+      for (let j=0; j< vpvList[i].AllPhases.length; j++) {
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        const curPhase = vpvList[i].AllPhases[j];
+        const foundPhase = listPhases.find(elem=> elem.originalName == curPhase.originalName);
+        if (!foundPhase && curPhase.originalName != ".") {
+          listPhases.push(curPhase);
+        }
+      }
+    }    
+    console.log( 'alldifferentphases', listPhases);
+    return listPhases;
+  }
+
+  initMSDropDown(vpvList: VisboProjectVersion[]): void {
+    const listMS = this.getAllMiletones(vpvList);
+    if (!listMS) return;
+    this.dropDownMS = [];
+    listMS.forEach(item => {
+      this.dropDownMS.push(item.originalName);
+    });
+    if (this.dropDownMS.length > 1) {
+      this.dropDownMS.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownMS.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } 
+    if (this.dropDownMS.length == 1) {    
+      this.dropDownMS.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } 
+    if (this.dropDownMS.length <= 0) {   
+      this.dropDownMS = undefined;
+    }
+  }
+
+  getAllMiletones(vpvList: VisboProjectVersion[]): any[] {
+    let listMS: any[] = [];
+    for (let i=0; i < vpvList.length; i++) {      
+        const curProj = vpvList[i];
+        // this.log(`Group Graph Sum Chart Element ${graphElement}: ${JSON.stringify(graphSum[graphElement])}`);
+        curProj.AllPhases.forEach(phase => {
+          const results = phase.AllResults;
+          results.forEach(item => {
+            const foundMS = listMS.find(elem=> elem.originalName == item.originalName);
+            if (!foundMS) {
+              listMS.push(item);
+            }
+          })      
+      })
+    }    
+    console.log( 'allDiffMilestones', listMS);
+    return listMS;
+  }
+
   initBUDropDown(): void {
     const listBU = this.customize?.value?.businessUnitDefinitions;
     if (!listBU) return;
@@ -547,13 +707,14 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
   getMinAndMaxDate(vpvList: VisboProjectVersion[]): startAndEndDate {
 
-    const minMaxDate = new startAndEndDate();
+    const minMaxDate: startAndEndDate = {start: null, end: null};
     let newStartDate = new Date(8640000000000000);
     let newEndDate =  new Date(-8640000000000000);
 
     if (!vpvList && vpvList.length < 1) {
       return undefined;
     }
+    
     vpvList.forEach( item => {
       const startDate = new Date(item.startDate);
       const endDate = new Date(item.endDate);
@@ -567,6 +728,156 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     minMaxDate.start = newStartDate;
     minMaxDate.end = newEndDate;
     return minMaxDate;
+  }
+
+  private makeTimelineProject(vpv: VisboProjectVersion, phase: string, milestone: string): TimelineProject {
+
+    let rgbHex:string = undefined;
+    const defaultColor = '#59a19e';
+    const headLineColor = '#808080';
+    
+    
+    let tooltipItemsList: any[] = [];
+
+
+    const tag = new Date(vpv.startDate);
+    // tag.setDate(tag.getDate())
+    const etag = new Date(vpv.endDate);
+    // etag.setDate(etag.getDate());
+
+    // get the Phase with name 'filterPH'
+    const filteredPhases: Phase[] = [];
+    const filteredMilestones: Milestone[] = [];
+    if (this.filterPH ) {      
+      vpv.AllPhases.forEach ( ph => {
+        if (ph.originalName.toLowerCase() == this.filterPH.toLowerCase()) {
+          const phStart = new Date(tag);
+          phStart.setDate(phStart.getDate() + ph.startOffsetinDays);
+          const phEnd = new Date(tag);
+          phEnd.setDate(phEnd.getDate() + ph.startOffsetinDays+ ph.dauerInDays - 1);
+
+          let phtooltipList: TooltipItem[] = [];        
+          // let phTooltip: TooltipItem = {key: "Phase Name:", value: ph.originalName};
+          // phtooltipList.push(phTooltip);
+
+          let phTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.phaseStart'), value: convertDate(new Date(phStart), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          phTooltip = {key: this.translate.instant('compViewBoard.lbl.phaseEnd'), value: convertDate(new Date(phEnd), "fullDate", this.currentLang)};
+          phtooltipList.push(phTooltip);
+
+          const phase:Phase = {name: ph.originalName, startDate: new Date(phStart), endDate: new Date(phEnd),tooltipItems: phtooltipList};
+          filteredPhases.push(phase);
+        } 
+     })      
+    }
+
+    if (this.filterMS ){
+      vpv.AllPhases.forEach ( ph => {        
+        ph.AllResults.forEach (ms => {
+          if (ms.originalName.toLowerCase() == this.filterMS.toLowerCase()) {
+            const msDate = new Date(tag);
+            msDate.setDate(msDate.getDate() + ph.startOffsetinDays + ms.offset);
+
+            let mstooltipList: TooltipItem[] = []; 
+  
+            let msTooltip: TooltipItem = {key: this.translate.instant('compViewBoard.lbl.milestoneDate'), value: convertDate(new Date(msDate), "fullDate", this.currentLang)};
+            mstooltipList.push(msTooltip);    
+
+            const milestone:Milestone = {name: ms.originalName, date: new Date(msDate),tooltipItems: mstooltipList};
+            filteredMilestones.push(milestone);
+          }
+        })     
+      })
+    }
+
+    let buColor = 0;
+    const item = getCustomFieldString(vpv.vp, '_businessUnit');
+    
+
+    const bu = item ? item.value : undefined;    
+    const buDefs = [];
+
+    for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
+      buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
+    }
+   
+    if (bu) {
+      buColor = buDefs[bu];
+      rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+    } else {
+      rgbHex = defaultColor;
+    }
+    this.log(`BusinessUnit - Color ${rgbHex}`);
+    let newColor:string = undefined;
+
+    if (!vpv.vp.vpStatus) {
+        newColor = chroma(rgbHex).brighten(3).hex();
+    }
+    switch (vpv.vp.vpStatus) {
+      case 'initialized':
+        newColor = chroma(rgbHex).brighten(3).hex();
+        break;
+      case 'proposed':
+        newColor = chroma(rgbHex).brighten(3).hex();
+        break;
+      case 'ordered':
+        newColor = chroma(rgbHex).brighten().hex();
+        break;
+      case 'paused':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+      case 'finished':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+      case 'stopped':
+        newColor = chroma(rgbHex).darken(1).hex();
+        break;
+    }
+
+    const status = this.translate.instant('compViewBoard.lbl.vpStatus')
+    const vpstatus = vpv.vp? vpv.vp.vpStatus : "undefined";
+    const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
+    const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
+    if (vpstatus){
+      tooltipItemsList.push({key: status, value: vpstatus});
+    }
+    // get businessUnit of vp
+    const buText = this.translate.instant('compViewBoard.lbl.bu');
+    const buitem = getCustomFieldString(vpv.vp, '_businessUnit');
+    const businessUnit = buitem ? buitem.value : undefined;
+    if (businessUnit) {    
+      tooltipItemsList.push({key: buText, value: businessUnit});
+    }
+    // get Manager of vp
+    const lead = this.translate.instant('compViewBoard.lbl.manager');
+    if (vpv.vp.managerId) {
+      tooltipItemsList.push({key: lead, value: this.getVPManager(vpv.vp, false)});
+    }
+    // get template of vp
+    const template = this.translate.instant('compViewBoard.lbl.template');
+    if (vpv.VorlagenName) {   
+      tooltipItemsList.push({key: template, value: vpv.VorlagenName});      
+    }
+
+    const start = this.translate.instant('compViewBoard.lbl.startDate');
+    const end = this.translate.instant('compViewBoard.lbl.endDate');
+    tooltipItemsList.push({key: start, value: convertDate(new Date(vpv.startDate), "fullDate", this.currentLang)});    
+    tooltipItemsList.push({key: end, value: convertDate(new Date(vpv.endDate), "fullDate", this.currentLang)});
+    
+    
+    
+    const timelineProject:TimelineProject = {
+      id:vpv._id,
+      name:this.combineName(vpv.name, vpv.variantName),
+      startDate: vpv.startDate,
+      endDate: vpv.endDate,
+      color: newColor,
+      phases:filteredPhases,
+      milestones: filteredMilestones,
+      tooltipItems: tooltipItemsList
+    };
+    return timelineProject;
   }
 
   /** Log a message with the MessageService */

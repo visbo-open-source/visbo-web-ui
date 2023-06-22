@@ -35,6 +35,7 @@ export class VPVPhase {
   AllRoles: any[];
   // eslint-disable-next-line
 	AllCosts: any[];
+  AllResults: any [];
 	percentDone: number;
 	responsible: string;
 	deliverables: string[];

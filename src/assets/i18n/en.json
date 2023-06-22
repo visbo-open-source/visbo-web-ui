@@ -1235,6 +1235,7 @@
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
+			"nrProjects":"Number of projects",
 			"vpStatus": "State",
 			"bu": "Business Unit",
 			"manager": "Manager",
@@ -1243,9 +1244,14 @@
 			"endDate": "Project end date",
 			"timeline": "Timeline",
 			"filter": "Filter",
+			"filterPh": "Phase",
+			"filterMS": "Milestone",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
-			"all": "All"
+			"all": "All",			
+			"phaseStart": "Phase start date",
+			"phaseEnd": "Phase end date",
+			"milestoneDate": "Date"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"

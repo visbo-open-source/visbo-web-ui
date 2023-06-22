@@ -209,6 +209,8 @@ export class VisboProjectVersionService {
       params = params.append('keyMetrics', '2');
     } else {
       params = params.append('keyMetrics', '1');
+      // Ute added
+      params = params.append('longList', '1');
     }
     if (deleted) {
       params = params.append('deleted', '1');
