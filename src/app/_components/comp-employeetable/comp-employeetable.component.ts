@@ -141,7 +141,7 @@ export class EmployeeComponent implements OnInit {
     };
     if (!this.isCreatorOfRecord) {
       updatedRow.approvalDate = new Date().toISOString();
-      updatedRow.approvalId = this.managerUid;
+      updatedRow.approvalId = userId;
     }
     this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
       .subscribe(
@@ -373,12 +373,6 @@ export class EmployeeComponent implements OnInit {
         console.log(error);
       });
   }
-  
-
-getProjectName(vpid:string) {
-  var projIndex = this.visboProjectsList.findIndex(item => item._id == vpid);
-  return (this.visboProjectsList[projIndex].name);
-}
-
+ 
 }
 
