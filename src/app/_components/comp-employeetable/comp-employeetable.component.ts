@@ -156,7 +156,7 @@ export class EmployeeComponent implements OnInit {
     this.isCreatorOfRecord = false;
   }
 
-  selectRow(user) {
+  selectRow(user:VtrVisboTrackerExtended) {
     this.selectedRow = user;
     this.userForm.patchValue({
       userId: user.userId,
@@ -172,38 +172,73 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  sortVTRTable(n: number): void {
-    if (n !== undefined) {
-      if (!this.originalColumns) {
-        return;
+  sortVTRTable(n: number, isManager: boolean=false): void {
+    if (isManager) {
+      if (n !== undefined) {
+        if (!this.managerTimeTrackerList) {
+          return;
+        }
+        if (n !== this.sortColumn) {
+          this.sortColumn = n;
+          this.sortAscending = undefined;
+        }
+        if (this.sortAscending === undefined) {
+          this.sortAscending = (n === 1 || n === 3);
+        } else {
+          this.sortAscending = !this.sortAscending;
+        }
       }
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
+      this.managerTimeTrackerList.sort((a, b) => {
+        switch (this.sortColumn) {
+          case 1:             
+           return (visboCmpString(b.userName.toLowerCase(), a.userName.toLowerCase()) || (b.date.localeCompare(a.date)) ) ;
+          case 2:
+            return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
+          case 3:
+            return a.date.localeCompare(b.date);
+          case 4:
+            return a.time - b.time;
+          case 5:
+            return a.status.localeCompare(b.status);
+        }
+      });
+      if (!this.sortAscending) {
+        this.managerTimeTrackerList.reverse();
       }
-      if (this.sortAscending === undefined) {
-        this.sortAscending = (n === 1 || n === 3);
-      } else {
-        this.sortAscending = !this.sortAscending;
+    } else {
+      if (n !== undefined) {
+        if (!this.originalColumns) {
+          return;
+        }
+        if (n !== this.sortColumn) {
+          this.sortColumn = n;
+          this.sortAscending = undefined;
+        }
+        if (this.sortAscending === undefined) {
+          this.sortAscending = (n === 1 || n === 3);
+        } else {
+          this.sortAscending = !this.sortAscending;
+        }
+      }
+      this.originalColumns.sort((a, b) => {
+        switch (this.sortColumn) {
+          case 1:
+            return (visboCmpString(a.userName.toLowerCase(), b.userName.toLowerCase()) && (a.date.localeCompare(b.date))) ;
+          case 2:
+            return a.vpid.localeCompare(b.vpid);
+          case 3:
+            return a.date.localeCompare(b.date);
+          case 4:
+            return a.time - b.time;
+          case 5:
+            return a.status.localeCompare(b.status);
+        }
+      });
+      if (!this.sortAscending) {
+        this.originalColumns.reverse();
       }
     }
-    this.originalColumns.sort((a, b) => {
-      switch (this.sortColumn) {
-        case 1:
-          return visboCmpString(a.userId.toLowerCase(), b.userId.toLowerCase());
-        case 2:
-          return a.vpid.localeCompare(b.vpid);
-        case 3:
-          return a.date.localeCompare(b.date);
-        case 4:
-          return a.time - b.time;
-        case 5:
-          return a.status.localeCompare(b.status);
-      }
-    });
-    if (!this.sortAscending) {
-      this.originalColumns.reverse();
-    }
+
   }
 
   updateFilter() {

@@ -99,14 +99,14 @@
 <table *ngIf="originalManagerList?.length" class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
-    <th (click)="sortVTRTable(1)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
+    <th (click)="sortVTRTable(1, true)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
-    <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
+    <th (click)="sortVTRTable(2, true)" class="d-none d-md-table-cell">
       {{'vtr.titleProject' | translate}}
       <i class="fa fa-sort"></i>
     </th>
     <th
-      (click)="sortVTRTable(3)"
+      (click)="sortVTRTable(3, true)"
       class="d-none d-md-table-cell">
       {{'vtr.titleDate' | translate}}
       <i class="fa fa-sort"></i>
@@ -116,13 +116,13 @@
       {{'vtr.titleDescription' | translate}}
     </th>
     <th
-      (click)="sortVTRTable(4)"
+      (click)="sortVTRTable(4, true)"
       class="d-none d-md-table-cell">
       {{'vtr.titleHours' | translate}}
       <i class="fa fa-sort"></i>
     </th>
     <th
-      (click)="sortVTRTable(5)"
+      (click)="sortVTRTable(5, true)"
       class="d-none d-md-table-cell">
       {{'vtr.titleApprove' | translate}}
       <i class="fa fa-sort"></i>
