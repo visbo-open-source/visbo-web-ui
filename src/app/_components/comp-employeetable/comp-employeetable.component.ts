@@ -225,7 +225,7 @@ export class EmployeeComponent implements OnInit {
           case 1:
             return (visboCmpString(a.userName.toLowerCase(), b.userName.toLowerCase()) && (a.date.localeCompare(b.date))) ;
           case 2:
-            return a.vpid.localeCompare(b.vpid);
+            return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
           case 3:
             return a.date.localeCompare(b.date);
           case 4:
