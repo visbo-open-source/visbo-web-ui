@@ -13,9 +13,19 @@
       </li>
       <li class="nav-item">
         <a class="nav-link bg-light " (click)="gotoClickedItem('vp')">{{ 'navbar.vp' | translate }}</a>
-      </li>
-      <li class="nav-item">
+      </li>      
+      <li *ngIf="!hasApproveRights()" class="nav-item">
         <a class="nav-link bg-light "  (click)="gotoClickedItem('vtr')">{{ 'navbar.vtr' | translate }}</a>
+      </li>
+      <li *ngIf="hasApproveRights()" class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle bg-light " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ 'navbar.vtr' | translate }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item"  (click)="gotoClickedItem('vtr')">{{ 'navbar.vtrRecord' | translate }}</a>
+          <!-- <div class="dropdown-divider"></div> -->
+          <a class="dropdown-item" (click)="gotoClickedItem('vtrApprove')">{{ 'navbar.vtrApprove' | translate }}</a>
+        </div>
       </li>
       <li class="nav-item">
         <a class="nav-link bg-light "  (click)="gotoClickedItem('profile')">{{ 'navbar.profile' | translate }}</a>

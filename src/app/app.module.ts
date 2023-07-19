@@ -77,6 +77,10 @@ import { VisboProjectVersionsComponent } from './visboprojectversions/visboproje
 import { VisboPortfolioVersionsComponent } from './visboportfolio/visboportfolio.component';
 import { VisboPortfolioCmpComponent } from './visboportfolio-cmp/visboportfolio-cmp.component';
 
+// Visbo TimeTracker
+import { EmployeeComponent } from './_components/comp-employeetable/comp-employeetable.component';
+import { VisboTimeTracking } from './_services/visbotimetracker.service';
+
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 // Sys Admin / App Admin
@@ -98,8 +102,7 @@ import { SyssettingsComponent } from './visbosysadmin/syssettings/syssettings.co
 import { EnvServiceProvider } from './_helpers/env.service.provider';
 
 import { GoogleChartModule } from './_chart/google-chart.module';
-import { EmployeeComponent } from './_components/comp-employeetable/comp-employeetable.component';
-import { VisboTimeTracking } from './_services/visbotimetracker.service';
+import { ApproverComponent } from './_components/comp-approvertable/comp-approvertable.component';
 
 @NgModule({
   declarations: [
@@ -152,7 +155,8 @@ import { VisboTimeTracking } from './_services/visbotimetracker.service';
     SysLogComponent,
     SystasksComponent,
     SysconfigComponent,
-    SyssettingsComponent
+    SyssettingsComponent,
+    ApproverComponent
   ],
   imports: [
     BrowserModule,

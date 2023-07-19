@@ -43,6 +43,8 @@
 		"vc": "VISBO Center",
 		"vp": "VISBO Projects",
 		"vtr": "VISBO Time Recorder",
+		"vtrRecord": "Record",		
+		"vtrApprove": "Approve",
 		"profile": "Profile",
 		"others": "Others",
 		"settings": "Settings",

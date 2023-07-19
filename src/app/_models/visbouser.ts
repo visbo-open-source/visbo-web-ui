@@ -25,6 +25,7 @@ export class VisboUserStatus {
   lastLoginAt: Date;
   lastLoginFailedAt: Date;
   loginRetries: number;
+  isApprover: boolean;
   expiresAt: Date;
 }
 

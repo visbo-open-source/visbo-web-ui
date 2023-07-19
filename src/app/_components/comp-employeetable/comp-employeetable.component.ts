@@ -11,6 +11,7 @@ import { VisboProjectService } from 'src/app/_services/visboproject.service';
 import { VisboProject } from 'src/app/_models/visboproject';
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
 import { VisboOrganisation } from 'src/app/_models/visbosetting';
+import { VisboUser } from 'src/app/_models/visbouser';
 
 @Component({
   selector: 'app-employee',
@@ -58,6 +59,7 @@ export class EmployeeComponent implements OnInit {
   private userEmail: string;
   originalManagerList: VtrVisboTrackerExtended[];
   private managerUid: number;
+  userIsApprover: boolean;
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -285,15 +287,21 @@ export class EmployeeComponent implements OnInit {
       );
   }
 
+  
+  getActiveUser(): VisboUser {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+ 
+
   private getProfile() {
-    this.userService.getUserProfile()
-      .subscribe(user => {
-        this.userId = user._id;
-        this.userName = user.profile.firstName + ' ' + user.profile.lastName;
-        this.userEmail = user.email;
-        this.userForm.get('userId').setValue(user._id);
-        this.getTimeTrackerList();
-      });
+      const user = this.getActiveUser();
+      this.userId = user._id;
+      this.userName = user.profile.firstName + ' ' + user.profile.lastName;
+      this.userEmail = user.email;
+      this.userIsApprover = user.status.isApprover;
+      console.log("getProfile: userIsApprover: ", this.userIsApprover);
+      this.userForm.get('userId').setValue(user._id);
+      this.getTimeTrackerList();
   }
 
   private getTimeTrackerList() {
@@ -408,6 +416,6 @@ export class EmployeeComponent implements OnInit {
         console.log(error);
       });
   }
- 
+
 }
 

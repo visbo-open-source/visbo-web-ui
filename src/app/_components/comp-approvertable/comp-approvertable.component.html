@@ -1,27 +1,28 @@
+<!-- <p>comp-approvertable works!</p> -->
 <app-usernavbar></app-usernavbar>
 <div class="cld-date">
   <div class="calendar">
-    {{"vtr.fromDate" | translate}}
-    <input
-      (change)="updateFilter()"
-      [(ngModel)]="startDate"
-      [max]="endDate"
-      class="col-2 col-sm-2 form-control" id="startDate"
-      type="date">
-    {{"vtr.toDate" | translate}}
-    <input
-      (change)="updateFilter()"
-      [(ngModel)]="endDate"
-      [min]="startDate"
-      class="col-2 col-sm-2 form-control"
-      id="endDate"
-      type="date">
+        {{"vtr.fromDate" | translate}}
+        <input
+          (change)="updateFilter()"
+          [(ngModel)]="startDate"
+          [max]="endDate"
+          class="col-2 col-sm-2 form-control" id="startDate"
+          type="date">
+        {{"vtr.toDate" | translate}}
+        <input
+          (change)="updateFilter()"
+          [(ngModel)]="endDate"
+          [min]="startDate"
+          class="col-4 col-sm-2 form-control"
+          id="endDate"
+          type="date">
   </div>
 </div>
-<div class="text-center" *ngIf="originalManagerList?.length"><h1>Employee List</h1></div>
-<table  class="table table-hover table-sortable table-custom">
+<!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Employee List</h1></div>
+<table  class="table table-hover table-sortable table-custom"> -->
 <!-- <table *ngIf="rows?.length" class="table table-hover table-sortable table-custom"> -->
-  <thead>
+  <!-- <thead>
   <tr class="col-center">
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
     <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
@@ -93,10 +94,13 @@
     <td></td>
   </tr>
 
-  </tbody>
-</table>
+  </tbody> -->
+<!-- </table> -->
+
+
 <!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
-<!-- <div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
+<div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
+<!-- <table  class="table table-hover table-sortable table-custom"> -->
 <table *ngIf="originalManagerList?.length" class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
@@ -166,7 +170,7 @@
     <td></td>
   </tr>
   </tbody>
-</table> -->
+</table>
 
 
 <!-- Button to Open the Modal -->
@@ -252,7 +256,7 @@
 
 
 <!-- The Modal Manager-->
-<!-- <div
+<div
   aria-hidden="true"
   aria-labelledby="VtrModalEditLabel"
   class="modal fade"
@@ -260,18 +264,24 @@
   role="dialog"
   tabindex="-1">
   <div class="modal-dialog" role="document">
-    <div class="modal-content"> -->
+    <div class="modal-content">
 
       <!-- Modal Header -->
-      <!--  -->
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
       <!-- [disabled]="userForm.invalid" -->
       <!-- Modal body -->
-      <!-- <div class="modal-body">
+      <div class="modal-body">
         <form [formGroup]="userForm">
           <div class="form-group">
             <div> {{"vtr.mdl.Employee" | translate}} - <b>{{this.vtrActiveUserName}}</b></div>
             <div> {{"vtr.mdl.Centre" | translate}} - <b>{{this.vcActiveName}}</b></div>
-            <div> {{"vtr.mdl.Project" | translate}} - <b>{{this.vpActiveName}}</b></div>            
+            <div> {{"vtr.mdl.Project" | translate}} - <b>{{this.vpActiveName}}</b></div>
+            <!-- <div> {{"vtr.mdl.Project" | translate}} - <b>{{getProjectName(userForm.get('vpid').value)}}</b></div> -->
             <div> {{"vtr.mdl.Description" | translate}} - <b>{{userForm.get('notes').value}}</b></div>
             <div> {{"vtr.mdl.Hours" | translate}} - <b>{{userForm.get('time').value}}</b></div>
           </div>
@@ -286,16 +296,17 @@
             </select>
           </div>
         </form>
-      </div> -->
+      </div>
 
       <!-- Modal footer -->
-      <!-- <div class="modal-footer">
+      <div class="modal-footer">
         <button (click)="saveChanges()" [disabled]="!userForm.valid" class="btn btn-primary"
                 data-dismiss="modal"
                 type="button">{{'vtr.btn.save' | translate}}</button>
-      </div> -->
-<!-- 
+      </div>
+
     </div>
   </div>
-</div> -->
+</div>
+
 

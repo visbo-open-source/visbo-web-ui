@@ -1,0 +1,419 @@
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { visboCmpString } from '../../_helpers/visbo.helper';
+import { VtrVisboTrackerExtended } from 'src/app/_models/employee';
+import { VisboTimeTracking } from 'src/app/_services/visbotimetracker.service';
+import { UserService } from 'src/app/_services/user.service';
+import { AuthenticationService } from 'src/app/_services/authentication.service';
+import { VisboCenter } from 'src/app/_models/visbocenter';
+import { VisboCenterService } from 'src/app/_services/visbocenter.service';
+import { VisboProjectService } from 'src/app/_services/visboproject.service';
+import { VisboProject } from 'src/app/_models/visboproject';
+import { VisboSettingService } from 'src/app/_services/visbosetting.service';
+import { VisboOrganisation } from 'src/app/_models/visbosetting';
+import { VisboUser } from 'src/app/_models/visbouser';
+
+@Component({
+  selector: 'app-comp-approvertable',
+  templateUrl: './comp-approvertable.component.html',
+  styleUrls: ['./comp-approvertable.component.css']
+})
+export class ApproverComponent implements OnInit {
+
+    // @ViewChild('VtrModalCreate') VtrModalCreate: HTMLElement;
+    rows: VtrVisboTrackerExtended[] = [];
+    originalColumns: VtrVisboTrackerExtended[] = [];
+    startDate: string = new Date(Date.now() - 12096e5).toISOString().slice(0, 10);
+    endDate: string = new Date().toISOString().slice(0, 10);
+    sortAscending: boolean;
+    sortColumn: number;
+    userForm: FormGroup = new FormGroup({
+      userId: new FormControl('', Validators.required),
+      vpid: new FormControl('', Validators.required),
+      vcid: new FormControl('', Validators.required),
+      roleId: new FormControl('', Validators.required),
+      date: new FormControl('', Validators.required),
+      time: new FormControl('', Validators.required),
+      notes: new FormControl('', Validators.required),
+      status: new FormControl(null),
+      approvalId: new FormControl(null),
+      approvalDate: new FormControl(null)
+    });
+    selectedRow: VtrVisboTrackerExtended;
+    showModal = false;
+    vtrApprove = ['Yes', 'No'];
+    visboCentersList: VisboCenter[] = [];
+    visboProjectsList: VisboProject[] = [];  
+    indexedProjectsList: VisboProject[] = [];
+    selectedCenterProjects: VisboProject[];
+    hasOrga = false;
+    vcOrga: VisboOrganisation[] = [];
+    vcActive: VisboCenter;
+    vpActiveName: string;
+    vcActiveName: string;
+    vtrActiveUserName: string;
+    isCreatorOfRecord: boolean;
+    managerTimeTrackerList: VtrVisboTrackerExtended[];
+    private userId: string;
+    private userName: string;
+    private userEmail: string;
+    originalManagerList: VtrVisboTrackerExtended[];
+    private managerUid: number;
+    userIsApprover: boolean;
+  
+    constructor(
+      private trackerService: VisboTimeTracking,
+      private userService: UserService,
+      private authService: AuthenticationService,
+      private visboCenterWs: VisboCenterService,
+      private visboProjectService: VisboProjectService,
+      private visboSettingService: VisboSettingService,
+    ) {
+    }
+  
+    ngOnInit(): void {
+      this.visboCenterWs.getVisboCenters().subscribe(
+        visboCentersList => {
+          this.visboCentersList = visboCentersList;
+          this.getProfile();
+        },
+        error => {
+          console.log('get VCs failed: error: %d message: %s', error.status, error.error.message);
+        }
+      );
+      this.getProjectList();
+      this.userForm.get('vcid').valueChanges.subscribe((value) => {
+        if (value) {
+          this.onCenterChange(value);
+        }
+      });
+    }
+  
+    onCenterChange(selectedCenterId: string): void {
+      this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
+        visboProjectsList => {
+          this.selectedCenterProjects = visboProjectsList.filter(project => project.vpType === 0);
+        },
+        error => {
+          console.log(error);
+        }
+      );
+      this.getOrganizationList(selectedCenterId);
+    }
+  
+    addEmployee() {
+      this.showModal = true;
+      this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {
+        this.userForm.reset();
+        this.getTimeTrackerList();
+      }, error => {
+        console.log('Error:', error);
+      });
+      this.showModal = false;
+    }
+  
+    openEditModal(user: VtrVisboTrackerExtended, isCreator?) {
+      if (isCreator) {
+        this.showModal = true;
+        this.isCreatorOfRecord = true;
+      }
+      this.vpActiveName = user.vpName;
+      this.vcActiveName = user.vcName;
+      this.vtrActiveUserName = user.userName;
+  
+      this.userForm.patchValue({
+        userId: user.userId,
+        vcid: user.vcid,
+        vpid: user.vpid,
+        date: user.date,
+        time: user.time,
+        notes: user.notes,
+        roleId: user.roleId,
+        approvalId: null,
+        approvalDate: null
+      });
+    }
+  
+    saveChanges() {
+      const userId = this.selectedRow.userId;
+      const timeTrackerId = this.selectedRow.timeTrackerId;
+      const updatedRow = {
+        ...this.userForm.value,
+        userId,
+      };
+      if (!this.isCreatorOfRecord) {
+        updatedRow.approvalDate = new Date().toISOString();
+        updatedRow.approvalId = userId;
+      }
+      this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
+        .subscribe(
+          () => {
+            this.userForm.reset();
+            this.getTimeTrackerList();
+          },
+          (error) => {
+            console.error('Error updating row:', error);
+          }
+        );
+      this.isCreatorOfRecord = false;
+    }
+  
+    selectRow(user:VtrVisboTrackerExtended) {
+      this.selectedRow = user;
+      this.userForm.patchValue({
+        userId: user.userId,
+        vcid: user.vcid,
+        vpid: user.vpid,
+        roleId: user.roleId,
+        date: user.date,
+        notes: user.notes,
+        time: user.time,
+        status: user.status,
+        approvalId: user?.approvalId || null,
+        approvalDate: user?.approvalDate || null
+      });
+    }
+  
+    sortVTRTable(n: number, isManager: boolean=false): void {
+      if (isManager) {
+        if (n !== undefined) {
+          if (!this.managerTimeTrackerList) {
+            return;
+          }
+          if (n !== this.sortColumn) {
+            this.sortColumn = n;
+            this.sortAscending = undefined;
+          }
+          if (this.sortAscending === undefined) {
+            this.sortAscending = (n === 1 || n === 3);
+          } else {
+            this.sortAscending = !this.sortAscending;
+          }
+        }
+        this.managerTimeTrackerList.sort((a, b) => {
+          switch (this.sortColumn) {
+            case 1:             
+             return (visboCmpString(b.userName.toLowerCase(), a.userName.toLowerCase()) || (b.date.localeCompare(a.date)) ) ;
+            case 2:
+              return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
+            case 3:
+              return a.date.localeCompare(b.date);
+            case 4:
+              return a.time - b.time;
+            case 5:
+              return a.status.localeCompare(b.status);
+          }
+        });
+        if (!this.sortAscending) {
+          this.managerTimeTrackerList.reverse();
+        }
+      } else {
+        if (n !== undefined) {
+          if (!this.originalColumns) {
+            return;
+          }
+          if (n !== this.sortColumn) {
+            this.sortColumn = n;
+            this.sortAscending = undefined;
+          }
+          if (this.sortAscending === undefined) {
+            this.sortAscending = (n === 1 || n === 3);
+          } else {
+            this.sortAscending = !this.sortAscending;
+          }
+        }
+        this.originalColumns.sort((a, b) => {
+          switch (this.sortColumn) {
+            case 1:
+              return (visboCmpString(a.userName.toLowerCase(), b.userName.toLowerCase()) && (a.date.localeCompare(b.date))) ;
+            case 2:
+              return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
+            case 3:
+              return a.date.localeCompare(b.date);
+            case 4:
+              return a.time - b.time;
+            case 5:
+              return a.status.localeCompare(b.status);
+          }
+        });
+        if (!this.sortAscending) {
+          this.originalColumns.reverse();
+        }
+      }
+  
+    }
+  
+    updateFilter() {
+      this.managerTimeTrackerList = this.originalManagerList
+      this.originalColumns = this.rows;
+      if (!!this.startDate?.length || !!this.endDate?.length) {
+        const startDate = this.startDate?.length ? new Date(this.startDate) : null;
+        const endDate = this.endDate?.length ? new Date(this.endDate) : null;
+  
+        this.originalColumns = this.originalColumns.filter(item => {
+          const date = new Date(item.date);
+          if (startDate && !endDate) {
+            return date >= startDate;
+          } else if (!startDate && endDate) {
+            return date <= endDate;
+          } else {
+            return date >= startDate && date <= endDate;
+          }
+        });
+        this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
+          const date = new Date(item.date);
+          if (startDate && !endDate) {
+            return date >= startDate;
+          } else if (!startDate && endDate) {
+            return date <= endDate;
+          } else {
+            return date >= startDate && date <= endDate;
+          }
+        });
+      }
+    }
+  
+    private getProjectList(): void {
+      this.visboProjectService.getVisboProjects(null)
+        .subscribe(
+          visboProjectsList => {
+            visboProjectsList.forEach(vp => this.indexedProjectsList[vp._id] = vp)
+            this.visboProjectsList = visboProjectsList;
+            // this.visboProjectsList = visboProjectsList.filter(item => item.vpType == 0);
+          },
+          ({error, status}) => {
+            console.log('get VPs failed: error: %d message: %s', status, error.message); // log to console instead
+          }
+        );
+    }
+  
+    
+    getActiveUser(): VisboUser {
+      return JSON.parse(localStorage.getItem('currentUser'));
+    }
+   
+  
+    private getProfile() {
+        const user = this.getActiveUser();
+        this.userId = user._id;
+        this.userName = user.profile.firstName + ' ' + user.profile.lastName;
+        this.userEmail = user.email;
+        this.userIsApprover = user.status.isApprover;
+        console.log("getProfile: userIsApprover: ", this.userIsApprover);
+        this.userForm.get('userId').setValue(user._id);
+        this.getTimeTrackerList();
+    }
+  
+    private getTimeTrackerList() {
+      this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {
+        this.rows = timeEntries?.map(record => {
+          const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
+          const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
+          return {
+            userId: record.userId,
+            vcid: record.vcid,
+            vpid: record.vpid,
+            roleId: record.roleId,
+            notes: record.notes,
+            status: record.status,
+            time: record.time.$numberDecimal,
+            date: record.date?.split('T')[0],
+            approvalId: record.approvalId,
+            approvalDate: record.approvalDate,
+            vcName: centerName,
+            vpName: projectName,
+            timeTrackerId: record._id,
+            userName: record.name
+          };
+        });
+        this.managerTimeTrackerList = managerView?.map(record => {
+          const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
+          const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
+          return {
+            userId: record.userId,
+            vcid: record.vcid,
+            vpid: record.vpid,
+            roleId: record.roleId,
+            notes: record.notes,
+            status: record.status,
+            time: record.time.$numberDecimal,
+            date: record.date?.split('T')[0],
+            approvalId: record.approvalId,
+            approvalDate: record.approvalDate,
+            vcName: centerName,
+            vpName: projectName,
+            timeTrackerId: record._id,
+            userName: record.name
+          };
+        });
+        if (this.managerTimeTrackerList?.length) {
+          this.getOrganizationList(this.visboCentersList[0]._id);
+        }
+        this.originalManagerList = this.managerTimeTrackerList;
+        this.originalColumns = this.rows;
+        this.sortVTRTable(undefined);
+        this.updateFilter();
+      });
+    }
+  
+    clearEditModal() {
+      this.isCreatorOfRecord = false;
+      this.userForm.reset();
+      this.userForm.get('userId').setValue(this.userId);
+    }
+  
+    approveAllTimeRecords() {
+      const timeTrackerIds =
+        this.managerTimeTrackerList
+          .map(timeTrackerElem => {
+            return {
+              id: timeTrackerElem.timeTrackerId,
+              vpid: timeTrackerElem.vpid,
+            };
+          });
+      console.log(this.managerTimeTrackerList);
+      const requestBody = {
+        status: "Yes",
+        approvalId: this.managerUid,
+        approvalDate: new Date().toISOString(),
+        approvalList: timeTrackerIds
+      };
+      this.trackerService.approveAllTimeRecords(requestBody).subscribe(() => {
+        this.getTimeTrackerList();
+      });
+    }
+  
+    checkIsCreatorOfRecord({userId}) {
+      return userId === this.userId;
+    }
+  
+    protected readonly event = event;
+  
+    checkHours(event: Event) {
+      if (event.target['value'] > 24) {
+        event.target['value'] = 24;
+      } 
+      if (event.target['value'] < 0) {
+        event.target['value'] = 0;
+      }
+    }
+  
+    private getOrganizationList(selectedCenterId: string) {
+      this.visboSettingService.getVCOrganisations(
+        selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
+        organisation => {
+          this.vcOrga = organisation;
+          this.hasOrga = organisation?.length > 0;
+          const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
+          if (this.managerTimeTrackerList) {
+            this.managerUid = roleId;
+          }
+          if (this.hasOrga) {
+            this.userForm.get('roleId').setValue(roleId);
+          }
+        },
+        error => {
+          console.log(error);
+        });
+    }
+}
