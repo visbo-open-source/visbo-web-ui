@@ -101,7 +101,7 @@
 <!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
 <div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
 <!-- <table  class="table table-hover table-sortable table-custom"> -->
-<table *ngIf="originalManagerList?.length" class="table table-hover table-sortable table-custom">
+<table class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
     <th (click)="sortVTRTable(1, true)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
@@ -159,7 +159,7 @@
       </button>
     </td>
   </tr>
-  <tr style="text-align: center" *ngIf="!managerTimeTrackerList.length">
+  <tr style="text-align: center" *ngIf="managerTimeTrackerList?.length==0">
     <td></td>
     <td></td>
     <td></td>

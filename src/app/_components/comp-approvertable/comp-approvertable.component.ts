@@ -53,11 +53,11 @@ export class ApproverComponent implements OnInit {
     vcActiveName: string;
     vtrActiveUserName: string;
     isCreatorOfRecord: boolean;
-    managerTimeTrackerList: VtrVisboTrackerExtended[];
+    managerTimeTrackerList: VtrVisboTrackerExtended[]=[];
+    originalManagerList: VtrVisboTrackerExtended[]=[];
     private userId: string;
     private userName: string;
     private userEmail: string;
-    originalManagerList: VtrVisboTrackerExtended[];
     private managerUid: number;
     userIsApprover: boolean;
   
@@ -207,59 +207,16 @@ export class ApproverComponent implements OnInit {
         if (!this.sortAscending) {
           this.managerTimeTrackerList.reverse();
         }
-      } else {
-        if (n !== undefined) {
-          if (!this.originalColumns) {
-            return;
-          }
-          if (n !== this.sortColumn) {
-            this.sortColumn = n;
-            this.sortAscending = undefined;
-          }
-          if (this.sortAscending === undefined) {
-            this.sortAscending = (n === 1 || n === 3);
-          } else {
-            this.sortAscending = !this.sortAscending;
-          }
-        }
-        this.originalColumns.sort((a, b) => {
-          switch (this.sortColumn) {
-            case 1:
-              return (visboCmpString(a.userName.toLowerCase(), b.userName.toLowerCase()) && (a.date.localeCompare(b.date))) ;
-            case 2:
-              return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
-            case 3:
-              return a.date.localeCompare(b.date);
-            case 4:
-              return a.time - b.time;
-            case 5:
-              return a.status.localeCompare(b.status);
-          }
-        });
-        if (!this.sortAscending) {
-          this.originalColumns.reverse();
-        }
-      }
-  
+      }  
     }
   
     updateFilter() {
-      this.managerTimeTrackerList = this.originalManagerList
-      this.originalColumns = this.rows;
+      this.managerTimeTrackerList = this.originalManagerList;
+      // this.originalColumns = this.rows;
       if (!!this.startDate?.length || !!this.endDate?.length) {
         const startDate = this.startDate?.length ? new Date(this.startDate) : null;
         const endDate = this.endDate?.length ? new Date(this.endDate) : null;
   
-        this.originalColumns = this.originalColumns.filter(item => {
-          const date = new Date(item.date);
-          if (startDate && !endDate) {
-            return date >= startDate;
-          } else if (!startDate && endDate) {
-            return date <= endDate;
-          } else {
-            return date >= startDate && date <= endDate;
-          }
-        });
         this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
           const date = new Date(item.date);
           if (startDate && !endDate) {
@@ -285,6 +242,7 @@ export class ApproverComponent implements OnInit {
             console.log('get VPs failed: error: %d message: %s', status, error.message); // log to console instead
           }
         );
+
     }
   
     
@@ -305,52 +263,41 @@ export class ApproverComponent implements OnInit {
     }
   
     private getTimeTrackerList() {
-      this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {
-        this.rows = timeEntries?.map(record => {
-          const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
-          const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
-          return {
-            userId: record.userId,
-            vcid: record.vcid,
-            vpid: record.vpid,
-            roleId: record.roleId,
-            notes: record.notes,
-            status: record.status,
-            time: record.time.$numberDecimal,
-            date: record.date?.split('T')[0],
-            approvalId: record.approvalId,
-            approvalDate: record.approvalDate,
-            vcName: centerName,
-            vpName: projectName,
-            timeTrackerId: record._id,
-            userName: record.name
-          };
-        });
+      this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {        
         this.managerTimeTrackerList = managerView?.map(record => {
           const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
           const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
-          return {
-            userId: record.userId,
-            vcid: record.vcid,
-            vpid: record.vpid,
-            roleId: record.roleId,
-            notes: record.notes,
-            status: record.status,
-            time: record.time.$numberDecimal,
-            date: record.date?.split('T')[0],
-            approvalId: record.approvalId,
-            approvalDate: record.approvalDate,
-            vcName: centerName,
-            vpName: projectName,
-            timeTrackerId: record._id,
-            userName: record.name
-          };
+          if (centerName && projectName) {
+            return {
+              userId: record.userId,
+              vcid: record.vcid,
+              vpid: record.vpid,
+              roleId: record.roleId,
+              notes: record.notes,
+              status: record.status,
+              time: record.time.$numberDecimal,
+              date: record.date?.split('T')[0],
+              approvalId: record.approvalId,
+              approvalDate: record.approvalDate,
+              vcName: centerName,
+              vpName: projectName,
+              timeTrackerId: record._id,
+              userName: record.name
+            }; 
+          } else {
+
+          }
         });
+        this.originalManagerList = [];
+        // delete the items which are undefined
+        this.managerTimeTrackerList.forEach( item => {
+          if (item) {this.originalManagerList.push(item)}
+        });
+        this.managerTimeTrackerList = this.originalManagerList;
         if (this.managerTimeTrackerList?.length) {
-          this.getOrganizationList(this.visboCentersList[0]._id);
+          this.getOrganizationList(this.visboCentersList[0]._id);         
         }
-        this.originalManagerList = this.managerTimeTrackerList;
-        this.originalColumns = this.rows;
+       
         this.sortVTRTable(undefined);
         this.updateFilter();
       });
@@ -371,7 +318,7 @@ export class ApproverComponent implements OnInit {
               vpid: timeTrackerElem.vpid,
             };
           });
-      console.log(this.managerTimeTrackerList);
+      //console.log(this.managerTimeTrackerList);
       const requestBody = {
         status: "Yes",
         approvalId: this.managerUid,
@@ -404,7 +351,9 @@ export class ApproverComponent implements OnInit {
         organisation => {
           this.vcOrga = organisation;
           this.hasOrga = organisation?.length > 0;
-          const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
+          var role = organisation[0].allRoles.find(role => (role.email === this.userEmail && role.isSummaryRole && !role.isExternRole));        
+          const roleId = role?.uid;
+       
           if (this.managerTimeTrackerList) {
             this.managerUid = roleId;
           }

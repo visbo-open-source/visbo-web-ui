@@ -53,11 +53,11 @@ export class EmployeeComponent implements OnInit {
   vcActiveName: string;
   vtrActiveUserName: string;
   isCreatorOfRecord: boolean;
-  managerTimeTrackerList: VtrVisboTrackerExtended[];
+  // managerTimeTrackerList: VtrVisboTrackerExtended[];
+  // originalManagerList: VtrVisboTrackerExtended[];
   private userId: string;
   private userName: string;
   private userEmail: string;
-  originalManagerList: VtrVisboTrackerExtended[];
   private managerUid: number;
   userIsApprover: boolean;
 
@@ -175,39 +175,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   sortVTRTable(n: number, isManager: boolean=false): void {
-    if (isManager) {
-      if (n !== undefined) {
-        if (!this.managerTimeTrackerList) {
-          return;
-        }
-        if (n !== this.sortColumn) {
-          this.sortColumn = n;
-          this.sortAscending = undefined;
-        }
-        if (this.sortAscending === undefined) {
-          this.sortAscending = (n === 1 || n === 3);
-        } else {
-          this.sortAscending = !this.sortAscending;
-        }
-      }
-      this.managerTimeTrackerList.sort((a, b) => {
-        switch (this.sortColumn) {
-          case 1:             
-           return (visboCmpString(b.userName.toLowerCase(), a.userName.toLowerCase()) || (b.date.localeCompare(a.date)) ) ;
-          case 2:
-            return (b.vpName.localeCompare(a.vpName) || (b.date.localeCompare(a.date)) );
-          case 3:
-            return a.date.localeCompare(b.date);
-          case 4:
-            return a.time - b.time;
-          case 5:
-            return a.status.localeCompare(b.status);
-        }
-      });
-      if (!this.sortAscending) {
-        this.managerTimeTrackerList.reverse();
-      }
-    } else {
+   
       if (n !== undefined) {
         if (!this.originalColumns) {
           return;
@@ -239,12 +207,9 @@ export class EmployeeComponent implements OnInit {
       if (!this.sortAscending) {
         this.originalColumns.reverse();
       }
-    }
-
   }
 
   updateFilter() {
-    this.managerTimeTrackerList = this.originalManagerList
     this.originalColumns = this.rows;
     if (!!this.startDate?.length || !!this.endDate?.length) {
       const startDate = this.startDate?.length ? new Date(this.startDate) : null;
@@ -259,17 +224,7 @@ export class EmployeeComponent implements OnInit {
         } else {
           return date >= startDate && date <= endDate;
         }
-      });
-      this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
-        const date = new Date(item.date);
-        if (startDate && !endDate) {
-          return date >= startDate;
-        } else if (!startDate && endDate) {
-          return date <= endDate;
-        } else {
-          return date >= startDate && date <= endDate;
-        }
-      });
+      });      
     }
   }
 
@@ -279,7 +234,6 @@ export class EmployeeComponent implements OnInit {
         visboProjectsList => {
           visboProjectsList.forEach(vp => this.indexedProjectsList[vp._id] = vp)
           this.visboProjectsList = visboProjectsList;
-          // this.visboProjectsList = visboProjectsList.filter(item => item.vpType == 0);
         },
         ({error, status}) => {
           console.log('get VPs failed: error: %d message: %s', status, error.message); // log to console instead
@@ -309,48 +263,36 @@ export class EmployeeComponent implements OnInit {
       this.rows = timeEntries?.map(record => {
         const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
         const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
-        return {
-          userId: record.userId,
-          vcid: record.vcid,
-          vpid: record.vpid,
-          roleId: record.roleId,
-          notes: record.notes,
-          status: record.status,
-          time: record.time.$numberDecimal,
-          date: record.date?.split('T')[0],
-          approvalId: record.approvalId,
-          approvalDate: record.approvalDate,
-          vcName: centerName,
-          vpName: projectName,
-          timeTrackerId: record._id,
-          userName: record.name
-        };
+        if (centerName && projectName) {
+          return {
+            userId: record.userId,
+            vcid: record.vcid,
+            vpid: record.vpid,
+            roleId: record.roleId,
+            notes: record.notes,
+            status: record.status,
+            time: record.time.$numberDecimal,
+            date: record.date?.split('T')[0],
+            approvalId: record.approvalId,
+            approvalDate: record.approvalDate,
+            vcName: centerName,
+            vpName: projectName,
+            timeTrackerId: record._id,
+            userName: record.name
+          }; 
+        } else {
+            //console.log("No access to this VC %s for User: %s", record.vcid, record.name)
+        }
       });
-      this.managerTimeTrackerList = managerView?.map(record => {
-        const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
-        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
-        return {
-          userId: record.userId,
-          vcid: record.vcid,
-          vpid: record.vpid,
-          roleId: record.roleId,
-          notes: record.notes,
-          status: record.status,
-          time: record.time.$numberDecimal,
-          date: record.date?.split('T')[0],
-          approvalId: record.approvalId,
-          approvalDate: record.approvalDate,
-          vcName: centerName,
-          vpName: projectName,
-          timeTrackerId: record._id,
-          userName: record.name
-        };
+      // delete the records = undefined
+      this.originalColumns = [];
+      this.rows.forEach( item => {
+        if (item) {this.originalColumns.push(item)}
       });
-      if (this.managerTimeTrackerList?.length) {
+      this.rows = this.originalColumns;
+      if (this.originalColumns?.length) {
         this.getOrganizationList(this.visboCentersList[0]._id);
       }
-      this.originalManagerList = this.managerTimeTrackerList;
-      this.originalColumns = this.rows;
       this.sortVTRTable(undefined);
       this.updateFilter();
     });
@@ -360,27 +302,6 @@ export class EmployeeComponent implements OnInit {
     this.isCreatorOfRecord = false;
     this.userForm.reset();
     this.userForm.get('userId').setValue(this.userId);
-  }
-
-  approveAllTimeRecords() {
-    const timeTrackerIds =
-      this.managerTimeTrackerList
-        .map(timeTrackerElem => {
-          return {
-            id: timeTrackerElem.timeTrackerId,
-            vpid: timeTrackerElem.vpid,
-          };
-        });
-    console.log(this.managerTimeTrackerList);
-    const requestBody = {
-      status: "Yes",
-      approvalId: this.managerUid,
-      approvalDate: new Date().toISOString(),
-      approvalList: timeTrackerIds
-    };
-    this.trackerService.approveAllTimeRecords(requestBody).subscribe(() => {
-      this.getTimeTrackerList();
-    });
   }
 
   checkIsCreatorOfRecord({userId}) {
@@ -403,11 +324,10 @@ export class EmployeeComponent implements OnInit {
       selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
       organisation => {
         this.vcOrga = organisation;
-        this.hasOrga = organisation?.length > 0;
-        const roleId = this.hasOrga ? organisation[0].allRoles.find(({email}) => email === this.userEmail).uid : null;
-        if (this.managerTimeTrackerList) {
-          this.managerUid = roleId;
-        }
+        this.hasOrga = organisation?.length > 0;       
+        var role = organisation[0].allRoles.find(role => (role.email === this.userEmail && !role.isSummaryRole && !role.isExternRole));        
+        const roleId = role?.uid;
+        
         if (this.hasOrga) {
           this.userForm.get('roleId').setValue(roleId);
         }
