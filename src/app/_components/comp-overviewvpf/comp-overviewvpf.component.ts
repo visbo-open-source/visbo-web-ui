@@ -138,6 +138,8 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
   budgetAtCompletion = 0;
   RACSumCurrent = 0;
   RACSumBaseline = 0;
+  profitCurrent = 0;
+  profitBaseline = 0;
 
   chart = true;
   parentThis = this;
@@ -638,6 +640,10 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
         this.hasVariant = true;
       }
     }
+
+    
+    this.profitBaseline = this.RACSumBaseline - this.budgetAtCompletion;
+    this.profitCurrent = this.RACSumCurrent - this.estimateAtCompletion;
     this.sortKeyMetricsTable(undefined);
     this.thinDownMetricList();
     this.visboKeyMetricsCalcVPF();
@@ -1157,17 +1163,42 @@ export class VisboCompOverviewVPFComponent implements OnInit, OnChanges {
     else return 3;
   }
 
-  
-  getFinancalLevel(cost: number, revenue: number): number {
-    if (cost && revenue) {
-      if (cost + revenue == 2) return 1;
-      if (cost + revenue == 6) return 3;
-      if ((cost + revenue > 2) && (cost + revenue < 6)) return 2;
-    } else {
-      return 2;
+  getProfitLevel(plan: number, baseline: number): number {
+    let percentCalc = 1;
+    if (baseline && plan) {
+      if ((baseline > 0) && (plan > 0)) {
+        percentCalc = baseline/plan;
+      }
+      else if ((baseline < 0) && (plan < 0)) {
+        percentCalc = plan/baseline;
+      }
+      else if ((baseline < 0) && (plan > 0)) {
+        percentCalc = 1;
+      }
+      else if ((baseline > 0) && (plan < 0)) {
+        percentCalc = 2;
+      }      
     }
-      
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
   }
+  
+  getFinancalLevel(profit: number): number {    
+    //getFinancalLevel(cost: number, revenue: number, profit: number): number {
+      // if (cost && revenue && profit) {
+      //   if (cost + revenue + profit <= 4) return 1;
+      //   if (cost + revenue + profit >= 7) return 3;
+      //   if ((cost + revenue + profit > 4) && (cost + revenue + profit < 7)) return 2;
+      // } else {
+      //   return 2;
+      // } 
+      if (profit) {
+        if (profit > 0) return 1;
+        if (profit == 0) return 2;
+        if (profit < 0) return 3;
+      }
+    }
 
   getVPStatus(local: boolean, original: string = undefined): string {
     if (!this.dropDownVPStatus) {
