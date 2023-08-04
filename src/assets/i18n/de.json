@@ -1585,6 +1585,7 @@
 	"keyMetrics": {		
 		"longCostBaseCurr": "Kosten: Baseline / Plan",
 		"longRACBaseCurr": "Revenue: Baseline / Plan",
+		"longProfitBaseCurr": "Profit: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",
