@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
-import { VisboSetting, VisboOrganisation } from '../_models/visbosetting';
+import { VisboSetting, VisboOrganisation, VisboCustomUserFields } from '../_models/visbosetting';
 
 import { VisboProject, VPVariant, VPParams, VPCustomString, VPCustomDouble, VPCustomDate,
           getCustomFieldString, addCustomFieldString, addCustomFieldDouble, getCustomFieldDouble,
@@ -57,6 +57,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   dropDown: DropDown[] = [];          // all variants and default variant
   dropDownIndex: number;
   vcCustomize: VisboSetting[];
+  vcCustomfields: VisboSetting;
   vcEnableDisable: VisboSetting[];
   vcOrga: VisboOrganisation[];
   timeoutID: ReturnType<typeof setTimeout>;
@@ -91,6 +92,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   editCustomFieldString: VPCustomString[];
   editCustomFieldDouble: VPCustomDouble[];
   editCustomFieldDate: VPCustomDate[];
+  customUserFieldDefinitions: VisboCustomUserFields[];
 
   newVPV: VisboProjectVersion;
   newVPVstartDate: Date;
@@ -617,7 +619,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   getAllVersionsShort(): void {
     if (this.vpActive) {
-      this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, this.calcPredict ? 2 : 1)
+      this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, this.calcPredict ? 2 : 1, true)
         .subscribe(
           vpv => {
             this.allVPVs = vpv;
@@ -962,11 +964,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,CustomPredict,CustomEdit')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
               this.vcEnableDisable = this.squeezeEnableDisable(vcsettings.filter(item => item.type == '_VCConfig'));
+              this.vcCustomfields = vcsettings.find(item=> item.type == 'customfields');
               let customSetting = vcsettings.find(item => item.type == 'CustomPredict');
               if (customSetting) {
                 this.customPredict = customSetting.name;
@@ -1473,6 +1476,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (user) {
         this.vpActive.managerId = user._id;
       }
+
+      // definition of the customUserFields
+      this.customUserFieldDefinitions = this.vcCustomfields?.value?.liste;
       
       const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
@@ -1498,6 +1504,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           const editField = this.editCustomFieldString.find(element => element.name == item.name);
           if (editField && editField.value) {
             item.value = editField.value;
+            // save the customFieldString changes to the vpv
+            const userFieldDef = this.customUserFieldDefinitions.find(elem => elem.name == item.name)
+            if (userFieldDef ) {              
+              const usageIndex = this.vpvActive.customStringFields.findIndex(part => part.strkey == userFieldDef.uid)
+              this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
+            }
           }
         }
       });
@@ -1506,9 +1518,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           const editField = this.editCustomFieldDouble.find(element => element.name == item.name);
           if (editField && editField.value !== null) {
             item.value = editField.value;
+            // save the customFieldString changes to the vpv
+            const userFieldDef = this.customUserFieldDefinitions.find(elem => elem.name == item.name)
+            if (userFieldDef ) {              
+              const usageIndex = this.vpvActive.customDblFields.findIndex(part => part.str == userFieldDef.uid)
+              this.vpvActive.customDblFields[usageIndex].dbl = item.value;
+            }
           }
         }
       });
+      
     }
 
     // project version commited
@@ -1534,6 +1553,31 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
           this.alertService.success(message, true);                   
           this.vpActive = vp;
+        
+          this.vpvActive.vp = vp;
+          this.vpvActive.timestamp = new Date();
+          this.visboprojectversionService.addVisboProjectVersion(this.vpvActive)
+            .subscribe(
+              (vpv) => {
+                const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+                //this.vpvActive = vpv[0];
+                this.addVPVtoList(vpv[0]);
+                this.switchVariant(vpv[0].variantName);
+                this.alertService.success(message, true);
+              },
+              error => {
+                this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
+                if (error.status === 403) {
+                  const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpvActive.name});
+                  this.alertService.error(message);
+                } else if (error.status === 409) {
+                  const message = this.translate.instant('vpDetail.msg.errorVPVConflict', {'name': this.vpvActive.name});
+                  this.alertService.error(message);
+                } else {
+                  this.alertService.error(getErrorMessage(error));
+                }
+              }
+            )
         },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
