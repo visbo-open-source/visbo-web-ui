@@ -321,7 +321,7 @@ export class ApproverComponent implements OnInit {
       //console.log(this.managerTimeTrackerList);
       const requestBody = {
         status: "Yes",
-        approvalId: this.managerUid,
+        approvalId: this.userId,
         approvalDate: new Date().toISOString(),
         approvalList: timeTrackerIds
       };
