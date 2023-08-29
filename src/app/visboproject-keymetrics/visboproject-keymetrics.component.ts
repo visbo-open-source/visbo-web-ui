@@ -18,7 +18,7 @@ import { VisboProject, VPVariant, VPParams, VPCustomString, VPCustomDouble, VPCu
           constSystemVPStatus, constSystemVPStatusFrozen} from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { VisboProjectVersion, VPVKeyMetrics } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVDblFields, VPVKeyMetrics, VPVStrFields } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGUserGroup, VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -1498,6 +1498,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       } else if (this.customRisk) {
         addCustomFieldDouble(this.vpActive, '_risk', this.customRisk);
       }
+      
       // update changed customFields
       this.vpActive.customFieldString.forEach(item => {
         if (item.type == 'VP') {
@@ -1507,8 +1508,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             // save the customFieldString changes to the vpv
             const userFieldDef = this.customUserFieldDefinitions.find(elem => elem.name == item.name)
             if (userFieldDef ) {              
-              const usageIndex = this.vpvActive.customStringFields.findIndex(part => part.strkey == userFieldDef.uid)
+              const usageIndex = this.vpvActive.customStringFields.findIndex(part => part.strkey == userFieldDef.uid);
+              if (usageIndex < 0) {
+                const strField = new VPVStrFields();
+                strField.strkey = userFieldDef.uid;
+                strField.strvalue = item.value;
+                this.vpvActive.customStringFields.push(strField);
+              } else {
               this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
+              }
             }
           }
         }
@@ -1522,7 +1530,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             const userFieldDef = this.customUserFieldDefinitions.find(elem => elem.name == item.name)
             if (userFieldDef ) {              
               const usageIndex = this.vpvActive.customDblFields.findIndex(part => part.str == userFieldDef.uid)
-              this.vpvActive.customDblFields[usageIndex].dbl = item.value;
+              if (usageIndex < 0) {
+                const dblField = new VPVDblFields();
+                dblField.str = userFieldDef.uid;
+                dblField.dbl = item.value;
+                this.vpvActive.customDblFields.push(dblField);
+              } else {
+                this.vpvActive.customDblFields[usageIndex].dbl = item.value;
+              }              
             }
           }
         }

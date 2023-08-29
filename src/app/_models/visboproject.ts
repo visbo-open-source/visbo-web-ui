@@ -142,6 +142,10 @@ export interface CreateProjectProperty {
   bac?: number;
   rac?: number;
   businessUnit?: string;
+  // ur: 25.08.2023 added
+  customFieldString?: VPCustomString[];
+  customFieldDouble?: VPCustomDouble[];
+  customFieldDate?: VPCustomDate[];
 }
 
 export const constSystemCustomName = ['_businessUnit', '_risk', '_strategicFit', '_PMCommit']

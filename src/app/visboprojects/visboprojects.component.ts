@@ -8,7 +8,7 @@ import { TranslateService} from '@ngx-translate/core';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboProject, CreateProjectProperty, getCustomFieldDate } from '../_models/visboproject';
+import { VisboProject, CreateProjectProperty, getCustomFieldDate, VPCustomString, VPCustomDouble, VPCustomDate } from '../_models/visboproject';
 import { VisboProjectVersion } from '../_models/visboprojectversion';
 import { VisboProjectService } from '../_services/visboproject.service';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
@@ -333,10 +333,23 @@ export class VisboProjectsComponent implements OnInit {
       // const suggestedEndDate: Date = new Date(suggestedStartDate);
       // suggestedEndDate.setFullYear(suggestedEndDate.getFullYear() + 1);
 
+      const templateVP = this.getVPTemplate(templateID);     
+
+      const uCf = this.userCustomfields;   // these are the customFields-Settings
+      // check if all "VP"-Type customFields are defined in customFieldsSetting -  only those will be go further
+      let cfType = 0;
+      const str_CF = this.checkCustomFields(templateVP, cfType);
+      cfType = 1;
+      const dbl_CF = this.checkCustomFields(templateVP, cfType);     
+      const date_CF = templateVP.customFieldDate;
+
       this.newVP = {
         name: this.newVP?.name || '',
         vcid: this.vcActive?._id,
         vpType: 0,
+        customFieldString: str_CF,
+        customFieldDouble: dbl_CF,
+        customFieldDate: date_CF,
         // startDate: suggestedStartDate,
         // endDate: suggestedEndDate,
         templateID: templateID
@@ -371,6 +384,35 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
+  checkCustomFields(vp:VisboProject, cfType: number):any {
+    let result: any;
+    let cfStr: VPCustomString[] = [];
+    let cfDbl: VPCustomDouble[] = [];
+    //let cfDate: VPCustomDate[];
+    if (cfType == 0) {
+      vp.customFieldString.forEach(element => {
+        if (element.type == "System"){ cfStr.push(element) };
+        if (element.type == "VP"){
+          const hCFString = this.userCustomfields.findIndex(item => item.name == element.name );         
+          if (hCFString > -1 ) {cfStr.push(element);}        
+          }
+        });
+        result = cfStr;
+    }
+
+    if (cfType == 1) {
+      vp.customFieldDouble.forEach(element => {
+        if (element.type == "System"){ cfDbl.push(element) };
+        if (element.type == "VP"){
+          const hCFDouble = this.userCustomfields.findIndex(item => item.name == element.name );         
+          if (hCFDouble > -1 ) { cfDbl.push(element) };              
+          }       
+        });
+        result = cfDbl;
+    } 
+    return result;
+  } 
+
   hasCost(vpv: VisboProjectVersion): Boolean {
     let result = false;
     if (vpv) {
@@ -398,6 +440,7 @@ export class VisboProjectsComponent implements OnInit {
     this.log(`Create VP newVP: ${JSON.stringify(this.newVP)}`);
     if (!this.newVP.name) { return; }
     if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
+    
     // dummy code to test additional properties find the first Template and create with start and end date
 
     // in newVP.templateID there comes the name of the template!!
@@ -678,6 +721,11 @@ export class VisboProjectsComponent implements OnInit {
   hasCommitDate():boolean {
     const index = this.visboprojects.findIndex(item => this.getCommitDate(item) != undefined )
     return (index >= 0);
+  }
+  
+  getVPTemplate(templateID: string):VisboProject {
+    const index = this.vpTemplates.findIndex(item => item._id == templateID )
+    return (this.vpTemplates[index]);
   }
 
   /** Log a message with the MessageService */
