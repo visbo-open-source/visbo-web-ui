@@ -393,7 +393,7 @@ export class VisboProjectsComponent implements OnInit {
       vp.customFieldString.forEach(element => {
         if (element.type == "System"){ cfStr.push(element) };
         if (element.type == "VP"){
-          const hCFString = this.userCustomfields.findIndex(item => item.name == element.name );         
+          const hCFString = this.userCustomfields.findIndex(item => (item.name == element.name) && ( item.type == '0') );         
           if (hCFString > -1 ) {cfStr.push(element);}        
           }
         });
@@ -404,7 +404,7 @@ export class VisboProjectsComponent implements OnInit {
       vp.customFieldDouble.forEach(element => {
         if (element.type == "System"){ cfDbl.push(element) };
         if (element.type == "VP"){
-          const hCFDouble = this.userCustomfields.findIndex(item => item.name == element.name );         
+          const hCFDouble = this.userCustomfields.findIndex(item => (item.name == element.name) && (item.type == '1') );         
           if (hCFDouble > -1 ) { cfDbl.push(element) };              
           }       
         });

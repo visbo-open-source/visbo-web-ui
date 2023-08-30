@@ -92,6 +92,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   editCustomFieldString: VPCustomString[];
   editCustomFieldDouble: VPCustomDouble[];
   editCustomFieldDate: VPCustomDate[];
+  newCustomFieldString: VPCustomString[];
+  newCustomFieldDouble: VPCustomDouble[];
+  
   customUserFieldDefinitions: VisboCustomUserFields[];
 
   newVPV: VisboProjectVersion;
@@ -771,7 +774,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.vpvBaseline = result;
     return result;
-  }
+  }Add
 
   checkBaselineVersion(vpv: VisboProjectVersion): boolean {
     let result = true;
@@ -795,14 +798,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         .subscribe(
           vp => {
             this.vpActive = vp;
-            this.translateCustomFields(this.vpActive);
-            this.initCustomFields(this.vpActive);
-            this.combinedPerm = vp.perm;
+            this.translateCustomFields(this.vpActive);               
+            this.combinedPerm = vp.perm;         
+            this.getVisboCenterSettings();
             this.titleService.setTitle(this.translate.instant('vpKeyMetric.titleName', {name: vp.name}));
             this.dropDownInit();
             this.getAllVersionsShort();
-            this.getVisboCenterSettings();
-            this.getVisboCenterOrga();
+            // ur: 30.08.23: CustomFieldsSetting wird in initCustomFields bereits benötigt
+            // this.getVisboCenterSettings();
+            this.getVisboCenterOrga();            
+            this.initCustomFields(this.vpActive);
           },
           error => {
             this.log(`get VP failed: error: ${error.status} message: ${error.error.message}`);
@@ -867,9 +872,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.customCommit = new Date(customFieldDate.value);
       }
       this.customerID = vp.kundennummer;
+
+      // content of customfields-setting
+      this.customUserFieldDefinitions = this.vcCustomfields?.value?.liste;
+      
       this.editCustomFieldString = this.getCustomFieldListString(true);
       this.editCustomFieldDouble = this.getCustomFieldListDouble(true);
-      this.editCustomFieldDate = this.getCustomFieldListDate(true);
+      this.editCustomFieldDate = this.getCustomFieldListDate(true);      
+      // ur: 30.08.2023: Preparation for adding new customFields
+      this.newCustomFieldString = this.checkEmptyCustomFields(vp, 0);
+      this.newCustomFieldDouble = this.checkEmptyCustomFields(vp, 1);
       this.customVPModified = false;
       this.customVPAdd = false;
       this.customVPToCommit = false;
@@ -878,7 +890,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
           result = true;
       }
     }
@@ -1515,7 +1527,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                 strField.strvalue = item.value;
                 this.vpvActive.customStringFields.push(strField);
               } else {
-              this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
+                this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
               }
             }
           }
@@ -1698,10 +1710,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     list.forEach(item => {
       const fieldString = new VPCustomString();
-      fieldString.name = item.name;
-      fieldString.type = item.type;
-      fieldString.value = item.value;
-      this.editCustomFieldString.push(fieldString);
+      const hCFString = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '0') );         
+          if (hCFString > -1 ) {
+            fieldString.name = item.name;
+            fieldString.type = item.type;
+            fieldString.value = item.value;
+            this.editCustomFieldString.push(fieldString);
+          }      
     });
     return this.editCustomFieldString;
   }
@@ -1715,7 +1730,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       list = this.vpActive?.customFieldDouble;
     }
     list.forEach(item => {
-      const fieldString = new VPCustomDouble();
+      const fieldString = new VPCustomDouble(); 
+      const hCFDouble = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '1') );         
+      if (hCFDouble > -1 )
       fieldString.name = item.name;
       fieldString.type = item.type;
       fieldString.value = item.value;
@@ -1741,6 +1758,47 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     });
     return this.editCustomFieldDate;
   }
+
+  checkEmptyCustomFields(vp:VisboProject, cfType: number):any {
+    let result: any;
+    let cfStr: VPCustomString[] = [];
+    let cfDbl: VPCustomDouble[] = [];
+    //let cfDate: VPCustomDate[];
+    if (cfType == 0) {
+      this.customUserFieldDefinitions.forEach(element => {
+        if (element.type == '0') {      
+          const hCFString = vp.customFieldString.findIndex(item => item.name == element.name );         
+          if (hCFString == -1 ) {
+            const hcf = new VPCustomString();
+            hcf.name = element.name;
+            hcf.type = 'VP';
+            hcf.value = '';
+            hcf.localName = element.name;
+            cfStr.push(hcf);                  
+          }
+        }
+      });
+      result = cfStr;
+    }
+
+    if (cfType == 1) {
+      this.customUserFieldDefinitions.forEach(element => {
+        if (element.type == '1') {
+          const hCFDouble = vp.customFieldDouble.findIndex(item => item.name == element.name );         
+          if (hCFDouble == -1 ) { 
+            const hcf = new VPCustomDouble();
+            hcf.name = element.name;
+            hcf.type = 'VP';
+            hcf.value = 0;
+            hcf.localName = element.name;
+            cfDbl.push(hcf);               
+          } 
+        }      
+      });
+      result = cfDbl;
+    } 
+    return result;
+  } 
 
   getTimestampTooltip(vpv: VisboProjectVersion): string {
     if (!vpv) return '';
