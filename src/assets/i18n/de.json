@@ -467,7 +467,8 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
-			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!",
+			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!",			
+			"errorVPVConflict": "Ein VISBO Projekt Version mit dem Namen  {{name}} does already exist!",
 			"errorRemoveVariantPerm": "Keine Berechtigung Variante {{name}} zu löschen",
 			"errorRemoveVariantConflict": "Beim Löschen der Variante {{name}} ist ein Fehler aufgetreten",
 			"errorCreateVariantPerm": "Keine Berechtigung eine Variante zu erstellen",
@@ -1553,6 +1554,7 @@
 	"keyMetrics": {		
 		"longCostBaseCurr": "Kosten: Baseline / Plan",
 		"longRACBaseCurr": "Revenue: Baseline / Plan",
+		"longProfitBaseCurr": "Profit: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

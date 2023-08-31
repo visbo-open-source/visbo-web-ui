@@ -57,7 +57,8 @@
     <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
       <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">
-        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent)) }"></ng-container></strong>
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
+        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong>
         {{ 'compViewBubble.metric.financialSummary' | translate }}
       </h5>
       <div class="card-body p-2">
@@ -80,6 +81,7 @@
              / {{estimateAtCompletion | number:'1.0-0'}} T€
           </div>
         </div>
+        <!-- ur: new for Profit line -->
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(RACSumBaseline, RACSumCurrent)}"></ng-container></strong>
@@ -89,7 +91,17 @@
             {{RACSumBaseline | number:'1.0-0'}} T€
              / {{RACSumCurrent | number:'1.0-0'}} T€
           </div>
-        </div>               
+        </div>
+        <div class="row">
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getProfitLevel(profitCurrent, profitBaseline)}"></ng-container></strong>
+            {{ 'keyMetrics.longProfitBaseCurr' | translate }} 
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{profitBaseline | number:'1.0-0'}} T€
+             / {{profitCurrent | number:'1.0-0'}} T€
+          </div>
+        </div>
       </div>
     </div>
   </div>
