@@ -21,36 +21,42 @@
           </div>
           <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
             <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
-            <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(false) }}</a>
             <div class="dropdown-menu">
               <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
                 <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
               </a>
             </div>
-          </span>
-          <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
+          </span>          
+          <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
             <span> {{ 'compViewBubble.lbl.bu' | translate }}: </span>
-            <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
             <div class="dropdown-menu">
               <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                 <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
               </a>
             </div>
-          </span>
-          <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+          </span>          
+          <span class="ml-2" *ngIf="filterStrategicFit >= 0">
             <span> {{ 'compViewBubble.lbl.strategicFit' | translate }} >=</span>
             <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
-          </div>
-          <div class="ml-2" *ngIf="filterRisk >= 0">
+          </span>
+          <span class="ml-2" *ngIf="filterRisk >= 0">
             <span> {{ 'compViewBubble.lbl.risk' | translate }} >=</span>
             <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
-          </div>
+          </span>          
           <div class="ml-2">
             <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
               {{ 'compViewBubble.btn.exportExcel' | translate }}
             </button>
           </div>
         </div>
+        <div> {{ 'compViewBubble.lbl.nrProjects' | translate }}:   
+            <span class="align-right">
+              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: visbokeymetrics.length < visboprojectversions.length ? 2 : 1}"></ng-container></strong>
+              {{visbokeymetrics.length}} / {{visboprojectversions.length}}
+            </span> 
+        </div>        
       </div>
     </div>
 
@@ -61,16 +67,7 @@
         <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong>
         {{ 'compViewBubble.metric.financialSummary' | translate }}
       </h5>
-      <div class="card-body p-2">
-        <!-- <div class="row">
-          <div class="col col-sm-8">
-            {{ 'compViewBubble.lbl.nrProjects' | translate }}
-          </div>
-          <div class="col col-sm-4 text-right">
-            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: countKM < visbokeymetrics.length ? 2 : 1}"></ng-container></strong>
-            {{countKM}} / {{visbokeymetrics.length}}
-          </div>
-        </div> -->
+      <div class="card-body p-2">       
         <div class="row">
           <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">   
             <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>         

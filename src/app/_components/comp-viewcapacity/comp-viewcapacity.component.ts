@@ -130,6 +130,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
   visboprojectversions: VisboProjectVersion[];
+  visboprojectsversions_filtered: VisboProjectVersion[];
 
   capaLoad: CapaLoad[];
   timeoutID: ReturnType<typeof setTimeout>;
@@ -489,7 +490,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(item.vp, '_businessUnit');
-        if (setting && (setting.value !== this.filterBU)) {
+        if (!setting) return;
+        if (setting.value !== this.filterBU) {
           return;
         }
       }
@@ -736,6 +738,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
               capacity = vp.capacity.filter(item => item.vpid != undefined);
               const listVPVFilter = this.filterVPV(this.visboprojectversions);
+              this.visboprojectsversions_filtered = listVPVFilter;
               capacity.forEach(item => {
                 const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
                 item.vp = vpv && vpv.vp;

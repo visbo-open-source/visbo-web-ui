@@ -164,6 +164,9 @@ export function addCustomFieldString(vp: VisboProject, name: string, value: stri
   const customField = new VPCustomString();
   customField.name = name;
   customField.value = value;
+  if (constSystemCustomName.findIndex(str => str == name) > -1){
+    customField.type = "System"
+  }
   if (vp?.customFieldString) {
     vp.customFieldString.push(customField);
   }
@@ -174,6 +177,9 @@ export function addCustomFieldDouble(vp: VisboProject, name: string, value: numb
   const customField = new VPCustomDouble();
   customField.name = name;
   customField.value = value;
+  if (constSystemCustomName.findIndex(str => str == name) > -1){
+    customField.type = "System"
+  }
   if (vp?.customFieldDouble) {
     vp.customFieldDouble.push(customField);
   }
@@ -191,7 +197,10 @@ export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDo
 export function addCustomFieldDate(vp: VisboProject, name: string, value: Date): VPCustomDate {
   const customField = new VPCustomDate();
   customField.name = name;
-  customField.value = new Date(value);
+  customField.value = new Date(value);  
+  if (constSystemCustomName.findIndex(str => str == name) > -1){
+    customField.type = "System"
+  }
   if (vp?.customFieldDate) {
     vp.customFieldDate.push(customField);
   }
