@@ -890,7 +890,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
       }
     }
