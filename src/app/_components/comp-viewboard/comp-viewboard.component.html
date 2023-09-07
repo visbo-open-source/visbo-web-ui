@@ -5,12 +5,11 @@
           <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
           <span>{{ 'compViewBoard.lbl.filter' | translate }}:</span>    
         <div class="ml-2">
-
           <span>Text:</span>
           <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">                 
           <span *ngIf="dropDownPH" class="dropdown ml-2 my-1 d-print-none">
             <span> {{ 'compViewBoard.lbl.filterPh' | translate }}: </span>
-            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterPH }}</a>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterPH}}</a>
             <div class="dropdown-menu dropdown-menue-end">
               <a *ngFor="let item of dropDownPH; let itemIndex = index" class="dropdown-item">
                 <div class="dropdown-item" (click)="filterEventPH(itemIndex)">{{ item }}</div>
@@ -39,7 +38,8 @@
               </a>
             </div>
           </span>
-          <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
+          <!-- <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none"> -->            
+          <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
             <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
             <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
             <div class="dropdown-menu">
