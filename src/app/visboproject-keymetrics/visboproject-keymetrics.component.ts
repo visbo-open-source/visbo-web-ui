@@ -890,7 +890,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
       }
     }
@@ -1732,11 +1733,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     list.forEach(item => {
       const fieldString = new VPCustomDouble(); 
       const hCFDouble = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '1') );         
-      if (hCFDouble > -1 )
-      fieldString.name = item.name;
-      fieldString.type = item.type;
-      fieldString.value = item.value;
-      this.editCustomFieldDouble.push(fieldString);
+      if (hCFDouble > -1 ) {
+        fieldString.name = item.name;
+        fieldString.type = item.type;
+        fieldString.value = item.value;
+        this.editCustomFieldDouble.push(fieldString);
+      }      
     });
     return this.editCustomFieldDouble;
   }

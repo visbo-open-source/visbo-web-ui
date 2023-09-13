@@ -304,20 +304,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
-    let lastValueRisk: number;
-    let lastValueSF: number;
+    let lastValueRisk: number = 0;
+    let lastValueSF: number = 0;
     let lastValueVPStatus: string;
-    let lastValueBU: string;
+    let lastValueBU: string = '';
     if (!vpvList && vpvList.length < 1) {
       return;
     }
-
     vpvList.forEach( item => {
       if (item.vp?.customFieldDouble) {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
           if (customField) {
-            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            //if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 ) {
               this.filterStrategicFit = 0;
             }
             lastValueSF = customField.value
@@ -326,7 +326,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
           if (customField) {
-            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            // if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            if ( this.filterRisk == undefined && lastValueRisk >= 0) {
               this.filterRisk = 0;
             }
             lastValueRisk = customField.value
@@ -337,7 +338,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         if (this.filterBU === undefined) {
           const customField = getCustomFieldString(item.vp, '_businessUnit');
           if (customField) {
-            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU) {
+            if ( this.filterBU == undefined ) {
               this.filterBU = '';
             }
             lastValueBU = customField.value
@@ -346,7 +349,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       const vpStatus = item.vp?.vpStatus;
       if (vpStatus) {
-        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+        //if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          if ( this.filterVPStatusIndex == undefined && lastValueVPStatus ) {
           this.filterVPStatusIndex = 0;
         }
         lastValueVPStatus = vpStatus
@@ -510,10 +514,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
-        if (setting && setting.value !== this.filterBU) {
-          continue;
-        }
-      }
+        if (!setting) continue;
+        if (setting.value !== this.filterBU) {
+            continue;
+          }
+      }  
       if (this.filterRisk >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
         if (setting && setting.value < this.filterRisk) {
@@ -620,10 +625,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
       } else {  
         this.RACSumCurrent += 0;
-        this.RACSumBaseline += 0;
-      // 
-      //   this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-      //   this.RACSumBaseline += elementKeyMetric.Erloes || 0;
+        this.RACSumBaseline += 0;      
       }
       
       this.visbokeymetrics.push(elementKeyMetric);

@@ -788,7 +788,8 @@
 			"risk": "Risiko",
 			"vpStatus": "Status",
 			"bu": "Business Unit",
-			"orgaValid": "Organisation von"
+			"orgaValid": "Organisation von",			
+			"nrProjects":"  Anzahl Projekte"
 		},
 		"btn": {
 			"back": "Zurück",

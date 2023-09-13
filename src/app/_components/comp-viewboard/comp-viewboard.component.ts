@@ -555,10 +555,10 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
-    let lastValueRisk: number;
-    let lastValueSF: number;
+    let lastValueRisk: number = 0;
+    let lastValueSF: number = 0;
     let lastValueVPStatus: string;
-    let lastValueBU: string;
+    let lastValueBU: string = '';
     if (!vpvList && vpvList.length < 1) {
       return;
     }
@@ -567,7 +567,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
           if (customField) {
-            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            //if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 ) {
               this.filterStrategicFit = 0;
             }
             lastValueSF = customField.value
@@ -576,7 +577,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
           if (customField) {
-            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            // if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            if ( this.filterRisk == undefined && lastValueRisk >= 0) {
               this.filterRisk = 0;
             }
             lastValueRisk = customField.value
@@ -587,7 +589,9 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         if (this.filterBU === undefined) {
           const customField = getCustomFieldString(item.vp, '_businessUnit');
           if (customField) {
-            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU) {
+            if ( this.filterBU == undefined ) {
               this.filterBU = '';
             }
             lastValueBU = customField.value
@@ -596,7 +600,8 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
       }
       const vpStatus = item.vp?.vpStatus;
       if (vpStatus) {
-        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+        //if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          if ( this.filterVPStatusIndex == undefined && lastValueVPStatus ) {
           this.filterVPStatusIndex = 0;
         }
         lastValueVPStatus = vpStatus
@@ -640,7 +645,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
   }
 
   initMSDropDown(vpvList: VisboProjectVersion[]): void {
-    const listMS = this.getAllMiletones(vpvList);
+    const listMS = this.getAllMilestones(vpvList);
     if (!listMS) return;
     this.dropDownMS = [];
     listMS.forEach(item => {
@@ -658,7 +663,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
   }
 
-  getAllMiletones(vpvList: VisboProjectVersion[]): any[] {
+  getAllMilestones(vpvList: VisboProjectVersion[]): any[] {
     let listMS: any[] = [];
     for (let i=0; i < vpvList.length; i++) {      
         const curProj = vpvList[i];
