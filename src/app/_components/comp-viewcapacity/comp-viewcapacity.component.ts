@@ -12,6 +12,8 @@ import { VisboSetting, VisboOrganisation, VisboOrgaStructure, VisboReducedOrgaIt
           VisboOrgaTreeLeaf, TreeLeafSelection } from '../../_models/visbosetting';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboCenter } from '../../_models/visbocenter';
+import { VisboUser } from '../../_models/visbouser';
+
 
 import { VisboCapacity, VisboProjectVersion} from '../../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
@@ -124,7 +126,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vpvActive: VisboProjectVersion;
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
-  @Input() combinedPerm: VGPermission;
+  @Input() combinedPerm: VGPermission; 
 
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
@@ -463,21 +465,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   filterVPV(vpvList: VisboProjectVersion[]): VisboProjectVersion[] {
-    const filter = this.filter;
 
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     const vpvFiltered: VisboProjectVersion[] = [];
     if (!vpvList) { return vpvFiltered }
+    
     vpvList.forEach(item => {
       if (!item.vp) {
         return;
       }
-      if (item.vp.vpType != 0) {
+      if (item.vp?.vpType != 0) {
         return;
       }
+
       if (filter
-        && !(item.vp.name.toLowerCase().indexOf(filter) >= 0
-          || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          || (item.vp.description || '').toLowerCase().indexOf(filter) >= 0
+        && !(item.vp?.name.toLowerCase().indexOf(filter) >= 0
+          || (item.VorlagenName?.toLowerCase().indexOf(filter) >= 0)
+          || ((this.getVPManager(item.vp) || '').toLowerCase().indexOf(filter) >= 0)
+          || (item.vp?.description.toLowerCase().indexOf(filter) >= 0)
         )
       ) {
         return;
@@ -2396,6 +2401,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       return result.name;
     }
+  }
+  
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp?.managerId) {
+      const user = vp.manager;
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
   }
 
   setGridline(count: number): void {
