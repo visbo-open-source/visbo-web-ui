@@ -8,7 +8,7 @@ import { AuthenticationService } from 'src/app/_services/authentication.service'
 import { VisboCenter } from 'src/app/_models/visbocenter';
 import { VisboCenterService } from 'src/app/_services/visbocenter.service';
 import { VisboProjectService } from 'src/app/_services/visboproject.service';
-import { VisboProject } from 'src/app/_models/visboproject';
+import { VisboProject, constSystemVPStatus } from 'src/app/_models/visboproject';
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
 import { VisboOrganisation } from 'src/app/_models/visbosetting';
 import { VisboUser } from 'src/app/_models/visbouser';
@@ -92,7 +92,7 @@ export class EmployeeComponent implements OnInit {
   onCenterChange(selectedCenterId: string): void {
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
-        this.selectedCenterProjects = visboProjectsList.filter(project => project.vpType === 0);
+        this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
       },
       error => {
         console.log(error);
@@ -104,7 +104,7 @@ export class EmployeeComponent implements OnInit {
   addEmployee() {
     this.showModal = true;
     this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {
-      this.userForm.reset();
+      this.userForm.reset();     
       this.getTimeTrackerList();
     }, error => {
       console.log('Error:', error);
@@ -302,6 +302,13 @@ export class EmployeeComponent implements OnInit {
     this.isCreatorOfRecord = false;
     this.userForm.reset();
     this.userForm.get('userId').setValue(this.userId);
+    if (this.visboCentersList.length == 1) {
+      this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
+      const thisday = new Date();
+      let thisdayStr = thisday.toISOString();
+      thisdayStr = thisdayStr.split('T')[0];
+      this.userForm.get('date').setValue(thisdayStr);
+    }
   }
 
   checkIsCreatorOfRecord({userId}) {
