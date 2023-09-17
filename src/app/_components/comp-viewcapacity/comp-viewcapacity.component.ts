@@ -12,6 +12,8 @@ import { VisboSetting, VisboOrganisation, VisboOrgaStructure, VisboReducedOrgaIt
           VisboOrgaTreeLeaf, TreeLeafSelection } from '../../_models/visbosetting';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboCenter } from '../../_models/visbocenter';
+import { VisboUser } from '../../_models/visbouser';
+
 
 import { VisboCapacity, VisboProjectVersion} from '../../_models/visboprojectversion';
 import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
@@ -124,15 +126,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vpvActive: VisboProjectVersion;
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
-  @Input() combinedPerm: VGPermission;
+  @Input() combinedPerm: VGPermission; 
 
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
   visboprojectversions: VisboProjectVersion[];
+  visboprojectsversions_filtered: VisboProjectVersion[];
 
   capaLoad: CapaLoad[];
-  timeoutID: number;
+  timeoutID: ReturnType<typeof setTimeout>;
   timeoutFilterID: number;
   hasCost: boolean;
   printView = false;
@@ -462,21 +465,24 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   filterVPV(vpvList: VisboProjectVersion[]): VisboProjectVersion[] {
-    const filter = this.filter;
 
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
     const vpvFiltered: VisboProjectVersion[] = [];
     if (!vpvList) { return vpvFiltered }
+    
     vpvList.forEach(item => {
       if (!item.vp) {
         return;
       }
-      if (item.vp.vpType != 0) {
+      if (item.vp?.vpType != 0) {
         return;
       }
+
       if (filter
-        && !(item.vp.name.toLowerCase().indexOf(filter) >= 0
-          || (item.VorlagenName || '').toLowerCase().indexOf(filter) >= 0
-          || (item.vp.description || '').toLowerCase().indexOf(filter) >= 0
+        && !(item.vp?.name.toLowerCase().indexOf(filter) >= 0
+          || (item.VorlagenName?.toLowerCase().indexOf(filter) >= 0)
+          || ((this.getVPManager(item.vp) || '').toLowerCase().indexOf(filter) >= 0)
+          || (item.vp?.description.toLowerCase().indexOf(filter) >= 0)
         )
       ) {
         return;
@@ -489,19 +495,20 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(item.vp, '_businessUnit');
-        if (setting && setting.value !== this.filterBU) {
+        if (!setting) return;
+        if (setting.value !== this.filterBU) {
           return;
         }
       }
       if (this.filterRisk >= 0) {
         const setting = getCustomFieldDouble(item.vp, '_risk');
-        if (setting && setting.value < this.filterRisk) {
+        if (setting && (setting.value < this.filterRisk)) {
           return;
         }
       }
       if (this.filterStrategicFit >= 0) {
         const setting = getCustomFieldDouble(item.vp, '_strategicFit');
-        if (setting && setting.value < this.filterStrategicFit) {
+        if (setting && (setting.value < this.filterStrategicFit)) {
           return;
         }
       }
@@ -699,7 +706,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               });
               capacity = capacity.filter(item => item.vp != undefined);
               this.visboCapacityChild = capacity;
-              if (this.checkFilter() && this.refPFV) {
+              //if (this.checkFilter() && this.refPFV) {
+              if (this.checkFilter()) {
                 this.visboCapacity = this.sumCapacityChild(this.visboCapacityChild);
               } else {
                 this.visboCapacity = visbocenter.capacity.filter(item => item.vpid == undefined);
@@ -735,15 +743,18 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
               capacity = vp.capacity.filter(item => item.vpid != undefined);
               const listVPVFilter = this.filterVPV(this.visboprojectversions);
+              this.visboprojectsversions_filtered = listVPVFilter;
               capacity.forEach(item => {
                 const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
                 item.vp = vpv && vpv.vp;
               });
               capacity = capacity.filter(item => item.vp != undefined);
               this.visboCapacityChild = capacity;
-              if (this.checkFilter() && this.refPFV) {
+              if (this.checkFilter()) {
                 this.visboCapacity = this.sumCapacityChild(this.visboCapacityChild);
-              } else {
+              // } else if (this.checkFilter() && this.refPFV){
+              //   this.visboCapacity = this.sumCapacityChild(this.visboCapacityChild);             
+              } else {               
                 this.visboCapacity = vp.capacity.filter(item => item.vpid == undefined);
               }
             }
@@ -762,6 +773,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         );
     }
   }
+
 
   sumCapacityChild(capacityChild: VisboCapacity[]): VisboCapacity[] {
     if (!capacityChild) { return undefined; }
@@ -782,6 +794,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         capacity.otherActivityCost_PT = 0;
         capacity.baselineCost = 0;
         capacity.baselineCost_PT = 0;
+        capacity.internCapa = 0;
+        capacity.internCapa_PT = 0;
+        capacity.externCapa = 0;
+        capacity.externCapa_PT = 0;
         
         capacityParent.push(capacity);
       }
@@ -791,9 +807,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       capacity.actualCost_PT += item.actualCost_PT;
       capacity.otherActivityCost += item.otherActivityCost;
       capacity.otherActivityCost_PT += item.otherActivityCost_PT;
-      capacity.baselineCost += item.baselineCost;
-      capacity.baselineCost_PT += item.baselineCost_PT;
-
+      capacity.baselineCost += item?.baselineCost;
+      capacity.baselineCost_PT += item?.baselineCost_PT;
+      capacity.internCapa = item.internCapa;
+      capacity.internCapa_PT = item.internCapa_PT;
+      capacity.externCapa = item.externCapa;
+      capacity.externCapa_PT = item.externCapa_PT;
 
       this.log(`Cumulate Child ${item.name} ${item.month}`);
     });
@@ -1239,6 +1258,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           capa = capaIntern + (item.externCapa || 0);
         }
       }
+      
       this.sumCost += plan;
       this.sumBudget += capa;
 
@@ -1260,7 +1280,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     // now fill up with the Child Infos
     // this.visboCapacityChild.forEach(item => {
-      sortedProjects.forEach(item => {
+    sortedProjects.forEach(item => {
       const currentDate = new Date(item.month);
       const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
       if (row) {
@@ -2381,6 +2401,22 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else {
       return result.name;
     }
+  }
+  
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp?.managerId) {
+      const user = vp.manager;
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
   }
 
   setGridline(count: number): void {
