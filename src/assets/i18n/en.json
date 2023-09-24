@@ -467,7 +467,8 @@
 			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveLockPerm": "No Permission to delete Lock",
-			"errorVPConflict": "A VISBO Project with {{name}} does already exist!",
+			"errorVPConflict": "A VISBO Project with {{name}} does already exist!",			
+			"errorVPVConflict": "A VISBO Project Version with {{name}} does already exist!",
 			"errorRemoveVariantPerm": "No Permission to delete Variant {{name}}",
 			"errorRemoveVariantConflict": "An Error occurred during delete Variant {{name}}",
 			"errorCreateVariantPerm": "No Permission to create Variant",
@@ -755,7 +756,8 @@
 			"risk": "Risk",
 			"vpStatus": "State",
 			"bu": "Business Unit",
-			"orgaValid": "Organisation from"
+			"orgaValid": "Organisation from",			
+			"nrProjects": "  Number of projects"
 		},
 		"btn": {
 			"back": "Back",
@@ -1204,6 +1206,7 @@
 	"compViewBoard": {
 		"lbl": {
 			"project": "Project",
+			"nrProjects":"Number of projects",
 			"vpStatus": "State",
 			"bu": "Business Unit",
 			"manager": "Manager",
@@ -1212,9 +1215,14 @@
 			"endDate": "Project end date",
 			"timeline": "Timeline",
 			"filter": "Filter",
+			"filterPh": "Phase",
+			"filterMS": "Milestone",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
-			"all": "All"
+			"all": "All",			
+			"phaseStart": "Phase start date",
+			"phaseEnd": "Phase end date",
+			"milestoneDate": "Date"
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
@@ -1547,6 +1555,7 @@
 	"keyMetrics": {	
 		"longCostBaseCurr": "Cost: Baseline / Plan",
 		"longRACBaseCurr": "Revenue: Baseline / Plan",
+		"longProfitBaseCurr": "Profit: Baseline / Plan",
 		"shortRAC": "Order Value",
 		"baselineRAC": "in % of RAC",
 		"longRAC": "Revenue at Completion",

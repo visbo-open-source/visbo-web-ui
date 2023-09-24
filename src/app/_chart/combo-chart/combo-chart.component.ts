@@ -73,6 +73,8 @@ export class ComboChartComponent implements OnInit, OnChanges {
     this.gLib.visualization.events.addListener(chart, 'select', selectHandler);
 
     chart.draw(data, this.graphOptions || options);
+    // next line to show the tooltip definition in dev-tools by click
+    // chart.draw(data, {tooltip: {trigger: 'selection', isHtml: true}});
     this.initialised = true;
   }
 }

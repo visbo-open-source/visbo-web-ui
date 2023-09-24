@@ -78,7 +78,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   visbokeymetrics: VPVKeyMetricsCalc[] = [];
   activeID: string; // either VP ID of Portfolio or VC ID
   deleted: boolean;
-  timeoutID: number;
+  timeoutID: ReturnType<typeof setTimeout>;
 
   colorMetric = [{name: 'Critical', color: 'red'}, {name: 'Warning', color: 'yellow'}, {name: 'Good', color: 'green'} ];
 
@@ -103,6 +103,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   budgetAtCompletion = 0; 
   RACSumCurrent = 0;
   RACSumBaseline = 0;
+  profitCurrent = 0;
+  profitBaseline = 0;
 
   chart = true;
   parentThis = this;
@@ -302,20 +304,20 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
   }
 
   initFilter(vpvList: VisboProjectVersion[]): void {
-    let lastValueRisk: number;
-    let lastValueSF: number;
+    let lastValueRisk: number = 0;
+    let lastValueSF: number = 0;
     let lastValueVPStatus: string;
-    let lastValueBU: string;
+    let lastValueBU: string = '';
     if (!vpvList && vpvList.length < 1) {
       return;
     }
-
     vpvList.forEach( item => {
       if (item.vp?.customFieldDouble) {
         if (this.filterStrategicFit === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_strategicFit');
           if (customField) {
-            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            //if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 ) {
               this.filterStrategicFit = 0;
             }
             lastValueSF = customField.value
@@ -324,7 +326,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         if (this.filterRisk === undefined) {
           const customField = getCustomFieldDouble(item.vp, '_risk');
           if (customField) {
-            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            // if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+            if ( this.filterRisk == undefined && lastValueRisk >= 0) {
               this.filterRisk = 0;
             }
             lastValueRisk = customField.value
@@ -335,7 +338,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         if (this.filterBU === undefined) {
           const customField = getCustomFieldString(item.vp, '_businessUnit');
           if (customField) {
-            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+            // if ( this.filterBU == undefined && lastValueBU) {
+            if ( this.filterBU == undefined ) {
               this.filterBU = '';
             }
             lastValueBU = customField.value
@@ -344,7 +349,8 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       const vpStatus = item.vp?.vpStatus;
       if (vpStatus) {
-        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+        //if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          if ( this.filterVPStatusIndex == undefined && lastValueVPStatus ) {
           this.filterVPStatusIndex = 0;
         }
         lastValueVPStatus = vpStatus
@@ -508,10 +514,11 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
       }
       if (this.filterBU) {
         const setting = getCustomFieldString(this.visboprojectversions[item].vp, '_businessUnit');
-        if (setting && setting.value !== this.filterBU) {
-          continue;
-        }
-      }
+        if (!setting) continue;
+        if (setting.value !== this.filterBU) {
+            continue;
+          }
+      }  
       if (this.filterRisk >= 0) {
         const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
         if (setting && setting.value < this.filterRisk) {
@@ -618,10 +625,7 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
       } else {  
         this.RACSumCurrent += 0;
-        this.RACSumBaseline += 0;
-      // 
-      //   this.RACSumCurrent += elementKeyMetric.Erloes || 0;
-      //   this.RACSumBaseline += elementKeyMetric.Erloes || 0;
+        this.RACSumBaseline += 0;      
       }
       
       this.visbokeymetrics.push(elementKeyMetric);
@@ -629,6 +633,9 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
         this.hasVariant = true;
       }
     }
+
+    this.profitBaseline = this.RACSumBaseline - this.budgetAtCompletion;
+    this.profitCurrent = this.RACSumCurrent - this.estimateAtCompletion;
     this.sortKeyMetricsTable(undefined);
     this.thinDownMetricList();
     this.visboKeyMetricsCalcBubble();
@@ -1179,16 +1186,42 @@ export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
     else if (percentCalc <= 1.05) return 2;
     else return 3;
   }
-  
-  getFinancalLevel(cost: number, revenue: number): number {
-    if (cost && revenue) {
-      if (cost + revenue == 2) return 1;
-      if (cost + revenue == 6) return 3;
-      if ((cost + revenue > 2) && (cost + revenue < 6)) return 2;
-    } else {
-      return 2;
+
+  getProfitLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      if ((baseline > 0) && (plan > 0)) {
+        percentCalc = baseline/plan;
+      }
+      else if ((baseline < 0) && (plan < 0)) {
+        percentCalc = plan/baseline;
+      }
+      else if ((baseline < 0) && (plan > 0)) {
+        percentCalc = 1;
+      }
+      else if ((baseline > 0) && (plan < 0)) {
+        percentCalc = 2;
+      }      
     }
-      
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
+  }
+  
+  getFinancalLevel(profit: number): number {    
+  //getFinancalLevel(cost: number, revenue: number, profit: number): number {
+    // if (cost && revenue && profit) {
+    //   if (cost + revenue + profit <= 4) return 1;
+    //   if (cost + revenue + profit >= 7) return 3;
+    //   if ((cost + revenue + profit > 4) && (cost + revenue + profit < 7)) return 2;
+    // } else {
+    //   return 2;
+    // } 
+    if (profit) {
+      if (profit > 0) return 1;
+      if (profit == 0) return 2;
+      if (profit < 0) return 3;
+    }
   }
 
   getVPStatus(local: boolean, original: string = undefined): string {

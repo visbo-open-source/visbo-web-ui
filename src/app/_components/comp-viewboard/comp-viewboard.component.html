@@ -1,44 +1,89 @@
 <div class='well' (resized)="onResized($event)">
-  <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>
+  <div *ngIf="graphDataTimeline.length > 0" class='container-fluid'>    
     <div *ngIf="filter || !getPreView()" class="row text-dark d-print-none">
-      <div class="my-1 row">
         <div class="ml-2">
           <span>{{ 'compViewBoard.lbl.timeline' | translate }}, </span>
-          <span> {{ 'compViewBoard.lbl.filter' | translate }}:</span>
-          <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+          <span>{{ 'compViewBoard.lbl.filter' | translate }}:</span>    
+        <div class="ml-2">
+          <span>Text:</span>
+          <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">                 
+          <span *ngIf="dropDownPH" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewBoard.lbl.filterPh' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterPH}}</a>
+            <div class="dropdown-menu dropdown-menue-end">
+              <a *ngFor="let item of dropDownPH; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventPH(itemIndex)">{{ item }}</div>
+              </a>
+            </div>
+          </span>
+          <!-- <span> {{ 'compViewBoard.lbl.filterPh' | translate }}:</span>
+          <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filterPH" placeholder="Phase Name"> -->
+          <span *ngIf="dropDownMS" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewBoard.lbl.filterMS' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" role="button">{{filterMS}}</a>
+            <div class="dropdown-menu dropdown-menue-end">
+              <a *ngFor="let item of dropDownMS; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventMS(itemIndex)">{{ item }}</div>
+              </a>
+            </div>
+          </span>
+          <!-- <span> {{ 'compViewBoard.lbl.filterMS' | translate }}:</span>
+          <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filterMS" placeholder="Milestone Name"> -->
+          <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(false) }}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+              </a>
+            </div>
+          </span>
+          <!-- <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none"> -->            
+          <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
+              </a>
+            </div>
+          </span>
+          <span class="ml-2" *ngIf="filterStrategicFit >= 0">
+            <span> {{ 'compViewBoard.lbl.strategicFit' | translate }} >=</span>
+            <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
+          </span>
+          <span class="ml-2" *ngIf="filterRisk >= 0">
+            <span> {{ 'compViewBoard.lbl.risk' | translate }} >=</span>
+            <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
+          </span>
+          <div> {{ 'compViewBoard.lbl.nrProjects' | translate }}:   
+              <span class="align-right">
+                <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: timelineProjects.length < listVPV.length ? 2 : 1}"></ng-container></strong>
+                {{timelineProjects.length}} / {{listVPV.length}}
+              </span> 
+            </div>
         </div>
-        <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
-          <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
-          <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
-          <div class="dropdown-menu">
-            <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
-              <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
-            </a>
-          </div>
-        </span>
-        <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
-          <span> {{ 'compViewBoard.lbl.bu' | translate }}: </span>
-          <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
-          <div class="dropdown-menu">
-            <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
-              <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
-            </a>
-          </div>
-        </span>
-        <div class="ml-2" *ngIf="filterStrategicFit >= 0">
-          <span> {{ 'compViewBoard.lbl.strategicFit' | translate }} >=</span>
-          <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
-        </div>
-        <div class="ml-2" *ngIf="filterRisk >= 0">
-          <span> {{ 'compViewBoard.lbl.risk' | translate }} >=</span>
-          <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
-        </div>
-      </div>
     </div>
   </div>
+  
+  <ng-template #indicator let-level="level">
+    <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+  </ng-template>
 
   <div *ngIf="graphDataTimeline.length > 1" class="mt-2">
-    <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>
+    <!-- <app-timeline-chart [graphData]="graphDataTimeline" [graphOptions]="graphOptionsTimeline" [parentThis]="parentThis" [language]="currentLang"></app-timeline-chart>     -->
+    <app-portfolio-chart 
+      [projects]="timelineProjects"
+      [minDate]="timelineMinAndMaxDate.start"
+      [maxDate]="timelineMinAndMaxDate.end"
+      (projectSelected)="timelineSelectVPName($event)">
+    </app-portfolio-chart>
+    <!-- <app-portfolio-chart 
+      [projects]="timelineProjects"
+      [minDate]="timelineMinAndMaxDate.start"
+      [maxDate]="timelineMinAndMaxDate.end"
+      [parentThis]="parentThis">
+    </app-portfolio-chart> -->
   </div>
   <h5 *ngIf="graphDataTimeline.length == 1" class="mt-2">
     {{ 'compViewBoard.msg.errorNoMatchingProjects' | translate }}
