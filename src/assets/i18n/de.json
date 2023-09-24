@@ -194,6 +194,7 @@
 		"titlePermUser": "Berechtigung für {{name}}",
 		"titleSettings": "VISBO Center Setting",
 		"titleOrganisations": "VISBO Center Organisation",
+		"titleTimeTracking": "VISBO Center Zeiterfassung",
 		"titleEnableDisable": "VISBO Center Enable / Disable von Funktionen",
 		"titleDeleteSetting": "VISBO Center Setting löschen",
 		"titleDeleteOrganisation": "VISBO Center Organisation löschen",
@@ -230,7 +231,10 @@
 			"newOrga": "Neue Organisation anlegen",
 			"updateOrga": "Existierende Organisation aktualisieren",
 			"valid": "Gültig ab",
-			"nrRoles": "Anzahl Rollen"
+			"nrRoles": "Anzahl Rollen",
+			"titleVTR": "Angaben zum TimeTracking",
+			"startDate": "Start Datum",
+			"endDate": "Ende Datum"
 		},
 		"btn": {
 			"viewAudit": "Audit",
@@ -239,11 +243,13 @@
 			"viewProjectUsers": "Projekt Benutzer",
 			"ViewSetting": "Settings",
 			"ViewOrganisation": "Organisation",
+			"ViewTimeTracker": "Zeiterfassung",
 			"ViewEnableDisable": "Enable / Disable",
 			"addUser": "Benutzer einladen",
 			"addGroup": "Gruppe hinzufügen",
 			"addSetting": "Setting hinzufügen",
 			"changeOrganisation": "Hinzufügen",
+			"calcTimeTracking": "Start Berechnung",
 			"invite": "Einladen",
 			"save": "Speichern",
 			"edit": "Ändern",
@@ -251,6 +257,7 @@
 			"delete": "Löschen",
 			"download": "Herunterladen",
 			"back": "Zurück",
+			"vtrCalc": "Start Berechnung",
 			"cancel": "Abbrechen",
 			"upload": "Importieren",
 			"reset": "Zurücksetzen"

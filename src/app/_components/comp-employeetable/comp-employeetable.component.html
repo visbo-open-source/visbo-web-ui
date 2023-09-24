@@ -23,7 +23,10 @@
 <table  class="table table-hover table-sortable table-custom">
   <thead>
   <tr class="col-center">
-    <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
+    <th (click)="sortVTRTable(0)" class="d-none d-md-table-cell">
+      {{'vtr.titleVCN' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
     <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
       {{'vtr.titleProject' | translate}}
       <i class="fa fa-sort"></i>
@@ -213,7 +216,8 @@
           </div>
           <div class="form-group">
             <label for="date">{{"vtr.mdl.Date" | translate}}</label>
-            <input class="form-control" formControlName="date" id="date" type="date" [value]="startDate" [attr.disabled]="isCreatorOfRecord && userForm.controls.date.value ? 'disabled' : null">
+            <!-- <input class="form-control" formControlName="date" id="date" type="date" [value]="startDate" [attr.disabled]="isCreatorOfRecord && userForm.controls.date.value ? 'disabled' : null"> -->
+            <input class="form-control" formControlName="date" id="date" type="date" [value]="startDate" >
           </div>
           <div class="form-group">
             <label for="notes">{{"vtr.mdl.Description" | translate}}</label>

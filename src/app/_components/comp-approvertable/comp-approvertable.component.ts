@@ -294,9 +294,12 @@ export class ApproverComponent implements OnInit {
           if (item) {this.originalManagerList.push(item)}
         });
         this.managerTimeTrackerList = this.originalManagerList;
-        if (this.managerTimeTrackerList?.length) {
-          this.getOrganizationList(this.visboCentersList[0]._id);         
-        }
+        
+        // ur: don't know why this is needed
+        //
+        // if (this.managerTimeTrackerList?.length) {
+        //   this.getOrganizationList(this.visboCentersList[0]._id);         
+        // }
        
         this.sortVTRTable(undefined);
         this.updateFilter();
