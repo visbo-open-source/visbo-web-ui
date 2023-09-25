@@ -42,6 +42,9 @@
 		"visbo": "VISBO",
 		"vc": "VISBO Center",
 		"vp": "VISBO Projects",
+		"vtr": "VISBO Time Recorder",
+		"vtrRecord": "Record",		
+		"vtrApprove": "Approve",
 		"profile": "Profile",
 		"others": "Others",
 		"settings": "Settings",
@@ -474,6 +477,36 @@
 			"errorCreateVariantPerm": "No Permission to create Variant",
 			"errorChangeVariantPerm": "No Permission to change Variant {{name}}",
 			"errorVariantConflict": "A Variant with {{name}} does already exist!"
+		}
+	},
+	"vtr":{
+		"title": "Employee",
+		"titleVCN": "VISBO Center Name",
+		"titleProject": "Project Name",
+		"titleDate": "Date",
+		"titleDescription": "Short Description",
+		"titleHours": "Hours",
+		"titleApprove": "Approved",
+		"fromDate": "Show Records From",
+		"toDate": "To",
+		"approveAll":"Approve All",
+		"edit": "Edit",
+
+		"mdl":{
+			"addNewEmployee":"New Time Entry",
+			"record": "Edit Record",
+			"Employee": "Employee",
+			"Centre":"Center Name",
+			"Project":"Project Name",
+			"Date":"Date",
+			"Description":"Short Description",
+			"Hours":"Hours",
+			"Approve":"Approve"
+		},
+		"btn":{
+			"save":"Save",
+			"cancel":"Cancel",
+			"add":"Add New"
 		}
 	},
 	"vpRestrict": {

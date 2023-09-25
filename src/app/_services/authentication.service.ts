@@ -62,7 +62,7 @@ export class AuthenticationService {
                       // this.log(`Login token expiration:  ${decoded.exp}`);
                       this.logoutTime = new Date(decoded.exp * 1000);
                     }
-                    this.log(`Login Request logoutTime:  ${this.logoutTime}`);
+                    this.log(`Login Request logoutTime:  ${this.logoutTime}`);                   
 
                     return result.user;
                 }

@@ -26,7 +26,7 @@ export class VisboProjectService {
 
 
   /** GET VisboProjects from the server if id is specified get only projects of this vcid*/
-  getVisboProjects(id: string, sysadmin = false, deleted = false): Observable<VisboProject[]> {
+  getVisboProjects(id: string, sysadmin = false, deleted = false, vpType = false): Observable<VisboProject[]> {
     const url = `${this.vpUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -38,6 +38,10 @@ export class VisboProjectService {
     }
     if (deleted) {
       params = params.append('deleted', '1');
+    }
+    // if vpType is true only the project (no Templates, no portfolios ) will be searched
+    if (vpType) {
+      params = params.append('vpType', 0);
     }
     this.log(`VP getVisboProjects Sysadmin ${sysadmin} Deleted ${deleted}`);
 

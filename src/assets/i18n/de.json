@@ -42,6 +42,9 @@
 		"visbo": "VISBO",
 		"vc": "VISBO Center",
 		"vp": "VISBO Projekte",
+		"vtr": "VISBO-Zeiterfassung",
+		"vtrRecord": "Erfassung",		
+		"vtrApprove": "Bestätigung",
 		"profile": "Profil",
 		"others": "Sonstiges",
 		"settings": "Einstellungen",
@@ -474,6 +477,35 @@
 			"errorCreateVariantPerm": "Keine Berechtigung eine Variante zu erstellen",
 			"errorChangeVariantPerm": "Keine Berechtigung Variante {{name}} zu ändern",
 			"errorVariantConflict": "Eine Variante mit dem Namen {{name}} existiert bereits!"
+		}
+	},
+	"vtr":{
+		"title": "Mitarbeiter",
+		"titleVCN": "VISBO-Zentrum Name",
+		"titleProject": "Projekt Name",
+		"titleDate": "Datum",
+		"titleDescription": "Kurzbeschreibung",
+		"titleHours": "Stunden",
+		"titleApprove": "Genehmigt",
+		"fromDate": "Datensätze anzeigen Zeit",
+		"toDate": "An",
+		"approveAll":"Genehmigen Sie alle",
+		"edit": "Ändern",
+		"mdl":{
+			"addNewEmployee":"Neuer Zeiterfassungseintrag",
+			"record": "Ändern Rekord",
+			"Employee": "Mitarbeiter",
+			"Centre":"Zentrum Name",
+			"Project":"Projekt Name",
+			"Date":"Datum",
+			"Description":"Kurzbeschreibung",
+			"Hours":"Stunden",
+			"Approve":"Genehmigt"
+		},
+		"btn":{
+			"save":"Speichern",
+			"cancel":"Abbrechen",
+			"add":"Hinzufügen"
 		}
 	},
 	"vpRestrict": {
