@@ -1581,31 +1581,34 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
           this.alertService.success(message, true);                   
           this.vpActive = vp;
-        
-          this.vpvActive.vp = vp;
-          this.vpvActive.timestamp = new Date();
-          this.visboprojectversionService.addVisboProjectVersion(this.vpvActive)
-            .subscribe(
-              (vpv) => {
-                const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
-                //this.vpvActive = vpv[0];
-                this.addVPVtoList(vpv[0]);
-                this.switchVariant(vpv[0].variantName);
-                this.alertService.success(message, true);
-              },
-              error => {
-                this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
-                if (error.status === 403) {
-                  const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpvActive.name});
-                  this.alertService.error(message);
-                } else if (error.status === 409) {
-                  const message = this.translate.instant('vpDetail.msg.errorVPVConflict', {'name': this.vpvActive.name});
-                  this.alertService.error(message);
-                } else {
-                  this.alertService.error(getErrorMessage(error));
+
+          // only write new vpv, if the vpStatus is initialized or proposed or ordered
+          if (this.vpActive.vpStatus == constSystemVPStatus[0] || this.vpActive.vpStatus == constSystemVPStatus[1] || this.vpActive.vpStatus == constSystemVPStatus[2]) {
+            this.vpvActive.vp = vp;
+            this.vpvActive.timestamp = new Date();
+            this.visboprojectversionService.addVisboProjectVersion(this.vpvActive)
+              .subscribe(
+                (vpv) => {
+                  const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
+                  //this.vpvActive = vpv[0];
+                  this.addVPVtoList(vpv[0]);
+                  this.switchVariant(vpv[0].variantName);
+                  this.alertService.success(message, true);
+                },
+                error => {
+                  this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
+                  if (error.status === 403) {
+                    const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpvActive.name});
+                    this.alertService.error(message);
+                  } else if (error.status === 409) {
+                    const message = this.translate.instant('vpDetail.msg.errorVPVConflict', {'name': this.vpvActive.name});
+                    this.alertService.error(message);
+                  } else {
+                    this.alertService.error(getErrorMessage(error));
+                  }
                 }
-              }
-            )
+              )
+          }
         },
         error => {
           this.log(`save VP failed: error: ${error.status} message: ${error.error.message}`);
