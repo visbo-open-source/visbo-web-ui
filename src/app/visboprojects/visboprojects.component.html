@@ -95,6 +95,10 @@
     <div *ngIf="viewCockpit == 'Capacity' && vcActive && vcOrga">
       <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
+
+    <!-- <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+  </div> -->
+
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [userCustomfields]="userCustomfields" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>
@@ -104,8 +108,7 @@
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
       <app-comp-viewboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewboard>
     </div>
-  </div>
-
+  </div>  
   <!-- Modal VP Create-->
   <div *ngIf="newVP" class="modal fade" id="VpModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpModalCreateTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
