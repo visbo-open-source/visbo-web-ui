@@ -192,6 +192,8 @@ export class EmployeeComponent implements OnInit {
       }
       this.originalColumns.sort((a, b) => {
         switch (this.sortColumn) {
+          case 0:
+            return (visboCmpString(a.vcName.toLowerCase(), b.vcName.toLowerCase()) && b.vpName.localeCompare(a.vpName) && (a.date.localeCompare(b.date))) ;
           case 1:
             return (visboCmpString(a.userName.toLowerCase(), b.userName.toLowerCase()) && (a.date.localeCompare(b.date))) ;
           case 2:
@@ -290,9 +292,12 @@ export class EmployeeComponent implements OnInit {
         if (item) {this.originalColumns.push(item)}
       });
       this.rows = this.originalColumns;
-      if (this.originalColumns?.length) {
-        this.getOrganizationList(this.visboCentersList[0]._id);
-      }
+
+      // ur: don't no why this is needed
+      //
+      // if (this.originalColumns?.length) {
+      //   this.getOrganizationList(this.visboCentersList[0]._id);
+      // }
       this.sortVTRTable(undefined);
       this.updateFilter();
     });

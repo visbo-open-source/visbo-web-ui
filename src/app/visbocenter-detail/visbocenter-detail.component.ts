@@ -83,6 +83,11 @@ export class VisbocenterDetailComponent implements OnInit {
   sortEnableDisableAscending: boolean;
   sortEnableDisableColumn: number;
 
+  // VTR Definitionen
+  newVTRstartDate: Date;
+  newVTRendDate: Date;
+  changeStatus: boolean;
+  
   constructor(
     private messageService: MessageService,
     private visbocenterService: VisboCenterService,
@@ -336,6 +341,36 @@ export class VisbocenterDetailComponent implements OnInit {
         }
       );
   }
+
+  
+  showTimeTracking(): void {
+    this.showList = 'TimeTracking';
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.log('Visbo TimeTracking of: ' + id);
+    this.visbosettingService.getVCOrganisations(id)
+      .subscribe(
+        orgas => {
+          this.log(`fetched VC Organisations ${orgas.length}`);
+          this.vcOrganisations = orgas;
+          this.vcOrganisations.sort(function(a, b) { return visboCmpDate(b.timestamp, a.timestamp); });
+          // set latestOrgaTimestamp to the newest Orga TS
+          if (this.vcOrganisations[0]) {
+            this.latestOrgaTimestamp = new Date(this.vcOrganisations[0].timestamp);
+          }
+        },
+        error => {
+          this.log(`Get VC Organisations failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vcDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
 
   showSetting(): void {
     this.showList = 'Settings';
@@ -1277,6 +1312,20 @@ export class VisbocenterDetailComponent implements OnInit {
        return actDate;
     }
     return null;
+  }
+
+  
+  updateDateRange(): void {
+    // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
+    let result = true;
+    if (!this.newVTRstartDate || !this.newVTRendDate) {
+      this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);
+      result = false;
+    } else if (this.newVTRstartDate.getTime() >= this.newVTRendDate.getTime()) {
+      this.log(`Dates start later end ${this.newVTRstartDate} ${this.newVTRendDate}`);
+      result = false;
+    } 
+    this.changeStatus = result;
   }
 
   sortSettingEnabledDisabled(n?: number): void {
