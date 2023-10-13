@@ -19,6 +19,10 @@ import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
+
+const VISBO_orange = '#F7941E';
+const VISBO_blue = '#458CCB';
+
 class exportCost {
   name: string;
   vpStatus: string;
@@ -60,7 +64,10 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   parentThis = this;
   timeoutID: ReturnType<typeof setTimeout>;
 
-  colors = ['#F7941E', '#BDBDBD', '#458CCB'];
+  // VISBO orange = #F7941E
+  // VISBO blue = #458CCB
+  // colors = ['#F7941E', '#BDBDBD', '#458CCB'];
+  colors = [VISBO_orange, '#BDBDBD', VISBO_blue];
 
   chartActive: Date;
   graphDataComboChart = [];
