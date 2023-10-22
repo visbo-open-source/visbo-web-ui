@@ -40,6 +40,9 @@ import { SystasksComponent } from './visbosysadmin/systasks/systasks.component';
 import { SysconfigComponent } from './visbosysadmin/sysconfig/sysconfig.component';
 import { SyssettingsComponent } from './visbosysadmin/syssettings/syssettings.component';
 
+import { EmployeeComponent } from './_components/comp-employeetable/comp-employeetable.component';
+import { ApproverComponent } from './_components/comp-approvertable/comp-approvertable.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -50,6 +53,8 @@ const routes: Routes = [
   { path: 'pwforgotten', component: PwforgottenComponent },
   { path: 'pwreset', component: PwresetComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
+  { path: 'vtr', component: EmployeeComponent, canActivate: [AuthGuard]  },  
+  { path: 'vtrApprove', component: ApproverComponent, canActivate: [AuthGuard]  },
   { path: 'vc', component: VisboCentersComponent, canActivate: [AuthGuard] },
   { path: 'vcDetail/:id', component: VisbocenterDetailComponent, canActivate: [AuthGuard]  },
   { path: 'vcAudit/:id', component: VisbocenterAuditComponent, canActivate: [AuthGuard]  },

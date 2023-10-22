@@ -225,15 +225,17 @@ export class VisboProjectVersionService {
   }
 
   /** GET getVisboCenterProjectVersions for all projects of a specific VC */
-  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted = false): Observable<VisboProjectVersion[]> {
+  getVisboCenterProjectVersions(id: string, refDate: Date = new Date(), deleted = false, longList = false): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     params = params.append('vcid', id);
     params = params.append('refDate', refDate.toISOString());
     params = params.append('keyMetrics', '1');
-    params = params.append('variantID', '');
-
+    params = params.append('variantID', '');    
+    if (longList) {
+      params = params.append('longList', '1');
+    }
     if (deleted) {
       params = params.append('deleted', '1');
     }
