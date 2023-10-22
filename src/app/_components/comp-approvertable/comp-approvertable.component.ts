@@ -301,7 +301,7 @@ export class ApproverComponent implements OnInit {
         //   this.getOrganizationList(this.visboCentersList[0]._id);         
         // }
        
-        this.sortVTRTable(undefined);
+        this.sortVTRTable(undefined, true);
         this.updateFilter();
       });
     }

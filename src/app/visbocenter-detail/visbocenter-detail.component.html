@@ -26,7 +26,7 @@
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
         <button *ngIf="hasVCPerm(permVC.Modify)" id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
         <!-- Button TimeTracking in VCDetails -->
-        <!-- <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button" disabled class="btn btn-md btn-light mx-1" (click)="showTimeTracking()">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button> -->
+        <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button" disabled class="btn btn-md btn-light mx-1" (click)="showTimeTracking()">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVCDetailNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fas fa-bars"></i>
         </button>
