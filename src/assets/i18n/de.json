@@ -195,6 +195,7 @@
 		"titleSettings": "VISBO Center Setting",
 		"titleOrganisations": "VISBO Center Organisation",
 		"titleTimeTracking": "VISBO Center Zeiterfassung",
+		"titleTimeRecordsImport": "VISBO Center Import Zeiterfassung",
 		"titleEnableDisable": "VISBO Center Enable / Disable von Funktionen",
 		"titleDeleteSetting": "VISBO Center Setting löschen",
 		"titleDeleteOrganisation": "VISBO Center Organisation löschen",
@@ -295,6 +296,7 @@
 			"errorVCConflict": "Ein VISBO Center mit dem Namen {{name}} existiert bereits!",
 			"saveOrgaSuccess": "VISBO Center Organisation wurde erfolgreich gespeichert",
 			"saveSettingSuccess": "VISBO Center Setting wurde erfolgreich gespeichert",
+			"addVCTimeTracking": "VISBO Center TimeRecords wurden erfolgreich importiert",
 			"duplicateSetting": "VISBO Center Setting {{name}} ist bereits vorhanden",
 			"errorList": "Fehler beim hochladen der Organisation"
 		}

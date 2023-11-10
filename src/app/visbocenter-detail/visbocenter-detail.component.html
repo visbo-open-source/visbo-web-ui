@@ -26,7 +26,12 @@
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
         <button *ngIf="hasVCPerm(permVC.Modify)" id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
         <!-- Button TimeTracking in VCDetails -->
-        <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button" disabled class="btn btn-md btn-light mx-1" (click)="showTimeTracking()">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button>
+<!-- 
+        <button id="CalcTimeTracking" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#vcModalVTR">
+          {{ 'vcDetail.btn.calcTimeTracking' | translate }}
+        </button> -->
+        <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button"  class="btn btn-md btn-light mx-1" data-toggle="modal" data-target="#vcModalVTR">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button>
+        <!-- <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button"  class="btn btn-md btn-light mx-1" (click)="showTimeTracking()">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button> -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVCDetailNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fas fa-bars"></i>
         </button>
@@ -959,42 +964,25 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="vcModalVTRTitle">{{ 'vcDetail.titleVTR' | translate }}</h5>
+        <h5 class="modal-title" id="vcModalVTRTitle">{{ 'vcDetail.titleTimeRecordsImport' | translate }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <!-- <div *ngIf="newVPV && newVPV.variantName == 'pfv'">
-          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
-        </div> -->
         <form  name="vcVTR" #f2="ngForm" novalidate>
           <div class="form-group">
             <label for="startDateID" class="col-4 col-form-label">{{ 'vcDetail.lbl.startDate' | translate }}:</label>
-            <input id="startDateID" type="date" class="col-6 col-form-label" name="newVTRstartDate" [ngModel]="newVTRstartDate | date:'yyyy-MM-dd'" (input)="newVTRstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
+            <input id="startDateID" type="month" class="col-6 col-form-label" name="newVTRstartDate" min="minDate" max="newVTRendDate" [ngModel]="newVTRstartDate | date:'yyyy-MM'" (input)="newVTRstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
           </div>
           <div class="form-group">
             <label for="endDateID" class="col-4 col-form-label">{{ 'vcDetail.lbl.endDate' | translate }}:</label>
-            <input id="endDateID" type="date" class="col-6 col-form-label" name="newVTRendDate" [ngModel]="newVTRendDate | date:'yyyy-MM-dd'" (input)="newVTRendDate=parseDate($event.target.value)" (change)="updateDateRange()">
+            <input id="endDateID" type="month" class="col-6 col-form-label" name="newVTRendDate" min="newVTRstartDate" max="today" [ngModel]="newVTRendDate | date:'yyyy-MM'" (input)="newVTRendDate=parseDate($event.target.value)" (change)="updateDateRange()">
           </div>
-          <!-- <div class="custom-control custom-checkbox ml-3">
-              <input type="checkbox" class="custom-control-input" id="scaleCheckBox" name="scaleCheckBox" [(ngModel)]="scaleCheckBox">
-              <label class="custom-control-label" for="scaleCheckBox">{{ 'vpKeyMetric.lbl.scaleCheck' | translate }}</label>
-          </div> -->
-          <!-- <div *ngIf="scaleCheckBox" class="form-group">
-            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
-            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99" (change)="updateScaleFactor()"> %
-          </div>
-          <div *ngIf="scaleCheckBox" class="form-group">
-            <label for="scaleStartDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleStartDate' | translate }}:</label>
-            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" min="{{getScaleDate('Min') | date:'yyyy-MM-dd'}}" max="{{getScaleDate('Max') | date:'yyyy-MM-dd'}}" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
-          </div> -->
-
         </form>
         <div class="modal-footer align-items-end">
           <button id="vtrCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
-          <button id="vtrConfirm" type="submit" class="btn btn-primary disabled mx-1">{{ 'vcDetail.btn.vtrCalc' | translate }}</button>
-          <!-- <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button> -->
+          <button *ngIf="changeStatus" id="vtrConfirm" type="submit" class="btn btn-primary  mx-1" (click)="vtrCalculate()" data-dismiss="modal" >{{ 'vcDetail.btn.vtrCalc' | translate }}</button>
         </div>
       </div>
     </div>
