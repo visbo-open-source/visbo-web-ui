@@ -500,7 +500,7 @@
 		"toDate": "To",
 		"approveAll":"Approve All",
 		"edit": "Edit",
-
+		"userName": "Employee",
 		"mdl":{
 			"addNewEmployee":"New Time Entry",
 			"record": "Edit Record",

@@ -500,6 +500,7 @@
 		"toDate": "An",
 		"approveAll":"Genehmigen Sie alle",
 		"edit": "Ändern",
+		"userName": "Mitarbeiter",
 		"mdl":{
 			"addNewEmployee":"Neuer Zeiterfassungseintrag",
 			"record": "Ändern Rekord",
