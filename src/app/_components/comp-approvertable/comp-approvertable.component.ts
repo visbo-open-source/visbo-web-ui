@@ -56,7 +56,7 @@ export class ApproverComponent implements OnInit {
     managerTimeTrackerList: VtrVisboTrackerExtended[]=[];
     originalManagerList: VtrVisboTrackerExtended[]=[];
     private userId: string;
-    private userName: string;
+    userName: string;
     private userEmail: string;
     private managerUid: number;
     userIsApprover: boolean;
@@ -218,13 +218,17 @@ export class ApproverComponent implements OnInit {
         const endDate = this.endDate?.length ? new Date(this.endDate) : null;
   
         this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
+          var identicalName = true;
+          if (this.userName) {
+            identicalName = (item.userName == this.userName);
+          }
           const date = new Date(item.date);
           if (startDate && !endDate) {
-            return date >= startDate;
+            return (date >= startDate) && identicalName;
           } else if (!startDate && endDate) {
-            return date <= endDate;
+            return (date <= endDate) && identicalName;;
           } else {
-            return date >= startDate && date <= endDate;
+            return (date >= startDate) && (date <= endDate) && identicalName;
           }
         });
       }
