@@ -1320,6 +1320,14 @@ export class VisbocenterDetailComponent implements OnInit {
     // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
     let result = true;
     const today = new Date();
+
+    if (this.newVTRendDate){
+      const d = new Date (this.newVTRendDate);    
+      const month = d.getMonth();
+      const year = d.getFullYear();
+      d.setFullYear(year, month+1, 0);    
+      this.newVTRendDate = new Date(d);
+    } 
     if (!this.newVTRstartDate || !this.newVTRendDate) {
       this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);
       result = false;
@@ -1329,12 +1337,7 @@ export class VisbocenterDetailComponent implements OnInit {
     } else if ( this.newVTRendDate.getTime() >= today.getTime()) {
         this.log(`End is later today ${this.newVTRendDate} ${today}`);
         result = false;
-    } 
-    const d = new Date (this.newVTRendDate);    
-    const month = d.getMonth();
-    const year = d.getFullYear();
-    d.setFullYear(year, month+1, 0);    
-    this.newVTRendDate = new Date(d);
+    }     
     this.changeStatus = result;
   }
 
