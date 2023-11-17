@@ -174,8 +174,8 @@ export class VisboProjectVersion {
   variantDescription: string;
   Risiko: number;
   StrategicFit: number;
-  customDblFields: VPVDblFields[];  
-  customStringFields: VPVStrFields[];  
+  customDblFields: VPVDblFields[];
+  customStringFields: VPVStrFields[];
   customBoolFields: VPVBoolFields[];
   Erloes: number;
   startDate: Date;
@@ -227,7 +227,7 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   variant?: string;
   _strategicFit?: number;
   _risk?: number;
-  _businessUnit?: string;  
+  _businessUnit?: string;
   vpStatus?: string;
   lead?: string;
   _PMCommit?: Date;
@@ -239,7 +239,7 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   costCurrentTotalPredict?: number;
   costBaseLastActual?: number;
   costBaseLastTotal?: number;
-  racBaseLast?: number;  
+  racBaseLast?: number;
   racCurrent?: number;
   timeCompletionCurrentActual?: number;
   timeCompletionCurrentTotal?: number;

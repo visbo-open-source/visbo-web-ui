@@ -25,6 +25,8 @@
         <button id="ViewGroup" type="button" class="btn btn-md btn-light mx-1" (click)="switchView('Groups')">{{ 'vcDetail.btn.viewGroups' | translate }}</button>
         <button id="ViewAudit" *ngIf="hasVCPerm(permVC.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVCAudit(visbocenter)">{{ 'vcDetail.btn.viewAudit' | translate }}</button>
         <button *ngIf="hasVCPerm(permVC.Modify)" id="ViewOrga" type="button" class="btn btn-md btn-light mx-1" (click)="showOrganisation()">{{ 'vcDetail.btn.ViewOrganisation' | translate }}</button>
+        <!-- Button TimeTracking in VCDetails -->
+        <!-- <button *ngIf="hasVCPerm(permVC.Modify) && hasVPPerm(permVP.Modify)" id="ViewTimeTracking" type="button" disabled class="btn btn-md btn-light mx-1" (click)="showTimeTracking()">{{ 'vcDetail.btn.ViewTimeTracker' | translate }}</button> -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarVCDetailNavigation" aria-controls="navbarMainNavigation" aria-expanded="false" aria-label="Toggle navigation">
           <i class="fas fa-bars"></i>
         </button>
@@ -181,6 +183,70 @@
           <!-- Button trigger modal -->
           <button id="AddOrganisation" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#VcOrganisationModalUpload">
             {{ 'vcDetail.btn.changeOrganisation' | translate }}
+          </button>
+        </div>
+      </div>
+      <div *ngIf="errorList.length > 0" class="card col-10 px-0 mb-1">
+        <h5 class="card-header p-2">
+          <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: 3}"></ng-container></strong>
+          {{ 'vcDetail.msg.errorList' | translate }}
+          <button id="AddOrganisation" type="button" class="my-1 btn btn-secondary float-right" (click)="resetError()">
+            {{ 'vcDetail.btn.reset' | translate }}
+          </button>
+        </h5>
+        <div class="card-body p-2">
+          <div *ngFor="let item of errorList" class="row">
+            <div class="col col-sm-8">
+              {{item}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='panel-body'>
+        <table class='table table-hover'>
+          <!--Table head-->
+          <thead id="OrganisationHead">
+            <tr>
+              <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
+              <th (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
+              <th (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
+              <th (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th>{{ 'vcDetail.lbl.nrRoles' | translate }}</th>
+              <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
+            </tr>
+          </thead>
+          <!--Table body-->
+          <tbody id="OrganisationList">
+            <tr *ngFor="let item of vcOrganisations; let itemIndex=index">
+              <td>{{itemIndex+1}}</td>
+              <!-- <button id="OrganisationDownload" type="submit" class="btn btn-primary mx-1" (click)="downloadOrganisation()" data-dismiss="modal">{{ 'vcDetail.btn.download' | translate }}</button> -->
+              <td id="ColOrganisationTimestamp" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}">{{item.timestamp | date : 'dd.MM.yyyy'}}</td>
+              <td id="ColOrganisationName" (click)='downloadOrganisation(itemIndex)' title="{{ 'vcDetail.btn.download' | translate }}"><a>{{item.name}}</a></td>
+              <td id="ColOrganisationDate">{{item.updatedAt | date : 'dd.MM.yy'}}</td>
+              <td id="ColCount">{{item.allUnits?.length}}</td>
+              <td *ngIf="hasVCPerm(permVC.Modify)">
+                <div *ngIf="canDeleteOrga(item)">
+                  <button id="ColDeleteOrganisation" class="Detail" (click)='initOrganisation(itemIndex)' title="{{ 'vcDetail.lbl.deleteOrganisation' | translate }}"
+                  data-toggle="modal" data-target="#VcOrganisationRemove">&times;</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="showList == 'TimeTracking'">
+      <div class='row'>
+        <div class='col'>
+          <h4 class='panel-heading'>
+              {{ 'vcDetail.titleTimeTracking' | translate }}
+          </h4>
+        </div>
+        <div *ngIf="hasVCPerm(permVC.Modify) && errorList.length == 0" class='col'>
+          <!-- Button trigger modal -->
+          <button id="CalcTimeTracking" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#vcModalVTR">
+            {{ 'vcDetail.btn.calcTimeTracking' | translate }}
           </button>
         </div>
       </div>
@@ -887,6 +953,53 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal calculate TimeTracking start&end Date of Calculation -->
+<div *ngIf="visbocenter" class="modal fade" id="vcModalVTR" tabindex="-1" role="dialog" aria-labelledby="vcModalVTR" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vcModalVTRTitle">{{ 'vcDetail.titleVTR' | translate }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- <div *ngIf="newVPV && newVPV.variantName == 'pfv'">
+          <label class="bg-warning">{{ 'vpKeyMetric.msg.changePFV' | translate }}</label>
+        </div> -->
+        <form  name="vcVTR" #f2="ngForm" novalidate>
+          <div class="form-group">
+            <label for="startDateID" class="col-4 col-form-label">{{ 'vcDetail.lbl.startDate' | translate }}:</label>
+            <input id="startDateID" type="date" class="col-6 col-form-label" name="newVTRstartDate" [ngModel]="newVTRstartDate | date:'yyyy-MM-dd'" (input)="newVTRstartDate=parseDate($event.target.value)" (change)="updateDateRange()">
+          </div>
+          <div class="form-group">
+            <label for="endDateID" class="col-4 col-form-label">{{ 'vcDetail.lbl.endDate' | translate }}:</label>
+            <input id="endDateID" type="date" class="col-6 col-form-label" name="newVTRendDate" [ngModel]="newVTRendDate | date:'yyyy-MM-dd'" (input)="newVTRendDate=parseDate($event.target.value)" (change)="updateDateRange()">
+          </div>
+          <!-- <div class="custom-control custom-checkbox ml-3">
+              <input type="checkbox" class="custom-control-input" id="scaleCheckBox" name="scaleCheckBox" [(ngModel)]="scaleCheckBox">
+              <label class="custom-control-label" for="scaleCheckBox">{{ 'vpKeyMetric.lbl.scaleCheck' | translate }}</label>
+          </div> -->
+          <!-- <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleFactor' | translate }}:</label>
+            <input id="scaleID" type="number" class="col-6 col-form-label" name="scaleFactor" [(ngModel)]="scaleFactor" min="-99" (change)="updateScaleFactor()"> %
+          </div>
+          <div *ngIf="scaleCheckBox" class="form-group">
+            <label for="scaleStartDateID" class="col-4 col-form-label">{{ 'vpKeyMetric.lbl.scaleStartDate' | translate }}:</label>
+            <input id="scaleStartDateID" type="date" class="col-6 col-form-label" name="newVPVscaleStartDate" [ngModel]="newVPVscaleStartDate | date:'yyyy-MM-dd'" min="{{getScaleDate('Min') | date:'yyyy-MM-dd'}}" max="{{getScaleDate('Max') | date:'yyyy-MM-dd'}}" (input)="newVPVscaleStartDate=parseDate($event.target.value)">
+          </div> -->
+
+        </form>
+        <div class="modal-footer align-items-end">
+          <button id="vtrCancel" type="button" class="btn btn-secondary mx-1" data-dismiss="modal">{{ 'vcDetail.btn.back' | translate }}</button>
+          <button id="vtrConfirm" type="submit" class="btn btn-primary disabled mx-1">{{ 'vcDetail.btn.vtrCalc' | translate }}</button>
+          <!-- <button id="vpvMoveConfirm" *ngIf="changeStatus" type="submit" class="btn btn-primary mx-1" (click)="moveVPV()" data-dismiss="modal">{{ 'vpKeyMetric.btn.vpvChange' | translate }}</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </div>
 

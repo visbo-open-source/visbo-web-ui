@@ -286,7 +286,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpvActive) {
       this.drillDownCapaFiltered = this.drillDownCapa.filter( item => (item.id != 2)  && (item.id != 3));
       this.lastTimestampVPF = this.vpvActive.timestamp;
-    }
+    } 
     this.initVPProperties();
     this.getProjectVersions();
     this.visboViewOrganisationTree();
@@ -637,10 +637,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   getProjectVersions(): void {
     this.visboprojectversions = undefined;
+    const longlist = true;
+    const refDate = new Date();
 
     if (this.vcActive ) {
       this.log(`Get VPV of VC ${this.vcActive._id}`);
-      this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id)
+      this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id, refDate, false, longlist)      
         .subscribe(
           vpv => {
             // map vp to the list
@@ -699,7 +701,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             } else {
               this.log(`Store VC Project Capacity for Len ${visbocenter.capacity.length}`);
               let capacity = visbocenter.capacity.filter(item => item.vpid != undefined);
-              const listVPVFilter = this.filterVPV(this.visboprojectversions);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);              
+              this.visboprojectsversions_filtered = listVPVFilter;
               capacity.forEach(item => {
                 const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
                 item.vp = vpv && vpv.vp;

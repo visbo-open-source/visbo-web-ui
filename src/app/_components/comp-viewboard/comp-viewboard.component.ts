@@ -395,8 +395,20 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         new Date(minAndMaxDate.end)
       ]);
 
-    }
-  
+    } else if ( minAndMaxDate.start && minAndMaxDate.end && minAndMaxDate.start <= minAndMaxDate.end) {
+      const lastlineID = 0;
+      // color for the Portfolio-TimeLine
+      this.graphOptionsTimeline.colors.push(headLineColor);
+
+      graphDataTimeline.push([
+        (lastlineID).toString(),
+        this.combineName('xxx', ''),
+        '',
+        new Date(minAndMaxDate.start),
+        new Date(minAndMaxDate.end)
+      ]);
+
+    }    
 
     this.graphOptionsTimeline.height = 50 + graphDataTimeline.length * 41;
 

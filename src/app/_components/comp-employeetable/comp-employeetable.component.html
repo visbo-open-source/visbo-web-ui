@@ -1,0 +1,305 @@
+<app-usernavbar></app-usernavbar>
+<div class="cld-date">
+  <div class="calendar">
+    {{"vtr.fromDate" | translate}}
+    <input
+      (change)="updateFilter()"
+      [(ngModel)]="startDate"
+      [max]="endDate"
+      class="col-2 col-sm-2 form-control" id="startDate"
+      type="date">
+    {{"vtr.toDate" | translate}}
+    <input
+      (change)="updateFilter()"
+      [(ngModel)]="endDate"
+      [min]="startDate"
+      class="col-2 col-sm-2 form-control"
+      id="endDate"
+      type="date">
+  </div>
+</div>
+<div class="text-center" ><h1>Employee List</h1></div>
+<!-- <div class="text-center" ><h1>Employee List</h1></div> -->
+<table  class="table table-hover table-sortable table-custom">
+  <thead>
+  <tr class="col-center">
+    <th (click)="sortVTRTable(0)" class="d-none d-md-table-cell">
+      {{'vtr.titleVCN' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
+      {{'vtr.titleProject' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(3)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDate' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDescription' | translate}}
+    </th>
+    <th
+      (click)="sortVTRTable(4)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleHours' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(5)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleApprove' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th>
+      <button
+        (click)="this.clearEditModal()"
+        class="my-1 btn btn-primary float-right"
+        data-target="#VtrModalCreate"
+        data-toggle="modal"
+        type="button"
+      >
+        Add
+      </button>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr (click)="selectRow(user)" *ngFor="let user of originalColumns" class="col-center">
+    <td class="d-none d-md-table-cell">{{user.vcName}}</td>
+    <td class="d-none d-md-table-cell">{{user.vpName}}</td>
+    <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
+    <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
+    <td class="d-none d-md-table-cell">{{user.time}}</td>
+    <td class="d-none d-md-table-cell">{{user.status}}</td>
+    <td>
+      <button
+        (click)="openEditModal(user, true)"
+        *ngIf="checkIsCreatorOfRecord(user)"
+        [disabled]="user.status === 'Yes'"
+        data-target="#VtrModalCreate"
+        data-toggle="modal">
+        {{ 'vtr.edit' | translate }}
+      </button>
+    </td>
+  </tr>
+  <tr style="text-align: center" *ngIf="!originalColumns?.length">
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>No Data</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+
+  </tbody>
+</table>
+<!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
+<!-- <div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
+<table *ngIf="originalManagerList?.length" class="table table-hover table-sortable table-custom">
+  <thead>
+  <tr class="col-center">
+    <th (click)="sortVTRTable(1, true)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
+    <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
+    <th (click)="sortVTRTable(2, true)" class="d-none d-md-table-cell">
+      {{'vtr.titleProject' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(3, true)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDate' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      class="d-none d-md-table-cell">
+      {{'vtr.titleDescription' | translate}}
+    </th>
+    <th
+      (click)="sortVTRTable(4, true)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleHours' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th
+      (click)="sortVTRTable(5, true)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleApprove' | translate}}
+      <i class="fa fa-sort"></i>
+    </th>
+    <th>
+      <button *ngIf="managerTimeTrackerList?.length"
+              (click)="approveAllTimeRecords()" 
+              class="my-1 btn btn-primary float-right">
+              {{"vtr.approveAll" | translate}}</button>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr (click)="selectRow(user)" *ngFor="let user of managerTimeTrackerList" class="col-center">
+    <td class="d-none d-md-table-cell">{{user.userName}}</td>
+    <td class="d-none d-md-table-cell">{{user.vcName}}</td>
+    <td class="d-none d-md-table-cell">{{user.vpName}}</td>
+    <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
+    <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
+    <td class="d-none d-md-table-cell">{{user.time}}</td>
+    <td class="d-none d-md-table-cell">{{user.status}}</td>
+    <td>
+      <button
+        (click)="openEditModal(user)"
+        [disabled]="user.status === 'Yes'"
+        data-target="#VtrModalEdit"
+        data-toggle="modal">
+        {{ 'vtr.edit' | translate }}
+      </button>
+    </td>
+  </tr>
+  <tr style="text-align: center" *ngIf="!managerTimeTrackerList.length">
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>No Data</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  </tbody>
+</table> -->
+
+
+<!-- Button to Open the Modal -->
+
+<!-- <button type="button" class="m-2 btn btn-primary"  >{{ 'vp.btn.create' | translate }}</button> -->
+
+<!-- The Modal Employee -->
+<div
+  #VtrModalCreate
+  aria-hidden="true"
+  class="modal fade"
+  id="VtrModalCreate"
+  role="dialog"
+  tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">{{!isCreatorOfRecord ? ("vtr.mdl.addNewEmployee" | translate) : ("vtr.mdl.record" | translate)}}</h4>
+        <button (click)="clearEditModal()" aria-label="Close" class="close" data-dismiss="modal" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="userForm">
+          <div class="form-group">
+            <label for="visboCenterSelect">{{"vtr.mdl.Centre" | translate}}</label>
+            <select  
+              class="form-control"
+              formControlName="vcid"
+              id="visboCenterSelect">
+              <option *ngFor="let center of visboCentersList" 
+              [value]="center._id"            
+              [attr.disabled]="isCreatorOfRecord && userForm.controls.vcid.value ? 'disabled' : null">{{ center.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="projectNameSelect">{{"vtr.mdl.Project" | translate}}</label>
+            <select class="form-control w-100" formControlName="vpid" id="projectNameSelect">
+              <option *ngFor="let project of selectedCenterProjects" [value]="project?._id" [attr.disabled]="isCreatorOfRecord && userForm.controls.vpid.value ? 'disabled' : null">{{ project.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="date">{{"vtr.mdl.Date" | translate}}</label>
+            <!-- <input class="form-control" formControlName="date" id="date" type="date" [value]="startDate" [attr.disabled]="isCreatorOfRecord && userForm.controls.date.value ? 'disabled' : null"> -->
+            <input class="form-control" formControlName="date" id="date" type="date" [value]="startDate" >
+          </div>
+          <div class="form-group">
+            <label for="notes">{{"vtr.mdl.Description" | translate}}</label>
+            <textarea class="form-control" formControlName="notes" id="notes"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="time">{{"vtr.mdl.Hours" | translate}}</label>
+            <input class="form-control" (keyup)="checkHours($event)" formControlName="time" id="time" type="number" >
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button
+          (click)="clearEditModal()"
+          class="btn btn-secondary mx-1"
+          data-dismiss="modal"
+          type="button">
+          {{ 'vtr.btn.cancel' | translate }}
+        </button>
+        <button
+          (click)="isCreatorOfRecord ? saveChanges() : addEmployee()"
+          [disabled]="userForm.invalid"
+          class="btn btn-primary mx-1"
+          data-dismiss="modal"
+          id="AddGroupConfirm"
+          type="button"
+        >
+          {{ 'vtr.btn.save' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- The Modal Manager-->
+<!-- <div
+  aria-hidden="true"
+  aria-labelledby="VtrModalEditLabel"
+  class="modal fade"
+  id="VtrModalEdit"
+  role="dialog"
+  tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"> -->
+
+      <!-- Modal Header -->
+      <!--  -->
+      <!-- [disabled]="userForm.invalid" -->
+      <!-- Modal body -->
+      <!-- <div class="modal-body">
+        <form [formGroup]="userForm">
+          <div class="form-group">
+            <div> {{"vtr.mdl.Employee" | translate}} - <b>{{this.vtrActiveUserName}}</b></div>
+            <div> {{"vtr.mdl.Centre" | translate}} - <b>{{this.vcActiveName}}</b></div>
+            <div> {{"vtr.mdl.Project" | translate}} - <b>{{this.vpActiveName}}</b></div>            
+            <div> {{"vtr.mdl.Description" | translate}} - <b>{{userForm.get('notes').value}}</b></div>
+            <div> {{"vtr.mdl.Hours" | translate}} - <b>{{userForm.get('time').value}}</b></div>
+          </div>
+
+          <div class="form-group">
+            <label for="approveStatus">{{"vtr.mdl.Approve" | translate}}</label>
+            <select class="form-control" formControlName="status" id="approveStatus">
+              <option
+                *ngFor="let status of vtrApprove"
+                [ngValue]="status"
+                [selected]="status === userForm.value.status">{{ status }}</option>
+            </select>
+          </div>
+        </form>
+      </div> -->
+
+      <!-- Modal footer -->
+      <!-- <div class="modal-footer">
+        <button (click)="saveChanges()" [disabled]="!userForm.valid" class="btn btn-primary"
+                data-dismiss="modal"
+                type="button">{{'vtr.btn.save' | translate}}</button>
+      </div> -->
+<!-- 
+    </div>
+  </div>
+</div> -->
+

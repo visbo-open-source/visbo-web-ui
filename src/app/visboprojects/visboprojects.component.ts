@@ -484,8 +484,9 @@ export class VisboProjectsComponent implements OnInit {
 
   getVisboProjectKeyMetrics(): void {
     this.log(`get VC keyMetrics ${this.vcActive.name} ${this.vcActive._id}`);
+    const longlist = true;
 
-    this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id, this.vpvRefDate)
+    this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id, this.vpvRefDate, false, longlist)
       .subscribe(
         visboprojectversions => {
           this.visboprojectversions = visboprojectversions;

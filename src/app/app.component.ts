@@ -12,7 +12,7 @@ import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.hel
 })
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '23-09';
+  version = '23-10';
   restVersionString = new Date();
   restUIVersionString = new Date();
   localsAvailable = false;
@@ -25,7 +25,12 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const langToSet = this.translate.getBrowserLang();
+    let langToSet: string;
+    if (this.translate.getLangs().includes(this.translate.getBrowserLang())) {
+      langToSet = this.translate.getBrowserLang();
+    } else {
+      langToSet = 'en';
+    }
     this.log(`Browser Language: ${langToSet}`);
     // MS TODO: Verify if this really waits
     // load the tranlation file and use later instant access

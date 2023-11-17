@@ -39,7 +39,7 @@
                   <span> {{ 'ViewCapacity.lbl.filter' | translate }}:</span>
                   <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
                 </div>
-                <!-- <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+                <!-- <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none"> 
                   <span> {{ 'ViewCapacity.lbl.vpStatus' | translate }}: </span>
                   <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
                   <div class="dropdown-menu">
