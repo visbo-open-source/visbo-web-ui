@@ -296,7 +296,8 @@
 			"errorVCConflict": "A VISBO Center with {{name}} does already exist!",
 			"saveOrgaSuccess": "VISBO Center Organisation was saved successfully",
 			"saveSettingSuccess": "VISBO Center Setting was saved successfully",
-			"addVCTimeTracking": "VISBO Center TimeRecords were imported successfully",
+			"addVCTimeTracking": "VISBO Center TimeRecords were imported successfully",			
+			"timeForTimeRecords": "Caution: Please, check the Start- and End-Date !",
 			"duplicateSetting": "VISBO Center Setting {{name}} exists already",
 			"errorList": "Errors during upload the organisation"
 		}

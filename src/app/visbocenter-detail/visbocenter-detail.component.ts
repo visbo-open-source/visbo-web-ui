@@ -87,6 +87,7 @@ export class VisbocenterDetailComponent implements OnInit {
   newVTRstartDate: Date;
   newVTRendDate: Date;
   changeStatus: boolean;
+  showMessage: boolean;
 
   
   constructor(
@@ -1329,16 +1330,22 @@ export class VisbocenterDetailComponent implements OnInit {
       this.newVTRendDate = new Date(d);
     } 
     if (!this.newVTRstartDate || !this.newVTRendDate) {
-      this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);
+      this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);      
       result = false;
+      this.showMessage = true;
     } else if (this.newVTRstartDate.getTime() >= this.newVTRendDate.getTime()) {
       this.log(`Dates start later end ${this.newVTRstartDate} ${this.newVTRendDate}`);
       result = false;
+      this.showMessage = true;
     } else if ( this.newVTRendDate.getTime() >= today.getTime()) {
         this.log(`End is later today ${this.newVTRendDate} ${today}`);
         result = false;
-    }     
-    this.changeStatus = result;
+        this.showMessage = true;
+    } else {
+      this.showMessage = false;
+    }   
+
+    this.changeStatus = result;  
   }
 
   sortSettingEnabledDisabled(n?: number): void {
@@ -1381,6 +1388,7 @@ export class VisbocenterDetailComponent implements OnInit {
   }
   
   vtrCalculate(): void {
+    if (this.showMessage) return;
 
     if (this.changeStatus) {
       const user = this.getActiveUser();

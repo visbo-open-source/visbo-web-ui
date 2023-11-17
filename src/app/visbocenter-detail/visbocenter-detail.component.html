@@ -964,6 +964,9 @@
         </button>
       </div>
       <div class="modal-body">
+        <div *ngIf="showMessage">
+          <label *ngIf="showMessage" class="bg-warning">{{ 'vcDetail.msg.timeForTimeRecords' | translate }}</label>  
+        </div>
         <form  name="vcVTR" #f2="ngForm" novalidate>
           <div class="form-group">
             <label for="startDateID" class="col-4 col-form-label">{{ 'vcDetail.lbl.startDate' | translate }}:</label>
