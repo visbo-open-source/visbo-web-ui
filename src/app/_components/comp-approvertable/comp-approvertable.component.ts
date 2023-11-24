@@ -57,6 +57,7 @@ export class ApproverComponent implements OnInit {
     originalManagerList: VtrVisboTrackerExtended[]=[];
     private userId: string;
     userName: string;
+    filterName: string = "";
     private userEmail: string;
     private managerUid: number;
     userIsApprover: boolean;
@@ -219,8 +220,8 @@ export class ApproverComponent implements OnInit {
   
         this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
           var identicalName = true;
-          if (this.userName) {
-            identicalName = (item.userName == this.userName);
+          if (this.filterName) {
+            identicalName = (item.userName.toLowerCase().search(this.filterName.toLowerCase()) > -1);
           }
           const date = new Date(item.date);
           if (startDate && !endDate) {
