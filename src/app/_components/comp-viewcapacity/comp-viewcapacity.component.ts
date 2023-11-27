@@ -966,9 +966,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     let onlyFuture = false;
     const first = new Date(capacity[0].month);
     const last = new Date(capacity[capacity.length - 1].month);
-    if (first.getTime() >= startOfMonth.getTime() || last.getTime() >= startOfMonth.getTime()) {
-      onlyFuture = true;
-    }
+    // if (first.getTime() >= startOfMonth.getTime() || last.getTime() >= startOfMonth.getTime()) {
+    //   onlyFuture = true;
+    // }
 
     let capaLoad: CapaLoad[] = [];
     for (let i=0; i < capacity.length; i++) {
@@ -995,10 +995,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     // remove empty items
     capaLoad = capaLoad.filter(item => item.uid >= 0);
-    let markCount = Math.round(capaLoad.length / 4);
-    if (markCount < 3) {
-      markCount = Math.min(3, capaLoad.length);
-    }
+
+    let markCount = capaLoad.length;
+    //let markCount = Math.round(capaLoad.length / 4);
+    // if (markCount < 3) {
+    //   markCount = Math.min(3, capaLoad.length);
+    //}
     // this.log(`Calculated CapaLoad ${capaLoad.length} Mark ${markCount}`);
 
     capaLoad.sort(function(a, b) { return b.percentOver - a.percentOver; });
@@ -1013,12 +1015,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         return 0;
       }
     });
+    // only the best, worst three will be shown
     for (let i=0; i < markCount; i++) {
       if (capaLoad[i].percentUnder == -1) continue; // orga unit is not scheduled
       if (capaLoad[i].percentUnder >= 0) break; // no more items with under capacity
       if (capaLoad[i].rankOver > 0) continue;   // item is marked with rankOver, do not mark both
       capaLoad[i].rankUnder = markCount - i;
     }
+
     for (let i=0; i < capaLoad.length; i++) {
       this.capaLoad[capaLoad[i].uid] = capaLoad[i];
     }
