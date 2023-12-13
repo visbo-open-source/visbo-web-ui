@@ -45,6 +45,7 @@ class CapaLoad {
   rankOver: number;
   percentUnder: number;
   rankUnder: number;
+  totalOver: number;
 }
 
 class DrillDownElement {
@@ -743,7 +744,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               this.visboCapacityChild = [];
             } else {
               let capacity: VisboCapacity[];
-              this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);
+              this.log(`Store VPF Project Capacity for Len ${vp.capacity.length}`);              
               capacity = vp.capacity.filter(item => item.vpid != undefined);
               const listVPVFilter = this.filterVPV(this.visboprojectversions);
               this.visboprojectsversions_filtered = listVPVFilter;
@@ -761,6 +762,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
                 this.visboCapacity = vp.capacity.filter(item => item.vpid == undefined);
               }
             }
+           
             this.checkCostAvailable(this.visboCapacity);
             this.visboViewCapacityOverTime();
           },
@@ -953,10 +955,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       cost = (item?.actualCost_PT|| 0) + (item?.plannedCost_PT || 0);
 
-      if (cost > 0 && capa === 0) {
-        capa = 1;
-      }
-      return (capa > 0 && cost > 0) ? (cost / capa) - 1 : undefined;
+      // if (cost > 0 && capa === 0) {
+      //   capa = 1;
+      // }
+      var result = cost - capa;
+
+      return result;
+
+      // return (capa > 0 && cost > 0) ? (cost / capa) - 1 : undefined;
     }
 
     // calculate the overload/underload only for current&future months if there were at least 1
@@ -978,20 +984,23 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       const capa = percentCalc(capacity[i], refPFV);
       const roleID = capacity[i].roleID;
+      const cost = (capacity[i]?.actualCost_PT|| 0) + (capacity[i]?.plannedCost_PT || 0);
       if (!capaLoad[roleID]) {
         const load = new CapaLoad();
         load.uid = roleID;
-        load.isBooked = false;
+        load.isBooked = (cost > 0);
         load.percentOver = 0;
         load.percentUnder = 0;
+        load.totalOver = 0;
         capaLoad[roleID] = load;
       }
-      capaLoad[roleID].isBooked = capaLoad[roleID].isBooked || !isNaN(capa);
+      capaLoad[roleID].isBooked = capaLoad[roleID].isBooked || (cost > 0);
       if (capa > 0) {
         capaLoad[roleID].percentOver += capa;
       } else if (capa < 0) {
         capaLoad[roleID].percentUnder += capa;
       }
+      capaLoad[roleID].totalOver = capaLoad[roleID].percentOver + capaLoad[roleID].percentUnder;
     }
     // remove empty items
     capaLoad = capaLoad.filter(item => item.uid >= 0);
@@ -1003,25 +1012,28 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     //}
     // this.log(`Calculated CapaLoad ${capaLoad.length} Mark ${markCount}`);
 
-    capaLoad.sort(function(a, b) { return b.percentOver - a.percentOver; });
-    for (let i=0; i < markCount; i++) {
-      if (capaLoad[i].percentOver <= 0) break;
-      capaLoad[i].rankOver = markCount - i;
-    }
-    capaLoad.sort(function(a, b) {
-      if (a.isBooked || b.isBooked) {
-        return a.percentUnder - b.percentUnder;
-      } else {
-        return 0;
-      }
-    });
-    // only the best, worst three will be shown
-    for (let i=0; i < markCount; i++) {
-      if (capaLoad[i].percentUnder == -1) continue; // orga unit is not scheduled
-      if (capaLoad[i].percentUnder >= 0) break; // no more items with under capacity
-      if (capaLoad[i].rankOver > 0) continue;   // item is marked with rankOver, do not mark both
-      capaLoad[i].rankUnder = markCount - i;
-    }
+
+    // capaLoad.sort(function(a, b) { return b.percentOver - a.percentOver; });
+    // for (let i=0; i < markCount; i++) {
+    //   if (capaLoad[i].percentOver <= 0) break;
+    //   capaLoad[i].rankOver = markCount - i;
+    // }
+    // capaLoad.sort(function(a, b) {
+    //   if (a.isBooked || b.isBooked) {
+    //     return a.percentUnder - b.percentUnder;
+    //   } else {
+    //     return 0;
+    //   }
+    // });
+
+
+    // all will be shown
+    // for (let i=0; i < markCount; i++) {
+    //   if (capaLoad[i].percentUnder == -1) continue; // orga unit is not scheduled
+    //   if (capaLoad[i].percentUnder >= 0) break; // no more items with under capacity
+    //   if (capaLoad[i].rankOver > 0) continue;   // item is marked with rankOver, do not mark both
+    //   capaLoad[i].rankUnder = markCount - i;
+    // }
 
     for (let i=0; i < capaLoad.length; i++) {
       this.capaLoad[capaLoad[i].uid] = capaLoad[i];
