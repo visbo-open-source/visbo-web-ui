@@ -6,3 +6,8 @@
 .modal-scroll {
   overflow-y: visible;
 }
+
+.dropdown-menu {
+    max-height: 200px;
+    overflow-y: scroll;
+}

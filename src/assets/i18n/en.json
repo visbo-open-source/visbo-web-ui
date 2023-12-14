@@ -195,6 +195,7 @@
 		"titleSettings": "VISBO Center Setting",
 		"titleOrganisations": "VISBO Center Organisation",		
 		"titleTimeTracking": "VISBO Center TimeTracking",
+		"titleTimeRecordsImport": "VISBO Center Import TimeRecords",
 		"titleEnableDisable": "VISBO Center Enable / Disable of functions",
 		"titleDeleteSetting": "Delete VISBO Center Setting",
 		"titleDeleteOrganisation": "Delete VISBO Center Organisation",
@@ -295,6 +296,8 @@
 			"errorVCConflict": "A VISBO Center with {{name}} does already exist!",
 			"saveOrgaSuccess": "VISBO Center Organisation was saved successfully",
 			"saveSettingSuccess": "VISBO Center Setting was saved successfully",
+			"addVCTimeTracking": "VISBO Center TimeRecords were imported successfully",			
+			"timeForTimeRecords": "Caution: Please, check the Start- and End-Date !",
 			"duplicateSetting": "VISBO Center Setting {{name}} exists already",
 			"errorList": "Errors during upload the organisation"
 		}
@@ -498,7 +501,7 @@
 		"toDate": "To",
 		"approveAll":"Approve All",
 		"edit": "Edit",
-
+		"userName": "Employee",
 		"mdl":{
 			"addNewEmployee":"New Time Entry",
 			"record": "Edit Record",
