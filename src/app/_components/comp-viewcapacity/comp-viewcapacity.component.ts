@@ -137,7 +137,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   capaLoad: CapaLoad[];
   timeoutID: ReturnType<typeof setTimeout>;
-  timeoutFilterID: number;
+  timeoutFilterID: ReturnType<typeof setTimeout>;
   hasCost: boolean;
   printView = false;
 
@@ -309,6 +309,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
       this.initSetting();
+      // test ur
+      this.capaLoad  = [];
+      this.visboViewOrganisationTree();
+      // end test ur
       this.getCapacity();
     }
   }
@@ -1077,7 +1081,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   updateDateRange(): void {
     if (this.compareDate()) {
-      this.updateUrlParam('from', undefined)
+      this.updateUrlParam('from', undefined);      
+      this.capaLoad = []; // reset the load indicators
       this.getCapacity();
     }
   }
