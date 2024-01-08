@@ -34,6 +34,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
   qualityCost: number;
   qualityRAC: number;
+  qualityActualRAC: number;
   qualityTotalCost: number;
   qualityTotalCostPredict: number;
   qualityEndDate: number;
@@ -80,9 +81,11 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     '4': { lineWidth: 4, pointShape: 'circle', lineDashStyle: [6, 2, 2, 6], pointSize: 6 },
     '5': { lineWidth: 1, pointShape: 'circle', lineDashStyle: [8, 4, 4, 8], pointSize: 4 }
   };
-  seriesRAC =  {
-    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: [6, 2, 2, 6], pointSize: undefined },
-    '1': { lineWidth: 1, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined }
+  seriesRAC =  {    
+    '0': { lineWidth: 4, pointShape: 'star', lineDashStyle: undefined, pointSize: undefined},
+    '1': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: undefined, pointSize: undefined},
+    '2': { lineWidth: 4, pointShape: 'star', lineDashStyle: [6, 2, 2, 6], pointSize: undefined },
+    '3': { lineWidth: 4, pointShape: 'triangle', lineDashStyle: [8, 4, 4, 8], pointSize: undefined }
   };
   seriesEndDate =  {
     '0': { lineWidth: 4, pointShape: 'star' , lineDashStyle: [4, 8, 8, 4], pointSize: undefined },
@@ -299,6 +302,8 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
 
         elementKeyMetric.savingRAC = ((1 - (elementKeyMetric.keyMetrics.RACCurrent || 0)
         / (elementKeyMetric.keyMetrics.RACBaseLast || 1)) * 100) || 0;
+        elementKeyMetric.savingRACActual = ((1 - (elementKeyMetric.keyMetrics.RACCurrentActual || 0)
+        / (elementKeyMetric.keyMetrics.RACBaseLastActual || 1)) * 100) || 0;
 
         // Calculate Saving EndDate in number of weeks related to BaseLine, limit the results to be between -20 and 20
         if (elementKeyMetric.keyMetrics.endDateBaseLast && elementKeyMetric.keyMetrics.endDateCurrent) {
@@ -531,6 +536,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       const tooltip = this.createTooltipRAC(this.visboprojectversions[i]);      
       keyMetricsRAC.push([
         new Date(this.visboprojectversions[i].timestamp),
+        Math.round(this.visboprojectversions[i].keyMetrics.RACCurrentActual || 0),
+        tooltip,
+        Math.round(this.visboprojectversions[i].keyMetrics.RACBaseLastActual || 0),         
+        tooltip,
         Math.round(this.visboprojectversions[i].keyMetrics.RACCurrent || 0),
         tooltip,
         Math.round(this.visboprojectversions[i].keyMetrics.RACBaseLast || 0),         
@@ -540,7 +549,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     }
     if (keyMetricsRAC.length === 0) {
       this.log(`keyMetricsCost empty`);      
-      keyMetricsRAC.push([new Date(), 0, undefined, 0, undefined]);
+      keyMetricsRAC.push([new Date(), 0, undefined, 0, undefined, 0, undefined, 0, undefined]);
     }   
     keyMetricsRAC.sort(function(a, b) { return a[0] - b[0]; });
 
@@ -553,10 +562,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       currentDate.setMonth(currentDate.getMonth()+1);
       
       keyMetricsRAC.push([
-        currentDate, undefined, undefined, undefined, undefined]);      
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined]);      
     }   
     keyMetricsRAC.unshift([
       'Timestamp',
+      this.translate.instant('keyMetrics.shortRevPlanActual'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.shortRevBaseActual'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortRevPlan'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.shortRevBase'),
@@ -575,10 +588,13 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       
       const planRev = this.translate.instant('keyMetrics.planRev');
       const baselineRev = this.translate.instant('keyMetrics.baselineRev');
+      const planRevAct = this.translate.instant('keyMetrics.shortRevPlanActual');
+      const baselineRevAct = this.translate.instant('keyMetrics.shortRevBaseActual');
 
+      result = result + '<tr>' + '<td>' + planRevAct + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACCurrentActual || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
+      result = result + '<tr>' + '<td>' + baselineRevAct + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLastActual || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';      
       result = result + '<tr>' + '<td>' + planRev + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACCurrent || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
-      result = result + '<tr>' + '<td>' + baselineRev + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLast || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';
-      result = result + '</table>' + '</div>' + '</div>';
+      result = result + '<tr>' + '<td>' + baselineRev + ':</td>' + '<td align="right"><b>' + Math.round((vpv.keyMetrics?.RACBaseLast || 0) * 10) / 10 + ' T&euro;</b></td>' + '</tr>';result = result + '</table>' + '</div>' + '</div>';
 
     return result;
   }
@@ -1187,6 +1203,14 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.qualityRAC = 3;
     }
+    index = keyMetrics.RACCurrentActual / (keyMetrics.RACBaseLastActual || 1);
+    if (index >= 1 - level1) {
+      this.qualityActualRAC = 1;
+    } else if (index > 1 - level2) {
+      this.qualityActualRAC = 2;
+    } else {
+      this.qualityActualRAC = 3;
+    }
 
     if (keyMetrics.costCurrentTotalPredict) {
       index = keyMetrics.costCurrentTotalPredict / (keyMetrics.costBaseLastTotal || 1);
@@ -1379,6 +1403,10 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast, b.keyMetrics?.endDateBaseLast); });
     } else if (this.sortColumn === 33) {
       this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
+    } else if (this.sortColumn === 34) {
+        this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.RACCurrentActual || 0) - (b.keyMetrics?.RACCurrentActual || 0); });
+    } else if (this.sortColumn === 35) {
+        this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.RACBaseLastActual || 0) - (b.keyMetrics?.RACBaseLastActual || 0); });
     }
     if (!this.sortAscending) {
       this.visbokeymetrics.reverse();
