@@ -207,6 +207,8 @@ export class ApproverComponent implements OnInit {
               return a.time - b.time;
             case 5:
               return a.status.localeCompare(b.status);
+            case 6:
+              return (visboCmpString(a.failed, b.failed));
           }
         });
         if (!this.sortAscending) {
