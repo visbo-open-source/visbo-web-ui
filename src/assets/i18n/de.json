@@ -496,6 +496,7 @@
 		"titleDate": "Datum",
 		"titleDescription": "Kurzbeschreibung",
 		"titleHours": "Stunden",
+		"titleError": "Fehler im TimeRecord",
 		"titleApprove": "Genehmigt",
 		"fromDate": "Datensätze anzeigen Zeit",
 		"toDate": "An",

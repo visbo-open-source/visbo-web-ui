@@ -36,6 +36,7 @@ export class ApproverComponent implements OnInit {
       time: new FormControl('', Validators.required),
       notes: new FormControl('', Validators.required),
       status: new FormControl(null),
+      failed: new FormControl(null),
       approvalId: new FormControl(null),
       approvalDate: new FormControl(null)
     });
@@ -136,15 +137,18 @@ export class ApproverComponent implements OnInit {
     }
   
     saveChanges() {
-      const userId = this.selectedRow.userId;
+      const employeeId = this.selectedRow.userId;
       const timeTrackerId = this.selectedRow.timeTrackerId;
-      const updatedRow = {
-        ...this.userForm.value,
-        userId,
-      };
+      // const updatedRow = {
+      //   ...this.userForm.value,
+      //   employeeId,
+      // };
+      const updatedRow = this.selectedRow;
+
       if (!this.isCreatorOfRecord) {
         updatedRow.approvalDate = new Date().toISOString();
-        updatedRow.approvalId = userId;
+        updatedRow.approvalId = this.userId;
+        updatedRow.status = this.userForm.value.status;
       }
       this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
         .subscribe(
@@ -287,7 +291,8 @@ export class ApproverComponent implements OnInit {
               vcName: centerName,
               vpName: projectName,
               timeTrackerId: record._id,
-              userName: record.name
+              userName: record.name,
+              failed: record.failed
             }; 
           } else {
 
@@ -373,4 +378,12 @@ export class ApproverComponent implements OnInit {
           console.log(error);
         });
     }
+
+
+    getTimeRecFailed(user: VtrVisboTrackerExtended): string {
+      let message = '';
+      message = user.failed;
+      return message || '';
+    }
+    
 }

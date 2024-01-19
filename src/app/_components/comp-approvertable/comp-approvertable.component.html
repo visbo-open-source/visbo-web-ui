@@ -53,11 +53,17 @@
       class="d-none d-md-table-cell">
       {{'vtr.titleHours' | translate}}
       <i class="fa fa-sort"></i>
-    </th>
+    </th>   
     <th
       (click)="sortVTRTable(5, true)"
       class="d-none d-md-table-cell">
       {{'vtr.titleApprove' | translate}}
+      <i class="fa fa-sort"></i>
+    </th> 
+    <th
+      (click)="sortVTRTable(6, true)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleError' | translate}}
       <i class="fa fa-sort"></i>
     </th>
     <th>
@@ -77,6 +83,8 @@
     <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
     <td class="d-none d-md-table-cell">{{user.time}}</td>
     <td class="d-none d-md-table-cell">{{user.status}}</td>
+    <!-- <td *ngIf="!user.failed" class="d-none d-md-table-cell"></td>     -->
+    <td class="d-none d-md-table-cell">{{ getTimeRecFailed(user) }}</td>
     <td>
       <button
         (click)="openEditModal(user)"
