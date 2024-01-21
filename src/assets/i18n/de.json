@@ -1622,6 +1622,15 @@
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
 
+		"shortRevPlan": "Revenue at Completion",
+		"planRev": "Revenue, total plan",
+		"shortRevBase": "Revenue at Completion, baseline",
+		"baselineRev": "planned Revenue, baseline",
+		"shortRevPlanActual": "Revenue plan-to-date",
+		"planRevAct": "Revenue, plan-to-date",
+		"shortRevBaseActual": "Revenue plan-to-date, baseline",
+		"baselineRevAct": "Revenue, actual baseline",
+
 		"shortEED": "EED",
 		"longEED": "Estimated End Date",
 		"shortBED": "BED",
