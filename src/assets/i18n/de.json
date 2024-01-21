@@ -496,6 +496,7 @@
 		"titleDate": "Datum",
 		"titleDescription": "Kurzbeschreibung",
 		"titleHours": "Stunden",
+		"titleError": "Fehler im TimeRecord",
 		"titleApprove": "Genehmigt",
 		"fromDate": "Datensätze anzeigen Zeit",
 		"toDate": "An",
@@ -634,6 +635,7 @@
 			"unitsDelay": "Tage",
 			"finishedDeadlineDelay": "Durchschnittliche Verschiebung bei erreichten Terminen",
 			"unfinishedDeadlineDelay": "Durchschnittliche geplante Verschiebung bei offenen Terminen",
+			"actualRAC": "bisherige Erreichung Revenue",
 			"actualCost": "bisherige Erreichung der Kosten",
 			"actualDelivery": "bisherige Erreichung der Lieferungen",
 			"actualDeadline": "bisherige Erreichung der Termine",
@@ -1619,11 +1621,6 @@
 		"shortETC": "ETC",
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
-
-		"shortRevPlan": "Revenue (Plan)",
-		"planRev": "Revenue, plan-to-date",
-		"shortRevBase": "Revenue (Base)",
-		"baselineRev": "Revenue, baseline",
 
 		"shortEED": "EED",
 		"longEED": "Estimated End Date",

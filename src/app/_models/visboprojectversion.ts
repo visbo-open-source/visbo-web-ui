@@ -106,7 +106,9 @@ export class VPVBoolFields {
 
 export class VPVKeyMetrics {
   RACBaseLast: number;
-  RACCurrent: number;
+  RACCurrent: number;  
+  RACBaseLastActual: number;
+  RACCurrentActual: number;
   baselineDate: Date;
   costCurrentActual: number;
   costCurrentTotal: number;
@@ -158,6 +160,7 @@ export class VPVKeyMetricsCalc {
   savingCostActual: number;
   savingEndDate: number;
   savingRAC : number;
+  savingRACActual : number;
   timeCompletionTotal: number;
   timeCompletionActual: number;
   deliveryCompletionTotal: number;
@@ -241,6 +244,8 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   costBaseLastTotal?: number;
   racBaseLast?: number;
   racCurrent?: number;
+  racBaseLastActual?: number;
+  racCurrentActual?: number;
   timeCompletionCurrentActual?: number;
   timeCompletionCurrentTotal?: number;
   timeCompletionBaseLastActual?: number;
@@ -260,6 +265,7 @@ export interface ExportKeyMetric extends Record<`custom${string}`, string> {
   savingCostTotalPredict?: number;
   savingCostActual?: number;
   savingRac?: number;
+  savingRacActual?: number;
   timeCompletionTotal?: number;
   timeCompletionActual?: number;
   deliveryCompletionTotal?: number;

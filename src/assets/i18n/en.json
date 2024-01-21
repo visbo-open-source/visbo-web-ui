@@ -496,6 +496,7 @@
 		"titleDate": "Date",
 		"titleDescription": "Short Description",
 		"titleHours": "Hours",
+		"titleError": "Error in TimeRecord",
 		"titleApprove": "Approved",
 		"fromDate": "Show Records From",
 		"toDate": "To",
@@ -634,6 +635,7 @@
 			"unitsDelay": "Days",
 			"finishedDeadlineDelay": "Average deviation of finished deadlines",
 			"unfinishedDeadlineDelay": "Planned average deviation of unfinished deadlines",
+			"actualRAC": "actual achievement Revenue",
 			"actualCost": "actual achievement of costs",
 			"actualDelivery": "actual achievement of deliveries",
 			"actualDeadline": "actual achievement of deadlines",
@@ -1620,11 +1622,6 @@
 		"planETC": "ETC, plan-to-date",
 		"longETC": "Estimate To Complete, plan-to-date",
 
-		"shortRevPlan": "Revenue (Plan)",
-		"planRev": "Revenue, plan-to-date",
-		"shortRevBase": "Revenue (Base)",
-		"baselineRev": "Revenue, baseline",
-		
 		"shortEED": "EED",
 		"longEED": "Estimated End Date",
 		"shortBED": "BED",
