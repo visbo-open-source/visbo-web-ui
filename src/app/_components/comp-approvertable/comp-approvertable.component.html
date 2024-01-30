@@ -67,8 +67,13 @@
       <i class="fa fa-sort"></i>
     </th>
     <th>
-      <button *ngIf="managerTimeTrackerList?.length"
+      <!-- <button *ngIf="checkApprovableTimeRecs()"
+          (click)="approveAllTimeRecords()" 
+          class="my-1 btn btn-primary float-right">
+          {{"vtr.approveAll" | translate}}</button> -->
+      <button 
               (click)="approveAllTimeRecords()" 
+              [disabled]="!checkApprovableTimeRecs()"
               class="my-1 btn btn-primary float-right">
               {{"vtr.approveAll" | translate}}</button>
     </th>
@@ -83,7 +88,6 @@
     <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
     <td class="d-none d-md-table-cell">{{user.time}}</td>
     <td class="d-none d-md-table-cell">{{user.status}}</td>
-    <!-- <td *ngIf="!user.failed" class="d-none d-md-table-cell"></td>     -->
     <td class="d-none d-md-table-cell">{{ getTimeRecFailed(user) }}</td>
     <td>
       <button

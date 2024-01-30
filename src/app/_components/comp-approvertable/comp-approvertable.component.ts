@@ -218,6 +218,7 @@ export class ApproverComponent implements OnInit {
     }
   
     updateFilter() {
+      var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
       this.managerTimeTrackerList = this.originalManagerList;
       // this.originalColumns = this.rows;
       if (!!this.startDate?.length || !!this.endDate?.length) {
@@ -229,6 +230,9 @@ export class ApproverComponent implements OnInit {
           if (this.filterName) {
             identicalName = (item.userName.toLowerCase().search(this.filterName.toLowerCase()) > -1);
           }
+          if (item.status == 'No') {
+            approvableTimeRecs.push(item)
+          }
           const date = new Date(item.date);
           if (startDate && !endDate) {
             return (date >= startDate) && identicalName;
@@ -238,6 +242,7 @@ export class ApproverComponent implements OnInit {
             return (date >= startDate) && (date <= endDate) && identicalName;
           }
         });
+
       }
     }
   
@@ -386,6 +391,16 @@ export class ApproverComponent implements OnInit {
       let message = '';
       message = user.failed;
       return message || '';
+    }
+    
+    checkApprovableTimeRecs() {
+      var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
+      this.managerTimeTrackerList.forEach(item=> {
+        if (item.status == 'No') {
+            approvableTimeRecs.push(item);
+        }
+      });    
+      return approvableTimeRecs.length > 0;
     }
     
 }
