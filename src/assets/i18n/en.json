@@ -496,7 +496,7 @@
 		"titleDate": "Date",
 		"titleDescription": "Short Description",
 		"titleHours": "Hours",
-		"titleError": "Not Imported TimeRecords",
+		"titleError": "Not Imported TimeRecord",
 		"titleApprove": "Approved",
 		"fromDate": "Show Records From",
 		"toDate": "To",
