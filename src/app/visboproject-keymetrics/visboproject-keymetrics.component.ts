@@ -774,7 +774,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     this.vpvBaseline = result;
     return result;
-  }Add
+  }
 
   checkBaselineVersion(vpv: VisboProjectVersion): boolean {
     let result = true;

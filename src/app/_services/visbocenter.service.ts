@@ -8,6 +8,7 @@ import { EnvService } from './env.service';
 
 import { VisboCenter, VisboCenterResponse } from '../_models/visbocenter';
 import { VisboProject, VisboProjectResponse } from '../_models/visboproject';
+import { VisboProjectVersion, VisboProjectVersionResponse } from '../_models/visboprojectversion';
 import { VGPermission, VGGroup, VGUserGroup, VGResponse, VGUserGroupMix } from '../_models/visbogroup';
 import { MessageService } from './message.service';
 import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
@@ -407,6 +408,28 @@ export class VisboCenterService  {
       .pipe(
         tap(() => this.log(`removed Predict Training Info `)),
         catchError(this.handleError<VisboProjectResponse>('removeVisboCenterTraining'))
+      );
+  }
+
+   
+  /** POST: add the timerecords to the Visbo Center */
+  addVCTimeTracking (vcid: string, fromDate: Date, toDate: Date, name:string, sysadmin?: boolean): Observable<VisboProjectVersionResponse> {
+    const url = `${this.vcUrl}/${vcid}/timetracking`;
+    let params = new HttpParams();
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    const reqBody = {
+      from: fromDate.toISOString(),
+      to: toDate.toISOString(),
+      name: name,
+      status: "Yes"
+    };
+    this.log(`Calling HTTP Request: ${url} for ${vcid} ${fromDate.toISOString()}${toDate.toISOString()} `);   
+    return this.http.post<VisboProjectVersionResponse>(url, reqBody, { headers , params })
+      .pipe(
+        tap(() => this.log(`added Visbo TimeRecords to VPVs of vcid=${vcid}`)),
+        catchError(this.handleError<VisboProjectVersionResponse>('addVCTimeTracking'))
       );
   }
 

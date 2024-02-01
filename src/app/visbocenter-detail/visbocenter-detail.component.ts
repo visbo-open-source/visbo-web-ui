@@ -10,7 +10,7 @@ import * as XLSX from 'xlsx';
 import { MessageService } from '../_services/message.service';
 import { AlertService } from '../_services/alert.service';
 
-import { VisboUserInvite } from '../_models/visbouser';
+import { VisboUserInvite, VisboUser } from '../_models/visbouser';
 import { VGGroup, VGGroupExpanded, VGPermission, VGUserGroup, VGProjectUserGroup, VGPVC, VGPVP } from '../_models/visbogroup';
 import { VisboCenter } from '../_models/visbocenter';
 import { VisboCenterService } from '../_services/visbocenter.service';
@@ -87,6 +87,8 @@ export class VisbocenterDetailComponent implements OnInit {
   newVTRstartDate: Date;
   newVTRendDate: Date;
   changeStatus: boolean;
+  showMessage: boolean;
+
   
   constructor(
     private messageService: MessageService,
@@ -1318,14 +1320,32 @@ export class VisbocenterDetailComponent implements OnInit {
   updateDateRange(): void {
     // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
     let result = true;
+    const today = new Date();
+
+    if (this.newVTRendDate){
+      const d = new Date (this.newVTRendDate);    
+      const month = d.getMonth();
+      const year = d.getFullYear();
+      d.setFullYear(year, month+1, 0);    
+      this.newVTRendDate = new Date(d);
+    } 
     if (!this.newVTRstartDate || !this.newVTRendDate) {
-      this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);
+      this.log(`Dates Empty ${this.newVTRstartDate} ${this.newVTRendDate}`);      
       result = false;
+      this.showMessage = true;
     } else if (this.newVTRstartDate.getTime() >= this.newVTRendDate.getTime()) {
       this.log(`Dates start later end ${this.newVTRstartDate} ${this.newVTRendDate}`);
       result = false;
-    } 
-    this.changeStatus = result;
+      this.showMessage = true;
+    } else if ( this.newVTRendDate.getTime() >= today.getTime()) {
+        this.log(`End is later today ${this.newVTRendDate} ${today}`);
+        result = false;
+        this.showMessage = true;
+    } else {
+      this.showMessage = false;
+    }   
+
+    this.changeStatus = result;  
   }
 
   sortSettingEnabledDisabled(n?: number): void {
@@ -1362,9 +1382,43 @@ export class VisbocenterDetailComponent implements OnInit {
       this.vcSettingsEnableDisable.reverse();
     }
   }
+ 
+  getActiveUser(): VisboUser {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+  
+  vtrCalculate(): void {
+    if (this.showMessage) return;
+
+    if (this.changeStatus) {
+      const user = this.getActiveUser();
+        
+      this.visbocenterService.addVCTimeTracking(this.visbocenter._id, this.newVTRstartDate, this.newVTRendDate, user.name)
+        .subscribe(
+          (vpvs) => {
+            const message = this.translate.instant('vcDetail.msg.addVCTimeTracking', {'name': this.visbocenter.name});
+            this.alertService.success(message, true);
+          },
+          error => {
+            this.log(`save VPVs after import of TimeRecords failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vcDetail.msg.errorPermVP', {'name': user.name});
+              this.alertService.error(message);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('vcDetail.msg.errorVPVConflict', {'name': this.visbocenter.name});
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+          }        
+        )    
+    }    
+  }
 
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('VisboCenter Details: ' + message);
   }
+
+
 }

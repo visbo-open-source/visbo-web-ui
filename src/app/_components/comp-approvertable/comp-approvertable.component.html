@@ -1,103 +1,31 @@
-<!-- <p>comp-approvertable works!</p> -->
-<app-usernavbar></app-usernavbar>
+<app-usernavbar></app-usernavbar> 
 <div class="cld-date">
   <div class="calendar">
-        {{"vtr.fromDate" | translate}}
-        <input
-          (change)="updateFilter()"
-          [(ngModel)]="startDate"
-          [max]="endDate"
-          class="col-2 col-sm-2 form-control" id="startDate"
-          type="date">
-        {{"vtr.toDate" | translate}}
-        <input
-          (change)="updateFilter()"
-          [(ngModel)]="endDate"
-          [min]="startDate"
-          class="col-4 col-sm-2 form-control"
-          id="endDate"
-          type="date">
+      {{"vtr.fromDate" | translate}}
+      <input
+        (change)="updateFilter()"
+        [(ngModel)]="startDate"
+        [max]="endDate"
+        class="col-2 col-sm-2 form-control" id="startDate"
+        type="date">
+      {{"vtr.toDate" | translate}}
+      <input
+        (change)="updateFilter()"
+        [(ngModel)]="endDate"
+        [min]="startDate"
+        class="col-4 col-sm-2 form-control"
+        id="endDate"
+        type="date">
   </div>
 </div>
-<!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Employee List</h1></div>
-<table  class="table table-hover table-sortable table-custom"> -->
-<!-- <table *ngIf="rows?.length" class="table table-hover table-sortable table-custom"> -->
-  <!-- <thead>
-  <tr class="col-center">
-    <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
-    <th (click)="sortVTRTable(2)" class="d-none d-md-table-cell">
-      {{'vtr.titleProject' | translate}}
-      <i class="fa fa-sort"></i>
-    </th>
-    <th
-      (click)="sortVTRTable(3)"
-      class="d-none d-md-table-cell">
-      {{'vtr.titleDate' | translate}}
-      <i class="fa fa-sort"></i>
-    </th>
-    <th
-      class="d-none d-md-table-cell">
-      {{'vtr.titleDescription' | translate}}
-    </th>
-    <th
-      (click)="sortVTRTable(4)"
-      class="d-none d-md-table-cell">
-      {{'vtr.titleHours' | translate}}
-      <i class="fa fa-sort"></i>
-    </th>
-    <th
-      (click)="sortVTRTable(5)"
-      class="d-none d-md-table-cell">
-      {{'vtr.titleApprove' | translate}}
-      <i class="fa fa-sort"></i>
-    </th>
-    <th>
-      <button
-        (click)="this.clearEditModal()"
-        class="my-1 btn btn-primary float-right"
-        data-target="#VtrModalCreate"
-        data-toggle="modal"
-        type="button"
-      >
-        Add
-      </button>
-    </th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr (click)="selectRow(user)" *ngFor="let user of originalColumns; let vpIndex=index" class="col-center">
-    <td class="d-none d-md-table-cell">{{user.vcName}}</td>
-    <td class="d-none d-md-table-cell">{{user.vpName}}</td>
-    <td class="d-none d-md-table-cell">{{user.date | date :'dd.MM.yyyy'}}</td>
-    <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
-    <td class="d-none d-md-table-cell">{{user.time}}</td>
-    <td class="d-none d-md-table-cell">{{user.status}}</td>
-    <td>
-      <button
-        (click)="openEditModal(user, true)"
-        *ngIf="checkIsCreatorOfRecord(user)"
-        [disabled]="user.status === 'Yes'"
-        data-target="#VtrModalCreate"
-        data-toggle="modal">
-        {{ 'vtr.edit' | translate }}
-      </button>
-    </td>
-  </tr>
-  <tr style="text-align: center" *ngIf="!originalColumns.length">
-    <td></td>
-    <td></td>
-    <td></td>
-    <td>No Data</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-
-  </tbody> -->
-<!-- </table> -->
-
-
+<div class="text-left">
+  {{"vtr.userName" | translate}}
+  <input
+        (change)="updateFilter()"
+        [(ngModel)]="filterName"
+        class="col-2 col-sm-2 form-control" id="filterName"
+        type="string">  
+</div>
 <!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
 <div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
 <!-- <table  class="table table-hover table-sortable table-custom"> -->
@@ -125,16 +53,27 @@
       class="d-none d-md-table-cell">
       {{'vtr.titleHours' | translate}}
       <i class="fa fa-sort"></i>
-    </th>
+    </th>   
     <th
       (click)="sortVTRTable(5, true)"
       class="d-none d-md-table-cell">
       {{'vtr.titleApprove' | translate}}
       <i class="fa fa-sort"></i>
+    </th> 
+    <th
+      (click)="sortVTRTable(6, true)"
+      class="d-none d-md-table-cell">
+      {{'vtr.titleError' | translate}}
+      <i class="fa fa-sort"></i>
     </th>
     <th>
-      <button *ngIf="managerTimeTrackerList?.length"
+      <!-- <button *ngIf="checkApprovableTimeRecs()"
+          (click)="approveAllTimeRecords()" 
+          class="my-1 btn btn-primary float-right">
+          {{"vtr.approveAll" | translate}}</button> -->
+      <button 
               (click)="approveAllTimeRecords()" 
+              [disabled]="!checkApprovableTimeRecs()"
               class="my-1 btn btn-primary float-right">
               {{"vtr.approveAll" | translate}}</button>
     </th>
@@ -149,6 +88,7 @@
     <td class="d-none d-md-table-cell"><span class="short">{{user.notes}}</span></td>
     <td class="d-none d-md-table-cell">{{user.time}}</td>
     <td class="d-none d-md-table-cell">{{user.status}}</td>
+    <td class="d-none d-md-table-cell">{{ getTimeRecFailed(user) }}</td>
     <td>
       <button
         (click)="openEditModal(user)"
