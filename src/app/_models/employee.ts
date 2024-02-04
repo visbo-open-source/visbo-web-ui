@@ -8,6 +8,7 @@ export interface VtrVisboTracker {
     notes: string;
     approvalId: string;
     status: string;
+    failed: string;
     approvalDate: string;
   }
 

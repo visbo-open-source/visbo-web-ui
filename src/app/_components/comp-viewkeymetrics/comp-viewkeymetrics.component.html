@@ -20,9 +20,17 @@
                 selected: typeMetricChart == 'RAC',
                 text: 'vpKeyMetric.lbl.metricRAC' | translate } " >
             </ng-container></a>
-          </td>        
-          <td ></td>
-          <td class="d-none d-xl-table-cell"></td>        
+          </td> 
+          <td (click)="switchView('RAC', true)"
+              title="{{ 'vpKeyMetric.lbl.actualRAC' | translate }}: {{vpvKeyMetricActive.keyMetrics.RACCurrentActual |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.RACBaseLastActual |  number:'1.0-0' }} T€">
+            <a>
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
+              <span> {{vpvKeyMetricActive.keyMetrics.RACCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingRACActual | number:'1.0-0'}} %) </span>
+            </a>
+          </td>   
+          <td class="d-none d-xl-table-cell" (click)="switchView('RAC', true)">
+            {{vpvKeyMetricActive.keyMetrics.RACBaseLastActual |  number:'1.0-0' }} T€
+          </td>  
           <td >
             <div title="{{ 'vpKeyMetric.lbl.totalRAC' | translate }}: {{vpvKeyMetricActive.keyMetrics.RACCurrent |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.RACBaseLast |  number:'1.0-0' }} T€"><a>
               <ng-container *ngTemplateOutlet="indicator; context:{level: qualityRAC} " ></ng-container>
@@ -248,7 +256,7 @@
     <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
     <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
   </div>
-  <div *ngIf="typeMetricChart != 'RAC'" class="btn-group row">
+  <div  *ngIf="typeMetricChart != 'RAC'" class="btn-group row">
     <button class="mx-1" (click)="switchChart()">{{chartButton}}</button>
     <button *ngIf="!this.chart" type="button" class="mx-1" (click)="gotoVisboProjectVersions()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>
     <h3  class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
@@ -279,6 +287,8 @@
       <thead>
         <tr>
           <th (click)="sortKeyMetricsTable(1)">{{ 'keyMetrics.lbl.timeStamp' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(34)" title="{{ 'keyMetrics.shortRevPlanActual' | translate }}">{{ 'keyMetrics.shortRevPlanActual' | translate }}</th>
+          <th class="text-right" (click)="sortKeyMetricsTable(35)" title="{{ 'keyMetrics.shortRevBaseActual' | translate }}">{{ 'keyMetrics.shortRevBaseActual' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(15)" title="{{ 'keyMetrics.shortRevPlan' | translate }}">{{ 'keyMetrics.shortRevPlan' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(16)" title="{{ 'keyMetrics.shortRevBase' | translate }}">{{ 'keyMetrics.shortRevBase' | translate }}</th>
           <th class="text-right" (click)="sortKeyMetricsTable(17)">{{ 'keyMetrics.baselineRAC' | translate }}</th>
@@ -295,7 +305,9 @@
                 text: vp.timestamp | date :'dd.MM.yyyy HH:mm' } " >
             </ng-container></a>
           </td>
-          <td class="text-right">{{vp.keyMetrics.RACCurrent | number:'1.0-0'}} T€</td>          
+          <td class="text-right">{{vp.keyMetrics.RACCurrentActual | number:'1.0-0'}} T€</td>
+          <td class="text-right">{{vp.keyMetrics.RACBaseLastActual | number:'1.0-0'}} T€</td>
+          <td class="text-right">{{vp.keyMetrics.RACCurrent | number:'1.0-0'}} T€</td>
           <td class="text-right">{{vp.keyMetrics.RACBaseLast | number:'1.0-0'}} T€</td>
           <td class="text-right" title="{{ 'keyMetrics.shortRAC' | translate }}: {{vp.keyMetrics.RACBaseLast | number:'1.0-0'}} T€">{{100 - vp.savingRAC | number:'1.0-0'}} %</td>
           <td class="text-right" title="{{ vp.ampelErlaeuterung }}">

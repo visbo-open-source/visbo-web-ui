@@ -36,6 +36,7 @@ export class ApproverComponent implements OnInit {
       time: new FormControl('', Validators.required),
       notes: new FormControl('', Validators.required),
       status: new FormControl(null),
+      failed: new FormControl(null),
       approvalId: new FormControl(null),
       approvalDate: new FormControl(null)
     });
@@ -56,7 +57,8 @@ export class ApproverComponent implements OnInit {
     managerTimeTrackerList: VtrVisboTrackerExtended[]=[];
     originalManagerList: VtrVisboTrackerExtended[]=[];
     private userId: string;
-    private userName: string;
+    userName: string;
+    filterName: string = "";
     private userEmail: string;
     private managerUid: number;
     userIsApprover: boolean;
@@ -135,15 +137,18 @@ export class ApproverComponent implements OnInit {
     }
   
     saveChanges() {
-      const userId = this.selectedRow.userId;
+      const employeeId = this.selectedRow.userId;
       const timeTrackerId = this.selectedRow.timeTrackerId;
-      const updatedRow = {
-        ...this.userForm.value,
-        userId,
-      };
+      // const updatedRow = {
+      //   ...this.userForm.value,
+      //   employeeId,
+      // };
+      const updatedRow = this.selectedRow;
+
       if (!this.isCreatorOfRecord) {
         updatedRow.approvalDate = new Date().toISOString();
-        updatedRow.approvalId = userId;
+        updatedRow.approvalId = this.userId;
+        updatedRow.status = this.userForm.value.status;
       }
       this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
         .subscribe(
@@ -202,6 +207,8 @@ export class ApproverComponent implements OnInit {
               return a.time - b.time;
             case 5:
               return a.status.localeCompare(b.status);
+            case 6:
+              return (visboCmpString(a.failed, b.failed));
           }
         });
         if (!this.sortAscending) {
@@ -211,6 +218,7 @@ export class ApproverComponent implements OnInit {
     }
   
     updateFilter() {
+      var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
       this.managerTimeTrackerList = this.originalManagerList;
       // this.originalColumns = this.rows;
       if (!!this.startDate?.length || !!this.endDate?.length) {
@@ -218,15 +226,23 @@ export class ApproverComponent implements OnInit {
         const endDate = this.endDate?.length ? new Date(this.endDate) : null;
   
         this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
+          var identicalName = true;
+          if (this.filterName) {
+            identicalName = (item.userName.toLowerCase().search(this.filterName.toLowerCase()) > -1);
+          }
+          if (item.status == 'No') {
+            approvableTimeRecs.push(item)
+          }
           const date = new Date(item.date);
           if (startDate && !endDate) {
-            return date >= startDate;
+            return (date >= startDate) && identicalName;
           } else if (!startDate && endDate) {
-            return date <= endDate;
+            return (date <= endDate) && identicalName;;
           } else {
-            return date >= startDate && date <= endDate;
+            return (date >= startDate) && (date <= endDate) && identicalName;
           }
         });
+
       }
     }
   
@@ -282,7 +298,8 @@ export class ApproverComponent implements OnInit {
               vcName: centerName,
               vpName: projectName,
               timeTrackerId: record._id,
-              userName: record.name
+              userName: record.name,
+              failed: record.failed
             }; 
           } else {
 
@@ -301,7 +318,7 @@ export class ApproverComponent implements OnInit {
         //   this.getOrganizationList(this.visboCentersList[0]._id);         
         // }
        
-        this.sortVTRTable(undefined);
+        this.sortVTRTable(undefined, true);
         this.updateFilter();
       });
     }
@@ -368,4 +385,22 @@ export class ApproverComponent implements OnInit {
           console.log(error);
         });
     }
+
+
+    getTimeRecFailed(user: VtrVisboTrackerExtended): string {
+      let message = '';
+      message = user.failed;
+      return message || '';
+    }
+    
+    checkApprovableTimeRecs() {
+      var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
+      this.managerTimeTrackerList.forEach(item=> {
+        if (item.status == 'No') {
+            approvableTimeRecs.push(item);
+        }
+      });    
+      return approvableTimeRecs.length > 0;
+    }
+    
 }
