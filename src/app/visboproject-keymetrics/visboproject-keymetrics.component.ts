@@ -1119,8 +1119,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         ott => {
           this.customURL = this.getCustomURL(type, ott);
           if (type == 'edit') {
-            // opens a new Window with the this.customURL - visbo-connect://eidt?...
+            // opens a new Window with the this.customURL - visbo-connect://edit?...
             window.location.href =this.customURL;
+            console.log(window.location.hostname);
           }          
         },
         error => {
@@ -1765,12 +1766,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   checkEmptyCustomFields(vp:VisboProject, cfType: number):any {
-    let result: any;
+    let result: any = undefined;
     let cfStr: VPCustomString[] = [];
     let cfDbl: VPCustomDouble[] = [];
     //let cfDate: VPCustomDate[];
     if (cfType == 0) {
-      this.customUserFieldDefinitions.forEach(element => {
+      this.customUserFieldDefinitions?.forEach(element => {
         if (element.type == '0') {      
           const hCFString = vp.customFieldString.findIndex(item => item.name == element.name );         
           if (hCFString == -1 ) {
@@ -1787,7 +1788,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
 
     if (cfType == 1) {
-      this.customUserFieldDefinitions.forEach(element => {
+      this.customUserFieldDefinitions?.forEach(element => {
         if (element.type == '1') {
           const hCFDouble = vp.customFieldDouble.findIndex(item => item.name == element.name );         
           if (hCFDouble == -1 ) { 
