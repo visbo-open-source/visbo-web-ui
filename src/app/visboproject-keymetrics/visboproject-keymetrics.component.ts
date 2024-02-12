@@ -1713,7 +1713,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldString;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldString = new VPCustomString();
       const hCFString = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '0') );         
           if (hCFString > -1 ) {
@@ -1734,7 +1734,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldDouble;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldString = new VPCustomDouble(); 
       const hCFDouble = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '1') );         
       if (hCFDouble > -1 ) {
@@ -1755,7 +1755,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldDate;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldDate = new VPCustomDate();
       fieldDate.name = item.name;
       fieldDate.type = item.type;
