@@ -19,6 +19,7 @@ import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation } from '../_model
 
 import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
 
+
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 const JSON_EXTENSION = '.json';
@@ -86,7 +87,7 @@ export class VisbocenterDetailComponent implements OnInit {
   // VTR Definitionen
   newVTRstartDate: Date;
   newVTRendDate: Date;
-  changeStatus: boolean;
+  changeStatus: boolean = true;
   showMessage: boolean;
 
   
@@ -106,6 +107,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.getVisboCenter();
     this.getVisboCenterUsers();
+    this.initVTRDates();
   }
 
   getVisboCenter(): void {
@@ -1414,6 +1416,38 @@ export class VisbocenterDetailComponent implements OnInit {
         )    
     }    
   }
+
+
+  initVTRDates(): void {
+ 
+    const d = new Date (); 
+    d.setMonth(d.getMonth()-1);
+    d.setDate(1);
+    this.newVTRstartDate = new Date(d);
+    this.newVTRendDate = new Date(d.setDate(30));
+
+
+		// // set the fromDate to the first day of the month
+		// fromDate.setDate(1);
+		// // set toDate to the last day of the month
+		// const d = new Date (toDate);    
+		// const month = d.getMonth();
+		// const year = d.getFullYear();
+		// d.setFullYear(year, month+1, 0); 
+		// d.setHours(23);
+		// d.setMinutes(59);
+		// d.setSeconds(59);   
+		// toDate = new Date(d);
+
+
+  }
+
+  subtractTimeFromDate(objDate, intDays) {
+    var numberOfMlSeconds = objDate.getTime();
+    var addMlSeconds = ((intDays * 24) * 60) * 60000;
+    var newDateObj = new Date(numberOfMlSeconds - addMlSeconds);
+    return newDateObj;
+}
 
   /** Log a message with the MessageService */
   private log(message: string) {
