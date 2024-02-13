@@ -187,7 +187,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.variantName = this.route.snapshot.queryParams['variantName'];
     this.defaultVariant = this.translate.instant('vpKeyMetric.lbl.defaultVariant');
     this.pfvVariant = this.translate.instant('vpKeyMetric.lbl.pfvVariant');
-    this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
+    //this.calcPredict = this.route.snapshot.queryParams['calcPredict'] ? true : false;
     let view = this.route.snapshot.queryParams['view'];
     if (!view) {
       // map old / outdated URLs to common url
@@ -1713,9 +1713,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldString;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldString = new VPCustomString();
-      const hCFString = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '0') );         
+      const hCFString = this.customUserFieldDefinitions?.findIndex(elem => (item.name == elem.name) && ( elem.type == '0') );         
           if (hCFString > -1 ) {
             fieldString.name = item.name;
             fieldString.type = item.type;
@@ -1734,9 +1734,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldDouble;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldString = new VPCustomDouble(); 
-      const hCFDouble = this.customUserFieldDefinitions.findIndex(elem => (item.name == elem.name) && ( elem.type == '1') );         
+      const hCFDouble = this.customUserFieldDefinitions?.findIndex(elem => (item.name == elem.name) && ( elem.type == '1') );         
       if (hCFDouble > -1 ) {
         fieldString.name = item.name;
         fieldString.type = item.type;
@@ -1755,7 +1755,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       list = this.vpActive?.customFieldDate;
     }
-    list.forEach(item => {
+    list?.forEach(item => {
       const fieldDate = new VPCustomDate();
       fieldDate.name = item.name;
       fieldDate.type = item.type;
@@ -1773,7 +1773,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (cfType == 0) {
       this.customUserFieldDefinitions?.forEach(element => {
         if (element.type == '0') {      
-          const hCFString = vp.customFieldString.findIndex(item => item.name == element.name );         
+          const hCFString = vp.customFieldString?.findIndex(item => item.name == element.name );         
           if (hCFString == -1 ) {
             const hcf = new VPCustomString();
             hcf.name = element.name;
@@ -1790,7 +1790,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (cfType == 1) {
       this.customUserFieldDefinitions?.forEach(element => {
         if (element.type == '1') {
-          const hCFDouble = vp.customFieldDouble.findIndex(item => item.name == element.name );         
+          const hCFDouble = vp.customFieldDouble?.findIndex(item => item.name == element.name );         
           if (hCFDouble == -1 ) { 
             const hcf = new VPCustomDouble();
             hcf.name = element.name;

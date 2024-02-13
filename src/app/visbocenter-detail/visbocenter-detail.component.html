@@ -244,7 +244,7 @@
         </div>
         <div *ngIf="hasVCPerm(permVC.Modify) && errorList.length == 0" class='col'>
           <!-- Button trigger modal -->
-          <button id="CalcTimeTracking" type="button" class="my-1 btn btn-primary float-right" data-toggle="modal" data-target="#vcModalVTR">
+          <button id="CalcTimeTracking" type="button" class="my-1 btn btn-primary float-right" (click)="initVTRDates()" data-toggle="modal" data-target="#vcModalVTR">
             {{ 'vcDetail.btn.calcTimeTracking' | translate }}
           </button>
         </div>

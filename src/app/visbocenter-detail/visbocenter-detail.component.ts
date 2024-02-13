@@ -17,7 +17,8 @@ import { VisboCenterService } from '../_services/visbocenter.service';
 import { VisboSettingService } from '../_services/visbosetting.service';
 import { VisboSetting, VisboReducedOrgaItem, VisboOrganisation } from '../_models/visbosetting';
 
-import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, getJsDateFromExcel } from '../_helpers/visbo.helper';
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, getJsDateFromExcel, subtractTimeFromDate } from '../_helpers/visbo.helper';
+
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -86,7 +87,7 @@ export class VisbocenterDetailComponent implements OnInit {
   // VTR Definitionen
   newVTRstartDate: Date;
   newVTRendDate: Date;
-  changeStatus: boolean;
+  changeStatus: boolean = true;
   showMessage: boolean;
 
   
@@ -106,6 +107,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.getVisboCenter();
     this.getVisboCenterUsers();
+    this.initVTRDates();
   }
 
   getVisboCenter(): void {
@@ -1413,6 +1415,14 @@ export class VisbocenterDetailComponent implements OnInit {
           }        
         )    
     }    
+  }
+
+
+  initVTRDates(): void { 
+    let d = new Date (); 
+    d = subtractTimeFromDate(d, 31),
+    this.newVTRstartDate = new Date(d);
+    this.newVTRendDate = new Date(d.setDate(30));
   }
 
   /** Log a message with the MessageService */

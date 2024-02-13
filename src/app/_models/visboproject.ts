@@ -153,9 +153,9 @@ export const constSystemVPStatus = ['initialized', 'proposed', 'ordered', 'pause
 export const constSystemVPStatusFrozen = ['paused', 'finished', 'stopped']
 
 export function getCustomFieldString(vp: VisboProject, name: string): VPCustomString {
-  let result: VPCustomString;
+  let result: VPCustomString = undefined;
   if (vp && vp.customFieldString) {
-    result = vp.customFieldString.find(element => element.name == name)
+    result = vp.customFieldString?.find(element => element.name == name)
   }
   return result;
 }
@@ -187,7 +187,7 @@ export function addCustomFieldDouble(vp: VisboProject, name: string, value: numb
 }
 
 export function getCustomFieldDouble(vp: VisboProject, name: string): VPCustomDouble {
-  let result: VPCustomDouble;
+  let result: VPCustomDouble = undefined;
   if (vp && vp.customFieldDouble) {
     result = vp.customFieldDouble.find(element => element.name == name)
   }
@@ -208,7 +208,7 @@ export function addCustomFieldDate(vp: VisboProject, name: string, value: Date):
 }
 
 export function getCustomFieldDate(vp: VisboProject, name: string): VPCustomDate {
-  let result: VPCustomDate;
+  let result: VPCustomDate = undefined;;
   if (vp && vp.customFieldDate) {
     result = vp.customFieldDate.find(element => element.name == name)
   }
