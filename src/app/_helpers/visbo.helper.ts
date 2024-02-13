@@ -124,6 +124,15 @@ export function visboIsSameDay(dateA: Date, dateB: Date): boolean {
   return localA.toISOString() === localB.toISOString();
 }
 
+
+export function subtractTimeFromDate(objDate, intDays) {
+  var numberOfMlSeconds = objDate.getTime();
+  var addMlSeconds = ((intDays * 24) * 60) * 60000;
+  var newDateObj = new Date(numberOfMlSeconds - addMlSeconds);
+  return newDateObj;
+}
+
+
 export function visboGetShortText(text: string, len: number, position?: string): string {
   if (!text) {
     return '';
