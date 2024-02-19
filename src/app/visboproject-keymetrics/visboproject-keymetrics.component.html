@@ -140,7 +140,7 @@
     </div>
 
     <div *ngIf="currentView == 'Capacity' && vcOrga">
-      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+      <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [vpvBaseline]="vpvBaseline" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
     <div *ngIf="currentView == 'Cost'">
       <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
