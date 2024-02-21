@@ -1068,7 +1068,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   initShowUnit(unit: string): void {
     let showDays = true;
-    if (this.hasVPPerm(this.permVP.ViewAudit) && (unit != '1' && unit != 'PD')) {
+    if (this.hasVPPerm(this.permVP.ViewAudit) &&  unit && (unit != '1') && (unit != 'PD')) {
       showDays = false;
     }
     this.showUnit = showDays ? 'PD' : 'PE';
