@@ -1174,13 +1174,13 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       this.sumCost += (costtypes[i].currentCost || 0);   
       this.sumBudget += (costtypes[i].baseLineCost || 0);
     
-      const tooltip = this.createTooltipPlanActual(costtypes[i], false, this.refPFV);          
+      const tooltip = this.createTooltipPlanActual(costtypes[i], this.refPFV);          
       graphDataCosttypes.push([
         currentDate, 
         plannedCost,
-        //tooltip,
+        tooltip,
         actualCost,
-        //tooltip
+        tooltip
       ]);
     }
     // we need at least 2 items for Line Chart and show the current status for today
@@ -1203,9 +1203,9 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     graphDataCosttypes.unshift([
       'Month',
       {label: this.translate.instant('ViewCosttypes.lbl.baseLineCost'), type: 'number'},
-      //{type: 'string', cost: 'tooltip', 'p': {'html': true}},
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
       {label: this.translate.instant('ViewCosttypes.lbl.currentCost'), type: 'number'},
-      //{type: 'string', cost: 'tooltip', 'p': {'html': true}}
+      {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
  
     // round the sum
@@ -1275,10 +1275,9 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     }
   }
 
-  createTooltipPlanActual(costtypes: VisboCosttypes, PT: boolean, refPFV = false): string {
+  createTooltipPlanActual(costtypes: VisboCosttypes, refPFV = false): string {
     const currentDate = convertDate(new Date(costtypes.month), 'fullMonthYear', this.currentLang);
-    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
-      '<div><b>' + currentDate + '</b></div>';
+     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' + '<div><b>' + currentDate + '</b></div>';
 
     const strActualCost = this.translate.instant('ViewCosttypes.lbl.currentCost');
     const strPlannedCost = this.translate.instant('ViewCosttypes.lbl.baseLineCost');
@@ -1293,14 +1292,14 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     plannedCost = costtypes.baseLineCost || 0;
  
 
-    if (refPFV) {    
+    if (refPFV) {
         totalCapa = costtypes.baseLineCost || 0;
     }
 
     result = result + this.addTooltipRowString(costName + ':', costtypes.costName, false);
     result = result + this.addTooltipRowNumber(strPlannedCost , plannedCost, 1, unit, false);
     
-    if (actualCost !== 0) {
+    if (actualCost) {
       result = result + this.addTooltipRowNumber(strActualCost, actualCost, 1, unit, false);
     }
  
