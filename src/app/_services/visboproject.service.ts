@@ -156,6 +156,54 @@ export class VisboProjectService {
   //   );
   // }
 
+
+   /** GET CostTypes of VisboPortfolio Version by id. Will 404 if id not found */
+   getCosttypes(vpid: string, vpfid: string, refDate: Date, costID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
+    const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/costtypes`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
+    }
+    if (perProject) {
+      params = params.append('perProject', '1');
+    }
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
+    }
+    if (costID) {
+      this.log(`Calling RoleID: ${costID}`);
+      params = params.append('costID', costID);
+    }
+    if (refDate) {
+      params = params.append('refDate', refDate.toISOString());
+    }
+    this.log(`Calling HTTP Request for a specific entry: ${url}`);
+    return this.http.get<VisboProjectResponse>(url, { headers , params }).pipe(
+      map(response => {
+        return response.vp[0];
+      }),
+      tap(vp => this.log(`fetched Cost Information for VP/VPF ${vpid}/ ${vpfid} Len: ${vp.costtypes.length}`)),
+      catchError(this.handleError<VisboProject>(`getVisboPortfolio Cost Information id:${vpfid}`))
+    );
+  }
+
+  
+
   //////// Save methods //////////
 
   /** POST: add a new Visbo Project to the server */

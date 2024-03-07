@@ -74,7 +74,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
     activeVPFVariant: DropDown;
     newVPFVariant: DropDown;
 
-    views = ['ProjectBoard', 'KeyMetrics', 'KeyMetric', 'Capacity', 'List', 'Overview'];
+    views = ['ProjectBoard', 'KeyMetric', 'KeyMetrics', 'Costtype', 'Capacity', 'List', 'Overview'];
 
     user: VisboUser;
     vpSelected: string;
@@ -146,7 +146,7 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     sortAscending: boolean;
     sortColumn: number;
-
+ProjectBoardcha
     combinedPerm: VGPermission = undefined;
     permVC = VGPVC;
     permVP = VGPVP;

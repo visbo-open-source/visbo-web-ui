@@ -1726,7 +1726,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     });
     graphDataCapacity.unshift(rowHeader);
 
-    // give the capacities colors
     let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(drillDownNEW.length + 3));
     orgaColors.reverse();

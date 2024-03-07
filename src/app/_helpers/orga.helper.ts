@@ -1,6 +1,6 @@
 // functions to build and manipulate the orga tree
 
-import { VisboReducedOrgaItem, VisboOrgaStructure, VisboOrgaTreeLeaf, TreeLeafSelection } from '../_models/visbosetting';
+import { VisboReducedOrgaItem, VisboOrgaStructure, VisboOrgaTreeLeaf, TreeLeafSelection, VisboCost } from '../_models/visbosetting';
 
 export function buildOrgaTree(allRoles: VisboReducedOrgaItem[]): VisboOrgaStructure {
   const tree = new VisboOrgaTreeLeaf();
@@ -72,5 +72,39 @@ export function isParentLeaf(leaf: VisboOrgaTreeLeaf): boolean {
   if (leaf?.parent?.parent == null) {
     result = true;
   }
+  return result;
+}
+
+export function buildOrgaCostTree(allCosts: VisboCost[]): VisboOrgaStructure {
+  const tree = new VisboOrgaTreeLeaf();
+  tree.uid = 0;
+  tree.name = 'root';
+  tree.parent = null;
+  tree.children = [];
+  tree.showChildren = true;
+
+  // calculate an indexed role list with Childs
+  const indexedRoles: VisboOrgaTreeLeaf[] = [];
+  allCosts.forEach(cost => {
+    const newLeaf = new VisboOrgaTreeLeaf();
+    newLeaf.uid = cost.uid;
+    newLeaf.name = cost.name;
+    newLeaf.children = [];
+    newLeaf.showChildren = false;
+    if (cost.pid) {
+      newLeaf.parent = indexedRoles[cost.pid];
+      newLeaf.showChildren = false;
+      indexedRoles[cost.pid].children.push(newLeaf);
+    } else {
+      newLeaf.parent = tree;
+      newLeaf.showChildren = true;
+      tree.children.push(newLeaf);
+    }
+    indexedRoles[cost.uid] = newLeaf;
+  });
+
+  const result = new VisboOrgaStructure();
+  result.tree = tree;
+  result.list = indexedRoles;
   return result;
 }

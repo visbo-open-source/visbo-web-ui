@@ -1,0 +1,1750 @@
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+
+import { ActivatedRoute, Router } from '@angular/router';
+import { ResizedEvent } from 'angular-resize-event';
+
+import { TranslateService } from '@ngx-translate/core';
+
+import { MessageService } from '../../_services/message.service';
+import { AlertService } from '../../_services/alert.service';
+
+import { VisboSetting, VisboOrganisation, VisboOrgaStructure, VisboReducedOrgaItem,
+          VisboOrgaTreeLeaf, TreeLeafSelection } from '../../_models/visbosetting';
+import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
+import { VisboCenter } from '../../_models/visbocenter';
+import { VisboUser } from '../../_models/visbouser';
+
+
+import { VisboCosttypes, VisboProjectVersion} from '../../_models/visboprojectversion';
+import { VisboPortfolioVersion, VPFParams } from '../../_models/visboportfolio';
+import { VisboCenterService } from '../../_services/visbocenter.service';
+import { VisboProjectService } from '../../_services/visboproject.service';
+import { VisboProjectVersionService } from '../../_services/visboprojectversion.service';
+import { VisboSettingService } from '../../_services/visbosetting.service';
+
+import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
+
+import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, validateDate, visboIsToday,
+          visboGetShortText, getPreView, excelColorToRGBHex, visboGetBeginOfMonth } from '../../_helpers/visbo.helper';
+import { buildOrgaCostTree, expandParentTree, setTreeLeafSelection, getLeafByID, getLeafByName,
+          isParentLeaf } from '../../_helpers/orga.helper';
+
+import { scale } from 'chroma-js';
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
+const baselineColor = '#F7941E';
+
+
+class CapaLoad {
+  uid: number;
+  isBooked: boolean;
+  percentOver: number;
+  rankOver: number;
+  percentUnder: number;
+  rankUnder: number;
+  totalOver: number;
+}
+
+
+class DrillDownElement {
+  currentDate: Date;
+  name: string;
+  variantName: string;
+  businessUnit: string;
+  strategicFit: number;
+  plan: number;
+  planTotal: number;
+  budget: number;
+  budgetIntern: number;
+}
+class DrillDownUsedElements {
+  name: string; 
+  roleID: number; 
+  vpID: string;
+  planTotal_PT: number; 
+  planTotal: number; 
+  budget: number; 
+  budget_PT: number;  
+}
+
+class DrillDownCapa {
+  id: number;
+  name: string;
+  localName: string;
+}
+
+class DropDownStatus {
+  name: string;
+  localName: string;
+}
+
+class VPProperties {
+  _bu: string;
+  _strategicFit: number;
+  _risk: number;
+}
+
+class exportCosttype {
+  name: string;
+  vpStatus: string;
+  strategicFit: number;
+  risk: number;
+  variantName: string;
+  ampelStatus: number;
+  ampelErlaeuterung: string;
+  vpid: string;
+  month: Date;
+  roleID: number;
+  costName: string;    
+  actualCost: number;
+  plannedCost: number;
+  baselineCost: number;
+}
+
+@Component({
+  selector: 'app-comp-viewcosttype',
+  templateUrl: './comp-viewcosttype.component.html',
+  styleUrls: ['./comp-viewcosttype.component.css']
+})
+export class CompViewcosttypeComponent implements OnInit, OnChanges {
+
+  @Input() vcActive: VisboCenter;
+  @Input() vpActive: VisboProject;
+  @Input() vpfActive: VisboPortfolioVersion;
+  @Input() listVP: VisboProject[];
+  @Input() customize: VisboSetting;
+  @Input() vpvActive: VisboProjectVersion;
+  @Input() vpvBaseline: VisboProjectVersion;
+  @Input() vcOrganisation: VisboOrganisation;
+  @Input() refDate: Date;
+  @Input() combinedPerm: VGPermission; 
+
+  lastTimestampVPF: Date;
+  visboCost: VisboCosttypes[];
+  visboCostChild: VisboCosttypes[];
+  visboprojectversions: VisboProjectVersion[];
+  visboprojectsversions_filtered: VisboProjectVersion[];
+ 
+  timeoutID: ReturnType<typeof setTimeout>;
+  timeoutFilterID: ReturnType<typeof setTimeout>;
+  hasCost: boolean;
+  printView = false;
+
+  costID: number;
+  currentLeaf: VisboOrgaTreeLeaf;
+  costFrom: Date;
+  costTo: Date;
+  currentRefDate: Date
+  currentName: string;
+
+  sumCost: number;
+  sumBudget: number;
+  
+  capaLoad: CapaLoad[];
+
+  filter: string;
+  filterStrategicFit: number;
+  filterRisk: number;
+  filterBU: string;
+  dropDownBU: string[];
+  filterVPStatusIndex: number;
+  dropDownVPStatus: DropDownStatus[];
+
+  listVPProperties: VPProperties[];
+
+  showUnit: string;  
+  drillDown: number;
+  drillDownCapa: DrillDownCapa[];
+  drillDownCapaFiltered: DrillDownCapa[];
+  showUnitText: string;
+  refPFV = true;
+  parentThis = this;
+
+  orga: VisboOrgaStructure;
+  topLevelNodes: VisboReducedOrgaItem[];
+
+  colorsPFV = [baselineColor, '#458CCB'];
+  // seriesPFV = [
+  //   {type: 'line', lineWidth: 4, pointSize: 0}];  
+  seriesPFV = [
+    {type: 'line', lineWidth: 4, pointSize: 0},
+    // legende of Cost Info Current visible or not
+    {visibleInLegend: true}
+  ];
+
+  chartActive: Date;
+  graphDataComboChart = [];
+  graphOptionsComboChart = {
+      chartArea:{'left':100,'top':100,width:'90%'},
+      width: '100%',
+      height: '600',
+      title: 'Monthly Cost Information',
+      animation: {startup: true, duration: 200},
+      legend: {position: 'top', maxline: 1 },
+      explorer: {actions: ['dragToZoom', 'rightClickToReset'], maxZoomIn: .01},
+      annotations: {
+        textStyle: {
+          fontSize: 10
+        }
+      },
+      colors: this.colorsPFV,
+      series: this.seriesPFV,
+      seriesType: 'bars',
+      isStacked: false,
+      tooltip: {
+        isHtml: true
+      },
+      vAxis: {
+        title: 'Monthly Cost',
+        format: "###,###.## ",
+        minorGridlines: {count: 0, color: 'none'}
+      },
+      hAxis: {
+        format: 'MMM yy',
+        // textStyle: {fontSize: 15},
+        gridlines: {
+          color: '#FFF',
+          count: -1
+        },
+        minorGridlines: {count: 0, color: '#FFF'},
+        slantedText: true,
+        slantedTextAngle: 90
+      }
+    };
+  currentLang: string;
+
+  permVC = VGPVC;
+  permVP = VGPVP;
+
+  constructor(
+    private visbocenterService: VisboCenterService,
+    private visboprojectService: VisboProjectService,
+    private visboprojectversionService: VisboProjectVersionService,
+    private visbosettingService: VisboSettingService,
+    private messageService: MessageService,
+    private alertService: AlertService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private translate: TranslateService
+  ) { }
+
+  ngOnInit(): void {
+    this.currentLang = this.translate.currentLang;    
+    this.drillDownCapa = [
+      {
+        id: 0,
+        name: 'drillNone',
+        localName: this.translate.instant('ViewCapacity.lbl.drillNone')
+      },
+      {
+        id: 1,
+        name: 'drillOrga',
+        localName: this.translate.instant('ViewCapacity.lbl.drillOrga')
+      },
+      {
+        id: 2,
+        name: 'drillProject',
+        localName: this.translate.instant('ViewCapacity.lbl.drillProject')
+      },
+      {
+        id: 3,
+        name: 'drillProjectBU',
+        localName: this.translate.instant('ViewCapacity.lbl.drillProjectBU')
+      },
+    ];
+    this.drillDownCapaFiltered = this.drillDownCapa;
+
+    this.initSetting();
+    if (!this.refDate) { this.refDate = new Date(); }
+    this.currentRefDate = this.refDate;
+   
+    this.showUnitText = this.translate.instant('ViewCosttypes.lbl.keuro');
+    
+    this.log(`Cost Info Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);    
+    this.capaLoad = [];
+    if (this.vpfActive) {
+      this.lastTimestampVPF = this.vpfActive.timestamp;
+    } else if (this.vpvActive) {      
+      this.lastTimestampVPF = this.vpvActive.timestamp;
+    } 
+    this.initVPProperties();
+    this.getProjectVersions();
+    this.visboViewCosttypeTree();
+    this.getCosttypes();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.log(`Cost Info Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
+    let refresh = false;
+
+    // in case of VP CostInfo
+    if (changes.vpvActive?.previousValue && changes.vpvActive?.currentValue?.timestamp &&  changes.vpvActive?.currentValue?.timestamp != changes.vpvActive?.previousValue?.timestamp ) {
+      refresh = true;
+    }
+    // in case of VPF CostInfo changing VPF Version
+    if (changes.vpfActive?.previousValue && changes.vpfActive?.currentValue?.timestamp &&  changes.vpfActive?.currentValue?.timestamp != changes.vpfActive?.previousValue?.timestamp) {
+      refresh = true;
+    }
+    // refresh calculation if refDate has changed or the timestamp of the VPF has changed
+    if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
+      this.initSetting();
+      this.visboViewCosttypeTree();
+      this.getCosttypes();
+    }
+  }
+
+  onResized(event: ResizedEvent): void {
+    if (!event) { this.log('No event in Resize'); }
+    let diff = 0;
+    if (this.chartActive) {
+      diff = (new Date()).getTime() - this.chartActive.getTime()
+    }
+    if (diff < 1000) {
+      return;
+    }
+    // check only width for redraw chart
+    if (Math.abs(event.newRect.width - event.oldRect.width) < 5) {
+      return;
+    }
+    this.log(`Resize ${diff} ${Math.abs(event.newRect.height - event.oldRect.height)} ${Math.abs(event.newRect.width - event.oldRect.width)}`);
+    if (this.timeoutID) { clearTimeout(this.timeoutID); }
+    this.timeoutID = setTimeout(() => {
+      this.visboViewCostOverTime();
+      this.timeoutID = undefined;
+    }, 500);
+  }
+
+  initVPProperties(): void {
+      if (!this.listVP) { return; }
+      this.listVPProperties = [];
+      this.listVP.forEach(vp => {
+        const properties = new VPProperties();
+        properties._bu = getCustomFieldString(vp, "_businessUnit")?.value;
+        properties._strategicFit = getCustomFieldDouble(vp, "_strategicFit")?.value;
+        properties._risk = getCustomFieldDouble(vp, "_risk")?.value;
+        this.listVPProperties[vp._id] = properties;
+      });
+      return;
+  }
+
+  initSetting(): void {
+    this.chartActive = undefined;
+    this.costID = this.route.snapshot.queryParams['costID'];
+    this.refPFV = true;
+    const unit = this.route.snapshot.queryParams['unit'];
+    this.initShowUnit(unit);
+
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
+    const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
+    if (filter) {
+      this.filter = filter;
+    }
+    this.filterBU = filterBU;
+    this.filterRisk = filterRisk;
+    this.filterStrategicFit = filterStrategicFit;
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
+    this.log(`Call init Filter ${this.visboprojectversions && this.visboprojectversions.length}`);
+    this.initFilter(this.listVP);
+    let drillDown = Number(this.route.snapshot.queryParams['drillDown']);
+    if (!(drillDown >= 0)) {
+      drillDown =  this.checkFilter() ? 2 : 0;
+    }
+    this.drillDown = drillDown;
+
+    const from = this.route.snapshot.queryParams['from'];
+    const to = this.route.snapshot.queryParams['to'];
+
+    if (from && validateDate(from, false)) {
+      this.costFrom = new Date(validateDate(from, false));
+    } else if (this.vpvActive){
+      // specific Project, show start & end date of the project
+      const baseStart = new Date(this.vpvBaseline.startDate).getTime();
+      const vpvStart = new Date(this.vpvActive.startDate).getTime();
+      const minStart = Math.min(baseStart, vpvStart);
+      this.costFrom = new Date(minStart);
+    } else {
+      // Portfolio or VC set a defined time range
+      this.costFrom = new Date();
+      this.costFrom.setMonth(this.costFrom.getMonth() - 3);
+    }
+    this.costFrom.setDate(1);
+    this.costFrom.setHours(0, 0, 0, 0);
+
+    if (to && validateDate(to, false)) {
+      this.costTo = new Date(validateDate(to, false));
+    } else if (this.vpvActive){
+      // specific Project, show start & end date of the project
+      const baseEnd = new Date(this.vpvBaseline.endDate).getTime();
+      const vpvEnd = new Date(this.vpvActive.endDate).getTime();
+      const maxEnd = Math.max(baseEnd, vpvEnd);
+      this.costTo = new Date(maxEnd);
+    } else {
+      // Portfolio or VC set a defined time range
+      this.costTo = new Date();
+      this.costTo.setMonth(this.costTo.getMonth() + 9);
+    }
+    this.costTo.setDate(1);
+    this.costTo.setHours(0, 0, 0, 0);
+
+    if (this.vcActive) {
+      this.currentName = this.vcActive.name;
+    } else if (this.vpfActive) {
+      this.currentName = this.vpfActive.name;
+    } else if (this.vpActive) {
+      this.currentName = this.vpActive.name;
+    }
+    this.initBUDropDown();
+    this.initVPStateDropDown();
+
+    this.log(`Cost From / To ${this.costFrom} / ${this.costTo}`);
+  }
+
+  filterVP(vpList: VisboProject[]): VisboProject[] {
+    const filter = this.filter;
+
+    if (!vpList) { return undefined }
+    const listVPFilter: VisboProject[] = [];
+    vpList.forEach(item => {
+      if (item.vpType != 0) {
+        return;
+      }
+      if (filter
+        && !(item.name.toLowerCase().indexOf(filter) >= 0
+          || (item.description || '').toLowerCase().indexOf(filter) >= 0
+        )
+      ) {
+        return;
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = item.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+          return;
+        }
+      }
+      if (this.filterBU) {
+        const setting = getCustomFieldString(item, '_businessUnit');
+        if (setting && setting.value !== this.filterBU) {
+          return;
+        }
+      }
+      if (this.filterRisk >= 0) {
+        const setting = getCustomFieldDouble(item, '_risk');
+        if (setting && setting.value < this.filterRisk) {
+          return;
+        }
+      }
+      if (this.filterStrategicFit >= 0) {
+        const setting = getCustomFieldDouble(item, '_strategicFit');
+        if (setting && setting.value < this.filterStrategicFit) {
+          return;
+        }
+      }
+      listVPFilter.push(item);
+    })
+    return listVPFilter;
+  }
+
+  filterVPV(vpvList: VisboProjectVersion[]): VisboProjectVersion[] {
+
+    const filter = this.filter ? this.filter.toLowerCase() : undefined;
+    const vpvFiltered: VisboProjectVersion[] = [];
+    if (!vpvList) { return vpvFiltered }
+    
+    vpvList.forEach(item => {
+      if (!item.vp) {
+        return;
+      }
+      if (item.vp?.vpType != 0) {
+        return;
+      }
+
+      if (filter
+        && !(item.vp?.name.toLowerCase().indexOf(filter) >= 0
+          || (item.VorlagenName?.toLowerCase().indexOf(filter) >= 0)
+          || ((this.getVPManager(item.vp) || '').toLowerCase().indexOf(filter) >= 0)
+          || (item.vp?.description.toLowerCase().indexOf(filter) >= 0)
+        )
+      ) {
+        return;
+      }
+      if (this.filterVPStatusIndex > 0) {
+        const setting = item.vp.vpStatus;
+        if (setting !== this.dropDownVPStatus[this.filterVPStatusIndex].name) {
+          return;
+        }
+      }
+      if (this.filterBU) {
+        const setting = getCustomFieldString(item.vp, '_businessUnit');
+        if (!setting) return;
+        if (setting.value !== this.filterBU) {
+          return;
+        }
+      }
+      if (this.filterRisk >= 0) {
+        const setting = getCustomFieldDouble(item.vp, '_risk');
+        if (setting && (setting.value < this.filterRisk)) {
+          return;
+        }
+      }
+      if (this.filterStrategicFit >= 0) {
+        const setting = getCustomFieldDouble(item.vp, '_strategicFit');
+        if (setting && (setting.value < this.filterStrategicFit)) {
+          return;
+        }
+      }
+      vpvFiltered.push(item);
+    })
+    return vpvFiltered;
+  }
+
+  initFilter(vpList: VisboProject[]): void {
+    let lastValueRisk: number;
+    let lastValueSF: number;
+    let lastValueVPStatus: string;
+    let lastValueBU: string;
+    if (!vpList || vpList.length < 1) {
+      return;
+    }
+
+    vpList.forEach( item => {
+      this.log(`initFilter check vp ${item.name}`)
+      if (item.customFieldDouble) {
+        if (this.filterStrategicFit === undefined) {
+          const customField = getCustomFieldDouble(item, '_strategicFit');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} strategicFit ${customField}`);
+            if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
+              this.filterStrategicFit = 0;
+            }
+            lastValueSF = customField.value
+          }
+        }
+        if (this.filterRisk === undefined) {
+          const customField = getCustomFieldDouble(item, '_risk');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} risk ${customField}`);
+            if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
+              this.filterRisk = 0;
+            }
+            lastValueRisk = customField.value
+          }
+        }
+      }
+      if (item.customFieldString) {
+        if (this.filterBU === undefined) {
+          const customField = getCustomFieldString(item, '_businessUnit');
+          if (customField) {
+            this.log(`initFilter check vp ${item.name} BU ${customField}`);
+            if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
+              this.filterBU = '';
+            }
+            lastValueBU = customField.value
+          }
+        }
+      }
+      const vpStatus = item.vpStatus;
+      if (vpStatus) {
+        if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
+          this.filterVPStatusIndex = 0;
+        }
+        lastValueVPStatus = vpStatus
+      }
+    });
+  }
+
+  checkFilter(): boolean {
+    if ( this.filter
+      || this.filterStrategicFit > 0
+      || this.filterRisk > 0
+      || this.filterBU
+      || this.filterVPStatusIndex > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  initBUDropDown(): void {
+    const listBU = this.customize?.value?.businessUnitDefinitions;
+    if (!listBU) return;
+    this.dropDownBU = [];
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } else {
+      this.dropDownBU = undefined;
+    }
+  }
+
+  initVPStateDropDown(): void {
+    this.dropDownVPStatus = [];
+    constSystemVPStatus.forEach(item => {
+      this.dropDownVPStatus.push({name: item, localName: this.translate.instant('vpStatus.' + item)});
+    });
+    if (this.dropDownVPStatus.length > 1) {
+      // this.dropDownVPStatus.sort(function(a, b) { return visboCmpString(a.localName.toLowerCase(), b.localName.toLowerCase()); });
+      this.dropDownVPStatus.unshift({name: undefined, localName: this.translate.instant('compViewBoard.lbl.all')});
+    } else {
+      this.dropDownVPStatus = undefined;
+    }
+  }
+
+  hasVPPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vp & perm) > 0;
+  }
+
+  hasVCPerm(perm: number): boolean {
+    if (this.combinedPerm === undefined) {
+      return false;
+    }
+    return (this.combinedPerm.vc & perm) > 0;
+  }
+
+  getCosttypes(): void {
+    if ((this.drillDown == 2)|| (this.drillDown == 3)) {
+      //this.getProjectCapacity();
+    } else {
+      this.getCostOrga();
+    }
+  }
+
+  getProjectVersions(): void {
+    this.visboprojectversions = undefined;
+    const longlist = true;
+    const refDate = new Date();
+
+    if (this.vcActive ) {
+      this.log(`Get VPV of VC ${this.vcActive._id}`);
+      this.visboprojectversionService.getVisboCenterProjectVersions(this.vcActive._id, refDate, false, longlist)      
+        .subscribe(
+          vpv => {
+            // map vp to the list
+            vpv.forEach(item => {
+              item.vp = this.listVP.find(element => element._id.toString() == item.vpid.toString());
+            })
+            this.visboprojectversions = vpv;
+          },
+          error => {
+            this.log(`get VC Project Versions failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpfActive) {
+      this.log(`Get VPV of VPF ${this.vpActive._id} VPF ${this.vpfActive._id}`);
+      this.visboprojectversionService.getVisboPortfolioKeyMetrics(this.vpfActive._id)
+        .subscribe(
+          vpv => {
+            // map vp to the list
+            vpv.forEach(item => {
+              item.vp = this.listVP.find(element => element._id.toString() == item.vpid.toString());
+            })
+            this.visboprojectversions = vpv;
+          },
+          error => {
+            this.log(`get VPF Project Versions failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    }
+  }
+
+  getProjectCosttypes(): void {
+    this.visboCost = undefined;
+    this.refPFV = true;
+
+    if (this.vcActive && this.currentLeaf) {
+      this.log(`Cost Info Calc for VC ${this.vcActive._id} role ${this.currentLeaf.name}`);
+
+      this.visbocenterService.getCosttypes(this.vcActive._id, this.refDate, this.currentLeaf.uid.toString(), this.costFrom, this.costTo, true, this.refPFV, false, false, true)
+        .subscribe(
+          visbocenter => {
+            if (!visbocenter.costtypes || visbocenter.costtypes.length === 0) {
+              this.log(`get VPV Calc: Reset Cost Info to empty `);
+              this.visboCost = [];
+              this.visboCostChild = [];
+            } else {
+              this.log(`Store VC Project Cost Info for Len ${visbocenter.costtypes.length}`);
+              let costInfo = visbocenter.costtypes.filter(item => item.vpid != undefined);
+              const listVPVFilter = this.filterVPV(this.visboprojectversions);              
+              this.visboprojectsversions_filtered = listVPVFilter;
+              costInfo.forEach(item => {
+                const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
+                item.vp = vpv && vpv.vp;
+              });
+              costInfo = costInfo.filter(item => item.vp != undefined);
+              this.visboCostChild = costInfo;
+              
+              if (this.checkFilter()) {
+                //this.visboCost = this.sumCapacityChild(this.visboCostChild);
+              } else {
+                this.visboCost = visbocenter.costtypes.filter(item => item.vpid == undefined);
+              }
+            }
+            this.checkCostAvailable(this.visboCost);
+            this.visboViewCostOverTime();
+          },
+          error => {
+            this.log(`get VC Cost Info failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermOrganisation', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
+      this.log(`Costtypes Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} cost ${this.currentLeaf.name} DrillDown Project`);
+      this.visboprojectService.getCosttypes(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.costFrom, this.costTo, true, this.refPFV, false, false, true)
+        .subscribe(
+          vp => {
+            if (!vp.costtypes || vp.costtypes.length === 0) {
+              this.log(`get VPF Calc: Reset Costtypes to empty `);
+              this.visboCost = [];
+              this.visboCostChild = [];
+            } else {
+                let costty: VisboCosttypes[];
+                this.log(`Store VPF Project Costtypes for Len ${vp.costtypes.length}`);              
+                costty = vp.costtypes.filter(item => item.vpid != undefined);
+                const listVPVFilter = this.filterVPV(this.visboprojectversions);
+                this.visboprojectsversions_filtered = listVPVFilter;
+                costty.forEach(item => {
+                  const vpv = listVPVFilter.find(vpv => vpv.vpid == item.vpid);
+                  item.vp = vpv && vpv.vp;
+                });
+                costty = costty.filter(item => item.vp != undefined);
+                this.visboCostChild = costty;
+              // TODO: ur:
+              this.visboCostChild = costty;
+              if (this.checkFilter()) {
+                this.visboCost = this.sumCostChild(this.visboCostChild);
+              } else if (this.checkFilter() && this.refPFV){
+                this.visboCost = this.sumCostChild(this.visboCostChild);             
+              } else {               
+                this.visboCost = vp.costtypes.filter(item => item.vpid == undefined);
+              }
+            }
+           
+            this.checkCostAvailable(this.visboCost);
+            this.visboViewCostOverTime();
+          },
+          error => {
+            this.log(`get VPF Costtypes Project failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    }
+  }
+
+
+  
+
+  getCostOrga(): void {
+    this.visboCost = undefined;
+
+    if (this.vcActive ) {
+      this.log(`Cost Calc for VC ${this.vcActive._id} role ${this.costID}`);
+
+      this.visbocenterService.getCosttypes(this.vcActive._id, this.refDate, this.currentLeaf?.uid.toString(), this.costFrom, this.costTo, true, this.refPFV)
+        .subscribe(
+          visbocenter => {
+            if (!visbocenter.costtypes || visbocenter.costtypes.length === 0) {
+              this.log(`get VPV Calc: Reset Costtypes to empty `);
+              this.visboCost = [];
+              this.visboCostChild = [];
+            } else {
+              this.log(`Store costtypes for Len ${visbocenter.costtypes.length}`);
+              let costtypes = visbocenter.costtypes.filter(item => item.costID == this.currentLeaf.uid.toString());
+              this.visboCost = costtypes;
+              costtypes = visbocenter.costtypes.filter(item => item.costID != this.currentLeaf.uid.toString());
+              this.visboCostChild = costtypes;
+            }
+            // if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
+            //   this.calcLoad(this.visboCost, this.refPFV);
+            // }
+            // this.calcLoad(this.visboCostChild, this.refPFV);
+            
+            this.checkCostAvailable(this.visboCost);
+            this.visboViewCostOverTime();
+          },
+          error => {
+            this.log(`get VC Costtypes failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else if (error.status === 409) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermOrganisation', {'name': this.vcActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpfActive && this.currentLeaf) {
+      this.log(`Costtypes Calc for VP ${this.vpActive._id} VPF ${this.vpfActive._id} role ${this.costID}`);
+      this.visboprojectService.getCosttypes(this.vpActive._id, this.vpfActive._id, this.refDate, this.currentLeaf.uid.toString(), this.costFrom, this.costTo, true, this.refPFV)
+        .subscribe(
+          vp => {
+            if (!vp.costtypes || vp.costtypes.length === 0) {
+              this.log(`get VPF Calc: Reset Costtypes to empty `);
+              this.visboCost = [];
+            } else {
+              this.log(`Store Costtypes for Len ${vp.costtypes.length}`);
+              let costtypes = vp.costtypes.filter(item => item.costID == this.currentLeaf.uid);
+              this.visboCost = costtypes;
+              costtypes = vp.costtypes.filter(item => item.costID != this.currentLeaf.uid);
+              this.visboCostChild = costtypes;
+            }
+            // if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
+            //   this.calcLoad(this.visboCost, this.refPFV);
+            // }
+            // this.calcLoad(this.visboCostChild, this.refPFV);
+            
+            
+            this.checkCostAvailable(this.visboCost);
+            this.visboViewCostOverTime();
+          },
+          error => {
+            this.log(`get VPF Costtypes failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    } else if (this.vpActive && this.vpvActive && this.currentLeaf) {
+      this.refPFV = true;
+      this.log(`Costtypes Calc for VPV ${this.vpvActive.vpid} role ${this.costID} ${this.currentLeaf.uid} ${this.currentLeaf.parent?.uid}`);
+      const xxx = this.vpvBaseline;
+      this.visboprojectversionService.getCosttype(this.vpvActive._id, this.currentLeaf.uid.toString(),  this.costFrom, this.costTo, true, this.refPFV)
+        .subscribe(
+          listVPV => {
+            if (!listVPV || listVPV.length != 1 || !listVPV[0].costtypes || listVPV[0].costtypes.length === 0) {
+              this.log(`get VPV Calc: Reset Costtype to empty `);
+              this.visboCost = [];
+            } else {
+              const vpv = listVPV[0];
+              this.log(`Store Costtypes for Len ${vpv.costtypes.length}`);
+              let costtypes = vpv.costtypes.filter(item => item.costID == this.currentLeaf.uid);
+              this.visboCost = costtypes;
+              costtypes = vpv.costtypes.filter(item => item.costID != this.currentLeaf.uid);
+              this.visboCostChild = costtypes;
+            }
+            // if (this.topLevelNodes.findIndex(item => item.uid == this.currentLeaf.uid) >= 0) {
+            //   this.calcLoad(this.visboCost, this.refPFV);
+            // }
+            // this.calcLoad(this.visboCostChild, this.refPFV);
+            this.visboViewCostOverTime();
+          },
+          error => {
+            this.log(`get VPF Costtypes failed: error: ${error.status} message: ${error.error && error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('ViewCosttypes.msg.errorPermCosttypes', {'name': this.vpActive.name});
+              this.alertService.error(message, true);
+            } else {
+              this.alertService.error(getErrorMessage(error), true);
+            }
+          }
+        );
+    }
+  }
+
+  
+
+  sumCostChild(costChild: VisboCosttypes[]): VisboCosttypes[] {
+    if (!costChild) { return undefined; }
+    const costyParent: VisboCosttypes[] = [];
+    return costyParent
+  }
+
+  checkCostAvailable(costtypes: VisboCosttypes[]): void {
+    let result = false;
+    if (costtypes && costtypes.length > 0) {
+      result = (costtypes[0].baseLineCost != undefined) ||
+                (costtypes[0].currentCost != undefined) ;
+    }
+    this.hasCost = result;
+  }
+
+ 
+  visboViewCosttypeTree(): void {
+    const allCosts = [];
+    const exitDate = visboGetBeginOfMonth(new Date(), -3);
+    const costs = this.vcOrganisation?.allUnits?.filter(role => (role.type == 3) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
+    if (!costs) return;
+
+    costs.forEach(cost => allCosts[cost.uid] = cost);
+    this.orga = buildOrgaCostTree(costs);
+
+    this.topLevelNodes = costs.filter(cost => cost.pid == undefined);
+    // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
+    this.currentLeaf = getLeafByID(this.orga, this.costID);
+    expandParentTree(this.currentLeaf);
+    setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.SELECTED);
+  }
+
+  initShowUnit(unit: string): void {
+    let showDays = true;
+    if (this.hasVPPerm(this.permVP.ViewAudit) &&  unit && (unit != '1') && (unit != 'PD')) {
+      showDays = false;
+    }
+    this.showUnit = showDays ? 'PD' : 'PE';
+    this.updateUrlParam('unit', this.showUnit);
+    if (showDays) {
+      this.showUnitText = this.translate.instant('ViewCosttypes.lbl.pd')
+    } else {
+      this.showUnitText = this.translate.instant('ViewCosttypes.lbl.euro')
+    }
+  }
+
+  updateShowUnit(unit: string): void {
+    this.initShowUnit(unit);
+    this.visboViewCostOverTime();
+  }
+
+  updateDateRange(): void {
+    if (this.compareDate()) {
+      this.updateUrlParam('from', undefined);  
+      this.getCosttypes();
+    }
+  }
+
+  updateRef(): void {
+    this.log(`Show Ref change to ${this.refPFV}`);
+    this.updateUrlParam('pfv', this.refPFV ? '1' : '0');    
+    this.capaLoad = []; // reset the load indicators
+    this.getCosttypes();
+  }
+
+  updateDrillDown(): void {
+    this.log(`Show Drilldown change to ${this.drillDown}`);
+    this.updateUrlParam('drillDown', this.drillDown.toString());
+    this.capaLoad = []; // reset the load indicators
+    this.getCosttypes();
+  }
+
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    // let keyCode = event.keyCode;
+    // if (keyCode == 13) {    // return key
+      this.updateUrlParam('filter', undefined)
+    // }
+    if (this.timeoutFilterID) { clearTimeout(this.timeoutFilterID); }
+    this.timeoutFilterID = setTimeout(() => {
+      this.getCosttypes();
+      this.timeoutFilterID = undefined;
+    }, 500);
+  }
+
+  filterEventBU(index: number): void {
+    if (index <= 0 || index >= this.dropDownBU.length) {
+      this.filterBU = '';
+    } else {
+      this.filterBU = this.dropDownBU[index];
+    }
+    this.updateUrlParam('filter', undefined);
+    this.getCosttypes();
+  }
+
+  filterEventVPStatus(index: number): void {
+    if (index <= 0 || index >= this.dropDownVPStatus.length) {
+      this.filterVPStatusIndex = 0;
+    } else {
+      this.filterVPStatusIndex = index;
+    }
+    this.updateUrlParam('filter', undefined);
+    this.getCosttypes();
+  }
+
+  updateUrlParam(type: string, value: string, history = false): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
+    if (type == 'costID') {
+      queryParams.costID = Number(value);
+    } else if (type == 'from' || type == 'to') {
+      queryParams.from = this.costFrom.toISOString();
+      queryParams.to = this.costTo.toISOString();
+    } else if (type == 'unit') {
+      queryParams.unit = value;
+    } else if (type == 'pfv') {
+      queryParams.pfv = value;
+    } else if (type == 'drillDown') {
+      queryParams.drillDown = value == '0' ? undefined : value;
+    } if (type == 'filter') {
+      queryParams.filter = this.filter;
+      localStorage.setItem('vpfFilter', this.filter || '');
+      queryParams.filterVPStatus = this.getVPStatus(false);
+      localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
+      queryParams.filterBU = this.filterBU ? this.filterBU : undefined;
+      localStorage.setItem('vpfFilterBU', this.filterBU || '');
+      queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
+      localStorage.setItem('vpfFilterRisk', (this.filterRisk || 0).toString());
+      queryParams.filterStrategicFit = this.filterStrategicFit > 0 ? this.filterStrategicFit.toString() : undefined;
+      localStorage.setItem('vpfFilterStrategicFit', (this.filterStrategicFit || 0).toString());
+    }
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: !history,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  visboViewCostOverTime(): void {
+    if (!this.visboCost || this.visboCost.length === 0) {
+      this.graphDataComboChart = [];
+      return;
+    }
+
+    let optformat: string;    
+    optformat = "###,###.## " + this.translate.instant('ViewCosttypes.lbl.keuro');
+
+    this.graphOptionsComboChart.title = this.translate.instant(this.refPFV ? 'ViewCosttypes.titleCostOverTimeBL' : 'ViewCosttypes.titleCostOverTime', {name: this.currentName, costName: this.currentLeaf.name});
+    this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCosttypes.yAxisCostOverTime');
+    //this.graphOptionsComboChart.vAxis.format = optformat;
+    // set the colors for the Chart
+    if (this.drillDown > 3) {
+      delete this.graphOptionsComboChart.colors;
+      this.graphOptionsComboChart.series = this.seriesPFV;
+    } else if (this.refPFV) {
+      this.graphOptionsComboChart.colors = this.colorsPFV;
+      this.graphOptionsComboChart.series = this.seriesPFV;
+    }   
+
+    this.log(`ViewCosttypesOverTime Type ${this.drillDown ? 'DrillDown' : 'Base/Current'} resource ${this.currentLeaf.name}`);
+    if ((this.drillDown == 2) || (this.drillDown == 3)) {
+      //this.visboViewProjectCapacityDrillDown()
+    } else if (this.drillDown == 1) {
+      //this.visboViewCapacityDrillDown()
+    } else {
+      this.visboViewCosttypes();
+    }
+  }
+
+  // calcChildNode(capacity: VisboCapacity[], property = 'roleName'): string[] {
+  //   const allNames = [];
+  //   let uniqueNames = [];
+  //   if (!capacity) {
+  //     return allNames;
+  //   }
+  //   capacity.forEach(item => {
+  //       allNames.push(item[property] || '');
+  //   });
+  //   // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
+  //   uniqueNames = allNames.filter((name, index) => {
+  //       return allNames.indexOf(name) === index;
+  //   });
+  //   return uniqueNames;
+  // }
+
+  mapChildNode(list: string[]): number[] {
+    const resultList = [];
+    if (!list) {
+      return resultList;
+    }
+    for (let i = 0; i < list.length; i++) {
+      resultList[list[i]] = i;
+    }
+    return resultList;
+  }  
+
+  
+  onlyCosttypesWithNeeds(childResourceNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
+    
+    let childNodeListUsed: DrillDownUsedElements[] = [];
+    let planTotal_PT = 0;
+    let planTotal = 0;
+    let budget_PT = 0;
+    let budget = 0;
+    let roleID = 0;
+    childNodeList.forEach(item => {
+      planTotal_PT = 0;
+      planTotal = 0;
+      budget_PT = 0;
+      budget = 0;
+      roleID = 0;
+      //childResourceNeeds.forEach(child =>{
+      //   if (child.roleName === item){
+      //     planTotal += planTotal + child.actualCost + child.plannedCost + child.otherActivityCost;
+      //     planTotal_PT = planTotal_PT + child.actualCost_PT + child.plannedCost_PT + child.otherActivityCost_PT;
+      //     budget += budget + child.baselineCost;
+      //     budget_PT += budget_PT + child.baselineCost_PT;
+      //   }
+      //   roleID = child.roleID;
+      // })      
+      if (planTotal != 0 || planTotal_PT != 0 || budget != 0 || budget_PT != 0){
+        childNodeListUsed.push({name: item, roleID: roleID, vpID: '', planTotal_PT: planTotal_PT, planTotal: planTotal, budget: budget, budget_PT: budget_PT});
+      }
+    })  
+    return childNodeListUsed;
+  }
+
+
+
+  onlyProjectsWithNeeds(childResourceNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
+    
+    let childNodeListUsed: DrillDownUsedElements[] = [];
+    
+    childNodeList.forEach(item => {      
+      let planTotal_PT = 0, planTotal = 0, budget_PT = 0, budget = 0, roleID = 0, vpID = '';
+      // planTotal_PT = 0;
+      // planTotal = 0;
+      // budget_PT = 0;
+      // budget = 0;
+      // vpID = '';
+      // roleID = 0;
+      childResourceNeeds.forEach(child =>{
+        if (child.name === item){
+          // planTotal += planTotal + child.actualCost + child.plannedCost + child.otherActivityCost;
+          // planTotal_PT = planTotal_PT + child.actualCost_PT + child.plannedCost_PT + child.otherActivityCost_PT;
+          // budget += budget + child.baselineCost;  
+          // budget_PT += budget_PT + child.baselineCost_PT;          
+          // vpID = child.vpid;
+          // roleID = child.roleID;
+        }
+      })      
+      if (planTotal != 0 || planTotal_PT != 0 || budget != 0 || budget_PT != 0){
+        childNodeListUsed.push({name: item, roleID: roleID, vpID: vpID, planTotal_PT: planTotal_PT, planTotal: planTotal, budget: budget, budget_PT: budget_PT});
+      }
+    })  
+    return childNodeListUsed;
+  }
+
+
+
+  visboViewCosttypes(): void {
+    const graphDataCosttypes = [];
+    const costtypes = this.visboCost;
+    if (costtypes.length > 0 ) {
+      this.costFrom =  new Date(costtypes[0].month);
+      this.costTo = new Date(costtypes[costtypes.length-1].month);
+    }
+
+    this.sumCost = 0;
+    this.sumBudget = 0;
+
+    for (let i = 0; i < costtypes.length; i++) {
+      const currentDate = new Date(costtypes[i].month);
+      const costID = this.currentLeaf.uid;
+      
+      //const budget = Math.round(costtypes[i].baseLineCost * 10) / 10 || 0;
+      let actualCost:number = Math.round(costtypes[i].currentCost * 10) / 10 || 0;
+      //const actualCost = Math.round(costtypes[i].currentCost * 10) / 10 || 0;
+      let plannedCost:number = Math.round(costtypes[i].baseLineCost * 10) / 10 || 0;
+             
+      this.sumCost += (costtypes[i].currentCost || 0);   
+      this.sumBudget += (costtypes[i].baseLineCost || 0);
+    
+      const tooltip = this.createTooltipPlanActual(costtypes[i], false, this.refPFV);          
+      graphDataCosttypes.push([
+        currentDate, 
+        plannedCost,
+        //tooltip,
+        actualCost,
+        //tooltip
+      ]);
+    }
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = graphDataCosttypes.length;
+    if (len < 1) {
+      this.log(`visboCosttypes Empty`);
+    }
+    
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      let currentDate = new Date(graphDataCosttypes[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      currentDate = new Date(currentDate);
+      graphDataCosttypes.push([
+         currentDate, undefined, undefined, undefined, undefined
+      ]);
+    }
+    // set number of gridlines to a fixed count to avoid in between gridlines
+    this.setGridline(graphDataCosttypes.length);   
+    graphDataCosttypes.unshift([
+      'Month',
+      {label: this.translate.instant('ViewCosttypes.lbl.baseLineCost'), type: 'number'},
+      //{type: 'string', cost: 'tooltip', 'p': {'html': true}},
+      {label: this.translate.instant('ViewCosttypes.lbl.currentCost'), type: 'number'},
+      //{type: 'string', cost: 'tooltip', 'p': {'html': true}}
+    ]);
+ 
+    // round the sum
+    this.sumCost = Math.round(this.sumCost * 10) / 10 || 0;
+    this.sumBudget = Math.round(this.sumBudget * 10) / 10 || 0;
+
+    
+    this.graphDataComboChart = graphDataCosttypes;
+    console.log("GraphDataCosttypes = " , graphDataCosttypes);
+    this.chartActive = new Date(); 
+  }
+
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} `);
+    if (this.graphDataComboChart && row < this.graphDataComboChart.length) {
+      if (this.drillDown == 2 || this.drillDown == 3) {
+        // navigate to the project capacity
+        const vpName = this.graphDataComboChart[0][label];
+        const currentDate = this.graphDataComboChart[row + 1][0];
+        this.log(`chart identified Row ${currentDate} Project: ${vpName}`);
+        this.gotoClickedRow(vpName);
+      } else if (this.drillDown == 1) {
+        const roleName = this.graphDataComboChart[0][label];
+        const currentDate = this.graphDataComboChart[row + 1][0];
+        this.log(`chart identified Row ${currentDate} Role: ${roleName}`);
+        const leaf = getLeafByName(this.orga, roleName);
+        if (leaf) {
+          this.selectLeaf(leaf, true);
+        }
+      }
+    }
+  }
+
+  gotoClickedRow(vpName: string): void {
+    this.log(`goto VP ${vpName}`);
+    const element = this.visboCostChild.find(item => item.name == vpName);
+    if (element) {
+      const queryParams = new VPParams();
+      if (element.variantName) {
+        queryParams.variantName = element.variantName;
+      }
+      if (this.refDate && !visboIsToday(this.refDate)) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      queryParams.unit = this.showUnit === 'PD' ? '1' : '0';
+      if (this.costID) {
+        queryParams.roleID = this.costID;
+      }
+      if (this.costFrom) {
+        queryParams.from = this.costFrom.toISOString();
+      }
+      if (this.costTo) {
+        queryParams.to = this.costTo.toISOString();
+      }
+      if (this.refDate) {
+        queryParams.refDate = this.refDate.toISOString();
+      }
+      queryParams.view = 'Costtypes';
+      queryParams.drillDown = '1';
+      this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`)
+
+      this.router.navigate(['vpKeyMetrics/'.concat(element.vpid)], {
+        queryParams: queryParams
+      });
+    } else {
+      this.log(`Project ${vpName} not found`)
+    }
+  }
+
+  createTooltipPlanActual(costtypes: VisboCosttypes, PT: boolean, refPFV = false): string {
+    const currentDate = convertDate(new Date(costtypes.month), 'fullMonthYear', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
+      '<div><b>' + currentDate + '</b></div>';
+
+    const strActualCost = this.translate.instant('ViewCosttypes.lbl.currentCost');
+    const strPlannedCost = this.translate.instant('ViewCosttypes.lbl.baseLineCost');
+    const costName = this.translate.instant('ViewCosttypes.lbl.costName');
+    const strDiffCost = this.translate.instant('ViewCosttypes.lbl.diffCost');
+
+    let totalCapa: number, actualCost: number, plannedCost: number;
+    const unit = ' ' + this.translate.instant('ViewCosttypes.lbl.keuro');
+
+    
+    actualCost = costtypes.currentCost || 0;
+    plannedCost = costtypes.baseLineCost || 0;
+ 
+
+    if (refPFV) {    
+        totalCapa = costtypes.baseLineCost || 0;
+    }
+
+    result = result + this.addTooltipRowString(costName + ':', costtypes.costName, false);
+    result = result + this.addTooltipRowNumber(strPlannedCost , plannedCost, 1, unit, false);
+    
+    if (actualCost !== 0) {
+      result = result + this.addTooltipRowNumber(strActualCost, actualCost, 1, unit, false);
+    }
+ 
+    let diff: number;   
+    diff = actualCost - plannedCost;
+    if (diff != 0) {
+      result = result + this.addTooltipRowNumber(strDiffCost, diff, 1, unit, true);
+    }
+    result = result + '</div>';
+
+    return result;
+  }
+
+  addTooltipRowNumber(label: string, value: number, precision: number, unit: string, color: boolean): string {
+    let result: string;
+    result = '<div class="row">' +  '<div class="col-8">' + label;
+    if (color === true && value !== 0) {
+      if (value < 0) {
+        result += '</div><div  class="col-4 text-right text-success font-weight-bold">'
+      } else if (value > 0) {
+        result += '</div><div  class="col-4 text-right text-danger font-weight-bold">'
+      }
+    } else {
+      result += '</div><div  class="col-4 text-right font-weight-bold">'
+    }
+    result += this.visboRoundToString(value, precision) + unit + '</div>'
+    result += '</div>'
+    return result;
+  }
+
+  addTooltipRowString(label: string, value: string, color: boolean): string {
+    let result: string;
+    result = '<div class="row">' +  '<div class="col-4">' + label;
+    result += '</div><div  class="col-8 text-right font-weight-bold">'
+    result += value + '</div>'
+    result += '</div>'
+    return result;
+  }
+
+  createTooltipProjectDrillDown(item: DrillDownElement, PT: boolean, refPFV = false): string {
+    const current = convertDate(item.currentDate, 'fullMonthYear', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
+      '<div><b>' + current + '</b></div>';
+
+    const name = this.translate.instant('ViewCosttypes.lbl.project');
+    let unit: string, strBudgetCost: string, strInternCapa: string;
+
+    const strFractionCost = this.translate.instant('ViewCosttypes.lbl.fractionCost');
+    const strCost = this.translate.instant('ViewCosttypes.lbl.cost');
+  
+    unit = ' ' + this.translate.instant('ViewCosttypes.lbl.keuro');
+
+    if (refPFV) {
+      strBudgetCost = this.translate.instant('ViewCosttypes.lbl.baseLineCost');    
+    }
+
+    let vpName = item.name;
+    if (item.variantName) {
+      vpName = vpName.concat(' (', item.variantName,')')
+    }
+    result = result + this.addTooltipRowString(name, vpName, false);
+    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
+    if (refPFV) {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);   
+    }
+    result = result + this.addTooltipRowNumber(strCost, plan, 1, unit, false);
+
+    const diff = this.calcLoadDiff(item, false);
+    if (diff) {
+      const diffPercent = '' + Math.round(this.calcLoadDiff(item, true) * 100) + ' %';
+      if (diffPercent !== undefined) {
+        result = result + this.addTooltipRowString(strFractionCost, diffPercent, true);
+      } else {
+        result = result + this.addTooltipRowString(strFractionCost, 'Unknown', false);
+      }
+    }
+    if ((this.drillDown == 3) && (vpName != "All")) {
+      result = result + this.addTooltipRowString("BusinessUnit", item.businessUnit, false);
+      result = result + this.addTooltipRowNumber("StrategicFit", item.strategicFit, 0, '', false);
+    }
+
+    result = result + '</div>';
+    return result;
+  }
+
+  createTooltipOrgaDrillDown(item: DrillDownElement, PT: boolean, refPFV = false): string {
+    const current = convertDate(item.currentDate, 'fullMonthYear', this.currentLang);
+    let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
+      '<div><b>' + current + '</b></div>';
+
+    const roleName = this.translate.instant('VisboCosttypes.lbl.costName');
+    let unit: string, strBudgetCost: string;
+
+    const strDiffCost = this.translate.instant('VisboCosttypes.lbl.diffCost');
+    const strCost = this.translate.instant('VisboCosttypes.lbl.currentCost');
+    const strCostTotal = this.translate.instant('VisboCosttypes.lbl.costTotal');
+    
+    unit = ' ' + this.translate.instant('VisboCosttypes.lbl.keuro');
+
+    if (refPFV) {
+      strBudgetCost = this.translate.instant('VisboCosttypes.lbl.baseLineCost');
+    }
+
+    result = result + this.addTooltipRowString(roleName, item.name, false);
+    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
+    if (refPFV) {
+      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
+    } 
+    if (item.planTotal > 0 ) {
+      result = result + this.addTooltipRowNumber(strCostTotal, item.planTotal, 1, unit, false);
+    }
+    result = result + this.addTooltipRowNumber(strCost, item.plan, 1, unit, false);
+
+    const diff = this.calcLoadDiff(item, false);
+    if (diff != 0) {
+      result = result + this.addTooltipRowNumber(strDiffCost, diff, 1, unit, true);
+      const diffPercent = this.calcLoadDiff(item, true);
+      if (diffPercent == undefined) {
+        const str = '> 999 %'
+        result = result + this.addTooltipRowString(strDiffCost, str, true);
+      } else {
+        const str = '' + Math.round(diffPercent * 100) + ' %'
+        result = result + this.addTooltipRowString(strDiffCost, str, true);
+      }
+    }
+    result = result + '</div>';
+    return result;
+  }
+
+  calcLoadDiff(item: DrillDownElement, percent = false): number {
+    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
+    const diff = plan - item.budget;
+    if (percent) {
+      if (!item.budget) {
+        return plan ? undefined : 1;
+      }
+      return plan / item.budget;
+    } else {
+      return diff;
+    }
+  }
+
+  visboSortProjects(costtypes:VisboCosttypes[], criterion: "cost" | "businessUnit"): VisboCosttypes[] {
+    switch(criterion) {
+      case "cost":
+        return this.sortProjectsByCost(costtypes);
+      case "businessUnit":
+        return this.sortProjectsByBusinessUnit(costtypes);
+    }
+    return costtypes;
+  }
+
+  sortProjectsByCost(costtypes:VisboCosttypes[]): VisboCosttypes[] {
+    // ------- SORT by sum value -------
+    const groupKey = (value: VisboCosttypes) => value.vpid;
+    const sumValue = (value: VisboCosttypes) => value.baseLineCost + value.currentCost;
+    const costtypesChildGroupedByProject = costtypes.reduce((accumulator, elem) => {
+      const key = groupKey(elem);
+      if (!accumulator.has(key)) {
+        accumulator.set(key, {sum: 0, vpid: key});
+      }
+      accumulator.get(key).sum += sumValue(elem);
+      return accumulator;
+    }, new Map<string, {sum: number, vpid: string}>());
+
+    // generate an indexed array based on vpid
+    const sumCostProject = [];
+    costtypesChildGroupedByProject.forEach(item => sumCostProject[item.vpid] = item.sum);
+
+    costtypes.sort((a, z) => (sumCostProject[z.vpid] || 0) - (sumCostProject[a.vpid] || 0));
+    return costtypes;
+    // ------ SORT END ------
+  }
+
+  sortProjectsByBusinessUnit(costtypes: VisboCosttypes[]): VisboCosttypes[] {
+    const listVPProperties = this.listVPProperties;
+    costtypes.sort((a, z) => {
+      // sorts the businessUnit alphanumerical ascending
+      const aBU = listVPProperties[a.vpid]?._bu || "zzzzzz";
+      const zBU = listVPProperties[z.vpid]?._bu || "zzzzzz";
+      if(aBU < zBU) { return -1; }
+      if(aBU > zBU) { return 1; }
+      // sorts the strategicFit descending
+      const aStrategicFit = listVPProperties[a.vpid]?._strategicFit || -1;
+      const zStrategicFit = listVPProperties[z.vpid]?._strategicFit || -1;
+      if(aStrategicFit != zStrategicFit) { return zStrategicFit - aStrategicFit; }
+      return 0
+    })
+    return costtypes;
+  }
+
+
+  visboRoundToString(value: number, fraction = 1): string {
+    const result = value || 0;
+    return result.toLocaleString(this.currentLang, {minimumFractionDigits: fraction, maximumFractionDigits: fraction})
+  }
+
+  displayCosttypes(): number {
+     let result = -1;
+    if (this.drillDown != 2 && this.vcOrganisation && this.visboCost) {     // Orga && Costtypes data available
+      result = this.visboCost.length;
+    } else if (this.drillDown == 2  && this.vcOrganisation && this.visboCostChild){
+      result = this.visboCostChild.length;
+    }
+     return result;
+  }
+
+  getLevel(plan: number, baseline: number): number {
+    let percentCalc = 1
+    if (baseline) {
+      percentCalc = plan/baseline;
+    }
+    if (percentCalc <= 1) return 1;
+    else if (percentCalc <= 1.05) return 2;
+    else return 3;
+  }
+
+  selectLeaf(leaf: VisboOrgaTreeLeaf, showChildren = true): void {
+    if ((leaf.name !== this.currentLeaf.name)
+      || (leaf.parent && this.currentLeaf.parent && (leaf.parent.uid !== this.currentLeaf.parent.uid))) {
+      setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
+      this.currentLeaf = leaf;
+      this.updateUrlParam('roleID', leaf.uid.toString());
+      this.getCosttypes();
+    }
+    if (showChildren) {
+      leaf.showChildren = true;
+    }
+    setTreeLeafSelection(leaf, TreeLeafSelection.SELECTED);
+    return;
+  }
+
+  switchLeaf(leaf: VisboOrgaTreeLeaf): void {
+    leaf.showChildren = !leaf.showChildren;
+    this.selectLeaf(leaf, leaf.showChildren);
+    return;
+  }
+
+  // copyCapacity(vpv: VisboCapacity, name: string): exportCapacity {
+  //   const copy = new exportCapacity();
+
+  //   copy.name = name;
+  //   copy.month = new Date(vpv.month);
+  //   copy.variantName = vpv.variantName;
+  //   copy.roleID = vpv.roleID;
+  //   copy.roleName = vpv.roleName;
+  //   copy.actualCost_PT = vpv.actualCost_PT;
+  //   copy.plannedCost_PT = vpv.plannedCost_PT;
+  //   copy.otherActivityCost_PT = vpv.otherActivityCost_PT;
+  //   copy.internCapa_PT = vpv.internCapa_PT;
+  //   copy.externCapa_PT = vpv.externCapa_PT;
+  //   copy.actualCost = vpv.actualCost;
+  //   copy.plannedCost = vpv.plannedCost;
+  //   copy.otherActivityCost = vpv.otherActivityCost;
+  //   copy.internCapa = vpv.internCapa;
+  //   copy.externCapa = vpv.externCapa;
+  //   copy.baselineCost = vpv.baselineCost;
+  //   copy.baselineCost_PT = vpv.baselineCost_PT;
+  //   // copy.ampelStatus = vpv.ampelStatus;
+  //   // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
+  //   if (vpv.vp) {
+  //     copy.vpStatus = vpv.vp.vpStatusLocale;
+  //     copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
+  //     copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+  //   } else {
+  //     copy.vpStatus = '';
+  //     copy.strategicFit = -1;
+  //     copy.risk = -1;
+  //   }
+  //   delete copy.vpid;
+
+  //   return copy;
+  // }
+
+  exportExcel(): void {
+  //   this.log(`Export Data to Excel ${this.visboCost?.length} `);
+  //   // convert list to matix
+
+  //   const excel: exportCapacity[] = [];
+
+  //   let name = '';
+  //   let urlWeb = ''
+  //   const listURL: string[] = [];
+  //   const tooltip = this.translate.instant('ViewCapacity.msg.viewWeb');
+  //   if (this.vpfActive) {
+  //     name = this.vpfActive.name
+  //     urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Capacity');
+  //   } else if (this.vpActive) {
+  //     name = this.vpActive.name;
+  //     urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Capacity');
+  //   } else if (this.vcActive) {
+  //     name = this.vcActive.name;
+  //     urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Capacity');
+  //   }
+  //   if (this.visboCost) {
+  //     this.visboCost.forEach(element => {
+  //       excel.push(this.copyCapacity(element, name));
+  //       listURL.push(urlWeb);
+  //     });
+  //   }
+  //   if (this.visboCapacityChild) {
+  //     this.visboCapacityChild.forEach(element => {
+  //       let urlWebDetail = urlWeb;
+  //       if (element.name) {
+  //         urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Capacity');
+  //       }
+  //       excel.push(this.copyCapacity(element, element.name || name));
+  //       listURL.push(urlWebDetail);
+  //     });
+  //   }
+
+  //   const len = excel.length;
+  //   const width = Object.keys(excel[0]).length;
+  //   this.log(`Export Data to Excel ${excel.length}`);
+  //   // Add Localised header to excel
+  //   // eslint-disable-next-line
+  //   const header: any = {};
+  //   let colName: number, colIndex = 0;
+  //   for (const element in excel[0]) {
+  //     // this.log(`Processing Header ${element}`);
+  //     if (element == 'name') {
+  //       colName = colIndex;
+  //     }
+  //     colIndex++;
+  //     header[element] = this.translate.instant('ViewCapacity.lbl.'.concat(element))
+  //   }
+  //   excel.unshift(header);
+  //   // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+  //   for (let index = 1; index <= len; index++) {
+  //     const address = XLSX.utils.encode_cell({r: index, c: colName});
+  //     const url = listURL[index - 1];
+  //     worksheet[address].l = { Target: url, Tooltip: tooltip };
+  //   }
+  //   const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+  //   worksheet['!autofilter'] = { ref: matrix };
+  //   // eslint-disable-next-line
+  //   const sheets: any = {};
+  //   const sheetName = visboGetShortText(name, 30);
+  //   sheets[sheetName] = worksheet;
+  //   const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+  //   // eslint-disable-next-line
+  //   const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  //   const actDate = new Date();
+  //   const fileName = ''.concat(
+  //     actDate.getFullYear().toString(),
+  //     '_',
+  //     (actDate.getMonth() + 1).toString().padStart(2, "0"),
+  //     '_',
+  //     actDate.getDate().toString().padStart(2, "0"),
+  //     '_Capacity ',
+  //     (name || '')
+  //   );
+
+  //   const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+  //   const url = window.URL.createObjectURL(data);
+  //   const a = document.createElement('a');
+  //   document.body.appendChild(a);
+  //   a.href = url;
+  //   a.download = fileName.concat(EXCEL_EXTENSION);
+  //   this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+  //   a.click();
+  //   window.URL.revokeObjectURL(url);
+  }
+
+  getVPStatus(local: boolean, original: string = undefined): string {
+    if (!this.dropDownVPStatus) {
+      return undefined;
+    }
+    let result = this.dropDownVPStatus[0];
+    if (original) {
+      result = this.dropDownVPStatus.find(item => item.name == original) || result;
+    } else if (this.dropDownVPStatus && this.filterVPStatusIndex >= 0 && this.filterVPStatusIndex < this.dropDownVPStatus.length) {
+      result = this.dropDownVPStatus[this.filterVPStatusIndex];
+    }
+    if (local) {
+      return result.localName;
+    } else {
+      return result.name;
+    }
+  }
+  
+  getVPManager(vp: VisboProject, withEmail = true): string {
+    let fullName = '';
+    if (vp?.managerId) {
+      const user = vp.manager;
+      if (user) {
+        if (user.profile) {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }
+        if (!fullName || withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        }
+      }
+    }
+    return fullName || '';
+  }
+
+  setGridline(count: number): void {
+    if (count > 0 && count <= 18) {
+        // only majorGridlines
+        this.graphOptionsComboChart.hAxis.gridlines.count = count;
+        this.graphOptionsComboChart.hAxis.minorGridlines = {count: 0, color: 'none'};
+    } else {
+        // only majorGridlines
+        this.graphOptionsComboChart.hAxis.gridlines.count = -1;
+        this.graphOptionsComboChart.hAxis.minorGridlines = {count: count, color: '#FFF'};
+    }
+  }
+
+  parseDate(dateString: string): Date {
+     if (dateString) {
+       const actDate = new Date(dateString);
+       actDate.setDate(1);
+       actDate.setHours(0, 0, 0, 0);
+       return actDate;
+    }
+    return null;
+  }
+
+  compareDate(): boolean {
+    const start = this.costFrom;
+    const end = this.costTo;
+
+    const stDate = new Date(start);
+    const enDate = new Date(end);
+    const compDate = visboCmpDate(enDate,stDate);
+
+    if(compDate >= 0) {
+      return true;
+    } else {
+      // alert("Please Enter the correct date ");
+      return false;
+    }
+  }
+
+  getPreView(): boolean {
+    return getPreView();
+  }
+
+  /** Log a message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('CompVisboViewCosttype: ' + message);
+  }
+
+}
