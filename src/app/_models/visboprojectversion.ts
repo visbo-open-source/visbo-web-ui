@@ -30,7 +30,7 @@ export class VisboCosttypes {
   costName: string;
   variantName: string;  
   currentCost: number;
-  baseLineCost: number;
+  baselineCost: number;
 }
 
 export class VPVCost {

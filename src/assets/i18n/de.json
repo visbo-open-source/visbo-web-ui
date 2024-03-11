@@ -900,6 +900,7 @@
 			"drillOrga": "Kostenarten",
 			"drillProject": "Projekte",
 			"drillProjectBU": "Projekte/BusinessUnit",	
+			"project": "Projekt",
 			"refPFV": "Vergleich mit Baseline",			
 			"noPFV": "no BL",
 			"filter": "Filter Projekte",
@@ -912,7 +913,9 @@
 			"euro": "Euro",
 			"keuro": "T€",
 			"currentCost": "Kosten Information",
-			"baseLineCost": "Kosten Information Baseline",
+			"baselineCost": "Kosten Information Baseline",
+			"budget": "Kosten Baseline",
+			"fractionCost": "Anteil",
 			"costName": "Kostenart",
 			"diffCost": "Unterschied Kosten"
 		},

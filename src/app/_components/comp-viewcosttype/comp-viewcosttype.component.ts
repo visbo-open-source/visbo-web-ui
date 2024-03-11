@@ -55,19 +55,15 @@ class DrillDownElement {
   variantName: string;
   businessUnit: string;
   strategicFit: number;
-  plan: number;
-  planTotal: number;
-  budget: number;
-  budgetIntern: number;
+  currentCost: number; 
+  baseLineCost: number;
 }
 class DrillDownUsedElements {
   name: string; 
-  roleID: number; 
-  vpID: string;
-  planTotal_PT: number; 
-  planTotal: number; 
-  budget: number; 
-  budget_PT: number;  
+  costID: number; 
+  vpID: string;  
+  currentCost: number; 
+  baseLineCost: number;
 }
 
 class DrillDownCapa {
@@ -97,10 +93,9 @@ class exportCosttype {
   ampelErlaeuterung: string;
   vpid: string;
   month: Date;
-  roleID: number;
+  costID: number;
   costName: string;    
-  actualCost: number;
-  plannedCost: number;
+  currentCost: number;
   baselineCost: number;
 }
 
@@ -166,9 +161,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
   orga: VisboOrgaStructure;
   topLevelNodes: VisboReducedOrgaItem[];
 
-  colorsPFV = [baselineColor, '#458CCB'];
-  // seriesPFV = [
-  //   {type: 'line', lineWidth: 4, pointSize: 0}];  
+  colorsPFV = [baselineColor, '#458CCB']; 
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0},
     // legende of Cost Info Current visible or not
@@ -237,22 +230,22 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       {
         id: 0,
         name: 'drillNone',
-        localName: this.translate.instant('ViewCapacity.lbl.drillNone')
+        localName: this.translate.instant('ViewCosttypes.lbl.drillNone')
       },
       {
         id: 1,
         name: 'drillOrga',
-        localName: this.translate.instant('ViewCapacity.lbl.drillOrga')
+        localName: this.translate.instant('ViewCosttypes.lbl.drillOrga')
       },
       {
         id: 2,
         name: 'drillProject',
-        localName: this.translate.instant('ViewCapacity.lbl.drillProject')
+        localName: this.translate.instant('ViewCosttypes.lbl.drillProject')
       },
       {
         id: 3,
         name: 'drillProjectBU',
-        localName: this.translate.instant('ViewCapacity.lbl.drillProjectBU')
+        localName: this.translate.instant('ViewCosttypes.lbl.drillProjectBU')
       },
     ];
     this.drillDownCapaFiltered = this.drillDownCapa;
@@ -618,7 +611,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
   getCosttypes(): void {
     if ((this.drillDown == 2)|| (this.drillDown == 3)) {
-      //this.getProjectCapacity();
+      this.getProjectCosttypes();
     } else {
       this.getCostOrga();
     }
@@ -896,7 +889,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
   checkCostAvailable(costtypes: VisboCosttypes[]): void {
     let result = false;
     if (costtypes && costtypes.length > 0) {
-      result = (costtypes[0].baseLineCost != undefined) ||
+      result = (costtypes[0].baselineCost != undefined) ||
                 (costtypes[0].currentCost != undefined) ;
     }
     this.hasCost = result;
@@ -1052,29 +1045,30 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
     this.log(`ViewCosttypesOverTime Type ${this.drillDown ? 'DrillDown' : 'Base/Current'} resource ${this.currentLeaf.name}`);
     if ((this.drillDown == 2) || (this.drillDown == 3)) {
-      //this.visboViewProjectCapacityDrillDown()
+      this.graphOptionsComboChart.isStacked = true;
+      this.visboViewProjectCosttypesDrillDown()
     } else if (this.drillDown == 1) {
-      //this.visboViewCapacityDrillDown()
+      //this.visboViewCosttypesDrillDown()
     } else {
       this.visboViewCosttypes();
     }
   }
 
-  // calcChildNode(capacity: VisboCapacity[], property = 'roleName'): string[] {
-  //   const allNames = [];
-  //   let uniqueNames = [];
-  //   if (!capacity) {
-  //     return allNames;
-  //   }
-  //   capacity.forEach(item => {
-  //       allNames.push(item[property] || '');
-  //   });
-  //   // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
-  //   uniqueNames = allNames.filter((name, index) => {
-  //       return allNames.indexOf(name) === index;
-  //   });
-  //   return uniqueNames;
-  // }
+  calcChildNode(costtypes: VisboCosttypes[], property = 'costName'): string[] {
+    const allNames = [];
+    let uniqueNames = [];
+    if (!costtypes) {
+      return allNames;
+    }
+    costtypes.forEach(item => {
+        allNames.push(item[property] || '');
+    });
+    // allNames.sort(function(a, b) { return visboCmpString(a.toString(), b.toString()); });
+    uniqueNames = allNames.filter((name, index) => {
+        return allNames.indexOf(name) === index;
+    });
+    return uniqueNames;
+  }
 
   mapChildNode(list: string[]): number[] {
     const resultList = [];
@@ -1087,32 +1081,219 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     return resultList;
   }  
 
+  visboViewProjectCosttypesDrillDown(): void {
+
+    const graphDataCosttypes = [];
+    const initialOffset = 1    // first element in the array is the parent
+
+    this.log(`visboViewProjectCosttypesDrillDown resource ${this.currentLeaf.name}`);
+    this.sumCost = 0;
+    this.sumBudget = 0;    
+
+    const drillDownCosttypes: DrillDownElement[][] = [];
+
+    // sorting the projects for Costtypes-chart view projects
+    let sortedProjects: VisboCosttypes[] = null;
+    if (this.drillDown == 2) {
+      sortedProjects = this.visboSortProjects(this.visboCostChild, "cost");
+    } else {
+      sortedProjects = this.visboSortProjects(this.visboCostChild, "businessUnit");
+    }
+    const childNodeList = this.calcChildNode(sortedProjects, 'name');
+    const mapNodeList = this.mapChildNode(childNodeList);
+
+
+    this.visboCost.forEach(item => {
+      const currentDate = new Date(item.month);
+      let blCost = 0, capaIntern = 0, plan = 0;
+      plan = item.currentCost;     
+      blCost= (item.baselineCost || 0);
+      
+      this.sumCost += plan;
+      this.sumBudget += blCost;
+
+
+      const template: DrillDownElement[] = [];
+      const elementDrill = new DrillDownElement();
+      elementDrill.currentDate = currentDate;
+      elementDrill.name = 'All';
+      elementDrill.currentCost = plan;
+      elementDrill.baseLineCost= blCost;
+      template.push(elementDrill);
+      childNodeList.forEach(element => {
+        template.push({currentDate: currentDate, name: element, variantName: '', currentCost: 0, baseLineCost: 0, businessUnit: '', strategicFit: 0});
+      });
+      drillDownCosttypes.push(template);
+    });
+
+    // now fill up with the Child Infos
+    // this.visboCosttypesChild.forEach(item => {
+    sortedProjects.forEach(item => {
+      const currentDate = new Date(item.month);
+      const row = drillDownCosttypes.find(item => item[0].currentDate.getTime() == currentDate.getTime());
+      if (row) {
+        const index = mapNodeList[item.name];
+        if (index >= 0) {
+          let plan = 0,  blCost = 0;       
+          plan = (item.currentCost || 0);       
+          blCost = (item.baselineCost || 0);
+      
+          row[index + 1].businessUnit = getCustomFieldString(item.vp, "_businessUnit")?.value;
+          row[index + 1].strategicFit = getCustomFieldDouble(item.vp, "_strategicFit")?.value;
+          row[index + 1].currentCost = plan;
+          row[index + 1].baseLineCost = blCost;
+          row[index + 1].variantName = item.variantName;
+        }
+      } else {
+        this.log(`visboViewProjectCosttypesDrillDown Date out of range ${currentDate.toISOString()}`);
+      }
+    });
+    
+    // here you have to check which projects have data at all over the entire specified period
+    let  childNodeListNew:   DrillDownUsedElements[];     
+    childNodeListNew = this.onlyProjectsWithNeeds(sortedProjects, childNodeList);
+
+    for (let index = 0; index < drillDownCosttypes.length; index++) {
+      const element = drillDownCosttypes[index];
+      const currentDate = element[0].currentDate;
+      // baseline Values compared against costtypes of organisation
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      rowMatrix.push(element[0].baseLineCost || 0); // parent planned cost
+      const tooltip = this.createTooltipProjectDrillDown(element[0], false, this.refPFV);
+      rowMatrix.push(tooltip);
+    
+      childNodeList.forEach((item, index) => {
+        let prj = childNodeListNew.find(proj => proj.name === item);
+        if (prj) {        
+          rowMatrix.push(element[index + initialOffset].currentCost);
+          const currentElement = element[index + initialOffset];
+          rowMatrix.push(this.createTooltipProjectDrillDown(currentElement, false, this.refPFV));
+
+          // sorted according to businessUnit
+          if (this.drillDown == 3) {
+            rowMatrix.push(undefined)
+          }
+          // sorted according to sum of cost
+          if (this.drillDown == 2) {
+            const diff = this.calcLoadDiff(currentElement, true);
+            if (diff == undefined && isParentLeaf(this.currentLeaf)){
+              rowMatrix.push("keine Ahnung")
+            // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
+            //   rowMatrix.push(strNoPFV)
+            } else if (diff > 1) {
+              const diffPercent = Math.round(diff * 100);
+              rowMatrix.push( '' + diffPercent + ' %')
+            } else {
+              rowMatrix.push(undefined)
+            }
+          }
+        } 
+      });
+      graphDataCosttypes.push(rowMatrix);
+    }
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = graphDataCosttypes.length;
+    if (len < 1) {
+      this.log(`visboCost Empty`);
+    }
+    // this.log(`visboCost len ${len}`);
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      const currentDate = new Date(graphDataCosttypes[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      childNodeList.forEach(() => {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      });
+      graphDataCosttypes.push(rowMatrix);
+    }
+    const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
+    const annotation = {type: 'string', role: 'annotation' };
+    const rowHeader = [];
+    rowHeader.push('Month');
+    rowHeader.push(this.translate.instant('ViewCosttypes.lbl.budget' ));
+    rowHeader.push(tooltip);
+    childNodeList.forEach(item => {      
+      let prj = childNodeListNew.find(proj => proj.name === item);
+      if (prj) {        
+        rowHeader.push(item);
+        rowHeader.push(tooltip);
+        rowHeader.push(annotation);
+      }
+    });
+    graphDataCosttypes.unshift(rowHeader);
+
+    // give the capacities colors
+    let orgaColors =[];
+    if (this.drillDown == 2) {
+        // for cost coloring
+        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeListNew.length + 3));
+        // sorted - sum of Cost, the darkest color should be nearest to x-Axis
+        orgaColors.reverse();
+    } else {
+        // for BU coloring
+        const drillDownElementSorted = drillDownCosttypes.length> 0 && drillDownCosttypes[0];
+        
+        // for only the projects with values
+        let drillDownElementReduced: DrillDownElement[]=[];  
+        drillDownElementSorted.forEach((item) => {
+          if (item.name == 'All') {
+            drillDownElementReduced.push(item)
+          } else {
+            let prj = childNodeListNew.find(proj => proj.name === item.name);  
+            if (prj)  {drillDownElementReduced.push(item)};
+          }
+        }); 
+
+        const buDefs = [];
+        for ( let j = 0; j < this.customize?.value?.businessUnitDefinitions?.length; j++) {
+          buDefs[this.customize.value.businessUnitDefinitions[j].name] = this.customize.value.businessUnitDefinitions[j].color;
+        }
+        for (let s = 1; drillDownElementReduced && s < drillDownElementReduced.length; s++) {
+          // s runs beginning as 1 because in the first element there is the sum over all projects
+          const defaultColor = '#59a19e';
+          const bu = drillDownElementReduced[s].businessUnit;
+          const buColor = buDefs[bu];
+          const rgbHex = buColor ? excelColorToRGBHex(buColor): defaultColor;
+          orgaColors.push(rgbHex);
+        }
+    }
+   
+    orgaColors.unshift(baselineColor);
   
-  onlyCosttypesWithNeeds(childResourceNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
+    this.graphOptionsComboChart.colors = orgaColors;
+    this.setGridline(graphDataCosttypes.length);
+
+    this.graphDataComboChart = graphDataCosttypes;
+    this.chartActive = new Date();
+  }
+
+
+  onlyCosttypesWithNeeds(childCosttypesNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
     
     let childNodeListUsed: DrillDownUsedElements[] = [];
-    let planTotal_PT = 0;
-    let planTotal = 0;
-    let budget_PT = 0;
-    let budget = 0;
-    let roleID = 0;
+    let currentCost = 0;
+    let baseLineCost = 0;
+    let costID = 0;
     childNodeList.forEach(item => {
-      planTotal_PT = 0;
-      planTotal = 0;
-      budget_PT = 0;
-      budget = 0;
-      roleID = 0;
-      //childResourceNeeds.forEach(child =>{
-      //   if (child.roleName === item){
-      //     planTotal += planTotal + child.actualCost + child.plannedCost + child.otherActivityCost;
-      //     planTotal_PT = planTotal_PT + child.actualCost_PT + child.plannedCost_PT + child.otherActivityCost_PT;
-      //     budget += budget + child.baselineCost;
-      //     budget_PT += budget_PT + child.baselineCost_PT;
-      //   }
-      //   roleID = child.roleID;
-      // })      
-      if (planTotal != 0 || planTotal_PT != 0 || budget != 0 || budget_PT != 0){
-        childNodeListUsed.push({name: item, roleID: roleID, vpID: '', planTotal_PT: planTotal_PT, planTotal: planTotal, budget: budget, budget_PT: budget_PT});
+      currentCost = 0;
+      baseLineCost = 0;
+      costID = 0;
+      childCosttypesNeeds.forEach(child =>{
+        if (child.costName === item){
+          currentCost += currentCost + child.currentCost;
+          baseLineCost += baseLineCost + child.baselineCost;          
+        }
+        costID = child.costID;
+      })      
+      if (currentCost != 0 ||  baseLineCost != 0 ){
+        childNodeListUsed.push({name: item, costID: costID, vpID: '', currentCost: currentCost, baseLineCost: baseLineCost});
       }
     })  
     return childNodeListUsed;
@@ -1120,30 +1301,23 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
 
 
-  onlyProjectsWithNeeds(childResourceNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
+  onlyProjectsWithNeeds(childCosttypesNeeds: VisboCosttypes[], childNodeList:string[] ): DrillDownUsedElements[] {
     
     let childNodeListUsed: DrillDownUsedElements[] = [];
     
     childNodeList.forEach(item => {      
-      let planTotal_PT = 0, planTotal = 0, budget_PT = 0, budget = 0, roleID = 0, vpID = '';
-      // planTotal_PT = 0;
-      // planTotal = 0;
-      // budget_PT = 0;
-      // budget = 0;
-      // vpID = '';
-      // roleID = 0;
-      childResourceNeeds.forEach(child =>{
+      let  currentCost = 0,  baseLineCost = 0, costID = 0, vpID = '';
+     
+      childCosttypesNeeds.forEach(child =>{
         if (child.name === item){
-          // planTotal += planTotal + child.actualCost + child.plannedCost + child.otherActivityCost;
-          // planTotal_PT = planTotal_PT + child.actualCost_PT + child.plannedCost_PT + child.otherActivityCost_PT;
-          // budget += budget + child.baselineCost;  
-          // budget_PT += budget_PT + child.baselineCost_PT;          
-          // vpID = child.vpid;
-          // roleID = child.roleID;
+          currentCost += currentCost + child.currentCost;
+          baseLineCost += baseLineCost + child.baselineCost;
+          vpID = child.vpid;
+          costID = child.costID;
         }
       })      
-      if (planTotal != 0 || planTotal_PT != 0 || budget != 0 || budget_PT != 0){
-        childNodeListUsed.push({name: item, roleID: roleID, vpID: vpID, planTotal_PT: planTotal_PT, planTotal: planTotal, budget: budget, budget_PT: budget_PT});
+      if (currentCost != 0 || baseLineCost != 0 ){
+        childNodeListUsed.push({name: item, costID: costID, vpID: '', currentCost: currentCost, baseLineCost: baseLineCost});
       }
     })  
     return childNodeListUsed;
@@ -1169,10 +1343,10 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       //const budget = Math.round(costtypes[i].baseLineCost * 10) / 10 || 0;
       let actualCost:number = Math.round(costtypes[i].currentCost * 10) / 10 || 0;
       //const actualCost = Math.round(costtypes[i].currentCost * 10) / 10 || 0;
-      let plannedCost:number = Math.round(costtypes[i].baseLineCost * 10) / 10 || 0;
+      let plannedCost:number = Math.round(costtypes[i].baselineCost * 10) / 10 || 0;
              
       this.sumCost += (costtypes[i].currentCost || 0);   
-      this.sumBudget += (costtypes[i].baseLineCost || 0);
+      this.sumBudget += (costtypes[i].baselineCost || 0);
     
       const tooltip = this.createTooltipPlanActual(costtypes[i], this.refPFV);          
       graphDataCosttypes.push([
@@ -1202,7 +1376,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     this.setGridline(graphDataCosttypes.length);   
     graphDataCosttypes.unshift([
       'Month',
-      {label: this.translate.instant('ViewCosttypes.lbl.baseLineCost'), type: 'number'},
+      {label: this.translate.instant('ViewCosttypes.lbl.baselineCost'), type: 'number'},
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       {label: this.translate.instant('ViewCosttypes.lbl.currentCost'), type: 'number'},
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
@@ -1222,7 +1396,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     this.log(`chart Select Row ${row} ${label} ${value} `);
     if (this.graphDataComboChart && row < this.graphDataComboChart.length) {
       if (this.drillDown == 2 || this.drillDown == 3) {
-        // navigate to the project capacity
+        // navigate to the project costtypes
         const vpName = this.graphDataComboChart[0][label];
         const currentDate = this.graphDataComboChart[row + 1][0];
         this.log(`chart identified Row ${currentDate} Project: ${vpName}`);
@@ -1280,7 +1454,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
      let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' + '<div><b>' + currentDate + '</b></div>';
 
     const strActualCost = this.translate.instant('ViewCosttypes.lbl.currentCost');
-    const strPlannedCost = this.translate.instant('ViewCosttypes.lbl.baseLineCost');
+    const strPlannedCost = this.translate.instant('ViewCosttypes.lbl.baselineCost');
     const costName = this.translate.instant('ViewCosttypes.lbl.costName');
     const strDiffCost = this.translate.instant('ViewCosttypes.lbl.diffCost');
 
@@ -1289,11 +1463,11 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
     
     actualCost = costtypes.currentCost || 0;
-    plannedCost = costtypes.baseLineCost || 0;
+    plannedCost = costtypes.baselineCost || 0;
  
 
     if (refPFV) {
-        totalCapa = costtypes.baseLineCost || 0;
+        totalCapa = costtypes.baselineCost || 0;
     }
 
     result = result + this.addTooltipRowString(costName + ':', costtypes.costName, false);
@@ -1345,26 +1519,24 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       '<div><b>' + current + '</b></div>';
 
     const name = this.translate.instant('ViewCosttypes.lbl.project');
-    let unit: string, strBudgetCost: string, strInternCapa: string;
+    let unit: string, strBudgetCost: string;
 
     const strFractionCost = this.translate.instant('ViewCosttypes.lbl.fractionCost');
-    const strCost = this.translate.instant('ViewCosttypes.lbl.cost');
+    const strCost = this.translate.instant('ViewCosttypes.lbl.currentCost');
   
     unit = ' ' + this.translate.instant('ViewCosttypes.lbl.keuro');
 
-    if (refPFV) {
-      strBudgetCost = this.translate.instant('ViewCosttypes.lbl.baseLineCost');    
-    }
+    strBudgetCost = this.translate.instant('ViewCosttypes.lbl.baselineCost');
 
     let vpName = item.name;
     if (item.variantName) {
       vpName = vpName.concat(' (', item.variantName,')')
     }
     result = result + this.addTooltipRowString(name, vpName, false);
-    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
-    if (refPFV) {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);   
-    }
+    const plan = item.currentCost > 0 ? item.currentCost : item.currentCost;
+    
+    result = result + this.addTooltipRowNumber(strBudgetCost, item.baseLineCost, 1, unit, false);   
+   
     result = result + this.addTooltipRowNumber(strCost, plan, 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
@@ -1404,14 +1576,13 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     }
 
     result = result + this.addTooltipRowString(roleName, item.name, false);
-    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
-    if (refPFV) {
-      result = result + this.addTooltipRowNumber(strBudgetCost, item.budget, 1, unit, false);
-    } 
-    if (item.planTotal > 0 ) {
-      result = result + this.addTooltipRowNumber(strCostTotal, item.planTotal, 1, unit, false);
+    const plan = item.currentCost > 0 ? item.currentCost : item.currentCost;
+    result = result + this.addTooltipRowNumber(strBudgetCost, item.baseLineCost, 1, unit, false);
+  
+    if (item.currentCost > 0 ) {
+      result = result + this.addTooltipRowNumber(strCostTotal, item.currentCost, 1, unit, false);
     }
-    result = result + this.addTooltipRowNumber(strCost, item.plan, 1, unit, false);
+    result = result + this.addTooltipRowNumber(strCost, item.currentCost, 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
     if (diff != 0) {
@@ -1430,13 +1601,13 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
   }
 
   calcLoadDiff(item: DrillDownElement, percent = false): number {
-    const plan = item.planTotal > 0 ? item.planTotal : item.plan;
-    const diff = plan - item.budget;
+    const plan = item.currentCost > 0 ? item.currentCost : item.currentCost;
+    const diff = plan - item.baseLineCost;
     if (percent) {
-      if (!item.budget) {
+      if (!item.baseLineCost) {
         return plan ? undefined : 1;
       }
-      return plan / item.budget;
+      return plan / item.baseLineCost;
     } else {
       return diff;
     }
@@ -1455,7 +1626,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
   sortProjectsByCost(costtypes:VisboCosttypes[]): VisboCosttypes[] {
     // ------- SORT by sum value -------
     const groupKey = (value: VisboCosttypes) => value.vpid;
-    const sumValue = (value: VisboCosttypes) => value.baseLineCost + value.currentCost;
+    const sumValue = (value: VisboCosttypes) => value.baselineCost + value.currentCost;
     const costtypesChildGroupedByProject = costtypes.reduce((accumulator, elem) => {
       const key = groupKey(elem);
       if (!accumulator.has(key)) {
