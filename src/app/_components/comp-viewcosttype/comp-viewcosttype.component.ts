@@ -260,7 +260,8 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     this.capaLoad = [];
     if (this.vpfActive) {
       this.lastTimestampVPF = this.vpfActive.timestamp;
-    } else if (this.vpvActive) {      
+    } else if (this.vpvActive) {   
+      this.drillDownCapaFiltered = this.drillDownCapa.filter( item => (item.id != 2)  && (item.id != 3));
       this.lastTimestampVPF = this.vpvActive.timestamp;
     } 
     this.initVPProperties();
@@ -694,7 +695,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
               this.visboCostChild = costInfo;
               
               if (this.checkFilter()) {
-                //this.visboCost = this.sumCapacityChild(this.visboCostChild);
+                this.visboCost = this.sumCostChild(this.visboCostChild);
               } else {
                 this.visboCost = visbocenter.costtypes.filter(item => item.vpid == undefined);
               }
@@ -876,13 +877,29 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
           }
         );
     }
-  }
-
-  
+  }  
 
   sumCostChild(costChild: VisboCosttypes[]): VisboCosttypes[] {
     if (!costChild) { return undefined; }
     const costyParent: VisboCosttypes[] = [];
+    costChild.forEach(item => {
+      let costtypes = costyParent.find(element => element.month == item.month);
+      if (!costtypes) {
+        costtypes = new VisboCosttypes();
+        costtypes.month = item.month;
+        costtypes.costID = item.costID;
+        costtypes.costName = item.costName;
+        costtypes.name = 'All';
+        costtypes.currentCost = 0;
+        costtypes.baselineCost = 0;
+        
+        costyParent.push(costtypes);
+      }
+      costtypes.currentCost += item.currentCost;
+      costtypes.baselineCost += item?.baselineCost;
+
+      this.log(`Cumulate Child ${item.name} ${item.month}`);
+    });
     return costyParent
   }
 
@@ -1048,7 +1065,8 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       this.graphOptionsComboChart.isStacked = true;
       this.visboViewProjectCosttypesDrillDown()
     } else if (this.drillDown == 1) {
-      //this.visboViewCosttypesDrillDown()
+      this.graphOptionsComboChart.isStacked = true;
+      this.visboViewCosttypesDrillDown()
     } else {
       this.visboViewCosttypes();
     }
@@ -1267,6 +1285,147 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
    
     orgaColors.unshift(baselineColor);
   
+    this.graphOptionsComboChart.colors = orgaColors;
+    this.setGridline(graphDataCosttypes.length);
+
+    this.graphDataComboChart = graphDataCosttypes;
+    this.chartActive = new Date();
+  }
+
+
+  visboViewCosttypesDrillDown(): void {
+
+    const graphDataCosttypes= [];
+    const initialOffset = 1    // first element in the array is the parent
+
+    this.log(`ViewCosttypesDrillDown resource ${this.currentLeaf.name}`);
+    this.sumCost = 0;
+    this.sumBudget = 0;
+    const childNodeList = this.calcChildNode(this.visboCostChild);
+    const mapNodeList = this.mapChildNode(childNodeList);
+
+    const drillDownCapacity: DrillDownElement[][] = [];
+    this.visboCost.forEach(item => {
+      const currentDate = new Date(item.month);
+      let blCost = 0,  plan = 0;
+      blCost = (item.baselineCost || 0);   
+      plan = item.currentCost || 0 
+      this.sumCost += plan;
+      this.sumBudget += blCost;
+
+      const template: DrillDownElement[] = [];
+      const elementDrill = new DrillDownElement();
+      elementDrill.currentDate = currentDate;
+      elementDrill.name = this.currentLeaf.name;
+      elementDrill.currentCost = plan;     
+      elementDrill.baseLineCost = blCost;
+
+      template.push(elementDrill)
+      childNodeList.forEach(element => {
+        template.push({currentDate: currentDate, name: element, variantName: '', baseLineCost: 0,  currentCost: 0,  businessUnit: '', strategicFit: 0});
+      });
+      drillDownCapacity.push(template);
+    });
+    // now fill up with the Child Infos
+    this.visboCostChild.forEach(item => {
+      const currentDate = new Date(item.month);
+      const row = drillDownCapacity.find(item => item[0].currentDate.getTime() == currentDate.getTime());
+      if (row) {
+        const index = mapNodeList[item.costName];
+        if (index >= 0) {
+          let plan = 0, budget = 0 , capaIntern = 0;
+          budget = (item.baselineCost || 0);
+          plan = (item.currentCost || 0);   
+          row[index + 1].currentCost = plan;
+          row[index + 1].baseLineCost = budget;
+          if (row[0].currentCost >= plan) {
+            row[0].currentCost -= plan;
+          } else {
+            row[0].currentCost = 0;
+          }
+        }
+      } else {
+        // this.log(`ViewCosttypesDrillDown Date out of range ${currentDate.toISOString()}`);
+      }
+    });
+
+    // hier muss gecheckt werden, welche Rollen überhaupt Daten haben über den ganzen angegebenen Zeitraum
+    let  drillDownNEW:   DrillDownUsedElements[];     
+    drillDownNEW = this.onlyCosttypesWithNeeds(this.visboCostChild,childNodeList);
+
+    for (let index = 0; index < drillDownCapacity.length; index++) {
+      const element = drillDownCapacity[index];
+      const currentDate = element[0].currentDate;
+      // capa Values compared against resources of organisation
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      rowMatrix.push(element[0].baseLineCost || 0);
+      const tooltip = this.createTooltipOrgaDrillDown(element[0], this.showUnit === 'PD', this.refPFV);
+      rowMatrix.push(tooltip);      
+      rowMatrix.push(element[0].currentCost || 0); // parent planned cost
+      rowMatrix.push(tooltip);
+      childNodeList.forEach((item, index) => {
+        let cost = drillDownNEW.find(costtype => costtype.name === item);
+        if (cost) {                  
+            rowMatrix.push(element[index + initialOffset].currentCost);
+            rowMatrix.push(this.createTooltipOrgaDrillDown(element[index + initialOffset], this.showUnit === 'PD', this.refPFV));
+            const diffPercent = Math.round(this.calcLoadDiff(element[index + initialOffset], true) * 100);
+            if (diffPercent > 100) {
+              rowMatrix.push( '' + diffPercent + ' %')
+            } else {
+              rowMatrix.push(undefined)
+            }
+        }
+      });
+      graphDataCosttypes.push(rowMatrix);
+    }
+    // we need at least 2 items for Line Chart and show the current status for today
+    const len = graphDataCosttypes.length;
+    if (len < 1) {
+      this.log(`visboCapacity Empty`);
+    }
+    // this.log(`visboCapacity len ${len}`);
+    if (len === 1) {
+      // add an additional month as one month could not be displayed, but do not deliver values for it
+      const currentDate = new Date(graphDataCosttypes[0][0]);
+      currentDate.setMonth(currentDate.getMonth()+1);
+      const rowMatrix = [];
+      rowMatrix.push(currentDate);
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);     
+      rowMatrix.push(undefined);
+      rowMatrix.push(undefined);
+      childNodeList.forEach(() => {
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+        rowMatrix.push(undefined);
+      });
+      graphDataCosttypes.push(rowMatrix);
+    }
+    const tooltip = {type: 'string', role: 'tooltip', 'p': {'html': true}};
+    const annotation = {type: 'string', role: 'annotation' };
+    const rowHeader = [];
+    rowHeader.push('Month');
+    rowHeader.push(this.translate.instant('ViewCapacity.lbl.budget'));
+    rowHeader.push(tooltip);  
+    rowHeader.push(this.currentLeaf.name);
+    rowHeader.push(tooltip);
+    childNodeList.forEach(item => {
+      let role = drillDownNEW.find(resource => resource.name === item);
+      if (role) {                  
+          rowHeader.push(item);
+          rowHeader.push(tooltip);
+          rowHeader.push(annotation);
+        }
+    });
+    graphDataCosttypes.unshift(rowHeader);
+
+    let orgaColors = [];
+    orgaColors = orgaColors.concat(scale('YlGnBu').colors(drillDownNEW.length + 3));
+    orgaColors.reverse();
+
+    // color for baseline
+    orgaColors.unshift(baselineColor);
     this.graphOptionsComboChart.colors = orgaColors;
     this.setGridline(graphDataCosttypes.length);
 
