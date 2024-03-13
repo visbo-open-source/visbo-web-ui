@@ -125,6 +125,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() listVP: VisboProject[];
   @Input() customize: VisboSetting;
   @Input() vpvActive: VisboProjectVersion;
+  @Input() vpvBaseline: VisboProjectVersion;
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission; 
@@ -309,10 +310,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
       this.initSetting();
-      // test ur
       this.capaLoad  = [];
       this.visboViewOrganisationTree();
-      // end test ur
       this.getCapacity();
     }
   }
@@ -389,7 +388,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityFrom = new Date(validateDate(from, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      this.capacityFrom = new Date(this.vpvActive.startDate);
+      const baseStart = new Date(this.vpvBaseline.startDate).getTime();
+      const vpvStart = new Date(this.vpvActive.startDate).getTime();
+      const minStart = Math.min(baseStart, vpvStart);
+      this.capacityFrom = new Date(minStart);
     } else {
       // Portfolio or VC set a defined time range
       this.capacityFrom = new Date();
@@ -402,7 +404,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityTo = new Date(validateDate(to, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      this.capacityTo = new Date(this.vpvActive.endDate);
+      const baseEnd = new Date(this.vpvBaseline.endDate).getTime();
+      const vpvEnd = new Date(this.vpvActive.endDate).getTime();
+      const maxEnd = Math.max(baseEnd, vpvEnd);
+      this.capacityTo = new Date(maxEnd);
     } else {
       // Portfolio or VC set a defined time range
       this.capacityTo = new Date();
@@ -901,6 +906,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpActive && this.vpvActive && this.currentLeaf) {
       this.refPFV = true;
       this.log(`Capacity Calc for VPV ${this.vpvActive.vpid} role ${this.roleID} ${this.currentLeaf.uid} ${this.currentLeaf.parent?.uid}`);
+      const xxx = this.vpvBaseline;
       this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           listVPV => {
@@ -1062,7 +1068,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   initShowUnit(unit: string): void {
     let showDays = true;
-    if (this.hasVPPerm(this.permVP.ViewAudit) && (unit != '1' && unit != 'PD')) {
+    if (this.hasVPPerm(this.permVP.ViewAudit) &&  unit && (unit != '1') && (unit != 'PD')) {
       showDays = false;
     }
     this.showUnit = showDays ? 'PD' : 'PE';
@@ -1720,7 +1726,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     });
     graphDataCapacity.unshift(rowHeader);
 
-    // give the capacities colors
     let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(drillDownNEW.length + 3));
     orgaColors.reverse();

@@ -189,6 +189,50 @@ export class VisboCenterService  {
   //   );
   // }
 
+  
+  /** GET Costtypes of VisboCenter by id. Will 404 if id not found */
+  getCosttypes(id: string, refDate: Date, costID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboCenter> {
+    const url = `${this.vcUrl}/${id}/costtypes`;
+    let params = new HttpParams();
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
+    }
+    if (perProject) {
+      params = params.append('perProject', '1');
+    }
+    if (sysadmin) {
+      params = params.append('sysadmin', '1');
+    }
+    if (deleted) {
+      params = params.append('deleted', '1');
+    }
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
+    }
+    if (costID) {
+      this.log(`Calling RoleID: ${costID}`);
+      params = params.append('costID', costID);
+    }
+    this.log(`Calling Costtypes for a VC: ${url} params  ${JSON.stringify(params)}`);
+    return this.http.get<VisboCenterResponse>(url, { headers , params }).pipe(
+      map(response => {
+                // TODO: is there a better way to transfer the perm?
+                response.vc[0].perm = response.perm;
+                return response.vc[0];
+              }),
+      tap(visbocenter => this.log(`fetched Costtypes for VC ${visbocenter.name} id:${id} perm:${JSON.stringify(visbocenter.perm)}`)),
+      catchError(this.handleError<VisboCenter>(`getVisboCenter id:${id}`))
+    );
+  }
+
   //////// Save methods //////////
 
   /** POST: a new Visbo Center to the server */

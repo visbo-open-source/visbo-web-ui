@@ -27,6 +27,9 @@
       <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")' title="{{ 'vp.btn.viewProjectBoard' | translate }}">
         <img src="assets/icons/noun-board.svg" width="60" />
       </button>
+      <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("Costtype")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
+        <img src="assets/icons/noun-money.svg" width="60" />
+      </button>
       <!-- <button class="btn btn-default" (click)='changeView("KeyMetric", "Cost")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
         <img src="assets/icons/noun-money.svg" width="60" />
       </button> -->
@@ -95,10 +98,9 @@
     <div *ngIf="viewCockpit == 'Capacity' && vcActive && vcOrga">
       <app-comp-viewcapacity [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
     </div>
-
-    <!-- <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-  </div> -->
-
+    <div *ngIf="viewCockpit == 'Costtype' && vcActive && vcOrga">
+      <app-comp-viewcosttype [vcActive]="vcActive" [vcOrganisation]="vcOrga[0]" [listVP] = "visboprojects" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcosttype>
+    </div>
     <div *ngIf="viewCockpit == 'KeyMetrics' && visboprojectversions && vcActive">
       <app-comp-viewbubble [bubbleMode]="true" [vcActive]="vcActive" [customize]="customize" [userCustomfields]="userCustomfields" [visboprojectversions]="visboprojectversions" [vcUser]="vcUser" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
     </div>

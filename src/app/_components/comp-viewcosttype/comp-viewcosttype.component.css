@@ -1,0 +1,29 @@
+
+.dropdown-item.tree-item {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.dropdown-item.tree-item.tree-item__selected {
+     /* background-color: #bddaea; */
+     background-color: #afb9c0;
+}
+
+.dropdown-item.tree-item.tree-item__parent-selected {
+    /* background-color: #dcedf7; */
+    background-color: #d8dadb;
+    bg: #808080   
+}
+
+.dropdown-item.tree-item:hover {
+    opacity: 1;
+}
+.scroll {    
+    background: #fcfdfd;
+    height: 645px;
+    overflow-y: scroll;    
+    padding: 1px;
+    } 
+/* color-designs */
+/* #adb6bb;#d6dee2; */
+/* #dcedf7;#bddaea; */

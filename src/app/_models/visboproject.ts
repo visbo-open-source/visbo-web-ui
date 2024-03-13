@@ -84,6 +84,7 @@ export class VisboProject {
   // values outside of the ReST VP Definition
   // eslint-disable-next-line
   capacity: any[];
+  costtypes: any[];
   manager: VisboUser;
   perm: {system: number, vc: number, vp: number};
 }

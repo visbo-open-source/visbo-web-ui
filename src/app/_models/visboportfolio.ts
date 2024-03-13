@@ -55,6 +55,7 @@ export class VPFParams {
   metricX: string;
   metricY: string;
   roleID: number;
+  costID: number;
   unit: string;
   from: string;
   to: string;
