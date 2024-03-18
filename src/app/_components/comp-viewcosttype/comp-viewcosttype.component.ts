@@ -1106,7 +1106,8 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
     this.log(`visboViewProjectCosttypesDrillDown resource ${this.currentLeaf.name}`);
     this.sumCost = 0;
-    this.sumBudget = 0;    
+    this.sumBudget = 0; 
+    const strNoPFV = this.refPFV ? this.translate.instant('ViewCapacity.lbl.noPFV') : '';   
 
     const drillDownCosttypes: DrillDownElement[][] = [];
 
@@ -1129,7 +1130,6 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       
       this.sumCost += plan;
       this.sumBudget += blCost;
-
 
       const template: DrillDownElement[] = [];
       const elementDrill = new DrillDownElement();
@@ -1195,10 +1195,8 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
           // sorted according to sum of cost
           if (this.drillDown == 2) {
             const diff = this.calcLoadDiff(currentElement, true);
-            if (diff == undefined && isParentLeaf(this.currentLeaf)){
-              rowMatrix.push("keine Ahnung")
-            // } else if (diff == undefined && (currentElement.plan + currentElement.planTotal) > 0) {
-            //   rowMatrix.push(strNoPFV)
+            if (diff == undefined && isParentLeaf(this.currentLeaf)){            
+              rowMatrix.push(strNoPFV)
             } else if (diff > 1) {
               const diffPercent = Math.round(diff * 100);
               rowMatrix.push( '' + diffPercent + ' %')
