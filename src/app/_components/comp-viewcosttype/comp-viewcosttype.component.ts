@@ -1719,26 +1719,26 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:250px;">' +
       '<div><b>' + current + '</b></div>';
 
-    const roleName = this.translate.instant('VisboCosttypes.lbl.costName');
+    const costName = this.translate.instant('ViewCosttypes.lbl.costName');
     let unit: string, strBudgetCost: string;
 
-    const strDiffCost = this.translate.instant('VisboCosttypes.lbl.diffCost');
-    const strCost = this.translate.instant('VisboCosttypes.lbl.currentCost');
-    const strCostTotal = this.translate.instant('VisboCosttypes.lbl.costTotal');
+    const strDiffCost = this.translate.instant('ViewCosttypes.lbl.diffCost');
+    const strCost = this.translate.instant('ViewCosttypes.lbl.currentCost');
+    const strCostDiffShare = this.translate.instant('ViewCosttypes.lbl.diffCostShare');
     
-    unit = ' ' + this.translate.instant('VisboCosttypes.lbl.keuro');
+    unit = ' ' + this.translate.instant('ViewCosttypes.lbl.keuro');
 
     if (refPFV) {
-      strBudgetCost = this.translate.instant('VisboCosttypes.lbl.baseLineCost');
+      strBudgetCost = this.translate.instant('ViewCosttypes.lbl.baselineCost');
     }
 
-    result = result + this.addTooltipRowString(roleName, item.name, false);
+    result = result + this.addTooltipRowString(costName, item.name, false);
     const plan = item.currentCost > 0 ? item.currentCost : item.currentCost;
     result = result + this.addTooltipRowNumber(strBudgetCost, item.baseLineCost, 1, unit, false);
   
-    if (item.currentCost > 0 ) {
-      result = result + this.addTooltipRowNumber(strCostTotal, item.currentCost, 1, unit, false);
-    }
+    // if (item.currentCost > 0 ) {
+    //   result = result + this.addTooltipRowNumber(strCostTotal, item.currentCost, 1, unit, false);
+    // }
     result = result + this.addTooltipRowNumber(strCost, item.currentCost, 1, unit, false);
 
     const diff = this.calcLoadDiff(item, false);
@@ -1747,10 +1747,10 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       const diffPercent = this.calcLoadDiff(item, true);
       if (diffPercent == undefined) {
         const str = '> 999 %'
-        result = result + this.addTooltipRowString(strDiffCost, str, true);
+        result = result + this.addTooltipRowString(strCostDiffShare, str, true);
       } else {
         const str = '' + Math.round(diffPercent * 100) + ' %'
-        result = result + this.addTooltipRowString(strDiffCost, str, true);
+        result = result + this.addTooltipRowString(strCostDiffShare, str, true);
       }
     }
     result = result + '</div>';
@@ -1761,7 +1761,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     const plan = item.currentCost > 0 ? item.currentCost : item.currentCost;
     const diff = plan - item.baseLineCost;
     if (percent) {
-      if (!item.baseLineCost) {
+      if ((!item.baseLineCost) || (item.baseLineCost == 0)) {
         return plan ? undefined : 1;
       }
       return plan / item.baseLineCost;

@@ -917,7 +917,8 @@
 			"budget": "Baseline Cost Information",
 			"fractionCost": "Share",
 			"costName": "Cost Type",
-			"diffCost": "Difference of Cost"
+			"diffCost": "Difference of Cost",
+			"diffCostShare": "Share"
 		},
 		"msg": {
 			"calculating": "Calculating of the Cost Information ...",
