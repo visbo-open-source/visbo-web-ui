@@ -917,7 +917,8 @@
 			"budget": "Kosten Baseline",
 			"fractionCost": "Anteil",
 			"costName": "Kostenart",
-			"diffCost": "Unterschied Kosten"
+			"diffCost": "Unterschied Kosten",
+			"diffCostShare": "Unterschied Kosten anteilig"
 		},
 		"msg": {
 			"calculating": "Berechnen der Kosten Information ...",
