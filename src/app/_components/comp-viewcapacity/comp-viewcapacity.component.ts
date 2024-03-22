@@ -36,6 +36,9 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 const EXCEL_EXTENSION = '.xlsx';
 
 const baselineColor = '#F7941E';
+const VISBO_blue = '#458CCB';
+const VISBO_Ist = '#BDBDBD';
+const VISBO_other = '#adc7f1';
 const capaColor = '#ff0000';
 
 class CapaLoad {
@@ -173,8 +176,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   orga: VisboOrgaStructure;
   topLevelNodes: VisboReducedOrgaItem[];
 
-  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB','#adc7f1'];
-  colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB','#adc7f1'];
+  colorsPFV = [baselineColor, VISBO_Ist, VISBO_blue, VISBO_other];
+  colorsOrga = [capaColor, capaColor, VISBO_Ist, VISBO_blue, VISBO_other];
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
   ];

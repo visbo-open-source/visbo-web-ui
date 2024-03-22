@@ -118,7 +118,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   refDate: Date;
   refDateStr: string;
 
-  allViews = ['Overview', 'KeyMetrics', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
+  allViews = ['Overview', 'KeyMetrics', 'Costtypes', 'Capacity', 'Cost', 'Deadline', 'Delivery', 'All'];
   delayEndDate: number;
   hasOrga = false;
   vpUser = new Map<string, VisboUser>();

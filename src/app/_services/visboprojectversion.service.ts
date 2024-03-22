@@ -323,15 +323,15 @@ export class VisboProjectVersionService {
       params = params.append('endDate', endDate.toISOString());
     }
     if (costID) {
-      this.log(`Calling RoleID: ${costID}`);
-      params = params.append('roleID', costID);
+      this.log(`Calling costID: ${costID}`);
+      params = params.append('costID', costID);
     }
     
     this.log(`Calling HTTP Request: ${url} Options: ${params}`);
     return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
       .pipe(
         map(response => response.vpv),
-        tap(() => this.log(`fetched Capacity Calculation for ${id}`)),
+        tap(() => this.log(`fetched Costtypes Calculation for ${id}`)),
         catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
       );
   }
