@@ -1462,6 +1462,7 @@
 		},
 		"btn": {
 			"viewKeyMetrics": "Projekt Metrik",
+			"viewTopWorse" : "Beste / Schlechteste Option",
 			"viewCapacity": "Auslastung",
 			"viewCost": "Kosten",
 			"viewEndDate": "Projekt Ende Datum",
