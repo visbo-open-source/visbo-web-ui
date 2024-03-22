@@ -94,6 +94,7 @@ class exportCapacity {
   vpStatus: string;
   strategicFit: number;
   risk: number;
+  businessUnit: string;
   variantName: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -2316,10 +2317,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       copy.vpStatus = vpv.vp.vpStatusLocale;
       copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
       copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+      copy.businessUnit = getCustomFieldString(vpv.vp, "_businessUnit")?.value;
     } else {
       copy.vpStatus = '';
       copy.strategicFit = -1;
       copy.risk = -1;
+      copy.businessUnit = '';
     }
     delete copy.vpid;
 

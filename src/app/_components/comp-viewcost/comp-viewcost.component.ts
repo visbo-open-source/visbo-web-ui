@@ -41,6 +41,8 @@ class exportCost {
   baseLineCost: number;
   actualCost: number;
   plannedCost: number;
+  personnelCost: number;
+  allOtherCost: number;
   cost: number;
   baseLineInvoice: number;
   actualInvoice: number;
@@ -323,9 +325,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     copy.baseLineCost = Math.round(cost.baseLineCost * 1000);
     if (copy.month.getTime() < actualDataUntilTime) {
       copy.actualCost = Math.round(cost.currentCost * 1000);
+      copy.personnelCost = Math.round(cost.personnelCost * 1000);      
+      copy.allOtherCost = Math.round(cost.allOtherCost * 1000);
       copy.plannedCost = 0;
     } else {
       copy.actualCost = 0;
+      copy.personnelCost = 0;      
+      copy.allOtherCost = 0;
       copy.plannedCost = Math.round(cost.currentCost * 1000);
     }
     copy.cost = copy.actualCost + copy.plannedCost;
