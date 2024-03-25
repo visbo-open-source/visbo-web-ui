@@ -1,31 +1,35 @@
 <app-usernavbar></app-usernavbar> 
 <div class="cld-date">
   <div class="calendar">
-      {{"vtr.fromDate" | translate}}
-      <input
-        (change)="updateFilter()"
-        [(ngModel)]="startDate"
-        [max]="endDate"
-        class="col-2 col-sm-2 form-control" id="startDate"
-        type="date">
-      {{"vtr.toDate" | translate}}
-      <input
-        (change)="updateFilter()"
-        [(ngModel)]="endDate"
-        [min]="startDate"
-        class="col-4 col-sm-2 form-control"
-        id="endDate"
-        type="date">
+    {{"vtr.fromDate" | translate}}
+    <input
+      (change)="updateFilter()"
+      [(ngModel)]="startDate"
+      [max]="endDate"
+      class="col-2 col-sm-2 form-control" id="startDate"
+      type="date">
+    {{"vtr.toDate" | translate}}
+    <input
+      (change)="updateFilter()"
+      [(ngModel)]="endDate"
+      [min]="startDate"
+      class="col-2 col-sm-2 form-control"
+      id="endDate"
+      type="date"><div class="text-left">
+    {{"vtr.userName" | translate}}
+    <input
+              (change)="updateFilter()"
+              [(ngModel)]="filterName"
+              class="col-2 col-sm-2 form-control" id="filterName"
+              type="string">
+
+    <button type="button" class="btn btn-md btn-light ml-1 py-1" id="exportExcel" (click)='exportExcel()'>
+      {{ 'vpfVersion.btn.exportExcel' | translate }}
+    </button>
   </div>
 </div>
-<div class="text-left">
-  {{"vtr.userName" | translate}}
-  <input
-        (change)="updateFilter()"
-        [(ngModel)]="filterName"
-        class="col-2 col-sm-2 form-control" id="filterName"
-        type="string">  
-</div>
+
+ 
 <!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
 <div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
 <!-- <table  class="table table-hover table-sortable table-custom"> -->

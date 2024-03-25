@@ -662,7 +662,8 @@
 		"btn": {
 			"vpView": "Details",
 			"vpViewAll": "All",
-			"vpViewProperties": "Properties",
+			"vpViewProperties": "Properties",			
+			"vpCosttypes": "Cost Needs",
 			"vpCapacity": "Resource Needs",
 			"vpKeyMetric": "Key Metrics",
 			"vpOverview": "Overview",
@@ -690,6 +691,48 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"viewWeb": "View Project Online",
 			"localInstallationRequired": "Installation of VISBO Clients required"
+		}
+	},
+	"compViewEmployeetable": {
+		"titleEmployee":"",
+		"lbl":{
+			"userID": "UserID",
+			"userName": "Employee",
+			"date": "Date",
+			"vcName": "VisboCenter",
+			"vpName": "Project Name",
+			"roleID":"Ressource (ID)",
+			"time": "Hours",
+			"description": "Action Description",
+			"status": "Status",
+			"approvalID": "Approver (ID)",
+			"approverName": "Approver Name",
+			"approvalDate": "Date of the Approval",
+			"result": "Result"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Employee"
+		}
+	},
+	"compViewApprovertable": {
+		"titleEmployee":"",
+		"lbl":{
+			"userID": "UserID",
+			"userName": "Employee",
+			"date": "Date",
+			"vcName": "VisboCenter",
+			"vpName": "Project Name",
+			"roleID":"Ressource (ID)",
+			"time": "Hours",
+			"description": "Action Description",
+			"status": "Status",
+			"approvalID": "Approver (ID)",
+			"approverName": "Approver Name",
+			"approvalDate": "Date of the Approval",
+			"result": "not imported Time Records"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Approver"
 		}
 	},
 	"compViewVp": {
@@ -729,6 +772,8 @@
 			"baseLineCost": "Cost (Baseline)",
 			"actualCost": "Actual Cost",
 			"plannedCost": "Planned Cost",
+			"personnelCost": "Personnel Cost",
+			"allOtherCost": "all other Cost",
 			"cost": "Cost",
 			"baseLineInvoice": "Invoices (Baseline)",
 			"invoice": "Invoices",
@@ -798,6 +843,7 @@
 			"filter": "Filter Projects",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
+			"businessUnit": "Business Unit",
 			"vpStatus": "State",
 			"bu": "Business Unit",
 			"orgaValid": "Organisation from",			
@@ -894,18 +940,22 @@
 		"yAxisCostOverTime": "Monthly Cost",
 		"titleCostOverTime": "Workload from {{rcostName}}: Cost Information for {{name}}",
 		"titleCostOverTimeBL": "Cost Information of {{costName}}: Baseline vs. CurrentCost {{name}}",
-		"lbl": {				
+		"lbl": {	
+			"month": "Month",			
 			"showDrill": "View",	
 			"drillNone": "Current Cost",
 			"drillOrga": "Organisation Units",
 			"drillProject": "Projects",
 			"drillProjectBU": "Projects/BusinessUnit",		
 			"project": "Project",
+			"name": "Project Name",
+			"variantName": "Variant",
 			"refPFV": "Compare against Baseline",			
 			"noPFV": "no BL",
 			"filter": "Filter Projects",
 			"strategicFit": "Strategic fit",
 			"risk": "Risk",
+			"businessUnit": "Business Unit",
 			"vpStatus": "State",
 			"bu": "Business Unit",
 			"orgaValid": "Organisation from",			
@@ -917,6 +967,7 @@
 			"budget": "Baseline Cost Information",
 			"fractionCost": "Share",
 			"costName": "Cost Type",
+			"costID": "Cost UID",
 			"diffCost": "Difference of Cost",
 			"diffCostShare": "Share"
 		},
@@ -1661,11 +1712,13 @@
 		"relativPV": "in % of PV",
 		"longPV": "Planned monthly Cost Value, baseline",
 		"shortAC": "AC",
-		"planAC": "AC, plan-to-date",
-		"longAC": "Actual monthly Cost value, plan-to-date",
+		"planAC": "AC,  personnel",
+		"planACCost": "AC,  cost",
+		"longAC": "Actual monthly Cost value, plan-to-date, personnel and cost separatly",
 		"shortETC": "ETC",
-		"planETC": "ETC, plan-to-date",
-		"longETC": "Estimate To Complete, plan-to-date",
+		"planETC": "ETC,  personnel",
+		"planETCCost": "ETC,  cost",
+		"longETC": "Estimate To Complete, plan-to-date, personnel and cost separatly",
 
 		"shortRevPlan": "Revenue at Completion",
 		"planRev": "Revenue, total plan",

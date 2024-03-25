@@ -88,6 +88,7 @@ class exportCosttype {
   vpStatus: string;
   strategicFit: number;
   risk: number;
+  businessUnit: string;
   variantName: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -1866,132 +1867,124 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     return;
   }
 
-  // copyCapacity(vpv: VisboCapacity, name: string): exportCapacity {
-  //   const copy = new exportCapacity();
+  copyCosttypes(vpv: VisboCosttypes, name: string): exportCosttype {
+    const copy = new exportCosttype();
 
-  //   copy.name = name;
-  //   copy.month = new Date(vpv.month);
-  //   copy.variantName = vpv.variantName;
-  //   copy.roleID = vpv.roleID;
-  //   copy.roleName = vpv.roleName;
-  //   copy.actualCost_PT = vpv.actualCost_PT;
-  //   copy.plannedCost_PT = vpv.plannedCost_PT;
-  //   copy.otherActivityCost_PT = vpv.otherActivityCost_PT;
-  //   copy.internCapa_PT = vpv.internCapa_PT;
-  //   copy.externCapa_PT = vpv.externCapa_PT;
-  //   copy.actualCost = vpv.actualCost;
-  //   copy.plannedCost = vpv.plannedCost;
-  //   copy.otherActivityCost = vpv.otherActivityCost;
-  //   copy.internCapa = vpv.internCapa;
-  //   copy.externCapa = vpv.externCapa;
-  //   copy.baselineCost = vpv.baselineCost;
-  //   copy.baselineCost_PT = vpv.baselineCost_PT;
-  //   // copy.ampelStatus = vpv.ampelStatus;
-  //   // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
-  //   if (vpv.vp) {
-  //     copy.vpStatus = vpv.vp.vpStatusLocale;
-  //     copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
-  //     copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
-  //   } else {
-  //     copy.vpStatus = '';
-  //     copy.strategicFit = -1;
-  //     copy.risk = -1;
-  //   }
-  //   delete copy.vpid;
+    copy.name = name;
+    copy.month = new Date(vpv.month);
+    copy.variantName = vpv.variantName;
+    copy.costID = vpv.costID;
+    copy.costName = vpv.costName;    
+    copy.baselineCost = vpv.baselineCost;
+    copy.currentCost = vpv.currentCost;
+    // copy.ampelStatus = vpv.ampelStatus;
+    // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
+    if (vpv.vp) {
+      copy.vpStatus = vpv.vp.vpStatusLocale;
+      copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
+      copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+      copy.businessUnit = getCustomFieldString(vpv.vp, "_businessUnit")?.value;
+    } else {
+      copy.vpStatus = '';
+      copy.strategicFit = -1;
+      copy.risk = -1;
+      copy.businessUnit = '';
+    }
+    delete copy.vpid;
 
-  //   return copy;
-  // }
+    return copy;
+  }
 
   exportExcel(): void {
-  //   this.log(`Export Data to Excel ${this.visboCost?.length} `);
-  //   // convert list to matix
+    this.log(`Export Data to Excel ${this.visboCost?.length} `);
+    // convert list to matix
 
-  //   const excel: exportCapacity[] = [];
+    const excel: exportCosttype[] = [];
 
-  //   let name = '';
-  //   let urlWeb = ''
-  //   const listURL: string[] = [];
-  //   const tooltip = this.translate.instant('ViewCapacity.msg.viewWeb');
-  //   if (this.vpfActive) {
-  //     name = this.vpfActive.name
-  //     urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Capacity');
-  //   } else if (this.vpActive) {
-  //     name = this.vpActive.name;
-  //     urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Capacity');
-  //   } else if (this.vcActive) {
-  //     name = this.vcActive.name;
-  //     urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Capacity');
-  //   }
-  //   if (this.visboCost) {
-  //     this.visboCost.forEach(element => {
-  //       excel.push(this.copyCapacity(element, name));
-  //       listURL.push(urlWeb);
-  //     });
-  //   }
-  //   if (this.visboCapacityChild) {
-  //     this.visboCapacityChild.forEach(element => {
-  //       let urlWebDetail = urlWeb;
-  //       if (element.name) {
-  //         urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Capacity');
-  //       }
-  //       excel.push(this.copyCapacity(element, element.name || name));
-  //       listURL.push(urlWebDetail);
-  //     });
-  //   }
+    let name = '';
+    let urlWeb = ''
+    const listURL: string[] = [];
+    const tooltip = this.translate.instant('ViewCosttypes.msg.viewWeb');
+    if (this.vpfActive) {
+      name = this.vpfActive.name
+      urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Costtypes');
+    } else if (this.vpActive) {
+      name = this.vpActive.name;
+      urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Costtypes');
+    } else if (this.vcActive) {
+      name = this.vcActive.name;
+      urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Costtypes');
+    }
+    if (this.visboCost) {
+      this.visboCost.forEach(element => {
+        excel.push(this.copyCosttypes(element, name));
+        listURL.push(urlWeb);
+      });
+    }
+    if (this.visboCostChild) {
+      this.visboCostChild.forEach(element => {
+        let urlWebDetail = urlWeb;
+        if (element.name) {
+          urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Costtypes');
+        }
+        excel.push(this.copyCosttypes(element, element.name || name));
+        listURL.push(urlWebDetail);
+      });
+    }
 
-  //   const len = excel.length;
-  //   const width = Object.keys(excel[0]).length;
-  //   this.log(`Export Data to Excel ${excel.length}`);
-  //   // Add Localised header to excel
-  //   // eslint-disable-next-line
-  //   const header: any = {};
-  //   let colName: number, colIndex = 0;
-  //   for (const element in excel[0]) {
-  //     // this.log(`Processing Header ${element}`);
-  //     if (element == 'name') {
-  //       colName = colIndex;
-  //     }
-  //     colIndex++;
-  //     header[element] = this.translate.instant('ViewCapacity.lbl.'.concat(element))
-  //   }
-  //   excel.unshift(header);
-  //   // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    this.log(`Export Data to Excel ${excel.length}`);
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    let colName: number, colIndex = 0;
+    for (const element in excel[0]) {
+      // this.log(`Processing Header ${element}`);
+      if (element == 'name') {
+        colName = colIndex;
+      }
+      colIndex++;
+      header[element] = this.translate.instant('ViewCosttypes.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    // this.log(`Header for Excel: ${JSON.stringify(header)}`)
 
-  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
-  //   for (let index = 1; index <= len; index++) {
-  //     const address = XLSX.utils.encode_cell({r: index, c: colName});
-  //     const url = listURL[index - 1];
-  //     worksheet[address].l = { Target: url, Tooltip: tooltip };
-  //   }
-  //   const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
-  //   worksheet['!autofilter'] = { ref: matrix };
-  //   // eslint-disable-next-line
-  //   const sheets: any = {};
-  //   const sheetName = visboGetShortText(name, 30);
-  //   sheets[sheetName] = worksheet;
-  //   const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
-  //   // eslint-disable-next-line
-  //   const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  //   const actDate = new Date();
-  //   const fileName = ''.concat(
-  //     actDate.getFullYear().toString(),
-  //     '_',
-  //     (actDate.getMonth() + 1).toString().padStart(2, "0"),
-  //     '_',
-  //     actDate.getDate().toString().padStart(2, "0"),
-  //     '_Capacity ',
-  //     (name || '')
-  //   );
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = listURL[index - 1];
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_Costtypes ',
+      (name || '')
+    );
 
-  //   const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
-  //   const url = window.URL.createObjectURL(data);
-  //   const a = document.createElement('a');
-  //   document.body.appendChild(a);
-  //   a.href = url;
-  //   a.download = fileName.concat(EXCEL_EXTENSION);
-  //   this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
-  //   a.click();
-  //   window.URL.revokeObjectURL(url);
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   getVPStatus(local: boolean, original: string = undefined): string {

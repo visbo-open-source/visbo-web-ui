@@ -37,6 +37,8 @@ export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
+  personnelCost: number;
+  allOtherCost: number;
   baseLineInvoice: number;
   currentInvoice: number;
 }
