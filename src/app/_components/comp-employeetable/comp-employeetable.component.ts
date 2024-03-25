@@ -1,6 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+import { MessageService } from '../../_services/message.service';
+import { AlertService } from '../../_services/alert.service';
+
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { visboCmpString } from '../../_helpers/visbo.helper';
+import { visboCmpString ,getErrorMessage, visboGetShortText} from '../../_helpers/visbo.helper';
 import { VtrVisboTrackerExtended } from 'src/app/_models/employee';
 import { VisboTimeTracking } from 'src/app/_services/visbotimetracker.service';
 import { UserService } from 'src/app/_services/user.service';
@@ -12,6 +17,28 @@ import { VisboProject, constSystemVPStatus } from 'src/app/_models/visboproject'
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
 import { VisboOrganisation } from 'src/app/_models/visbosetting';
 import { VisboUser } from 'src/app/_models/visbouser';
+
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
+class exportVTR {
+  userID: string;
+  userName: string;
+  vcName: string;
+  vpid: string;
+  vpName: string;
+  roleID: number;
+  date: Date;
+  time: number;
+  description: string;
+  status: string;
+  approvalID: string;
+  approverName: string;
+  approvalDate: string;  
+  result: string;
+}
 
 @Component({
   selector: 'app-employee',
@@ -45,7 +72,8 @@ export class EmployeeComponent implements OnInit {
   visboCentersList: VisboCenter[] = [];
   visboProjectsList: VisboProject[] = [];  
   indexedProjectsList: VisboProject[] = [];
-  selectedCenterProjects: VisboProject[];
+  selectedCenterProjects: VisboProject[];  
+  vcUser = new Map<string, VisboUser>();
   hasOrga = false;
   vcOrga: VisboOrganisation[] = [];
   vcActive: VisboCenter;
@@ -63,6 +91,9 @@ export class EmployeeComponent implements OnInit {
 
   constructor(
     private trackerService: VisboTimeTracking,
+    private translate: TranslateService,
+    private messageService: MessageService,
+    private alertService: AlertService,
     private userService: UserService,
     private authService: AuthenticationService,
     private visboCenterWs: VisboCenterService,
@@ -174,6 +205,31 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
+  
+  getVisboCenterUsers(): void {
+    if (!this.userForm) {
+      this.vcUser.clear();
+      return;
+    }
+    //this.log(`VisboCenter UserList of: ${this.vcActive}`);
+    this.visboCenterWs.getVCUser(this.vcActive._id, false, false)
+      .subscribe(
+        user => {
+          user.forEach(user => this.vcUser.set(user._id, user));          
+          this.log(`fetched Users ${this.vcUser.size}`);
+        },
+        error => {
+          this.log(`Get VC Users failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpDetail.msg.errorPerm');
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
   sortVTRTable(n: number, isManager: boolean=false): void {
    
       if (n !== undefined) {
@@ -264,7 +320,7 @@ export class EmployeeComponent implements OnInit {
     this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {
       this.rows = timeEntries?.map(record => {
         const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
-        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';
+        const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';        
         if (centerName && projectName) {
           return {
             userId: record.userId,
@@ -349,5 +405,218 @@ export class EmployeeComponent implements OnInit {
       });
   }
 
+  
+  copyTimeRecords(vtr: VtrVisboTrackerExtended, name: string): exportVTR {
+    
+    const copy = new exportVTR();
+    copy.userID = vtr.userId;
+    copy.userName = this.userEmail;
+    copy.date = new Date(vtr.date);
+    copy.vcName = vtr.vcName;
+    copy.vpid = vtr.vpid;
+    copy.vpName = vtr.vpName;
+    copy.roleID = vtr.roleId;
+    copy.time = vtr.time;
+    copy.description = vtr.notes;
+    copy.status = vtr.status;
+    copy.approvalID = vtr.approvalId;
+    const approverEmail = this.getApprover(vtr, true);
+    copy.approverName = approverEmail;
+    copy.approvalDate = vtr.approvalDate;
+    if (vtr.failed) {
+      copy.result = vtr.failed
+    } else {
+      copy.result = ""
+    }  
+    delete copy.vpid;
+    return copy;
+  }
+
+  exportExcel(): void {
+    this.log(`Export TimeRecords to Excel ${this.rows?.length}`);
+    // convert list to matrix
+
+    const excel: exportVTR[] = [];
+
+    let name = '';
+    let urlWeb = ''
+    const listURL: string[] = [];
+    const tooltip = this.translate.instant('compEmployeetable.msg.viewWeb');
+    if (this.userId) {
+      name = this.userEmail;
+      urlWeb = window.location.origin.concat('/vtr');
+    }
+    const cumulate = new exportVTR();
+    
+    this.rows?.forEach(element => {
+      excel.push(this.copyTimeRecords(element, name));
+      listURL.push(urlWeb);
+    });
+
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    this.log(`Export Data to Excel ${excel.length}`);
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    let colName: number, colIndex = 0;
+    for (const element in excel[0]) {
+      this.log(`Processing Header ${element}`);
+      if (element == 'userName') {
+        colName = colIndex;
+      }
+      colIndex++;
+      header[element] = this.translate.instant('compViewEmployeetable.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = listURL[index - 1];
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_Cost ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+  // exportExcel(): void {
+  //   this.log(`Export Data to Excel ${this.visboCost?.length} `);
+  //   // convert list to matix
+
+  //   const excel: exportCosttype[] = [];
+
+  //   let name = '';
+  //   let urlWeb = ''
+  //   const listURL: string[] = [];
+  //   const tooltip = this.translate.instant('ViewCosttypes.msg.viewWeb');
+  //   if (this.vpfActive) {
+  //     name = this.vpfActive.name
+  //     urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Costtypes');
+  //   } else if (this.vpActive) {
+  //     name = this.vpActive.name;
+  //     urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Costtypes');
+  //   } else if (this.vcActive) {
+  //     name = this.vcActive.name;
+  //     urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Costtypes');
+  //   }
+  //   if (this.visboCost) {
+  //     this.visboCost.forEach(element => {
+  //       excel.push(this.copyCosttypes(element, name));
+  //       listURL.push(urlWeb);
+  //     });
+  //   }
+  //   if (this.visboCostChild) {
+  //     this.visboCostChild.forEach(element => {
+  //       let urlWebDetail = urlWeb;
+  //       if (element.name) {
+  //         urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Costtypes');
+  //       }
+  //       excel.push(this.copyCosttypes(element, element.name || name));
+  //       listURL.push(urlWebDetail);
+  //     });
+  //   }
+
+  //   const len = excel.length;
+  //   const width = Object.keys(excel[0]).length;
+  //   this.log(`Export Data to Excel ${excel.length}`);
+  //   // Add Localised header to excel
+  //   // eslint-disable-next-line
+  //   const header: any = {};
+  //   let colName: number, colIndex = 0;
+  //   for (const element in excel[0]) {
+  //     // this.log(`Processing Header ${element}`);
+  //     if (element == 'name') {
+  //       colName = colIndex;
+  //     }
+  //     colIndex++;
+  //     header[element] = this.translate.instant('ViewCosttypes.lbl.'.concat(element))
+  //   }
+  //   excel.unshift(header);
+  //   // this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+  //   for (let index = 1; index <= len; index++) {
+  //     const address = XLSX.utils.encode_cell({r: index, c: colName});
+  //     const url = listURL[index - 1];
+  //     worksheet[address].l = { Target: url, Tooltip: tooltip };
+  //   }
+  //   const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+  //   worksheet['!autofilter'] = { ref: matrix };
+  //   // eslint-disable-next-line
+  //   const sheets: any = {};
+  //   const sheetName = visboGetShortText(name, 30);
+  //   sheets[sheetName] = worksheet;
+  //   const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+  //   // eslint-disable-next-line
+  //   const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  //   const actDate = new Date();
+  //   const fileName = ''.concat(
+  //     actDate.getFullYear().toString(),
+  //     '_',
+  //     (actDate.getMonth() + 1).toString().padStart(2, "0"),
+  //     '_',
+  //     actDate.getDate().toString().padStart(2, "0"),
+  //     '_Costtypes ',
+  //     (name || '')
+  //   );
+
+  //   const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+  //   const url = window.URL.createObjectURL(data);
+  //   const a = document.createElement('a');
+  //   document.body.appendChild(a);
+  //   a.href = url;
+  //   a.download = fileName.concat(EXCEL_EXTENSION);
+  //   this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+  //   a.click();
+  //   window.URL.revokeObjectURL(url);
+  // }
+
+  getApprover(vtr: VtrVisboTrackerExtended, withEmail = true): string {
+    let fullName = '';
+    if (vtr.approvalId) {
+      const user = this.vcUser.get(vtr.approvalId);
+      if (user) {        
+        if ( withEmail) {
+          fullName = fullName.concat(' (', user.email, ')');
+        } else {
+          fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+        }      
+      }
+    }
+    return fullName || '';
+  }
+  
+  /** Log a message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('VisboProject: ' + message);
+  }
 }
 

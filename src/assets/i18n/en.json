@@ -693,6 +693,24 @@
 			"localInstallationRequired": "Installation of VISBO Clients required"
 		}
 	},
+	"compViewEmployeetable": {
+		"titleEmployee":"",
+		"lbl":{
+			"userID": "UserID",
+			"userName": "Employee",
+			"date": "Date",
+			"vcName": "VisboCenter",
+			"vpName": "Project Name",
+			"roleID":"Ressource (ID)",
+			"time": "Hours",
+			"description": "Action Description",
+			"status": "Status",
+			"approvalID": "Approver (ID)",
+			"approverName": "Approver Name",
+			"approvalDate": "Date of the Approval",
+			"result": "Result"
+		}
+	},
 	"compViewVp": {
 		"titleVPCost": "Overview Project Cost",
 		"lbl": {
