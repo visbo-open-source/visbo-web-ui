@@ -709,6 +709,30 @@
 			"approverName": "Approver Name",
 			"approvalDate": "Date of the Approval",
 			"result": "Result"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Employee"
+		}
+	},
+	"compViewApprovertable": {
+		"titleEmployee":"",
+		"lbl":{
+			"userID": "UserID",
+			"userName": "Employee",
+			"date": "Date",
+			"vcName": "VisboCenter",
+			"vpName": "Project Name",
+			"roleID":"Ressource (ID)",
+			"time": "Hours",
+			"description": "Action Description",
+			"status": "Status",
+			"approvalID": "Approver (ID)",
+			"approverName": "Approver Name",
+			"approvalDate": "Date of the Approval",
+			"result": "not imported Time Records"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Approver"
 		}
 	},
 	"compViewVp": {

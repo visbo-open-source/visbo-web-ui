@@ -433,7 +433,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   exportExcel(): void {
-    this.log(`Export TimeRecords to Excel ${this.rows?.length}`);
+    this.log(`Export TimeRecords to Excel ${this.originalColumns?.length}`);
     // convert list to matrix
 
     const excel: exportVTR[] = [];
@@ -448,7 +448,7 @@ export class EmployeeComponent implements OnInit {
     }
     const cumulate = new exportVTR();
     
-    this.rows?.forEach(element => {
+    this.originalColumns?.forEach(element => {
       excel.push(this.copyTimeRecords(element, name));
       listURL.push(urlWeb);
     });
@@ -493,7 +493,7 @@ export class EmployeeComponent implements OnInit {
       (actDate.getMonth() + 1).toString().padStart(2, "0"),
       '_',
       actDate.getDate().toString().padStart(2, "0"),
-      '_Cost ',
+      '_TimeRecsEmployee ',
       (name || '')
     );
 

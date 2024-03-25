@@ -709,6 +709,30 @@
 			"approverName": "Name des Prüfers",
 			"approvalDate": "Datum der Prüfung",
 			"result": "Ergebnis"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Employee"
+		}
+	},
+	"compViewApprovertable": {
+		"titleEmployee":"",
+		"lbl":{
+			"userID": "UserID",
+			"userName": "Mitarbeiter",
+			"date": "Datum",
+			"vcName": "VisboCenter",
+			"vpName": "Projektname",
+			"roleID":"Rolle(ID)",
+			"time": "Anzahl Stunden",
+			"description": "Tätigkeitsbeschreibung",
+			"status": "Status",
+			"approvalID": "ID des Prüfers",
+			"approverName": "Name des Prüfers",
+			"approvalDate": "Datum der Prüfung",
+			"result": "TimeRecord nicht importiert"
+		},
+		"msg":{
+			"viewWeb": "Exelausleitung TimeRecords Approver"
 		}
 	},
 	"compViewVp": {
