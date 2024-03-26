@@ -1051,7 +1051,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
 
     this.graphOptionsComboChart.title = this.translate.instant(this.refPFV ? 'ViewCosttypes.titleCostOverTimeBL' : 'ViewCosttypes.titleCostOverTime', {name: this.currentName, costName: this.currentLeaf.name});
     this.graphOptionsComboChart.vAxis.title = this.translate.instant('ViewCosttypes.yAxisCostOverTime');
-    //this.graphOptionsComboChart.vAxis.format = optformat;
+    this.graphOptionsComboChart.vAxis.format = optformat;
     // set the colors for the Chart
     if (this.drillDown > 3) {
       delete this.graphOptionsComboChart.colors;
@@ -1879,15 +1879,17 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     copy.currentCost = vpv.currentCost;
     // copy.ampelStatus = vpv.ampelStatus;
     // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
-    if (vpv.vp) {
-      copy.vpStatus = vpv.vp.vpStatusLocale;
-      copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
-      copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
-      copy.businessUnit = getCustomFieldString(vpv.vp, "_businessUnit")?.value;
+
+    if (vpv.vp || (this.vpActive && (this.vpActive.vpType == 0))) {
+      const vp = vpv.vp? vpv.vp : this.vpActive
+      copy.vpStatus = vp.vpStatusLocale;
+      copy.strategicFit = getCustomFieldDouble(vp, '_strategicFit')?.value;
+      copy.risk = getCustomFieldDouble(vp, '_risk')?.value;
+      copy.businessUnit = getCustomFieldString(vp, "_businessUnit")?.value;
     } else {
       copy.vpStatus = '';
-      copy.strategicFit = -1;
-      copy.risk = -1;
+      copy.strategicFit = undefined;
+      copy.risk = undefined;
       copy.businessUnit = '';
     }
     delete copy.vpid;
