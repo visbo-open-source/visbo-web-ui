@@ -17,17 +17,8 @@
                 <input id="costTo" type="date" class="border-1 font-weight-bold" name="costTo" min= "2015-01-01" max="2050-01-01" [ngModel]="costTo | date:'yyyy-MM-dd'" (input)="costTo=parseDate($event.target.value)" (change)="updateDateRange()" >
               </span>
               <div class="mx-2 pt-1">
-                <span *ngIf="hasCost" class="mr-auto">{{ 'ViewCosttypes.title2'  | translate }}</span>
-                <span *ngIf="hasCost" class="mr-auto font-weight-bold">{{showUnitText}}</span>
-                <!-- <span *ngIf="hasCost" class="mr-auto dropdown">
-                  <a class="pl-2 font-weight-bold dropdown-toggle" data-toggle="dropdown" >
-                    {{showUnitText}}
-                  </a>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" (click)="updateShowUnit('PD')">{{ 'ViewCosttypes.lbl.pd' | translate }}</a>
-                    <a class="dropdown-item" (click)="updateShowUnit('Euro')">{{ 'ViewCosttypes.lbl.euro' | translate }}</a>
-                  </div>
-                </span> -->
+                <span  class="mr-auto">{{ 'ViewCosttypes.title2'  | translate }}</span>
+                <span  class="mr-auto font-weight-bold">{{showUnitText}}</span>              
               </div>
             </div>
             <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
@@ -102,19 +93,13 @@
                   </span>
               </div>         
             </div>
-            <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none mt-1">
-              <!-- <div *ngIf="!vpvActive" class="custom-control custom-checkbox m-2">
-                <input type="checkbox" class="custom-control-input" (change)="updateRef()" id="idRefPFV" [(ngModel)]="refPFV">
-                <label class="custom-control-label" for="idRefPFV">{{ 'ViewCosttypes.lbl.refPFV' | translate }}</label>
-              </div> -->
-  
+            <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none mt-1">             
               <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
                 <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCosttypes.lbl.showDrill' | translate }}:</label>
                 <select class="col-9 form-control" id="drillDownOpt" (change)="updateDrillDown()" name="drillDown" [(ngModel)]="drillDown">
                   <option *ngFor="let drillItem of drillDownCapaFiltered" value="{{drillItem.id}}">{{drillItem.localName}}</option>
                 </select>
-              </div>
-  
+              </div>             
               <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
                 <button type="button" class="btn btn-md btn-light ml-1" id="exportExcel" (click)='exportExcel()'>
                   {{ 'vpfVersion.btn.exportExcel' | translate }}
@@ -141,8 +126,7 @@
               </div>
             </div>
             <div *ngIf="sumBudget >= 0" class="row">
-              <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">
-                <!-- <div *ngIf="refPFV"> -->
+              <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">               
                 <div>
                   {{ 'ViewCosttypes.lbl.baselineCost' | translate }}
                 </div>               
