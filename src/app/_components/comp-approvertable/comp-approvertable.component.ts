@@ -38,7 +38,7 @@ class exportVTR {
   status: string;
   approvalID: string;
   approverName: string;
-  approvalDate: string;  
+  approvalDate: Date;  
   result: string;
 }
 
@@ -438,9 +438,9 @@ export class ApproverComponent implements OnInit {
      
   copyTimeRecords(vtr: VtrVisboTrackerExtended, name: string): exportVTR {
     
-    const copy = new exportVTR();
-    copy.userID = vtr.userId;
+    const copy = new exportVTR();    
     copy.userName = vtr.userName;
+    copy.userID = vtr.userId;
     copy.date = new Date(vtr.date);
     copy.vcName = vtr.vcName;
     copy.vpid = vtr.vpid;
@@ -455,7 +455,9 @@ export class ApproverComponent implements OnInit {
     }
     //const approverEmail = this.getApprover(vtr, true);
     //copy.approverName = approverEmail;
-    copy.approvalDate = vtr.approvalDate;
+    if (vtr.approvalDate) {
+      copy.approvalDate = new Date(vtr.approvalDate);
+    }
     if (vtr.failed) {
       copy.result = vtr.failed
     } else {
@@ -477,7 +479,7 @@ export class ApproverComponent implements OnInit {
     const tooltip = this.translate.instant('compViewApprovertable.msg.viewWeb');
     if (this.userId) {
       name = this.userEmail;
-      urlWeb = window.location.origin.concat('/vtr');
+      urlWeb = window.location.origin.concat('/vtrApprove');
     }
     const cumulate = new exportVTR();
     

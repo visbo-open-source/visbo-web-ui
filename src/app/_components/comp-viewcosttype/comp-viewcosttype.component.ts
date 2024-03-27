@@ -1595,7 +1595,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       if (this.refDate) {
         queryParams.refDate = this.refDate.toISOString();
       }
-      queryParams.view = 'Costtypes';
+      queryParams.view = 'Costtype';
       queryParams.drillDown = '1';
       this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`)
 
@@ -1909,13 +1909,13 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
     const tooltip = this.translate.instant('ViewCosttypes.msg.viewWeb');
     if (this.vpfActive) {
       name = this.vpfActive.name
-      urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Costtypes');
+      urlWeb = window.location.origin.concat('/vpf/', this.vpfActive.vpid, '?view=Costtype');
     } else if (this.vpActive) {
       name = this.vpActive.name;
-      urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Costtypes');
+      urlWeb = window.location.origin.concat('/vpKeyMetrics/', this.vpActive._id, '?view=Costtype');
     } else if (this.vcActive) {
       name = this.vcActive.name;
-      urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Costtypes');
+      urlWeb = window.location.origin.concat('/vp/', this.vcActive._id, '?view=KeyMetrics&viewCockpit=Costtype');
     }
     if (this.visboCost) {
       this.visboCost.forEach(element => {
@@ -1927,7 +1927,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       this.visboCostChild.forEach(element => {
         let urlWebDetail = urlWeb;
         if (element.name) {
-          urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Costtypes');
+          urlWebDetail = window.location.origin.concat('/vpKeyMetrics/', element.vpid, '?view=Costtype');
         }
         excel.push(this.copyCosttypes(element, element.name || name));
         listURL.push(urlWebDetail);

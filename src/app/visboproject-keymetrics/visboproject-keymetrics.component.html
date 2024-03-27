@@ -97,7 +97,7 @@
       <div class="col-9 btn-toolbar" style="padding: unset;">
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Overview')">{{ 'vpKeyMetric.btn.vpOverview' | translate }}</button>
         <button *ngIf="hasVPPerm(permVP.View)" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('KeyMetrics')">{{ 'vpKeyMetric.btn.vpKeyMetric' | translate }}</button>
-        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Costtypes')">{{ 'vpKeyMetric.btn.vpCosttypes' | translate }}</button>
+        <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Costtype')">{{ 'vpKeyMetric.btn.vpCosttypes' | translate }}</button>
         
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" type="button" class="btn btn-md btn-light mr-1" (click)="switchView('Capacity')">{{ 'vpKeyMetric.btn.vpCapacity' | translate }}</button>
         <div class="dropdown mr-1">
@@ -140,7 +140,7 @@
     <div *ngIf="currentView == 'KeyMetrics' || currentViewKM">
       <app-comp-viewkeymetrics [visboprojectversions]="activeVPVs" [vpvid]="vpvActive._id" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewkeymetrics>
     </div>
-    <div *ngIf="currentView == 'Costtypes' && vcOrga">
+    <div *ngIf="currentView == 'Costtype' && vcOrga">
       <app-comp-viewcosttype [vpActive]="vpActive" [vpvActive]="vpvActive" [vpvBaseline]="vpvBaseline" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcosttype>
     </div>
     <div *ngIf="currentView == 'Capacity' && vcOrga">
