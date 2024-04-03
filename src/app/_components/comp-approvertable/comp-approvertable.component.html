@@ -2,27 +2,14 @@
 <div class="cld-date">
   <div class="calendar">
     {{"vtr.fromDate" | translate}}
-    <input
-      (change)="updateFilter()"
-      [(ngModel)]="startDate"
-      [max]="endDate"
-      class="col-2 col-sm-2 form-control" id="startDate"
-      type="date">
+    <input (change)="updateFilter()" [(ngModel)]="startDate" [max]="endDate" class="col-2 col-sm-2 form-control"
+      id="startDate" type="date">
     {{"vtr.toDate" | translate}}
-    <input
-      (change)="updateFilter()"
-      [(ngModel)]="endDate"
-      [min]="startDate"
-      class="col-2 col-sm-2 form-control"
-      id="endDate"
-      type="date"><div class="text-left">
+    <input (change)="updateFilter()" [(ngModel)]="endDate" [min]="startDate" class="col-2 col-sm-2 form-control"
+      id="endDate" type="date">
     {{"vtr.userName" | translate}}
-    <input
-              (change)="updateFilter()"
-              [(ngModel)]="filterName"
-              class="col-2 col-sm-2 form-control" id="filterName"
-              type="string">
-
+    <input (change)="updateFilter()" [(ngModel)]="filterName" class="col-2 col-sm-2 form-control" id="filterName"
+      type="string">
     <button type="button" class="btn btn-md btn-light ml-1 py-1" id="exportExcel" (click)='exportExcel()'>
       {{ 'vpfVersion.btn.exportExcel' | translate }}
     </button>

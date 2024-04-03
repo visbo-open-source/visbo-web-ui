@@ -35,7 +35,7 @@ class exportVTR {
   date: Date;
   time: number;
   description: string;
-  status: string;
+  approved: string;
   approvalID: string;
   approverName: string;
   approvalDate: Date;  
@@ -445,25 +445,27 @@ export class ApproverComponent implements OnInit {
     copy.vcName = vtr.vcName;
     copy.vpid = vtr.vpid;
     copy.vpName = vtr.vpName;
-    copy.roleID = vtr.roleId;
-    copy.time = vtr.time;
+    copy.roleID = vtr.roleId * 1;
+    copy.time = vtr.time * 1;
     copy.description = vtr.notes;
-    copy.status = vtr.status;
+    copy.approved = vtr.status;
     copy.approvalID = vtr.approvalId;
     if (vtr.approvalId) {
       copy.approverName = this.userEmail
-    }
+    } 
     //const approverEmail = this.getApprover(vtr, true);
     //copy.approverName = approverEmail;
     if (vtr.approvalDate) {
       copy.approvalDate = new Date(vtr.approvalDate);
-    }
+    } 
     if (vtr.failed) {
       copy.result = vtr.failed
     } else {
       copy.result = ""
     }  
     delete copy.vpid;
+    delete copy.userID;    
+    delete copy.approvalID;
     return copy;
   }
 
@@ -481,7 +483,7 @@ export class ApproverComponent implements OnInit {
       name = this.userEmail;
       urlWeb = window.location.origin.concat('/vtrApprove');
     }
-    const cumulate = new exportVTR();
+    //const cumulate = new exportVTR();
     
     this.managerTimeTrackerList?.forEach(element => {
       excel.push(this.copyTimeRecords(element, name));
@@ -542,7 +544,7 @@ export class ApproverComponent implements OnInit {
     a.click();
     window.URL.revokeObjectURL(url);
   }
-
+  
    
   /** Log a message with the MessageService */
   private log(message: string) {
