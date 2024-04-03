@@ -704,7 +704,7 @@
 			"roleID":"Ressource (ID)",
 			"time": "Hours",
 			"description": "Action Description",
-			"status": "Status",
+			"approved": "Approved",
 			"approvalID": "Approver (ID)",
 			"approverName": "Approver Name",
 			"approvalDate": "Date of the Approval",
@@ -715,7 +715,7 @@
 		}
 	},
 	"compViewApprovertable": {
-		"titleEmployee":"",
+		"titleApprover":"",
 		"lbl":{
 			"userID": "UserID",
 			"userName": "Employee",
@@ -725,7 +725,7 @@
 			"roleID":"Ressource (ID)",
 			"time": "Hours",
 			"description": "Action Description",
-			"status": "Status",
+			"approved": "Approved",
 			"approvalID": "Approver (ID)",
 			"approverName": "Approver Name",
 			"approvalDate": "Date of the Approval",
