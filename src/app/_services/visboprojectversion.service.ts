@@ -302,6 +302,40 @@ export class VisboProjectVersionService {
       );
   }
 
+  
+  /** GET CostTypes Calculation from the server for the specified vpv id , costID*/
+  getCosttype(id: string, costID: string, startDate: Date, endDate: Date,  hierarchy = false, pfv = false): Observable<VisboProjectVersion[]> {
+    const url = `${this.vpvUrl}/${id}/costtypes`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let params = new HttpParams();
+    if (hierarchy) {
+      params = params.append('hierarchy', '1');
+    }
+    if (pfv) {
+      params = params.append('pfv', '1');
+    }
+    if (startDate) {
+      this.log(`Calling From: ${startDate.toISOString()}`);
+      params = params.append('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      this.log(`Calling To: ${endDate.toISOString()}`);
+      params = params.append('endDate', endDate.toISOString());
+    }
+    if (costID) {
+      this.log(`Calling costID: ${costID}`);
+      params = params.append('costID', costID);
+    }
+    
+    this.log(`Calling HTTP Request: ${url} Options: ${params}`);
+    return this.http.get<VisboProjectVersionResponse>(url, { headers , params })
+      .pipe(
+        map(response => response.vpv),
+        tap(() => this.log(`fetched Costtypes Calculation for ${id}`)),
+        catchError(this.handleError<VisboProjectVersion[]>('getVisboProjectVersions'))
+      );
+  }
+
   /** GET Cost Calculation from the server for the specified vpv id */
   getCost(id: string): Observable<VisboProjectVersion[]> {
     const url = `${this.vpvUrl}/${id}/cost`;

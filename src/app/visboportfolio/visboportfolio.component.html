@@ -71,15 +71,15 @@
         <button class="btn btn-default" (click)='changeView("ProjectBoard")' title="{{ 'vpfVersion.btn.viewProjectBoard' | translate }}">
           <img src="assets/icons/noun-board.svg" width="60" />
         </button>
-        <button class="btn btn-default" (click)='changeView("KeyMetric", "Cost")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
+        <button class="btn btn-default" (click)='changeView("KeyMetric", "Cost")' title="{{ 'vpfVersion.btn.viewTopWorse' | translate }}">
+          <img src="assets/icons/noun-time-is-money.svg" width="60" />
+        </button> 
+        <button class="btn btn-default" (click)='changeView("Costtype")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
           <img src="assets/icons/noun-money.svg" width="60" />
-        </button>
-        <button class="btn btn-default" (click)='changeView("KeyMetric", "EndDate")' title="{{ 'vpfVersion.btn.viewEndDate' | translate }}">
-          <img src="assets/icons/noun-stopwatch.svg" width="60" />
         </button>
         <button *ngIf="hasVPPerm(permVP.Modify + permVP.ViewAudit) && hasOrga" (click)='changeView("Capacity")' title="{{ 'vpfVersion.btn.viewCapacity' | translate }}" class="btn btn-default">
           <img src="assets/icons/noun-bottleneck.svg" width="60" />
-        </button>
+        </button>       
         <button class="btn btn-default" (click)='changeView("KeyMetrics")' title="{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}">
           <img src="assets/icons/noun-bubbles.svg" width="60" />
         </button>
@@ -111,6 +111,10 @@
   <div *ngIf="pageParams.view == 'Overview' && vpActive && listVPV">
     <hr>
     <app-comp-overviewvpf [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcUser]="vcUser" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-overviewvpf>
+  </div> 
+  <div *ngIf="pageParams.view == 'Costtype' && vpActive && vpfActive && vcOrga">
+    <hr>
+    <app-comp-viewcosttype [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcosttype>
   </div>
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
     <hr>

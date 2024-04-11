@@ -7,6 +7,7 @@ export class VisboCenter {
   vpCount: number;
   // eslint-disable-next-line
   capacity: any[];
+  costtypes: any [];
   deletedAt: Date;
   perm: {system: number, vc: number, vp: number};
 }

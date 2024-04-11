@@ -1,0 +1,211 @@
+<!-- <p>comp-viewcosttype works!</p> -->
+<div class='well' (resized)="onResized($event)">
+    <div  class='container-fluid mb-2'>
+  
+      <div class="row row-cols-1 row-cols-lg-2">
+        <div class="col col-sm-12 col-lg-8">
+          <div class="text-dark">
+            <div *ngIf="!getPreView()" class="row ml-1 pt-2 d-print-none">
+              <span >
+                <label class="mr-2 pt-1">{{ 'ViewCosttypes.titleCosttypes' | translate }}</label>
+              </span>
+              <span>
+                <input id="costFrom" type="date" class="border-1 font-weight-bold" name="costFrom" min= "2015-01-01" max="2050-01-01" [ngModel]="costFrom | date:'yyyy-MM-dd'" (input)="costFrom=parseDate($event.target.value)" (change)="updateDateRange()" >
+              </span>
+              <span>
+                <label class="mx-2 pt-1">{{ 'ViewCosttypes.titleTimeTo'  | translate }}</label>
+                <input id="costTo" type="date" class="border-1 font-weight-bold" name="costTo" min= "2015-01-01" max="2050-01-01" [ngModel]="costTo | date:'yyyy-MM-dd'" (input)="costTo=parseDate($event.target.value)" (change)="updateDateRange()" >
+              </span>
+              <div class="mx-2 pt-1">
+                <span  class="mr-auto">{{ 'ViewCosttypes.title2'  | translate }}</span>
+                <span  class="mr-auto font-weight-bold">{{showUnitText}}</span>              
+              </div>
+            </div>
+            <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
+              <div *ngIf="(drillDown == 0 || drillDown == 1) && checkFilter()" class="my-1 row">
+                <div class="ml-2 text-warning">
+                  {{ 'ViewCosttypes.msg.noFilter' | translate }}
+                </div>
+              </div>
+              <div *ngIf="drillDown == 2 || drillDown == 3" class="my-1 row">
+                  <div class="ml-2">
+                    <span> {{ 'ViewCosttypes.lbl.filter' | translate }}:</span>
+                    <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+                  </div>
+                  <!-- <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none"> 
+                    <span> {{ 'ViewCapacity.lbl.vpStatus' | translate }}: </span>
+                    <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{ getVPStatus(true) }}</a>
+                    <div class="dropdown-menu">
+                      <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                        <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+                      </a>
+                    </div>
+                  </span>
+                  <span *ngIf="dropDownBU && filterBU != undefined" class="dropdown ml-2 my-1 d-print-none">
+                    <span> {{ 'ViewCapacity.lbl.bu' | translate }}: </span>
+                    <a class="dropdown-toggle" data-toggle="dropdown" style="!important">{{filterBU || dropDownBU[0]}}</a>
+                    <div class="dropdown-menu">
+                      <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+                        <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
+                      </a>
+                    </div>
+                  </span>
+                  <div class="ml-2" *ngIf="filterStrategicFit >= 0">
+                    <span> {{ 'ViewCapacity.lbl.strategicFit' | translate }} >=</span>
+                    <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
+                  </div>
+                  <div class="ml-2" *ngIf="filterRisk >= 0">
+                    <span> {{ 'ViewCapacity.lbl.risk' | translate }} >=</span>
+                    <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
+                  </div> -->
+                  <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+                    <span> {{ 'ViewCosttypes.lbl.vpStatus' | translate }}: </span>
+                    <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(false) }}</a>
+                    <div class="dropdown-menu">
+                      <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                        <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+                      </a>
+                    </div>
+                  </span>          
+                  <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+                    <span> {{ 'ViewCosttypes.lbl.bu' | translate }}: </span>
+                    <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
+                    <div class="dropdown-menu">
+                      <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+                        <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
+                      </a>
+                    </div>
+                  </span>          
+                  <span class="ml-2" *ngIf="filterStrategicFit >= 0">
+                    <span> {{ 'ViewCosttypes.lbl.strategicFit' | translate }} >=</span>
+                    <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
+                  </span>
+                  <span class="ml-2" *ngIf="filterRisk >= 0">
+                    <span> {{ 'ViewCosttypes.lbl.risk' | translate }} >=</span>
+                    <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
+                  </span> 
+                  <span class="ml-2">
+                    <span> {{ 'ViewCosttypes.lbl.nrProjects' | translate }}:</span>  
+                    <span class="align-right">
+                      <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: visboprojectsversions_filtered.length < visboprojectversions.length ? 2 : 1}"></ng-container></strong>
+                      {{visboprojectsversions_filtered.length}} / {{visboprojectversions.length}}
+                    </span> 
+                  </span>
+              </div>         
+            </div>
+            <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none mt-1">             
+              <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
+                <label for="drillDownOpt" class="col-3 col-form-label">{{ 'ViewCosttypes.lbl.showDrill' | translate }}:</label>
+                <select class="col-9 form-control" id="drillDownOpt" (change)="updateDrillDown()" name="drillDown" [(ngModel)]="drillDown">
+                  <option *ngFor="let drillItem of drillDownCapaFiltered" value="{{drillItem.id}}">{{drillItem.localName}}</option>
+                </select>
+              </div>             
+              <div *ngIf="!getPreView()" class="d-flex flex-wrap d-print-none">
+                <button type="button" class="btn btn-md btn-light ml-1" id="exportExcel" (click)='exportExcel()'>
+                  {{ 'vpfVersion.btn.exportExcel' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="visboCost && visboCost.length > 0" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+          <h5 class="card-header p-2">
+            <strong *ngIf="sumBudget > 0" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
+            {{ 'ViewCosttypes.titleBox' | translate }}</h5>
+          <div class="card-body p-2">
+            <div class="row">
+              <div class="col col-sm-6">
+                <div>
+                  {{ 'ViewCosttypes.lbl.currentCost' | translate }}
+                </div>               
+              </div>
+              <div class="col col-sm-6 text-right">
+                <strong *ngIf="sumBudget >= 0" class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(sumCost, sumBudget)}"></ng-container></strong>
+                {{sumCost | number:'1.0-0'}}
+                <span>T€</span>                
+              </div>
+            </div>
+            <div *ngIf="sumBudget >= 0" class="row">
+              <div class="col col-sm-6" title="{{ 'keyMetrics.longBAC' | translate }}">               
+                <div>
+                  {{ 'ViewCosttypes.lbl.baselineCost' | translate }}
+                </div>               
+              </div>
+              <div class="col col-sm-6 text-right">
+                {{sumBudget | number:'1.0-0'}}
+                <span>T€</span>                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="row">
+        <div *ngIf="orga && !getPreView()" class="pl-3 col-3 border-right scroll d-print-none">
+          <span class="pt-2 text-dark font-weight-bold" title="{{ 'ViewCosttypes.lbl.orgaValid' | translate }} {{vcOrganisation.timestamp | date: 'dd.MM.yyyy'}}">{{ 'ViewCosttypes.title1'  | translate }}</span>
+          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: orga.tree.children, level: 0 }" ></ng-container>
+        </div>
+        <div *ngIf="!getPreView() && displayCosttypes() > 0" class="col-9">
+          <div *ngIf="graphDataComboChart.length > 2" >
+              <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+          </div>
+        </div>
+        <div *ngIf="getPreView() && displayCosttypes() > 0" class="col-12">
+          <div *ngIf="graphDataComboChart.length > 2" >
+            <app-combo-chart [graphData]="graphDataComboChart" [graphOptions]="graphOptionsComboChart" [parentThis]="parentThis" [language]="currentLang"></app-combo-chart>
+          </div>
+        </div>
+        <!-- here will be shown the text: No Cost Info the spinner -->
+        <div *ngIf="displayCosttypes() == 0" class="col-9">
+          <span class="pt-2  text-dark font-weight-bold">{{ 'ViewCosttypes.msg.noCostInfo' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  
+  
+    <!-- Here are the definitions in HTLM, Angular and Bootstrap for the organisation-tree, chooseable with click on the item, expandable with brackets -->
+    <ng-template #recursiveList let-list let-level="level">
+      <div *ngFor="let item of list" style="white-space: nowrap;">
+        <div class="dropdown-item tree-item" (click)="selectLeaf(item)"
+        [ngClass]="{'tree-item__selected': item.isSelected === 'SELECTED', 'tree-item__parent-selected': item.isSelected === 'PARENT_SELECTED'}">
+          <span [style.margin-left]="(level * 20) + 'px'"> <!--indentation for the tree structure -->
+            <a (click)="$event.stopPropagation(); switchLeaf(item);">
+              <i class="fa" [ngClass]="{'fa-chevron-right': !item.showChildren, 'fa-chevron-down': item.showChildren}"></i>
+            </a>
+            <span class="ml-sm-1" [ngClass]="{'font-italic': capaLoad[item.uid] && !capaLoad[item.uid].isBooked}">
+              {{item.name}} <!-- {{item.isSelected}} -->
+            </span>
+            <!-- <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankOver > 0" class="ml-sm-1"> -->
+            <span *ngIf="capaLoad[item.uid] && (capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+              <strong class="fas fa-arrow-up" style="color:red"></strong>
+            </span>
+            <!-- <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].isBooked && capaLoad[item.uid].rankUnder >= 0" class="ml-sm-1"> -->
+            <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].isBooked && !(capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+              <strong class="fas fa-arrow-down" style="color:green"></strong>
+            </span>
+            <span *ngIf="capaLoad[item.uid] && !(capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+              <strong class="fas fa-arrow-up" style="color:orange"></strong>
+            </span>
+            <span *ngIf="capaLoad[item.uid] && !capaLoad[item.uid].isBooked" class="ml-sm-1">
+              <i class="fas fa-minus" style="color:green"></i>
+            </span>
+          </span>
+        </div>
+        <div *ngIf="item.children?.length > 0 && item.showChildren" [ngStyle]="{'list-style-type': 'none'}">
+          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children, level: level + 1 }"></ng-container>
+        </div>
+      </div>
+    </ng-template>
+    <!-- End of definitions for the OrgaTree -->
+  
+    <ng-template #indicator let-level="level">
+      <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+    </ng-template>
+  
+    <div *ngIf="displayCosttypes() < 0" >
+      <div class="spinner-border" role="status"></div>
+      <span> {{ 'ViewCosttypes.msg.calculating' | translate }}</span>
+    </div>
+  </div>

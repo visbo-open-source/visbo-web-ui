@@ -103,6 +103,7 @@ import { EnvServiceProvider } from './_helpers/env.service.provider';
 
 import { GoogleChartModule } from './_chart/google-chart.module';
 import { ApproverComponent } from './_components/comp-approvertable/comp-approvertable.component';
+import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-viewcosttype.component';
 
 @NgModule({
   declarations: [
@@ -156,7 +157,8 @@ import { ApproverComponent } from './_components/comp-approvertable/comp-approve
     SystasksComponent,
     SysconfigComponent,
     SyssettingsComponent,
-    ApproverComponent
+    ApproverComponent,
+    CompViewcosttypeComponent
   ],
   imports: [
     BrowserModule,

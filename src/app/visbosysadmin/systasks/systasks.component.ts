@@ -39,7 +39,10 @@ export class SystasksComponent implements OnInit {
     this.visbosettingService.getVCSettingByType(this.systemVC, 'Task', true)
       .subscribe(
         vcsetting => {
-          this.vcsetting = vcsetting;
+          // eliminate the settings for Predict Collect and Predict Training          
+          this.vcsetting = vcsetting?.filter( item => ( item.name != "Predict Collect" ) && ( item.name != "Predict Training" ))
+          // ur: 08.02.2024: 
+          // this.vcsetting = vcsetting;
           this.sortTable(undefined);
           this.log('get Settings success ' + vcsetting.length);
           this.alertService.clear();

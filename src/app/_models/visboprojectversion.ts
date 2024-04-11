@@ -21,11 +21,24 @@ export class VisboCapacity {
   baselineCost: number;
   baselineCost_PT: number;
 }
+export class VisboCosttypes {
+  name: string;
+  vpid: string;
+  vp: VisboProject;
+  month: Date;
+  costID: number;
+  costName: string;
+  variantName: string;  
+  currentCost: number;
+  baselineCost: number;
+}
 
 export class VPVCost {
   currentDate: Date;
   baseLineCost: number;
   currentCost: number;
+  personnelCost: number;
+  allOtherCost: number;
   baseLineInvoice: number;
   currentInvoice: number;
 }
@@ -208,6 +221,7 @@ export class VisboProjectVersion {
   delivery: VPVDelivery[];
   deadline: VPVDeadline[];
   capacity:VisboCapacity[];
+  costtypes: VisboCosttypes[];
 
   perm: {system: number, vc: number, vp: number};
   updatedAt: Date;
