@@ -123,7 +123,8 @@ export class EmployeeComponent implements OnInit {
   onCenterChange(selectedCenterId: string): void {
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
-        this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
+        //this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
+        this.selectedCenterProjects = visboProjectsList.filter(project => ((project.vpType === 0) && (project.vpStatus == constSystemVPStatus[2])));
       },
       error => {
         console.log(error);
