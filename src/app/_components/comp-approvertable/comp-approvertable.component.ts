@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { visboCmpString } from '../../_helpers/visbo.helper';
+import { TranslateService } from '@ngx-translate/core';
+
+import { MessageService } from '../../_services/message.service';
+import { AlertService } from '../../_services/alert.service';
+
+import { visboCmpString ,getErrorMessage, visboGetShortText} from '../../_helpers/visbo.helper';
 import { VtrVisboTrackerExtended } from 'src/app/_models/employee';
 import { VisboTimeTracking } from 'src/app/_services/visbotimetracker.service';
 import { UserService } from 'src/app/_services/user.service';
@@ -12,6 +17,30 @@ import { VisboProject } from 'src/app/_models/visboproject';
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
 import { VisboOrganisation } from 'src/app/_models/visbosetting';
 import { VisboUser } from 'src/app/_models/visbouser';
+
+
+
+import * as XLSX from 'xlsx';
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
+
+
+class exportVTR {
+  userID: string;
+  userName: string;
+  vcName: string;
+  vpid: string;
+  vpName: string;
+  roleID: number;
+  date: Date;
+  time: number;
+  description: string;
+  approved: string;
+  approvalID: string;
+  approverName: string;
+  approvalDate: Date;  
+  result: string;
+}
 
 @Component({
   selector: 'app-comp-approvertable',
@@ -65,6 +94,9 @@ export class ApproverComponent implements OnInit {
   
     constructor(
       private trackerService: VisboTimeTracking,
+      private translate: TranslateService,
+      private messageService: MessageService,
+      private alertService: AlertService,
       private userService: UserService,
       private authService: AuthenticationService,
       private visboCenterWs: VisboCenterService,
@@ -402,5 +434,121 @@ export class ApproverComponent implements OnInit {
       });    
       return approvableTimeRecs.length > 0;
     }
+
+     
+  copyTimeRecords(vtr: VtrVisboTrackerExtended, name: string): exportVTR {
+    
+    const copy = new exportVTR();    
+    copy.userName = vtr.userName;
+    copy.userID = vtr.userId;
+    copy.date = new Date(vtr.date);
+    copy.vcName = vtr.vcName;
+    copy.vpid = vtr.vpid;
+    copy.vpName = vtr.vpName;
+    copy.roleID = vtr.roleId * 1;
+    copy.time = vtr.time * 1;
+    copy.description = vtr.notes;
+    copy.approved = vtr.status;
+    copy.approvalID = vtr.approvalId;
+    if (vtr.approvalId) {
+      copy.approverName = this.userEmail
+    } 
+    //const approverEmail = this.getApprover(vtr, true);
+    //copy.approverName = approverEmail;
+    if (vtr.approvalDate) {
+      copy.approvalDate = new Date(vtr.approvalDate);
+    } 
+    if (vtr.failed) {
+      copy.result = vtr.failed
+    } else {
+      copy.result = ""
+    }  
+    delete copy.vpid;
+    delete copy.userID;    
+    delete copy.approvalID;
+    return copy;
+  }
+
+  exportExcel(): void {
+    this.log(`Export TimeRecords to Excel ${this.managerTimeTrackerList?.length}`);
+    // convert list to matrix
+
+    const excel: exportVTR[] = [];
+
+    let name = '';
+    let urlWeb = ''
+    const listURL: string[] = [];
+    const tooltip = this.translate.instant('compViewApprovertable.msg.viewWeb');
+    if (this.userId) {
+      name = this.userEmail;
+      urlWeb = window.location.origin.concat('/vtrApprove');
+    }
+    //const cumulate = new exportVTR();
+    
+    this.managerTimeTrackerList?.forEach(element => {
+      excel.push(this.copyTimeRecords(element, name));
+      listURL.push(urlWeb);
+    });
+
+    const len = excel.length;
+    const width = Object.keys(excel[0]).length;
+    this.log(`Export Data to Excel ${excel.length}`);
+    // Add Localised header to excel
+    // eslint-disable-next-line
+    const header: any = {};
+    let colName: number, colIndex = 0;
+    for (const element in excel[0]) {
+      this.log(`Processing Header ${element}`);
+      if (element == 'userName') {
+        colName = colIndex;
+      }
+      colIndex++;
+      header[element] = this.translate.instant('compViewApprovertable.lbl.'.concat(element))
+    }
+    excel.unshift(header);
+    this.log(`Header for Excel: ${JSON.stringify(header)}`)
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excel, {skipHeader: true});
+    for (let index = 1; index <= len; index++) {
+      const address = XLSX.utils.encode_cell({r: index, c: colName});
+      const url = listURL[index - 1];
+      worksheet[address].l = { Target: url, Tooltip: tooltip };
+    }
+    const matrix = 'A1:' + XLSX.utils.encode_cell({r: len, c: width});
+    worksheet['!autofilter'] = { ref: matrix };
+    // eslint-disable-next-line
+    const sheets: any = {};
+    const sheetName = visboGetShortText(name, 30);
+    sheets[sheetName] = worksheet;
+    const workbook: XLSX.WorkBook = { Sheets: sheets, SheetNames: [sheetName] };
+    // eslint-disable-next-line
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const actDate = new Date();
+    const fileName = ''.concat(
+      actDate.getFullYear().toString(),
+      '_',
+      (actDate.getMonth() + 1).toString().padStart(2, "0"),
+      '_',
+      actDate.getDate().toString().padStart(2, "0"),
+      '_TimeRecsApprover ',
+      (name || '')
+    );
+
+    const data: Blob = new Blob([excelBuffer], {type: EXCEL_TYPE});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = fileName.concat(EXCEL_EXTENSION);
+    this.log(`Open URL ${url} doc ${JSON.stringify(a)}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+  
+   
+  /** Log a message with the MessageService */
+  private log(message: string) {
+    this.messageService.add('VisboProject: ' + message);
+  }
     
 }

@@ -22,6 +22,11 @@ const EXCEL_EXTENSION = '.xlsx';
 
 const VISBO_orange = '#F7941E';
 const VISBO_blue = '#458CCB';
+const baselineColor = '#F7941E';
+const VISBO_IstPerso = '#BDBDBD';
+const VISBO_IstCost = '#E0E0E0';
+const VISBO_other = '#adc7f1';
+const capaColor = '#ff0000';
 
 class exportCost {
   name: string;
@@ -36,6 +41,8 @@ class exportCost {
   baseLineCost: number;
   actualCost: number;
   plannedCost: number;
+  personnelCost: number;
+  allOtherCost: number;
   cost: number;
   baseLineInvoice: number;
   actualInvoice: number;
@@ -67,7 +74,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   // VISBO orange = #F7941E
   // VISBO blue = #458CCB
   // colors = ['#F7941E', '#BDBDBD', '#458CCB'];
-  colors = [VISBO_orange, '#BDBDBD', VISBO_blue];
+  colors = [VISBO_orange, VISBO_IstPerso, VISBO_IstCost, VISBO_blue, VISBO_other];
 
   chartActive: Date;
   graphDataComboChart = [];
@@ -214,9 +221,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
           new Date(cost[i].currentDate),
           Math.round(cost[i].baseLineCost * 10) / 10 || 0,
           this.createCustomHTMLContent(cost[i], true),
-          Math.round(cost[i].currentCost * 10) / 10  || 0,
+          Math.round(cost[i].personnelCost * 10) / 10  || 0,
+          this.createCustomHTMLContent(cost[i], true),
+          Math.round(cost[i].allOtherCost * 10) / 10  || 0,
           this.createCustomHTMLContent(cost[i], true),
           0,
+          '',
+            0,
           ''
         ]);
       } else {
@@ -226,8 +237,12 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
           this.createCustomHTMLContent(cost[i], false),
           0,
           '',
-          Math.round(cost[i].currentCost * 10) / 10  || 0,
-          this.createCustomHTMLContent(cost[i], false)
+          0,
+          '',
+          Math.round(cost[i].personnelCost * 10) / 10  || 0,
+          this.createCustomHTMLContent(cost[i], true),
+          Math.round(cost[i].allOtherCost * 10) / 10  || 0,
+          this.createCustomHTMLContent(cost[i], true)
         ]);
       }
       this.vpvTotalCostBaseLine += cost[i].baseLineCost || 0;
@@ -249,7 +264,7 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       const currentDate = new Date(graphDataCost[0][0]);
       currentDate.setMonth(currentDate.getMonth() + 1);
       graphDataCost.push([
-        currentDate, undefined, undefined, undefined, undefined, undefined, undefined
+        currentDate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
       ]);
     }
     // header will be written in the array at the beginning
@@ -258,8 +273,12 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       this.translate.instant('keyMetrics.baselinePV'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.planAC'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},      
+      this.translate.instant('keyMetrics.planACCost'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}},
       this.translate.instant('keyMetrics.planETC'),
+      {type: 'string', role: 'tooltip', 'p': {'html': true}},
+      this.translate.instant('keyMetrics.planETCCost'),
       {type: 'string', role: 'tooltip', 'p': {'html': true}}
     ]);
     // graphDataCost.reverse();
@@ -281,11 +300,15 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     const baselinePV = this.translate.instant('keyMetrics.baselinePV');
     const planAC = this.translate.instant('keyMetrics.planAC');
     const planETC = this.translate.instant('keyMetrics.planETC');
+    const planACCost = this.translate.instant('keyMetrics.planACCost');
+    const planETCCost = this.translate.instant('keyMetrics.planETCCost');
 
     result = result + '<tr>' + '<td>' + baselinePV + ':</td>'
                     + '<td align="right"><b>' + Math.round(cost.baseLineCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
     result = result + '<tr>' + '<td>' + (actualData ? planAC : planETC)
-                    + ':</td align="right">' + '<td><b>' + Math.round(cost.currentCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+                    + ':</td align="right">' + '<td><b>' + Math.round(cost.personnelCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
+    result = result + '<tr>' + '<td>' + (actualData ? planACCost : planETCCost)
+                    + ':</td align="right">' + '<td><b>' + Math.round(cost.allOtherCost * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';
     result = result + '</table>' + '</div>' + '</div>';
     return result;
   }
@@ -302,9 +325,13 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     copy.baseLineCost = Math.round(cost.baseLineCost * 1000);
     if (copy.month.getTime() < actualDataUntilTime) {
       copy.actualCost = Math.round(cost.currentCost * 1000);
+      copy.personnelCost = Math.round(cost.personnelCost * 1000);      
+      copy.allOtherCost = Math.round(cost.allOtherCost * 1000);
       copy.plannedCost = 0;
     } else {
       copy.actualCost = 0;
+      copy.personnelCost = 0;      
+      copy.allOtherCost = 0;
       copy.plannedCost = Math.round(cost.currentCost * 1000);
     }
     copy.cost = copy.actualCost + copy.plannedCost;

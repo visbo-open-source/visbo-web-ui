@@ -36,6 +36,9 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 const EXCEL_EXTENSION = '.xlsx';
 
 const baselineColor = '#F7941E';
+const VISBO_blue = '#458CCB';
+const VISBO_Ist = '#BDBDBD';
+const VISBO_other = '#adc7f1';
 const capaColor = '#ff0000';
 
 class CapaLoad {
@@ -91,6 +94,7 @@ class exportCapacity {
   vpStatus: string;
   strategicFit: number;
   risk: number;
+  businessUnit: string;
   variantName: string;
   ampelStatus: number;
   ampelErlaeuterung: string;
@@ -125,6 +129,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() listVP: VisboProject[];
   @Input() customize: VisboSetting;
   @Input() vpvActive: VisboProjectVersion;
+  @Input() vpvBaseline: VisboProjectVersion;
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission; 
@@ -172,8 +177,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   orga: VisboOrgaStructure;
   topLevelNodes: VisboReducedOrgaItem[];
 
-  colorsPFV = [baselineColor, '#BDBDBD', '#458CCB','#adc7f1'];
-  colorsOrga = [capaColor, capaColor, '#BDBDBD', '#458CCB','#adc7f1'];
+  colorsPFV = [baselineColor, VISBO_Ist, VISBO_blue, VISBO_other];
+  colorsOrga = [capaColor, capaColor, VISBO_Ist, VISBO_blue, VISBO_other];
   seriesPFV = [
     {type: 'line', lineWidth: 4, pointSize: 0}
   ];
@@ -309,10 +314,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
       this.initSetting();
-      // test ur
       this.capaLoad  = [];
       this.visboViewOrganisationTree();
-      // end test ur
       this.getCapacity();
     }
   }
@@ -389,7 +392,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityFrom = new Date(validateDate(from, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      this.capacityFrom = new Date(this.vpvActive.startDate);
+      const baseStart = new Date(this.vpvBaseline.startDate).getTime();
+      const vpvStart = new Date(this.vpvActive.startDate).getTime();
+      const minStart = Math.min(baseStart, vpvStart);
+      this.capacityFrom = new Date(minStart);
     } else {
       // Portfolio or VC set a defined time range
       this.capacityFrom = new Date();
@@ -402,7 +408,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityTo = new Date(validateDate(to, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      this.capacityTo = new Date(this.vpvActive.endDate);
+      const baseEnd = new Date(this.vpvBaseline.endDate).getTime();
+      const vpvEnd = new Date(this.vpvActive.endDate).getTime();
+      const maxEnd = Math.max(baseEnd, vpvEnd);
+      this.capacityTo = new Date(maxEnd);
     } else {
       // Portfolio or VC set a defined time range
       this.capacityTo = new Date();
@@ -901,6 +910,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     } else if (this.vpActive && this.vpvActive && this.currentLeaf) {
       this.refPFV = true;
       this.log(`Capacity Calc for VPV ${this.vpvActive.vpid} role ${this.roleID} ${this.currentLeaf.uid} ${this.currentLeaf.parent?.uid}`);
+      const xxx = this.vpvBaseline;
       this.visboprojectversionService.getCapacity(this.vpvActive._id, this.currentLeaf.uid.toString(), this.currentLeaf.parent.uid.toString(), this.capacityFrom, this.capacityTo, true, this.refPFV)
         .subscribe(
           listVPV => {
@@ -1062,7 +1072,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
   initShowUnit(unit: string): void {
     let showDays = true;
-    if (this.hasVPPerm(this.permVP.ViewAudit) && (unit != '1' && unit != 'PD')) {
+    if (this.hasVPPerm(this.permVP.ViewAudit) &&  unit && (unit != '1') && (unit != 'PD')) {
       showDays = false;
     }
     this.showUnit = showDays ? 'PD' : 'PE';
@@ -1720,7 +1730,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     });
     graphDataCapacity.unshift(rowHeader);
 
-    // give the capacities colors
     let orgaColors = [];
     orgaColors = orgaColors.concat(scale('YlGnBu').colors(drillDownNEW.length + 3));
     orgaColors.reverse();
@@ -1759,9 +1768,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const budget = Math.round(capacity[i].baselineCost_PT * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
-          const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
+          const otherActivityCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
           this.sumCost += (capacity[i].actualCost_PT || 0) + (capacity[i].plannedCost_PT || 0) + (capacity[i].otherActivityCost_PT || 0);
-          // this.sumCost += actualCost + plannedCost + otherActiviyCost;          
+          // this.sumCost += actualCost + plannedCost + otherActivityCost;          
           this.sumBudget += (capacity[i].baselineCost_PT || 0);
           // this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], true, this.refPFV);
@@ -1773,16 +1782,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip,
             plannedCost,
             tooltip,
-            otherActiviyCost,
+            otherActivityCost,
             tooltip
           ]);
         } else {
           const budget = Math.round(capacity[i].baselineCost * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost * 10) / 10 || 0;
-          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;          
+          const otherActivityCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;          
           this.sumCost += (capacity[i].actualCost || 0)+ (capacity[i].plannedCost || 0) + (capacity[i].otherActivityCost || 0);
-          // this.sumCost += actualCost + plannedCost + otherActiviyCost;          
+          // this.sumCost += actualCost + plannedCost + otherActivityCost;          
           this.sumBudget += (capacity[i].baselineCost || 0);
           // this.sumBudget += budget;
           const tooltip = this.createTooltipPlanActual(capacity[i], false, this.refPFV);
@@ -1794,7 +1803,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip,
             plannedCost,
             tooltip,
-            otherActiviyCost,
+            otherActivityCost,
             tooltip
           ]);
         }
@@ -1805,8 +1814,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const budgetExtern = Math.round(capacity[i].externCapa_PT * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost_PT * 10) / 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost_PT * 10) / 10 || 0;
-          const otherActiviyCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
-          this.sumCost += (capacity[i].actualCost_PT || 0) + (capacity[i].plannedCost_PT || 0);
+          const otherActivityCost = Math.round(capacity[i].otherActivityCost_PT * 10) / 10 || 0;
+          this.sumCost += (capacity[i].actualCost_PT || 0) + (capacity[i].plannedCost_PT || 0) + (capacity[i].otherActivityCost_PT || 0);
           // this.sumCost += actualCost + plannedCost;
           this.sumBudget += (capacity[i].internCapa_PT || 0) + (capacity[i].externCapa_PT || 0);
           // this.sumBudget += budgetIntern + budgetExtern;
@@ -1821,7 +1830,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip,
             plannedCost,
             tooltip,
-            otherActiviyCost,
+            otherActivityCost,
             tooltip
           ]);
         } else {
@@ -1829,8 +1838,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
           const budgetExtern = Math.round(capacity[i].externCapa * 10) / 10 || 0;
           const actualCost = Math.round(capacity[i].actualCost * 10)/ 10 || 0;
           const plannedCost = Math.round(capacity[i].plannedCost * 10) / 10 || 0;
-          const otherActiviyCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
-          this.sumCost += (capacity[i].actualCost || 0) + (capacity[i].plannedCost || 0);
+          const otherActivityCost = Math.round(capacity[i].otherActivityCost * 10) / 10 || 0;
+          this.sumCost += (capacity[i].actualCost || 0) + (capacity[i].plannedCost || 0) + (capacity[i].otherActivityCost || 0);
           // this.sumCost += actualCost + plannedCost;
           this.sumBudget += (capacity[i].internCapa || 0) + (capacity[i].externCapa || 0);
           // this.sumBudget += budgetIntern + budgetExtern;
@@ -1845,7 +1854,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
             tooltip,
             plannedCost,
             tooltip,
-            otherActiviyCost,
+            otherActivityCost,
             tooltip
           ]);
         }
@@ -2304,14 +2313,17 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     copy.baselineCost_PT = vpv.baselineCost_PT;
     // copy.ampelStatus = vpv.ampelStatus;
     // copy.ampelErlaeuterung = vpv.ampelErlaeuterung;
-    if (vpv.vp) {
-      copy.vpStatus = vpv.vp.vpStatusLocale;
-      copy.strategicFit = getCustomFieldDouble(vpv.vp, '_strategicFit')?.value;
-      copy.risk = getCustomFieldDouble(vpv.vp, '_risk')?.value;
+    if (vpv.vp || (this.vpActive && (this.vpActive.vpType == 0))) {
+      const vp = vpv.vp? vpv.vp : this.vpActive
+      copy.vpStatus = vp.vpStatusLocale;
+      copy.strategicFit = getCustomFieldDouble(vp, '_strategicFit')?.value;
+      copy.risk = getCustomFieldDouble(vp, '_risk')?.value;
+      copy.businessUnit = getCustomFieldString(vp, "_businessUnit")?.value;
     } else {
       copy.vpStatus = '';
-      copy.strategicFit = -1;
-      copy.risk = -1;
+      copy.strategicFit = undefined;
+      copy.risk = undefined;
+      copy.businessUnit = '';
     }
     delete copy.vpid;
 

@@ -51,6 +51,7 @@ export class VisboOrganisation {
 export class VisboCost {
   name: string;
   uid: number;
+  pid: number;
 }
 
 export class VisboSubRole {

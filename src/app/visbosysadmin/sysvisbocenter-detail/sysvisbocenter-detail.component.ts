@@ -104,7 +104,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
           if (vcSettings.length > 0) {
             this.indexEnableDisable = 0;
           }
-          this.switchView('SettingEnableDisable')
+          //this.switchView('SettingEnableDisable')
           // this.sortSettingTable();
         },
         error => {
