@@ -1967,8 +1967,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         queryParams.refDate = this.refDate.toISOString();
       }
       queryParams.view = 'Capacity';
-      queryParams.drillDown = '1';
-      this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`)
+      queryParams.drillDown = '';
+      this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`);      
 
       this.router.navigate(['vpKeyMetrics/'.concat(element.vpid)], {
         queryParams: queryParams

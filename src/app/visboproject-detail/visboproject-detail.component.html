@@ -29,7 +29,7 @@
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
       <label *ngIf="visboproject.vpType != 1" name=vpVersion class="col form-control-plaintext pt-2"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
-      <label *ngIf="visboproject.vpType == 1" name=vpVersion class="col form-control-plaintext pt-2"><a>{{ visboproject.vpfCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+      <label *ngIf="visboproject.vpType == 1" name=vpVersion class="col form-control-plaintext pt-2"><span>{{ visboproject.vpfCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</span></label>
     </div>
     <div class="form-group row">
       <label for="VPCreated" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>

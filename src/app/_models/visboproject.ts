@@ -126,6 +126,7 @@ export class VPParams {
   viewKM: string;
   filter: string;
   roleID: number;
+  costID: number;
   unit: string;
   from: string;
   to: string;

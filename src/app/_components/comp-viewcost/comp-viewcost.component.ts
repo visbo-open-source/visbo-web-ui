@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResizedEvent } from 'angular-resize-event';
@@ -11,9 +11,10 @@ import { AlertService } from '../../_services/alert.service';
 import { VisboProjectVersion, VPVCost } from '../../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../../_services/visboprojectversion.service';
 
+import { VPParams, constSystemVPStatus } from '../../_models/visboproject';
 import { VGPermission, VGPVC, VGPVP } from '../../_models/visbogroup';
 
-import { convertDate, getErrorMessage, visboGetShortText } from '../../_helpers/visbo.helper';
+import { convertDate, getErrorMessage, visboGetShortText, getPreView, validateDate } from '../../_helpers/visbo.helper';
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -61,12 +62,27 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
   @Input() vpvActive: VisboProjectVersion;
   @Input() combinedPerm: VGPermission;
 
+  @Output() switchViewChild: EventEmitter<VPParams> = new EventEmitter<VPParams>();
+
   currentVpvId: string;
   vpvCost: VPVCost[];
   vpvActualDataUntil: Date;
+  costFrom: Date;
+  costTo:Date;
+  currentName: string;
 
   vpvTotalCostBaseLine: number;
   vpvTotalCostCurrent: number;
+
+  costID: number;
+  filter: string;
+  filterStrategicFit: number;
+  filterRisk: number;
+  filterBU: string;
+  dropDownBU: string[];
+  filterVPStatusIndex: number;
+
+  drillDown: number;
 
   parentThis = this;
   timeoutID: ReturnType<typeof setTimeout>;
@@ -125,13 +141,15 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
+    this.initSetting();
     this.visboCostCalc();
   }
 
   ngOnChanges(): void {
     this.log(`Cost Changes  ${this.vpvActive._id} ${this.vpvActive.timestamp}`);
     this.chartActive = undefined;
-    if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {
+    if (this.currentVpvId !== undefined && this.vpvActive._id !== this.currentVpvId) {      
+      this.initSetting();
       this.visboCostCalc();
     }
   }
@@ -158,6 +176,68 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     }
     return (this.combinedPerm.vp & perm) > 0;
   }
+
+
+  initSetting(): void {
+  this.chartActive = undefined;
+  this.costID = this.route.snapshot.queryParams['costID'];  
+  const unit = this.route.snapshot.queryParams['unit'];
+  //this.initShowUnit(unit);
+
+  const filter = this.route.snapshot.queryParams['filter'] || undefined;
+  const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+  const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
+  const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
+  let filterParam = this.route.snapshot.queryParams['filterRisk'];
+  const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+  filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+  const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
+  if (filter) {
+    this.filter = filter;
+  }
+  this.filterBU = filterBU;
+  this.filterRisk = filterRisk;
+  this.filterStrategicFit = filterStrategicFit;
+  this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
+  let drillDown = Number(this.route.snapshot.queryParams['drillDown']);  
+  this.drillDown = drillDown;
+
+  const from = this.route.snapshot.queryParams['from'];
+  const to = this.route.snapshot.queryParams['to'];
+
+  if (from && validateDate(from, false)) {
+    this.costFrom = new Date(validateDate(from, false));
+  } else if (this.vpvActive){
+    // specific Project, show start & end date of the project    
+    const vpvStart = new Date(this.vpvActive.startDate).getTime();    
+    this.costFrom = new Date(vpvStart);
+  } else {
+    // Portfolio or VC set a defined time range
+    this.costFrom = new Date();
+    this.costFrom.setMonth(this.costFrom.getMonth() - 3);
+  }
+  this.costFrom.setDate(1);
+  this.costFrom.setHours(0, 0, 0, 0);
+
+  if (to && validateDate(to, false)) {
+    this.costTo = new Date(validateDate(to, false));
+  } else if (this.vpvActive){
+    // specific Project, show start & end date of the project
+    const vpvEnd = new Date(this.vpvActive.endDate).getTime();
+    this.costTo = new Date(vpvEnd);
+  } else {
+    // Portfolio or VC set a defined time range
+    this.costTo = new Date();
+    this.costTo.setMonth(this.costTo.getMonth() + 9);
+  }
+  this.costTo.setDate(1);
+  this.costTo.setHours(0, 0, 0, 0);
+
+ if (this.vpvActive) {
+    this.currentName = this.vpvActive.name;
+  }
+  this.log(`Cost From / To ${this.costFrom} / ${this.costTo}`);
+}
 
   visboCostCalc(): void {
     if (!this.vpvActive) {
@@ -191,6 +271,28 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
           }
         }
       );
+  }
+  
+  updateUrlParam(type: string, value: string, history = false): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new VPParams();
+    if (type == 'costID') {
+      queryParams.costID = Number(value);
+    } else if (type == 'from' || type == 'to') {
+      queryParams.from = this.vpvActive.startDate.toISOString();
+      queryParams.to = this.vpvActive.endDate.toISOString();
+    } else if (type == 'unit') {
+      queryParams.unit = value;      
+    } 
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: !history,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
   }
 
   visboViewCostOverTime(): void {
@@ -285,10 +387,6 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
     // this.log(`view Cost VP cost budget  ${JSON.stringify(graphDataCost)}`);
     this.graphDataComboChart = graphDataCost;
     this.chartActive = new Date();
-  }
-
-  chartSelectRow(row: number, label: string, value: number): void {
-    this.log(`chart Select Row ${row} ${label} ${value} `);
   }
 
   createCustomHTMLContent(cost: VPVCost, actualData: boolean): string {
@@ -462,6 +560,61 @@ export class VisboCompViewCostComponent implements OnInit, OnChanges {
       }
     }
     return result;
+  }
+
+
+  
+  chartSelectRow(row: number, label: string, value: number): void {
+    this.log(`chart Select Row ${row} ${label} ${value} `);
+    if (this.graphDataComboChart && row < this.graphDataComboChart.length) {
+     
+        const ressCost = this.graphDataComboChart[0][label];
+        const currentDate = this.graphDataComboChart[row + 1][0];
+        this.log(`chart identified Row ${currentDate} Role: ${ressCost}`);
+        this.gotoClickedRow(ressCost);
+      }    
+  }
+
+  gotoClickedRow(ressCost: string): void {
+    this.log(`goto VPKeyMetrics ${ressCost}`);
+    //gotoClickedRow(vpName: string): void {
+      //this.log(`goto VP ${vpName}`);
+      
+      const element = this.vpvCost;
+      if (element) {
+        const queryParams = new VPParams();        
+        
+        queryParams.refDate = this.vpvActive.timestamp.toString();
+        queryParams.unit = '';        
+        queryParams.costID = undefined;        
+        queryParams.from = this.vpvActive.startDate.toString();      
+        queryParams.to = this.vpvActive.endDate.toString(); 
+        queryParams.variantName = this.vpvActive.variantName; 
+        if (ressCost.includes("cost") ) {
+                queryParams.view = 'Costtype';   
+            } else {
+                queryParams.view = 'Capacity';
+            }
+        queryParams.drillDown = '';
+        this.log(`Goto vpid ${this.vpvActive.vpid} QueryParams ${JSON.stringify(queryParams)}`)
+  
+        // this.router.navigate(['vpKeyMetrics/'.concat(this.vpvActive.vpid)], {
+        //   queryParams: queryParams
+        // }).catch(err => {console.error('Navigation Error:', err)});
+        console.log('vpKeyMetrics/'.concat(this.vpvActive.vpid), queryParams);
+        this.switchViewChild.emit(queryParams);
+        this.router.navigate(['vpKeyMetrics/'.concat(this.vpvActive.vpid)], {
+          queryParams: queryParams
+        });
+
+      } else {
+        this.log(`Project ${this.vpvActive.name} not found`)
+      }
+      
+  }
+
+  getPreView(): boolean {
+    return getPreView();
   }
 
   /** Log a message with the MessageService */

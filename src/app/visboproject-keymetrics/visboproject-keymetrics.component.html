@@ -148,9 +148,9 @@
     </div>
     <div *ngIf="currentView == 'Capacity' && vcOrga">
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [vpvBaseline]="vpvBaseline" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-    </div>
+    </div>   
     <div *ngIf="currentView == 'Cost'">
-      <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
+      <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewcost>
     </div>
 
     <div *ngIf="currentView == 'Deadline'">
