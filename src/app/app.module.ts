@@ -60,6 +60,7 @@ import { VisboCompViewKeyMetricsComponent } from './_components/comp-viewkeymetr
 import { VisboCompViewDeliveryComponent } from './_components/comp-viewdelivery/comp-viewdelivery.component';
 import { VisboCompViewDeadlineComponent } from './_components/comp-viewdeadline/comp-viewdeadline.component';
 import { VisboCompViewCostComponent } from './_components/comp-viewcost/comp-viewcost.component';
+import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-viewcosttype.component';
 import { VisboCompViewCapacityComponent } from './_components/comp-viewcapacity/comp-viewcapacity.component';
 import { VisboCompViewCapacityCmpComponent } from './_components/comp-viewcapacitycmp/comp-viewcapacitycmp.component';
 import { VisboCompViewBoardComponent } from './_components/comp-viewboard/comp-viewboard.component';
@@ -103,7 +104,6 @@ import { EnvServiceProvider } from './_helpers/env.service.provider';
 
 import { GoogleChartModule } from './_chart/google-chart.module';
 import { ApproverComponent } from './_components/comp-approvertable/comp-approvertable.component';
-import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-viewcosttype.component';
 
 @NgModule({
   declarations: [
@@ -123,6 +123,7 @@ import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-
     VisboCompViewDeliveryComponent,
     VisboCompViewDeadlineComponent,
     VisboCompViewCostComponent,
+    CompViewcosttypeComponent,
     VisboCompViewCapacityComponent,
     VisboCompViewCapacityCmpComponent,
     VisboCompViewBoardComponent,
@@ -157,8 +158,7 @@ import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-
     SystasksComponent,
     SysconfigComponent,
     SyssettingsComponent,
-    ApproverComponent,
-    CompViewcosttypeComponent
+    ApproverComponent
   ],
   imports: [
     BrowserModule,

@@ -916,7 +916,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   // Commit-Button pressed
   setVPToCommit(): void {
-    this.customVPToCommit = true;
+     this.customVPToCommit = true;
      // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
      this.savingCostTotal = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentTotal || 0)
                   / (this.vpvActive.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
@@ -1352,9 +1352,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = 'pfv';
+        this.newVPV.isCommited = false;
       } else {
         this.newVPV = this.vpvActive;        
-        this.newVPV.status = this.customVPStatus;
+        this.newVPV.status = this.customVPStatus;        
+        this.newVPV.isCommited = false;
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = this.vpvActive.variantName;
@@ -1366,6 +1368,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.scaleFactor = 0;
     } else if (mode == 'Copy') {
       this.newVPV = this.vpvActive;
+      this.newVPV.isCommited = false;
       this.newVPV.status = this.customVPStatus;
       const list = this.getDropDownList(2, false);
       this.newVPVvariantName = list.length > 0 ? list[0].variantName : '';
@@ -1389,7 +1392,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
     || endDate.toISOString() !== this.newVPVendDate.toISOString()
     || scaleFactor !== 1) {
-      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate)
+      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate, this.newVPV.isCommited)
         .subscribe(
           vpv => {
             this.addVPVtoList(vpv);
@@ -1567,13 +1570,19 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         customFieldDate.value = this.customCommit;
       } else if (this.customCommit) {
         addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
-      }
+      }     
     }
 
     if (!this.customVPToCommit) {
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${this.customVPStatus}`);
     } else {
       this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit}`);
+    }
+
+    if (this.customCommit && this.customVPToCommit) {
+      this.vpvActive.isCommited = true;
+    } else {
+      this.vpvActive.isCommited = false;
     }
 
     this.visboprojectService.updateVisboProject(this.vpActive)

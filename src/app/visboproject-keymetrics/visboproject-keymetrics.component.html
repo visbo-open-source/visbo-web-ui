@@ -109,9 +109,9 @@
             <a *ngIf="hasKM(vpvActive.keyMetrics, 'Cost') && hasOrga" class="dropdown-item" (click)="switchView('Cost', false)">{{ 'vpKeyMetric.lbl.metricCost' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('Deadline', false)">{{ 'vpKeyMetric.lbl.metricDeadline' | translate }}</a>
             <a class="dropdown-item" (click)="switchView('Delivery', false)">{{ 'vpKeyMetric.lbl.metricDelivery' | translate }}</a>
-            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <!-- <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a> -->
             <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
-            <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <!-- <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a> -->
             <!-- old -- <a [href]="customURL" class="dropdown-item" (click)="initCustomURL('edit')" >{{customEdit}}</a> -->
             <!-- <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL('predict')" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a> -->
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
@@ -126,6 +126,9 @@
             <div class="dropdown-menu">
               <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
               <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+              <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+              <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
+              <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
               <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
             </div>
         </div>
@@ -145,9 +148,9 @@
     </div>
     <div *ngIf="currentView == 'Capacity' && vcOrga">
       <app-comp-viewcapacity [vpActive]="vpActive" [vpvActive]="vpvActive" [vpvBaseline]="vpvBaseline" [vcOrganisation]="vcOrga[0]" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
-    </div>
+    </div>   
     <div *ngIf="currentView == 'Cost'">
-      <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm"></app-comp-viewcost>
+      <app-comp-viewcost [vpvActive]="vpvActive" [combinedPerm]="combinedPerm" (switchViewChild)="switchViewParent($event)"></app-comp-viewcost>
     </div>
 
     <div *ngIf="currentView == 'Deadline'">

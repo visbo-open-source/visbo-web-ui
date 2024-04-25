@@ -1596,7 +1596,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
         queryParams.refDate = this.refDate.toISOString();
       }
       queryParams.view = 'Costtype';
-      queryParams.drillDown = '1';
+      queryParams.drillDown = '';
       this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`)
 
       this.router.navigate(['vpKeyMetrics/'.concat(element.vpid)], {
@@ -1851,7 +1851,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       || (leaf.parent && this.currentLeaf.parent && (leaf.parent.uid !== this.currentLeaf.parent.uid))) {
       setTreeLeafSelection(this.currentLeaf, TreeLeafSelection.NOT_SELECTED);
       this.currentLeaf = leaf;
-      this.updateUrlParam('roleID', leaf.uid.toString());
+      this.updateUrlParam('costID', leaf.uid.toString());
       this.getCosttypes();
     }
     if (showChildren) {

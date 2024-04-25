@@ -499,7 +499,8 @@ export class VisboprojectDetailComponent implements OnInit {
   }
 
   canDeleteVariant(variant: VPVariant): boolean {
-    if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
+    //if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
+    if (!variant ||this.getLockStatus(variant) > 1 ) {
       return false;
     } else if (this.hasVPPerm(this.permVP.Modify) || (this.hasVPPerm(this.permVP.CreateVariant) && variant.email == this.currentUser.email)) {
       return true;
