@@ -3,4 +3,27 @@
     color: #da6969;
     font-size: 12px;
   }
-  
+#SortName {
+    cursor: pointer;
+  }
+#SortPM {
+    cursor: pointer;
+  }
+#SortStatus {
+    cursor: pointer;
+  }
+#SortType {
+    cursor: pointer;
+  }
+#SortDate {
+    cursor: pointer;
+  }
+#SortVersions {
+  cursor: pointer;
+}
+#VPHead {
+  background-color:#adc7f1;
+}  
+#VPList {
+  background-color:#d4e4ff;
+}

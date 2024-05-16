@@ -2,3 +2,27 @@
  margin: 0em;
  padding-top: 0em;
 }
+#SortDate {
+    cursor: pointer;
+}
+#SortUser {
+    cursor: pointer;
+}
+#SortAction {
+    cursor: pointer;
+}
+#SortVP {
+    cursor: pointer;
+}
+#SortInfo {
+    cursor: pointer;
+}
+#SortResult {
+    cursor: pointer;
+}
+#auditFrom {
+    cursor: pointer;
+}
+#auditTo {
+    cursor: pointer;
+}

@@ -63,6 +63,14 @@ table{
 }
 .table-custom {
   width: 100%;
-  max-width: 1200px;
-  margin: auto;
+  max-width: 2500px;
+  margin: left;
 }
+#TimeRecHead {
+    /* background-color: rgb(16, 153, 16); */
+    color: black;
+    font-size: 120%;
+}
+/* #TimeRecList {
+    background-color:rgb(219, 250, 219);
+} */

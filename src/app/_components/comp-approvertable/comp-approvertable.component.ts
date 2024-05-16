@@ -91,6 +91,7 @@ export class ApproverComponent implements OnInit {
     private userEmail: string;
     private managerUid: number;
     userIsApprover: boolean;
+    noData: boolean = false;
   
     constructor(
       private trackerService: VisboTimeTracking,
@@ -214,7 +215,7 @@ export class ApproverComponent implements OnInit {
     sortVTRTable(n: number, isManager: boolean=false): void {
       if (isManager) {
         if (n !== undefined) {
-          if (!this.managerTimeTrackerList) {
+          if (!this.originalManagerList) {
             return;
           }
           if (n !== this.sortColumn) {
@@ -227,7 +228,7 @@ export class ApproverComponent implements OnInit {
             this.sortAscending = !this.sortAscending;
           }
         }
-        this.managerTimeTrackerList.sort((a, b) => {
+        this.originalManagerList.sort((a, b) => {
           switch (this.sortColumn) {
             case 1:             
              return (visboCmpString(b.userName.toLowerCase(), a.userName.toLowerCase()) || (b.date.localeCompare(a.date)) ) ;
@@ -244,20 +245,20 @@ export class ApproverComponent implements OnInit {
           }
         });
         if (!this.sortAscending) {
-          this.managerTimeTrackerList.reverse();
+          this.originalManagerList.reverse();
         }
       }  
     }
   
     updateFilter() {
       var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
-      this.managerTimeTrackerList = this.originalManagerList;
-      // this.originalColumns = this.rows;
+      this.originalManagerList = this.managerTimeTrackerList;
+
       if (!!this.startDate?.length || !!this.endDate?.length) {
         const startDate = this.startDate?.length ? new Date(this.startDate) : null;
         const endDate = this.endDate?.length ? new Date(this.endDate) : null;
   
-        this.managerTimeTrackerList = this.managerTimeTrackerList?.filter(item => {
+        this.originalManagerList = this.originalManagerList?.filter(item => {
           var identicalName = true;
           if (this.filterName) {
             identicalName = (item.userName.toLowerCase().search(this.filterName.toLowerCase()) > -1);
@@ -265,14 +266,15 @@ export class ApproverComponent implements OnInit {
           if (item.status == 'No') {
             approvableTimeRecs.push(item)
           }
-          const date = new Date(item.date);
-          if (startDate && !endDate) {
-            return (date >= startDate) && identicalName;
-          } else if (!startDate && endDate) {
-            return (date <= endDate) && identicalName;;
-          } else {
-            return (date >= startDate) && (date <= endDate) && identicalName;
-          }
+          return identicalName;
+          // const date = new Date(item.date);
+          // if (startDate && !endDate) {
+          //   return (date >= startDate) && identicalName;
+          // } else if (!startDate && endDate) {
+          //   return (date <= endDate) && identicalName;;
+          // } else {
+          //   return (date >= startDate) && (date <= endDate) && identicalName;
+          // }
         });
 
       }
@@ -310,39 +312,49 @@ export class ApproverComponent implements OnInit {
         this.getTimeTrackerList();
     }
   
-    private getTimeTrackerList() {
-      this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {        
-        this.managerTimeTrackerList = managerView?.map(record => {
-          const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
-          const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
-          if (centerName && projectName) {
-            return {
-              userId: record.userId,
-              vcid: record.vcid,
-              vpid: record.vpid,
-              roleId: record.roleId,
-              notes: record.notes,
-              status: record.status,
-              time: record.time.$numberDecimal,
-              date: record.date?.split('T')[0],
-              approvalId: record.approvalId,
-              approvalDate: record.approvalDate,
-              vcName: centerName,
-              vpName: projectName,
-              timeTrackerId: record._id,
-              userName: record.name,
-              failed: record.failed
-            }; 
-          } else {
+    getTimeTrackerList() {
+      this.originalManagerList = [];
+      this.trackerService.getUserTimeTracker(this.userId, new Date(this.startDate), new Date(this.endDate), true).subscribe(({timeEntries, managerView}) => {    
+            this.managerTimeTrackerList = managerView?.map(record => {
+            const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
+            const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
+            if (centerName && projectName) {
+              return {
+                userId: record.userId,
+                vcid: record.vcid,
+                vpid: record.vpid,
+                roleId: record.roleId,
+                notes: record.notes,
+                status: record.status,
+                time: record.time.$numberDecimal,
+                date: record.date?.split('T')[0],
+                approvalId: record.approvalId,
+                approvalDate: record.approvalDate,
+                vcName: centerName,
+                vpName: projectName,
+                timeTrackerId: record._id,
+                userName: record.name,
+                failed: record.failed
+              }; 
+            } else {
 
-          }
-        });
-        this.originalManagerList = [];
-        // delete the items which are undefined
-        this.managerTimeTrackerList.forEach( item => {
-          if (item) {this.originalManagerList.push(item)}
-        });
-        this.managerTimeTrackerList = this.originalManagerList;
+            }
+          
+          });       
+          
+          if (this.managerTimeTrackerList.length > 0) {
+            // delete the items which are undefined
+            
+            this.managerTimeTrackerList.forEach( item => {
+              if (item) {this.originalManagerList.push(item)}
+            });
+            this.managerTimeTrackerList = this.originalManagerList;
+            this.sortVTRTable(undefined, true);
+            this.updateFilter();
+        
+        } else {
+          this.managerTimeTrackerList = undefined
+        }      
         
         // ur: don't know why this is needed
         //
@@ -350,8 +362,6 @@ export class ApproverComponent implements OnInit {
         //   this.getOrganizationList(this.visboCentersList[0]._id);         
         // }
        
-        this.sortVTRTable(undefined, true);
-        this.updateFilter();
       });
     }
   
@@ -363,14 +373,14 @@ export class ApproverComponent implements OnInit {
   
     approveAllTimeRecords() {
       const timeTrackerIds =
-        this.managerTimeTrackerList
+        this.originalManagerList
           .map(timeTrackerElem => {
             return {
               id: timeTrackerElem.timeTrackerId,
               vpid: timeTrackerElem.vpid,
             };
           });
-      //console.log(this.managerTimeTrackerList);
+      //console.log(this.originalManagerList);
       const requestBody = {
         status: "Yes",
         approvalId: this.userId,
@@ -406,7 +416,7 @@ export class ApproverComponent implements OnInit {
           var role = organisation[0].allRoles.find(role => (role.email === this.userEmail && role.isSummaryRole && !role.isExternRole));        
           const roleId = role?.uid;
        
-          if (this.managerTimeTrackerList) {
+          if (this.originalManagerList) {
             this.managerUid = roleId;
           }
           if (this.hasOrga) {
@@ -427,7 +437,7 @@ export class ApproverComponent implements OnInit {
     
     checkApprovableTimeRecs() {
       var approvableTimeRecs:VtrVisboTrackerExtended[] = [];
-      this.managerTimeTrackerList.forEach(item=> {
+      this.originalManagerList.forEach(item=> {
         if (item.status == 'No') {
             approvableTimeRecs.push(item);
         }
@@ -470,7 +480,7 @@ export class ApproverComponent implements OnInit {
   }
 
   exportExcel(): void {
-    this.log(`Export TimeRecords to Excel ${this.managerTimeTrackerList?.length}`);
+    this.log(`Export TimeRecords to Excel ${this.originalManagerList?.length}`);
     // convert list to matrix
 
     const excel: exportVTR[] = [];
@@ -485,7 +495,7 @@ export class ApproverComponent implements OnInit {
     }
     //const cumulate = new exportVTR();
     
-    this.managerTimeTrackerList?.forEach(element => {
+    this.originalManagerList?.forEach(element => {
       excel.push(this.copyTimeRecords(element, name));
       listURL.push(urlWeb);
     });

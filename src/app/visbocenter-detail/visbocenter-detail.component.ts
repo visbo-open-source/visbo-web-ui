@@ -1195,6 +1195,8 @@ export class VisbocenterDetailComponent implements OnInit {
       this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.users.email, b.users.email); });
     } else if (this.sortVPUserColumn === 2) {
       this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.vp.name.toLowerCase(), b.vp.name.toLowerCase()); });
+    } else if (this.sortVPUserColumn === 3) {
+      this.vgVPUsers.sort(function(a, b) { return visboCmpString(a.groupName.toLowerCase(), b.groupName.toLowerCase()); });
     }
     this.log(`Sort VP Users Column ${this.sortVPUserColumn} Reverse: ${this.sortVPUserAscending}`);
     if (!this.sortVPUserAscending) {

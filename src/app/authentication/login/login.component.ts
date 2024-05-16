@@ -226,6 +226,7 @@ export class LoginComponent implements OnInit {
 
   useLanguage(language: string): void {
     this.translate.use(language);
+    this.currentLang = language;
   }
 
   // queryStringToJSON(querystring: string): HttpParams {

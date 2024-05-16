@@ -45,7 +45,8 @@ class DropDownStatus {
 
 @Component({
   selector: 'app-comp-viewbubble',
-  templateUrl: './comp-viewbubble.component.html'
+  templateUrl: './comp-viewbubble.component.html',
+  styleUrls: ['./comp-viewbubble.component.css']
 })
 export class VisboCompViewBubbleComponent implements OnInit, OnChanges {
 
