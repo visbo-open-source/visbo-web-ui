@@ -458,16 +458,28 @@ export class ApproverComponent implements OnInit {
     copy.roleID = vtr.roleId * 1;
     copy.time = vtr.time * 1;
     copy.description = vtr.notes;
-    copy.approved = vtr.status;
+    copy.approved = vtr.status;    
     copy.approvalID = vtr.approvalId;
     if (vtr.approvalId) {
       copy.approverName = this.userEmail
-    } 
-    //const approverEmail = this.getApprover(vtr, true);
-    //copy.approverName = approverEmail;
+    } else {
+      copy.approverName = ""
+    }
+    copy.approverName = "";
     if (vtr.approvalDate) {
       copy.approvalDate = new Date(vtr.approvalDate);
     } 
+    if (vtr.failed) {
+      copy.result = vtr.failed
+    } else {
+      copy.result = ""
+    }  
+
+    if (vtr.approvalDate) {
+      copy.approvalDate = new Date(vtr.approvalDate);
+    } else {
+      copy.approvalDate = undefined
+    }
     if (vtr.failed) {
       copy.result = vtr.failed
     } else {
@@ -560,5 +572,22 @@ export class ApproverComponent implements OnInit {
   private log(message: string) {
     this.messageService.add('VisboProject: ' + message);
   }
+
+  
+  // getApprover(vtr: VtrVisboTrackerExtended, withEmail = true): string {
+  //   let fullName = '';
+  //   if (vtr.approvalId) {
+  //     const user = this.vcUser.get(vtr.approvalId);
+  //     if (user) {        
+  //       if ( withEmail) {
+  //         fullName = fullName.concat(' (', user.email, ')');
+  //       } else {
+  //         fullName = user.profile.firstName.concat(' ', user.profile.lastName)
+  //       }      
+  //     }
+  //   }
+  //   return fullName || '';
+  // }
+  
     
 }
