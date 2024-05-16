@@ -55,7 +55,8 @@ class exportCost {
 
 @Component({
   selector: 'app-comp-viewcost',
-  templateUrl: './comp-viewcost.component.html'
+  templateUrl: './comp-viewcost.component.html' ,
+  styleUrls: ['./comp-viewcost.component.css']
 })
 export class VisboCompViewCostComponent implements OnInit, OnChanges {
 

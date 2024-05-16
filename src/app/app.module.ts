@@ -158,7 +158,7 @@ import { ApproverComponent } from './_components/comp-approvertable/comp-approve
     SystasksComponent,
     SysconfigComponent,
     SyssettingsComponent,
-    ApproverComponent
+    ApproverComponent,
   ],
   imports: [
     BrowserModule,

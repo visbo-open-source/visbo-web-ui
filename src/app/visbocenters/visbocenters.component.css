@@ -1,4 +1,13 @@
 /* VisboCentersComponent's private CSS styles */
+
+#VCHead {
+  background-color: lightgray;
+}
+
+#VCList {
+  background-color: rgb(231, 231, 231);
+}
+
 .selected {
   background-color: #CFD8DC !important;
   color: white;
@@ -69,4 +78,15 @@ button.delete {
   top: 6px;
   background-color: gray !important;
   color: white;
+}
+
+#SortName {
+  cursor: pointer;
+}
+#SortDate {
+  cursor: pointer;
+}
+
+#SortProjects {
+  cursor: pointer;
 }

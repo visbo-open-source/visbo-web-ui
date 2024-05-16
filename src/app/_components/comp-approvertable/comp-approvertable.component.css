@@ -17,3 +17,18 @@
 .calendar input{
     max-width: 155px;
 }
+.table-custom {
+    width: 100%;
+    max-width: 2500px;
+    margin: left;
+}
+#TimeRecHead {
+    /* rote farbe - background-color: rgb(241, 8, 8); */
+    /* background-color: #f1b308; */
+    color: black;
+    font-size: 120%;
+}
+#TimeRecList {
+    /* background-color: #ecdeb7; */
+    color: black;;
+}

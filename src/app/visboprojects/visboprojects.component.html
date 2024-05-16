@@ -49,17 +49,17 @@
   </div>
 
   <div *ngIf="viewMode != 'KeyMetrics'" class='panel-body'>
-    <table class='table table-hover table-sortable'>
+    <table class='table table-hover table-sortable' >
       <thead id="VPHead">
         <tr>
           <th class="d-none d-md-table-cell">{{ 'vp.lbl.nr' | translate }}</th>
-          <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }}</th>
-          <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }}</th>
-          <th id="SortStatus" class="d-none d-lg-table-cell" (click)="sortVPTable(8)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
-          <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }}</th>
-          <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }}</th>
-          <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }}</th>
-          <th *ngIf="!vcSelected" id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}</th>
+          <th id="SortName" (click)="sortVPTable(1)">{{ 'vp.lbl.name' | translate }} <i class="fa fa-sort"></i></th>
+          <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortVPTable(7)">{{ 'vp.lbl.manager' | translate }} <i class="fa fa-sort"></i></th>
+          <th id="SortStatus" class="d-none d-lg-table-cell" (click)="sortVPTable(8)">{{ 'keyMetrics.lbl.vpStatus' | translate }} <i class="fa fa-sort"></i></th>
+          <th id="SortType" class="d-none d-md-table-cell" (click)="sortVPTable(5)">{{ 'vp.lbl.type' | translate }} <i class="fa fa-sort"></i></th>
+          <th id="SortDate" class="d-none d-md-table-cell" (click)="sortVPTable(2)">{{ 'vp.lbl.modified' | translate }} <i class="fa fa-sort"></i></th>
+          <th id="SortVersions" class="d-none d-lg-table-cell" (click)="sortVPTable(4)">{{ 'vp.lbl.versions' | translate }} <i class="fa fa-sort"></i></th>
+          <th *ngIf="!vcSelected" id="SortVC" class="d-none d-lg-table-cell" (click)="sortVPTable(3)">{{ 'vp.lbl.vc' | translate }}  <i class="fa fa-sort"></i></th>
           <!-- <th id="SortCommitDate" class="d-none d-xl-table-cell"  *ngIf="isViewWithCommit()  && hasCommitDate()"  (click)="sortVPTable(6)">{{ 'vp.lbl.commit' | translate }}</th> -->
           <th>Info</th>
         </tr>

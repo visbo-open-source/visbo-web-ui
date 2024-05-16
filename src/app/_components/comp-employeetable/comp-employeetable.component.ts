@@ -70,7 +70,7 @@ export class EmployeeComponent implements OnInit {
   showModal = false;
   vtrApprove = ['Yes', 'No'];
   visboCentersList: VisboCenter[] = [];
-  visboProjectsList: VisboProject[] = [];  
+  visboProjectsList: VisboProject[] = []; 
   indexedProjectsList: VisboProject[] = [];
   selectedCenterProjects: VisboProject[];  
   vcUser = new Map<string, VisboUser>();
@@ -81,8 +81,6 @@ export class EmployeeComponent implements OnInit {
   vcActiveName: string;
   vtrActiveUserName: string;
   isCreatorOfRecord: boolean;
-  // managerTimeTrackerList: VtrVisboTrackerExtended[];
-  // originalManagerList: VtrVisboTrackerExtended[];
   private userId: string;
   private userName: string;
   private userEmail: string;
@@ -134,9 +132,26 @@ export class EmployeeComponent implements OnInit {
   }
 
   addEmployee() {
+    //var userTimeRec: VtrVisboTrackerExtended = undefined;
     this.showModal = true;
-    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {
-      this.userForm.reset();     
+    this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {      
+      // userTimeRec => {
+      //   userTimeRec.vcid = this.userForm.value.vcid;
+      //   userTimeRec.userId = this.userForm.value.userId;
+      //   userTimeRec.approvalDate = this.userForm.value.approvalDate;
+      //   userTimeRec.approvalId =  this.userForm.value.approvalId;
+      //   userTimeRec.roleId =  this.userForm.value.roleId;
+      //   userTimeRec.status =  this.userForm.value.status;
+      //   userTimeRec.time =  this.userForm.value.time;
+      //   userTimeRec.userName =  this.userForm.value.userName;
+      //   const centerName = this.visboCentersList.find(vc => vc._id === this.userForm.value.vcid)?.name ?? '';
+      //   const projectName = this.visboProjectsList.find(vp => vp._id === this.userForm.value.vpid)?.name ?? '';   
+      //   userTimeRec.vcName = centerName;
+      //   userTimeRec.vpName = projectName;
+
+      //   this.originalColumns.push(userTimeRec)
+      // }
+      this.userForm.reset(); 
       this.getTimeTrackerList();
     }, error => {
       console.log('Error:', error);
@@ -317,8 +332,9 @@ export class EmployeeComponent implements OnInit {
       this.getTimeTrackerList();
   }
 
-  private getTimeTrackerList() {
-    this.trackerService.getUserTimeTracker(this.userId).subscribe(({timeEntries, managerView}) => {
+   getTimeTrackerList() {
+    this.originalColumns = [];
+    this.trackerService.getUserTimeTracker(this.userId, new Date(this.startDate), new Date(this.endDate), false).subscribe(({timeEntries, managerView}) => {
       this.rows = timeEntries?.map(record => {
         const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
         const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';        
@@ -344,19 +360,24 @@ export class EmployeeComponent implements OnInit {
         }
       });
       // delete the records = undefined
-      this.originalColumns = [];
-      this.rows.forEach( item => {
-        if (item) {this.originalColumns.push(item)}
-      });
-      this.rows = this.originalColumns;
+      if (this.rows.length > 0) {        
+        this.rows.forEach( item => {
+          if (item) {this.originalColumns.push(item)}
+        });
+        this.rows = this.originalColumns;
+        this.sortVTRTable(undefined);
+        this.updateFilter();
+      } else {
+        this.originalColumns = undefined
+      }
+     
 
       // ur: don't no why this is needed
       //
       // if (this.originalColumns?.length) {
       //   this.getOrganizationList(this.visboCentersList[0]._id);
       // }
-      this.sortVTRTable(undefined);
-      this.updateFilter();
+      
     });
   }
 

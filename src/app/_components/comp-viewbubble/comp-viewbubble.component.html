@@ -113,37 +113,37 @@
     <div *ngIf="chart==false" class='mt-3 container-fluid'>
       <div class='panel-body'>
         <table class='table table-hover table-sortable'>
-          <thead>
+          <thead id="VPFHead">
             <tr>
               <!-- <th class="d-none d-lg-table-cell">{{ 'compViewBubble.lbl.nr' | translate }}</th> -->
-              <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }}</th>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }}</th>
-              <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }}</th>
-              <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }}</th>         
-              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.racBaseLast' | translate }}</th>              
-              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)">{{ 'compViewBubble.lbl.racCurrent' | translate }}</th>     
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }}</th>
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}}</th>
-              <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
-              <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}}</th>
+              <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }} <i class="fa fa-sort"></i> </th>
+              <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }} <i class="fa fa-sort"></i></th>
+              <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }} <i class="fa fa-sort"></i></th>         
+              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.racBaseLast' | translate }} <i class="fa fa-sort"></i></th>              
+              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)">{{ 'compViewBubble.lbl.racCurrent' | translate }} <i class="fa fa-sort"></i></th>     
+              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}} <i class="fa fa-sort"></i></th>
               <!-- <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
               <th *ngIf="selectedMetric('CostPredict')" class="text-right" (click)="sortKeyMetricsTable(17)">{{getMetric('CostPredict').table}}</th> -->
 
-              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }}</th>
-              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{getMetric('EndDate').table}}</th>
-              <th *ngIf="selectedMetric('Deadline')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'compViewBubble.lbl.deadlines' | translate }}</th>
-              <th *ngIf="selectedMetric('Deadline')" class="text-right" (click)="sortKeyMetricsTable(6)">{{getMetric('Deadline').table}}</th>
-              <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlineUnFinishedDelay').table}}</th>
-              <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}}</th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }}</th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}}</th>
-              <th class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }}</th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{getMetric('EndDate').table}} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Deadline')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'compViewBubble.lbl.deadlines' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Deadline')" class="text-right" (click)="sortKeyMetricsTable(6)">{{getMetric('Deadline').table}} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlineUnFinishedDelay').table}} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }} <i class="fa fa-sort"></i></th>
+              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}} <i class="fa fa-sort"></i></th>
+              <th class="d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }} <i class="fa fa-sort"></i></th>
               <!-- <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th> -->
-              <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }}</th>
+              <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }} <i class="fa fa-sort"></i></th>
             </tr>
           </thead>
           <!--Table body-->
-          <tbody>
+          <tbody id="VPFTotalList">
             <tr *ngFor="let vpkm of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vpkm)'
                 data-toggle="modal" data-target="#ProjectDetail">
               <!-- <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td> -->

@@ -23,7 +23,11 @@
     height: 645px;
     overflow-y: scroll;    
     padding: 1px;
-    } 
+    }     
+#withScroll {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
 /* color-designs */
 /* #adb6bb;#d6dee2; */
 /* #dcedf7;#bddaea; */

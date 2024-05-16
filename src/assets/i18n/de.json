@@ -303,7 +303,7 @@
 		}
 	},
 	"vp": {
-		"title": "Projekte",
+		"title": "VISBO Projekte",
 		"titleName": "Projekte in {{name}}",
 		"titleVC": "Projekte in",
 		"noVP": "Kein VISBO Projekt",
@@ -518,6 +518,9 @@
 			"save":"Speichern",
 			"cancel":"Abbrechen",
 			"add":"Hinzufügen"
+		},
+		"msg":{
+			"calculating": "Suche nach passenden timerecords"
 		}
 	},
 	"vpRestrict": {

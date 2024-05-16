@@ -3,14 +3,14 @@
   <div class="calendar">
     {{"vtr.fromDate" | translate}}
     <input
-      (change)="updateFilter()"
+      (change)="getTimeTrackerList()"
       [(ngModel)]="startDate"
       [max]="endDate"
       class="col-2 col-sm-2 form-control" id="startDate"
       type="date">
     {{"vtr.toDate" | translate}}
     <input
-      (change)="updateFilter()"
+      (change)="getTimeTrackerList()"
       [(ngModel)]="endDate"
       [min]="startDate"
       class="col-2 col-sm-2 form-control"
@@ -22,10 +22,10 @@
   </div>
 </div>
 
-<div class="text-center" ><h1>Employee List</h1></div>
+<div class="text-align" ><h2>VISBO Time Recorder - Employee List</h2></div>
 <!-- <div class="text-center" ><h1>Employee List</h1></div> -->
 <table  class="table table-hover table-sortable table-custom">
-  <thead>
+  <thead id="TimeRecHead">
   <tr class="col-center">
     <th (click)="sortVTRTable(0)" class="d-none d-md-table-cell">
       {{'vtr.titleVCN' | translate}}
@@ -70,7 +70,7 @@
     </th>
   </tr>
   </thead>
-  <tbody>
+  <tbody id="TimeRecList">
   <tr (click)="selectRow(user)" *ngFor="let user of originalColumns" class="col-center">
     <td class="d-none d-md-table-cell">{{user.vcName}}</td>
     <td class="d-none d-md-table-cell">{{user.vpName}}</td>
@@ -79,7 +79,7 @@
     <td class="d-none d-md-table-cell">{{user.time}}</td>
     <td class="d-none d-md-table-cell">{{user.status}}</td>
     <td>
-      <button
+      <button class="my-1 float-right"
         (click)="openEditModal(user, true)"
         *ngIf="checkIsCreatorOfRecord(user)"
         [disabled]="user.status === 'Yes'"
@@ -97,10 +97,12 @@
     <td></td>
     <td></td>
     <td></td>
-    <td></td>
   </tr>
-
   </tbody>
+  <div *ngIf="originalColumns?.length==0" >
+    <div class="spinner-border"></div>
+    <span> {{ 'vtr.msg.calculating' | translate }}</span>
+  </div>
 </table>
 
 <!-- The Modal Employee -->

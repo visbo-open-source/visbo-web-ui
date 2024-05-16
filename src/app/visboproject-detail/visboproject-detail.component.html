@@ -62,14 +62,14 @@
           </div>
         </div>
         <div class='panel-body'>
-          <table class='table table-hover'>
+          <table class='table table-hover table-sortable'>
             <!--Table head-->
             <thead id="UserHead">
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortUserPermTable(1)">{{ 'vpDetail.lbl.email' | translate }}</th>
-                <th (click)="sortUserPermTable(2)">{{ 'vpDetail.lbl.group' | translate }}</th>
-                <th class="d-none d-md-table-cell">{{ 'vpDetail.lbl.type' | translate }}</th>
+                <th id=sortEmail (click)="sortUserPermTable(1)">{{ 'vpDetail.lbl.email' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortGroup (click)="sortUserPermTable(2)">{{ 'vpDetail.lbl.group' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortType class="d-none d-md-table-cell">{{ 'vpDetail.lbl.type' | translate }} <i class="fa fa-sort"></i></th>
                 <th *ngIf="!deleted && hasVPPerm(permVP.ManagePerm)">{{ 'vpDetail.lbl.delete' | translate }}</th>
               </tr>
             </thead>
