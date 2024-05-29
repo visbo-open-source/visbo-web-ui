@@ -26,10 +26,13 @@ export class VisboTimeTracking {
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
   if (startDate) {
-    params = params.append('startDate', startDate.toISOString());
+    params = params.append('startDate', startDate.toUTCString());
   }
   if (endDate) {
-    params = params.append('endDate', endDate.toISOString())
+    endDate.setHours(23);
+    endDate.setMinutes(59);
+    endDate.setSeconds(0);    
+    params = params.append('endDate', endDate.toUTCString())
   }
   if (asApprover) {
     params = params.append('asApprover', asApprover)
