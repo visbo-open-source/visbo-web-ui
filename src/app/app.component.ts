@@ -12,7 +12,7 @@ import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.hel
 })
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '24-05';
+  version = '24-06';
   restVersionString = new Date();
   restUIVersionString = new Date();
   localsAvailable = false;
