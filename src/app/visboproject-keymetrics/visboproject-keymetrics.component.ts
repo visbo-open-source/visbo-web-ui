@@ -890,8 +890,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified) {
-      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
       }
     }
@@ -1540,6 +1540,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       });
       this.vpActive.customFieldDouble.forEach(item => {
         if (item.type == 'VP') {
+          const newField = this.newCustomFieldDouble.find(element => element.name == item.name);
           const editField = this.editCustomFieldDouble.find(element => element.name == item.name);
           if (editField && editField.value !== null) {
             item.value = editField.value;

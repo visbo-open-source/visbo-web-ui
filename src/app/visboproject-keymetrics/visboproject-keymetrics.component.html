@@ -400,9 +400,8 @@
                   <input id="customFieldDateID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
                 </td>
               </tr>
-              <!-- ur: 30.08.2023: Preparation for adding new customFields -->
-              
-              <!-- <tr *ngIf="customVPAdd">
+              <!-- ur: 30.08.2023: Preparation for adding new customFields -->              
+              <tr *ngIf="customVPAdd">
                 <ng-container *ngFor="let item of newCustomFieldString">
                   <td>{{ item.name }}</td>              
                   <td *ngIf="canChangeVPDetails()">
@@ -417,7 +416,7 @@
                     <input id="customFieldDoubleID" type="number" class="col-8 form-control" (change)="setModified()" name="{{ item.name }}" [(ngModel)]="item.value">
                   </td>
                 </ng-container>
-              </tr>           -->
+              </tr>          
             </tbody>
           </table>
           <div class="modal-footer align-items-end">
