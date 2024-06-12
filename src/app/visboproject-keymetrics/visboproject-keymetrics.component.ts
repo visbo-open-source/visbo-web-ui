@@ -29,6 +29,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, validateDate, convertDat
           visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
 
 import {TimeLineOptions} from '../_models/_chart'
+import { easeElasticOut } from 'd3';
 
 class DropDown {
   name: string;
@@ -890,8 +891,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified) {
-      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
       }
     }
@@ -1497,7 +1498,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // definition of the customUserFields
       this.customUserFieldDefinitions = this.vcCustomfields?.value?.liste;
       
-      const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
+      let customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
       } else if (this.customBU) {
@@ -1559,19 +1560,68 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         }
       });
+      // add new CustomFields of type VP        
+      this.newCustomFieldDouble.forEach(item => {
+        if (item.type == 'VP') {
+          const newFieldDef= this.customUserFieldDefinitions.find(element => element.name == item.name);
+          if (newFieldDef) {    
+            const usageIndex = this.vpvActive.customDblFields.findIndex(part => part.str == newFieldDef.uid);
+            if (usageIndex < 0) {        
+              const dblField = new VPVDblFields();
+              dblField.str = newFieldDef.uid;
+              dblField.dbl = item.value;
+              this.vpvActive.customDblFields.push(dblField);
+            }  else {
+              this.vpvActive.customDblFields[usageIndex].dbl = item.value;
+            }
+            customFieldDouble = getCustomFieldDouble(this.vpActive, item.name);
+            if (customFieldDouble && item.value != undefined) {
+              customFieldDouble.value = item.value;
+              customFieldDouble.localName = newFieldDef.name;
+              customFieldDouble.type = item.type;
+            } else if (item.value) {
+              addCustomFieldDouble(this.vpActive, item.name, item.value);
+            }
+          }
+        }     
+      });
       
-    }
 
-    // project version commited
-    if (this.vpActive && this.customVPToCommit) {
-      this.customCommit = new Date();
-      const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
-      if (customFieldDate && this.customCommit != undefined) {
-        customFieldDate.value = this.customCommit;
-      } else if (this.customCommit) {
-        addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
-      }     
-    }
+      this.newCustomFieldString.forEach(item => {
+        if (item.type == 'VP') {
+          const newFieldDef= this.customUserFieldDefinitions.find(element => element.name == item.name);
+          if (newFieldDef) { 
+            const usageIndex = this.vpvActive.customStringFields.findIndex(part => part.strkey == newFieldDef.uid);
+            if (usageIndex < 0) {            
+              const strField = new VPVStrFields();
+              strField.strkey = newFieldDef.uid;
+              strField.strvalue = item.value;
+              this.vpvActive.customStringFields.push(strField); 
+            } else {
+              this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
+            }
+            customFieldString = getCustomFieldString(this.vpActive, item.name);
+            if (customFieldString && item.value != undefined) {
+              customFieldString.value = item.value;
+              customFieldString.localName = newFieldDef.name;
+              customFieldString.type = item.type;
+            } else if (item.value) {
+              addCustomFieldString(this.vpActive, item.name, item.value);
+            }
+          }  
+        }
+      });
+
+      // project version commited
+      if (this.vpActive && this.customVPToCommit) {
+        this.customCommit = new Date();
+        const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
+        if (customFieldDate && this.customCommit != undefined) {
+          customFieldDate.value = this.customCommit;
+        } else if (this.customCommit) {
+          addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+        }     
+      }
 
     if (!this.customVPToCommit) {
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${this.customVPStatus}`);
@@ -1634,6 +1684,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
     );
   }
+}
 
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {

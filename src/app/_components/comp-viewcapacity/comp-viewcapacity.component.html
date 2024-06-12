@@ -199,17 +199,29 @@
             {{item.name}} <!-- {{item.isSelected}} -->
           </span>
           <!-- <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].rankOver > 0" class="ml-sm-1"> -->
-          <span *ngIf="capaLoad[item.uid] && (capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+          <span *ngIf="refPFV && (capaLoad[item.uid] && capaLoad[item.uid].isNoPerson && (capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
+            <strong class="fas fa-arrow-up" style="color:red"></strong>
+          </span>   
+          <span *ngIf="!refPFV && (capaLoad[item.uid] && (capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
             <strong class="fas fa-arrow-up" style="color:red"></strong>
           </span>
           <!-- <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].isBooked && capaLoad[item.uid].rankUnder >= 0" class="ml-sm-1"> -->
-          <span *ngIf="capaLoad[item.uid] && capaLoad[item.uid].isBooked && !(capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+          <span *ngIf="refPFV && (capaLoad[item.uid] && capaLoad[item.uid].isNoPerson && capaLoad[item.uid].isBooked && !(capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
             <strong class="fas fa-arrow-down" style="color:green"></strong>
           </span>
-          <span *ngIf="capaLoad[item.uid] && !(capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0)" class="ml-sm-1">
+          <span *ngIf="!refPFV && (capaLoad[item.uid] && capaLoad[item.uid].isBooked && !(capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
+            <strong class="fas fa-arrow-down" style="color:green"></strong>
+          </span>
+          <span *ngIf="refPFV && (capaLoad[item.uid] && capaLoad[item.uid].isNoPerson && !(capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
             <strong class="fas fa-arrow-up" style="color:orange"></strong>
           </span>
-          <span *ngIf="capaLoad[item.uid] && !capaLoad[item.uid].isBooked" class="ml-sm-1">
+          <span *ngIf="!refPFV && (capaLoad[item.uid] && !(capaLoad[item.uid].totalOver > 0) && (capaLoad[item.uid].percentOver > 0))" class="ml-sm-1">
+            <strong class="fas fa-arrow-up" style="color:orange"></strong>
+          </span>
+          <span *ngIf="refPFV && (capaLoad[item.uid] && capaLoad[item.uid].isNoPerson && !capaLoad[item.uid].isBooked)" class="ml-sm-1">
+            <i class="fas fa-minus" style="color:green"></i>
+          </span>
+          <span *ngIf="!refPFV && (capaLoad[item.uid] && !capaLoad[item.uid].isBooked)" class="ml-sm-1">
             <i class="fas fa-minus" style="color:green"></i>
           </span>
         </span>
