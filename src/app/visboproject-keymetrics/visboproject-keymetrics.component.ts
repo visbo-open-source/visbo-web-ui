@@ -220,7 +220,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
-    this.findVPV(new Date(this.refDate));
+    this.findVPV(new Date(this.refDate));               
+    this.initCustomFields(this.vpActive);
   }
 
   onResized(event: ResizedEvent): void {
@@ -807,7 +808,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.getAllVersionsShort();
             // ur: 30.08.23: CustomFieldsSetting wird in initCustomFields bereits benötigt
             // this.getVisboCenterSettings();
-            this.getVisboCenterOrga();            
+            this.getVisboCenterOrga();
             this.initCustomFields(this.vpActive);
           },
           error => {
@@ -890,7 +891,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   checkVPCustomValues(): boolean {
     let result = false;
-    if (!this.customVPAdd && !this.customVPModified) {
+    if (!this.customVPAdd && !this.customVPModified && this.hasVPPerm(this.permVP.Modify)) {
       if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
       //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
@@ -899,11 +900,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  addVPCustomValues(): void {
+  addVPCustomValues(): void {    
+    if (this.hasVPPerm(this.permVP.Modify) && !constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {         
+      this.customVPAdd = true;
+    }  
+    if (!this.hasVPPerm(this.permVP.Modify)) {
+      this.customVPAdd = false;
+    }     
     if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       this.customVPAdd = false;
-    } else {
-      this.customVPAdd = true;
     }
   }
 
