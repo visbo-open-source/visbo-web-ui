@@ -71,6 +71,11 @@ table{
     color: black;
     font-size: 120%;
 }
+#projectNameSelect {
+    max-height: 100px;
+    overflow-y: scroll;
+}
+
 /* #TimeRecList {
     background-color:rgb(219, 250, 219);
 } */
