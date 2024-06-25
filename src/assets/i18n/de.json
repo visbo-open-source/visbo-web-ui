@@ -508,6 +508,7 @@
 			"record": "Ändern Rekord",
 			"Employee": "Mitarbeiter",
 			"Centre":"Zentrum Name",
+			"BusinessUnit": "BuisnessUnit",
 			"Project":"Projekt Name",
 			"Date":"Datum",
 			"Description":"Kurzbeschreibung",
