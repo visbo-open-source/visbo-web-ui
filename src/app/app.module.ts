@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { SafeUrlPipe } from './_guards/safe-url.pipe';
+import { FilterPipe } from './_guards/filter.pipe'; // -> imported filter pipe
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -110,6 +111,7 @@ import { ApproverComponent } from './_components/comp-approvertable/comp-approve
     AppComponent,
     EmployeeComponent,
     SafeUrlPipe,
+    FilterPipe,
     AlertComponent,
     VisboCentersComponent,
     VisbocenterDetailComponent,

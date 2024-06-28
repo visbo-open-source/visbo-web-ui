@@ -65,7 +65,8 @@ export class EmployeeComponent implements OnInit {
     notes: new FormControl('', Validators.required),
     status: new FormControl(null),
     approvalId: new FormControl(null),
-    approvalDate: new FormControl(null)
+    approvalDate: new FormControl(null),
+    searchtext: new FormControl(null)
   });
   updatedRow: any = {};
   selectedRow: VtrVisboTrackerExtended;
@@ -76,7 +77,7 @@ export class EmployeeComponent implements OnInit {
   indexedProjectsList: VisboProject[] = [];
   selectedCenterProjects: VisboProject[];
   selection: VisboProject;
-  filter: string;  
+  searchtext: string = "";  
   vcUser = new Map<string, VisboUser>();
   hasOrga = false;
   vcOrga: VisboOrganisation[] = [];
@@ -180,31 +181,6 @@ export class EmployeeComponent implements OnInit {
   }
 
   
-  filterKeyBoardEvent(event: KeyboardEvent): void {    
-    if (!event) { this.log('No Keyboard Event'); }
-    // const keyCode = event ? event.keyCode : 0;
-    // if (keyCode == 13) {    // only return key    
-    this.filterVP('filter');
-    this.clearEditModal;
-  }
-
-  filterVP(type:string):void {
-    let newlistVP: VisboProject[];
-    const filter= this.filter;   
-    for (let i = 0; i < this.selectedCenterProjects.length; i++) {
-      if (this.selectedCenterProjects[i]?.vpType != 0) {
-        continue;
-      }
-      if (filter && !(this.selectedCenterProjects[i]?.name.toLowerCase().indexOf(filter) >= 0)) {
-        // ignore projects not matching filter
-        continue;
-      } else {
-          newlistVP.push(this.selectedCenterProjects[i]);
-      }
-    }
-    this.selectedCenterProjects = newlistVP;
-  }
-
   initBUDropDown(): void {
     this.dropDownBU = [];
 
@@ -268,6 +244,7 @@ export class EmployeeComponent implements OnInit {
       userId: user.userId,
       vcid: user.vcid,
       vpid: user.vpid,
+      bu: this.dropDownBU[0],
       date: user.date,
       time: user.time,
       notes: user.notes,
@@ -396,6 +373,11 @@ export class EmployeeComponent implements OnInit {
         }
       });      
     }
+  }
+
+  updateSearchText() {    
+    const searchFilter = this.searchtext;
+    this.searchtext = this.userForm.value.searchtext
   }
 
   private getProjectList(): void {
