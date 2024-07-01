@@ -501,6 +501,7 @@
 		"fromDate": "Show Records From",
 		"toDate": "To",
 		"approveAll":"Approve All",
+		"copy": "Copy",
 		"edit": "Edit",
 		"userName": "Employee",
 		"mdl":{

@@ -17,10 +17,13 @@ export class FilterPipe implements PipeTransform {
     if (!searchText) {
       return items;
     }
-    searchText = searchText.toLocaleLowerCase();
+    //searchText = searchText.toLocaleLowerCase();
+    let pattern = new RegExp(searchText,"i");
 
-    return items.filter(it => {
-      return it.name.toLocaleLowerCase().includes(searchText);
+    const xxx = items.filter(it => {
+        return pattern.test(it.name);
+      //return it.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase());
     });
+    return xxx;
   }
 }

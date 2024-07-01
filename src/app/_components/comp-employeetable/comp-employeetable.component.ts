@@ -135,7 +135,9 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  onBusinessUnitChange( selectedCenterId: string, bu: string):void {    
+  onBusinessUnitChange( selectedCenterId: string, bu: string):void {  
+    this.searchtext = "";  
+    this.userForm.get('searchtext').setValue(this.searchtext);
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
@@ -166,6 +168,8 @@ export class EmployeeComponent implements OnInit {
 
   onCenterChange(selectedCenterId: string): void {    
     this.getVisboCenterCustomization(selectedCenterId);
+    this.searchtext = "";
+    this.userForm.get('searchtext').setValue(this.searchtext);
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));        
@@ -239,6 +243,32 @@ export class EmployeeComponent implements OnInit {
     this.vpActiveName = user.vpName;
     this.vcActiveName = user.vcName;
     this.vtrActiveUserName = user.userName;
+
+    this.userForm.patchValue({
+      userId: user.userId,
+      vcid: user.vcid,
+      vpid: user.vpid,
+      bu: this.dropDownBU[0],
+      date: user.date,
+      time: user.time,
+      notes: user.notes,
+      roleId: user.roleId,
+      approvalId: null,
+      approvalDate: null
+    });
+  }
+
+  openCopyModal(user: VtrVisboTrackerExtended) {
+    this.showModal = true;
+    this.isCreatorOfRecord = false;
+    this.vpActiveName = user.vpName;
+    this.vcActiveName = user.vcName;
+    this.vtrActiveUserName = user.userName;
+    // Description is empty if date is today
+    if (new Date(user.date).getDate() == new Date().getDate()) {
+      user.notes = ""
+    };
+    user.time = 0;
 
     this.userForm.patchValue({
       userId: user.userId,
