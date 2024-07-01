@@ -268,7 +268,7 @@ export class EmployeeComponent implements OnInit {
     if (new Date(user.date).getDate() == new Date().getDate()) {
       user.notes = ""
     };
-    user.time = 0;
+    user.time = null;
 
     this.userForm.patchValue({
       userId: user.userId,
