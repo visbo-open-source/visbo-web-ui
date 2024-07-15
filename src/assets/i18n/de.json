@@ -1373,6 +1373,16 @@
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
 		}
 	},
+	"compViewKanban": {
+		"lbl": {
+			"Initial": "Initial",
+			"Proposed": "Vorgeschlagen",
+			"Ordered": "Beauftragt",
+			"Paused": "Pausiert",
+			"Finished": "Beendet",
+			"Stopped": "Abgebrochen"
+		}
+	},
 	"compViewDelivery": {
 		"titleAllDelivery": "Status der Lieferungen",
 		"titleDetailDelivery": "Status der Lieferung",

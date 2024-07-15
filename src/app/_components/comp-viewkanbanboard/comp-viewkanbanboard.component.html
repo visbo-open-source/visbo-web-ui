@@ -1,0 +1,91 @@
+<div class="row">
+<div  class="column"> 
+
+    <h5 class="card-header p-2">
+    <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
+    <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
+    <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
+    {{ 'compViewKanban.lbl.Initial' | translate }}
+    <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+    <span class="text-right" style="font-size: small;">{{ initlistVPV.length }}</span>
+    </h5>
+    <div class="card-body p-2">  
+        <table class='table table-hover table-sortable'>
+            <tbody id="VPVInitList">
+                <tr *ngFor="let vp of initlistVPV" >         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td></td>
+                </tr>
+            </tbody>
+        </table>      
+    </div>
+</div>
+<div  class="column"> 
+    <h5 class="card-header p-2">
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
+        <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
+        {{ 'compViewKanban.lbl.Proposed' | translate }}
+        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+        <span class="text-right" style="font-size: small;">{{ proposedlistVPV.length }}</span>
+    </h5>
+    <div class="card-body p-2">    
+        <table class='table table-hover table-sortable'>
+            <tbody id="VPVProposedList">
+                <tr *ngFor="let vp of proposedlistVPV">         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td></td>
+                </tr>
+            </tbody>
+        </table>        
+    </div>       
+</div>
+<div  class="column "> 
+    <h5 class="card-header p-2">
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
+        <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
+        {{ 'compViewKanban.lbl.Ordered' | translate }}
+        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+        <span class="text-right" style="font-size: small;">{{ orderedlistVPV.length }}</span>
+    </h5>
+    <div class="card-body p-2">       
+        <table class='table table-hover table-sortable'>
+            <tbody id="VPVOrderedList">
+                <tr *ngFor="let vp of orderedlistVPV">         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>       
+</div>
+
+<div  class="column "> 
+    <h5 class="card-header p-2">
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
+        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
+        <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
+        {{ 'compViewKanban.lbl.Finished' | translate }}        
+        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+        <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length }}</span>
+    </h5>
+    <div class="card-body p-2">       
+        <table class='table table-hover table-sortable'>
+            <tbody id="VPVFinishedList">
+                <tr *ngFor="let vp of finishedlistVPV">         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>       
+</div>
+</div>
+
+
+ 

@@ -65,6 +65,7 @@ import { CompViewcosttypeComponent } from './_components/comp-viewcosttype/comp-
 import { VisboCompViewCapacityComponent } from './_components/comp-viewcapacity/comp-viewcapacity.component';
 import { VisboCompViewCapacityCmpComponent } from './_components/comp-viewcapacitycmp/comp-viewcapacitycmp.component';
 import { VisboCompViewBoardComponent } from './_components/comp-viewboard/comp-viewboard.component';
+import { VisboCompViewKanbanBoardComponent } from './_components/comp-viewkanbanboard/comp-viewkanbanboard.component';
 import { VisboCompViewBubbleComponent } from './_components/comp-viewbubble/comp-viewbubble.component';
 import { VisboCompViewVPFComponent } from './_components/comp-viewvpf/comp-viewvpf.component';
 import { VisboCompOverviewVPFComponent } from './_components/comp-overviewvpf/comp-overviewvpf.component';
@@ -129,6 +130,7 @@ import { ApproverComponent } from './_components/comp-approvertable/comp-approve
     VisboCompViewCapacityComponent,
     VisboCompViewCapacityCmpComponent,
     VisboCompViewBoardComponent,
+    VisboCompViewKanbanBoardComponent,
     VisboCompViewBubbleComponent,
     VisboCompViewVPFComponent,
     VisboCompOverviewVPFComponent,
@@ -160,7 +162,7 @@ import { ApproverComponent } from './_components/comp-approvertable/comp-approve
     SystasksComponent,
     SysconfigComponent,
     SyssettingsComponent,
-    ApproverComponent,
+    ApproverComponent
   ],
   imports: [
     BrowserModule,
