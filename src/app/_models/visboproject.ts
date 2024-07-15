@@ -126,6 +126,7 @@ export class VPParams {
   viewKM: string;
   filter: string;
   roleID: number;
+  costID: number;
   unit: string;
   from: string;
   to: string;
@@ -167,6 +168,8 @@ export function addCustomFieldString(vp: VisboProject, name: string, value: stri
   customField.value = value;
   if (constSystemCustomName.findIndex(str => str == name) > -1){
     customField.type = "System"
+  } else {
+    customField.type = "VP"
   }
   if (vp?.customFieldString) {
     vp.customFieldString.push(customField);
@@ -180,6 +183,8 @@ export function addCustomFieldDouble(vp: VisboProject, name: string, value: numb
   customField.value = value;
   if (constSystemCustomName.findIndex(str => str == name) > -1){
     customField.type = "System"
+  } else {
+    customField.type = "VP"
   }
   if (vp?.customFieldDouble) {
     vp.customFieldDouble.push(customField);
@@ -201,7 +206,7 @@ export function addCustomFieldDate(vp: VisboProject, name: string, value: Date):
   customField.value = new Date(value);  
   if (constSystemCustomName.findIndex(str => str == name) > -1){
     customField.type = "System"
-  }
+  } 
   if (vp?.customFieldDate) {
     vp.customFieldDate.push(customField);
   }

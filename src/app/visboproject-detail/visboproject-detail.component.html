@@ -29,7 +29,7 @@
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
       <label for="vpVersion" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.versions' | translate }}:</label>
       <label *ngIf="visboproject.vpType != 1" name=vpVersion class="col form-control-plaintext pt-2"><a (click)="gotoVPView(visboproject)">{{ visboproject.vpvCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
-      <label *ngIf="visboproject.vpType == 1" name=vpVersion class="col form-control-plaintext pt-2"><a>{{ visboproject.vpfCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</a></label>
+      <label *ngIf="visboproject.vpType == 1" name=vpVersion class="col form-control-plaintext pt-2"><span>{{ visboproject.vpfCount }} {{ 'vpDetail.lbl.ofTotal' | translate }} {{ getVPVersionsTotal() }}</span></label>
     </div>
     <div class="form-group row">
       <label for="VPCreated" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.createdUpdated' | translate }}:</label>
@@ -62,14 +62,14 @@
           </div>
         </div>
         <div class='panel-body'>
-          <table class='table table-hover'>
+          <table class='table table-hover table-sortable'>
             <!--Table head-->
             <thead id="UserHead">
               <tr>
                 <th>{{ 'vpDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortUserPermTable(1)">{{ 'vpDetail.lbl.email' | translate }}</th>
-                <th (click)="sortUserPermTable(2)">{{ 'vpDetail.lbl.group' | translate }}</th>
-                <th class="d-none d-md-table-cell">{{ 'vpDetail.lbl.type' | translate }}</th>
+                <th id=sortEmail (click)="sortUserPermTable(1)">{{ 'vpDetail.lbl.email' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortGroup (click)="sortUserPermTable(2)">{{ 'vpDetail.lbl.group' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortType class="d-none d-md-table-cell">{{ 'vpDetail.lbl.type' | translate }} <i class="fa fa-sort"></i></th>
                 <th *ngIf="!deleted && hasVPPerm(permVP.ManagePerm)">{{ 'vpDetail.lbl.delete' | translate }}</th>
               </tr>
             </thead>

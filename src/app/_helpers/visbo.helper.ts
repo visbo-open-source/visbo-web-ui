@@ -207,3 +207,21 @@ export function excelColorToRGBHex(value: number): string {
   rgbHex = '#'+ redhex + greenhex + bluehex;
   return rgbHex;
 }
+
+export function hexToRgbAverage(hex: string): number {
+  var average: number = -1;
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (result) {
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    average = (r+g+b)/3
+  }
+  return average
+
+  // return result ? {
+  //   r: parseInt(result[1], 16),
+  //   g: parseInt(result[2], 16),
+  //   b: parseInt(result[3], 16)
+  // } : null;
+}

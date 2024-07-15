@@ -262,11 +262,11 @@
     <h3  class="fas fa-info-circle mx-2 mt-2 text-secondary" title="{{ 'keyMetrics.lbl.showLegend' | translate }}" data-toggle="modal" data-target="#VpvLegend"></h3>
   </div>
   <div *ngIf="chart && graphDataLineChart.length > 0" class="mt-1" >
-    <div *ngIf="typeMetricChart == 'Cost'">
-      <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
-    </div>
     <div *ngIf="typeMetricChart == 'RAC'">
       <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChartRAC" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
+    </div>
+    <div *ngIf="typeMetricChart == 'Cost'">
+      <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChart" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>
     </div>
     <div *ngIf="typeMetricChart == 'EndDate'">
       <app-line-chart [graphData]="graphDataLineChart" [graphOptions]="graphOptionsLineChartEndDate" [parentThis]="parentThis" [language]="currentLang"></app-line-chart>

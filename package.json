@@ -43,7 +43,7 @@
     "jwt-decode": "^3.1.2",
     "loader-utils": "^3.2.1",
     "node": "^16.17.1",
-    "npm": "^9.6.2",
+    "npm": "^10.8.0",
     "popper.js": "^1.16.1",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",

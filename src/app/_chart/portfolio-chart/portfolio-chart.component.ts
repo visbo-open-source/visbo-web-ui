@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, EventEmitter, Output } from '@angular/core';
 import * as d3 from 'd3';
 import { VisboProjectVersion } from 'src/app/_models/visboprojectversion';
+
+import { hexToRgbAverage } from '../../_helpers/visbo.helper';
 import { ResizedEvent } from 'angular-resize-event';
 
 
@@ -206,7 +208,8 @@ export class PortfolioChartComponent implements OnInit, AfterViewInit {
       .attr("y", 10)
       .attr("text-anchor", "start")
       .attr("dominant-baseline", "hanging")
-      .attr("fill", "black")
+      // color of the text is depending on the color of the project band     
+      .attr("fill", d => (hexToRgbAverage(d.color) > 127) ? "black" : "white")     
       .attr("font-size", "11")
       .style("pointer-events", "none")
       .text(d => d.name);

@@ -211,6 +211,7 @@ export class VisboProjectVersion {
   Dauer: number;
   AllPhases: VPVPhase[];
   timestamp: Date;
+  isCommited: Boolean;
   volumen: number;
   complexity: number;
   description: string;

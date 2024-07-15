@@ -43,6 +43,7 @@ const capaColor = '#ff0000';
 
 class CapaLoad {
   uid: number;
+  isNoPerson: boolean;
   isBooked: boolean;
   percentOver: number;
   rankOver: number;
@@ -147,6 +148,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   printView = false;
 
   roleID: number;
+  allRelevantRoles: VisboReducedOrgaItem[];
   currentLeaf: VisboOrgaTreeLeaf;
   capacityFrom: Date;
   capacityTo: Date;
@@ -977,6 +979,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       return result;
 
       // return (capa > 0 && cost > 0) ? (cost / capa) - 1 : undefined;
+    }   
+    
+    function isNotPerson(role) {
+      return ( role && role.isSummaryRole  );
     }
 
     // calculate the overload/underload only for current&future months if there were at least 1
@@ -998,10 +1004,12 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       }
       const capa = percentCalc(capacity[i], refPFV);
       const roleID = capacity[i].roleID;
+      const isNoPerson = isNotPerson(this.allRelevantRoles[roleID]);
       const cost = (capacity[i]?.actualCost_PT|| 0) + (capacity[i]?.plannedCost_PT || 0);
       if (!capaLoad[roleID]) {
         const load = new CapaLoad();
         load.uid = roleID;
+        load.isNoPerson = isNoPerson;
         load.isBooked = (cost > 0);
         load.percentOver = 0;
         load.percentUnder = 0;
@@ -1060,7 +1068,9 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     const roles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
     if (!roles) return;
 
-    roles.forEach(role => allRoles[role.uid] = role);
+    roles.forEach(role => allRoles[role.uid] = role); 
+    this.allRelevantRoles = allRoles;   
+    //roles.forEach(role => this.allRelevantRoles[role.uid] = role);
     this.orga = buildOrgaTree(roles);
 
     this.topLevelNodes = roles.filter(role => role.pid == undefined);
@@ -1967,8 +1977,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         queryParams.refDate = this.refDate.toISOString();
       }
       queryParams.view = 'Capacity';
-      queryParams.drillDown = '1';
-      this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`)
+      queryParams.drillDown = '';
+      this.log(`Goto vpid ${element.vpid} QueryParams ${JSON.stringify(queryParams)}`);      
 
       this.router.navigate(['vpKeyMetrics/'.concat(element.vpid)], {
         queryParams: queryParams

@@ -2,11 +2,23 @@
 <div class="cld-date">
   <div class="calendar">
     {{"vtr.fromDate" | translate}}
-    <input (change)="updateFilter()" [(ngModel)]="startDate" [max]="endDate" class="col-2 col-sm-2 form-control"
-      id="startDate" type="date">
+    <input
+      (change)="getTimeTrackerList()"
+      [(ngModel)]="startDate"
+      [max]="endDate"
+      class="col-2 col-sm-2 form-control" 
+      id="startDate"
+      type="date">
     {{"vtr.toDate" | translate}}
-    <input (change)="updateFilter()" [(ngModel)]="endDate" [min]="startDate" class="col-2 col-sm-2 form-control"
-      id="endDate" type="date">
+    
+    <input 
+      (change)="getTimeTrackerList()"
+      [(ngModel)]="endDate"
+      [min]="startDate"
+      class="col-2 col-sm-2 form-control"
+      id="endDate"
+      type="date">
+
     {{"vtr.userName" | translate}}
     <input (change)="updateFilter()" [(ngModel)]="filterName" class="col-2 col-sm-2 form-control" id="filterName"
       type="string">
@@ -16,12 +28,11 @@
   </div>
 </div>
 
- 
 <!-- <div class="text-center" *ngIf="originalManagerList?.length"><h1>Manager List</h1></div> -->
-<div class="text-center" *ngIf="userIsApprover"><h1>Manager List</h1></div>
+<div class="text-align" *ngIf="userIsApprover"><h2>VISBO Time Recorder - Manager List</h2></div>
 <!-- <table  class="table table-hover table-sortable table-custom"> -->
 <table class="table table-hover table-sortable table-custom">
-  <thead>
+  <thead id="TimeRecHead">
   <tr class="col-center">
     <th (click)="sortVTRTable(1, true)">{{'vtr.title' | translate}} <i class="fa fa-sort"></i></th>
     <th class="d-none d-md-table-cell">{{'vtr.titleVCN' | translate}}</th>
@@ -70,8 +81,8 @@
     </th>
   </tr>
   </thead>
-  <tbody>
-  <tr (click)="selectRow(user)" *ngFor="let user of managerTimeTrackerList" class="col-center">
+  <tbody id="TimeRecList">     
+  <tr (click)="selectRow(user)" *ngFor="let user of originalManagerList" class="col-center">
     <td class="d-none d-md-table-cell">{{user.userName}}</td>
     <td class="d-none d-md-table-cell">{{user.vcName}}</td>
     <td class="d-none d-md-table-cell">{{user.vpName}}</td>
@@ -81,7 +92,7 @@
     <td class="d-none d-md-table-cell">{{user.status}}</td>
     <td class="d-none d-md-table-cell">{{ getTimeRecFailed(user) }}</td>
     <td>
-      <button
+      <button class="my-1 float-right"
         (click)="openEditModal(user)"
         [disabled]="user.status === 'Yes'"
         data-target="#VtrModalEdit"
@@ -90,7 +101,8 @@
       </button>
     </td>
   </tr>
-  <tr style="text-align: center" *ngIf="managerTimeTrackerList?.length==0">
+  <tr style="text-align: center" *ngIf="!originalManagerList?.length">
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -101,6 +113,10 @@
     <td></td>
   </tr>
   </tbody>
+  <div *ngIf="originalManagerList?.length==0" >
+    <div class="spinner-border"></div>
+    <span> {{ 'vtr.msg.calculating' | translate }}</span>
+  </div>  
 </table>
 
 
