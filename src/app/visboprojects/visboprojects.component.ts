@@ -123,7 +123,7 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   changeView(nextView: string, filter: string = undefined): void {
-    if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
+    if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List'|| nextView === 'KanbanBoard') {
       this.viewCockpit = nextView;
     } else {
       this.viewCockpit = 'KeyMetrics';

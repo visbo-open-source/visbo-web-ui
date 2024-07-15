@@ -44,6 +44,9 @@
       </button>
       <button class="btn btn-default" (click)='changeView("List")' title="{{ 'vp.btn.viewList' | translate }}">
         <img src="assets/icons/noun-list.svg" width="60" />
+      </button>
+       <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("KanbanBoard")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
+        <img src="assets/icons/noun-board.svg" width="60" />
       </button>    
     </div>
   </div>
@@ -109,6 +112,9 @@
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
       <app-comp-viewboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewboard>
+    </div>
+    <div *ngIf="viewCockpit == 'KanbanBoard' && visboprojectversions">
+      <app-comp-viewkanbanboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewkanbanboard>
     </div>
   </div>  
   <!-- Modal VP Create-->
