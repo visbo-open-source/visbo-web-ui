@@ -170,6 +170,8 @@ export class EmployeeComponent implements OnInit {
     this.getVisboCenterCustomization(selectedCenterId);
     this.searchtext = "";
     this.userForm.get('searchtext').setValue(this.searchtext);
+    this.userForm.get('vpid').setValue('');
+    
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));        
