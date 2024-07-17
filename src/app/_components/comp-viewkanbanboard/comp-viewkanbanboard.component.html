@@ -15,7 +15,6 @@
                 <tr *ngFor="let vp of initlistVPV" >         
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-                  <td></td>
                 </tr>
             </tbody>
         </table>      
@@ -36,7 +35,6 @@
                 <tr *ngFor="let vp of proposedlistVPV">         
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-                  <td></td>
                 </tr>
             </tbody>
         </table>        
@@ -56,8 +54,7 @@
             <tbody id="VPVOrderedList">
                 <tr *ngFor="let vp of orderedlistVPV">         
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
-                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-                  <td></td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{ vp.variantName }}</td>
                 </tr>
             </tbody>
         </table>
@@ -79,7 +76,6 @@
                 <tr *ngFor="let vp of finishedlistVPV">         
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
-                  <td></td>
                 </tr>
             </tbody>
         </table>
