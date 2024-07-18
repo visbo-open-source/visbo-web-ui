@@ -30,6 +30,13 @@ class kanbanProjectlist {
   bu: string;
   buColor: string;
   status: string;
+  profit: number;
+}
+class kanbanIDs {
+  EAC: number;
+  BAC: number;
+  RAC: number;
+  Profit: number;
 }
 
 class DropDownStatus {
@@ -71,11 +78,17 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   currentLang: string;
 
   initlistVPV: kanbanProjectlist[] = [];
+  initlistIDs: kanbanIDs = new kanbanIDs();
   proposedlistVPV: kanbanProjectlist[] = [];
+  proposedlistIDs: kanbanIDs = new kanbanIDs();
   orderedlistVPV: kanbanProjectlist[] = [];
+  orderedlistIDs: kanbanIDs = new kanbanIDs();
   pausedlistVPV: kanbanProjectlist[] = [];
+  pausedlistIDs: kanbanIDs = new kanbanIDs();
   finishedlistVPV: kanbanProjectlist[] = [];
+  finishedlistIDs: kanbanIDs = new kanbanIDs();
   stoppedlistVPV: kanbanProjectlist[] = [];
+  stoppedlistIDs: kanbanIDs = new kanbanIDs();
 
   constructor(
     private messageService: MessageService,
@@ -149,11 +162,17 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
    
 
     this.initlistVPV = [];
+    this.initlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
     this.proposedlistVPV = [];
+    this.proposedlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
     this.orderedlistVPV = [];
+    this.orderedlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
     this.pausedlistVPV = [];
+    this.pausedlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
     this.finishedlistVPV = [];
+    this.finishedlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
     this.stoppedlistVPV = [];
+    this.stoppedlistIDs = {'BAC': 0, 'RAC': 0, 'EAC': 0, 'Profit': 0};
 
     if (!this.listVPV || this.listVPV.length === 0 ) {      
       return;
@@ -190,30 +209,63 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
       listitem.name = this.listVPV[i].name;
       listitem.variantName = this.listVPV[i].variantName;
       listitem.status = vpStatus;
+      let RAC = 0;
+      let BAC = 0;
+      let EAC = 0;
+      if (this.listVPV[i].keyMetrics) {
+        RAC = this.listVPV[i].keyMetrics.RACCurrent ? this.listVPV[i].keyMetrics.RACCurrent : 0;
+        EAC = this.listVPV[i].keyMetrics.costCurrentTotal ? this.listVPV[i].keyMetrics.costCurrentTotal : 0;
+        BAC = this.listVPV[i].keyMetrics.costBaseLastTotal ? this.listVPV[i].keyMetrics.costBaseLastActual : 0;
+        listitem.profit = RAC - EAC;
+      }     
 
       switch (vpStatus) {
         case constSystemVPStatus[0]:{          
           this.initlistVPV.push(listitem);
+          this.initlistIDs.BAC+=BAC;
+          this.initlistIDs.RAC+=RAC;
+          this.initlistIDs.EAC+=EAC;
+          this.initlistIDs.Profit+=listitem.profit;
           break;
         }
         case constSystemVPStatus[1]:{
           this.proposedlistVPV.push(listitem);
+          this.proposedlistIDs.BAC+=BAC;
+          this.proposedlistIDs.RAC+=RAC;
+          this.proposedlistIDs.EAC+=EAC;
+          this.proposedlistIDs.Profit+=listitem.profit;
           break;
         }
         case constSystemVPStatus[2]:{
           this.orderedlistVPV.push(listitem);
+          this.orderedlistIDs.BAC+=BAC;
+          this.orderedlistIDs.RAC+=RAC;
+          this.orderedlistIDs.EAC+=EAC;
+          this.orderedlistIDs.Profit+=listitem.profit;
           break;
         }
         case constSystemVPStatus[3]:{
           this.pausedlistVPV.push(listitem);
+          this.pausedlistIDs.BAC+=BAC;
+          this.pausedlistIDs.RAC+=RAC;
+          this.pausedlistIDs.EAC+=EAC;
+          this.pausedlistIDs.Profit+=listitem.profit;
           break;
         }
         case constSystemVPStatus[4]:{
           this.finishedlistVPV.push(listitem);
+          this.finishedlistIDs.BAC+=BAC;
+          this.finishedlistIDs.RAC+=RAC;
+          this.finishedlistIDs.EAC+=EAC;
+          this.finishedlistIDs.Profit+=listitem.profit;
           break;
         }
         case constSystemVPStatus[5]:{          
           this.stoppedlistVPV.push(listitem);
+          this.stoppedlistIDs.BAC+=BAC;
+          this.stoppedlistIDs.RAC+=RAC;
+          this.stoppedlistIDs.EAC+=EAC;
+          this.stoppedlistIDs.Profit+=listitem.profit;
           break;
         }
         default: {
@@ -221,6 +273,24 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
           break;
         }
       }
+      this.initlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
+      this.proposedlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
+      this.orderedlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
+      this.pausedlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
+      this.finishedlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
+      this.stoppedlistVPV.sort(function(a, b) {            
+        return (a.profit - b.profit);
+      });
     }
     const a = 0;
   }

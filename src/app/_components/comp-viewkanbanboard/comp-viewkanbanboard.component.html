@@ -1,60 +1,82 @@
 <div class="row">
-<div  class="column"> 
+<div  class="column overflow-scroll"> 
 
-    <h5 class="card-header p-2">
+    <h4 class="card-header p-2">
     <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
     <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
     <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
     {{ 'compViewKanban.lbl.Initial' | translate }}
-    <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-    <span class="text-right" style="font-size: small;">{{ initlistVPV.length }}</span>
-    </h5>
+    <span class="text-right" style="font-size: small;">Count: </span>
+    <span class="text-right" style="font-size: small;">{{ initlistVPV.length | number: '2.0-0'}} Projects</span>
+    <!-- <p class="text-right" style="font-size: small;">EAC: {{ initlistIDs.EAC | number: '2.0-0'  }} T€</p>   -->     
+    <p class="text-right" style="font-size: small;">Est. Profit: {{ initlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+    <p *ngIf="initlistIDs.EAC" class="text-right" style="font-size: small;">EAC: {{ initlistIDs.EAC | number: '2.0-0'  }} T€</p>
+    <p *ngIf="!initlistIDs.EAC" class="text-right" style="font-size: small;"><br /></p>  
+    <p *ngIf="initlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ initlistIDs.BAC | number: '2.0-0'  }} T€</p>
+    <p *ngIf="!initlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
+    <p *ngIf="initlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ initlistIDs.RAC | number: '2.0-0'  }} T€</p>
+    <p *ngIf="!initlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+    <!-- <p class="text-right" style="font-size: small;">RAC: {{ initlistIDs.RAC | number: '2.0-0'  }} T€</p>   -->
+    
+    </h4>
     <div class="card-body p-2">  
-        <table class='table table-hover table-sortable'>
+        <table class='table table-hover table-sortable table-wrapper'>
             <tbody id="VPVInitList">
                 <tr *ngFor="let vp of initlistVPV" >         
-                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)"class="text-right">{{vp.profit | number:'1.0-0'}}</td>
                 </tr>
             </tbody>
         </table>      
     </div>
 </div>
 <div  class="column"> 
-    <h5 class="card-header p-2">
+    <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
         {{ 'compViewKanban.lbl.Proposed' | translate }}
-        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ proposedlistVPV.length }}</span>
-    </h5>
+        <span class="text-right" style="font-size: small;">Count: {{ proposedlistVPV.length | number: '2.0-0'}} Projects</span>           
+        <p class="text-right" style="font-size: small;">Est. Profit: {{ proposedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">EAC: {{ proposedlistIDs.EAC | number: '2.0-0'  }} T€</p>        
+        <p *ngIf="proposedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ proposedlistIDs.BAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!proposedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
+        <p class="text-right" style="font-size: small;">RAC: {{ proposedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+    </h4>
     <div class="card-body p-2">    
-        <table class='table table-hover table-sortable'>
+        <table class='table table-hover table-sortable table-wrapper'>
             <tbody id="VPVProposedList">
                 <tr *ngFor="let vp of proposedlistVPV">         
-                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)"class="text-right">{{vp.profit | number:'1.0-0'}}</td>
                 </tr>
             </tbody>
         </table>        
     </div>       
 </div>
 <div  class="column "> 
-    <h5 class="card-header p-2">
+    <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
         {{ 'compViewKanban.lbl.Ordered' | translate }}
         <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ orderedlistVPV.length }}</span>
-    </h5>
-    <div class="card-body p-2">       
-        <table class='table table-hover table-sortable'>
+        <span class="text-right" style="font-size: small;">{{ orderedlistVPV.length }}</span>         
+        <p class="text-right" style="font-size: small;">Est. Profit: {{ orderedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">EAC: {{ orderedlistIDs.EAC | number: '4.0-0'  }} T€</p>  
+        <p *ngIf="orderedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ orderedlistIDs.BAC | number: '4.0-0'  }} T€</p>  
+        <p *ngIf="!orderedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
+        <p class="text-right" style="font-size: small;">RAC: {{ orderedlistIDs.RAC | number: '4.0-0'  }} T€</p>  
+    </h4>
+    <div class="card-body p-2 overflow-scroll">       
+        <table class='table table-hover table-sortable table-wrapper'>
             <tbody id="VPVOrderedList">
                 <tr *ngFor="let vp of orderedlistVPV">         
-                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{ vp.variantName }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-right">{{vp.profit | number:'1.0-0'}}</td>
                 </tr>
             </tbody>
         </table>
@@ -62,26 +84,51 @@
 </div>
 
 <div  class="column "> 
-    <h5 class="card-header p-2">
+    <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
         {{ 'compViewKanban.lbl.Finished' | translate }}        
         <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
         <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length }}</span>
-    </h5>
+        <p class="text-right" style="font-size: small;">Profit: {{ finishedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">CAC: {{ finishedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
+        <p *ngIf="finishedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ finishedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="!finishedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
+        <p class="text-right" style="font-size: small;">RAC: {{ finishedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+    </h4>
     <div class="card-body p-2">       
-        <table class='table table-hover table-sortable'>
+        <table class='table table-hover table-sortable table-wrapper'>
             <tbody id="VPVFinishedList">
                 <tr *ngFor="let vp of finishedlistVPV">         
-                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-right">{{vp.profit | number:'1.0-0'}}</td>
                 </tr>
             </tbody>
         </table>
-    </div>       
-</div>
-</div>
-
-
- 
+    </div>  
+</div>    
+<!-- <div  class="column "> 
+    <h4 class="card-header p-2">        
+        {{ 'compViewKanban.lbl.Finished' | translate }}        
+        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+        <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length }}</span>
+        <p class="text-right" style="font-size: small;">Profit: {{ finishedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">CAC: {{ finishedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
+        <p *ngIf="finishedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ finishedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="!finishedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
+        <p class="text-right" style="font-size: small;">RAC: {{ finishedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+    </h4>
+    <div class="card-body p-2">       
+        <table class='table table-hover table-sortable table-wrapper'>
+            <tbody id="VPVFinishedList">
+                <tr *ngFor="let vp of finishedlistVPV">         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-right">{{vp.profit | number:'1.0-0'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>  
+</div> -->
