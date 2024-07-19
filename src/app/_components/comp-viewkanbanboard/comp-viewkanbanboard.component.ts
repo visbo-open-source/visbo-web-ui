@@ -274,22 +274,22 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
         }
       }
       this.initlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
       this.proposedlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
       this.orderedlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
       this.pausedlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
       this.finishedlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
       this.stoppedlistVPV.sort(function(a, b) {            
-        return (a.profit - b.profit);
+        return (b.profit - a.profit);
       });
     }
     const a = 0;
