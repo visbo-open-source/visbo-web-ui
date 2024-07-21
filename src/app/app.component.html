@@ -1,4 +1,4 @@
-<div class="jumbotron pt-0 mt-0" id="visboRoot" style="background-color: #ffffff;">
+<div class="jumbotron pt-0 mt-0" id="visboRoot"  style="background-color: #ffffff">
   <!-- <h2>{{title}}</h2> -->
   <div *ngIf="localsAvailable" class="wrapper">
     <div class="container-fluid">
@@ -16,8 +16,8 @@
       <a data-toggle="modal" data-target="#versionModal" >{{ 'app.product' | translate }} {{version}}</a>
     </div>
     <div class="col-1">
-      <i *ngIf="getPreView()" (click)="switchPreView()" class="fas fa-desktop" style="float: right"></i>
-      <i *ngIf="!getPreView()" (click)="switchPreView()" class="fas fa-print" style="float: right"></i>
+      <i *ngIf="getPreView()" (click)="switchPreView()" class="fas fa-desktop" style="cursor: pointer; float: right;"></i>
+      <i *ngIf="!getPreView()" (click)="switchPreView()" class="fas fa-print" style="cursor: pointer; float: right;"></i>
     </div>
   </div>
   <div *ngIf="!getPreView()" class="row d-print-none">

@@ -61,13 +61,13 @@
           </div>
         </div>
         <div class='panel-body'>
-          <table class='table table-hover'>
+          <table class='table table-hover table-sortable'>
             <!--Table head-->
             <thead id="UserHead">
               <tr>
                 <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortUserTable(1)">{{ 'vcDetail.lbl.email' | translate }}</th>
-                <th (click)="sortUserTable(2)">{{ 'vcDetail.lbl.group' | translate }}</th>
+                <th id=sortEmail (click)="sortUserTable(1)">{{ 'vcDetail.lbl.email' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortGroup (click)="sortUserTable(2)">{{ 'vcDetail.lbl.group' | translate }} <i class="fa fa-sort"></i></th>
                 <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
               </tr>
             </thead>
@@ -103,13 +103,13 @@
           </div>
         </div>
         <div class='panel-body'>
-          <table class='table table-hover'>
+          <table class='table table-hover table-sortable'>
             <!--Table head-->
             <thead id="GroupHead">
               <tr>
                 <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortGroupTable(1)">{{ 'vcDetail.lbl.group' | translate }}</th>
-                <th (click)="sortGroupTable(2)">{{ 'vcDetail.lbl.members' | translate }}</th>
+                <th id=sortGroup (click)="sortGroupTable(1)">{{ 'vcDetail.lbl.group' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortMembers (click)="sortGroupTable(2)">{{ 'vcDetail.lbl.members' | translate }} <i class="fa fa-sort"></i></th>
                 <th >{{ 'vcDetail.lbl.type' | translate }}</th>
                 <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
                 <th>{{ 'vcDetail.lbl.info' | translate }}</th>
@@ -147,14 +147,14 @@
           </div>
         </div>
         <div class='panel-body'>
-          <table class='table table-hover'>
+          <table class='table table-hover table-sortable'>
             <!--Table head-->
             <thead>
               <tr>
                 <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-                <th (click)="sortVPUserTable(1)">{{ 'vcDetail.lbl.email' | translate }}</th>
-                <th (click)="sortVPUserTable(2)">{{ 'vcDetail.lbl.project' | translate }}</th>
-                <th>{{ 'vcDetail.lbl.group' | translate }}</th>
+                <th id=sortEmail (click)="sortVPUserTable(1)">{{ 'vcDetail.lbl.email' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortProject (click)="sortVPUserTable(2)">{{ 'vcDetail.lbl.project' | translate }} <i class="fa fa-sort"></i></th>
+                <th id=sortGroup (click)="sortVPUserTable(3)">{{ 'vcDetail.lbl.group' | translate }} <i class="fa fa-sort"></i></th>
               </tr>
             </thead>
             <!--Table body-->
@@ -202,14 +202,14 @@
         </div>
       </div>
       <div class='panel-body'>
-        <table class='table table-hover'>
+        <table class='table table-hover table-sortable'>
           <!--Table head-->
           <thead id="OrganisationHead">
             <tr>
               <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-              <th (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
-              <th (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
-              <th (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th id=sortTS (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortSettTab (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortUpdatedAt (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }} <i class="fa fa-sort"></i></th>
               <th>{{ 'vcDetail.lbl.nrRoles' | translate }}</th>
               <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
             </tr>
@@ -266,14 +266,14 @@
         </div>
       </div>
       <div class='panel-body'>
-        <table class='table table-hover'>
+        <table class='table table-hover table-sortable'>
           <!--Table head-->
           <thead id="OrganisationHead">
             <tr>
               <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-              <th (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
-              <th (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
-              <th (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th id=sortTS (click)="sortOrganisationTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortSettTab (click)="sortOrganisationTable(1)">{{ 'vcDetail.lbl.settingName' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortUpdatedAt (click)="sortOrganisationTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate } <i class="fa fa-sort"></i>}</th>
               <th>{{ 'vcDetail.lbl.nrRoles' | translate }}</th>
               <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
             </tr>
@@ -312,15 +312,15 @@
         </div>
       </div>
       <div class='panel-body'>
-        <table class='table table-hover'>
+        <table class='table table-hover table-sortable'>
           <!--Table head-->
           <thead id="SettingHead">
             <tr>
               <th>{{ 'vcDetail.lbl.nr' | translate }}</th>
-              <th (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }}</th>
-              <th (click)="sortSettingTable(4)">{{ 'vcDetail.lbl.type' | translate }}</th>
-              <th (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }}</th>
-              <th (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }}</th>
+              <th id=sortSettTab (click)="sortSettingTable(1)">{{ 'vcDetail.lbl.settingName' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortType (click)="sortSettingTable(4)">{{ 'vcDetail.lbl.type' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortTS (click)="sortSettingTable(2)">{{ 'vcDetail.lbl.timestamp' | translate }} <i class="fa fa-sort"></i></th>
+              <th id=sortUpdatedAT (click)="sortSettingTable(3)">{{ 'vcDetail.lbl.updatedAt' | translate }} <i class="fa fa-sort"></i></th>
               <th *ngIf="hasVCPerm(permVC.ManagePerm)">{{ 'vcDetail.lbl.delete' | translate }}</th>
             </tr>
           </thead>

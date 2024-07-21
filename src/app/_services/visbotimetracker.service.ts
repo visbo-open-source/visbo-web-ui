@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { EnvService } from './env.service';
@@ -21,10 +21,24 @@ export class VisboTimeTracking {
     private env: EnvService
   ) { }
 
- getUserTimeTracker(userId: string): Observable<any> {
-  console.log(userId)
+ getUserTimeTracker(userId: string, startDate: Date, endDate: Date, asApprover: boolean): Observable<any> {
+  console.log(userId);
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  let params = new HttpParams();
+  if (startDate) {
+    params = params.append('startDate', startDate.toUTCString());
+  }
+  if (endDate) {
+    endDate.setHours(23);
+    endDate.setMinutes(59);
+    endDate.setSeconds(0);    
+    params = params.append('endDate', endDate.toUTCString())
+  }
+  if (asApprover) {
+    params = params.append('asApprover', asApprover)
+  }
   const url = `${this.timetrackerUrl}/${userId}`;
-  return this.http.get(url);
+  return this.http.get(url, {headers, params});
 }
 
   addUserTimeTracker(data: VtrVisboTracker): Observable<any> {

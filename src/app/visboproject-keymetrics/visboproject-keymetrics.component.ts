@@ -29,6 +29,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate, validateDate, convertDat
           visboGetShortText, visboIsToday, visboGetBeginOfDay, getPreView } from '../_helpers/visbo.helper';
 
 import {TimeLineOptions} from '../_models/_chart'
+import { easeElasticOut } from 'd3';
 
 class DropDown {
   name: string;
@@ -219,7 +220,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
-    this.findVPV(new Date(this.refDate));
+    this.findVPV(new Date(this.refDate));               
+    this.initCustomFields(this.vpActive);
   }
 
   onResized(event: ResizedEvent): void {
@@ -806,7 +808,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.getAllVersionsShort();
             // ur: 30.08.23: CustomFieldsSetting wird in initCustomFields bereits benötigt
             // this.getVisboCenterSettings();
-            this.getVisboCenterOrga();            
+            this.getVisboCenterOrga();
             this.initCustomFields(this.vpActive);
           },
           error => {
@@ -889,20 +891,24 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   checkVPCustomValues(): boolean {
     let result = false;
-    if (!this.customVPAdd && !this.customVPModified) {
-      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
-      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
+    if (!this.customVPAdd && !this.customVPModified && this.hasVPPerm(this.permVP.Modify)) {
+      if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined || this.newCustomFieldDouble?.length != 0 || this.newCustomFieldString.length != 0) {
+      //if (this.customBU == undefined || this.customStrategicFit == undefined || this.customRisk == undefined ) {
           result = true;
       }
     }
     return result;
   }
 
-  addVPCustomValues(): void {
+  addVPCustomValues(): void {    
+    if (this.hasVPPerm(this.permVP.Modify) && !constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {         
+      this.customVPAdd = true;
+    }  
+    if (!this.hasVPPerm(this.permVP.Modify)) {
+      this.customVPAdd = false;
+    }     
     if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       this.customVPAdd = false;
-    } else {
-      this.customVPAdd = true;
     }
   }
 
@@ -916,7 +922,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   // Commit-Button pressed
   setVPToCommit(): void {
-    this.customVPToCommit = true;
+     this.customVPToCommit = true;
      // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
      this.savingCostTotal = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentTotal || 0)
                   / (this.vpvActive.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
@@ -1352,9 +1358,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = 'pfv';
+        this.newVPV.isCommited = false;
       } else {
         this.newVPV = this.vpvActive;        
-        this.newVPV.status = this.customVPStatus;
+        this.newVPV.status = this.customVPStatus;        
+        this.newVPV.isCommited = false;
         this.newVPVstartDate = new Date(this.newVPV.startDate);
         this.newVPVendDate = new Date(this.newVPV.endDate);
         this.newVPVvariantName = this.vpvActive.variantName;
@@ -1366,6 +1374,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.scaleFactor = 0;
     } else if (mode == 'Copy') {
       this.newVPV = this.vpvActive;
+      this.newVPV.isCommited = false;
       this.newVPV.status = this.customVPStatus;
       const list = this.getDropDownList(2, false);
       this.newVPVvariantName = list.length > 0 ? list[0].variantName : '';
@@ -1389,7 +1398,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (startDate.toISOString() !== this.newVPVstartDate.toISOString()
     || endDate.toISOString() !== this.newVPVendDate.toISOString()
     || scaleFactor !== 1) {
-      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate)
+      this.visboprojectversionService.changeVisboProjectVersion(this.newVPV._id, this.newVPVstartDate, this.newVPVendDate, scaleFactor, newVPVscaleStartDate, this.newVPV.isCommited)
         .subscribe(
           vpv => {
             this.addVPVtoList(vpv);
@@ -1494,7 +1503,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       // definition of the customUserFields
       this.customUserFieldDefinitions = this.vcCustomfields?.value?.liste;
       
-      const customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
+      let customFieldString = getCustomFieldString(this.vpActive, '_businessUnit');
       if (customFieldString && this.customBU) {
         customFieldString.value = this.customBU;
       } else if (this.customBU) {
@@ -1556,24 +1565,79 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           }
         }
       });
+      // add new CustomFields of type VP        
+      this.newCustomFieldDouble.forEach(item => {
+        if (item.type == 'VP') {
+          const newFieldDef= this.customUserFieldDefinitions.find(element => element.name == item.name);
+          if (newFieldDef) {    
+            const usageIndex = this.vpvActive.customDblFields.findIndex(part => part.str == newFieldDef.uid);
+            if (usageIndex < 0) {        
+              const dblField = new VPVDblFields();
+              dblField.str = newFieldDef.uid;
+              dblField.dbl = item.value;
+              this.vpvActive.customDblFields.push(dblField);
+            }  else {
+              this.vpvActive.customDblFields[usageIndex].dbl = item.value;
+            }
+            customFieldDouble = getCustomFieldDouble(this.vpActive, item.name);
+            if (customFieldDouble && item.value != undefined) {
+              customFieldDouble.value = item.value;
+              customFieldDouble.localName = newFieldDef.name;
+              customFieldDouble.type = item.type;
+            } else if (item.value) {
+              addCustomFieldDouble(this.vpActive, item.name, item.value);
+            }
+          }
+        }     
+      });
       
-    }
 
-    // project version commited
-    if (this.vpActive && this.customVPToCommit) {
-      this.customCommit = new Date();
-      const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
-      if (customFieldDate && this.customCommit != undefined) {
-        customFieldDate.value = this.customCommit;
-      } else if (this.customCommit) {
-        addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+      this.newCustomFieldString.forEach(item => {
+        if (item.type == 'VP') {
+          const newFieldDef= this.customUserFieldDefinitions.find(element => element.name == item.name);
+          if (newFieldDef) { 
+            const usageIndex = this.vpvActive.customStringFields.findIndex(part => part.strkey == newFieldDef.uid);
+            if (usageIndex < 0) {            
+              const strField = new VPVStrFields();
+              strField.strkey = newFieldDef.uid;
+              strField.strvalue = item.value;
+              this.vpvActive.customStringFields.push(strField); 
+            } else {
+              this.vpvActive.customStringFields[usageIndex].strvalue = item.value;
+            }
+            customFieldString = getCustomFieldString(this.vpActive, item.name);
+            if (customFieldString && item.value != undefined) {
+              customFieldString.value = item.value;
+              customFieldString.localName = newFieldDef.name;
+              customFieldString.type = item.type;
+            } else if (item.value) {
+              addCustomFieldString(this.vpActive, item.name, item.value);
+            }
+          }  
+        }
+      });
+
+      // project version commited
+      if (this.vpActive && this.customVPToCommit) {
+        this.customCommit = new Date();
+        const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
+        if (customFieldDate && this.customCommit != undefined) {
+          customFieldDate.value = this.customCommit;
+        } else if (this.customCommit) {
+          addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+        }     
       }
-    }
 
     if (!this.customVPToCommit) {
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${this.customVPStatus}`);
     } else {
       this.log(`update VP  ${this.vpActive._id} commit: ${this.customCommit}`);
+    }
+
+    if (this.customCommit && this.customVPToCommit) {
+      this.vpvActive.isCommited = true;
+    } else {
+      this.vpvActive.isCommited = false;
     }
 
     this.visboprojectService.updateVisboProject(this.vpActive)
@@ -1625,6 +1689,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
     );
   }
+}
 
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {

@@ -10,7 +10,7 @@ describe('VisboCompViewCostComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
     declarations: [
-        VisboProjectViewCostComponent
+      VisboCompViewCostComponent
     ],
     teardown: { destroyAfterEach: false }
 })

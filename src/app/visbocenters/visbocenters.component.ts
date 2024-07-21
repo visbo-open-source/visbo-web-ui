@@ -14,6 +14,7 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
 
 @Component({
   selector: 'app-visbocenters',
+  styleUrls: ['./visbocenters.component.css'],
   templateUrl: './visbocenters.component.html'
 })
 export class VisboCentersComponent implements OnInit {
