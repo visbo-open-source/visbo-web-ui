@@ -1,5 +1,5 @@
 <div class="row">
-<div  class="column overflow-scroll"> 
+<div  *ngIf="!modusStoppedPaused" class="column overflow-scroll"> 
 
     <h4 class="card-header p-2">
     <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
@@ -31,7 +31,7 @@
         </table>      
     </div>
 </div>
-<div  class="column"> 
+<div  *ngIf="!modusStoppedPaused" class="column"> 
     <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
@@ -56,7 +56,7 @@
         </table>        
     </div>       
 </div>
-<div  class="column "> 
+<div *ngIf="!modusStoppedPaused" class="column "> 
     <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
@@ -83,7 +83,7 @@
     </div>       
 </div>
 
-<div  class="column "> 
+<div  *ngIf="!modusStoppedPaused" class="column "> 
     <h4 class="card-header p-2">
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
@@ -109,21 +109,21 @@
         </table>
     </div>  
 </div>    
-<!-- <div  class="column "> 
+<div *ngIf="modusStoppedPaused" class="column "> 
     <h4 class="card-header p-2">        
-        {{ 'compViewKanban.lbl.Finished' | translate }}        
+        {{ 'compViewKanban.lbl.Paused' | translate }}        
         <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length }}</span>
-        <p class="text-right" style="font-size: small;">Profit: {{ finishedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
-        <p class="text-right" style="font-size: small;">CAC: {{ finishedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
-        <p *ngIf="finishedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ finishedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
-        <p *ngIf="!finishedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
-        <p class="text-right" style="font-size: small;">RAC: {{ finishedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+        <span class="text-right" style="font-size: small;">{{ pausedlistVPV.length }}</span>
+        <p class="text-right" style="font-size: small;">Profit: {{ pausedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">CAC: {{ pausedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
+        <p *ngIf="pausedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ pausedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="!pausedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
+        <p class="text-right" style="font-size: small;">RAC: {{ pausedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
     </h4>
     <div class="card-body p-2">       
         <table class='table table-hover table-sortable table-wrapper'>
-            <tbody id="VPVFinishedList">
-                <tr *ngFor="let vp of finishedlistVPV">         
+            <tbody id="VPVPausedList">
+                <tr *ngFor="let vp of pausedlistVPV">         
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
                   <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-right">{{vp.profit | number:'1.0-0'}}</td>
@@ -131,4 +131,27 @@
             </tbody>
         </table>
     </div>  
-</div> -->
+</div>
+<div *ngIf="modusStoppedPaused" class="column "> 
+    <h4 class="card-header p-2">        
+        {{ 'compViewKanban.lbl.Stopped' | translate }}        
+        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
+        <span class="text-right" style="font-size: small;">{{ stoppedlistVPV.length }}</span>
+        <p class="text-right" style="font-size: small;">Profit: {{ stoppedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
+        <p class="text-right" style="font-size: small;">CAC: {{ stoppedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
+        <p *ngIf="stoppedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ stoppedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="!stoppedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
+        <p class="text-right" style="font-size: small;">RAC: {{ stoppedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+    </h4>
+    <div class="card-body p-2">       
+        <table class='table table-hover table-sortable table-wrapper'>
+            <tbody id="VPVStoppedList">
+                <tr *ngFor="let vp of stoppedlistVPV">         
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-left">{{ vp.name }}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="d-none d-lg-table-cell">{{vp.variantName}}</td>
+                  <td [style.background-color]="getBUColor(vp.buColor)" [style.color]="getfontColor(vp.buColor)" class="text-right">{{vp.profit | number:'1.0-0'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>  
+</div>

@@ -55,6 +55,7 @@ export class VisboProjectsComponent implements OnInit {
   vcOrga: VisboOrganisation[];
   customize: VisboSetting;
   userCustomfields: CustomUserFields[];
+  modusStoppedPaused: boolean;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -123,6 +124,7 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   changeView(nextView: string, filter: string = undefined): void {
+    this.modusStoppedPaused = false;
     if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List'|| nextView === 'KanbanBoard') {
       this.viewCockpit = nextView;
     } else {
@@ -130,8 +132,11 @@ export class VisboProjectsComponent implements OnInit {
     }
     this.updateUrlParam('viewCockpit', this.viewCockpit);
 
+    if (filter=="stopped") {
+      this.modusStoppedPaused = true;
+    }
     if (filter) {
-      this.updateUrlParam('filter', filter.trim());
+     this.updateUrlParam('filter', filter.trim());
     }
   }
 

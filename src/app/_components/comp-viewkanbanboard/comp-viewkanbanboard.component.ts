@@ -54,6 +54,7 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   @Input() customize: VisboSetting;
   @Input() vpf: VisboProject;
   @Input() vcUser: Map<string, VisboUser>;
+  @Input() modusStoppedPaused: boolean;
 
   refDate: Date;
   filter: string;
