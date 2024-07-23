@@ -202,7 +202,7 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
       const bu = getCustomFieldString(this.listVPV[i].vp, '_businessUnit')?.value;
       if (bu) {        
         listitem.bu = bu;
-        listitem.buColor = this.buDefs[bu];
+        listitem.buColor = this.buDefs[bu] ? this.buDefs[bu] : defaultColor;
       } else {
         listitem.bu = '';
         listitem.buColor = defaultColor;
