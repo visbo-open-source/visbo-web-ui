@@ -134,6 +134,7 @@ export class VisboProjectsComponent implements OnInit {
 
     if (filter=="stopped") {
       this.modusStoppedPaused = true;
+      filter='';
     }
     if (filter) {
      this.updateUrlParam('filter', filter.trim());

@@ -49,10 +49,10 @@
         <img src="assets/icons/noun-kanban.svg" width="60" />
       </button>    
     </div>
-    <div class='btn-group'>
+    <div *ngIf="viewCockpit=='KanbanBoard'" class='btn-group'>
       <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard", "stopped")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
-        <img src="assets/icons/noun-pause.svg" width="35" />
-        <img src="assets/icons/noun-cancel.svg" width="45" />
+        <img src="assets/icons/noun-pause.svg" width="25" />
+        <img src="assets/icons/noun-cancel.svg" width="35" />
       </button>  
       <!-- <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard", "stopped")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
         <img src="assets/icons/noun-cancel.svg" width="45" />
