@@ -342,6 +342,7 @@
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewProjectBoard": "Project Board",
+			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "List",
 			"create": "Add",
 			"save": "Save",

@@ -123,31 +123,27 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   
   initSetting(): void {
     
-    // this.activeID = this.route.snapshot.paramMap.get('id');
-    // const refDate = this.route.snapshot.queryParams['refDate'];
-    // const filter = this.route.snapshot.queryParams['filter'] || undefined;    
-    // const filterPH = this.route.snapshot.queryParams['filterPH'] || undefined;    
-    // const filterMS = this.route.snapshot.queryParams['filterMS'] || undefined;
-    // const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
-    // const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
-    // const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
-    // let filterParam = this.route.snapshot.queryParams['filterRisk'];
-    // const filterRisk = filterParam ? filterParam.valueOf() : undefined;
-    // filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
-    // const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
+    this.activeID = this.route.snapshot.paramMap.get('id');
+    const refDate = this.route.snapshot.queryParams['refDate'];
+    const filter = this.route.snapshot.queryParams['filter'] || undefined;    
+    const filterPH = this.route.snapshot.queryParams['filterPH'] || undefined;    
+    const filterMS = this.route.snapshot.queryParams['filterMS'] || undefined;
+    const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
+    const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
+    const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
+    let filterParam = this.route.snapshot.queryParams['filterRisk'];
+    const filterRisk = filterParam ? filterParam.valueOf() : undefined;
+    filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
+    const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
 
-    // this.refDate = refDate ? new Date(refDate) : new Date();
-    // this.filter = filter;
-    // this.filterPH = filterPH?.replace("%20", " ");
-    // this.filterMS = filterMS?.replace("%20", " ");;
-    // this.filterBU = filterBU?.replace("%20", " ");;
-    // this.filterRisk = filterRisk;
-    // this.filterStrategicFit = filterStrategicFit;
-    // this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
-    // this.initBUDropDown();
-    // this.initPHDropDown(this.listVPV);
-    // this.initMSDropDown(this.listVPV);
-    // this.initVPStateDropDown();
+    this.refDate = refDate ? new Date(refDate) : new Date();
+    this.filter = filter;
+    this.filterPH = filterPH?.replace("%20", " ");
+    this.filterMS = filterMS?.replace("%20", " ");;
+    this.filterBU = filterBU?.replace("%20", " ");;
+    this.filterRisk = filterRisk;
+    this.filterStrategicFit = filterStrategicFit;
+    this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
   }
 
 
@@ -178,19 +174,6 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     if (!this.listVPV || this.listVPV.length === 0 ) {      
       return;
     }    
-
-    // this.listVPV.sort(function(a, b) {
-    //   const aBusinessUnit = getCustomFieldString(a.vp, '_businessUnit')?.value || "";
-    //   const bBusinessUnit = getCustomFieldString(b.vp, '_businessUnit')?.value || "";
-    //   let result = visboCmpString((bBusinessUnit || '').toLowerCase(), (aBusinessUnit || '').toLowerCase());
-    //   if (result == 0) {
-    //     result = visboCmpDate(b.startDate, a.startDate);
-    //   }
-    //   if (result == 0) {
-    //     result = visboCmpString(b.name.toLowerCase(), a.name.toLowerCase());
-    //   }
-    //   return result;
-    // });
      
    
     for (let i = 0; i < this.listVPV.length; i++) {
@@ -306,6 +289,20 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     return fontColor;
   }
 
+  updateUrlParam(type: string, value: string): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new VPFParams();
+    
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: true,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
+  }
   /** Log a message with the MessageService */
   private log(message: string) {
     this.messageService.add('CompVisboKanbanBoard: ' + message);

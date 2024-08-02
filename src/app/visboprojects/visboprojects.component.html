@@ -47,16 +47,14 @@
       </button>
        <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
         <img src="assets/icons/noun-kanban.svg" width="60" />
-      </button>    
+      </button>
     </div>
     <div *ngIf="viewCockpit=='KanbanBoard'" class='btn-group'>
       <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard", "stopped")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
         <img src="assets/icons/noun-pause.svg" width="25" />
         <img src="assets/icons/noun-cancel.svg" width="35" />
       </button>  
-      <!-- <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard", "stopped")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
-        <img src="assets/icons/noun-cancel.svg" width="45" />
-      </button>       -->
+      <!-- <button type="button" class="mx-1" (click)="gotoCockpitVPV()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>       -->
     </div>    
   </div>
 

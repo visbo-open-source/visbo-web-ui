@@ -342,6 +342,7 @@
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",
+			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "Liste",
 			"create": "Hinzufügen",
 			"save": "Speichern",

@@ -139,18 +139,15 @@ export class VisboProjectsComponent implements OnInit {
     if (filter) {
      this.updateUrlParam('filter', filter.trim());
     }
-  }
+  }  
 
   updateUrlParam(type: string, value: string): void {
-    // add parameter to URL
+    // add parameter to URL    
+    // const url1= window.location.origin.concat('/vp/', this.vcActive._id);
     const url = this.route.snapshot.url.join('/');
     if (value === undefined) { value = null; }
     const queryParams = new VPFParams();
-    if (type == 'filter') {
-      queryParams.filter = value;
-    } else if (type == 'refDate') {
-      queryParams.refDate = value;
-    } else if (type == 'view') {
+    if (type == 'view') {
       queryParams.view = value != 'Default' ? value : undefined;
     } else if (type == 'viewCockpit') {
       queryParams.viewCockpit = value != 'KeyMetrics' ? value : undefined;
