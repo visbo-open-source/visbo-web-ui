@@ -55,6 +55,7 @@ export class VisboProjectsComponent implements OnInit {
   vcOrga: VisboOrganisation[];
   customize: VisboSetting;
   userCustomfields: CustomUserFields[];
+  modusStoppedPaused: boolean;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -123,28 +124,30 @@ export class VisboProjectsComponent implements OnInit {
   }
 
   changeView(nextView: string, filter: string = undefined): void {
-    if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List') {
+    this.modusStoppedPaused = false;
+    if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List'|| nextView === 'KanbanBoard') {
       this.viewCockpit = nextView;
     } else {
       this.viewCockpit = 'KeyMetrics';
     }
     this.updateUrlParam('viewCockpit', this.viewCockpit);
 
-    if (filter) {
-      this.updateUrlParam('filter', filter.trim());
+    if (filter=="stopped") {
+      this.modusStoppedPaused = true;
+      filter='';
     }
-  }
+    if (filter) {
+     this.updateUrlParam('filter', filter.trim());
+    }
+  }  
 
   updateUrlParam(type: string, value: string): void {
-    // add parameter to URL
+    // add parameter to URL    
+    // const url1= window.location.origin.concat('/vp/', this.vcActive._id);
     const url = this.route.snapshot.url.join('/');
     if (value === undefined) { value = null; }
     const queryParams = new VPFParams();
-    if (type == 'filter') {
-      queryParams.filter = value;
-    } else if (type == 'refDate') {
-      queryParams.refDate = value;
-    } else if (type == 'view') {
+    if (type == 'view') {
       queryParams.view = value != 'Default' ? value : undefined;
     } else if (type == 'viewCockpit') {
       queryParams.viewCockpit = value != 'KeyMetrics' ? value : undefined;

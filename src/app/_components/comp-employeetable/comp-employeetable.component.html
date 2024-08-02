@@ -57,10 +57,11 @@
       {{'vtr.titleApprove' | translate}}
       <i class="fa fa-sort"></i>
     </th>
+    <th></th>
     <th>
       <button
         (click)="this.clearEditModal()"
-        class="my-1 btn btn-primary float-right"
+        class="my-1 btn btn-primary float-left"
         data-target="#VtrModalCreate"
         data-toggle="modal"
         type="button"
@@ -86,6 +87,16 @@
         data-target="#VtrModalCreate"
         data-toggle="modal">
         {{ 'vtr.edit' | translate }}
+      </button>
+    </td>
+    <td>
+      <button class="my-1 float-left"
+        (click)="openCopyModal(user)"
+        *ngIf="checkIsCreatorOfRecord(user)"
+        [disabled]="user.status === 'Yes'"
+        data-target="#VtrModalCreate"
+        data-toggle="modal">
+        {{ 'vtr.copy' | translate }}
       </button>
     </td>
   </tr>
@@ -126,7 +137,7 @@
 
       <div class="modal-body">
         <form [formGroup]="userForm">
-          <div class="form-group">
+          <div class="form-group">          
             <label for="visboCenterSelect">{{"vtr.mdl.Centre" | translate}}</label>
             <select  
               class="form-control"
@@ -138,10 +149,32 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="projectNameSelect">{{"vtr.mdl.Project" | translate}}</label>
-            <select class="form-control w-100" formControlName="vpid" id="projectNameSelect">
-              <option *ngFor="let project of selectedCenterProjects" [value]="project?._id" [attr.disabled]="isCreatorOfRecord && userForm.controls.vpid.value ? 'disabled' : null">{{ project.name }}</option>
+            <label for="businessUnitSelect">{{"vtr.mdl.BusinessUnit" | translate}}</label>
+            <select class="form-control w-100" 
+              formControlName="bu" id="businessUnitSelect">
+              <option *ngFor="let bu of dropDownBU" 
+              [value]="bu" 
+              [attr.disabled]="isCreatorOfRecord && userForm.controls.vpid.value ? 'disabled' : null">{{ bu }}</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label for="projectNameSelect">{{"vtr.mdl.Project" | translate}}</label>
+            <input class="form-control" type="text" id="searchtext" formControlName="searchtext" aria-describedby (change)="updateSearchText()" placeholder="Search ..." autofocus>            
+             <!-- HIERMIT KÖNNEN DIE PROJEKTE -- GEÄNDERT -- WERDEN MIT EDIT -->
+            <select  class="form-control w-100" formControlName="vpid" id="projectNameSelect">
+              <option *ngFor="let project of selectedCenterProjects | appFilter: searchtext" 
+                [value]="project?._id" >
+                {{ project.name }}
+              </option>
+            </select>
+            <!-- HIERMIT KÖNNEN DIE PROJEKTE NICHT MEHR GEÄNDERT WERDEN MIT EDIT -->
+            <!-- <select  class="form-control w-100" formControlName="vpid" id="projectNameSelect">
+              <option *ngFor="let project of selectedCenterProjects | appFilter: searchtext" 
+                [value]="project?._id" 
+                [attr.disabled]="isCreatorOfRecord && userForm.controls.vpid.value ? 'disabled' : null">
+                {{ project.name }}
+              </option>
+            </select> -->
           </div>
           <div class="form-group">
             <label for="date">{{"vtr.mdl.Date" | translate}}</label>
@@ -182,53 +215,4 @@
     </div>
   </div>
 </div>
-
-
-<!-- The Modal Manager-->
-<!-- <div
-  aria-hidden="true"
-  aria-labelledby="VtrModalEditLabel"
-  class="modal fade"
-  id="VtrModalEdit"
-  role="dialog"
-  tabindex="-1">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content"> -->
-
-      <!-- Modal Header -->
-      <!--  -->
-      <!-- [disabled]="userForm.invalid" -->
-      <!-- Modal body -->
-      <!-- <div class="modal-body">
-        <form [formGroup]="userForm">
-          <div class="form-group">
-            <div> {{"vtr.mdl.Employee" | translate}} - <b>{{this.vtrActiveUserName}}</b></div>
-            <div> {{"vtr.mdl.Centre" | translate}} - <b>{{this.vcActiveName}}</b></div>
-            <div> {{"vtr.mdl.Project" | translate}} - <b>{{this.vpActiveName}}</b></div>            
-            <div> {{"vtr.mdl.Description" | translate}} - <b>{{userForm.get('notes').value}}</b></div>
-            <div> {{"vtr.mdl.Hours" | translate}} - <b>{{userForm.get('time').value}}</b></div>
-          </div>
-
-          <div class="form-group">
-            <label for="approveStatus">{{"vtr.mdl.Approve" | translate}}</label>
-            <select class="form-control" formControlName="status" id="approveStatus">
-              <option
-                *ngFor="let status of vtrApprove"
-                [ngValue]="status"
-                [selected]="status === userForm.value.status">{{ status }}</option>
-            </select>
-          </div>
-        </form>
-      </div> -->
-
-      <!-- Modal footer -->
-      <!-- <div class="modal-footer">
-        <button (click)="saveChanges()" [disabled]="!userForm.valid" class="btn btn-primary"
-                data-dismiss="modal"
-                type="button">{{'vtr.btn.save' | translate}}</button>
-      </div> -->
-<!-- 
-    </div>
-  </div>
-</div> -->
 

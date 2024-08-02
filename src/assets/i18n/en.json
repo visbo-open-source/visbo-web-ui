@@ -342,6 +342,7 @@
 			"viewKeyMetrics": "Project Metric",
 			"viewCapacity": "Capacity",
 			"viewProjectBoard": "Project Board",
+			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "List",
 			"create": "Add",
 			"save": "Save",
@@ -501,6 +502,7 @@
 		"fromDate": "Show Records From",
 		"toDate": "To",
 		"approveAll":"Approve All",
+		"copy": "Copy",
 		"edit": "Edit",
 		"userName": "Employee",
 		"mdl":{
@@ -508,6 +510,7 @@
 			"record": "Edit Record",
 			"Employee": "Employee",
 			"Centre":"Center Name",
+			"BusinessUnit": "BuisnessUnit",
 			"Project":"Project Name",
 			"Date":"Date",
 			"Description":"Short Description",
@@ -1369,6 +1372,16 @@
 		},
 		"msg": {
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
+	"compViewKanban": {
+		"lbl": {
+			"Initial": "Initial",
+			"Proposed": "Proposed",
+			"Ordered": "Ordered",
+			"Paused": "Paused",
+			"Finished": "Finished",
+			"Stopped": "Canceled"
 		}
 	},
 	"compViewDelivery": {

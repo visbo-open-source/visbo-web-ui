@@ -29,7 +29,8 @@ import { getErrorMessage, visboCmpString, visboCmpDate, convertDate, validateDat
 import { buildOrgaTree, expandParentTree, setTreeLeafSelection, getLeafByID, getLeafByName,
           isParentLeaf } from '../../_helpers/orga.helper';
 
-import { scale } from 'chroma-js';
+//import { scale } from 'chroma-js';
+import * as chroma from 'chroma-js'; 
 
 import * as XLSX from 'xlsx';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -1458,7 +1459,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     let orgaColors =[];
     if (this.drillDown == 2) {
         // for cost coloring
-        orgaColors = orgaColors.concat(scale('YlGn').colors(childNodeListNew.length + 3));
+        orgaColors = orgaColors.concat(chroma.scale('YlGn').colors(childNodeListNew.length + 3));
         // sorted - sum of Cost, the darkest color should be nearest to x-Axis
         orgaColors.reverse();
     } else {
@@ -1741,7 +1742,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     graphDataCapacity.unshift(rowHeader);
 
     let orgaColors = [];
-    orgaColors = orgaColors.concat(scale('YlGnBu').colors(drillDownNEW.length + 3));
+    orgaColors = orgaColors.concat(chroma.scale('YlGnBu').colors(drillDownNEW.length + 3));
     orgaColors.reverse();
     if (this.refPFV) {
       // color for baseline

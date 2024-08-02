@@ -3,4 +3,5 @@
 }  
 #VPFTotalList {
     background-color:#d4e4ff;
+    overflow-y: scroll;
 }
