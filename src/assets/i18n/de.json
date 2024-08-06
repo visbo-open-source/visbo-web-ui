@@ -1381,7 +1381,8 @@
 			"Ordered": "Beauftragt",
 			"Paused": "Pausiert",
 			"Finished": "Beendet",
-			"Stopped": "Abgebrochen"
+			"Stopped": "Abgebrochen",
+			"SortBy": "Sortiert nach"
 		}
 	},
 	"compViewDelivery": {

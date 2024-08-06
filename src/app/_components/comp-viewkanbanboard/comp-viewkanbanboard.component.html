@@ -6,8 +6,7 @@
     <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
     <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
     {{ 'compViewKanban.lbl.Initial' | translate }}
-    <span class="text-right" style="font-size: small;">Count: </span>
-    <span class="text-right" style="font-size: small;">{{ initlistVPV.length | number: '2.0-0'}} Projects</span>
+    <span class="text-right" style="font-size: small;">{{ initlistVPV.length | number: '2.0-0'}} Projects</span>     
     <!-- <p class="text-right" style="font-size: small;">EAC: {{ initlistIDs.EAC | number: '2.0-0'  }} T€</p>   -->     
     <p class="text-right" style="font-size: small;">Est. Profit: {{ initlistIDs.Profit | number: '2.0-0'  }} T€</p> 
     <p *ngIf="initlistIDs.EAC" class="text-right" style="font-size: small;">EAC: {{ initlistIDs.EAC | number: '2.0-0'  }} T€</p>
@@ -16,6 +15,14 @@
     <p *ngIf="!initlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
     <p *ngIf="initlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ initlistIDs.RAC | number: '2.0-0'  }} T€</p>
     <p *ngIf="!initlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+    <!-- <p class="text-left" style="font-size: medium">Text:
+    <input class="ml-2 col-form-control" style="font-size: medium" type="text"  [(ngModel)]="filter" placeholder="Filter"></p> -->
+    <p class="text-left" style="font-size: medium">
+        {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+      <select class="ml-2 col-form-control" style="font-size: medium" id="sortMode" name="sortMode" [(ngModel)]="sortMode" (click)="switchSort(initlistVPV)">
+        <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+      </select>
+    </p>
     <!-- <p class="text-right" style="font-size: small;">RAC: {{ initlistIDs.RAC | number: '2.0-0'  }} T€</p>   -->
     
     </h4>
@@ -37,7 +44,7 @@
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
         {{ 'compViewKanban.lbl.Proposed' | translate }}
-        <span class="text-right" style="font-size: small;">Count: {{ proposedlistVPV.length | number: '2.0-0'}} Projects</span>           
+        <span class="text-right" style="font-size: small;">{{ proposedlistVPV.length | number: '2.0-0'}} Projects</span>           
         <p class="text-right" style="font-size: small;">Est. Profit: {{ proposedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">EAC: {{ proposedlistIDs.EAC | number: '2.0-0'  }} T€</p>        
         <p *ngIf="proposedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ proposedlistIDs.BAC | number: '2.0-0'  }} T€</p>
@@ -61,9 +68,8 @@
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
-        {{ 'compViewKanban.lbl.Ordered' | translate }}
-        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ orderedlistVPV.length }}</span>         
+        {{ 'compViewKanban.lbl.Ordered' | translate }}        
+        <span class="text-right" style="font-size: small;">{{ orderedlistVPV.length | number: '2.0-0'}} Projects</span>         
         <p class="text-right" style="font-size: small;">Est. Profit: {{ orderedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">EAC: {{ orderedlistIDs.EAC | number: '4.0-0'  }} T€</p>  
         <p *ngIf="orderedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ orderedlistIDs.BAC | number: '4.0-0'  }} T€</p>  
@@ -88,9 +94,8 @@
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong> -->
         <!-- {{ 'compViewBubble.metric.financialSummary' | translate }} -->
-        {{ 'compViewKanban.lbl.Finished' | translate }}        
-        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length }}</span>
+        {{ 'compViewKanban.lbl.Finished' | translate }} 
+        <span class="text-right" style="font-size: small;">{{ finishedlistVPV.length | number: '2.0-0'}} Projects</span>     
         <p class="text-right" style="font-size: small;">Profit: {{ finishedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">CAC: {{ finishedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="finishedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ finishedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
@@ -111,9 +116,8 @@
 </div>    
 <div *ngIf="modusStoppedPaused" class="column "> 
     <h4 class="card-header p-2">        
-        {{ 'compViewKanban.lbl.Paused' | translate }}        
-        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ pausedlistVPV.length }}</span>
+        {{ 'compViewKanban.lbl.Paused' | translate }} 
+        <span class="text-right" style="font-size: small;">{{ pausedlistVPV.length  | number: '2.0-0'}} Projects</span>
         <p class="text-right" style="font-size: small;">Profit: {{ pausedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">CAC: {{ pausedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="pausedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ pausedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
@@ -134,9 +138,8 @@
 </div>
 <div *ngIf="modusStoppedPaused" class="column "> 
     <h4 class="card-header p-2">        
-        {{ 'compViewKanban.lbl.Stopped' | translate }}        
-        <span class="text-right" style="font-size: small;">Anzahl Projekte:</span>
-        <span class="text-right" style="font-size: small;">{{ stoppedlistVPV.length }}</span>
+        {{ 'compViewKanban.lbl.Stopped' | translate }}
+        <span class="text-right" style="font-size: small;">{{ stoppedlistVPV.length | number: '2.0-0'}} Projects</span>     
         <p class="text-right" style="font-size: small;">Profit: {{ stoppedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">CAC: {{ stoppedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="stoppedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ stoppedlistIDs.BAC | number: '2.0-0'  }} T€</p>  

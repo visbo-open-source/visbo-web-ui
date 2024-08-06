@@ -1381,7 +1381,8 @@
 			"Ordered": "Ordered",
 			"Paused": "Paused",
 			"Finished": "Finished",
-			"Stopped": "Canceled"
+			"Stopped": "Canceled",
+			"SortBy": "Sort By"
 		}
 	},
 	"compViewDelivery": {
