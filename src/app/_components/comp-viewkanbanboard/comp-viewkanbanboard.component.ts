@@ -71,7 +71,12 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   dropDownPH: string[];
   filterMS: string;
   dropDownSortType: DropDown[];
-  sortMode: string = "alphabetical";
+  sortModeInit: string = "Profit";
+  sortModeProposed: string = "Profit";
+  sortModeOrdered: string = "Profit";
+  sortModeFinished: string = "Profit";
+  sortModeStopped: string = "Profit";
+  sortModePaused: string = "Profit";
   filterStrategicFit: number;
   filterRisk: number;
   filterBU: string;
@@ -161,11 +166,12 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   initDropDown(): void {
 
     this.dropDownSortType = [];
-    this.dropDownSortType.push({name: 'alphabetical', id: 'alphabetical'});    
-    this.dropDownSortType.push({name: 'businessUnit', id: 'bu'});    
-    this.dropDownSortType.push({name: 'strategicFit', id: 'strategicFit'});       
-    this.dropDownSortType.push({name: 'risk', id: 'risk'});   
-    this.dropDownSortType.push({name: 'Budget', id: 'BAC'});
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.alphabetical'), id: 'alphabetical'});    
+    this.dropDownSortType.push({name:  this.translate.instant('compViewKanban.lbl.businessUnit'), id: 'bu'});    
+    this.dropDownSortType.push({name:  this.translate.instant('compViewKanban.lbl.strategicFit'), id: 'strategicFit'});       
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.risk'), id: 'risk'});   
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.Budget'), id: 'BAC'});   
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.Profit'), id: 'Profit'});
   }
 
 
@@ -287,8 +293,13 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
           this.log('Kanban Board: ${this.listVPV[i].vp.vpStatus} existiert nicht')
           break;
         }
-      }      
-      this.switchSort(this.initlistVPV);
+      }
+      this.switchSort(this.initlistVPV, this.sortModeInit);
+      this.switchSort(this.proposedlistVPV, this.sortModeProposed);
+      this.switchSort(this.orderedlistVPV, this.sortModeOrdered);
+      this.switchSort(this.finishedlistVPV, this.sortModeFinished);
+      this.switchSort(this.pausedlistVPV, this.sortModePaused);
+      this.switchSort(this.stoppedlistVPV, this.sortModeStopped);
      
     }
     const a = 0;
@@ -304,33 +315,33 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     return fontColor;
   }
 
-  switchSort(list: kanbanProjectlist[]): void {
-    if (this.sortMode && this.sortMode =='alphabetical') {
+  switchSort(list: kanbanProjectlist[], sortMode: string): void {
+    if (sortMode && sortMode =='alphabetical') {
       list.sort(function(a, b) {            
         return  visboCmpString(a.name, b.name)
       });
     } 
-    if (this.sortMode && this.sortMode =='Profit') {
+    if (sortMode && sortMode =='Profit') {
       list.sort(function(a, b) {            
         return (b.profit - a.profit)
       });
     }
-    if (this.sortMode && this.sortMode =='risk') {
+    if (sortMode && sortMode =='risk') {
       list.sort(function(a, b) {            
         return (b.risk - a.risk)
       });
     }
-    if (this.sortMode && this.sortMode =='strategicFit') {
+    if (sortMode && sortMode =='strategicFit') {
       list.sort(function(a, b) {            
         return (b.strategicFit - a.strategicFit)
       });
     }
-    if (this.sortMode && this.sortMode =='bu') {
+    if (sortMode && sortMode =='bu') {
       list.sort(function(a, b) {            
         return  visboCmpString(b.bu , a.bu)
       });
     } 
-    if (this.sortMode && this.sortMode =='BAC') {
+    if (sortMode && sortMode =='BAC') {
       list.sort(function(a, b) {            
         return  (b.BAC - a.BAC)
       });

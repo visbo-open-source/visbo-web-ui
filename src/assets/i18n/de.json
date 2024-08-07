@@ -1382,7 +1382,13 @@
 			"Paused": "Pausiert",
 			"Finished": "Beendet",
 			"Stopped": "Abgebrochen",
-			"SortBy": "Sortiert nach"
+			"SortBy": "Sortiert nach",
+			"alphabetical": "Name",
+			"risk": "Risiko",
+			"strategicFit": "Strategie Fit",
+			"businessUnit": "Business Unit",
+			"Budget": "Budget",
+			"Profit": "Profit"
 		}
 	},
 	"compViewDelivery": {

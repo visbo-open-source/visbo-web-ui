@@ -19,7 +19,7 @@
     <input class="ml-2 col-form-control" style="font-size: medium" type="text"  [(ngModel)]="filter" placeholder="Filter"></p> -->
     <p class="text-left" style="font-size: medium">
         {{ 'compViewKanban.lbl.SortBy' | translate }}:     
-      <select class="ml-2 col-form-control" style="font-size: medium" id="sortMode" name="sortMode" [(ngModel)]="sortMode" (click)="switchSort(initlistVPV)">
+      <select class="ml-2 col-form-control" style="font-size: medium" id="sortModeInit" name="sortModeInit" [(ngModel)]="sortModeInit" (click)="switchSort(initlistVPV, sortModeInit)">
         <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
       </select>
     </p>
@@ -49,7 +49,14 @@
         <p class="text-right" style="font-size: small;">EAC: {{ proposedlistIDs.EAC | number: '2.0-0'  }} T€</p>        
         <p *ngIf="proposedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ proposedlistIDs.BAC | number: '2.0-0'  }} T€</p>
         <p *ngIf="!proposedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
-        <p class="text-right" style="font-size: small;">RAC: {{ proposedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="proposedlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ proposedlistIDs.RAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!proposedlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+        <p class="text-left" style="font-size: medium">
+            {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+          <select class="ml-2 col-form-control" style="font-size: medium" id="sortModeProposed" name="sortModeProposed" [(ngModel)]="sortModeProposed" (click)="switchSort(proposedlistVPV, sortModeProposed)">
+            <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+          </select>
+        </p>
     </h4>
     <div class="card-body p-2">    
         <table class='table table-hover table-sortable table-wrapper'>
@@ -73,8 +80,15 @@
         <p class="text-right" style="font-size: small;">Est. Profit: {{ orderedlistIDs.Profit | number: '2.0-0'  }} T€</p> 
         <p class="text-right" style="font-size: small;">EAC: {{ orderedlistIDs.EAC | number: '4.0-0'  }} T€</p>  
         <p *ngIf="orderedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ orderedlistIDs.BAC | number: '4.0-0'  }} T€</p>  
-        <p *ngIf="!orderedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p>  
-        <p class="text-right" style="font-size: small;">RAC: {{ orderedlistIDs.RAC | number: '4.0-0'  }} T€</p>  
+        <p *ngIf="!orderedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
+        <p *ngIf="orderedlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ orderedlistIDs.RAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!orderedlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+        <p class="text-left" style="font-size: medium">
+            {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+          <select class="ml-2 col-form-control" style="font-size: medium" id="sortModeOrdered" name="sortModeOrdered" [(ngModel)]="sortModeOrdered" (click)="switchSort(orderedlistVPV, sortModeOrdered)">
+            <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+          </select>
+        </p> 
     </h4>
     <div class="card-body p-2 overflow-scroll">       
         <table class='table table-hover table-sortable table-wrapper'>
@@ -100,7 +114,14 @@
         <p class="text-right" style="font-size: small;">CAC: {{ finishedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="finishedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ finishedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
         <p *ngIf="!finishedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
-        <p class="text-right" style="font-size: small;">RAC: {{ finishedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="finishedlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ finishedlistIDs.RAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!finishedlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+        <p class="text-left" style="font-size: medium">
+            {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+          <select class="ml-2 col-form-control" style="font-size: medium" id="sortModeFinished" name="sortModeFinished" [(ngModel)]="sortModeFinished" (click)="switchSort(finishedlistVPV, sortModeFinished)">
+            <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+          </select>
+        </p> 
     </h4>
     <div class="card-body p-2">       
         <table class='table table-hover table-sortable table-wrapper'>
@@ -122,7 +143,14 @@
         <p class="text-right" style="font-size: small;">CAC: {{ pausedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="pausedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ pausedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
         <p *ngIf="!pausedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
-        <p class="text-right" style="font-size: small;">RAC: {{ pausedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="pausedlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ pausedlistIDs.RAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!pausedlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+        <p class="text-left" style="font-size: medium">
+            {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+          <select class="ml-2 col-form-control" style="font-size: medium" id="sortModePaused" name="sortModePaused" [(ngModel)]="sortModePaused" (click)="switchSort(pausedlistVPV, sortModePaused)">
+            <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+          </select>
+        </p> 
     </h4>
     <div class="card-body p-2">       
         <table class='table table-hover table-sortable table-wrapper'>
@@ -144,7 +172,14 @@
         <p class="text-right" style="font-size: small;">CAC: {{ stoppedlistIDs.EAC | number: '2.0-0'  }} T€</p> 
         <p *ngIf="stoppedlistIDs.BAC" class="text-right" style="font-size: small;">BAC: {{ stoppedlistIDs.BAC | number: '2.0-0'  }} T€</p>  
         <p *ngIf="!stoppedlistIDs.BAC" class="text-right" style="font-size: small;"><br /></p> 
-        <p class="text-right" style="font-size: small;">RAC: {{ stoppedlistIDs.RAC | number: '2.0-0'  }} T€</p>  
+        <p *ngIf="stoppedlistIDs.RAC" class="text-right" style="font-size: small;">RAC: {{ stoppedlistIDs.RAC | number: '2.0-0'  }} T€</p>
+        <p *ngIf="!stoppedlistIDs.RAC" class="text-right" style="font-size: small;"><br /></p>
+        <p class="text-left" style="font-size: medium">
+            {{ 'compViewKanban.lbl.SortBy' | translate }}:     
+          <select class="ml-2 col-form-control" style="font-size: medium" id="sortModeStopped" name="sortModeStopped" [(ngModel)]="sortModeStopped" (click)="switchSort(stoppedlistVPV, sortModeStopped)">
+            <option *ngFor="let item of dropDownSortType" value="{{item.id}}">{{item.name}}</option>
+          </select>
+        </p> 
     </h4>
     <div class="card-body p-2">       
         <table class='table table-hover table-sortable table-wrapper'>
