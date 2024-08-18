@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../../_services/message.service';
 import { AlertService } from '../../_services/alert.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { visboCmpString ,getErrorMessage, visboGetShortText} from '../../_helpers/visbo.helper';
 import { VtrVisboTrackerExtended } from 'src/app/_models/employee';
@@ -17,6 +18,7 @@ import { VisboProject } from 'src/app/_models/visboproject';
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
 import { VisboOrganisation } from 'src/app/_models/visbosetting';
 import { VisboUser } from 'src/app/_models/visbouser';
+import { TTParams } from 'src/app/_models/employee';
 
 
 
@@ -52,8 +54,8 @@ export class ApproverComponent implements OnInit {
     // @ViewChild('VtrModalCreate') VtrModalCreate: HTMLElement;
     rows: VtrVisboTrackerExtended[] = [];
     originalColumns: VtrVisboTrackerExtended[] = [];
-    startDate: string = new Date(Date.now() - 12096e5).toISOString().slice(0, 10);
-    endDate: string = new Date().toISOString().slice(0, 10);
+    startDate: string;
+    endDate: string;
     sortAscending: boolean;
     sortColumn: number;
     userForm: FormGroup = new FormGroup({
@@ -97,6 +99,8 @@ export class ApproverComponent implements OnInit {
       private trackerService: VisboTimeTracking,
       private translate: TranslateService,
       private messageService: MessageService,
+      private route: ActivatedRoute,
+      private router: Router,
       private alertService: AlertService,
       private userService: UserService,
       private authService: AuthenticationService,
@@ -107,6 +111,22 @@ export class ApproverComponent implements OnInit {
     }
   
     ngOnInit(): void {
+
+      const from = this.route.snapshot.queryParams['from'];
+      const to = this.route.snapshot.queryParams['to'];
+      if (!from) {
+        // startDate set on the first day of the last month
+        let dd = new Date();
+        dd.setMonth(dd.getMonth() -1);
+        dd.setDate(1);        
+        this.startDate = dd.toISOString().slice(0, 10);
+        // from WTT
+        //this.startDate = new Date(Date.now() - (12096e5*3)).toISOString().slice(0, 10);
+      }
+      if (!to) {
+        this.endDate = new Date().toISOString().slice(0, 10);
+      }
+     
       this.visboCenterWs.getVisboCenters().subscribe(
         visboCentersList => {
           this.visboCentersList = visboCentersList;
@@ -573,7 +593,23 @@ export class ApproverComponent implements OnInit {
     this.messageService.add('VisboProject: ' + message);
   }
 
-  
+    updateUrlParam(type: string, value: string, history = false): void {
+    // add parameter to URL
+    const url = this.route.snapshot.url.join('/');
+    if (value === undefined) { value = null; }
+    const queryParams = new TTParams();
+    if (type == 'from' || type == 'to') {
+      queryParams.from = this.startDate;
+      queryParams.to = this.endDate;
+    } 
+    this.router.navigate([url], {
+      queryParams: queryParams,
+      // no navigation back to old status, but to the page before
+      replaceUrl: !history,
+      // preserve the existing query params in the route
+      queryParamsHandling: 'merge'
+    });
+  }
   // getApprover(vtr: VtrVisboTrackerExtended, withEmail = true): string {
   //   let fullName = '';
   //   if (vtr.approvalId) {
