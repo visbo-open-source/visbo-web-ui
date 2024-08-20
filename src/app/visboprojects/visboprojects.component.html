@@ -24,10 +24,10 @@
   
   <div *ngIf="vcActive && viewMode == 'KeyMetrics'" class="row">      
     <div class="col btn-toolbar" style="padding: unset;">
-      <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("ProjectBoard")' title="{{ 'vp.btn.viewProjectBoard' | translate }}">
+      <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("ProjectBoard")' title="{{ 'vp.btn.viewProjectBoard' | translate }}">
         <img src="assets/icons/noun-board.svg" width="60" />
       </button>
-      <button type="button" class="ml-2 btn btn-md btn-light" (click)='changeView("Costtype")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
+      <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("Costtype")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
         <img src="assets/icons/noun-money.svg" width="60" />
       </button>
       <!-- <button class="btn btn-default" (click)='changeView("KeyMetric", "Cost")' title="{{ 'vpfVersion.btn.viewCost' | translate }}">
@@ -44,8 +44,18 @@
       </button>
       <button class="btn btn-default" (click)='changeView("List")' title="{{ 'vp.btn.viewList' | translate }}">
         <img src="assets/icons/noun-list.svg" width="60" />
-      </button>    
+      </button>
+       <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
+        <img src="assets/icons/noun-kanban.svg" width="60" />
+      </button>
     </div>
+    <div *ngIf="viewCockpit=='KanbanBoard'" class='btn-group'>
+      <button type="button" class="ml-2 btn-md btn btn-default" (click)='changeView("KanbanBoard", "stopped")' title="{{ 'vp.btn.viewKanbanBoard' | translate }}">
+        <img src="assets/icons/noun-pause.svg" width="25" />
+        <img src="assets/icons/noun-cancel.svg" width="35" />
+      </button>  
+      <!-- <button type="button" class="mx-1" (click)="gotoCockpitVPV()">{{ 'vpKeyMetric.btn.allVersions' | translate }}</button>       -->
+    </div>    
   </div>
 
   <div *ngIf="viewMode != 'KeyMetrics'" class='panel-body'>
@@ -109,6 +119,9 @@
     </div>
     <div *ngIf="viewCockpit == 'ProjectBoard' && visboprojectversions">
       <app-comp-viewboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize"></app-comp-viewboard>
+    </div>
+    <div *ngIf="viewCockpit == 'KanbanBoard' && visboprojectversions">
+      <app-comp-viewkanbanboard [listVPV]="visboprojectversions" [vcUser]="vcUser" [customize]="customize" [modusStoppedPaused]="modusStoppedPaused"></app-comp-viewkanbanboard>
     </div>
   </div>  
   <!-- Modal VP Create-->

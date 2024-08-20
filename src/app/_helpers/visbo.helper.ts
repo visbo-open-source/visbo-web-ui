@@ -218,6 +218,19 @@ export function hexToRgbAverage(hex: string): number {
     average = (r+g+b)/3
   }
   return average
+}
+  
+export function hexToRgb(hex: string): string {
+  var rgbcolor: string = "";
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (result) {
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    rgbcolor = 'rgb('+r+','+g+','+b+')'
+  }
+  return rgbcolor
+
 
   // return result ? {
   //   r: parseInt(result[1], 16),

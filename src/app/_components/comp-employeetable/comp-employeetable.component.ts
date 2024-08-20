@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { MessageService } from '../../_services/message.service';
@@ -13,9 +13,9 @@ import { AuthenticationService } from 'src/app/_services/authentication.service'
 import { VisboCenter } from 'src/app/_models/visbocenter';
 import { VisboCenterService } from 'src/app/_services/visbocenter.service';
 import { VisboProjectService } from 'src/app/_services/visboproject.service';
-import { VisboProject, constSystemVPStatus } from 'src/app/_models/visboproject';
+import { VisboProject, constSystemCustomName, constSystemVPStatus, getCustomFieldString } from 'src/app/_models/visboproject';
 import { VisboSettingService } from 'src/app/_services/visbosetting.service';
-import { VisboOrganisation } from 'src/app/_models/visbosetting';
+import { VisboOrganisation, VisboSetting } from 'src/app/_models/visbosetting';
 import { VisboUser } from 'src/app/_models/visbouser';
 
 
@@ -58,24 +58,32 @@ export class EmployeeComponent implements OnInit {
     userId: new FormControl('', Validators.required),
     vpid: new FormControl('', Validators.required),
     vcid: new FormControl('', Validators.required),
+    bu: new FormControl('', Validators.required),
     roleId: new FormControl('', Validators.required),
     date: new FormControl('', Validators.required),
     time: new FormControl('', Validators.required),
     notes: new FormControl('', Validators.required),
     status: new FormControl(null),
     approvalId: new FormControl(null),
-    approvalDate: new FormControl(null)
+    approvalDate: new FormControl(null),
+    searchtext: new FormControl(null)
   });
+  updatedRow: any = {};
   selectedRow: VtrVisboTrackerExtended;
   showModal = false;
   vtrApprove = ['Yes', 'No'];
   visboCentersList: VisboCenter[] = [];
   visboProjectsList: VisboProject[] = []; 
   indexedProjectsList: VisboProject[] = [];
-  selectedCenterProjects: VisboProject[];  
+  selectedCenterProjects: VisboProject[];
+  selection: VisboProject;
+  searchtext: string = "";  
   vcUser = new Map<string, VisboUser>();
   hasOrga = false;
   vcOrga: VisboOrganisation[] = [];
+  customize: VisboSetting;
+  businessUnit: string;
+  dropDownBU: string[] = [];
   vcActive: VisboCenter;
   vpActiveName: string;
   vcActiveName: string;
@@ -85,7 +93,9 @@ export class EmployeeComponent implements OnInit {
   private userName: string;
   private userEmail: string;
   private managerUid: number;
+  private user_sav: VtrVisboTrackerExtended;
   userIsApprover: boolean;
+
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -105,23 +115,70 @@ export class EmployeeComponent implements OnInit {
       visboCentersList => {
         this.visboCentersList = visboCentersList;
         this.getProfile();
+        this.initBUDropDown();
       },
       error => {
         console.log('get VCs failed: error: %d message: %s', error.status, error.error.message);
       }
     );
     this.getProjectList();
+    let vcid: string = '';
     this.userForm.get('vcid').valueChanges.subscribe((value) => {
-      if (value) {
+      if (value) {                
+        vcid = value;
         this.onCenterChange(value);
+      }
+    });
+    this.userForm.get('bu').valueChanges.subscribe((value) => {
+      if (value) { 
+        this.businessUnit = value;
+        this.onBusinessUnitChange(vcid, value);
       }
     });
   }
 
-  onCenterChange(selectedCenterId: string): void {
+  onBusinessUnitChange( selectedCenterId: string, bu: string):void {  
+    this.searchtext = "";  
+    this.userForm.get('searchtext').setValue(this.searchtext);
     this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
+        let newList=[];
+        for (var i=0; i <= this.selectedCenterProjects.length; i++) {
+          let proj = this.selectedCenterProjects[i];
+          let projBU = getCustomFieldString(proj, constSystemCustomName[0]);
+          if ( (bu == 'All') || (projBU && (projBU.value == bu))) {
+            newList.push(proj);
+          }
+        }
+        //this.selectedCenterProjects.filter(project => (getCustomFieldString(project, constSystemCustomName[0])?.value == bu) || (bu == this.dropDownBU[0]));
+        this.businessUnit = bu;
+        this.selectedCenterProjects = newList;
+        //this.selectedCenterProjects = visboProjectsList.filter(project => ((project.vpType === 0) && (project.vpStatus == constSystemVPStatus[2])));
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+//   public selectedProj;
+//   public valueSelected() {
+//     const newList = this.selectedCenterProjects.filter(item => item.name === this.selectedProj);
+//     this.selectedCenterProjects = newList;
+// }
+
+  onCenterChange(selectedCenterId: string): void {    
+    this.getVisboCenterCustomization(selectedCenterId);
+    this.searchtext = "";
+    this.userForm.get('searchtext').setValue(this.searchtext);
+    this.userForm.get('vpid').setValue('');
+    
+    this.visboProjectService.getVisboProjects(selectedCenterId).subscribe(
+      visboProjectsList => {
+        this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));        
+        this.selectedCenterProjects.filter(project => (getCustomFieldString(project, constSystemCustomName[0])?.value == this.businessUnit) || (this.businessUnit == this.dropDownBU[0]));
+        let x = 10;
         //this.selectedCenterProjects = visboProjectsList.filter(project => ((project.vpType === 0) && (project.vpStatus == constSystemVPStatus[2])));
       },
       error => {
@@ -129,6 +186,28 @@ export class EmployeeComponent implements OnInit {
       }
     );
     this.getOrganizationList(selectedCenterId);
+  }
+
+  
+  initBUDropDown(): void {
+    this.dropDownBU = [];
+
+    const listBU = this.customize?.value?.businessUnitDefinitions;
+    if (!listBU) {
+      this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
+      //this.dropDownBU = undefined;
+      return;
+    }
+    
+    listBU.forEach(item => {
+      this.dropDownBU.push(item.name);
+    });
+    if (this.dropDownBU.length > 1) {
+      this.dropDownBU.sort(function(a, b) { return visboCmpString(a.toLowerCase(), b.toLowerCase()); });
+      this.dropDownBU.unshift(this.translate.instant('compViewBoard.lbl.all'));
+    } else {
+      this.dropDownBU = undefined;
+    }
   }
 
   addEmployee() {
@@ -150,7 +229,8 @@ export class EmployeeComponent implements OnInit {
       //   userTimeRec.vpName = projectName;
 
       //   this.originalColumns.push(userTimeRec)
-      // }
+      // }      
+      this.updatedRow = this.userForm.value;
       this.userForm.reset(); 
       this.getTimeTrackerList();
     }, error => {
@@ -172,6 +252,34 @@ export class EmployeeComponent implements OnInit {
       userId: user.userId,
       vcid: user.vcid,
       vpid: user.vpid,
+      bu: this.dropDownBU[0],
+      date: user.date,
+      time: user.time,
+      notes: user.notes,
+      roleId: user.roleId,
+      approvalId: null,
+      approvalDate: null
+    });
+  }
+
+  openCopyModal(user: VtrVisboTrackerExtended) {
+    this.showModal = true;
+    this.isCreatorOfRecord = false;
+    this.vpActiveName = user.vpName;
+    this.vcActiveName = user.vcName;
+    this.vtrActiveUserName = user.userName;
+    // Description is empty if date is today
+    // if (new Date(user.date).getDate() == new Date().getDate()) {
+    //   user.notes = ""
+    // };
+    this.user_sav = user;
+    //user.time = null;
+
+    this.userForm.patchValue({
+      userId: user.userId,
+      vcid: user.vcid,
+      vpid: user.vpid,
+      bu: this.dropDownBU[0],
       date: user.date,
       time: user.time,
       notes: user.notes,
@@ -184,15 +292,15 @@ export class EmployeeComponent implements OnInit {
   saveChanges() {
     const userId = this.selectedRow.userId;
     const timeTrackerId = this.selectedRow.timeTrackerId;
-    const updatedRow = {
+    this.updatedRow = {
       ...this.userForm.value,
       userId,
     };
     if (!this.isCreatorOfRecord) {
-      updatedRow.approvalDate = new Date().toISOString();
-      updatedRow.approvalId = userId;
+      this.updatedRow.approvalDate = new Date().toISOString();
+      this.updatedRow.approvalId = userId;
     }
-    this.trackerService.editUserTimeTracker(updatedRow, timeTrackerId)
+    this.trackerService.editUserTimeTracker(this.updatedRow, timeTrackerId)
       .subscribe(
         () => {
           this.userForm.reset();
@@ -302,6 +410,11 @@ export class EmployeeComponent implements OnInit {
     }
   }
 
+  updateSearchText() {    
+    const searchFilter = this.searchtext;
+    this.searchtext = this.userForm.value.searchtext
+  }
+
   private getProjectList(): void {
     this.visboProjectService.getVisboProjects(null)
       .subscribe(
@@ -383,16 +496,56 @@ export class EmployeeComponent implements OnInit {
 
   clearEditModal() {
     this.isCreatorOfRecord = false;
+    const lastRow = this.updatedRow;
     this.userForm.reset();
-    this.userForm.get('userId').setValue(this.userId);
-    if (this.visboCentersList.length == 1) {
-      this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
+    this.userForm.get('userId').setValue(this.userId);       
+    if (this.visboCentersList.length > 0) {       
+    //if (this.visboCentersList.length == 1) {
+      if (lastRow.vcid) {
+        this.userForm.get('vcid').setValue(lastRow.vcid);
+      } else {
+        this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
+      }    
+      if (lastRow.bu) {
+        this.userForm.get('bu').setValue(lastRow.bu);
+        this.businessUnit = lastRow.bu;
+      } else {
+        this.userForm.get('bu').setValue(this.dropDownBU[0]);
+      }     
+    }
       const thisday = new Date();
       let thisdayStr = thisday.toISOString();
       thisdayStr = thisdayStr.split('T')[0];
       this.userForm.get('date').setValue(thisdayStr);
-    }
   }
+
+  
+  clearCopyModal() {  
+    // this.isCreatorOfRecord = false;
+    // const lastRow = this.updatedRow;
+    // this.userForm.reset();
+    // this.userForm.get('userId').setValue(this.userId);       
+    // if (this.visboCentersList.length > 0) {       
+    // //if (this.visboCentersList.length == 1) {
+    //   if (lastRow.vcid) {
+    //     this.userForm.get('vcid').setValue(lastRow.vcid);
+    //   } else {
+    //     this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
+    //   }    
+    //   if (lastRow.bu) {
+    //     this.userForm.get('bu').setValue(lastRow.bu);
+    //     this.businessUnit = lastRow.bu;
+    //   } else {
+    //     this.userForm.get('bu').setValue(this.dropDownBU[0]);
+    //   }     
+    // }
+    //   this.userForm.get('time').setValue(this.time_sav);
+    //   const thisday = new Date();
+    //   let thisdayStr = thisday.toISOString();
+    //   thisdayStr = thisdayStr.split('T')[0];
+    //   this.userForm.get('date').setValue(thisdayStr);
+  }
+
 
   checkIsCreatorOfRecord({userId}) {
     return userId === this.userId;
@@ -401,8 +554,8 @@ export class EmployeeComponent implements OnInit {
   protected readonly event = event;
 
   checkHours(event: Event) {
-    if (event.target['value'] > 24) {
-      event.target['value'] = 24;
+    if (event.target['value'] > 12) {
+      event.target['value'] = 12;
     } 
     if (event.target['value'] < 0) {
       event.target['value'] = 0;
@@ -427,6 +580,28 @@ export class EmployeeComponent implements OnInit {
       });
   }
 
+
+  private getVisboCenterCustomization(selectedCenterId: string): void {
+      this.visboSettingService.getVCSettingByName(selectedCenterId, 'customization')
+        .subscribe(
+          vcsettings => {
+            if (vcsettings.length > 0) { 
+              this.customize = vcsettings[0]; 
+            } else {
+              this.customize = undefined;
+            }
+            this.initBUDropDown();
+          },
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vp.msg.errorPermVC');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    //}
+  }
   
   copyTimeRecords(vtr: VtrVisboTrackerExtended, name: string): exportVTR {
     
