@@ -93,7 +93,9 @@ export class EmployeeComponent implements OnInit {
   private userName: string;
   private userEmail: string;
   private managerUid: number;
+  private user_sav: VtrVisboTrackerExtended;
   userIsApprover: boolean;
+
 
   constructor(
     private trackerService: VisboTimeTracking,
@@ -267,10 +269,11 @@ export class EmployeeComponent implements OnInit {
     this.vcActiveName = user.vcName;
     this.vtrActiveUserName = user.userName;
     // Description is empty if date is today
-    if (new Date(user.date).getDate() == new Date().getDate()) {
-      user.notes = ""
-    };
-    user.time = null;
+    // if (new Date(user.date).getDate() == new Date().getDate()) {
+    //   user.notes = ""
+    // };
+    this.user_sav = user;
+    //user.time = null;
 
     this.userForm.patchValue({
       userId: user.userId,
@@ -516,6 +519,34 @@ export class EmployeeComponent implements OnInit {
       this.userForm.get('date').setValue(thisdayStr);
   }
 
+  
+  clearCopyModal() {  
+    // this.isCreatorOfRecord = false;
+    // const lastRow = this.updatedRow;
+    // this.userForm.reset();
+    // this.userForm.get('userId').setValue(this.userId);       
+    // if (this.visboCentersList.length > 0) {       
+    // //if (this.visboCentersList.length == 1) {
+    //   if (lastRow.vcid) {
+    //     this.userForm.get('vcid').setValue(lastRow.vcid);
+    //   } else {
+    //     this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
+    //   }    
+    //   if (lastRow.bu) {
+    //     this.userForm.get('bu').setValue(lastRow.bu);
+    //     this.businessUnit = lastRow.bu;
+    //   } else {
+    //     this.userForm.get('bu').setValue(this.dropDownBU[0]);
+    //   }     
+    // }
+    //   this.userForm.get('time').setValue(this.time_sav);
+    //   const thisday = new Date();
+    //   let thisdayStr = thisday.toISOString();
+    //   thisdayStr = thisdayStr.split('T')[0];
+    //   this.userForm.get('date').setValue(thisdayStr);
+  }
+
+
   checkIsCreatorOfRecord({userId}) {
     return userId === this.userId;
   }
@@ -523,8 +554,8 @@ export class EmployeeComponent implements OnInit {
   protected readonly event = event;
 
   checkHours(event: Event) {
-    if (event.target['value'] > 24) {
-      event.target['value'] = 24;
+    if (event.target['value'] > 12) {
+      event.target['value'] = 12;
     } 
     if (event.target['value'] < 0) {
       event.target['value'] = 0;
