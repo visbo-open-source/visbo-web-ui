@@ -342,6 +342,7 @@
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewCapacity": "Auslastung",
 			"viewProjectBoard": "Projekttafel",
+			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "Liste",
 			"create": "Hinzufügen",
 			"save": "Speichern",
@@ -501,6 +502,7 @@
 		"fromDate": "Datensätze anzeigen Zeit",
 		"toDate": "An",
 		"approveAll":"Genehmigen Sie alle",
+		"copy": "Kopieren",
 		"edit": "Ändern",
 		"userName": "Mitarbeiter",
 		"mdl":{
@@ -508,6 +510,7 @@
 			"record": "Ändern Rekord",
 			"Employee": "Mitarbeiter",
 			"Centre":"Zentrum Name",
+			"BusinessUnit": "Business Unit",
 			"Project":"Projekt Name",
 			"Date":"Datum",
 			"Description":"Kurzbeschreibung",
@@ -1369,6 +1372,16 @@
 		},
 		"msg": {
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
+	"compViewKanban": {
+		"lbl": {
+			"Initial": "Initial",
+			"Proposed": "Vorgeschlagen",
+			"Ordered": "Beauftragt",
+			"Paused": "Pausiert",
+			"Finished": "Beendet",
+			"Stopped": "Abgebrochen"
 		}
 	},
 	"compViewDelivery": {

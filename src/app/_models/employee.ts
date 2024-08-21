@@ -18,3 +18,11 @@ export interface VtrVisboTracker {
     timeTrackerId: number
     userName: string,
   }
+
+  export class TTParams {
+    // vcid: string;
+    // vpid: string;
+    from: string;
+    to: string;    
+  }
+  
