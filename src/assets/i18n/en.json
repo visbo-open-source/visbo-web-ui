@@ -1381,7 +1381,14 @@
 			"Ordered": "Ordered",
 			"Paused": "Paused",
 			"Finished": "Finished",
-			"Stopped": "Canceled"
+			"Stopped": "Canceled",
+			"SortBy": "Sort By",
+			"alphabetical": "Name",
+			"risk": "Risiko",
+			"strategicFit": "Strategic Fit",
+			"businessUnit": "Business Unit",
+			"Budget": "Volume",
+			"Profit": "Profit"
 		}
 	},
 	"compViewDelivery": {

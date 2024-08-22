@@ -1381,7 +1381,14 @@
 			"Ordered": "Beauftragt",
 			"Paused": "Pausiert",
 			"Finished": "Beendet",
-			"Stopped": "Abgebrochen"
+			"Stopped": "Abgebrochen",
+			"SortBy": "Sortiert nach",
+			"alphabetical": "Name",
+			"risk": "Risiko",
+			"strategicFit": "Strategie Fit",
+			"businessUnit": "Business Unit",
+			"Budget": "Volumen",
+			"Profit": "Profit"
 		}
 	},
 	"compViewDelivery": {
