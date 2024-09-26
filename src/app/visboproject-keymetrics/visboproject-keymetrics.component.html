@@ -116,21 +116,36 @@
             <!-- <a *ngIf="getEnableDisable('EnablePredict', 2, true) && customPredict" class="dropdown-item" (click)="initCustomURL('predict')" data-toggle="modal" data-target="#vpvModalCustomURL">{{customPredict}}</a> -->
             <a class="dropdown-item" (click)="switchView('All')">{{ 'vpKeyMetric.btn.vpViewAll' | translate }}</a>
             <a *ngIf="vpvActive" class="dropdown-item" data-toggle="modal" data-target="#VpvDetails" (click)="initCustomFields(vpActive)">{{ 'vpKeyMetric.btn.vpViewProperties' | translate }}</a>
+          </div>
         </div>
+        <div *ngIf="canCommit() || canCopyVersion()" class="dropdown mr-1">
+          <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
+            {{ 'vpKeyMetric.btn.vpvChange' | translate }}
+            <span class="caret"></span>
+          </button>
+          <div class="dropdown-menu">
+            <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
+            <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
+            <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
+          </div>
         </div>
-          <div *ngIf="canCommit() || canCopyVersion()" class="dropdown mr-1">
-            <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
-              {{ 'vpKeyMetric.btn.vpvChange' | translate }}
-              <span class="caret"></span>
-            </button>
-            <div class="dropdown-menu">
-              <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
-              <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-              <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
-              <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
-              <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
-              <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
-            </div>
+        <div *ngIf="canCommit() || canCopyVersion()" class="dropdown mr-1">
+          <button class="btn btn-md btn-light dropdown-toggle"  data-toggle="dropdown">
+            {{ 'vpKeyMetric.btn.vpvImpExp' | translate }}
+            <span class="caret"></span>
+          </button>
+          <div class="dropdown-menu">
+            <!-- <a href="http://localhost:3000/visbo/export-to-open-project/66ead9151b25afd15ef5771a">Versuche export-to-open-project</a> -->
+            <a class="dropdown-item" (click)="exportVPVtoOpenProject()">{{ 'vpKeyMetric.btn.vpvExport' | translate }}</a>
+            <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
+            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
+            <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
+          </div>
         </div>
       </div>
     </div>

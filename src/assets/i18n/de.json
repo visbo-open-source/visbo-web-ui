@@ -677,7 +677,9 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
-			"vpCommit": "Bestätigen",
+			"vpCommit": "Bestätigen",			
+			"vpvImpExp": "Import/Export",
+			"vpvExport": "Export zu OpenProject",
 			"back": "Zurück",
 			"save": "Speichern",
 			"add": "Hinzufügen"
@@ -689,6 +691,7 @@
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
 			"reduce": "Projekt auf oberste Levels reduzieren",
+			"exportToOpenProjVPVSuccess": "Projekt Version wurde erfolgreich zu OpenProject exportiert!",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",

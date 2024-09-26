@@ -1486,6 +1486,29 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  exportVPVtoOpenProject(): void {
+    this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
+    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive._id, "", this.level)
+      .subscribe(
+        openProj => {                
+              const xxx = openProj;
+              if (openProj.length > 0) {
+                const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
+                this.alertService.success(message, true);
+              }       
+        },
+        error => {
+          this.log(`VPV export to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+    }
+
   vpUpdate(): void {
     // project settings changed?!
     if (this.vpActive && this.customVPModified) {
