@@ -81,6 +81,7 @@
     </th>
   </tr>
   </thead>
+ 
   <tbody id="TimeRecList">     
   <tr (click)="selectRow(user)" *ngFor="let user of originalManagerList" class="col-center">
     <td class="d-none d-md-table-cell">{{user.userName}}</td>
@@ -112,11 +113,11 @@
     <td></td>
     <td></td>
   </tr>
-  </tbody>
-  <div *ngIf="originalManagerList?.length==0" >
-    <div class="spinner-border"></div>
+  </tbody>  
+  <div *ngIf="!noSpinner" >
+    <div class="spinner-border" role="status"></div>
     <span> {{ 'vtr.msg.calculating' | translate }}</span>
-  </div>  
+  </div>
 </table>
 
 

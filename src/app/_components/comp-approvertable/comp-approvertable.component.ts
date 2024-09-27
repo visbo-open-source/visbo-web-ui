@@ -23,6 +23,7 @@ import { TTParams } from 'src/app/_models/employee';
 
 
 import * as XLSX from 'xlsx';
+import { SubjectSubscriber } from 'rxjs/internal/Subject';
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 
@@ -85,15 +86,15 @@ export class ApproverComponent implements OnInit {
     vcActiveName: string;
     vtrActiveUserName: string;
     isCreatorOfRecord: boolean;
-    managerTimeTrackerList: VtrVisboTrackerExtended[]=[];
-    originalManagerList: VtrVisboTrackerExtended[]=[];
+    managerTimeTrackerList: VtrVisboTrackerExtended[] = [];
+    originalManagerList: VtrVisboTrackerExtended[] = [];
     private userId: string;
     userName: string;
     filterName: string = "";
     private userEmail: string;
     private managerUid: number;
     userIsApprover: boolean;
-    noData: boolean = false;
+    noSpinner: boolean = false;
   
     constructor(
       private trackerService: VisboTimeTracking,
@@ -278,7 +279,7 @@ export class ApproverComponent implements OnInit {
         const startDate = this.startDate?.length ? new Date(this.startDate) : null;
         const endDate = this.endDate?.length ? new Date(this.endDate) : null;
   
-        this.originalManagerList = this.originalManagerList?.filter(item => {
+        this.originalManagerList = this.managerTimeTrackerList?.filter(item => {
           var identicalName = true;
           if (this.filterName) {
             identicalName = (item.userName.toLowerCase().search(this.filterName.toLowerCase()) > -1);
@@ -333,9 +334,10 @@ export class ApproverComponent implements OnInit {
     }
   
     getTimeTrackerList() {
+      this.noSpinner = false;
       this.originalManagerList = [];
       this.trackerService.getUserTimeTracker(this.userId, new Date(this.startDate), new Date(this.endDate), true).subscribe(({timeEntries, managerView}) => {    
-            this.managerTimeTrackerList = managerView?.map(record => {
+        this.managerTimeTrackerList = managerView?.map(record => {
             const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
             const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
             if (centerName && projectName) {
@@ -363,25 +365,20 @@ export class ApproverComponent implements OnInit {
           });       
           
           if (this.managerTimeTrackerList.length > 0) {
-            // delete the items which are undefined
-            
+
+            // delete the items which are undefined            
             this.managerTimeTrackerList.forEach( item => {
               if (item) {this.originalManagerList.push(item)}
             });
             this.managerTimeTrackerList = this.originalManagerList;
             this.sortVTRTable(undefined, true);
             this.updateFilter();
+            this.noSpinner = true;
         
         } else {
-          this.managerTimeTrackerList = undefined
+          this.managerTimeTrackerList = undefined;
+          this.noSpinner = true;          
         }      
-        
-        // ur: don't know why this is needed
-        //
-        // if (this.managerTimeTrackerList?.length) {
-        //   this.getOrganizationList(this.visboCentersList[0]._id);         
-        // }
-       
       });
     }
   

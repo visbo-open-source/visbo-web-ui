@@ -523,7 +523,8 @@
 			"add":"Hinzufügen"
 		},
 		"msg":{
-			"calculating": "Suche nach passenden timerecords"
+			"calculating": "Suche nach passenden timerecords",
+			"noData": "No Data"
 		}
 	},
 	"vpRestrict": {
