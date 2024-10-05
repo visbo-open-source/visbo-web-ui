@@ -29,6 +29,11 @@ class kanbanProjectlist {
   variantName: string;
   bu: string;
   buColor: string;
+  strategicFit: number;
+  risk: number;
+  BAC: number;
+  RAC: number;
+  EAC: number;
   status: string;
   profit: number;
 }
@@ -37,6 +42,10 @@ class kanbanIDs {
   BAC: number;
   RAC: number;
   Profit: number;
+}
+class DropDown {
+  name: string;
+  id: string;
 }
 
 class DropDownStatus {
@@ -61,7 +70,13 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
   filterPH: string;
   dropDownPH: string[];
   filterMS: string;
-  dropDownMS: string[];
+  dropDownSortType: DropDown[];
+  sortModeInit: string = "Profit";
+  sortModeProposed: string = "Profit";
+  sortModeOrdered: string = "Profit";
+  sortModeFinished: string = "Profit";
+  sortModeStopped: string = "Profit";
+  sortModePaused: string = "Profit";
   filterStrategicFit: number;
   filterRisk: number;
   filterBU: string;
@@ -103,13 +118,14 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     this.currentLang = this.translate.currentLang;
     this.log(`KanbanBoard Init  ${this.refDate?.toISOString()} `);
     //this.initSetting();
+    this.initDropDown();
     this.visboKanbanfilter();
   }
 
   ngOnChanges(): void {
     this.log(`KanbanBoard Changes  ${this.refDate?.toISOString()}`);
     //this.initSetting();
-    //this.visboKanbanfilter();
+    this.visboKanbanfilter();
   }
 
   onResized(event: ResizedEvent): void {
@@ -144,6 +160,18 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     this.filterRisk = filterRisk;
     this.filterStrategicFit = filterStrategicFit;
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
+  }
+
+  
+  initDropDown(): void {
+
+    this.dropDownSortType = [];
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.alphabetical'), id: 'alphabetical'});    
+    this.dropDownSortType.push({name:  this.translate.instant('compViewKanban.lbl.businessUnit'), id: 'bu'});    
+    this.dropDownSortType.push({name:  this.translate.instant('compViewKanban.lbl.strategicFit'), id: 'strategicFit'});       
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.risk'), id: 'risk'});   
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.Budget'), id: 'BAC'});   
+    this.dropDownSortType.push({name: this.translate.instant('compViewKanban.lbl.Profit'), id: 'Profit'});
   }
 
 
@@ -190,6 +218,12 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
         listitem.bu = '';
         listitem.buColor = defaultColor;
       }     
+      const risk = getCustomFieldDouble(this.listVPV[i].vp, "_risk")?.value;
+      listitem.risk = risk; 
+      const strategicFit = getCustomFieldDouble(this.listVPV[i].vp, "_strategicFit")?.value;
+      listitem.strategicFit = strategicFit;
+
+
       listitem.name = this.listVPV[i].name;
       listitem.variantName = this.listVPV[i].variantName;
       listitem.status = vpStatus;
@@ -197,11 +231,14 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
       let BAC = 0;
       let EAC = 0;
       if (this.listVPV[i].keyMetrics) {
-        RAC = this.listVPV[i].keyMetrics.RACCurrent ? this.listVPV[i].keyMetrics.RACCurrent : 0;
-        EAC = this.listVPV[i].keyMetrics.costCurrentTotal ? this.listVPV[i].keyMetrics.costCurrentTotal : 0;
-        BAC = this.listVPV[i].keyMetrics.costBaseLastTotal ? this.listVPV[i].keyMetrics.costBaseLastActual : 0;
+        RAC = this.listVPV[i].keyMetrics.RACCurrent ? this.listVPV[i].keyMetrics.RACCurrent : 0;       
+        EAC = this.listVPV[i].keyMetrics.costCurrentTotal ? this.listVPV[i].keyMetrics.costCurrentTotal : 0;       
+        BAC = this.listVPV[i].keyMetrics.costBaseLastTotal ? this.listVPV[i].keyMetrics.costBaseLastActual : 0;       
         listitem.profit = RAC - EAC;
-      }     
+      }    
+      listitem.RAC = RAC; 
+      listitem.EAC = EAC;
+      listitem.BAC = BAC;        
 
       switch (vpStatus) {
         case constSystemVPStatus[0]:{          
@@ -257,24 +294,13 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
           break;
         }
       }
-      this.initlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
-      this.proposedlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
-      this.orderedlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
-      this.pausedlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
-      this.finishedlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
-      this.stoppedlistVPV.sort(function(a, b) {            
-        return (b.profit - a.profit);
-      });
+      this.switchSort(this.initlistVPV, this.sortModeInit);
+      this.switchSort(this.proposedlistVPV, this.sortModeProposed);
+      this.switchSort(this.orderedlistVPV, this.sortModeOrdered);
+      this.switchSort(this.finishedlistVPV, this.sortModeFinished);
+      this.switchSort(this.pausedlistVPV, this.sortModePaused);
+      this.switchSort(this.stoppedlistVPV, this.sortModeStopped);
+     
     }
     const a = 0;
   }
@@ -288,6 +314,78 @@ export class VisboCompViewKanbanBoardComponent implements OnInit {
     const fontColor = (hexToRgbAverage(hex) > 127) ? 'rgb(0,0,0)' : 'rgb(256,256,256)';
     return fontColor;
   }
+
+  switchSort(list: kanbanProjectlist[], sortMode: string): void {
+    if (sortMode && sortMode =='alphabetical') {
+      list.sort(function(a, b) {            
+        return  visboCmpString(a.name, b.name)
+      });
+    } 
+    if (sortMode && sortMode =='Profit') {
+      list.sort(function(a, b) {            
+        return (b.profit - a.profit)
+      });
+    }
+    if (sortMode && sortMode =='risk') {
+      list.sort(function(a, b) {            
+        return (b.risk - a.risk)
+      });
+    }
+    if (sortMode && sortMode =='strategicFit') {
+      list.sort(function(a, b) {            
+        return (b.strategicFit - a.strategicFit)
+      });
+    }
+    if (sortMode && sortMode =='bu') {
+      list.sort(function(a, b) {            
+        return  visboCmpString(b.bu , a.bu)
+      });
+    } 
+    if (sortMode && sortMode =='BAC') {
+      list.sort(function(a, b) {            
+        return  (b.BAC - a.BAC)
+      });
+    }
+    
+  }
+  
+  // updateUrlParam(type: string, value: string, history = false): void {
+  //   // add parameter to URL
+  //   const url = this.route.snapshot.url.join('/');
+  //   if (value === undefined) { value = null; }
+  //   const queryParams = new VPFParams();
+  //   if (type == 'roleID') {
+  //     queryParams.roleID = Number(value);
+  //   } else if (type == 'from' || type == 'to') {
+  //     queryParams.from = this.capacityFrom.toISOString();
+  //     queryParams.to = this.capacityTo.toISOString();
+  //   } else if (type == 'unit') {
+  //     queryParams.unit = value;
+  //   } else if (type == 'pfv') {
+  //     queryParams.pfv = value;
+  //   } else if (type == 'drillDown') {
+  //     queryParams.drillDown = value == '0' ? undefined : value;
+  //   } if (type == 'filter') {
+  //     queryParams.filter = this.filter;
+  //     localStorage.setItem('vpfFilter', this.filter || '');
+  //     queryParams.filterVPStatus = this.getVPStatus(false);
+  //     localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
+  //     queryParams.filterBU = this.filterBU ? this.filterBU : undefined;
+  //     localStorage.setItem('vpfFilterBU', this.filterBU || '');
+  //     queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
+  //     localStorage.setItem('vpfFilterRisk', (this.filterRisk || 0).toString());
+  //     queryParams.filterStrategicFit = this.filterStrategicFit > 0 ? this.filterStrategicFit.toString() : undefined;
+  //     localStorage.setItem('vpfFilterStrategicFit', (this.filterStrategicFit || 0).toString());
+  //   }
+  //   this.router.navigate([url], {
+  //     queryParams: queryParams,
+  //     // no navigation back to old status, but to the page before
+  //     replaceUrl: !history,
+  //     // preserve the existing query params in the route
+  //     queryParamsHandling: 'merge'
+  //   });
+  // }
+
 
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL

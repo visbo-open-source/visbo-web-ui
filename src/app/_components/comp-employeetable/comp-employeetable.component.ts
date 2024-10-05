@@ -116,12 +116,14 @@ export class EmployeeComponent implements OnInit {
         this.visboCentersList = visboCentersList;
         this.getProfile();
         this.initBUDropDown();
+        // this.searchtext = "";
+        // this.userForm.get('searchtext').setValue(this.searchtext);
       },
       error => {
         console.log('get VCs failed: error: %d message: %s', error.status, error.error.message);
       }
     );
-    this.getProjectList();
+    this.getProjectList();    
     let vcid: string = '';
     this.userForm.get('vcid').valueChanges.subscribe((value) => {
       if (value) {                
@@ -144,7 +146,7 @@ export class EmployeeComponent implements OnInit {
       visboProjectsList => {
         this.selectedCenterProjects = visboProjectsList.filter(project => (project.vpType === 0) && ((project.vpStatus != constSystemVPStatus[3] )&&(project.vpStatus != constSystemVPStatus[4] )&&(project.vpStatus != constSystemVPStatus[5] )));
         let newList=[];
-        for (var i=0; i <= this.selectedCenterProjects.length; i++) {
+        for (var i=0; i < this.selectedCenterProjects.length; i++) {
           let proj = this.selectedCenterProjects[i];
           let projBU = getCustomFieldString(proj, constSystemCustomName[0]);
           if ( (bu == 'All') || (projBU && (projBU.value == bu))) {
@@ -229,9 +231,10 @@ export class EmployeeComponent implements OnInit {
       //   userTimeRec.vpName = projectName;
 
       //   this.originalColumns.push(userTimeRec)
-      // }      
+      // }            
+      this.userForm.get('vcid').setValue(this.visboCentersList[0]._id);
       this.updatedRow = this.userForm.value;
-      this.userForm.reset(); 
+      this.userForm.reset();
       this.getTimeTrackerList();
     }, error => {
       console.log('Error:', error);
