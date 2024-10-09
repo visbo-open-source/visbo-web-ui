@@ -138,7 +138,6 @@
             <span class="caret"></span>
           </button>
           <div class="dropdown-menu">
-            <!-- <a href="http://localhost:3000/visbo/export-to-open-project/66ead9151b25afd15ef5771a">Versuche export-to-open-project</a> -->
             <a class="dropdown-item" (click)="exportVPVtoOpenProject()">{{ 'vpKeyMetric.btn.vpvExport' | translate }}</a>
             <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
             <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>

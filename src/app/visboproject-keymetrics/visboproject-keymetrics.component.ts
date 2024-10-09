@@ -1493,8 +1493,42 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         openProj => {                
               const xxx = openProj;
               if (openProj.length > 0) {
+                
                 const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
                 this.alertService.success(message, true);
+                
+                // hier erzeugen einer OP - Variante
+                this.newVariant.variantName = "OP";
+                this.newVariant.email = "ute...";
+                this.newVariant.description="This Project was exported to OpenProject";
+                
+                this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
+                  .subscribe(
+                    variant => {
+                      // Add Variant to list
+                      this.vpActive.variant.push(variant);
+                      //this.dropDownInit(variant._id);
+                      this.newVPVvariantName = variant.variantName;
+                      this.copyVPV();
+                      const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+                      this.alertService.success(message);
+                    },
+                    error => {
+                      this.log(`Create Variant error: ${error.error.message}`);
+                      if (error.status === 403) {
+                        const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+                        this.alertService.error(message);
+                      // } else if (error.status === 409) {
+                      //   const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+                      //   this.alertService.error(message);
+                      } else {
+                        this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+                        this.alertService.error(getErrorMessage(error));
+                      }
+                    }
+                  );
+
+
               }       
         },
         error => {
