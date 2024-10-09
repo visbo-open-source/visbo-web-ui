@@ -681,6 +681,7 @@
 			"vpCommit": "Bestätigen",			
 			"vpvImpExp": "Import/Export",
 			"vpvExport": "Export zu OpenProject",
+			"vpvImport": "Import von OpenProject",
 			"back": "Zurück",
 			"save": "Speichern",
 			"add": "Hinzufügen"
