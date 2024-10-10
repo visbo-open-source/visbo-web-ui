@@ -94,6 +94,7 @@ export class EmployeeComponent implements OnInit {
   private userEmail: string;
   private managerUid: number;
   private user_sav: VtrVisboTrackerExtended;
+  timeInput: number;
   userIsApprover: boolean;
 
 
@@ -215,6 +216,13 @@ export class EmployeeComponent implements OnInit {
   addEmployee() {
     //var userTimeRec: VtrVisboTrackerExtended = undefined;
     this.showModal = true;
+    const anzHours = this.userForm.value.time;
+    if (anzHours > 12) {
+      this.userForm.get('time').setValue(12)
+    }
+    if (anzHours < 0) {
+      this.userForm.get('time').setValue(0)
+    }
     this.trackerService.addUserTimeTracker({...this.userForm.value, status: 'No', name: this.userName}).subscribe(() => {      
       // userTimeRec => {
       //   userTimeRec.vcid = this.userForm.value.vcid;
@@ -295,6 +303,13 @@ export class EmployeeComponent implements OnInit {
   saveChanges() {
     const userId = this.selectedRow.userId;
     const timeTrackerId = this.selectedRow.timeTrackerId;
+    const anzHours = this.userForm.value.time;
+    if (anzHours > 12) {
+      this.userForm.get('time').setValue(12)
+    }
+    if (anzHours < 0) {
+      this.userForm.get('time').setValue(0)
+    }
     this.updatedRow = {
       ...this.userForm.value,
       userId,
