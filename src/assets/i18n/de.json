@@ -701,7 +701,8 @@
 			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"viewWeb": "Anzeige des Projekts Online",
-			"localInstallationRequired": "Installation der VISBO Clients erforderlich"
+			"localInstallationRequired": "Installation der VISBO Clients erforderlich",
+			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge erforderlich"
 		}
 	},
 	"compViewEmployeetable": {

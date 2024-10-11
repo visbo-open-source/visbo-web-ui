@@ -76,6 +76,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customURL: string;
   customPredict: string;
   customEdit: string;
+  customOpenProject: string;
   calcPredict = false;
   level: number;
   reduceLevel: false;
@@ -983,7 +984,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit,CustomOpenProject')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
@@ -996,6 +997,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               customSetting = vcsettings.find(item => item.type == 'CustomEdit');
               if (customSetting) {
                 this.customEdit = customSetting.name;
+              }
+              customSetting = vcsettings.find(item => item.type == 'CustomOpenProject');
+              if (customSetting) {
+                this.customOpenProject = customSetting.name;
               }
               this.initBUDropDown();
             },
@@ -1537,7 +1542,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
             this.alertService.error(message);
           } else {
-            this.alertService.error(getErrorMessage(error));
+            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+            this.alertService.error(message);
+            //this.alertService.error(getErrorMessage(error));
           }
         }
       );
