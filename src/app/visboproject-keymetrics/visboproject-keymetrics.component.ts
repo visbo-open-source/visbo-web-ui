@@ -76,6 +76,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customURL: string;
   customPredict: string;
   customEdit: string;
+  customOpenProject: string;
   calcPredict = false;
   level: number;
   reduceLevel: false;
@@ -983,7 +984,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit,CustomOpenProject')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
@@ -996,6 +997,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               customSetting = vcsettings.find(item => item.type == 'CustomEdit');
               if (customSetting) {
                 this.customEdit = customSetting.name;
+              }
+              customSetting = vcsettings.find(item => item.type == 'CustomOpenProject');
+              if (customSetting) {
+                this.customOpenProject = customSetting.name;
               }
               this.initBUDropDown();
             },
@@ -1485,6 +1490,65 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       );
   }
+
+  exportVPVtoOpenProject(): void {
+    this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
+    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive._id, "", this.level)
+      .subscribe(
+        openProj => {                
+              const xxx = openProj;
+              if (openProj.length > 0) {
+                
+                const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
+                this.alertService.success(message, true);
+                
+                // hier erzeugen einer OP - Variante
+                this.newVariant.variantName = "OP";
+                this.newVariant.email = "ute...";
+                this.newVariant.description="This Project was exported to OpenProject";
+                
+                this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
+                  .subscribe(
+                    variant => {
+                      // Add Variant to list
+                      this.vpActive.variant.push(variant);
+                      //this.dropDownInit(variant._id);
+                      this.newVPVvariantName = variant.variantName;
+                      this.copyVPV();
+                      const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+                      this.alertService.success(message);
+                    },
+                    error => {
+                      this.log(`Create Variant error: ${error.error.message}`);
+                      if (error.status === 403) {
+                        const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+                        this.alertService.error(message);
+                      // } else if (error.status === 409) {
+                      //   const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+                      //   this.alertService.error(message);
+                      } else {
+                        this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+                        this.alertService.error(getErrorMessage(error));
+                      }
+                    }
+                  );
+
+
+              }       
+        },
+        error => {
+          this.log(`VPV export to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+            this.alertService.error(message);
+            //this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+    }
 
   vpUpdate(): void {
     // project settings changed?!
