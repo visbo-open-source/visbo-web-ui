@@ -514,7 +514,7 @@
 			"Project":"Project Name",
 			"Date":"Date",
 			"Description":"Short Description",
-			"Hours":"Hours",
+			"Hours":"Hours (between 0 and 12)",
 			"Approve":"Approve"
 		},
 		"btn":{
