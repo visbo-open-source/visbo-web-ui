@@ -432,7 +432,7 @@ export class VisboProjectVersionService {
   }
 /** POST: export a Visbo Project Version to openproject*/
 exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined, isCommited: Boolean = false): Observable<any> {
-  const url = `${this.openProjURL}/visbo/project/export-to-open-project/${vpid}`;
+  const url = `${this.openProjURL}/bridge/export-to-open-project/${vpid}`; 
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
   if (variantName == 'pfv' && level > 0) {
