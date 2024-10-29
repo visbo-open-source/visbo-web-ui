@@ -437,9 +437,7 @@ exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined
   let params = new HttpParams();
   if (variantName == 'pfv' && level > 0) {
     params = params.append('level', level.toString());
-  }
-
-  
+  }  
   return this.http.post<any>(url, { headers , params }).pipe( 
       map(response => {
         return response; 
