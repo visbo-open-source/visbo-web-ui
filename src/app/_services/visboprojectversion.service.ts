@@ -22,6 +22,7 @@ export class VisboProjectVersionService {
 
   private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
   private vpfUrl = this.env.restUrl.concat('/vp'); // URL to web api
+  private openProjURL = this.env.openProjUrl;
 
   constructor(
     private http: HttpClient,
@@ -429,7 +430,23 @@ export class VisboProjectVersionService {
         catchError(this.handleError<VisboProjectVersion>('copyVisboProjectVersion'))
       );
   }
-
+/** POST: export a Visbo Project Version to openproject*/
+exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined, isCommited: Boolean = false): Observable<any> {
+  const url = `${this.openProjURL}/bridge/export-to-open-project/${vpid}`; 
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  let params = new HttpParams();
+  if (variantName == 'pfv' && level > 0) {
+    params = params.append('level', level.toString());
+  }  
+  return this.http.post<any>(url, { headers , params }).pipe( 
+      map(response => {
+        return response; 
+      }), 
+      tap(() => this.log(`exported VisboProjectVersion w/ id=${vpid}`)),
+      catchError(this.handleError<VisboProjectVersion>('exportVisboProjectVersion'))
+    );
+}
+  
   /**
    * Handle Http operation that failed.
    * Let the app continue.

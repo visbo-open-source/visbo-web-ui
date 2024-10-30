@@ -462,9 +462,10 @@
 			"invalidMessage": "Invalid Characters in Message",
 			"removeGroup": "Remove Group",
 			"detailGroup": "Details of Group",
-			"updateProjectSuccess": "VISBO Project {{name}} updated successfully",
-			"removeProjectSuccess": "VISBO Project {{name}} deleted successfully",
 			"addUserSuccess": "User {{name}} was added to VISBO Project",
+			"updateProjectSuccess": "VISBO Project {{name}} updated successfully",
+			"updateProjectConnectSuccess": "VISBO Projekt {{name}} - OP-Version created successfully",
+			"removeProjectSuccess": "VISBO Project {{name}} deleted successfully",
 			"removeUserSuccess": "User {{name}} was removed from Group",
 			"changeGroupSuccess": "Group {{name}} was updated successfully",
 			"createGroupSuccess": "Group {{name}} was created successfully",
@@ -678,7 +679,10 @@
 			"vpvChange": "Change",
 			"vpvMove": "Move",
 			"vpvCopy": "Copy",
-			"vpCommit": "Commit",
+			"vpCommit": "Commit",			
+			"vpvImpExp": "Import/Export",
+			"vpvExport": "Export to OpenProject",
+			"vpvImport": "Import from OpenProject",
 			"back": "Back",
 			"save": "Save",
 			"add": "Add"
@@ -689,7 +693,8 @@
 			"changeVPVSuccess": "Project version was copied successfully to Variant {{variantName}}!",
 			"changePFVSuccess": "Project Baseline was changed successfully!",
 			"confirmCommit": "Do you really want to commit this current project plan?",
-			"reduce": "Reduce Projects to top levels",
+			"reduce": "Reduce Projects to top levels",			
+			"exportToOpenProjVPVSuccess": "Project version was created successfully in OpenProject!",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
@@ -697,7 +702,8 @@
 			"errorVPConflict": "Conflict happened during updating of {{name}}",
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"viewWeb": "View Project Online",
-			"localInstallationRequired": "Installation of VISBO Clients required"
+			"localInstallationRequired": "Installation of VISBO Clients required",
+			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required"
 		}
 	},
 	"compViewEmployeetable": {

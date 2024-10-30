@@ -464,6 +464,7 @@
 			"detailGroup": "Details zur Gruppe",
 			"addUserSuccess": "Benutzer {{name}} wurde zum VISBO Projekt hinzugefügt",
 			"updateProjectSuccess": "VISBO Projekt {{name}} wurde gespeichert",
+			"updateProjectConnectSuccess": "VISBO Projekt {{name}} - OP-Version wurde gespeichert",
 			"removeProjectSuccess": "VISBO Projekt {{name}} wurde gelöscht",
 			"removeUserSuccess": "Benutzer {{name}} wurde aus der Gruppe gelöscht",
 			"changeGroupSuccess": "Gruppe {{name}} wurde erfolgreich geändert",
@@ -678,7 +679,10 @@
 			"vpvChange": "Ändern",
 			"vpvMove": "Verschieben",
 			"vpvCopy": "Kopieren",
-			"vpCommit": "Bestätigen",
+			"vpCommit": "Bestätigen",			
+			"vpvImpExp": "Import/Export",
+			"vpvExport": "Export zu OpenProject",
+			"vpvImport": "Import von OpenProject",
 			"back": "Zurück",
 			"save": "Speichern",
 			"add": "Hinzufügen"
@@ -690,6 +694,7 @@
 			"changePFVSuccess": "Projekt Baseline wurde erfolgreich geändert",
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
 			"reduce": "Projekt auf oberste Levels reduzieren",
+			"exportToOpenProjVPVSuccess": "Projekt Version wurde erfolgreich zu OpenProject exportiert!",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",
@@ -697,7 +702,8 @@
 			"errorVPConflict": "Es ist ein Konflikt beim ändern von {{name}} augetreten",
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"viewWeb": "Anzeige des Projekts Online",
-			"localInstallationRequired": "Installation der VISBO Clients erforderlich"
+			"localInstallationRequired": "Installation der VISBO Clients erforderlich",
+			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge erforderlich"
 		}
 	},
 	"compViewEmployeetable": {
