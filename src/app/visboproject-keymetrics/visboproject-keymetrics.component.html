@@ -139,7 +139,7 @@
           </button>
           <div class="dropdown-menu">
             <a class="dropdown-item" (click)="exportVPVtoOpenProject()">{{ 'vpKeyMetric.btn.vpvExport' | translate }}</a>
-            <a class="dropdown-item disabled" >{{ 'vpKeyMetric.btn.vpvImport' | translate }}</a>
+            <a class="dropdown-item" (click)="importVPVFromOpenProject()">{{ 'vpKeyMetric.btn.vpvImport' | translate }}</a>
             <!-- <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
             <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a> -->
             <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
