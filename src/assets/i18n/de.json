@@ -695,6 +695,7 @@
 			"confirmCommit": "Wollen Sie den aktuellen Projektstand als vollständig/aktuell bestätigen?",
 			"reduce": "Projekt auf oberste Levels reduzieren",
 			"exportToOpenProjVPVSuccess": "Projekt Version wurde erfolgreich zu OpenProject exportiert!",
+			"importVPVFromOpenProjSuccess": "Project Version wurde erfolgreich von OpenProject importiert!",
 			"noKeyMetric": "Diese Projekt Version hat keine Kennzahlen",
 			"errorPerm": "Keine Berechtigung für das VISBO Projekt",
 			"errorPermOrga": "Kein Zugriff auf die Organisation für {{name}}",

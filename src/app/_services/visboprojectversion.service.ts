@@ -457,8 +457,8 @@ importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {
       map(response => {
         return response; 
       }), 
-      tap(() => this.log(`exported VisboProjectVersion w/ id=${vpid}`)),
-      catchError(this.handleError<VisboProjectVersion>('exportVisboProjectVersion'))
+      tap(() => this.log(`imported VisboProjectVersion w/ id=${vpid}`)),
+      catchError(this.handleError<VisboProjectVersion>('importVisboProjectVersion'))
     );
 }
 

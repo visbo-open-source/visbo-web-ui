@@ -695,6 +695,7 @@
 			"confirmCommit": "Do you really want to commit this current project plan?",
 			"reduce": "Reduce Projects to top levels",			
 			"exportToOpenProjVPVSuccess": "Project version was created successfully in OpenProject!",
+			"importVPVFromOpenProjSuccess": "Project version was imported successfully from OpenProject",
 			"noKeyMetric": "This project does not have Key Metrics",
 			"errorPerm": "Permission denied for this VISBO Project",
 			"errorPermOrga": "Permission denied getting Organisation for {{name}}",
