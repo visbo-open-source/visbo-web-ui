@@ -857,7 +857,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
     const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
     if (vpstatus){
-      tooltipItemsList.push({key: status, value: vpstatus});
+      tooltipItemsList.push({key: status, value: localVPStatus});
     }
     // get businessUnit of vp
     const buText = this.translate.instant('compViewBoard.lbl.bu');

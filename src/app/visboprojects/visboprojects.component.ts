@@ -350,14 +350,18 @@ export class VisboProjectsComponent implements OnInit {
         name: this.newVP?.name || '',
         vcid: this.vcActive?._id,
         vpType: 0,
+        description: this.newVP?.description || '',
         customFieldString: str_CF,
         customFieldDouble: dbl_CF,
         customFieldDate: date_CF,
-        // startDate: suggestedStartDate,
-        // endDate: suggestedEndDate,
+        startDate: this.newVP?.startDate,
+        endDate: this.newVP?.endDate,
+        bac: this.newVP?.bac || 0,
+        rac: this.newVP?.rac || 0,
         templateID: templateID
       };
       this.checkTemplateCost(templateID);
+
   }
 
   checkTemplateCost(templateID: string): void {
@@ -483,6 +487,11 @@ export class VisboProjectsComponent implements OnInit {
         }
       }
     );
+  }
+  
+  cancelproject(): void {
+    delete this.newVP;
+       
   }
 
   getVisboProjectKeyMetrics(): void {

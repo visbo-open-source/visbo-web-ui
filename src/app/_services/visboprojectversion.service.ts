@@ -446,6 +446,23 @@ exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined
       catchError(this.handleError<VisboProjectVersion>('exportVisboProjectVersion'))
     );
 }
+
+/** POST: import a  Visbo Project Version from openproject*/
+importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {
+  const url = `${this.openProjURL}/bridge/import-from-open-project/${vpid}`; 
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  let params = new HttpParams();
+ 
+  return this.http.post<any>(url, { headers , params }).pipe( 
+      map(response => {
+        return response; 
+      }), 
+      tap(() => this.log(`imported VisboProjectVersion w/ id=${vpid}`)),
+      catchError(this.handleError<VisboProjectVersion>('importVisboProjectVersion'))
+    );
+}
+
+
   
   /**
    * Handle Http operation that failed.

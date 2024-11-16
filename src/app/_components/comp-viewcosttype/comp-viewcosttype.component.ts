@@ -1707,7 +1707,8 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       }
     }
     if ((this.drillDown == 3) && (vpName != "All")) {
-      result = result + this.addTooltipRowString("BusinessUnit", item.businessUnit, false);
+      const strBusinessUnit = this.translate.instant('ViewCosttypes.lbl.bu')
+      result = result + this.addTooltipRowString(strBusinessUnit, item.businessUnit, false);
       result = result + this.addTooltipRowNumber("StrategicFit", item.strategicFit, 0, '', false);
     }
 

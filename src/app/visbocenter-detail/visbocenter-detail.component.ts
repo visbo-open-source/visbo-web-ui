@@ -891,7 +891,9 @@ export class VisbocenterDetailComponent implements OnInit {
       this.newOrgaTimestamp = beginningOfMonth;
       this.minOrgaTimestamp = new Date(beginningOfMonth);
       this.minOrgaTimestamp.setMonth(0);
-      this.minOrgaTimestamp.setFullYear(this.minOrgaTimestamp.getFullYear() - 2);
+      let minYear = this.minOrgaTimestamp.getFullYear();
+      minYear = minYear - 5;      
+      this.minOrgaTimestamp.setFullYear(minYear);
     }
     const isExcel = this.newFile?.name.slice(-EXCEL_EXTENSION.length) == EXCEL_EXTENSION;
 
