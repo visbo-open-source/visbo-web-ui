@@ -1610,9 +1610,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           if (error.status === 403) {
             const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
             this.alertService.error(message);
+          } else if (error.status === 400 ) {
+              const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjError');
+              this.alertService.error(message);            
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
-            this.alertService.error(message);
+            this.alertService.error(message + error.status);
             //this.alertService.error(getErrorMessage(error));
           }
         }

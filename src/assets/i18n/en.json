@@ -704,7 +704,8 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"viewWeb": "View Project Online",
 			"localInstallationRequired": "Installation of VISBO Clients required",
-			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required"
+			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required",			
+			"importVPVFromOpenProjError": "Project Version imported from OpenProject could not bei saved (not valid)!"
 		}
 	},
 	"compViewEmployeetable": {
