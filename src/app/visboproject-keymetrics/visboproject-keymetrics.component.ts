@@ -1596,13 +1596,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
     this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
       .subscribe(
-        data => {  
-          const vpv = data;
-          if (vpv) {                        
+        vpv => {  
+            if (vpv) {                        
             const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
             this.alertService.success(message, true);
-            this.addVPVtoList(vpv[0]);
-            this.switchVariant(vpv[0].variantName);
+            this.addVPVtoList(vpv);
+            this.switchVariant(vpv.variantName);
           }
         },    
         error => {
