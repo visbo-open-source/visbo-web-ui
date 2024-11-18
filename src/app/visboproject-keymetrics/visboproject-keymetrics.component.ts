@@ -1597,7 +1597,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
       .subscribe(
         data => { 
-          if (data.success && (data.success == false)) {
+          if (data && (data.success == false)) {
             this.log(`VPV import from OpenProject failed: error: ${data.status} message: ${data.error.message}`);
             if (data.status === 403) {
               const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
