@@ -1596,12 +1596,26 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
     this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
       .subscribe(
-        vpv => {  
-            if (vpv) {                        
+        data => {  
+            if (data.success == true) {                        
             const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
             this.alertService.success(message, true);
-            this.addVPVtoList(vpv);
-            this.switchVariant(vpv.variantName);
+            this.addVPVtoList(data.vpv);
+            this.switchVariant(data.vpv.variantName);
+          } else {
+            this.log(`VPV import from OpenProject failed: error: ${data.status} message: ${data.error.message}`);
+          if (data.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else if (data.status === 400 ) {
+              const message = data.details.message;
+              //const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjError');
+              this.alertService.error(message);            
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+            this.alertService.error(message + data.status);
+            //this.alertService.error(getErrorMessage(error));
+          }
           }
         },    
         error => {
