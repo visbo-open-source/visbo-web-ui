@@ -1461,7 +1461,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.visboprojectversionService.addVisboProjectVersion(this.vpvActive)
     .subscribe(
       (vpv) => {
-        const message = this.translate.instant('vpDetail.msg.updateProjectConnectSuccess', {'name': this.vpActive.name});
+        const message = this.translate.instant('vpDetail.msg.updateProjectConnectSuccess', {'name': this.vpActive.name, 'variantName': this.vpvActive.variantName});
         this.addVPVtoList(vpv[0]);
         this.switchVariant(vpv[0].variantName);
         this.alertService.success(message, true);
