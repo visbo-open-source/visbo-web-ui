@@ -464,7 +464,7 @@
 			"detailGroup": "Details of Group",
 			"addUserSuccess": "User {{name}} was added to VISBO Project",
 			"updateProjectSuccess": "VISBO Project {{name}} updated successfully",
-			"updateProjectConnectSuccess": "VISBO Projekt {{name}} - OP-Version created successfully",
+			"updateProjectConnectSuccess": "VISBO Projekt {{name}} - {{variantName}}-Version created successfully",
 			"removeProjectSuccess": "VISBO Project {{name}} deleted successfully",
 			"removeUserSuccess": "User {{name}} was removed from Group",
 			"changeGroupSuccess": "Group {{name}} was updated successfully",

@@ -21,7 +21,7 @@ const httpOptions = {
 export class VisboProjectVersionService {
 
   private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
-  private vpfUrl = this.env.restUrl.concat('/vp'); // URL to web api
+  private vpfUrl = this.env.restUrl.concat('/vp');  // URL to web api
   private openProjURL = this.env.openProjUrl;
 
   constructor(
@@ -430,6 +430,7 @@ export class VisboProjectVersionService {
         catchError(this.handleError<VisboProjectVersion>('copyVisboProjectVersion'))
       );
   }
+
 /** POST: export a Visbo Project Version to openproject*/
 exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined, isCommited: Boolean = false): Observable<any> {
   const url = `${this.openProjURL}/bridge/export-to-open-project/${vpid}`; 
@@ -461,8 +462,6 @@ importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {
       catchError(this.handleError<VisboProjectVersion>('importVisboProjectVersion'))
     );
 }
-
-
   
   /**
    * Handle Http operation that failed.
