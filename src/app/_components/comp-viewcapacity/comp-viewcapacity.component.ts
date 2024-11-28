@@ -1125,17 +1125,30 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         }       
     })
 
-    definedRoles.forEach(role => {
-      if (role.type == 1){
-        if (allused1Roles[role.uid]) {
-          result.push(role)
-        }
+    allused1Roles.forEach(role => result.push(role));
+    allused2Roles.forEach(role => result.push(role));
+
+    // definedRoles.forEach(role => {
+    //   if (role.type == 1){
+    //     if (allused1Roles[role.uid]) {
+    //       result.push(role)
+    //     }
+    //   } else {
+    //       if (allused2Roles[role.uid]) {
+    //         result.push(role)
+    //       }
+    //   }
+    // });
+
+      
+    result.sort(function(a, b) {
+      if (a.type != b.type) {
+        return a.type - b.type;
       } else {
-          if (allused2Roles[role.uid]) {
-            result.push(role)
-          }
+        return a.path.localeCompare(b.path);
       }
     });
+    
     return result;
   }  
 
@@ -1145,7 +1158,10 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     var roles = [];
     const orgaroles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
     if (usedRoles) {
-      roles = usedRoles;
+      if (usedRoles.length < 1) {
+        usedRoles.push(orgaroles[0])
+      } 
+      roles = usedRoles;     
     } else {
       roles = orgaroles;
     }
