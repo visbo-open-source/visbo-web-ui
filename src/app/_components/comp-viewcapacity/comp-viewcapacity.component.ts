@@ -142,7 +142,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   visboprojectversions: VisboProjectVersion[];
   visboprojectsversions_filtered: VisboProjectVersion[];
 
-  capaLoad: CapaLoad[];
+  capaLoad: CapaLoad[];  
+  reducedRoleList:VisboReducedOrgaItem[];
   timeoutID: ReturnType<typeof setTimeout>;
   timeoutFilterID: ReturnType<typeof setTimeout>;
   hasCost: boolean;
@@ -290,25 +291,31 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     this.log(`Capacity Init  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     this.capaLoad = [];
+
     if (this.vpfActive) {
       this.lastTimestampVPF = this.vpfActive.timestamp;
+      this.initVPProperties();
+      this.getProjectVersions();
+      this.reducedRoleList = undefined;
+      
     } else if (this.vpvActive) {
       this.drillDownCapaFiltered = this.drillDownCapa.filter( item => (item.id != 2)  && (item.id != 3));
       this.lastTimestampVPF = this.vpvActive.timestamp;
-    } 
-    this.initVPProperties();
-    this.getProjectVersions();
-    this.visboViewOrganisationTree();
+      this.visboprojectversions = [];
+      this.visboprojectversions.push(this.vpvActive);
+      this.visboprojectversions.push(this.vpvBaseline);
+      this.reducedRoleList = this.getUsedRoles();
+    }    
+    this.visboViewOrganisationTree(this.reducedRoleList);
     this.getCapacity();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`Capacity Changes  RefDate ${this.refDate} Current RefDate ${this.currentRefDate}`);
     let refresh = false;
-
     // in case of VP Capacity
     if (changes.vpvActive?.previousValue && changes.vpvActive?.currentValue?.timestamp &&  changes.vpvActive?.currentValue?.timestamp != changes.vpvActive?.previousValue?.timestamp ) {
-      refresh = true;
+       refresh = true;
     }
     // in case of VPF Capacity changing VPF Version
     if (changes.vpfActive?.previousValue && changes.vpfActive?.currentValue?.timestamp &&  changes.vpfActive?.currentValue?.timestamp != changes.vpfActive?.previousValue?.timestamp) {
@@ -317,8 +324,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // refresh calculation if refDate has changed or the timestamp of the VPF has changed
     if (refresh || (this.currentRefDate !== undefined && this.refDate.getTime() !== this.currentRefDate.getTime())) {
       this.initSetting();
-      this.capaLoad  = [];
-      this.visboViewOrganisationTree();
+      this.capaLoad  = [];   
+      this.visboViewOrganisationTree(this.reducedRoleList);
       this.getCapacity();
     }
   }
@@ -653,7 +660,6 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   }
 
   getProjectVersions(): void {
-    this.visboprojectversions = undefined;
     const longlist = true;
     const refDate = new Date();
 
@@ -1063,10 +1069,86 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
   }
 
-  visboViewOrganisationTree(): void {
+  getUsedRoles(): VisboReducedOrgaItem[] {
+    var usedRoles = [];
+    const VPVlist = this.visboprojectversions;
+    VPVlist.forEach(vpv => {
+      const vpvAllPhases = vpv.AllPhases;
+      vpvAllPhases.forEach( phase => {
+        const allroles = phase.AllRoles;
+        allroles.forEach(role => {
+          if (!usedRoles[role.RollenTyp]) {
+            usedRoles[role.RollenTyp]=role.RollenTyp;
+          }
+        })
+      })
+    });
+    var result: VisboReducedOrgaItem[] = [];
+    var alldef1Roles: VisboReducedOrgaItem[] = [];
+    var alldef2Roles: VisboReducedOrgaItem[] = [];
+    var allused1Roles: VisboReducedOrgaItem[] = [];
+    var allused2Roles: VisboReducedOrgaItem[] = [];
+    const exitDate = visboGetBeginOfMonth(new Date(), -3);
+    const definedRoles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
+    if (!definedRoles) return;
+
+    definedRoles.forEach(role => {
+      if (role.type == 1) {
+        alldef1Roles[role.uid] = role; 
+      } else if (role.type == 2) {
+        alldef2Roles[role.uid] = role; 
+      }
+    });
+
+    usedRoles.forEach( roleNr => {
+      
+        var defRole = alldef1Roles[roleNr];
+        if (defRole) {
+          allused1Roles[roleNr] = defRole;
+          while (defRole.pid) {
+              if (!allused1Roles[defRole.pid]) {
+                allused1Roles[defRole.pid]=alldef1Roles[defRole.pid];
+              }
+              defRole = alldef1Roles[defRole.pid]
+          } 
+        }
+      
+        var defRole = alldef2Roles[roleNr];
+        if (defRole) {
+          allused2Roles[roleNr] = defRole;
+          while (defRole.pid) {
+              if (!allused2Roles[defRole.pid]) {
+                allused2Roles[defRole.pid]=alldef2Roles[defRole.pid];
+              }
+              defRole = alldef2Roles[defRole.pid]
+          } 
+        }       
+    })
+
+    definedRoles.forEach(role => {
+      if (role.type == 1){
+        if (allused1Roles[role.uid]) {
+          result.push(role)
+        }
+      } else {
+          if (allused2Roles[role.uid]) {
+            result.push(role)
+          }
+      }
+    });
+    return result;
+  }  
+
+  visboViewOrganisationTree(usedRoles:VisboReducedOrgaItem[]): void {
     const allRoles = [];
     const exitDate = visboGetBeginOfMonth(new Date(), -3);
-    const roles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
+    var roles = [];
+    const orgaroles = this.vcOrganisation?.allUnits?.filter(role => (role.type == 1 || role.type == 2) && (!role.exitDate || visboCmpDate(role.exitDate, exitDate) > 0));
+    if (usedRoles) {
+      roles = usedRoles;
+    } else {
+      roles = orgaroles;
+    }
     if (!roles) return;
 
     roles.forEach(role => allRoles[role.uid] = role); 

@@ -1450,6 +1450,51 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   copyVPV(): void {
     this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
+    this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
+      .subscribe(
+        vpv => {
+          this.addVPVtoList(vpv);
+          if (vpv.variantName != 'pfv') {
+            // no baseline copy, just create one new version
+            const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
+            this.alertService.success(message, true);
+            this.switchVariant(vpv.variantName);
+          } else {
+            // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
+            this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
+              .subscribe(
+                vpv => {
+                  this.addVPVtoList(vpv);
+                  const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
+                  this.alertService.success(message, true);
+                  this.switchVariant(vpv.variantName);
+                },
+                error => {
+                  this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
+                  if (error.status === 403) {
+                    const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+                    this.alertService.error(message);
+                  } else {
+                    this.alertService.error(getErrorMessage(error));
+                  }
+                }
+              );
+          }
+        },
+        error => {
+          this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  copyVPV_OP(): void {
+    this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
     
     this.vpvActive.variantName = this.newVPVvariantName;
     this.vpvActive.timestamp = new Date();
@@ -1549,7 +1594,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                       // Add Variant to list
                       this.vpActive.variant.push(variant);
                       this.newVPVvariantName = variant.variantName;                      
-                      this.copyVPV();
+                      this.copyVPV_OP();
                       const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
                       this.alertService.success(message);
                     },
@@ -1561,7 +1606,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
                       } else if (error.status === 409) {
                         // TODO UR
                         this.newVPVvariantName = this.newVariant.variantName;                      
-                        this.copyVPV();
+                        this.copyVPV_OP();
                         const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': this.newVariant.variantName});
                         this.alertService.success(message);
                         //const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
