@@ -1128,19 +1128,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     allused1Roles.forEach(role => result.push(role));
     allused2Roles.forEach(role => result.push(role));
 
-    // definedRoles.forEach(role => {
-    //   if (role.type == 1){
-    //     if (allused1Roles[role.uid]) {
-    //       result.push(role)
-    //     }
-    //   } else {
-    //       if (allused2Roles[role.uid]) {
-    //         result.push(role)
-    //       }
-    //   }
-    // });
-
-      
+    // sort for type and path to be able to build the orgatree right    
     result.sort(function(a, b) {
       if (a.type != b.type) {
         return a.type - b.type;
@@ -1148,7 +1136,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
         return a.path.localeCompare(b.path);
       }
     });
-    
+
     return result;
   }  
 
