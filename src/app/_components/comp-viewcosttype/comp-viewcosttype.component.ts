@@ -362,7 +362,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       this.costFrom = new Date(validateDate(from, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      const baseStart = new Date(this.vpvBaseline.startDate).getTime();
+      const baseStart = this.vpvBaseline ? new Date(this.vpvBaseline.startDate).getTime() : new Date(this.vpvActive.startDate).getTime();
       const vpvStart = new Date(this.vpvActive.startDate).getTime();
       const minStart = Math.min(baseStart, vpvStart);
       this.costFrom = new Date(minStart);
@@ -378,7 +378,7 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
       this.costTo = new Date(validateDate(to, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      const baseEnd = new Date(this.vpvBaseline.endDate).getTime();
+      const baseEnd = this.vpvBaseline ? new Date(this.vpvBaseline.endDate).getTime() : new Date(this.vpvActive.endDate).getTime();
       const vpvEnd = new Date(this.vpvActive.endDate).getTime();
       const maxEnd = Math.max(baseEnd, vpvEnd);
       this.costTo = new Date(maxEnd);

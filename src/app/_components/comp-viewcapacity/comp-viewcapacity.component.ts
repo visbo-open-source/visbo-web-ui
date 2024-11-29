@@ -303,7 +303,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.lastTimestampVPF = this.vpvActive.timestamp;
       this.visboprojectversions = [];
       this.visboprojectversions.push(this.vpvActive);
-      this.visboprojectversions.push(this.vpvBaseline);
+      this.vpvBaseline ? this.visboprojectversions.push(this.vpvBaseline) : undefined;
       this.reducedRoleList = this.getUsedRoles();
     }    
     this.visboViewOrganisationTree(this.reducedRoleList);
@@ -401,8 +401,8 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     if (from && validateDate(from, false)) {
       this.capacityFrom = new Date(validateDate(from, false));
     } else if (this.vpvActive){
-      // specific Project, show start & end date of the project
-      const baseStart = new Date(this.vpvBaseline.startDate).getTime();
+      // specific Project, show start & end date of the project                 
+      const baseStart = this.vpvBaseline ? new Date(this.vpvBaseline?.startDate).getTime() : new Date(this.vpvActive.startDate).getTime();    
       const vpvStart = new Date(this.vpvActive.startDate).getTime();
       const minStart = Math.min(baseStart, vpvStart);
       this.capacityFrom = new Date(minStart);
@@ -418,7 +418,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       this.capacityTo = new Date(validateDate(to, false));
     } else if (this.vpvActive){
       // specific Project, show start & end date of the project
-      const baseEnd = new Date(this.vpvBaseline.endDate).getTime();
+      const baseEnd = this.vpvBaseline ? new Date(this.vpvBaseline.endDate).getTime() : new Date(this.vpvActive.endDate).getTime();
       const vpvEnd = new Date(this.vpvActive.endDate).getTime();
       const maxEnd = Math.max(baseEnd, vpvEnd);
       this.capacityTo = new Date(maxEnd);
