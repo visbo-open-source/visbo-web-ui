@@ -6,7 +6,7 @@ export class EnvService {
   // API url
   public restUrl = 'https://dev.visbo.net/api';
   //public openProjUrl = 'http://localhost:3000';
-  public openProjUrl = 'https://opdev.visbo.net';
+  public openProjUrl = 'https://openproject.visbo.net';
 
 
   // Whether or not to enable debug mode
