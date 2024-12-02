@@ -146,7 +146,6 @@ export class VisboPortfolioVersionsComponent implements OnInit, OnChanges {
 
     sortAscending: boolean;
     sortColumn: number;
-ProjectBoardcha
     combinedPerm: VGPermission = undefined;
     permVC = VGPVC;
     permVP = VGPVP;

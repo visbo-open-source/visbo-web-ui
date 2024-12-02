@@ -18,7 +18,7 @@ import { VisboProject, VPVariant, VPParams, VPCustomString, VPCustomDouble, VPCu
           constSystemVPStatus, constSystemVPStatusFrozen} from '../_models/visboproject';
 import { VisboProjectService } from '../_services/visboproject.service';
 
-import { VisboProjectVersion, VPVDblFields, VPVKeyMetrics, VPVStrFields } from '../_models/visboprojectversion';
+import { VisboProjectVersion, VPVconnection, VPVDblFields, VPVKeyMetrics, VPVStrFields } from '../_models/visboprojectversion';
 import { VisboProjectVersionService } from '../_services/visboprojectversion.service';
 
 import { VGGroup, VGUserGroup, VGPermission, VGPVC, VGPVP } from '../_models/visbogroup';
@@ -76,6 +76,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   customURL: string;
   customPredict: string;
   customEdit: string;
+  customOpenProject: string;
   calcPredict = false;
   level: number;
   reduceLevel: false;
@@ -106,6 +107,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   scaleFactor: number;
   changeStatus: boolean;
   newVPVvariantName: string;
+  OPVariant: string ='OP';
+  newVPVconnection: VPVconnection={tool: '', toolID: ''};
   allVersions: boolean;
 
   currentView = 'KeyMetrics';
@@ -983,7 +986,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       if (!this.vcCustomize) {
         // check if appearance is available
         this.log(`get VC Setting ${this.vpActive.vcid}`);
-        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit')
+        this.visbosettingService.getVCSettingByType(this.vpActive.vcid, 'customization,_VCConfig,customfields,CustomPredict,CustomEdit,CustomOpenProject')
           .subscribe(
             vcsettings => {
               this.vcCustomize = vcsettings.filter(item => item.type == 'customization');
@@ -996,6 +999,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               customSetting = vcsettings.find(item => item.type == 'CustomEdit');
               if (customSetting) {
                 this.customEdit = customSetting.name;
+              }
+              customSetting = vcsettings.find(item => item.type == 'CustomOpenProject');
+              if (customSetting) {
+                this.customOpenProject = customSetting.name;
               }
               this.initBUDropDown();
             },
@@ -1481,6 +1488,193 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.alertService.error(message);
           } else {
             this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+  }
+
+  copyVPV_OP(): void {
+    this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
+    
+    this.vpvActive.variantName = this.newVPVvariantName;
+    this.vpvActive.timestamp = new Date();
+    this.vpvActive.connectedTo = this.newVPVconnection;
+    this.vpvActive.updatedAt = undefined;
+    this.vpvActive.createdAt = undefined;
+    this.vpvActive._id = '';
+
+    this.visboprojectversionService.addVisboProjectVersion(this.vpvActive)
+    .subscribe(
+      (vpv) => {
+        const message = this.translate.instant('vpDetail.msg.updateProjectConnectSuccess', {'name': this.vpActive.name, 'variantName': this.vpvActive.variantName});
+        this.addVPVtoList(vpv[0]);
+        this.switchVariant(vpv[0].variantName);
+        this.alertService.success(message, true);
+      },
+      error => {
+        this.log(`save VPV failed: error: ${error.status} message: ${error.error.message}`);
+        if (error.status === 403) {
+          const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpvActive.name});
+          this.alertService.error(message);
+        } else if (error.status === 409) {
+          const message = this.translate.instant('vpDetail.msg.errorVPVConflict', {'name': this.vpvActive.name});
+          this.alertService.error(message);
+        } else {
+          this.alertService.error(getErrorMessage(error));
+        }
+      }
+    );  
+    
+    // this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
+    //   .subscribe(
+    //     vpv => {
+    //       this.addVPVtoList(vpv);
+    //       if (vpv.variantName != 'pfv') {
+    //         // no baseline copy, just create one new version
+    //         const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
+    //         this.alertService.success(message, true);
+    //         this.switchVariant(vpv.variantName);
+    //       } else {            
+    //         // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
+    //         this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
+    //           .subscribe(
+    //             vpv => {
+    //               vpv.connectedTo.tool="OpenProject";
+    //               vpv.connectedTo.toolID="1234567890";
+    //               this.addVPVtoList(vpv);
+    //               const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
+    //               this.alertService.success(message, true);
+    //               this.switchVariant(vpv.variantName);
+    //             },
+    //             error => {
+    //               this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
+    //               if (error.status === 403) {
+    //                 const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+    //                 this.alertService.error(message);
+    //               } else {
+    //                 this.alertService.error(getErrorMessage(error));
+    //               }
+    //             }
+    //           );
+    //       }
+    //     },
+    //     error => {
+    //       this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);
+    //       if (error.status === 403) {
+    //         const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+    //         this.alertService.error(message);
+    //       } else {
+    //         this.alertService.error(getErrorMessage(error));
+    //       }
+    //     }
+    //   );
+  }
+
+  exportVPVtoOpenProject(): void {
+    this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
+    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive._id, "", this.level)
+      .subscribe(
+        openProj => {                
+              const xxx = openProj;
+              if (openProj) {
+                
+                const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
+                this.alertService.success(message, true);
+                
+                // hier erzeugen einer OP - Variante
+                this.newVariant.variantName = this.OPVariant;
+                this.newVariant.email = "ute...";
+                this.newVariant.description="This Project was exported to OpenProject";
+                this.newVPVconnection.tool = 'OpenProject';
+                this.newVPVconnection.toolID = openProj.identifier;
+                
+                this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
+                  .subscribe(
+                    variant => {
+                      // Add Variant to list
+                      this.vpActive.variant.push(variant);
+                      this.newVPVvariantName = variant.variantName;                      
+                      this.copyVPV_OP();
+                      const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+                      this.alertService.success(message);
+                    },
+                    error => {
+                      this.log(`Create Variant error: ${error.error.message}`);
+                      if (error.status === 403) {
+                        const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+                        this.alertService.error(message);
+                      } else if (error.status === 409) {
+                        // TODO UR
+                        this.newVPVvariantName = this.newVariant.variantName;                      
+                        this.copyVPV_OP();
+                        const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': this.newVariant.variantName});
+                        this.alertService.success(message);
+                        //const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+                        //this.alertService.error(message);
+                        
+                        //TODO UR
+                      } else {
+                        this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+                        this.alertService.error(getErrorMessage(error));
+                      }
+                    }
+                  );
+
+
+              }       
+        },
+        error => {
+          this.log(`VPV export to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+            this.alertService.error(message);
+            //this.alertService.error(getErrorMessage(error));
+          }
+        }
+      );
+    }
+
+  importVPVFromOpenProject(): void {
+    this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
+    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
+      .subscribe(
+        data => { 
+          if (data && (data.success == false)) {
+            this.log(`VPV import from OpenProject failed: error: ${data.status} message: ${data.error.message}`);
+            if (data.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else if (data.status === 400 ) {
+                const message = data.details.message;
+                //const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjError');
+                this.alertService.error(message);            
+            } else {
+              const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+              this.alertService.error(message + data.status);
+              //this.alertService.error(getErrorMessage(error));
+            }
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
+            this.alertService.success(message, true);
+            this.addVPVtoList(data);
+            this.switchVariant(data.variantName);
+          }
+        },    
+        error => {
+          this.log(`VPV import from OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+          if (error.status === 403) {
+            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+            this.alertService.error(message);
+          } else if (error.status === 400 ) {
+              const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjError');
+              this.alertService.error(message);            
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+            this.alertService.error(message + error.status);
+            //this.alertService.error(getErrorMessage(error));
           }
         }
       );

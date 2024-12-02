@@ -222,7 +222,7 @@
             </div>
           </form>
           <div class="modal-footer align-items-end">
-            <button id="ButtonBack" type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
+            <button id="ButtonBack" type="button" class="btn btn-secondary" (click)="cancelproject()" data-dismiss="modal">{{ 'vp.btn.cancel' | translate }}</button>
             <button *ngIf="myForm.valid && (newVP.vpType != 0  || !newVP.templateID || !datesAreInvalid())" id="CreateVPConfirm" type="button" class="btn btn-primary" (click)="addproject()" data-dismiss="modal">
               {{ 'vp.btn.save' | translate }}
             </button>
