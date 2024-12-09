@@ -926,6 +926,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   // Commit-Button pressed
   setVPToCommit(): void {
      this.customVPToCommit = true;
+     this.customVPModified = true;
      // Calculate Saving Cost in % of Total, limit the results to be between -100 and 100
      this.savingCostTotal = Math.round((1 - (this.vpvActive.keyMetrics.costCurrentTotal || 0)
                   / (this.vpvActive.keyMetrics.costBaseLastTotal || 1)) * 100) || 0;
@@ -1811,16 +1812,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       });
 
-      // project version commited
-      if (this.vpActive && this.customVPToCommit) {
-        this.customCommit = new Date();
-        const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
-        if (customFieldDate && this.customCommit != undefined) {
-          customFieldDate.value = this.customCommit;
-        } else if (this.customCommit) {
-          addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
-        }     
-      }
+    // project version commited
+    if (this.vpActive && this.customVPToCommit) {
+      this.customCommit = new Date();
+      const customFieldDate = getCustomFieldDate(this.vpActive, '_PMCommit');
+      if (customFieldDate && this.customCommit != undefined) {
+        customFieldDate.value = this.customCommit;
+      } else if (this.customCommit) {
+        addCustomFieldDate(this.vpActive, '_PMCommit', this.customCommit);
+      }     
+    }
 
     if (!this.customVPToCommit) {
       this.log(`update VP  ${this.vpActive._id} bu: ${this.customBU},  strategic fit: ${this.customStrategicFit}, risk: ${this.customRisk}, vpStatus: ${this.customVPStatus}`);
@@ -1849,7 +1850,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               .subscribe(
                 (vpv) => {
                   const message = this.translate.instant('vpDetail.msg.updateProjectSuccess', {'name': this.vpActive.name});
-                  //this.vpvActive = vpv[0];
+                  this.vpvActive = vpv[0];
                   this.addVPVtoList(vpv[0]);
                   this.switchVariant(vpv[0].variantName);
                   this.alertService.success(message, true);
