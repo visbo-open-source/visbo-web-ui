@@ -48,8 +48,8 @@ export class VisboCompViewDeadlineComponent implements OnInit, OnChanges {
     {name: 'VPV', ref: 'vpv', localName: ''},
     {name: 'All', ref: undefined, localName: ''}
   ];
-  type = this.listType[0].name;
-  refType = this.listType[0].ref;
+  type = this.listType[2].name;
+  refType = this.listType[2].ref;
   switchType = true;
 
   parentThis = this;
