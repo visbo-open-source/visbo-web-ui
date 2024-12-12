@@ -130,8 +130,7 @@
             <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
             <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit', false)">{{customEdit}}</a>
             <a *ngIf="customEdit && hasVPPerm(permVP.Modify) && hasVCPerm(permVC.Modify)" class="dropdown-item" (click)="initCustomURL('edit', true)">{{customEdit + ' Baseline'}}</a>
-            <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission for VP and VC-->
-            <a *ngIf="customEdit && !(hasVPPerm(permVP.Modify) || hasVCPerm(permVC.Modify))" class="dropdown-item disabled" (click)="initCustomURL('edit', true)">{{customEdit + ' Baseline'}}</a>
+            <!-- <a *ngIf="customEdit && !(hasVPPerm(permVP.Modify) && hasVCPerm(permVC.Modify))" class="dropdown-item disabled" (click)="initCustomURL('edit', true)">{{customEdit + ' Baseline'}}</a> -->
             <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
           </div>
         </div>
