@@ -45,6 +45,7 @@ export class VisboProjectsComponent implements OnInit {
   visboprojects: VisboProject[];
   visboprojectsAll: VisboProject[];
   vpTemplates: VisboProject[];
+  vpTempProjects: VisboProject[];
   vcSelected: string;
   vcActive: VisboCenter;
   newVP: CreateProjectProperty;
@@ -194,6 +195,7 @@ export class VisboProjectsComponent implements OnInit {
           this.visboprojectsAll = visboprojects;
           this.updateVPProperties();
           this.filterVP();
+          this.initProjectlist(visboprojects);
           this.initTemplates(visboprojects);
           this.initDropDown();
           this.switchView();
@@ -721,6 +723,18 @@ export class VisboProjectsComponent implements OnInit {
       this.vpTemplates.push(vp);
     }
   }
+
+  initProjectlist(vps: VisboProject[]): void {
+    this.vpTempProjects = vps.filter(item => item.vpType == 0);
+    if (this.vpTempProjects.length > 0) {
+      const vp = new VisboProject();
+      delete vp._id;
+      vp.name = this.translate.instant('vp.lbl.noTemplate');
+      this.vpTempProjects.push(vp);
+    }
+  }
+
+
 
   getCommitDate(vp: VisboProject):Date {
     if (!vp) { return undefined }
