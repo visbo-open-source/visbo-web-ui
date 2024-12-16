@@ -447,7 +447,7 @@ export class VisboProjectsComponent implements OnInit {
     this.log(`Create VP newVP: ${JSON.stringify(this.newVP)}`);
     if (!this.newVP.name) { return; }
     if (this.newVP.vpType != 1 && this.newVP.vpType != 2) { this.newVP.vpType = 0 }
-    
+
     // dummy code to test additional properties find the first Template and create with start and end date
 
     // in newVP.templateID there comes the name of the template!!
