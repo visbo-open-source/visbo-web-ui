@@ -1077,9 +1077,14 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       vpvAllPhases.forEach( phase => {
         const allroles = phase.AllRoles;
         allroles.forEach(role => {
-          if (!usedRoles[role.RollenTyp]) {
-            usedRoles[role.RollenTyp]=role.RollenTyp;
-          }
+          const rt = role.RollenTyp;
+          const tID = role.teamID;  
+          const pid = role.pid;
+          const oneRole = {rt , tID};
+          var erg = usedRoles.findIndex(item => (item.rt == rt) && (item.tID == tID));
+          if (erg < 0)  {
+            usedRoles.push(oneRole);
+          }      
         })
       })
     });
@@ -1096,15 +1101,16 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
       if (role.type == 1) {
         alldef1Roles[role.uid] = role; 
       } else if (role.type == 2) {
-        alldef2Roles[role.uid] = role; 
+        alldef2Roles.push(role); 
       }
     });
 
-    usedRoles.forEach( roleNr => {
+    // treatment of type = 1 roles
+    usedRoles.forEach( item => {
       
-        var defRole = alldef1Roles[roleNr];
+        var defRole = alldef1Roles[item.rt];
         if (defRole) {
-          allused1Roles[roleNr] = defRole;
+          allused1Roles[item.rt] = defRole;
           while (defRole.pid) {
               if (!allused1Roles[defRole.pid]) {
                 allused1Roles[defRole.pid]=alldef1Roles[defRole.pid];
@@ -1112,19 +1118,32 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
               defRole = alldef1Roles[defRole.pid]
           } 
         }
-      
-        var defRole = alldef2Roles[roleNr];
-        if (defRole) {
-          allused2Roles[roleNr] = defRole;
-          while (defRole.pid) {
-              if (!allused2Roles[defRole.pid]) {
-                allused2Roles[defRole.pid]=alldef2Roles[defRole.pid];
-              }
-              defRole = alldef2Roles[defRole.pid]
-          } 
+    });
+
+    // treatment of type = 2 roles
+    usedRoles.forEach( item => {
+
+        var teamRoles = alldef2Roles.filter(trole =>  (trole.uid == item.rt) ||  (trole.uid == item.tID));
+        if (teamRoles) {
+          teamRoles.forEach(role => {
+            const existing  = allused2Roles.findIndex(elem => (elem.uid == role.uid) && (elem.pid == role.pid)) >= 0;
+            if (!existing) {
+              allused2Roles.push(role);
+            }
+            var pid = role.pid;
+            while (pid) {
+                var xxx = alldef2Roles.find(item=>  item.uid == pid);
+                const existing  = allused2Roles.findIndex(elem => (elem.uid == xxx.uid) && (elem.pid == xxx.pid)) >= 0;
+                if (!existing) {
+                  allused2Roles.push(xxx);
+                }
+                pid = xxx.pid;
+                }
+            } 
+          );    
         }       
     })
-
+    
     allused1Roles.forEach(role => result.push(role));
     allused2Roles.forEach(role => result.push(role));
 
