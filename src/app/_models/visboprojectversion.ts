@@ -102,6 +102,11 @@ export class VPVDeadline {
   status: string;
 }
 
+export class VPVconnection {
+  tool: string;
+  toolID: string;
+}
+
 export  class VPVDblFields {
   str: string;
   dbl: number;
@@ -186,6 +191,7 @@ export class VisboProjectVersion {
   name: string;
   vpid: string;
   vp: VisboProject;
+  connectedTo: VPVconnection;
   variantName: string;
   variantDescription: string;
   Risiko: number;

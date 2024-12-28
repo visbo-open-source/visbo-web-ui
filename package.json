@@ -45,8 +45,10 @@
     "node": "^16.17.1",
     "npm": "^10.8.0",
     "popper.js": "^1.16.1",
+    "postcss": "^8.4.35",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
+    "semver": "^7.6.3",
     "tslib": "^2.1.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "zone.js": "~0.11.4"

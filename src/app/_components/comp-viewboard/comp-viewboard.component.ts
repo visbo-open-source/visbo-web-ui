@@ -343,31 +343,38 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
 
         if (!this.listVPV[i].vp.vpStatus) {
             newColor = chroma(rgbHex).brighten(3).hex();
+            //newColor = chroma(rgbHex).luminance(0.1);
             colorArray.push(newColor)
         }
         switch (this.listVPV[i].vp.vpStatus) {
           case 'initialized':
             newColor = chroma(rgbHex).brighten(3).hex();
+            //newColor = chroma(rgbHex).luminance(0.1).hex();
             colorArray.push(newColor)
             break;
           case 'proposed':
             newColor = chroma(rgbHex).brighten(3).hex();
+            //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
           case 'ordered':
             newColor = chroma(rgbHex).brighten().hex();
+            //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
           case 'paused':
             newColor = chroma(rgbHex).darken(1).hex();
+            //newColor = chroma(rgbHex).luminance(0.6).hex();
             colorArray.push(newColor)
             break;
           case 'finished':
             newColor = chroma(rgbHex).darken(1).hex();
+            //newColor = chroma(rgbHex).luminance(0.8).hex();
             colorArray.push(newColor)
             break;
           case 'stopped':
             newColor = chroma(rgbHex).darken(1).hex();
+            //newColor = chroma(rgbHex).luminance(0.99).hex();
             colorArray.push(newColor)
             break;
         }
@@ -857,7 +864,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     const VPStatusIndex = constSystemVPStatus.findIndex(item => item == vpstatus)+1;
     const localVPStatus = this.dropDownVPStatus[VPStatusIndex]?.localName || ""
     if (vpstatus){
-      tooltipItemsList.push({key: status, value: vpstatus});
+      tooltipItemsList.push({key: status, value: localVPStatus});
     }
     // get businessUnit of vp
     const buText = this.translate.instant('compViewBoard.lbl.bu');
