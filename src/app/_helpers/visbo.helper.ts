@@ -1,8 +1,3 @@
-class rgbColor {
-  red: string;
-  green: string;
-  blue: string;
-} 
 
 // use this for calling sort
 export function visboCmpString(first: string, second: string): number {
@@ -249,21 +244,6 @@ export function getRGBColor(hex: string) {
     return rgbColor;
 }
 
-
-export function parseRGB(colorString:string){
-  //var colorString = "rgba(111,222,333,0.5)",  
-  var colorsOnly = colorString.substring(colorString.indexOf('(') + 1, colorString.lastIndexOf(')')).split(/,\s*/);
-  // here we initialise an empty Object:
-  var components:rgbColor;
-  // here we assign the Array-elements to the
-  // named properties of that Object:
-  components.red = colorsOnly[0];
-  components.green =colorsOnly[1];
-  components.blue = colorsOnly[2];
-
-  console.log(colorsOnly, components);
-  return components;
-}
 
 export function rgbCompToHex( c: number) {
   var hex = c.toString(16);

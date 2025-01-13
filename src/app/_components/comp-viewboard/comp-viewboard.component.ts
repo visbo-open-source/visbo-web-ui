@@ -342,46 +342,32 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         let newColor = undefined;
 
         if (!this.listVPV[i].vp.vpStatus) {
-            newColor = brightenRGBColor(hexToRgb(rgbHex), 20, true);
-            //newColor = chroma(rgbHex).brighten(3).hex();
-            //newColor = chroma(rgbHex).luminance(0.1);
+            newColor = brightenRGBColor(hexToRgb(rgbHex), 0, true);
             colorArray.push(newColor)
         }
         switch (this.listVPV[i].vp.vpStatus) {
           case 'initialized':
-            newColor = brightenRGBColor(hexToRgb(rgbHex), 60, true); 
-            //newColor = chroma(rgbHex).brighten(3).hex();
-            //newColor = chroma(rgbHex).luminance(0.1).hex();
+            newColor = brightenRGBColor(hexToRgb(rgbHex), 60, true);             
             colorArray.push(newColor)
             break;
           case 'proposed':
             newColor = brightenRGBColor(hexToRgb(rgbHex),30, true); 
-            //newColor = chroma(rgbHex).brighten(3).hex();
-            //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
           case 'ordered':            
             newColor = brightenRGBColor(hexToRgb(rgbHex), 0, true); 
-            //newColor = chroma(rgbHex).brighten().hex();
-            //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
           case 'paused':          
             newColor = darkenRGBColor(hexToRgb(rgbHex), 20, true); 
-            //newColor = chroma(rgbHex).darken(1).hex();
-            //newColor = chroma(rgbHex).luminance(0.6).hex();
             colorArray.push(newColor)
             break;
           case 'finished': 
             newColor = darkenRGBColor(hexToRgb(rgbHex), 40, true); 
-            //newColor = chroma(rgbHex).darken(1).hex();
-            //newColor = chroma(rgbHex).luminance(0.8).hex();
             colorArray.push(newColor)
             break;
           case 'stopped':
             newColor = darkenRGBColor(hexToRgb(rgbHex), 60, true); 
-            //newColor = chroma(rgbHex).darken(1).hex();
-            //newColor = chroma(rgbHex).luminance(0.99).hex();
             colorArray.push(newColor)
             break;
         }
@@ -843,7 +829,7 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     let newColor:string = undefined;
 
     if (!vpv.vp.vpStatus) {
-        newColor = chroma(rgbHex).brighten(3).hex();
+        newColor = brightenRGBColor(hexToRgb(rgbHex), 0, true); 
     }
     switch (vpv.vp.vpStatus) {
       case 'initialized':
