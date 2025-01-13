@@ -14,7 +14,7 @@ import { VPFParams } from '../../_models/visboportfolio';
 import { VisboProject, VPParams, getCustomFieldDouble, getCustomFieldString, constSystemVPStatus } from '../../_models/visboproject';
 import { VisboUser } from '../../_models/visbouser';
 
-import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex } from '../../_helpers/visbo.helper';
+import { visboCmpString, visboCmpDate, convertDate, visboIsToday, getPreView, excelColorToRGBHex, brightenRGBColor, darkenRGBColor,hexToRgb } from '../../_helpers/visbo.helper';
 import * as chroma from 'chroma-js';
 import { Milestone, Phase, TimelineProject, TooltipItem } from 'src/app/_chart/portfolio-chart/portfolio-chart.component';
 
@@ -342,38 +342,45 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
         let newColor = undefined;
 
         if (!this.listVPV[i].vp.vpStatus) {
-            newColor = chroma(rgbHex).brighten(3).hex();
+            newColor = brightenRGBColor(hexToRgb(rgbHex), 20, true);
+            //newColor = chroma(rgbHex).brighten(3).hex();
             //newColor = chroma(rgbHex).luminance(0.1);
             colorArray.push(newColor)
         }
         switch (this.listVPV[i].vp.vpStatus) {
           case 'initialized':
-            newColor = chroma(rgbHex).brighten(3).hex();
+            newColor = brightenRGBColor(hexToRgb(rgbHex), 60, true); 
+            //newColor = chroma(rgbHex).brighten(3).hex();
             //newColor = chroma(rgbHex).luminance(0.1).hex();
             colorArray.push(newColor)
             break;
           case 'proposed':
-            newColor = chroma(rgbHex).brighten(3).hex();
+            newColor = brightenRGBColor(hexToRgb(rgbHex),30, true); 
+            //newColor = chroma(rgbHex).brighten(3).hex();
             //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
-          case 'ordered':
-            newColor = chroma(rgbHex).brighten().hex();
+          case 'ordered':            
+            newColor = brightenRGBColor(hexToRgb(rgbHex), 0, true); 
+            //newColor = chroma(rgbHex).brighten().hex();
             //newColor = chroma(rgbHex).luminance(0.5).hex();
             colorArray.push(newColor)
             break;
-          case 'paused':
-            newColor = chroma(rgbHex).darken(1).hex();
+          case 'paused':          
+            newColor = darkenRGBColor(hexToRgb(rgbHex), 20, true); 
+            //newColor = chroma(rgbHex).darken(1).hex();
             //newColor = chroma(rgbHex).luminance(0.6).hex();
             colorArray.push(newColor)
             break;
-          case 'finished':
-            newColor = chroma(rgbHex).darken(1).hex();
+          case 'finished': 
+            newColor = darkenRGBColor(hexToRgb(rgbHex), 40, true); 
+            //newColor = chroma(rgbHex).darken(1).hex();
             //newColor = chroma(rgbHex).luminance(0.8).hex();
             colorArray.push(newColor)
             break;
           case 'stopped':
-            newColor = chroma(rgbHex).darken(1).hex();
+            newColor = darkenRGBColor(hexToRgb(rgbHex), 60, true); 
+            //newColor = chroma(rgbHex).darken(1).hex();
             //newColor = chroma(rgbHex).luminance(0.99).hex();
             colorArray.push(newColor)
             break;
@@ -840,22 +847,28 @@ export class VisboCompViewBoardComponent implements OnInit, OnChanges {
     }
     switch (vpv.vp.vpStatus) {
       case 'initialized':
-        newColor = chroma(rgbHex).brighten(3).hex();
+        newColor = brightenRGBColor(hexToRgb(rgbHex), 60, true); 
+        //newColor = chroma(rgbHex).brighten(3).hex();
         break;
       case 'proposed':
-        newColor = chroma(rgbHex).brighten(3).hex();
+        newColor = brightenRGBColor(hexToRgb(rgbHex), 30, true); 
+        //newColor = chroma(rgbHex).brighten(10).hex();
         break;
       case 'ordered':
-        newColor = chroma(rgbHex).brighten().hex();
+        newColor = brightenRGBColor(hexToRgb(rgbHex), 0, true); 
+        //newColor = chroma(rgbHex).brighten().hex();
         break;
       case 'paused':
-        newColor = chroma(rgbHex).darken(1).hex();
+        newColor = darkenRGBColor(hexToRgb(rgbHex), 20, true); 
+        //newColor = chroma(rgbHex).darken(1).hex();
         break;
       case 'finished':
-        newColor = chroma(rgbHex).darken(1).hex();
+        newColor = darkenRGBColor(hexToRgb(rgbHex), 40, true); 
+        //newColor = chroma(rgbHex).darken(1).hex();
         break;
       case 'stopped':
-        newColor = chroma(rgbHex).darken(1).hex();
+        newColor = darkenRGBColor(hexToRgb(rgbHex), 60, true); 
+        //newColor = chroma(rgbHex).darken(1).hex();
         break;
     }
 
