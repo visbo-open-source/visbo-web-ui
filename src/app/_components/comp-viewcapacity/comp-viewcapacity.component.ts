@@ -1123,7 +1123,7 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     // treatment of type = 2 roles
     usedRoles.forEach( item => {
 
-        var teamRoles = alldef2Roles.filter(trole =>  (trole.uid == item.rt) || (trole.uid == item.tID));
+        var teamRoles = alldef2Roles.filter(trole =>  (trole.uid == item.rt) ||  (trole.uid == item.tID));
         if (teamRoles) {
           teamRoles.forEach(role => {
             const existing  = allused2Roles.findIndex(elem => (elem.uid == role.uid) && (elem.pid == role.pid)) >= 0;
