@@ -1,3 +1,4 @@
+
 // use this for calling sort
 export function visboCmpString(first: string, second: string): number {
   let result = 0;
@@ -230,11 +231,59 @@ export function hexToRgb(hex: string): string {
     rgbcolor = 'rgb('+r+','+g+','+b+')'
   }
   return rgbcolor
-
-
+  
   // return result ? {
   //   r: parseInt(result[1], 16),
   //   g: parseInt(result[2], 16),
   //   b: parseInt(result[3], 16)
   // } : null;
+}
+
+export function getRGBColor(hex: string) {
+    const rgbColor = hexToRgb(hex);
+    return rgbColor;
+}
+
+
+export function rgbCompToHex( c: number) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0"+hex : hex;
+}
+
+
+export function brightenRGBColor(rgbColor: string, percent: number, hex: boolean){
+  var colorsOnly = rgbColor.substring(rgbColor.indexOf('(') + 1, rgbColor.lastIndexOf(')')).split(/,\s*/);
+  const r = Number(colorsOnly[0]);
+  const g = Number(colorsOnly[1]);
+  const b = Number(colorsOnly[2]);
+  const p = percent/100;
+
+  const new_r = Math.round(r+(255-r)*p);
+  const new_g = Math.round(g+(255-g)*p);
+  const new_b = Math.round(b+(255-b)*p);
+
+  var result = 'rgb('+new_r+','+new_g+','+new_b+')';
+  if (hex) {
+    result ='#'+rgbCompToHex(new_r)+rgbCompToHex(new_g)+rgbCompToHex(new_b);
+  }
+
+  return  result;
+
+}
+export function darkenRGBColor(rgbColor: string, percent: number, hex: boolean){
+  var colorsOnly = rgbColor.substring(rgbColor.indexOf('(') + 1, rgbColor.lastIndexOf(')')).split(/,\s*/);
+  const r = Number(colorsOnly[0]);
+  const g = Number(colorsOnly[1]);
+  const b = Number(colorsOnly[2]);
+  const p = percent/100;
+
+  const new_r = Math.round(r*(1-p));
+  const new_g = Math.round(g*(1-p));
+  const new_b = Math.round(b*(1-p));
+
+  var result = 'rgb('+new_r+','+new_g+','+new_b+')';
+  if (hex) {
+    result ='#'+rgbCompToHex(new_r)+rgbCompToHex(new_g)+rgbCompToHex(new_b);
+  }
+  return  result;
 }

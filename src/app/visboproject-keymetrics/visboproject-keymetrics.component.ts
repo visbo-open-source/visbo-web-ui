@@ -554,7 +554,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
-  getCustomURL(type: string, ott: string): string {
+  getCustomURL(type: string, ott: string, baseline: boolean): string {
     let url: string;
     if (type == 'edit') {
       url = 'visbo-connect://'.concat(type);
@@ -568,10 +568,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         url = url.concat(separator, 'vpid:', this.vpActive._id.toString());
         separator = '&'
     }
-    if (this.vpvActive) {
+    if (baseline) {
+      if (this.vpvBaseline) {
+        url = url.concat(separator, 'vpvid:', this.vpvBaseline._id.toString());
+        separator = '&'
+      }
+    } else {
+      if (this.vpvActive) {
         url = url.concat(separator, 'vpvid:', this.vpvActive._id.toString());
         separator = '&'
-    }
+      }
+    }    
     if (ott) {
         url = url.concat(separator, 'ott:', ott);
         separator = '&'
@@ -1125,13 +1132,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.variantName} ${vpv.timestamp}`);
   }
 
-  initCustomURL(type: string): void {
+  initCustomURL(type: string, baseline: boolean): void {
     this.customURL = undefined;
     // get the One Time Token and set the customURL after getting it
     this.userService.getUserOTT()
       .subscribe(
         ott => {
-          this.customURL = this.getCustomURL(type, ott);
+          this.customURL = this.getCustomURL(type, ott, baseline);
           if (type == 'edit') {
             // opens a new Window with the this.customURL - visbo-connect://edit?...
             window.location.href =this.customURL;
@@ -1358,23 +1365,23 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.changeStatus = false;
     if (mode == 'Move') {
       // in case of isPMO Move of the Standard Variant will move the baseline
-      const pfv = this.allVPVs.find(vpv => vpv.variantName == 'pfv');
-      if (this.isPMO() && this.vpvActive.variantName == "" && pfv) {
-        this.newVPV = pfv;
-        this.newVPV.status = this.customVPStatus;
-        this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
-        this.newVPVstartDate = new Date(this.newVPV.startDate);
-        this.newVPVendDate = new Date(this.newVPV.endDate);
-        this.newVPVvariantName = 'pfv';
-        this.newVPV.isCommited = false;
-      } else {
-        this.newVPV = this.vpvActive;        
-        this.newVPV.status = this.customVPStatus;        
-        this.newVPV.isCommited = false;
-        this.newVPVstartDate = new Date(this.newVPV.startDate);
-        this.newVPVendDate = new Date(this.newVPV.endDate);
-        this.newVPVvariantName = this.vpvActive.variantName;
-      }
+      // const pfv = this.allVPVs.find(vpv => vpv.variantName == 'pfv');
+      // if (this.isPMO() && this.vpvActive.variantName == "" && pfv) {
+      //   this.newVPV = pfv;
+      //   this.newVPV.status = this.customVPStatus;
+      //   this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
+      //   this.newVPVstartDate = new Date(this.newVPV.startDate);
+      //   this.newVPVendDate = new Date(this.newVPV.endDate);
+      //   this.newVPVvariantName = 'pfv';
+      //   this.newVPV.isCommited = false;
+      // } else {
+      this.newVPV = this.vpvActive;        
+      this.newVPV.status = this.customVPStatus;        
+      this.newVPV.isCommited = false;
+      this.newVPVstartDate = new Date(this.newVPV.startDate);
+      this.newVPVendDate = new Date(this.newVPV.endDate);
+      //   this.newVPVvariantName = this.vpvActive.variantName;
+      // }
       this.newVPVscaleStartDate = new Date();
       this.newVPVscaleStartDate.setDate(1);
       this.newVPVscaleStartDate.setHours(0, 0, 0, 0);

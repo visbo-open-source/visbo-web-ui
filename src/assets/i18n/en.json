@@ -312,7 +312,8 @@
 		"lbl": {
 			"nr": "Nr.",
 			"name": "Name",
-			"template": "Project Template",
+			"template": "From Template",
+			"tempProject": "From Project",
 			"type": "Type",
 			"modified": "Modified",
 			"versions": "# Versions",
