@@ -173,15 +173,16 @@
             <button type="button" class="btn" (click)="switchToHistory('Delivery')" title="{{historyButton}}">i</button>
           </td>
         </tr>
-        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay') || hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveryDelay')">
+        <!-- <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay') || hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveryDelay')">
           <th></th>
           <th>{{ 'vpKeyMetric.lbl.finished' | translate }}</th>
           <td class="d-none d-xl-table-cell"></td>
           <th>{{ 'vpKeyMetric.lbl.unfinished' | translate }}</th>
           <td class="d-none d-xl-table-cell"></td>
           <th *ngIf="!getPreView()" class="d-print-no"></th>
-        </tr>
-        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')">
+        </tr> -->
+
+        <!-- <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeadlineDelay')">
           <td (click)="switchView('Deadline', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
                 selected: typeMetricChart == 'DeadlineDelay',
@@ -205,9 +206,9 @@
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('DeadlineDelay')" title="{{historyButton}}">i</button>
           </td>
-        </tr>
+        </tr> -->
 
-        <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveryDelay')">
+        <!-- <tr *ngIf="hasKM(vpvKeyMetricActive.keyMetrics, 'DeliveryDelay')">
           <td (click)="switchView('Delivery', true)">
             <a><ng-container *ngTemplateOutlet="highlight; context:{
                 selected: typeMetricChart == 'DeliveryDelay',
@@ -229,7 +230,7 @@
           <td *ngIf="!getPreView()" class="d-print-no">
             <button type="button" class="btn" (click)="switchToHistory('DeliveryDelay')" title="{{historyButton}}">i</button>
           </td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
     <h3 *ngIf="!vpvKeyMetricActive">
