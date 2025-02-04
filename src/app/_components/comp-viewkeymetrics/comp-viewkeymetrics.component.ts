@@ -1178,7 +1178,7 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     if (updateParent) {
       this.updateUrlParam('refDate', vpv.timestamp.toString());
     }
-    index = keyMetrics.costCurrentActual / (keyMetrics.costBaseLastActual || 1);
+    index = (keyMetrics.costCurrentActual || 0)  / (keyMetrics.costBaseLastActual || 1);
     if (index < 1 + level1) {
       this.qualityCost = 1;
     } else if (index < 1 + level2) {
@@ -1187,15 +1187,20 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.qualityCost = 3;
     }
 
-    index = keyMetrics.costCurrentTotal / (keyMetrics.costBaseLastTotal || 1);
+    index = (keyMetrics.costCurrentTotal || 0) / (keyMetrics.costBaseLastTotal || 1);
     if (index < 1 + level1) {
       this.qualityTotalCost = 1;
     } else if (index < 1 + level2) {
       this.qualityTotalCost = 2;
     } else {
       this.qualityTotalCost = 3;
+    } 
+
+    if ( (keyMetrics.RACCurrent || 0) == (keyMetrics.RACBaseLast || 0)) {
+      index = 1
+    } else {
+      index = (keyMetrics.RACCurrent || 0) / (keyMetrics.RACBaseLast || 1);
     }
-    index = keyMetrics.RACCurrent / (keyMetrics.RACBaseLast || 1);
     if (index >= 1 - level1) {
       this.qualityRAC = 1;
     } else if (index > 1 - level2) {
@@ -1203,7 +1208,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.qualityRAC = 3;
     }
-    index = keyMetrics.RACCurrentActual / (keyMetrics.RACBaseLastActual || 1);
+
+    if ( (keyMetrics.RACCurrentActual) == (keyMetrics.RACBaseLastActual)) {
+      index = 1
+    } else {
+      index = (keyMetrics.RACCurrentActual || 0) / (keyMetrics.RACBaseLastActual || 1);
+    }
     if (index >= 1 - level1) {
       this.qualityActualRAC = 1;
     } else if (index > 1 - level2) {
@@ -1212,16 +1222,16 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.qualityActualRAC = 3;
     }
 
-    if (keyMetrics.costCurrentTotalPredict) {
-      index = keyMetrics.costCurrentTotalPredict / (keyMetrics.costBaseLastTotal || 1);
-      if (index < 1 + level1) {
-        this.qualityTotalCostPredict = 1;
-      } else if (index < 1 + level2) {
-        this.qualityTotalCostPredict = 2;
-      } else {
-        this.qualityTotalCostPredict = 3;
-      }
-    }
+    // if (keyMetrics.costCurrentTotalPredict) {
+    //   index = keyMetrics.costCurrentTotalPredict / (keyMetrics.costBaseLastTotal || 1);
+    //   if (index < 1 + level1) {
+    //     this.qualityTotalCostPredict = 1;
+    //   } else if (index < 1 + level2) {
+    //     this.qualityTotalCostPredict = 2;
+    //   } else {
+    //     this.qualityTotalCostPredict = 3;
+    //   }
+    // }
 
     if (keyMetrics.endDateBaseLast) {
       const currentDate = keyMetrics.endDateCurrent ? new Date(keyMetrics.endDateCurrent) : new Date();
