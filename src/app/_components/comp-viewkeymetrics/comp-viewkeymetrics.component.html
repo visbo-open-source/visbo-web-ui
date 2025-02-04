@@ -3,11 +3,20 @@
     <table *ngIf="vpvKeyMetricActive" class='table table-hover table-sortable'>
       <!--Table head-->
       <thead>
+        <tr class="table-primary">
+          <th></th> 
+          <th class="text-center" colspan="2" >{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
+          <th colspan="2" class="text-center" >{{ 'vpKeyMetric.lbl.wholeProject' | translate }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <!--Table head-->
+      <thead>
         <tr>
           <th>{{ 'vpKeyMetric.lbl.keyMetric' | translate }}</th>
-          <th>{{ 'vpKeyMetric.lbl.planToDate' | translate }}</th>
+          <th>{{ 'vpKeyMetric.lbl.currentPlan' | translate }}</th>
           <th class="d-none d-xl-table-cell">{{ 'vpKeyMetric.lbl.pfvVariant' | translate }}</th>
-          <th>{{ 'vpKeyMetric.lbl.total' | translate }}</th>
+          <th>{{ 'vpKeyMetric.lbl.currentPlan' | translate }}</th>
           <th class="d-none d-xl-table-cell">{{ 'vpKeyMetric.lbl.pfvVariant' | translate }}</th>
           <th *ngIf="!getPreView()" class="d-none d-md-table-cell d-print-none">{{ 'vpKeyMetric.lbl.trend' | translate }}</th>
         </tr>
@@ -24,7 +33,7 @@
           <td (click)="switchView('RAC', true)"
               title="{{ 'vpKeyMetric.lbl.actualRAC' | translate }}: {{vpvKeyMetricActive.keyMetrics.RACCurrentActual |  number:'1.0-0' }} T€ / {{vpvKeyMetricActive.keyMetrics.RACBaseLastActual |  number:'1.0-0' }} T€">
             <a>
-              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityCost} " ></ng-container>
+              <ng-container *ngTemplateOutlet="indicator; context:{level: qualityActualRAC} " ></ng-container>
               <span> {{vpvKeyMetricActive.keyMetrics.RACCurrentActual |  number:'1.0-0' }} T€ ({{100 - vpvKeyMetricActive.savingRACActual | number:'1.0-0'}} %) </span>
             </a>
           </td>   
