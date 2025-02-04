@@ -1194,8 +1194,13 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
       this.qualityTotalCost = 2;
     } else {
       this.qualityTotalCost = 3;
+    } 
+
+    if ( (keyMetrics.RACCurrent || 0) == (keyMetrics.RACBaseLast || 0)) {
+      index = 1
+    } else {
+      index = (keyMetrics.RACCurrent || 0) / (keyMetrics.RACBaseLast || 1);
     }
-    index = (keyMetrics.RACCurrent || 0) / (keyMetrics.RACBaseLast || 1);
     if (index >= 1 - level1) {
       this.qualityRAC = 1;
     } else if (index > 1 - level2) {
@@ -1203,7 +1208,12 @@ export class VisboCompViewKeyMetricsComponent implements OnInit, OnChanges {
     } else {
       this.qualityRAC = 3;
     }
-    index = (keyMetrics.RACCurrentActual || 0) / (keyMetrics.RACBaseLastActual || 1);
+
+    if ( (keyMetrics.RACCurrentActual) == (keyMetrics.RACBaseLastActual)) {
+      index = 1
+    } else {
+      index = (keyMetrics.RACCurrentActual || 0) / (keyMetrics.RACBaseLastActual || 1);
+    }
     if (index >= 1 - level1) {
       this.qualityActualRAC = 1;
     } else if (index > 1 - level2) {
