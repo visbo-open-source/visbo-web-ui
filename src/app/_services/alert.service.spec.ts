@@ -3,12 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { AlertService } from './alert.service';
 
 describe('AlertService', () => {
+  var service: any;
   beforeEach(() => {
     TestBed.configureTestingModule({
     providers: [AlertService],
     teardown: { destroyAfterEach: false }
 });
-    service = TestBed.get(AlertService); // * inject service instance
+    service = TestBed.inject(AlertService); // * inject service instance
   });
 
   it('should be created', () => {

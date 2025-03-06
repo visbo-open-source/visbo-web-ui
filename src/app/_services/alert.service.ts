@@ -7,7 +7,7 @@ export class AlertService {
   // eslint-disable-next-line
     private subject = new Subject<any>();
     private keepAfterNavigationChange = false;
-
+    
     constructor(private router: Router) {
         // clear alert message on route change
         router.events.subscribe(event => {
