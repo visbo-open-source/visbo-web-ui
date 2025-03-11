@@ -16,14 +16,18 @@ import { getErrorMessage } from '../../_helpers/visbo.helper';
   styleUrls: ['./register.component.css']
 })
 
+// The RegisterComponent is an Angular component that handles user registration within the application. 
+// It manages the registration process, including form validation, user data handling, and communication with authentication services.
+// It also enforces password policy compliance and ensures users agree to the Data Protection (DP) and Terms of Use (TOU) before registration.
+
 export class RegisterComponent implements OnInit {
-  user: VisboUser;
-  check_DP: boolean;
-  check_TOU: boolean;
-  PWPolicy: string;
-  PWPolicyDescription: string;
-  hash = undefined;
-  loading = false;
+  user: VisboUser;                    // Represents the user being registered. Includes profile and status details.
+  check_DP: boolean;                  // Indicates if the user has accepted the Data Protection policy. Required for registration.
+  check_TOU: boolean;                 // Indicates if the user has accepted the Terms of Use. Required for registration.
+  PWPolicy: string;                   // Holds the password policy retrieved from the server, defining complexity and security requirements.
+  PWPolicyDescription: string;        // A descriptive text of the password policy to guide users during registration.
+  hash = undefined;                   // Optional registration hash from the URL, used for pre-registered or invited users.
+  loading = false;                    // Shows whether the registration process is ongoing, useful for UI elements like spinners.
 
   constructor(
     private messageService: MessageService,
@@ -34,6 +38,7 @@ export class RegisterComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // Initializes the component, fetching the password policy and setting up the user object.
   ngOnInit(): void {
     this.getPWPolicy();
     const id = this.route.snapshot.paramMap.get('id');
@@ -49,6 +54,7 @@ export class RegisterComponent implements OnInit {
     this.log(`Register for User ${id} hash ${this.hash}`);
   }
 
+  // Submits the registration form, validating user input and sending data to the authentication service.
   register(): void {
     if (!this.check_DP || !this.check_TOU) {
       const message = this.translate.instant('register.msg.confirmDP_TOU');
@@ -77,6 +83,7 @@ export class RegisterComponent implements OnInit {
       );
   }
 
+  // Retrieves an existing user's data using the id and hash, typically used for pre-registered users or invitations.
   getUser(id: string, hash: string): void {
     this.authenticationService.getUser(id, hash)
       .subscribe(
@@ -94,6 +101,7 @@ export class RegisterComponent implements OnInit {
       );
   }
 
+  // Retrieves the password policy from the server.
   getPWPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(

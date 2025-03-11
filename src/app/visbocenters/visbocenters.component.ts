@@ -17,12 +17,16 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
   styleUrls: ['./visbocenters.component.css'],
   templateUrl: './visbocenters.component.html'
 })
+
+// The VisboCentersComponent is an Angular component responsible for displaying a list of VisboCenter entities. It provides functionalities such as fetching data, sorting the list, and navigating to detailed views of individual VisboCenters.
+
+
 export class VisboCentersComponent implements OnInit {
 
-  visbocenters: VisboCenter[];
-  sysvisbocenter: VisboCenter;
-  sortAscending: boolean;
-  sortColumn: number;
+  visbocenters: VisboCenter[];    // An array that holds all VisboCenter objects retrieved from the backend.
+  sysvisbocenter: VisboCenter;    // Represents a system-level VisboCenter, if applicable.
+  sortAscending: boolean;         // Controls the sorting order of the displayed list (true for ascending, false for descending).
+  sortColumn: number;             // Indicates which column is currently being used for sorting.
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -34,11 +38,20 @@ export class VisboCentersComponent implements OnInit {
     private titleService: Title
   ) { }
 
+  // Sets the page title using TranslateService.
+  // Initiates the fetch request for all VisboCenters by calling getVisboCenters().
   ngOnInit(): void {
     this.titleService.setTitle(this.translate.instant('vc.title'));
     this.getVisboCenters();
   }
 
+  // Calls VisboCenterService to fetch all VisboCenter objects.
+  // On success:
+  //      Populates the visbocenters array.
+  //      Automatically sorts the data by name (sortColumn = 1).
+  //      Logs a success message using MessageService.
+  // On failure:
+  //      Logs an error message with details using AlertService.
   getVisboCenters(): void {
     // this.log("VC getVisboCenters");
     this.visbocenterService.getVisboCenters()
@@ -56,15 +69,19 @@ export class VisboCentersComponent implements OnInit {
       );
   }
 
+  // Navigates to the detailed view of a specific VisboCenter.
   gotoDetail(visbocenter: VisboCenter): void {
     this.router.navigate(['vcDetail/' + visbocenter._id]);
   }
 
+  // navigates to a project-related view (vp/).
+  // Triggered when a row in the list is clicked.
   gotoClickedRow(visbocenter: VisboCenter): void {
     // this.log(`clicked row ${visbocenter.name}`);
     this.router.navigate(['vp/' + visbocenter._id]);
   }
 
+  // Sorts the visbocenters array based on the specified column:
   sortVCTable(n: number): void {
     if (!this.visbocenters) { return; }
     // change sort order otherwise sort same column same direction

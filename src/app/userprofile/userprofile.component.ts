@@ -18,18 +18,24 @@ import { getErrorMessage } from '../_helpers/visbo.helper';
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html'
 })
+
+
+// The UserProfileComponent is an Angular component that manages the user's profile within the VISBO application. 
+// It allows users to view and update their profile information, change their password, and reset their profile data. 
+// The component also ensures compliance with the password policy.
+
 export class UserProfileComponent implements OnInit {
 
-  user: VisboUser;
-  oldpw: string;
-  newpw: string;
-  changePW: boolean;
+  user: VisboUser;              // Holds the user's profile data, including personal details and profile settings.
+  oldpw: string;                // Stores the old password when initiating a password change.
+  newpw: string;                // Stores the new password entered by the user.
+  changePW: boolean;            // Indicates if the password change mode is active.
 
-  currentLang: string;
+  currentLang: string;          // Stores the current language setting of the application
 
-  PWPolicy: string;
-  PWPolicyDescription: string;
-  loading = false;
+  PWPolicy: string;             // Stores the password policy fetched from the server.
+  PWPolicyDescription: string;  // Provides a user-friendly description of the password policy.
+  loading = false;              // Manages the loading state, particularly when saving profile or changing the password.
 
   constructor(
     private userService: UserService,
@@ -42,6 +48,8 @@ export class UserProfileComponent implements OnInit {
     private titleService: Title
   ) { }
 
+
+  // Initializes the component, fetching the password policy and loading the user's profile.
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.titleService.setTitle(this.translate.instant('profile.titleShort'));
@@ -51,6 +59,7 @@ export class UserProfileComponent implements OnInit {
     this.getUserProfile();
   }
 
+  // Retrieves the current user's profile information from the server.
   getUserProfile(): void {
     this.log('User Get Profile');
     this.userService.getUserProfile()
@@ -67,6 +76,7 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
+  // Saves the updated user profile data to the server.
   saveUserProfile(): void {
     this.loading = true;
     this.log(`Save profile info now ${this.user.email}`);
@@ -93,12 +103,14 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
+  // Prepares the component for a password change by resetting related fields.
   passwordInit(): void {
     this.changePW = true;
     this.oldpw = '';
     this.newpw = '';
   }
 
+  // Submits a request to change the user's password.
   passwordChange(): void {
     this.log(`Password Change ${this.user.email} Len Old ${this.oldpw.length} New ${this.newpw.length}`);
 
@@ -123,10 +135,12 @@ export class UserProfileComponent implements OnInit {
       );
   }
 
+  // Resets the user profile to its current state by re-fetching from the server.
   userReset(): void {
     this.getUserProfile();
   }
 
+  // Retrieves the password policy from the authentication service.
   getPWPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(
