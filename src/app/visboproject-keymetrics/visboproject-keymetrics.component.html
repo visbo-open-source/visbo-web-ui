@@ -126,9 +126,11 @@
           <div class="dropdown-menu">
             <a *ngIf="canCopyVersion()"class="dropdown-item" (click)="initNewVPV('Copy')" data-toggle="modal" data-target="#vpvModalCopy">{{ 'vpKeyMetric.btn.vpvCopy' | translate }}</a>
             <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit', false)">{{customEdit}}</a>
             <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
-            <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
+            <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit', false)">{{customEdit}}</a>
+            <a *ngIf="customEdit && hasVPPerm(permVP.Modify) && hasVCPerm(permVC.Modify)" class="dropdown-item" (click)="initCustomURL('edit', true)">{{customEdit + ' Baseline'}}</a>
+            <!-- <a *ngIf="customEdit && !(hasVPPerm(permVP.Modify) && hasVCPerm(permVC.Modify))" class="dropdown-item disabled" (click)="initCustomURL('edit', true)">{{customEdit + ' Baseline'}}</a> -->
             <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a>
           </div>
         </div>
@@ -140,11 +142,6 @@
           <div class="dropdown-menu">
             <a class="dropdown-item" (click)="exportVPVtoOpenProject()">{{ 'vpKeyMetric.btn.vpvExport' | translate }}</a>
             <a class="dropdown-item" (click)="importVPVFromOpenProject()">{{ 'vpKeyMetric.btn.vpvImport' | translate }}</a>
-            <!-- <a *ngIf="canModify() && canCopyVersion()" class="dropdown-item" (click)="initNewVPV('Move')" data-toggle="modal" data-target="#vpvModalMove">{{ 'vpKeyMetric.btn.vpvMove' | translate }}</a>
-            <a *ngIf="customEdit && hasVPPerm(permVP.Modify)" class="dropdown-item" (click)="initCustomURL('edit')">{{customEdit}}</a> -->
-            <!-- ur: 12.09.2022: ProjectEdit only enabled, if the user has the Modify-Permission -->
-            <!-- <a *ngIf="customEdit && !hasVPPerm(permVP.Modify)" class="dropdown-item disabled" (click)="initCustomURL('edit')">{{customEdit}}</a>
-            <a *ngIf="canCommit()" class="dropdown-item"  (click)="setVPToCommit()" data-toggle="modal" data-target="#VpvCommit">{{ 'vpKeyMetric.btn.vpCommit' | translate }}</a> -->
           </div>
         </div>
       </div>
