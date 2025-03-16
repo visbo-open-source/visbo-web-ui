@@ -62,6 +62,10 @@ export class VisboprojectAuditComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // Initialization (ngOnInit)
+  //    - Fetches project details and audit logs.
+  //    - Sets up default values like auditCount, auditType, and today.
+  //    - Calls getVisboProjectAudits() to load audit logs.
   ngOnInit(): void {
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
@@ -75,6 +79,11 @@ export class VisboprojectAuditComponent implements OnInit {
     this.sortTable(undefined);
   }
 
+  // Fetching Project Details (getVisboProject)
+  //    - Retrieves the project based on the id from the route.
+  //    - Stores project details in this.visboproject.
+  //    - Captures permissions in this.combinedPerm.
+  //    - Handles errors gracefully with alertService.error().
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -93,6 +102,14 @@ export class VisboprojectAuditComponent implements OnInit {
       );
   }
 
+  // Fetching Audit Logs (getVisboProjectAudits)
+  //    - Constructs a QueryAuditType object based on filters.
+  //    - Calls visboauditService.getVisboProjectAudits() to fetch audit logs.
+  //    - Applies filters for:
+  //            Date range (auditFrom - auditTo)
+  //            Action type (GET, POST, PUT, DELETE)
+  //            Search text (auditText)
+  //    - Handles API errors with appropriate messages.
   getVisboProjectAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const queryAudit = new QueryAuditType;
@@ -139,6 +156,10 @@ export class VisboprojectAuditComponent implements OnInit {
       );
   }
 
+  // Exporting Audit Logs (downloadVisboAudit)
+  //    - Converts the audit log data into an Excel file.
+  //    - Uses the XLSX library to create and format the spreadsheet.
+  //    - Downloads the generated file automatically.
   downloadVisboAudit(): void {
     this.log(`vpAudit Download ${this.audit.length} Items`);
     const audit: VisboAuditXLS[] = []
@@ -208,6 +229,7 @@ export class VisboprojectAuditComponent implements OnInit {
     this.auditIndex = auditIndex;
   }
 
+  // Converts bytes to human-readable sizes.
   helperFormatBytes(a: number, b = 2): string {
     if (0 === a) {
       return '0 B';
@@ -230,6 +252,7 @@ export class VisboprojectAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex;
   }
 
+  // Maps status codes to readable messages
   helperResponseText(visboaudit: VisboAudit): string {
     if (visboaudit.result.statusText) {
       return visboaudit.result.statusText;
@@ -247,10 +270,12 @@ export class VisboprojectAuditComponent implements OnInit {
     return status.toString();
   }
 
+  // Shortens text for UI display
   helperShortenText(text: string, len: number): string {
     return visboGetShortText(text, len);
   }
 
+  // Toggles detailed audit log display.
   toggleDetail(): void {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
@@ -261,6 +286,17 @@ export class VisboprojectAuditComponent implements OnInit {
     return (new Date(checkDate)) > this.today;
   }
 
+  // Sorting Audit Logs (sortTable)
+  //    -Sorts logs based on user interaction.
+  //    - Supports sorting by:
+  //          - Date (createdAt)
+  //          - User email (user.email)
+  //          - Action type (actionDescription)
+  //          - URL (url)
+  //          - Status (result.status)
+  //          - Response time (result.time)
+  //          - Response size (result.size)
+  //    - Uses sortAscending to toggle between ascending and descending orders.
   sortTable(n?: number): void {
     if (!this.audit) {
       return;
