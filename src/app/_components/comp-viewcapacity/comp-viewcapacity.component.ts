@@ -1176,10 +1176,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
 
     roles.forEach(role => allRoles[role.uid] = role);
     this.allRelevantRoles = allRoles;   
+
     if (!usedRoles) {
       this.orga = buildOrgaTree(roles);
     } else {
-      // the toplevelNode for ressource needs of a project has to have the name 'the Project Team'    
+      // the toplevelNode for ressource needs of a project has to have the name 'The Project Team'    
       const resPoolIndex = roles.findIndex(item => (item.type == 1) && (item.pid == undefined));
       roles[resPoolIndex].name = "The Project Team";       
       this.orga = buildOrgaTree(roles);
