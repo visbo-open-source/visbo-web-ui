@@ -1174,12 +1174,26 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
     }
     if (!roles) return;
 
-    roles.forEach(role => allRoles[role.uid] = role); 
+    roles.forEach(role => allRoles[role.uid] = role);
     this.allRelevantRoles = allRoles;   
-    //roles.forEach(role => this.allRelevantRoles[role.uid] = role);
-    this.orga = buildOrgaTree(roles);
+    if (!usedRoles) {
+      this.orga = buildOrgaTree(roles);
+    } else {
+      // the toplevelNode for ressource needs of a project has to have the name 'the Project Team'    
+      const resPoolIndex = roles.findIndex(item => (item.type == 1) && (item.pid == undefined));
+      roles[resPoolIndex].name = "The Project Team";       
+      this.orga = buildOrgaTree(roles);
+    }   
 
-    this.topLevelNodes = roles.filter(role => role.pid == undefined);
+    this.topLevelNodes = roles.filter(role => role.pid == undefined);   
+
+    // // the toplevelNode for ressource needs of a project has to have the name 'the Project Team'
+    // if (usedRoles) {
+    //   const resPoolIndex = roles.findIndex(item => (item.type == 1) && (item.pid == undefined));
+    //   roles[resPoolIndex].name = "The Project Team";       
+    //   this.orga = buildOrgaTree(roles);
+    // }   
+    
     // if RoleIdentifier role angegeben, dann suche diese im OrgaTree
     this.currentLeaf = getLeafByID(this.orga, this.roleID);
     expandParentTree(this.currentLeaf);
