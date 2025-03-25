@@ -1889,12 +1889,22 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             if (this.vpActive.kundennummer == "") {
               const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
               this.alertService.error(message);
-            } else {              
-              const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.vpActive.name, 'kundennummer': this.customerID });
+            } else {    
+              const message = error.error.message;          
+              //const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.visboproject.name, 'kundennummer': this.visboproject.kundennummer});
               this.alertService.error(message);
-              this.customerID = "";
             }
           } else {
+          // } else if (error.status === 409) {
+          //   if (this.vpActive.kundennummer == "") {
+          //     const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+          //     this.alertService.error(message);
+          //   } else {              
+          //     const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.vpActive.name, 'kundennummer': this.customerID });
+          //     this.alertService.error(message);
+          //     this.customerID = "";
+          //   }
+          // } else {
             this.alertService.error(getErrorMessage(error));
           }
         }

@@ -332,8 +332,9 @@ export class VisboprojectDetailComponent implements OnInit {
             if (this.visboproject.kundennummer == "") {
               const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.visboproject.name});
               this.alertService.error(message);
-            } else {              
-              const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.visboproject.name, 'kundennummer': this.visboproject.kundennummer});
+            } else {    
+              const message = error.error.message;          
+              //const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.visboproject.name, 'kundennummer': this.visboproject.kundennummer});
               this.alertService.error(message);
             }
           } else {
