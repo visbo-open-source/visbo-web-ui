@@ -91,13 +91,20 @@
     </td>
     <td>
       <button class="my-1 float-left"
+      (click)="openCopyModal(user)"
+      *ngIf="checkIsCreatorOfRecord(user)"
+      data-target="#VtrModalCreate"
+      data-toggle="modal">
+      {{ 'vtr.copy' | translate }}
+    </button>
+      <!-- <button class="my-1 float-left"
         (click)="openCopyModal(user)"
         *ngIf="checkIsCreatorOfRecord(user)"
         [disabled]="user.status === 'Yes'"
         data-target="#VtrModalCreate"
         data-toggle="modal">
         {{ 'vtr.copy' | translate }}
-      </button>
+      </button> -->
     </td>
   </tr>
   <tr style="text-align: center" *ngIf="!originalColumns?.length">
