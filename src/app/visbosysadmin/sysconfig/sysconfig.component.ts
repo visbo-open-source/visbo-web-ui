@@ -16,15 +16,22 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   templateUrl: './sysconfig.component.html',
   styleUrls: ['./sysconfig.component.css']
 })
+
+// 🔍 Overview
+// The SysconfigComponent is an Angular component for managing system-wide configuration
+// settings in VISBO. It enables system administrators to:
+// -  Retrieve, display, and sort system configuration entries (VisboSetting)
+// -  Edit and update specific configurations like UI URLs, SMTP, Redis, etc.
+// -  Enforce permission checks before allowing modifications
 export class SysconfigComponent implements OnInit {
 
-    systemVC: string;
-    combinedPerm: VGPermission = undefined;
-    permSystem = VGPSYSTEM;
-    vcsetting: VisboSetting[];
-    editIndex: number;
-    sortAscending: boolean;
-    sortColumn: number;
+    systemVC: string;                       // ID of the system-wide Visbo Center
+    combinedPerm: VGPermission = undefined; // Combined system permission object for the user
+    permSystem = VGPSYSTEM;                 // Constant containing permission flags
+    vcsetting: VisboSetting[];              // Array of configuration entries retrieved from the backend
+    editIndex: number;                      // Index of the currently edited configuration entry
+    sortAscending: boolean;                 // Sort order flag
+    sortColumn: number;                     // Active column used for sorting   
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -33,6 +40,10 @@ export class SysconfigComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
+  // ngOnInit
+  // -  Retrieves the system-wide Visbo Center ID (systemVC)
+  // -  Loads configuration data by calling getVisboConfig()
+  // -  Loads system-level permissions from VisboCenterService
   ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboConfig();
@@ -40,6 +51,9 @@ export class SysconfigComponent implements OnInit {
     // this.log(`getVisboConfig Perm ${JSON.stringify(this.combinedPerm)}`);
   }
 
+  // Fetches system configuration settings of type SysConfig for the current system VC.
+  // -  On success, stores settings in vcsetting and triggers sorting
+  // -  On failure, logs and displays error messages
   getVisboConfig(): void {
     this.log(`get VisboConfig Values`);
     this.visbosettingService.getVCSettingByType(this.systemVC, 'SysConfig', true)
@@ -88,6 +102,7 @@ export class SysconfigComponent implements OnInit {
     return result;
   }
 
+  // Returns the index of a config setting by name, for easier access and replacement.
   helperConfigName(config: string): number {
     for (let i = 0; i < this.vcsetting.length; i++) {
       if (this.vcsetting[i].name === config) {
@@ -97,6 +112,7 @@ export class SysconfigComponent implements OnInit {
     return undefined;
   }
 
+  // Finds and sets the index of the config item being edited based on its name.
   editConfigName(config: string): number {
     this.log(`Edit Config  ${config}`);
     for (let i = 0; i < this.vcsetting.length; i++) {
@@ -108,6 +124,7 @@ export class SysconfigComponent implements OnInit {
     return undefined;
   }
 
+  // Saves the updated config setting using the backend service and displays a success or error alert.
   updateConfig(setting: VisboSetting): void {
     // if (!setting) return;
     this.log(`Update Config  ${JSON.stringify(setting)}`);
@@ -123,12 +140,17 @@ export class SysconfigComponent implements OnInit {
           this.alertService.error(getErrorMessage(error));
         }
       );
-}
+  }
 
+  // Checks whether the current user has the specified system-level permission using a bitmask check
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm.system & perm) > 0;
   }
 
+  // Sorts the configuration list by a selected column:
+  // -  Column 1: Sort by setting name
+  // -  Column 3: Sort by last update date
+  // Toggles sort direction unless the column changes.
   sortTable(n?:number): void {
     if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
@@ -160,7 +182,4 @@ export class SysconfigComponent implements OnInit {
   private log(message: string) {
     this.messageService.add('Sys Config: ' + message);
   }
-
-
-
 }

@@ -14,17 +14,25 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   selector: 'app-sysvisbocenters',
   templateUrl: './sysvisbocenters.component.html'
 })
+// Overview
+// The SysVisboCentersComponent is an Angular component responsible for listing, 
+// managing, and navigating Visbo Centers at a system-wide level. 
+// It allows users with appropriate permissions to:
+// -  View active or deleted Visbo Centers
+// -  Create new Visbo Centers
+// -  Delete existing ones
+// -  Navigate to center-specific detail or VP (Variant Project) views
 export class SysVisboCentersComponent implements OnInit {
 
-  visbocenters: VisboCenter[];
-  sysvisbocenter: VisboCenter;
-  combinedPerm: VGPermission = undefined;
-  deleted = false;
-  permSystem = VGPSYSTEM;
-  permVC = VGPVC;
-  permVP = VGPVP;
-  sortAscending: boolean;
-  sortColumn: number;
+  visbocenters: VisboCenter[];            // Array of Visbo Centers retrieved from the backend
+  sysvisbocenter: VisboCenter;            // Holds the system-wide Visbo Center, if any
+  combinedPerm: VGPermission = undefined; // Current user's combined system permissions
+  deleted = false;                        // Flag to toggle between active and deleted centers
+  permSystem = VGPSYSTEM;                 // Constant for system-level permissions
+  permVC = VGPVC;                         // Constant for VC-level permissions
+  permVP = VGPVP;                         // Constant for VP-level permissions
+  sortAscending: boolean;                 // Determines if sorting is ascending
+  sortColumn: number;                     // Index of column currently used for sorting
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -34,6 +42,10 @@ export class SysVisboCentersComponent implements OnInit {
     private router: Router
   ) { }
 
+  // ngOnInit
+  // -  Initializes the component by checking query parameters for deleted flag
+  // -  Retrieves the list of Visbo Centers
+  // -  Loads user permission roles
   ngOnInit(): void {
     this.log(`Init SysVC Deleted: ${this.deleted}`);
     this.log(`Init GetVisboCenters ${JSON.stringify(this.route.snapshot.queryParams)}`);
@@ -42,6 +54,8 @@ export class SysVisboCentersComponent implements OnInit {
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }
 
+  // -  Toggles between viewing active and deleted Visbo Centers.
+  // -  Updates URL query parameters accordingly.
   toggleVisboCenters(): void {
     this.deleted = !this.deleted;
     this.log(`VC toggleVisboCenters ${this.deleted}`);
@@ -50,6 +64,9 @@ export class SysVisboCentersComponent implements OnInit {
     // this.router.navigate(['sysvcDetail/'+visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
+  // -  Fetches Visbo Centers from the backend.
+  // -  Applies sorting once fetched
+  // -  Displays success or error messages.
   getVisboCenters(deleted: boolean): void {
     this.log(`VC getVisboCenters ${JSON.stringify(this.combinedPerm)} deleted ${this.deleted}`);
     this.visbocenterService.getVisboCenters(true, deleted)
@@ -67,6 +84,7 @@ export class SysVisboCentersComponent implements OnInit {
       );
   }
 
+  // Retrieves the system-wide Visbo Center (usually a single global config VC).
   getSysVisboCenter(): void {
     this.visbocenterService.getSysVisboCenter()
       .subscribe(vc => {
@@ -76,6 +94,8 @@ export class SysVisboCentersComponent implements OnInit {
       });
   }
 
+  // Adds a new Visbo Center with the provided name and description.
+  // Displays appropriate error if name exists or permission is denied.
   add(name: string, description: string): void {
     name = name.trim();
     description = description.trim();
@@ -100,6 +120,9 @@ export class SysVisboCentersComponent implements OnInit {
     );
   }
 
+  // Deletes the selected Visbo Center.
+  // Optimistically removes the entry from the UI.
+  // Displays success or failure message.
   delete(visbocenter: VisboCenter): void {
     // remove item from list
     this.messageService.add(`VC: Delete VC: ${visbocenter.name} ID: ${visbocenter._id}`);
@@ -120,12 +143,16 @@ export class SysVisboCentersComponent implements OnInit {
     );
   }
 
+  // Navigates to the detail view of a selected Visbo Center.
+  // Adds deleted query param if the center is soft-deleted.
   gotoDetail(visbocenter: VisboCenter): void {
     const deleted = visbocenter.deletedAt ? true : false;
     this.log(`navigate to VC Detail ${visbocenter._id} Deleted ${deleted}`);
     this.router.navigate(['sysvcDetail/' + visbocenter._id], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
+  // Navigates directly to the Variant Projects (sysvp) view for
+  // the selected Visbo Center if user has permission.
   gotoClickedRow(visbocenter: VisboCenter): void {
     this.log(`clicked row ${visbocenter.name}`);
     // check that the user has Permission to see VPs
@@ -134,18 +161,26 @@ export class SysVisboCentersComponent implements OnInit {
     }
   }
 
+  // Checks if the user has the given system-level permission.
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm.system & perm) > 0;
   }
 
+  // Checks if the user has the given Visbo Center-level permission.
   hasVCPerm(perm: number): boolean {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // Checks if the user has the given Variant Project-level permission.
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // Sorts the list of Visbo Centers based on:
+  // 1: name
+  // 2: update timestamp
+  // 3: number of Variant Projects (vpCount)
+  // Toggles sort direction when same column is clicked again.
   sortVCTable(n?:number): void {
     if (!this.visbocenters) {
       return;

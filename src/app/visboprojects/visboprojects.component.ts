@@ -40,38 +40,44 @@ class CustomUserFields {
   styleUrls: ['./visboprojects.component.css'],
   templateUrl: './visboprojects.component.html'
 })
+
+// VisboProjectsComponent is an Angular component responsible for displaying 
+// and managing a list of Visbo Projects (VPs). 
+// It supports different view modes (like Key Metrics, Portfolio, Templates, 
+// Deleted Projects, etc.), 
+// allows filtering, sorting, user-specific customization, and creation of new projects.
 export class VisboProjectsComponent implements OnInit {
 
-  visboprojects: VisboProject[];
-  visboprojectsAll: VisboProject[];
-  vpTemplates: VisboProject[];
-  vpTempProjects: VisboProject[];
-  vcSelected: string;
-  vcActive: VisboCenter;
+  visboprojects: VisboProject[];      // Current list of VisboProjects.
+  visboprojectsAll: VisboProject[];   // full list of VisboProjects.
+  vpTemplates: VisboProject[];        // Template projects used for creation.
+  vpTempProjects: VisboProject[];     // temporary projects used for creation.
+  vcSelected: string;                 // Selected VisboCenter.
+  vcActive: VisboCenter;              // Active VisboCenter.
   newVP: CreateProjectProperty;
   templateHasCost: Boolean
   dropDownVPType: DropDown[];
-  viewMode = 'Default';
+  viewMode = 'Default';                 // Current display mode.
   hasOrga = false;
   vcOrga: VisboOrganisation[];
-  customize: VisboSetting;
-  userCustomfields: CustomUserFields[];
+  customize: VisboSetting;              // Customization setting.
+  userCustomfields: CustomUserFields[]; // Custom fields for users.
   modusStoppedPaused: boolean;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
-  vpvWithKM: number;
-  vpvRefDate: Date = new Date();
+  vpvWithKM: number;                    // Key metrics counter.
+  vpvRefDate: Date = new Date();        // Reference date
   deleted = false;
   vcUser = new Map<string, VisboUser>();
 
-  sortAscending: boolean;
+  sortAscending: boolean;               // Sorting preferences.
   sortColumn: number;
 
   currentLang: string;
   viewCockpit: string;
 
-  combinedPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined; // Permissions for actions.
   permVC = VGPVC;
   permVP = VGPVP;
 
@@ -88,6 +94,8 @@ export class VisboProjectsComponent implements OnInit {
     private titleService: Title
   ) { }
 
+  // Initializes component, sets titles, extracts parameters from route, 
+  // loads project and center data.
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.titleService.setTitle(this.translate.instant('vp.title'));
@@ -105,25 +113,26 @@ export class VisboProjectsComponent implements OnInit {
       this.getVisboCenterUsers()
     }
   }
-
+  // Checks VP permission.
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
     }
     return (this.combinedPerm.vp & perm) > 0;
   }
-
+  // Checks VC permission.
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
     }
     return (this.combinedPerm.vc & perm) > 0;
   }
-
+  // Translates VP type.
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  // Changes cockpit view.
   changeView(nextView: string, filter: string = undefined): void {
     this.modusStoppedPaused = false;
     if (nextView === 'Capacity' || nextView === 'Costtype' || nextView === 'KeyMetrics' || nextView === 'ProjectBoard' || nextView === 'List'|| nextView === 'KanbanBoard') {
@@ -142,6 +151,7 @@ export class VisboProjectsComponent implements OnInit {
     }
   }  
 
+  // Modifies browser URL to reflect state.
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL    
     // const url1= window.location.origin.concat('/vp/', this.vcActive._id);
@@ -162,7 +172,6 @@ export class VisboProjectsComponent implements OnInit {
     });
   }
 
-  
   getVisboCenterUserCustomFields(): void {
     if (this.vcActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       // check if appearance is available
@@ -186,8 +195,7 @@ export class VisboProjectsComponent implements OnInit {
         });
     }
   }
-
-
+  // Gets list of projects from backend.
   getVisboProjectList(vcid: string, sysAdmin: boolean, deleted = false): void {
     this.visboprojectService.getVisboProjects(vcid, sysAdmin, deleted)
       .subscribe(
@@ -208,7 +216,7 @@ export class VisboProjectsComponent implements OnInit {
         }
       );
   }
-
+  // Loads VisboCenter and related projects or only the projects
   getVisboProjects(deleted: boolean): void {
     this.deleted = deleted;
     if (this.vcSelected) {
@@ -234,7 +242,7 @@ export class VisboProjectsComponent implements OnInit {
       this.getVisboProjectList(null, false, deleted);
     }
   }
-
+  // Filters projects based on current view mode.
   filterVP(): void {
     let newVPType: number;
     if (this.deleted) {
@@ -257,7 +265,7 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
     }
   }
-
+  // Initializes dropdown list for view selection.
   initDropDown(): void {
     this.dropDownVPType = [];
     this.dropDownVPType.push({name: this.translate.instant('vp.btn.showDefault'), id: 'Default'});
@@ -273,6 +281,7 @@ export class VisboProjectsComponent implements OnInit {
     }
   }
 
+  // Returns manager name + email.
   getVPManager(vp: VisboProject, withEmail = true): string {
     let fullName = '';
     if (vp.managerId) {
@@ -289,6 +298,7 @@ export class VisboProjectsComponent implements OnInit {
     return fullName || '';
   }
 
+  // Translates VP status.
   getVPStatus(vp: VisboProject): string {
     if (vp?.vpType != 0) {
       return '';
@@ -298,6 +308,7 @@ export class VisboProjectsComponent implements OnInit {
     return this.translate.instant('vpStatus.' + status)
   }
 
+  // Toggles between different view modes.
   switchView(): void {
     if (!this.dropDownVPType) {
       return;
@@ -319,6 +330,7 @@ export class VisboProjectsComponent implements OnInit {
     this.updateUrlParam('view', this.viewMode);
   }
 
+  //  Initializes a new project from a template.
   switchTemplate(init: Boolean): void {
 
       let templateID: string;
@@ -365,7 +377,7 @@ export class VisboProjectsComponent implements OnInit {
       this.checkTemplateCost(templateID);
 
   }
-
+  // Checks if a template includes cost data.
   checkTemplateCost(templateID: string): void {
     let vpv: VisboProjectVersion;
     this.templateHasCost = false;
@@ -392,7 +404,7 @@ export class VisboProjectsComponent implements OnInit {
         );
     }
   }
-
+  //  Filters allowed custom fields.
   checkCustomFields(vp:VisboProject, cfType: number):any {
     let result: any;
     let cfStr: VPCustomString[] = [];
@@ -421,7 +433,7 @@ export class VisboProjectsComponent implements OnInit {
     } 
     return result;
   } 
-
+  // 
   hasCost(vpv: VisboProjectVersion): Boolean {
     let result = false;
     if (vpv) {
@@ -443,7 +455,7 @@ export class VisboProjectsComponent implements OnInit {
     const result = !(this.newVP?.startDate && this.newVP.endDate && (visboCmpDate(this.newVP.startDate, this.newVP.endDate) < 0));
     return result;
   }
-
+  // Creation of a new project.
   addproject(): void {
     this.newVP.name = this.newVP.name.trim();
     this.log(`Create VP newVP: ${JSON.stringify(this.newVP)}`);
@@ -490,12 +502,12 @@ export class VisboProjectsComponent implements OnInit {
       }
     );
   }
-  
+  // cancels the creation of a new project.
   cancelproject(): void {
     delete this.newVP;
        
   }
-
+  // Loads key metrics for projects.
   getVisboProjectKeyMetrics(): void {
     this.log(`get VC keyMetrics ${this.vcActive.name} ${this.vcActive._id}`);
     const longlist = true;
@@ -522,6 +534,7 @@ export class VisboProjectsComponent implements OnInit {
       );
   }
 
+  // Maps metrics to their corresponding projects.
   calcVPVList(): void {
     if (!this.visboprojectversions?.length) { return; }
     // this.vpvList = [];
@@ -611,7 +624,7 @@ export class VisboProjectsComponent implements OnInit {
         }
       );
   }
-
+  // Updates project details (like manager, localized status).
   updateVPProperties(): void {
     if (!this.visboprojectsAll || !this.vcUser) {
       return;
@@ -642,11 +655,11 @@ export class VisboProjectsComponent implements OnInit {
     this.log(`goto Detail for VP ${visboproject._id}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
-
+  // Navigates to VC details.
   gotoVCDetail(visbocenter: VisboCenter): void {
     this.router.navigate(['vcDetail/'.concat(visbocenter._id)]);
   }
-
+  // Sorts projects based on selected column.
   sortVPTable(n: number): void {
     if (n !== undefined) {
       if (!this.visboprojects) {
@@ -713,7 +726,7 @@ export class VisboProjectsComponent implements OnInit {
       this.visboprojects.reverse();
     }
   }
-
+  
   initTemplates(vps: VisboProject[]): void {
     this.vpTemplates = vps.filter(item => item.vpType == 2);
     if (this.vpTemplates.length > 0) {
@@ -733,18 +746,16 @@ export class VisboProjectsComponent implements OnInit {
       this.vpTempProjects.push(vp);
     }
   }
-
-
-
+  // Returns project commit date if set
   getCommitDate(vp: VisboProject):Date {
     if (!vp) { return undefined }
     return getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
    }
-
+   // Checks if one should show the commit
   isViewWithCommit():boolean {
     return ((this.viewMode != 'Deleted') && (this.viewMode != 'KeyMetrics') && (this.viewMode != 'Template'))
   }
-
+  // Checks if commit info is available.
   hasCommitDate():boolean {
     const index = this.visboprojects.findIndex(item => this.getCommitDate(item) != undefined )
     return (index >= 0);

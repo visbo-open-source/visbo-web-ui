@@ -16,14 +16,26 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   templateUrl: './syssettings.component.html',
   styleUrls: ['./syssettings.component.css']
 })
+
+// 🔍 Overview
+// The SyssettingsComponent is an Angular system administration module within VISBO 
+// that allows authorized users to view, sort, edit, and update VC configuration settings of 
+// type _VCConfig.
+// It is part of the system-level configuration UI, distinct from project-specific settings.
+
+// 🧱 Responsibilities
+// -  Load configuration entries of type _VCConfig from the system-wide Visbo Center
+// -  Allow editing and updating of settings via the UI
+// -  Sort settings by different attributes like name, flags, or update timestamp
+// -  Enforce permission-based access to editing functionality
 export class SyssettingsComponent implements OnInit {
 
-      systemVC: string;
-      combinedPerm: VGPermission = undefined;
-      permSystem = VGPSYSTEM;
-      vcsetting: VisboSetting[];
-      editIndex: number;
-      sortAscending: boolean;
+      systemVC: string;                       // ID of the global/system-level Visbo Center
+      combinedPerm: VGPermission = undefined; // Combined permissions object for current user
+      permSystem = VGPSYSTEM;                 // System permission constants
+      vcsetting: VisboSetting[];              // Array of VC config entries loaded from backend
+      editIndex: number;                      // Index of the currently edited setting
+      sortAscending: boolean;                 // Current sorting direction
       sortColumn: number;
 
     constructor(
@@ -33,12 +45,19 @@ export class SyssettingsComponent implements OnInit {
       private alertService: AlertService
     ) { }
 
+    // ngOnInit
+    // -  Gets the system VC ID (systemVC)
+    // -  Loads all _VCConfig settings by calling getVisboSettings()
+    // -  Loads current user's combined permissions via getSysAdminRole()
     ngOnInit(): void {
       this.systemVC = this.visbocenterService.getSysVCId();
       this.getVisboSettings();
       this.combinedPerm = this.visbocenterService.getSysAdminRole();
     }
 
+    // -  Loads all settings of type _VCConfig using VisboSettingService
+    // -  Triggers sorting of results
+    // -  Displays error on failure
     getVisboSettings(): void {
       this.log(`get getVisboSettings Values`);
       this.visbosettingService.getVCSettingByType(this.systemVC, '_VCConfig', true)
@@ -55,6 +74,7 @@ export class SyssettingsComponent implements OnInit {
         );
     }
 
+    // Extracts the systemEnabled flag from a setting to display as a simplified summary
     getMainInfo(entry: VisboSetting): string {
       // this.log('get Main Value ' + entry.name);
       let result = '';
@@ -65,6 +85,7 @@ export class SyssettingsComponent implements OnInit {
       return result;
     }
 
+    // Finds the index of a setting by its name — used for updating the local array after saving
     helperConfigName(config: string): number {
       for (let i = 0; i < this.vcsetting.length; i++) {
         if (this.vcsetting[i].name === config) {
@@ -74,6 +95,7 @@ export class SyssettingsComponent implements OnInit {
       return undefined;
     }
 
+    // Prepares a setting for editing by setting editIndex to its index
     editConfigName(config: string): number {
       this.log(`Edit Config  ${config}`);
       for (let i = 0; i < this.vcsetting.length; i++) {
@@ -85,6 +107,9 @@ export class SyssettingsComponent implements OnInit {
       return undefined;
     }
 
+    // -  Saves an updated config object via VisboSettingService
+    // -  Updates the local array with the returned data
+    // -  Displays a success message or handles errors appropriately
     updateConfig(setting: VisboSetting): void {
       // if (!setting) return;
       this.log(`Update Config  ${JSON.stringify(setting)}`);
@@ -101,11 +126,17 @@ export class SyssettingsComponent implements OnInit {
           }
         );
   }
-
+    // Returns true if the current user has the specified permission using a bitmask check
     hasSystemPerm(perm: number): boolean {
       return (this.combinedPerm.system & perm) > 0;
     }
-
+    // Sorts vcsetting by one of the following columns:
+    //  1	- Setting name
+    //  2	- systemEnabled flag
+    //  3	- systemLimit flag
+    //  4	- Fallback sort between systemLimit and sysVCEnabled
+    //  5	- Fallback sort between systemLimit and sysVCLimit
+    //  10	- Last updated date (updatedAt)
     sortTable(n?:number): void {
       if (!this.vcsetting) { return; }
       // change sort order otherwise sort same column same direction
