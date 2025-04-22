@@ -375,7 +375,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       return;
     } else if (this.vpActive.variant.find(item => item.variantName.toLowerCase() == this.newVariant.variantName.toLowerCase())) {
       this.log(`Variant does already exists ${this.newVariant?.variantName}`);
-      return;
+      return; 
     }
     this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
       .subscribe(
@@ -394,6 +394,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             this.alertService.error(message);
           } else if (error.status === 409) {
             const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+            this.alertService.error(message);
+          } else if (error.status === 412) {
+            const message = this.translate.instant('vpDetail.msg.errorVariantReserved', {'name': this.newVariant.variantName});
             this.alertService.error(message);
           } else {
             this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
@@ -1883,9 +1886,25 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             const message = this.translate.instant('vpDetail.msg.errorPermVP', {'name': this.vpActive.name});
             this.alertService.error(message);
           } else if (error.status === 409) {
-            const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
-            this.alertService.error(message);
+            if (this.vpActive.kundennummer == "") {
+              const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {    
+              const message = error.error.message;          
+              //const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.visboproject.name, 'kundennummer': this.visboproject.kundennummer});
+              this.alertService.error(message);
+            }
           } else {
+          // } else if (error.status === 409) {
+          //   if (this.vpActive.kundennummer == "") {
+          //     const message = this.translate.instant('vpDetail.msg.errorVPConflict', {'name': this.vpActive.name});
+          //     this.alertService.error(message);
+          //   } else {              
+          //     const message = this.translate.instant('vpDetail.msg.errorVPCustIDConflict', {'name': this.vpActive.name, 'kundennummer': this.customerID });
+          //     this.alertService.error(message);
+          //     this.customerID = "";
+          //   }
+          // } else {
             this.alertService.error(getErrorMessage(error));
           }
         }

@@ -483,13 +483,15 @@
 			"errorCreateGroupPerm": "Keine Berechtigung Gruppe {{name}} zu erstellen",
 			"errorRemoveGroupPerm": "Keine Berechtigung Gruppe {{name}} zu löschen",
 			"errorRemoveLockPerm": "Keine Berechtigung die Sperre zu löschen",
-			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}} existiert bereits!",			
+			"errorVPConflict": "Ein VISBO Projekt mit dem Namen {{name}}  existiert bereits!",
+			"errorVPCustIDConflict": "Ein VISBO Projekt mit dem Namen {{name}} oder der KundenID {{kundennummer}} existiert bereits!",			
 			"errorVPVConflict": "Ein VISBO Projekt Version mit dem Namen  {{name}} does already exist!",
 			"errorRemoveVariantPerm": "Keine Berechtigung Variante {{name}} zu löschen",
 			"errorRemoveVariantConflict": "Beim Löschen der Variante {{name}} ist ein Fehler aufgetreten",
 			"errorCreateVariantPerm": "Keine Berechtigung eine Variante zu erstellen",
 			"errorChangeVariantPerm": "Keine Berechtigung Variante {{name}} zu ändern",
-			"errorVariantConflict": "Eine Variante mit dem Namen {{name}} existiert bereits!"
+			"errorVariantConflict": "Eine Variante mit dem Namen {{name}} existiert bereits!",
+			"errorVariantReserved": "Varianten Namen {{name}} ist reserviert!"
 		}
 	},
 	"vtr":{

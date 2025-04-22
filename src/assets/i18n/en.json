@@ -483,13 +483,15 @@
 			"errorCreateGroupPerm": "No Permission to create Group {{name}}",
 			"errorRemoveGroupPerm": "No Permission to delete Group {{name}}",
 			"errorRemoveLockPerm": "No Permission to delete Lock",
-			"errorVPConflict": "A VISBO Project with {{name}} does already exist!",			
+			"errorVPConflict": "A VISBO Project with Name {{name}} does already exist!",				
+			"errorVPCustIDConflict": "A VISBO Project with Name {{name}} or CustomerID {{kundennummer}} does already exist!",
 			"errorVPVConflict": "A VISBO Project Version with {{name}} does already exist!",
 			"errorRemoveVariantPerm": "No Permission to delete Variant {{name}}",
 			"errorRemoveVariantConflict": "An Error occurred during delete Variant {{name}}",
 			"errorCreateVariantPerm": "No Permission to create Variant",
 			"errorChangeVariantPerm": "No Permission to change Variant {{name}}",
-			"errorVariantConflict": "A Variant with {{name}} does already exist!"
+			"errorVariantConflict": "A Variant with {{name}} does already exist!",
+			"errorVariantReserved": "Variant Name {{name}} is reserved name!"
 		}
 	},
 	"vtr":{
