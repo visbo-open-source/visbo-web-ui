@@ -21,21 +21,18 @@ export class VisboTimeTracking {
     private env: EnvService
   ) { }
 
- getUserTimeTracker(userId: string, startDate: Date, endDate: Date, asApprover: boolean): Observable<any> {
+ getUserTimeTracker(userId: string, startDate: string, endDate: string, asApprover: boolean): Observable<any> {
   console.log(userId);
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
   if (startDate) {
-    params = params.append('startDate', startDate.toUTCString());
+    params = params.append('startDate', startDate);
   }
   if (endDate) {
-    endDate.setHours(23);
-    endDate.setMinutes(59);
-    endDate.setSeconds(0);    
-    params = params.append('endDate', endDate.toUTCString())
+    params = params.append('endDate', endDate);
   }
   if (asApprover) {
-    params = params.append('asApprover', asApprover)
+    params = params.append('asApprover', asApprover);
   }
   const url = `${this.timetrackerUrl}/${userId}`;
   return this.http.get(url, {headers, params});
