@@ -57,6 +57,7 @@ export class VisboProjectsComponent implements OnInit {
   customize: VisboSetting;
   userCustomfields: CustomUserFields[];
   modusStoppedPaused: boolean;
+  vpFilter: string;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -753,6 +754,27 @@ export class VisboProjectsComponent implements OnInit {
   getVPTemplate(templateID: string):VisboProject {
     const index = this.vpTemplates.findIndex(item => item._id == templateID )
     return (this.vpTemplates[index]);
+  }
+
+  filterKeyBoardEvent(event: KeyboardEvent): void {
+    if (!event) { this.log('No Keyboard Event'); }
+    this.filterVPList();
+  }
+
+  filterVPList(clear = false): void {
+    if (clear) { this.vpFilter = undefined; }
+    let allOn = true;
+    const vpFilter = this.vpFilter ? this.vpFilter.toLowerCase() : undefined;
+    if (!vpFilter) {
+      // projects & portfolios, no templates
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+    } else {
+      let regex = new RegExp(vpFilter, "i");
+      //  projects & portfolios, no templates
+      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+      const list = this.visboprojects.filter(item =>  regex.test(item.name));
+      this.visboprojects = list;
+    }    
   }
 
   /** Log a message with the MessageService */
