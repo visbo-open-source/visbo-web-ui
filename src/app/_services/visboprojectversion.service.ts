@@ -23,6 +23,7 @@ export class VisboProjectVersionService {
   private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
   private vpfUrl = this.env.restUrl.concat('/vp');  // URL to web api
   private openProjURL = this.env.openProjUrl;
+  //private openProjURL = 'http://localhost:3000';
 
   constructor(
     private http: HttpClient,
@@ -449,12 +450,13 @@ exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined
 }
 
 /** POST: import a  Visbo Project Version from openproject*/
-importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {
+importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {  
   const url = `${this.openProjURL}/bridge/import-from-open-project/${vpid}`; 
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
+  const data = { 'existsOnVisbo' : true };
  
-  return this.http.post<any>(url, { headers , params }).pipe( 
+  return this.http.post<any>(url, data , { headers , params }).pipe( 
       map(response => {
         return response; 
       }), 
