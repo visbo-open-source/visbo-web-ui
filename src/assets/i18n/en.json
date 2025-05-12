@@ -710,7 +710,7 @@
 			"viewWeb": "View Project Online",
 			"localInstallationRequired": "Installation of VISBO Clients required",
 			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required",			
-			"importVPVFromOpenProjError": "Project Version imported from OpenProject could not bei saved (not valid)!"
+			"importVPVFromOpenProjError": "Project Version imported from OpenProject could not be saved (not valid)!"
 		}
 	},
 	"compViewEmployeetable": {
