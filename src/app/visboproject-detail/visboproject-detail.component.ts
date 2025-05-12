@@ -44,6 +44,8 @@ export class VisboprojectDetailComponent implements OnInit {
   permVC = VGPVC;
   permVP = VGPVP;
   deleted = false;
+  // ute
+  detailsVPModified: boolean = false;
 
   sortUserColumn = 1;
   sortUserAscending = true;
@@ -917,6 +919,11 @@ export class VisboprojectDetailComponent implements OnInit {
     if (!this.sortVariantAscending) {
       variant.reverse();
     }
+  }
+
+  
+  setModified(): void {
+    this.detailsVPModified = true;
   }
 
   /** Log a VisboProjectService message with the MessageService */
