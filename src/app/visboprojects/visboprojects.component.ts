@@ -303,6 +303,8 @@ export class VisboProjectsComponent implements OnInit {
     if (!this.dropDownVPType) {
       return;
     }
+    // delete the vpFilter content because of switching the view
+    this.vpFilter = "";    
     const element = this.dropDownVPType.find(item => item.id === this.viewMode);
     this.log(`switchView to ${this.viewMode} ${element?.name}`);
     if (element) {
@@ -767,11 +769,13 @@ export class VisboProjectsComponent implements OnInit {
     const vpFilter = this.vpFilter ? this.vpFilter.toLowerCase() : undefined;
     if (!vpFilter) {
       // projects & portfolios, no templates
-      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+      //this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+      this.filterVP();
     } else {
       let regex = new RegExp(vpFilter, "i");
-      //  projects & portfolios, no templates
-      this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);
+      // projects & portfolios, no templates
+      // this.visboprojects = this.visboprojectsAll.filter(item => item.vpType != 2);      
+      this.filterVP();
       const list = this.visboprojects.filter(item =>  regex.test(item.name));
       this.visboprojects = list;
     }    
