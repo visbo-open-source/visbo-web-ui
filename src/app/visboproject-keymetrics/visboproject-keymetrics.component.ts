@@ -1583,7 +1583,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   exportVPVtoOpenProject(): void {
     this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
-    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive._id, "", this.level)
+    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive.vcid, this.vpActive._id, "", this.level)
       .subscribe(
         openProj => {                
               const xxx = openProj;
@@ -1650,7 +1650,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
 
   importVPVFromOpenProject(): void {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
-    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
+    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive.vcid ,this.vpActive._id, "")
       .subscribe(
         data => { 
           if (data && (data.success == false)) {
