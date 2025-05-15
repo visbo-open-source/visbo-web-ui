@@ -59,6 +59,12 @@
   </div>
 
   <div *ngIf="viewMode != 'KeyMetrics'" class='panel-body'>
+    <div class="input-group">
+      <span class="input-group-prepend">
+          <span class="input-group-text bg-light" ><i class="fa fa-search"></i></span>
+      </span>
+      <input class="form-control py-2 border" id="myInput" (keyup)="filterKeyBoardEvent($event)"  [(ngModel)]="vpFilter" type="text" placeholder="Search for names ...">
+    </div>
     <table class='table table-hover table-sortable' >
       <thead id="VPHead">
         <tr>

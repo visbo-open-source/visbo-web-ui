@@ -1751,7 +1751,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   //    - If the variant already exists, it reuses the existing one and proceeds with copying the VPV.
   exportVPVtoOpenProject(): void {
     this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
-    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive._id, "", this.level)
+    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive.vcid, this.vpActive._id, "", this.level)
       .subscribe(
         openProj => {                
               const xxx = openProj;
@@ -1821,7 +1821,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   // If the import fails, an error message is displayed based on the response status.
   importVPVFromOpenProject(): void {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
-    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive._id, "")
+    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive.vcid ,this.vpActive._id, "")
       .subscribe(
         data => { 
           if (data && (data.success == false)) {

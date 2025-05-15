@@ -20,7 +20,7 @@ import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.hel
 // -  Logging important application lifecycle messages
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '25-04';                    // UI version label for display (25-04).
+  version = '25-05';                    // UI version label for display (25-04).
   restVersionString = new Date();       // Date object holding the backend version timestamp.
   restUIVersionString = new Date();     // Date object holding the frontend (UI) version timestamp.
   localsAvailable = false;              // Boolean flag indicating whether translation/localization is loaded successfully.

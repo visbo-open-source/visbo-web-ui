@@ -336,10 +336,10 @@ export class ApproverComponent implements OnInit {
     getTimeTrackerList() {
       this.noSpinner = false;
       this.originalManagerList = [];
-      this.trackerService.getUserTimeTracker(this.userId, new Date(this.startDate), new Date(this.endDate), true).subscribe(({timeEntries, managerView}) => {    
+      this.trackerService.getUserTimeTracker(this.userId, this.startDate, this.endDate, true).subscribe(({timeEntries, managerView}) => {    
         this.managerTimeTrackerList = managerView?.map(record => {
             const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name;
-            const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;
+            const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name;    
             if (centerName && projectName) {
               return {
                 userId: record.userId,
@@ -349,7 +349,7 @@ export class ApproverComponent implements OnInit {
                 notes: record.notes,
                 status: record.status,
                 time: record.time.$numberDecimal,
-                date: record.date?.split('T')[0],
+                date: record.date,
                 approvalId: record.approvalId,
                 approvalDate: record.approvalDate,
                 vcName: centerName,

@@ -23,6 +23,7 @@ export class VisboProjectVersionService {
   private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
   private vpfUrl = this.env.restUrl.concat('/vp');  // URL to web api
   private openProjURL = this.env.openProjUrl;
+  //private openProjURL = 'http://localhost:3000';
 
   constructor(
     private http: HttpClient,
@@ -550,17 +551,18 @@ export class VisboProjectVersionService {
       );
   }
 
-/** POST: export a Visbo Project Version to openproject*/
+/** POST: export a Visbo Project Version to openproject **/
 // The exportVPVToOpenProj method is responsible for exporting a Visbo project version (VPV) to the Open Project format using the Open Project Bridge API. 
 // It supports exporting specific project variants, including pfv (Baseline) variants, with an optional hierarchy level.
-exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined, isCommited: Boolean = false): Observable<any> {
+exportVPVToOpenProj(vcid: string, vpid: string, variantName: string, level: number = undefined, isCommited: Boolean = false): Observable<any> {
   const url = `${this.openProjURL}/bridge/export-to-open-project/${vpid}`; 
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
   if (variantName == 'pfv' && level > 0) {
     params = params.append('level', level.toString());
   }  
-  return this.http.post<any>(url, { headers , params }).pipe( 
+  const data = { "visboCentreId": vcid };
+  return this.http.post<any>(url , data , { headers , params }).pipe( 
       map(response => {
         return response; 
       }), 
@@ -572,12 +574,13 @@ exportVPVToOpenProj(vpid: string, variantName: string, level: number = undefined
 /** POST: import a  Visbo Project Version from openproject*/
 // The importVPVFromOpenProj method is responsible for importing an Open Project Project into Visbo project version (VPV)  using the Open Project Bridge API. 
 // It allows importing a specific project variant.
-importVPVFromOpenProj(vpid: string, variantName: string): Observable<any> {
+importVPVFromOpenProj(vcid: string, vpid: string, variantName: string): Observable<any> {  
   const url = `${this.openProjURL}/bridge/import-from-open-project/${vpid}`; 
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
+  const data = { 'existsOnVisbo' : true,  "visboCentreId": vcid };
  
-  return this.http.post<any>(url, { headers , params }).pipe( 
+  return this.http.post<any>(url, data , { headers , params }).pipe( 
       map(response => {
         return response; 
       }), 

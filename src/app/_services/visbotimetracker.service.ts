@@ -20,30 +20,25 @@ export class VisboTimeTracking {
     private messageService: MessageService,
     private env: EnvService
   ) { }
-
-
 // The getUserTimeTracker method is responsible for retrieving time tracking data for a specific user within a defined date range. 
 // It also supports fetching data where the user acts as an approver.
 // Parameters:
 //    userId: string:        The ID of the user whose time tracking data is being requested.
-//    startDate: Date:       The start date for the time tracking range.
+//    startDate: string:     The start date for the time tracking range.
 //    endDate: Date:         The end date for the time tracking range, extended to the end of the day.
 //    asApprover: boolean:   If true, the method fetches time tracking data where the user is an approver.
- getUserTimeTracker(userId: string, startDate: Date, endDate: Date, asApprover: boolean): Observable<any> {
+ getUserTimeTracker(userId: string, startDate: string, endDate: string, asApprover: boolean): Observable<any> {
   console.log(userId);
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
   if (startDate) {
-    params = params.append('startDate', startDate.toUTCString());
+    params = params.append('startDate', startDate);
   }
   if (endDate) {
-    endDate.setHours(23);
-    endDate.setMinutes(59);
-    endDate.setSeconds(0);    
-    params = params.append('endDate', endDate.toUTCString())
+    params = params.append('endDate', endDate);
   }
   if (asApprover) {
-    params = params.append('asApprover', asApprover)
+    params = params.append('asApprover', asApprover);
   }
   const url = `${this.timetrackerUrl}/${userId}`;
   return this.http.get(url, {headers, params});
