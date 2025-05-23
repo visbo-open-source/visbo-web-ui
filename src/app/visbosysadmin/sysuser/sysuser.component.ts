@@ -13,6 +13,13 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
   templateUrl: './sysuser.component.html',
   styleUrls: ['./sysuser.component.css']
 })
+// 🔍 Overview
+// The SysuserComponent is part of the VISBO system administration suite. It allows system administrators to:
+// -  View and sort the list of registered users
+// -  Filter users by email
+// -  Navigate through users (pagination)
+// -  View login metadata (e.g., last login, failed login attempts)
+// -  Toggle detailed views for selected users
 export class SysuserComponent implements OnInit {
 
   user: VisboUser[];
@@ -30,11 +37,18 @@ export class SysuserComponent implements OnInit {
     private router: Router
   ) { }
 
+  // ngOnInit
+  // -  Calls getSysUsers() to load the initial user list
+  // -  Applies initial sort via sortTable(undefined)
   ngOnInit(): void {
     this.getSysUsers();
     this.sortTable(undefined);
   }
 
+  // -  Calls SysUserService.getSysUsers() with the current userMatch filter (if any)
+  // -  Stores result in user
+  // -  Applies sorting
+  // -  Displays errors if the request fails
   getSysUsers(): void {
     if (this.userMatch) {
       this.userMatch = this.userMatch.trim();
@@ -54,10 +68,12 @@ export class SysuserComponent implements OnInit {
       );
   }
 
+  // Sets the selected userIndex (e.g., for pagination or detail display).
   helperUserIndex(userIndex: number): void {
     this.userIndex = userIndex;
   }
 
+  // Changes the current userIndex by a step (+1 or -1), with clamping to array bounds.
   pageUserIndex(increment: number): void {
     let newuserIndex = this.userIndex + increment;
     if (newuserIndex < 0) {
@@ -69,15 +85,18 @@ export class SysuserComponent implements OnInit {
     this.userIndex = newuserIndex;
   }
 
+  // Utility to shorten long text (e.g., user metadata or descriptions).
   helperShortenText(text: string, len: number): string {
     return visboGetShortText(text, len);
   }
 
+  // Toggles showMore, a flag to control visibility of extended user details.
   toggleDetail(): void {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
   }
 
+  // Sorts the user list based on the selected column index:
   sortTable(n: number): void {
     if (!this.user) {
       return;

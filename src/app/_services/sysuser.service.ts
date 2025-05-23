@@ -12,6 +12,11 @@ import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
+
+/* SysUserService Class Overview:
+   The SysUserService class is responsible for retrieving system users from a REST API. 
+   It provides functionality to fetch users based on matching criteria.
+*/
 @Injectable()
 export class SysUserService {
   //   private serviceUrl = 'vc';  // URL to api on same server
@@ -23,9 +28,19 @@ export class SysUserService {
     private env: EnvService
   ) { }
 
-
   /** GET Users from the server */
   getSysUsers(userMatch: string): Observable<VisboUser[]> {
+  // Fetches a list of users from the server, optionally filtering by an email match.
+  // Parameters:
+  //    userMatch: A string to match user email addresses.
+  // Returns:
+  //    An Observable<VisboUser[]> containing the retrieved users.
+  // Process:
+  //    Constructs the API request with query parameters.
+  //    Logs the request.
+  //    Maps the response to extract the list of users.
+  //    Catches and handles errors.
+
     const url = this.serviceUrl;
     let params = new HttpParams();
 
@@ -46,6 +61,8 @@ export class SysUserService {
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
+   * Returns:
+        An observable that either returns an empty result or throws the error.
    */
   private handleError<T> (operation = 'operation', result?: T) {
     // eslint-disable-next-line

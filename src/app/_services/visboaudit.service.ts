@@ -12,6 +12,11 @@ import { MessageService } from './message.service';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
+/* VisboAuditService Class Overview:
+   The VisboAuditService class provides methods for retrieving audit records from the VISBO system. 
+   It supports fetching general audits, version control (VC) audits, and project (VP) audits 
+   while allowing filtering based on parameters such as date range, action type, and search text.
+ */
 @Injectable()
 export class VisboAuditService {
   private serviceBaseUrl = this.env.restUrl;  // URL to api on same server
@@ -25,6 +30,17 @@ export class VisboAuditService {
 
   /** GET Audits from the server */
   getVisboAudits(sysadmin?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+  // Fetches audit records from the system.
+  // Parameters:
+  //    sysadmin:   A boolean indicating whether to fetch admin-related audits.
+  //    queryAudit: A QueryAuditType object containing filters (date range, action type, text, etc.).
+  // Returns:
+  //    An Observable<VisboAudit[]> containing the retrieved audit records.
+  // Process:
+  //    Constructs the API request with query parameters.
+  //    Logs the request.
+  //    Maps the response to extract audit records.
+  //    Catches and handles errors.
     const url = this.serviceBaseUrl.concat('/audit');
     let params = new HttpParams();
 
@@ -63,6 +79,19 @@ export class VisboAuditService {
 
   /** GET VC Audits from the server */
   getVisboCenterAudits(vcid: string, sysadmin?: boolean, deleted?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+  // Fetches Visbo Center (VC) audits.
+  // Parameters:
+  //    vcid:       The ID of the Visbo Center system.
+  //    sysadmin:   A boolean indicating admin access.
+  //    deleted:    A boolean indicating whether to fetch deleted records.
+  //    queryAudit: A QueryAuditType object containing filters.
+  // Returns:
+  //    An Observable<VisboAudit[]> containing the retrieved audit records.
+  // Process:
+  //    Constructs the API request URL dynamically.
+  //    Logs the request.
+  //    Maps the response to extract audits.
+  //    Catches and handles errors.
     const url = this.serviceBaseUrl.concat('/vc/', vcid, '/audit');
     let params = new HttpParams();
 
@@ -104,6 +133,14 @@ export class VisboAuditService {
 
   /** GET VP Audits from the server */
   getVisboProjectAudits(vpid: string, sysadmin?: boolean, deleted?: boolean, queryAudit?: QueryAuditType): Observable<VisboAudit[]> {
+  // Fetches project (VP) audits.
+  // Parameters:
+  //    vpid:       The project ID.
+  //    sysadmin:   A boolean indicating admin access.
+  //    deleted:    A boolean indicating whether to fetch deleted records.
+  //    queryAudit: A QueryAuditType object containing filters.
+  // Returns:
+  //    An Observable<VisboAudit[]> containing the retrieved audit records.
     const url = this.serviceBaseUrl.concat('/vp/', vpid, '/audit');
     let params = new HttpParams();
 
@@ -132,6 +169,8 @@ export class VisboAuditService {
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
+   * Returns:
+   *    An observable that either returns an empty result or throws the error.
    */
   private handleError<T> (operation = 'operation', result?: T) {
     // eslint-disable-next-line

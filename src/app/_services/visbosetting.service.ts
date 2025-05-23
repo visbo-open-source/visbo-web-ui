@@ -24,6 +24,11 @@ export class VisboSettingService  {
 
 
   /** GET VCSettings from the server */
+  // The getVCSettings method is responsible for retrieving configuration settings (VCSettings) for a specific Visbo Center (VC). 
+  // It supports retrieving settings as a system administrator by including the sysadmin flag.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center for which settings are being requested.
+  //    sysadmin: boolean (default: false):  If true, requests settings with system administrator privileges.
   getVCSettings(vcid: string, sysadmin = false): Observable<VisboSetting[]> {
     const url = `${this.vcUrl}/${vcid}/setting`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -41,8 +46,16 @@ export class VisboSettingService  {
       );
   }
 
-   /** GET VCOrganisatios from the server */
-   getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, hierarchy = false, withCapa = false): Observable<VisboOrganisation[]> {
+  /** GET VCOrganisatios from the server */
+  // The getVCOrganisations method is responsible for retrieving organization data (VCOrganisations) for a specific Visbo Center (VC). 
+  // It supports optional parameters for system administrator access, filtering by a reference date, as hierarchical structure, and/or including  capa information.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center for which organization data is being requested.
+  //    sysadmin: boolean (default: false):  If true, requests organization data with system administrator privileges.
+  //    refDate: string (optional):          A reference date in ISO string format to filter the organization data.
+  //    hierarchy: boolean (default: false): If true, includes hierarchical data in the response.
+  //    withCapa: boolean (default: false):  If true, includes capacity-related data in the response.
+  getVCOrganisations(vcid: string, sysadmin = false, refDate: string = undefined, hierarchy = false, withCapa = false): Observable<VisboOrganisation[]> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -69,6 +82,12 @@ export class VisboSettingService  {
   }
 
   /** Create VCOrganisation */
+  // The createVCOrganisation method is responsible for creating a new organization (VCOrganisation) within a specific Visbo Center (VC). 
+  // It allows for system administrator access and logs the amount of units of the organization being created.
+  // Parameters:
+  //    vcid: string:                         The ID of the Visbo Center where the new organization is to be created.
+  //    sysadmin: boolean (default: false):   If true, the request will be executed with system administrator privileges.
+  //    orga: VisboOrganisation:              An object containing the organizational data to be created, including all units and their configurations.
   createVCOrganisation(vcid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
     const url = `${this.vcUrl}/${vcid}/organisation`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -87,6 +106,13 @@ export class VisboSettingService  {
   }
 
   /** Update VCOrganisation */
+  // The updateVCOrganisation method is responsible for updating an existing organization (VCOrganisation) within a specific Visbo Center (VC). 
+  // It supports system administrator access and logs the size of the organization being updated.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center where the organization is located.
+  //    orgaid: string:                      The ID of the organization to be updated.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
+  //    orga: VisboOrganisation:             An object containing the updated organizational data, including all units and their configurations.
   updateVCOrganisation(vcid: string, orgaid: string, sysadmin = false, orga: VisboOrganisation): Observable<VisboOrganisation> {
     const url = `${this.vcUrl}/${vcid}/organisation/${orgaid}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -105,6 +131,12 @@ export class VisboSettingService  {
   }
 
   /** DELETE: delete a Visbo Center Organisation from the server */
+  // The deleteVCOrganisation method is responsible for deleting an existing organization (VCOrganisation) within a specific Visbo Center (VC). 
+  // It supports system administrator access and ensures proper logging of the deletion process.
+  // Parameters:
+  //    orga: VisboOrganisation:            The organization object to be deleted, containing the _id of the organization.
+  //    vcid: string:                       The ID of the Visbo Center where the organization is located.
+  //    sysadmin: boolean (default: false): If true, the request will be executed with system administrator privileges.
   deleteVCOrganisation (orga: VisboOrganisation, vcid: string, sysadmin = false): Observable<VisboOrganisation> {
     const id = orga._id;
     const url = `${this.vcUrl}/${vcid}/setting/${id}`;
@@ -124,6 +156,12 @@ export class VisboSettingService  {
   }
 
   /** GET VCSetting by id. Will 404 if id not found */
+  // The getVCSetting method is responsible for retrieving a specific configuration setting (VCSetting) from a particular Visbo Center (VC). 
+  // It supports system administrator access and provides detailed logging of the retrieval process.
+  // Parameters:
+  //    vcid: string:                       The ID of the Visbo Center where the setting is located.
+  //    id: string:                         The ID of the specific setting to retrieve.
+  //    sysadmin: boolean (default: false): If true, the request will be executed with system administrator privileges.
   getVCSetting(vcid: string, id: string, sysadmin = false): Observable<VisboSetting> {
     const url = `${this.vcUrl}/${vcid}/setting/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -142,6 +180,12 @@ export class VisboSettingService  {
   }
 
   /** GET VCSetting by type */
+  // The getVCSettingByName method is responsible for retrieving configuration settings (VCSettings) by name from a specific Visbo Center (VC). 
+  // It allows for system administrator access and logs the retrieval process.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center where the settings are located.
+  //    name: string:                        The name of the specific setting(s) to retrieve.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
   getVCSettingByName(vcid: string, name: string, sysadmin = false): Observable<VisboSetting[]> {
     const url = `${this.vcUrl}/${vcid}/setting?name=${name}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -160,6 +204,12 @@ export class VisboSettingService  {
   }
 
   /** GET VCSetting by type */
+  // The getVCSettingByType method is responsible for retrieving configuration settings (VCSettings) by type from a specific Visbo Center (VC). 
+  // It allows for system administrator access and logs the retrieval process.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center where the settings are located.
+  //    type: string:                        The type of the specific setting(s) to retrieve.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
   getVCSettingByType(vcid: string, type: string, sysadmin = false): Observable<VisboSetting[]> {
     const url = `${this.vcUrl}/${vcid}/setting?type=${type}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -180,6 +230,12 @@ export class VisboSettingService  {
   //////// Save methods //////////
 
   /** POST: a new Visbo Center Setting to the server */
+  // The addVCSetting method is responsible for adding a new configuration setting (VCSetting) to a specific Visbo Center (VC). 
+  // It supports system administrator access and logs the addition process.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center where the setting is to be added.
+  //    visbosetting: VisboSetting:          The setting object containing all necessary configuration data to be added to the Visbo Center.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
   addVCSetting (vcid: string, visbosetting: VisboSetting, sysadmin = false): Observable<VisboSetting> {
     const url = `${this.vcUrl}/${vcid}/setting`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -200,6 +256,11 @@ export class VisboSettingService  {
 
 
   /** DELETE: delete the Visbo Center Setting from the server */
+  // The deleteVCSetting method is responsible for deleting an existing configuration setting (VCSetting) from a specific Visbo Center (VC). 
+  // It supports system administrator access and provides detailed logging of the deletion process.
+  // Parameters:
+  //    visbosetting: VisboSetting:          The setting object to be deleted, containing both the _id of the setting and the vcid of the Visbo Center.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
   deleteVCSetting (visbosetting: VisboSetting, sysadmin = false): Observable<VisboSetting> {
     const id = visbosetting._id;
     const url = `${this.vcUrl}/${visbosetting.vcid}/setting/${id}`;
@@ -219,6 +280,12 @@ export class VisboSettingService  {
   }
 
   /** PUT: update the Visbo Center Setting on the server */
+  // The updateVCSetting method is responsible for updating an existing configuration setting (VCSetting) within a specific Visbo Center (VC). 
+  // It supports system administrator access and logs the update process.
+  // Parameters:
+  //    vcid: string:                        The ID of the Visbo Center where the setting is located.
+  //    visbosetting: VisboSetting:          The updated setting object containing the setting's _id and the new configuration data.
+  //    sysadmin: boolean (default: false):  If true, the request will be executed with system administrator privileges.
   updateVCSetting (vcid: string, visbosetting: VisboSetting, sysadmin = false): Observable<VisboSetting> {
     const id = visbosetting._id;
     const url = `${this.vcUrl}/${vcid}/setting/${id}`;

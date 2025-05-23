@@ -17,6 +17,15 @@ import { getErrorMessage, visboCmpString } from '../../_helpers/visbo.helper';
   templateUrl: './sysvisboproject-detail.component.html',
   styleUrls: ['./sysvisboproject-detail.component.css']
 })
+
+  // Overview
+  // The SysvisboprojectDetailComponent is an Angular component used in the VISBO platform
+  // to administer a specific Visbo Project (VP). 
+  // It supports:
+  // -  Loading and displaying detailed project information.
+  // -  Managing user-group associations and permissions.
+  // -  Adding/removing groups and users.
+  // -  Displaying and editing permission settings at the project level.
 export class SysvisboprojectDetailComponent implements OnInit {
   @Input() visboproject: VisboProject;
   vgUsers: VGUserGroup[];
@@ -51,6 +60,9 @@ export class SysvisboprojectDetailComponent implements OnInit {
     private router: Router
   ) { }
 
+  // Loads system administrator permissions.
+  // Fetches project details via getVisboProject().
+  // Loads associated users and groups with getVisboProjectUsers().
   ngOnInit(): void {
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
     this.getVisboProject();
@@ -58,6 +70,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     this.log(`SysAdmin Role: ${JSON.stringify(this.combinedPerm)}`);
   }
 
+  // Fetches the project details based on the route parameter (id) and stores permissions.
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -76,10 +89,13 @@ export class SysvisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // Navigates to the audit view for the project.
   gotoVPAudit(visboproject: VisboProject): void {
     this.log(`GoTo VP Audit ${visboproject.name} ${this.visboproject.name}`);
     this.router.navigate(['vpAudit/'.concat(visboproject._id)], { queryParams: { sysadmin: 1 }});
   }
+
+  // check for various levels of access (System, VisboCenter, VisboProject) by bitmask comparison.
 
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm.system & perm) > 0;
@@ -105,6 +121,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     this.showGroups = !this.showGroups;
   }
 
+  // Fetches all user-group-permission associations for the project and initializes sorting.
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -179,6 +196,8 @@ export class SysvisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // Adds a new user to the project based on the input email and selected group. 
+  // Updates the group and user lists.
   addNewVPUser(): void {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
@@ -225,6 +244,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // Calculates the combined effective permissions for a user based on all their groups.
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -232,6 +252,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
+  // Adds a user's group permissions to the overall combinedUserPerm.
   addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
@@ -259,6 +280,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     this.groupIndex = memberIndex;
   }
 
+  // Returns the number of users in a group.
   helperUsersPerGroup(groupName: string): number {
     const group = this.vgGroups && this.vgGroups.find(x => x.name === groupName);
     if (group) {
@@ -267,6 +289,8 @@ export class SysvisboprojectDetailComponent implements OnInit {
     return 0;
   }
 
+  // Removes a user from the project and synchronizes 
+  // both the user list and the associated group’s user list.
   removeVPUser(user: VGUserGroup, vpid: string): void {
     this.log(`Remove VisboProject User: ${user.email}/${user.userId} Group: ${user.groupName} VP: ${vpid}`);
     this.visboprojectService.deleteVPUser(user, vpid, true)
@@ -311,12 +335,14 @@ export class SysvisboprojectDetailComponent implements OnInit {
     return perm;
   }
 
+  // Triggers permission calculation or group setup when a group is selected.
   activateGroup(userGroup: VGUserGroup): void {
     this.log(`Activate Group : ${userGroup.groupName}`);
     const group = this.vgGroups.find(item => item.name == userGroup.groupName);
     this.initGroup(group);
   }
 
+  // Triggers permission calculation or group setup when a user is selected.
   activateUser(userGroup: VGUserGroup): void {
     this.log(`Activate User : ${userGroup.email}`);
     const memberIndex = this.vgUsers.findIndex(item => item.email == userGroup.email)
@@ -325,6 +351,8 @@ export class SysvisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // Initializes the actGroup model either for creation (if no group exists) 
+  // or for editing (existing group).
   initGroup(curGroup: VGGroup): void {
     this.actGroup = new VGGroupExpanded();
     if (curGroup) {
@@ -360,6 +388,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
 
   }
 
+  // Creates or updates a project-specific user group and sets VP-level permissions.
   addModifyVPGroup(): void {
     const newGroup = new VGGroup;
 
@@ -427,6 +456,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // Sorts the user list by email or group name.
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -452,6 +482,7 @@ export class SysvisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // Sorts the group list by name or user count.
   sortGroupTable(n?: number): void {
     if (!this.vgGroups) {
       return;

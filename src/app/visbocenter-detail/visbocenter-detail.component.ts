@@ -29,9 +29,15 @@ const JSON_EXTENSION = '.json';
   templateUrl: './visbocenter-detail.component.html',
   styleUrls: ['./visbocenter-detail.component.css']
 })
+
+// The VisbocenterDetailComponent is a robust Angular component responsible for managing and displaying detailed information about a VisboCenter entity, 
+// including user groups, settings, organizations, and permissions. 
+// It offers a wide range of functionalities such as viewing, editing, sorting, and exporting data, 
+// as well as managing configurations and time tracking.
 export class VisbocenterDetailComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
+
   vgUsers: VGUserGroup[];
   vgGroups: VGGroup[];
   vgVPUsers: VGProjectUserGroup[];
@@ -103,6 +109,7 @@ export class VisbocenterDetailComponent implements OnInit {
     private titleService: Title
   ) { }
 
+  //  Initializes the component, loads the VisboCenter data, and fetches associated users and settings.
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.getVisboCenter();
@@ -110,6 +117,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.initVTRDates();
   }
 
+  // Fetches and initializes the VisboCenter entity with permissions and metadata.
   getVisboCenter(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -208,6 +216,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Validate if a user or group has specific permissions within a Visbo Center
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -215,6 +224,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // Retrieves the current VisboCenter permissions.
   getVCPerm(): number {
     if (this.combinedPerm === undefined) {
       return 0;
@@ -222,6 +232,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return this.combinedPerm.vc;
   }
 
+  // Validate if a user or group has specific permissions within a Visbo Project
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -229,6 +240,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // Validate if a user has specific permissions within a Visbo Center
   hasUserVCPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -236,6 +248,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return (this.combinedUserPerm.vc & perm) > 0;
   }
 
+  // Validate if a user has specific permissions within a Visbo Project
   hasUserVPPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -243,6 +256,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
+  // Retrieves user and group permissions related to the VisboCenter.
   getVisboCenterUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -313,11 +327,13 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Changes the current view within the component (e.g., Settings, Users, Organisations).
   switchView(newView: string): void {
     this.showList = newView;
     this.log('VisboCenter new View: ' + newView);
   }
 
+  // Fetches and displays organizational data related to the VisboCenter.
   showOrganisation(): void {
     this.showList = 'Organisation';
     const id = this.route.snapshot.paramMap.get('id');
@@ -346,7 +362,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
-  
+  // Switches the view to display time tracking information.
   showTimeTracking(): void {
     this.showList = 'TimeTracking';
     const id = this.route.snapshot.paramMap.get('id');
@@ -376,6 +392,7 @@ export class VisbocenterDetailComponent implements OnInit {
   }
 
 
+  // Displays the settings view and fetches the VisboCenter settings.
   showSetting(): void {
     this.showList = 'Settings';
     const id = this.route.snapshot.paramMap.get('id');
@@ -400,6 +417,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Adds a new user to a specific group within the VisboCenter.
   addNewVCUser(): void {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
@@ -452,6 +470,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.userIndex = memberIndex;
   }
 
+  // Calculates combined permissions for a user.
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -459,6 +478,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
+  // Adds permissions for a specific user based on group settings.
   addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
@@ -491,6 +511,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return 0;
   }
 
+  // Removes a user from the VisboCenter.
   removeVCUser(user: VGUserGroup, vcid: string): void {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Group: ${user.groupName} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid)
@@ -551,12 +572,14 @@ export class VisbocenterDetailComponent implements OnInit {
     return perm;
   }
 
+  // Sets the active group for management actions.
   activateGroup(userGroup: VGUserGroup): void {
     this.log(`Activate Group : ${userGroup.groupName}`);
     const group = this.vgGroups.find(item => item.name == userGroup.groupName);
     this.initGroup(group);
   }
 
+  // Sets the active user for management actions.
   activateUser(userGroup: VGUserGroup): void {
     this.log(`Activate User : ${userGroup.email}`);
     const memberIndex = this.vgUsers.findIndex(item => item.email == userGroup.email)
@@ -599,6 +622,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.log(`Init Group for Creation / Modification: ${this.actGroup.name} ID ${this.actGroup._id} Action ${this.confirm} `);
   }
 
+  // Adds or modifies a VisboCenter group.
   addModifyVCGroup(): void {
     const newGroup = new VGGroup;
 
@@ -670,6 +694,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Removes a group from the VisboCenter.
   removeVCGroup(group: VGGroup ): void {
     this.log(`Remove VisboCenter Group: ${group.name}/${group._id} VC: ${group.vcid}`);
     this.visbocenterService.deleteVCGroup(group)
@@ -723,6 +748,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return result;
   }
 
+  //  Deletes a specific organization.
   removeVCOrganisation(orga: VisboOrganisation ): void {
     this.log(`Remove VisboCenter Organisation: ${orga.name} Timestamp: ${orga.timestamp}`);
     this.visbosettingService.deleteVCOrganisation(orga, this.visbocenter._id)
@@ -748,6 +774,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Removes a specific setting from the VisboCenter
   removeVCSetting(setting: VisboSetting ): void {
     this.log(`Remove VisboCenter Setting: ${setting.name}/${setting.type} Timestamp: ${setting.timestamp}`);
     this.visbosettingService.deleteVCSetting(setting)
@@ -792,6 +819,7 @@ export class VisbocenterDetailComponent implements OnInit {
     this.isSettingSaved = false;
   }
 
+  //  Adds a new setting, supporting file uploads and JSON parsing.
   addSetting(): void {
     if (!this.isValidFile()) {
       this.log(`Add Setting no valid file ${this.newFile?.name}`);
@@ -834,6 +862,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Saves a new or updated setting to the VisboCenter.
   saveSetting(): void {
     this.log(`Save Setting ${this.newVCSetting.name} `);
     const vcid = this.visbocenter._id;
@@ -866,6 +895,7 @@ export class VisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Adds a new organization through file import (Excel/JSON support).
   addOrganisation(): void {
     if (!this.isValidFile()) {
       this.log(`Add Organisation no valid file ${this.newFile?.name}`);
@@ -931,6 +961,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Saves the organization data to the VisboCenter.
   saveOrganisation(): void {
     this.log(`Save organisation ${this.newOrgaList.length}  ${this.orgaSaveMode}`);
     const vcid = this.visbocenter._id;
@@ -1008,6 +1039,8 @@ export class VisbocenterDetailComponent implements OnInit {
     return result;
   }
 
+  
+  // Initializes an organization item from imported data.
   // eslint-disable-next-line
   initItem(item: any): VisboReducedOrgaItem {
     const result = new VisboReducedOrgaItem();
@@ -1056,6 +1089,7 @@ export class VisbocenterDetailComponent implements OnInit {
     organisation[id].level = level;
   }
 
+  // Exports the current setting as a downloadable JSON file.
   downloadSetting(): void {
     const setting = this.vcSetting;
     this.log(`Download Setting ${setting.name} ${setting.type} ${setting.updatedAt}`);
@@ -1074,6 +1108,7 @@ export class VisbocenterDetailComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  // Exports the organizational data to an Excel file.
   downloadOrganisation(index: number): void {
     this.vcOrganisation = this.vcOrganisations[index];
     this.log(`Download Organisation ${this.vcOrganisation.name} ${this.vcOrganisation.updatedAt}`);
@@ -1151,6 +1186,7 @@ export class VisbocenterDetailComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  // Sorts user tables based on the selected column and sort order.
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -1206,6 +1242,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Sorts group tables based on the selected column and sort order.
   sortGroupTable(n?: number): void {
     if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction
@@ -1231,6 +1268,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Sorts setting tables based on the selected column and sort order.
   sortSettingTable(n?: number): void {
     if (!this.vcSettings) { return; }
     if (n !== undefined || this.sortSettingColumn === undefined) {
@@ -1271,6 +1309,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Sorts organisation tables based on the selected column and sort order.
   sortOrganisationTable(n?: number): void {
     if (!this.vcOrganisations) { return; }
     if (n !== undefined || this.sortOrganisationColumn === undefined) {
@@ -1303,6 +1342,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
 
+  //  Checks if a given date is today's date.
   isToday(checkDate: string): boolean {
     if (!this.today) {
       this.today = new Date();
@@ -1312,6 +1352,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return new Date(checkDate) >= this.today;
   }
 
+  // Parses a date string into a JavaScript Date object.
   parseDate(dateString: string, beginningOfMonth = false): Date {
      if (dateString) {
        const actDate = new Date(dateString);
@@ -1322,7 +1363,7 @@ export class VisbocenterDetailComponent implements OnInit {
     return null;
   }
 
-  
+  // Validates and sets the date range for time tracking.
   updateDateRange(): void {
     // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
     let result = true;
@@ -1389,10 +1430,12 @@ export class VisbocenterDetailComponent implements OnInit {
     }
   }
  
+  // Retrieves the currently logged-in user from local storage.
   getActiveUser(): VisboUser {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
-  
+
+  // Executes the time tracking calculation and saves the data in the concerned Visbo Projects
   vtrCalculate(): void {
     if (this.showMessage) return;
 
@@ -1421,7 +1464,7 @@ export class VisbocenterDetailComponent implements OnInit {
     }    
   }
 
-
+  // Sets default values for time tracking dates.
   initVTRDates(): void { 
     let d = new Date (); 
     d = subtractTimeFromDate(d, 31),

@@ -20,13 +20,17 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
+
+// The NavbarComponent is an Angular component responsible for managing the navigation bar of the VISBO application. 
+// It handles dynamic navigation, user permissions, and displays Visbo Centers and Organizations based on the user's access rights.
+
 export class NavbarComponent implements OnInit {  
   
-  combinedPerm: VGPermission;
-  permSystem = VGPSYSTEM;
-  visboCenters: VisboCenter[] = [];
-  organisation: VisboOrganisation[] = []; 
-  currentUser: VisboUser;
+  combinedPerm: VGPermission;                   // Holds the combined permissions of the currently logged-in user, primarily to manage system-level access.
+  permSystem = VGPSYSTEM;                       // System permission constants used to validate access to various system features.
+  visboCenters: VisboCenter[] = [];             // Array to store Visbo Centers retrieved from the service.
+  organisation: VisboOrganisation[] = [];       // List of organizations associated with the selected Visbo
+  currentUser: VisboUser;                       // The currently logged-in user, loaded from local storage.
 
   constructor(
     private route: ActivatedRoute,
@@ -38,6 +42,7 @@ export class NavbarComponent implements OnInit {
     public visboSettingService: VisboSettingService
   ) { }
 
+  //  Initializes the navigation bar component.
   ngOnInit(): void {
     // get return url from route parameters or default to '/'
     // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
@@ -48,15 +53,18 @@ export class NavbarComponent implements OnInit {
      
   }
 
+  // Navigates to a route specified by the action parameter when a navigation item is clicked.
   gotoClickedItem(action: string): void {
     this.log(`clicked nav item ${action}`);
     this.router.navigate([action]);
   }
 
+  // Checks if the user has the specified system permission.
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm?.system & perm) > 0;
   }
-  
+
+  // Retrieves all Visbo Centers and updates the visboCenters array.
   getVisboCenters(): void {
     // this.log("VC getVisboCenters");
     this.visbocenterService.getVisboCenters()
@@ -72,6 +80,7 @@ export class NavbarComponent implements OnInit {
       );
   }
 
+  // Fetches the list of organizations for a specific Visbo Center.
   getOrganizationList(selectedCenterId: string): void {
     this.visboSettingService.getVCOrganisations(
       selectedCenterId, false, new Date().toISOString(), true, false).subscribe(
@@ -83,10 +92,12 @@ export class NavbarComponent implements OnInit {
       });
   }
 
+  // Checks if the current user has approval rights.
   hasApproveRights(): boolean {   
     return this.currentUser.status.isApprover;
   }
 
+  // Retrieves the application's preview mode status.
   getPreView(): boolean {
     return getPreView();
   }

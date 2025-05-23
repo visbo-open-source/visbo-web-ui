@@ -183,6 +183,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     private titleService: Title
   ) { }
 
+  // The ngOnInit method is executed when the component is initialized. 
+  // It:
+  //    - Initializes default values
+  //    - Parses query parameters
+  //    - Sets up language preferences
+  //    - Maps outdated URLs
+  //    - Loads user and project data
   ngOnInit(): void {
     this.customVPToCommit = false;
     this.newVariant = new VPVariant();
@@ -221,12 +228,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.getVisboProjectPermission();
   }
 
+  // The ngOnChanges method is triggered whenever input-bound properties of the component change. 
+  // It:
+  //    - Logs the detected changes
+  //    - Finds the appropriate VPV (Visbo Project Version)
+  //    - Initializes custom fields for the active VP
   ngOnChanges(changes: SimpleChanges): void {
     this.log(`VP KeyMetrics Changes ${JSON.stringify(changes)}`);
     this.findVPV(new Date(this.refDate));               
     this.initCustomFields(this.vpActive);
   }
 
+  // The onResized method handles the resizing of the component and triggers a refresh of the VPV (Visbo Project Version) over time view after a short delay.
   onResized(event: ResizedEvent): void {
     this.log('Resize');
     if (!event) { this.log('No event in Resize'); }
@@ -237,6 +250,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }, 500);
   }
 
+  // The switchViewParent method updates the current view of the component based on new parameters. 
+  // It can:
+  //    - Change the reference date and update the VPV (Visbo Project Version).
+  //    - Switch to a new view.
+  //    - Enable the Key Metrics (KM) view and set active VPVs.
   switchViewParent(newParam: VPParams): void {
     if (!newParam) return;
     if (newParam.refDate) {
@@ -252,6 +270,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The hasVCPerm method checks if the user has a specific Visbo Company (VC) permission by performing a bitwise operation on the stored permissions.
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -259,6 +278,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // The hasVPPerm method checks if the user has a specific Visbo Project (VP) permission by performing a bitwise operation on the stored permissions.
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -266,6 +286,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // The getVisboProjectPermission method retrieves and processes user and group permissions for a Visbo Project based on its VPID from the URL parameters.
   getVisboProjectPermission(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -289,6 +310,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  // The getVisboProjectUsers method retrieves and processes the list of users associated with a Visbo Project based on its ID from the URL parameters. 
+  // It also identifies project administrators and the VP manager.
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -322,6 +345,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  // The getVPManager method retrieves the full name and email of the Visbo Project (VP) manager based on their ID.
   getVPManager(vp: VisboProject, withEmail = true): string {
     let fullName = '';
     if (vp.managerId && this.vpManagerList) {      
@@ -339,6 +363,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return fullName || '';
   }
 
+  // The getFullUserName method retrieves the full name of a user, optionally including their email. 
+  // If the user is null, it attempts to find them using the stored VP Manager Email.
   getFullUserName(user: VisboUser, withEmail: boolean): string {
     let fullName = '';
     if (!user && this.vpManagerEmail) {
@@ -357,6 +383,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return fullName;
   }
 
+  // The getVariantInfo method generates a formatted description for a variant dropdown item, including its description and creator's email (if applicable).
   getVariantInfo(item: DropDown): string {
       const result: string[] = []
       if (item.description) { result.push(item.description); }
@@ -366,6 +393,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       return result.join(' ');
   }
 
+  // The createVPVariant method creates a new variant for an active Visbo Project (VP), ensuring that it does not already exist, and updates the UI accordingly.
   createVPVariant(): void {
     this.log(`Create Variant ${this.newVariant?.variantName}`);
     this.newVariant.variantName = (this.newVariant.variantName || '').trim();
@@ -406,6 +434,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  // The dropDownInit method initializes the variant dropdown list by ensuring 
+  // that the correct variant ID and name are set and populating a list of available variants.
   dropDownInit(id:string = undefined): void {
     const dropDown: DropDown[] = []
     if (id) { this.variantID = id; }
@@ -445,6 +475,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.dropDown = dropDown
   }
 
+  // The getDropDown method retrieves information from the currently selected dropdown variant, either returning its description or formatted variant name.
   getDropDown(type: string): string {
     if (!(this.dropDownIndex >= 0 && this.dropDownIndex < this.dropDown.length)) {
       return '';
@@ -461,8 +492,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
-  // calculate the dropDown List for type = 0 (all Variants), 1 (all Variants except baseline), 2 (variants the user could modify)
-  // withVersions restricts the variant List to only show variants that have versions
+// The getDropDownList method filters and returns a list of variants from the dropdown based on:
+//    User permissions
+//    Variant type
+//    Version availability
+// Parameters:
+//    type: number → Determines which variants to include:
+//          0 → Include all variants.
+//          1 → Exclude "pfv" (Baseline) variants.
+//          2 → Include only variants created by the current user (unless permissions override this restriction).
+// withVersions: boolean → If true, excludes variants with zero versions (except the default variant).
   getDropDownList(type: number, withVersions: boolean): DropDown[] {
     type = type || 0;
     const email = this.currentUser?.email;
@@ -495,6 +534,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The findVPV method finds the most relevant Visbo Project Version (VPV) based on:
+  //    A given reference date (refDate).
+  //    An optional variant name (variantName).
+  //    If no exact match is found, it defaults to the first available VPV.
   findVPV(refDate: Date, variantName: string = undefined): void {
     if (!variantName) variantName = '';
     let found: VisboProjectVersion;
@@ -518,6 +561,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The switchView method switches the current view of the Visbo Project UI and optionally with the Key Metrics (KM) view.
   switchView(newView: string, withKM = false): void {
     newView = this.allViews.find(item => item === newView);
     if (!newView) { newView = this.allViews[0]; }
@@ -526,6 +570,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.updateUrlParam('view', newView);
   }
 
+  // The switchVariant method switches the currently active variant in the Visbo Project UI. 
+  // If a reference date is provided, it updates the selected date and ensures the latest version is shown 
+  // if switching between variants.
   switchVariant(name: string, refDate: Date = undefined): void {
     if (this.variantName != name) {
       // if user switches between variants the refDate gets resetted so it shows the latest version
@@ -550,6 +597,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return;
   }
 
+  // The isActiveVariant method checks whether a given variant is currently active.
   isActiveVariant(variantName: string): boolean {
     let result = false;
     if (this.variantName == undefined && variantName == this.defaultVariant) { result = true; }
@@ -557,6 +605,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The getCustomURL method constructs a custom URL for different Visbo Project actions, including editing and data retrieval. It dynamically includes:
+  //      The Visbo Project ID (VPID)
+  //      The Visbo Project Version ID (VPVID) (either a baseline version or the active version)
+  //      An OTT (One-Time Token) parameter
+  // Parameters
+  //      type: string → Specifies the type of URL to generate:
+  //            "edit" → Generates a URL with the "visbo-connect://edit" scheme.
+  //            Other values are currently not supported (commented out code suggests future expansion for "visbo-predict://predict").
+  //      ott: string → A One-Time Token to be appended to the URL.
+  //      baseline: boolean → If true, appends the baseline version's ID; otherwise, appends the active version's ID.
+  // Returns
+  //      string: The constructed URL with the necessary parameters.
   getCustomURL(type: string, ott: string, baseline: boolean): string {
     let url: string;
     if (type == 'edit') {
@@ -590,6 +650,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return url;
   }
 
+  // The updateUrlParam method updates a specific query parameter in the URL while preserving other existing parameters. 
+  // It ensures that:
+  //      Variant and view-related parameters are properly updated.
+  //      The URL is replaced without adding navigation history.
+  //      The reference date is retained in the query parameters.
   updateUrlParam(type: string, value: string): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -611,6 +676,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     });
   }
 
+  // The hasKM method checks if a specific Key Metric (KM) type exists in a given VPVKeyMetrics object. 
+  // It evaluates different key metric types (e.g., Cost, Deadline, End Date, Delivery) and determines whether they contain meaningful data.
   hasKM(km: VPVKeyMetrics, type: string): boolean {
     let result = false;
     if (!km || Object.keys(km).length <= 1) {
@@ -635,6 +702,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The getAllVersionsShort method retrieves all versions of the currently active Visbo Project (VP) and:
+  //        Associates them with the active VP.
+  //        Sorts them by timestamp (descending order).
+  //        Identifies the baseline version (pfv).
+  //        Updates the view and logs the retrieved data.
   getAllVersionsShort(): void {
     if (this.vpActive) {
       this.visboprojectversionService.getVisboProjectVersions(this.vpActive._id, this.deleted, undefined, this.calcPredict ? 2 : 1, true)
@@ -664,6 +736,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The addVPVtoList method adds a new Visbo Project Version (VPV) to the list of all project versions, 
+  // updates the count for the corresponding variant, and initializes the VP status dropdown.
   addVPVtoList(vpv: VisboProjectVersion): void {
     this.allVPVs.unshift(vpv);
     if (this.activeVPVs?.length > 0 && this.activeVPVs[0].variantName == vpv.variantName) {
@@ -673,6 +747,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.initVPStatusDropDown();
   }
 
+  // The viewVPVOverTime method processes and organizes VPV (Visbo Project Version) data over time, 
+  // preparing it for visualization in a timeline graph. 
+  // It filters, sorts, and structures the data to ensure proper representation of version changes over time.
   viewVPVOverTime(): void {
     let list = this.allVPVs?.filter(vpv => vpv.variantName != 'pfv');
     if (!this.viewAllVariants && this.vpvActive) {
@@ -750,6 +827,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.graphOptionsTimeline.height = 60 + 40 * rows;
   }
 
+  // The createCustomHTMLContent method generates an HTML tooltip for a given Visbo Project Version (VPV). 
+  // This tooltip includes:
+  //      The variant name
+  //      The formatted timestamp (date and time)
   createCustomHTMLContent(vpv: VisboProjectVersion): string {
     const strTimestamp = this.translate.instant('vpKeyMetric.lbl.timestamp');
     const ts = new Date(vpv.timestamp);
@@ -768,6 +849,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The timelineSelectRow method handles the selection of a row in the timeline graph. 
+  // When a user clicks on a timeline entry, it:
+  //      - Extracts the variant name and reference date from the selected row.
+  //      - Switches the project view to the selected variant and date.
   timelineSelectRow(row: number): void {
     // this.log(`timeline Select Row ${row} ${JSON.stringify(this.graphDataTimeline[row + 1])} `);
     let variantName = '';
@@ -775,13 +860,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (item[0] != this.defaultVariant) {
       variantName = item[0];
     }
-
     const refDate = new Date(item[3]);
     // const validUntil = new Date(item[4]);
     this.log(`timeline Goto ${variantName} ${refDate}`);
     this.switchVariant(variantName, refDate);
   }
 
+  // The findBaseLine method identifies the baseline version (pfv) for a given Visbo Project Version (VPV). 
+  // It searches through all available VPVs and returns the most recent baseline version that was created before the specified VPV.
   findBaseLine(vpv: VisboProjectVersion): VisboProjectVersion {
     let result: VisboProjectVersion;
     if (this.allVPVs && vpv) {
@@ -791,6 +877,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The checkBaselineVersion method determines whether a given Visbo Project Version (VPV) is valid or obsolete 
+  // by checking if a newer baseline version (pfv) exists.
   checkBaselineVersion(vpv: VisboProjectVersion): boolean {
     let result = true;
     if (vpv && this.allVPVs) {
@@ -805,6 +893,16 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result
   }
 
+  // The getVisboProject method fetches details of a Visbo Project using its ID from the URL. 
+  // Once retrieved, it:
+  //      Stores the project in this.vpActive
+  //      Translates custom fields
+  //      Retrieves user permissions and settings
+  //      Updates the page title dynamically
+  //      Initializes dropdown menus
+  //      Loads project versions
+  //      Fetches organization-related settings
+  //      Initializes custom fields
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.log(`get VP for vpID ${id}`);
@@ -838,6 +936,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The setActiveVPVs method filters and sorts all Visbo Project Versions (VPVs) for the currently selected variant and initializes relevant UI elements.
   setActiveVPVs(): void {
     const variantName = this.variantName || '';
     // MS TODO: calculate the correct variantName from name or id
@@ -847,6 +946,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.initVPStatusDropDown();
   }
 
+  // The translateCustomFields method translates the names of custom fields in a given Visbo Project (vp). 
+  // It ensures that system-defined field names are properly localized, while user-defined fields retain their original names.
   translateCustomFields(vp: VisboProject): void {
     if (vp?.customFieldString) {
       vp.customFieldString.forEach(item => {
@@ -868,6 +969,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The initCustomFields method initializes and extracts custom field data for a given Visbo Project (VP). 
+  // It processes system-defined and user-defined fields, ensuring they are correctly assigned for further use in the UI.
   initCustomFields(vp: VisboProject): void {
       this.customVPStatus = constSystemVPStatus.find(item => item == vp.vpStatus) || constSystemVPStatus[0];
       const customFieldString = getCustomFieldString(vp, '_businessUnit');
@@ -902,6 +1005,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       this.customVPToCommit = false;
   }
 
+  // The checkVPCustomValues method determines whether the Visbo Project's (VP) custom values require modification or addition.
+  // It checks if:
+  //      - The VP has modification permissions.
+  //      - Required custom fields are missing or undefined.
+  //      - New custom fields exist.
   checkVPCustomValues(): boolean {
     let result = false;
     if (!this.customVPAdd && !this.customVPModified && this.hasVPPerm(this.permVP.Modify)) {
@@ -913,6 +1021,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The addVPCustomValues method determines whether custom values can be added to the active Visbo Project (VP). 
+  // It checks:
+  //      - If the user has modification permissions.
+  //      - If the VP status is not frozen.
+  //      - If both conditions are met, it enables editing of custom fields.
   addVPCustomValues(): void {    
     if (this.hasVPPerm(this.permVP.Modify) && !constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {         
       this.customVPAdd = true;
@@ -934,6 +1047,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 
   // Commit-Button pressed
+  // The setVPToCommit method prepares the active Visbo Project Version (VPV) for commitment. 
+  // It:
+  //    - Marks the project as modified and ready to commit.
+  //    - Calculates key performance metrics such as:
+  //          Saving cost percentage
+  //          Delivery completion rate
+  //          Deadline completion rate
+  //          Saving RAC percentage
+  //    - Ensures all calculations handle edge cases to prevent division errors.
   setVPToCommit(): void {
      this.customVPToCommit = true;
      this.customVPModified = true;
@@ -960,15 +1082,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     // Calculate Saving RAC in % of Total, limit the results to be between -100 and 100
     this.savingRAC = Math.round((1 - (this.vpvActive.keyMetrics.RACCurrent || 0)
     / (this.vpvActive.keyMetrics.RACBaseLast || 1)) * 100) || 0;
-
-
   }
 
+  // The gotoRoot method redirects the user to the root (/) of the application when a required project ID is missing. 
+  // It ensures a smooth navigation experience by preventing access to incomplete or broken pages.
   gotoRoot(): void {
     this.log(`goto Root as no id is specified`);
     this.router.navigate(['/'], {});
   }
 
+  // The getVisboCenterOrga method retrieves the organizational data for the active Visbo Project (vpActive).
+  // It ensures that:
+  //      - The user has the required permissions (View) to access organizational data.
+  //      - The organization data is only fetched if not already available.
+  //      - The response is handled properly, including error management.
   getVisboCenterOrga(): void {
     if (this.vpActive && this.hasVCPerm(this.permVC.View)) {
       if (this.vcOrga == undefined) {
@@ -992,6 +1119,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The getVisboCenterSettings method retrieves and processes configuration settings for the active Visbo Project (vpActive). 
+  // These settings include:
+  //    - Customization settings
+  //    - General VC configuration (_VCConfig)
+  //    - Custom fields
+  //    - Editing settings (CustomEdit)
+  //    - Project opening settings (CustomOpenProject)
+  // It ensures that the settings are only fetched if they are not already loaded and properly processes them.
   getVisboCenterSettings(): void {
     if (this.vpActive && this.hasVCPerm(this.permVC.View)) {
       if (!this.vcCustomize) {
@@ -1029,6 +1164,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The squeezeEnableDisable method processes and filters Visbo Center (VC) settings to generate a compact, 
+  // simplified view of enable/disable configurations for the VC Admin interface. 
+  // It:
+  //    - Adds new properties (VCEnabled and sysVCLimit) for easier access.
+  //    - Ensures logical consistency in system limit configurations.
+  //    - Filters out system-limited settings for a cleaner display.
   squeezeEnableDisable(settings: VisboSetting[]): VisboSetting[] {
     if (!settings || settings.length == 0) {
       return [];
@@ -1050,6 +1191,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The getEnableDisable method retrieves and processes a specific enable/disable setting based on:
+  //    - The name of the setting.
+  //    - The level of control (system level, Visbo Center level, or general level).
+  //    - Whether the function should consider system limits when determining the result.
+  // It ensures that:
+  //    - Settings respect system limitations when required.
+  //    - The correct enable/disable flag is returned based on the selected level.
   getEnableDisable(name: string, level: number, notLimitOff: boolean): boolean {
     let result = false;
     if (this.vcEnableDisable) {
@@ -1079,6 +1227,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The initBUDropDown method initializes and populates the Business Unit (BU) dropdown list using customization settings stored in this.vcCustomize. 
+  // It:
+  //    - Extracts the business unit definitions from customization settings.
+  //    - Sorts the dropdown options alphabetically if there are multiple entries.
+  //    - Ensures the dropdown is properly initialized or set to undefined if no valid entries exist.
   initBUDropDown(): void {
     if (!this.vcCustomize || this.vcCustomize.length == 0) {
       return
@@ -1096,6 +1249,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The initVPStatusDropDown method initializes the dropdown list for Visbo Project (VP) statuses. 
+  // It ensures that:
+  //    - The correct status options are available based on the project’s current state.
+  //    - The status 'ordered' is included only if certain conditions are met.
+  //    - The translated status names are displayed in the dropdown.
   initVPStatusDropDown(): void {
     let localVPStatus = '';
     this.dropDownVPStatus = [];
@@ -1118,6 +1276,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The setVpvActive method sets the active Visbo Project Version (VPV) and updates key project
   setVpvActive(vpv: VisboProjectVersion): void {
     const keyMetrics = vpv.keyMetrics;
     let delay = 0;
@@ -1135,6 +1294,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.log(`VPV Active: vpv: ${vpv._id} ${vpv.variantName} ${vpv.timestamp}`);
   }
 
+  // The initCustomURL method generates and initializes a custom URL for performing an action (such as editing) on a Visbo Project. 
+  // It:
+  //      - Requests a One-Time Token (OTT) for secure access.
+  //      - Constructs the custom URL using getCustomURL().
+  //      - Redirects the user to the generated URL if the action type is 'edit'.
+  //      - Handles errors related to OTT retrieval.
   initCustomURL(type: string, baseline: boolean): void {
     this.customURL = undefined;
     // get the One Time Token and set the customURL after getting it
@@ -1158,14 +1323,19 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       });
   }
 
+  // The gotoVPDetail method navigates the user to the detailed view of a specific Visbo Project (visboproject).
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
+  // The gotoVC method navigates the user to the list of Visbo Projects of the Visbo Center (VC) associated with a given Visbo Project (visboproject).
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
 
+  // The helperDateDiff method calculates the difference between two dates (from and to)
+  // in weeks (w), days (d), or seconds. 
+  // It converts the difference from milliseconds into the requested time unit.
   helperDateDiff(from: string, to: string, unit: string): number {
     const fromDate: Date = new Date(from);
     const toDate: Date = new Date(to);
@@ -1180,16 +1350,21 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return dateDiff;
   }
 
+  // The getShortText method returns a shortened version of a given text by calling the helper function visboGetShortText(). 
   getShortText(text: string, len: number): string {
     return visboGetShortText(text, len);
   }
 
+  // The getVPStatus method retrieves the localized name of the current Visbo Project (VP) status based on the selected status from the dropdown list.
   getVPStatus(): string {
     const result = this.customVPStatus ? this.dropDownVPStatus?.find(item => item.name == this.customVPStatus) : undefined;
 
     return result ? result.localName : undefined;
   }
 
+  // The isPMO method determines whether the current user has Portfolio Management (PMO) privileges by checking if they have both:
+  //    - Modify permissions at the Visbo Center (VC) level.
+  //    - Modify permissions at the Visbo Project (VP) level.
   isPMO(): boolean {
     let result = false;
     if (this.hasVCPerm(this.permVC.Modify) && this.hasVPPerm(this.permVP.Modify)) {
@@ -1198,6 +1373,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The isLatestVPV method determines if a given Visbo Project Version (vpv) is the latest version within its variant by:
   isLatestVPV(vpv: VisboProjectVersion): boolean {
     let result = true;
     const latestVPV = this.allVPVs.find(item => item.variantName == vpv.variantName);
@@ -1207,12 +1383,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The changeRefDate method updates the reference date (refDate) 
+  // based on a user-inputted string (refDateStr) 
+  // and then switches to the given variant for that date.
   changeRefDate(): void {
     this.log(`changeRefDate ${this.refDateStr} ${this.refDate && this.refDate.toISOString()}`);
     this.refDate = new Date(this.refDateStr);
     this.switchVariant(this.variantName, this.refDate);
   }
 
+  // The setRefDateStr method converts a given Date object into a formatted date string (YYYY-MM-DD) while ensuring that timezone differences are accounted for. 
+  // If no date is provided, it defaults to the current date.
   setRefDateStr(refDate: Date): void {
     if (!refDate) refDate = new Date();
     const offset = refDate.getTimezoneOffset()
@@ -1220,6 +1401,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.refDateStr = localDate.toISOString().substr(0, 10);
   }
 
+  // The canModify method determines whether the user has permission to modify the currently active Visbo Project (VP). 
+  // It checks:
+  //    - If the VPV is the latest version.
+  //    - If the user has modification permissions for the vp
+  //    - If the user can create a variant and modify within it.
   canModify(): boolean {
     let result = false;
     let allowedVariants: DropDown[];
@@ -1240,6 +1426,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The canModifyDate method determines whether the start date or end date of a Visbo Project Version (VPV) can be modified, based on:
+  //    - The VPV's current status (e.g., ordered, paused, stopped, finished).
+  //    - Whether actual data exists (actualDataUntil) that conflicts with the modification.
+  //    - If the date is in the past and the project has certain statuses.
   canModifyDate(mode: string): boolean {
     let result = true;
     if (!this.newVPV) {
@@ -1255,10 +1445,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     if (mode == 'startDate') {
       // the reasons not to allow to move startdate:
       // 1. there exists an actualDataUntil, which is after newVPV.startDate
-      // 2. startDate is before today and(!) newVPV.status is 'beauftragt'
+      // 2. startDate is before today and(!) newVPV.status is 'beauftragt' 
       // it have to be allowed to move the startDate even if it is in the past, because otherwise you never can initiate projects
       // which have been proposed, by the time then been rejected but now should be initiated.
-      if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
+      if (actualDataUntil && (startDate.getTime() < actualDataUntil.getTime())) {
         result = false;
       } 
       if (startDate.getTime() < beginMonth.getTime() && (this.newVPV.status == 'ordered')) {
@@ -1274,16 +1464,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         result = false;
       }
 
-    } else if (mode == 'endDate') {
-      // the reasons not to allow to move endDate:
-      // 1. there exists an actualDataUntil, which is after newVPV.startDate
-
-      // if (actualDataUntil && startDate.getTime() < actualDataUntil.getTime()) {
-      //   result = false;
-      // } 
-      // if (endDate.getTime() < beginMonth.getTime() && this.newVPV.vp.vpStatus != 'ordered') {
-      //   result = false;
-      // }
+    } else if (mode == 'endDate') {   
+     
       if (endDate.getTime() < beginMonth.getTime() && this.newVPV.status == 'paused') {
         result = false;
       }
@@ -1294,11 +1476,15 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         result = false;
       }
     }
-    // always returns false : return result && false;
     return result;
   }
 
 
+  // The canCommit method determines whether the active Visbo Project Version (VPV) can be committed by checking:
+  //    - If the user has modification permissions or it belongs not to the VPV main variant
+  //    - If the active VPV belongs to the main variant, the user has to have modification permissions
+  //    - If the VP’s status is not one of the frozen.
+  //    - If the active VPV is the latest version.
   canCommit(): boolean {
     if (!this.hasVPPerm(this.permVP.Modify) || this.vpvActive.variantName != "") {
       return false;
@@ -1312,6 +1498,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return true;
   }
 
+  // The canModifyVPProperties method determines whether the properties of the active Visbo Project (VP) can be modified based on its status. 
+  // It ensures that:
+  // If the VP's status is a frozen one, modification is not allowed.
+  // Otherwise, modification is permitted.
   canModifyVPProperties(): boolean {
     if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       return false;
@@ -1319,6 +1509,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return true;
   }
 
+  // The canChangeVPDetails method determines whether a user has permission to modify details of a Visbo Project (VP) based on the following conditions:
+  //    - User has the Modify permission for VP.
+  //    - If checkPMO is true, the user must be part of the PMO.
+  //    - If the user is not in the PMO, VP properties must be modifiable.
   canChangeVPDetails(checkPMO = false): boolean {
     let result = true;
     if (!this.hasVPPerm(this.permVP.Modify)) {
@@ -1331,6 +1525,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The canCopyVersion method determines whether the user is allowed to copy a Visbo Project Version (VPV) 
+  // based on the status of the Visbo Project (VP). 
+  // It ensures that:
+  //    - If the VP's status is a frozen one, copying is not allowed.
+  //    - Otherwise, copying is permitted.
   canCopyVersion(): boolean {
     if (constSystemVPStatusFrozen.includes(this.vpActive.vpStatus)) {
       return false;
@@ -1338,6 +1537,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return true;
   }
 
+  // The getScaleDate method returns a date value based on the given mode (Min or Max) to determine
+  // the minimum or maximum scale reference date for a Visbo Project Version (VPV).
+  // If no valid mode is provided, it defaults to the current date.
   getScaleDate(mode: string): Date {
     let result: Date;
     if (mode == 'Min' && this.newVPV) {
@@ -1359,6 +1561,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The initNewVPV method initializes a new Visbo Project Version (VPV) based on the given mode. 
+  // It allows for:
+  //    - Moving ('Move') a VPV → Adjusts the status and resets commit status.
+  //    - Copying ('Copy') a VPV → Duplicates the active VPV and assigns a new variant if available.
   initNewVPV(mode: string): void {
     this.newVPV = undefined;
     if (!this.vpvActive) {
@@ -1366,30 +1572,18 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
     
     this.changeStatus = false;
-    if (mode == 'Move') {
-      // in case of isPMO Move of the Standard Variant will move the baseline
-      // const pfv = this.allVPVs.find(vpv => vpv.variantName == 'pfv');
-      // if (this.isPMO() && this.vpvActive.variantName == "" && pfv) {
-      //   this.newVPV = pfv;
-      //   this.newVPV.status = this.customVPStatus;
-      //   this.newVPV.actualDataUntil = this.vpvActive.actualDataUntil;
-      //   this.newVPVstartDate = new Date(this.newVPV.startDate);
-      //   this.newVPVendDate = new Date(this.newVPV.endDate);
-      //   this.newVPVvariantName = 'pfv';
-      //   this.newVPV.isCommited = false;
-      // } else {
+    if (mode == 'Move') {      
       this.newVPV = this.vpvActive;        
       this.newVPV.status = this.customVPStatus;        
       this.newVPV.isCommited = false;
       this.newVPVstartDate = new Date(this.newVPV.startDate);
-      this.newVPVendDate = new Date(this.newVPV.endDate);
-      //   this.newVPVvariantName = this.vpvActive.variantName;
-      // }
+      this.newVPVendDate = new Date(this.newVPV.endDate);      
       this.newVPVscaleStartDate = new Date();
       this.newVPVscaleStartDate.setDate(1);
       this.newVPVscaleStartDate.setHours(0, 0, 0, 0);
       this.scaleCheckBox = false;
       this.scaleFactor = 0;
+
     } else if (mode == 'Copy') {
       this.newVPV = this.vpvActive;
       this.newVPV.isCommited = false;
@@ -1399,6 +1593,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The moveVPV method modifies the start and end dates of a Visbo Project Version (VPV), with the option to apply scaling adjustments. 
+  // If changes are made, it updates the VPV in the database.
+  //    - If the start date, end date, or scale factor changes, the VPV is updated.
+  //    - If the VPV is not a Portfolio Version (pfv), it switches to the new variant.
+  //    - If the VPV to be moved is a pfv, the active vpv (not pfv) will be copied to reflect changes in Key Metrics.
   moveVPV(): void {
     if (!this.newVPV) {
       return;
@@ -1459,6 +1658,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The copyVPV method creates a copy of the currently active Visbo Project Version (VPV) and assigns it to a new variant or level. 
+  // If the VPV is a Portfolio Version (pfv), a second copy is created to update Key Metrics.
   copyVPV(): void {
     this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
     this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
@@ -1504,6 +1705,13 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
       );
   }
 
+  // The copyVPV_OP method creates a new Visbo Project Version (VPV) as a copy of the active VPV, with:
+  //    - A new variant name (newVPVvariantName).
+  //    - An updated timestamp.
+  //    - A new connection reference (newVPVconnection).
+  //    - The ID reset to ensure it's treated as a new version.
+  //    - updatedAt and createdAt cleared, as they will be set upon creation.
+  // After copying, the method adds the new VPV to the list and switches to the new variant.
   copyVPV_OP(): void {
     this.log(`Copy VPV ${this.vpvActive.name} Variant ${this.vpvActive.variantName || this.defaultVariant} to Variant ${this.newVPVvariantName || this.defaultVariant} level ${this.level || 'all'}`);
     
@@ -1535,52 +1743,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
         }
       }
     );  
-    
-    // this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.newVPVvariantName, this.level)
-    //   .subscribe(
-    //     vpv => {
-    //       this.addVPVtoList(vpv);
-    //       if (vpv.variantName != 'pfv') {
-    //         // no baseline copy, just create one new version
-    //         const message = this.translate.instant('vpKeyMetric.msg.changeVPVSuccess', {'variantName': vpv.variantName});
-    //         this.alertService.success(message, true);
-    //         this.switchVariant(vpv.variantName);
-    //       } else {            
-    //         // make a copy of the vpvActive to reflect the changed pfv in KeyMetrics
-    //         this.visboprojectversionService.copyVisboProjectVersion(this.vpvActive._id, this.vpvActive.variantName)
-    //           .subscribe(
-    //             vpv => {
-    //               vpv.connectedTo.tool="OpenProject";
-    //               vpv.connectedTo.toolID="1234567890";
-    //               this.addVPVtoList(vpv);
-    //               const message = this.translate.instant('vpKeyMetric.msg.changePFVSuccess');
-    //               this.alertService.success(message, true);
-    //               this.switchVariant(vpv.variantName);
-    //             },
-    //             error => {
-    //               this.log(`copy VPV failed: error: ${error.status} message: ${error.error.message}`);
-    //               if (error.status === 403) {
-    //                 const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
-    //                 this.alertService.error(message);
-    //               } else {
-    //                 this.alertService.error(getErrorMessage(error));
-    //               }
-    //             }
-    //           );
-    //       }
-    //     },
-    //     error => {
-    //       this.log(`change VPV failed: error: ${error.status} message: ${error.error.message}`);
-    //       if (error.status === 403) {
-    //         const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
-    //         this.alertService.error(message);
-    //       } else {
-    //         this.alertService.error(getErrorMessage(error));
-    //       }
-    //     }
-    //   );
   }
 
+  // The exportVPVtoOpenProject method exports the active Visbo Project Version (VPV) to OpenProject and, upon success:
+  //    - Creates a new variant OPVariant in Visbo to track the OpenProject export.
+  //    - Copies the VPV to this new variant.
+  //    - If the variant already exists, it reuses the existing one and proceeds with copying the VPV.
   exportVPVtoOpenProject(): void {
     this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
     this.visboprojectversionService.exportVPVToOpenProj(this.vpActive.vcid, this.vpActive._id, "", this.level)
@@ -1645,9 +1813,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
             //this.alertService.error(getErrorMessage(error));
           }
         }
-      );
-    }
+     );
+  }
 
+  // The importVPVFromOpenProject method imports a Visbo Project Version (VPV) from OpenProject into Visbo.
+  // Upon success, the imported VPV is added to the VPV list and switched to the correct variant.
+  // If the import fails, an error message is displayed based on the response status.
   importVPVFromOpenProject(): void {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
     this.visboprojectversionService.importVPVFromOpenProj(this.vpActive.vcid ,this.vpActive._id, "")
@@ -1685,12 +1856,17 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
             this.alertService.error(message + error.status);
-            //this.alertService.error(getErrorMessage(error));
           }
         }
       );
   }
 
+  // The vpUpdate method updates the Visbo Project (vpActive) and its related Project Version (vpvActive) by:
+  //    - Applying changes to project settings and custom fields.
+  //    - Committing the project version if required.
+  //    - Saving the changes to the VisboProject database.
+  //    - Creating a new version if the VP status allows it.
+  //    - Handling errors and providing success messages.
   vpUpdate(): void {
     // project settings changed?!
     if (this.vpActive && this.customVPModified) {
@@ -1912,6 +2088,11 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   }
 }
 
+// The updateVPVCount method updates the VPV (Visbo Project Version) count for a given Visbo Project (vp).
+// It modifies either:
+//    - A specific variant's VPV count (if variantName is provided).
+//    - The overall VPV count (if variantName is not provided).
+// After updating, it reinitializes the dropdown menu to reflect changes.
   updateVPVCount(vp: VisboProject, variantName: string, count: number): void {
     if (vp) {
       if (variantName) {
@@ -1926,6 +2107,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     }
   }
 
+  // The hasVariantChange method checks whether the currently active Visbo Project Version (vpvActive) has changed variants.
+  // It determines if a change is needed by comparing:
+  //    -  The current variant name (vpvActive.variantName) with → The new selected variant name (newVPVvariantName).
+  //    -  Whether the baseline version is still valid (via checkBaselineVersion).
   hasVariantChange(): boolean {
     let result = this.vpvActive?.variantName != this.newVPVvariantName;
     if (!result && !this.checkBaselineVersion(this.vpvActive)) {
@@ -1934,16 +2119,20 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The switchCopyVariant method updates the selected variant name (newVPVvariantName) when a user selects a new variant from a dropdown.
   switchCopyVariant(item: DropDown): void {
     this.newVPVvariantName = item?.variantName;
   }
 
+  // The updateScaleFactor method sets changeStatus to true if the scaleFactor is not zero.
+  // This indicates that a scaling change has been applied.
   updateScaleFactor(): void {
     if (this.scaleFactor != 0) {
       this.changeStatus = true;
     }
   }
 
+  // The getVariantName method retrieves a variant's name based on its identifier (variantName).
   getVariantName(variantName: string, all = false): string {
     let result = '';
     if (all) {
@@ -1957,6 +2146,12 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   }
 
+  // The updateDateRange method validates and checks if the date range for a Visbo Project Version (VPV) has changed.
+  // It sets changeStatus = true if:
+  //    - The start and end dates are valid.
+  //    - The start date is before the end date.
+  //    - Either the start or end date has changed.
+  // If no change is detected, changeStatus remains false.
   updateDateRange(): void {
     // this.log(`Update Date Range ${this.newVPVstartDate} ${this.newVPVendDate}`);
     let result = true;
@@ -1978,6 +2173,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     this.changeStatus = result;
   }
 
+  // The parseDate method converts a date string into a JavaScript Date object.
+  // It ensures that the time component is set to midnight (00:00:00.000) for consistency.
   parseDate(dateString: string): Date {
      if (dateString) {
        const actDate = new Date(dateString);
@@ -1987,10 +2184,14 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return null;
   }
 
+  // The getVPType method retrieves a localized name for a given Visbo Project (VP) type.
+  // It utilizes a translation service to return the human-readable VP type name.
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  // The getCustomFieldListString method retrieves a filtered list of custom string fields
+  // from an active Visbo Project (vpActive). It optionally filters the fields by type.
   getCustomFieldListString(vpOnly = true): VPCustomString[] {
     let list: VPCustomString[] = [];
     this.editCustomFieldString = [];
@@ -2011,7 +2212,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     });
     return this.editCustomFieldString;
   }
-
+  
+  // The getCustomFieldListDouble method retrieves a filtered list of custom numerical (double) fields
+  // from an active Visbo Project (vpActive). It optionally filters the fields by type.
   getCustomFieldListDouble(vpOnly = true): VPCustomDouble[] {
     let list: VPCustomDouble[] = [];
     this.editCustomFieldDouble = [];
@@ -2033,6 +2236,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return this.editCustomFieldDouble;
   }
 
+  // The getCustomFieldListDate method retrieves a filtered list of custom date fields
+  // from an active Visbo Project (vpActive). It optionally filters the fields by type.
   getCustomFieldListDate(vpOnly = true): VPCustomDate[] {
     let list: VPCustomDate[] = [];
     this.editCustomFieldDate = [];
@@ -2051,6 +2256,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return this.editCustomFieldDate;
   }
 
+  // The checkEmptyCustomFields method identifies missing custom fields in a Visbo Project (vp).
+  // It checks string (type 0) and numerical (type 1) custom fields and returns a list of fields
+  // that are defined in customUserFieldDefinitions but missing in vp.
   checkEmptyCustomFields(vp:VisboProject, cfType: number):any {
     let result: any = undefined;
     let cfStr: VPCustomString[] = [];
@@ -2092,6 +2300,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return result;
   } 
 
+  // The getTimestampTooltip method generates a tooltip text that displays the timestamp of a
+  // Visbo Project Version (vpv). If available, it also includes the baseline date.
   getTimestampTooltip(vpv: VisboProjectVersion): string {
     if (!vpv) return '';
     let title = this.translate.instant('vpKeyMetric.lbl.plan')
@@ -2106,6 +2316,10 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return title;
   }
 
+  // The getMonthEnd method calculates the last moment of a given month based on the provided date.
+  // It does this by:
+  //    - Moving to the first day of the next month.
+  //    - Subtracting one second to return the last second of the current month.
   getMonthEnd(actual: Date): Date {
     const actualDate = actual ? new Date(actual) : undefined;
     if (actualDate) {
@@ -2117,6 +2331,8 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
     return actualDate;
   }
 
+  // The getPreView method calls another function named getPreView() and returns its result.
+  // It acts as a wrapper method, possibly for dependency injection or abstraction.
   getPreView(): boolean {
     return getPreView();
   }

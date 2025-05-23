@@ -10,6 +10,10 @@ import { VisboFile, VisboFilesResponse, VisboDownloadResponse } from '../_models
 
 import { MessageService } from './message.service';
 
+/* SysLogService Class Overview:
+   The SysLogService class provides functionality for retrieving system logs from a REST API. 
+   It allows fetching log files by age and retrieving specific log files by name. 
+*/
 @Injectable()
 export class SysLogService {
 
@@ -24,6 +28,17 @@ export class SysLogService {
 
   /** GET List of Logs from the server */
   getSysLogs(ageDays: number): Observable<VisboFile[]> {
+  // Fetches a list of system logs from the server based on the specified log age.
+  // Parameters:
+  //    ageDays: The number of days for filtering log files.
+  // Returns:
+  //    An Observable<VisboFile[]> containing the retrieved log files.
+  // Process:
+  //    Constructs the API request with query parameters.
+  //    Logs the request.
+  //    Maps the response to extract the list of log files.
+  //    Catches and handles errors.
+
     const url = this.serviceUrl;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -44,12 +59,7 @@ export class SysLogService {
   getSysLog(folder: string, name: string): Observable<any> {
     const url = `${this.serviceUrl}/file/${folder}/${name}`;
 
-    this.log(`Calling HTTP Request for a specific log file: ${url}`);
-    // const options = {
-    //   observe: 'body',
-    //   responseType: 'text'
-    // };
-    // eslint-disable-next-line
+    this.log(`Calling HTTP Request for a specific log file: ${url}`);   
     let options: any = undefined;
     options = {};
     options.observe = 'body';
@@ -70,6 +80,8 @@ export class SysLogService {
  * Let the app continue.
  * @param operation - name of the operation that failed
  * @param result - optional value to return as the observable result
+ * Returns:
+      An observable that either returns an empty result or throws the error.
  */
  private handleError<T> (operation = 'operation', result?: T) {
    // eslint-disable-next-line

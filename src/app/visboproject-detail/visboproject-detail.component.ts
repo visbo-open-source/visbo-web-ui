@@ -19,6 +19,10 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
   templateUrl: './visboproject-detail.component.html',
   styleUrls: ['./visboproject-detail.component.css']
 })
+
+// The VisboprojectDetailComponent is a core component for managing project details, 
+// user permissions, variants, and related functionalities within the VISBO system. 
+// It handles CRUD operations, user and permission management, sorting, navigation, and data retrieval.
 export class VisboprojectDetailComponent implements OnInit {
 
   @Input() visboproject: VisboProject;
@@ -65,12 +69,21 @@ export class VisboprojectDetailComponent implements OnInit {
     private titleService: Title
   ) { }
 
+  // Component Initialization (ngOnInit)
+  //    - Retrieves the project details using getVisboProject().
+  //    - Loads the current user from localStorage.
+  //    - Sets deleted status based on URL query parameters.
   ngOnInit(): void {
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.getVisboProject();
   }
 
+  // Fetching Project Details (getVisboProject())
+  //    - Calls visboprojectService.getVisboProject(id) to fetch project data.
+  //    - Retrieves and applies user permissions via getVisboProjectPermission().
+  //    - Translates custom fields via translateCustomFields().
+  //    - Sets the browser title dynamically with titleService.setTitle().
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -97,6 +110,8 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // Your translateCustomFields function is responsible for assigning localized names to custom fields 
+  // based on predefined system names (constSystemCustomName). 
   translateCustomFields(vp: VisboProject): void {
     if (vp?.customFieldString) {
       vp.customFieldString.forEach(item => {
@@ -118,6 +133,8 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // Your function hasVCPerm checks if a user has a specific permission for Visbo Center (VC) 
+  // by performing a bitwise operation on this.combinedPerm.vc. 
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -125,6 +142,8 @@ export class VisboprojectDetailComponent implements OnInit {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // Your function hasVPPerm checks if a user has a specific Visbo Project (VP) 
+  // permission by using a bitwise operation on this.combinedPerm.vp. 
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -132,6 +151,8 @@ export class VisboprojectDetailComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // The hasUserVPPerm method is a function designed to check if a user has a specific permission of vp (Visbo Project) permissions stored in combinedUserPerm. 
+  // The method performs a bitwise operation to determine whether the given permission flag is set.
   hasUserVPPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -140,6 +161,7 @@ export class VisboprojectDetailComponent implements OnInit {
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
+  // The getVPPerm method retrieves the current permission value.
   getVPPerm(): number {
     if (this.combinedPerm === undefined) {
       return 0;
@@ -147,6 +169,9 @@ export class VisboprojectDetailComponent implements OnInit {
     return this.combinedPerm.vp;
   }
 
+  // The viewRestriction method checks whether a project (visboproject) 
+  // has any restrictions and if the current user has the necessary permissions to modify, 
+  // manage, or delete the project.
   viewRestriction(): boolean {
     if (!this.visboproject.restrict || !this.visboproject.restrict.length) {
       return false;
@@ -156,14 +181,18 @@ export class VisboprojectDetailComponent implements OnInit {
     return perm > 0;
   }
 
+  // The getVPType method retrieves a localized string representation of a VP (Virtual Project) Type based on a given numeric identifier.
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  //The toggleView method updates the currently active view by setting actView to a new view identifier.
   toggleView(newView: string): void {
     this.actView = newView;
   }
 
+  // The getVisboProjectPermission method retrieves and processes user and group permissions for a specific
+  //  Visbo Project based on its ID from the URL parameters.
   getVisboProjectPermission(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -191,6 +220,8 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The getVisboProjectUsers method retrieves the list of users associated with a Visbo Project based on its ID from the route parameters. 
+  // It also identifies project managers and assigns a manager email.
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -232,6 +263,8 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The getFullUserName method generates a formatted full name for a given VisboUser, optionally including their email. 
+  // If the user is not provided, it attempts to retrieve the project manager from the stored list.
   getFullUserName(user: VisboUser, withEmail: boolean): string {
     let fullName = '';
     if (!user && this.vpManagerEmail) {
@@ -254,6 +287,7 @@ export class VisboprojectDetailComponent implements OnInit {
     this.location.back();
   }
 
+  // The delete method removes a specified Visbo Project and handles navigation and error messages based on the deletion status.
   delete(visboproject: VisboProject): void {
     this.visboprojectService.deleteVisboProject(visboproject, this.deleted)
       .subscribe(
@@ -276,25 +310,30 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // Navigates to the VP Restriction page for a given project.
   gotoVPRestriction(visboproject: VisboProject): void {
     this.log(`goto VP Restriction: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpRestrict/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to the VP Audit page for a given project.
   gotoVPAudit(visboproject: VisboProject): void {
     this.log(`goto VP Audit: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpAudit/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to the VC (Virtual Company) Detail page related to the project.
   gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
+  // Navigates to the VP List for a given project's VC.
   gotoVPList(visboproject: VisboProject): void {
     this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to the VP Details or VP Portfolio View based on the project type.
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
@@ -304,11 +343,14 @@ export class VisboprojectDetailComponent implements OnInit {
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to the VP View page for a project.
   gotoVPView(visboproject: VisboProject): void {
     this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpv/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // The save method updates an existing Visbo Project in the system. 
+  // It ensures that custom fields are properly filtered, assigns a manager ID, and handles success or error responses.
   save(): void {
     if (this.visboproject.customFieldDouble) {
       this.visboproject.customFieldDouble = this.visboproject.customFieldDouble.filter(item => item.value != undefined);
@@ -346,6 +388,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The addNewVPUser method adds a new user to a Visbo Project (VP) by assigning them to a specified user group and handling success or error responses.
   addNewVPUser(): void {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
@@ -398,6 +441,8 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The initVPVariant method initializes a new VP Variant object (this.newVariant). 
+  // If an existing variant is provided, it copies its properties to the new instance.
   initVPVariant(variant: VPVariant): void {
     this.newVariant = new VPVariant();
     if (variant) {
@@ -409,6 +454,7 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The addNewVPVariant method creates and adds a new VP Variant to a Visbo Project while handling input validation and API responses.
   addNewVPVariant(): void {
     if (!this.newVariant || !this.newVariant.variantName || !this.newVariant.variantName.trim()) {
       // ignore empty variant
@@ -440,6 +486,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The changeVPVariant method updates the description of an existing VP Variant in a Visbo Project, ensuring that only actual changes are processed.
   changeVPVariant(): void {
     if (!this.newVariant) {
       return;
@@ -472,6 +519,8 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The calcCombinedPerm method calculates and aggregates the combined permissions of a specific user (vgUsers[memberIndex]) across system, 
+  // virtual company (VC), and virtual project (VP) levels.
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -479,6 +528,8 @@ export class VisboprojectDetailComponent implements OnInit {
     this.log(`Combined Permission for ${this.vgUsers[memberIndex].email}  ${JSON.stringify(this.combinedUserPerm)}`);
   }
 
+  // The addUserPerm method accumulates and updates the VP (Virtual Project) permissions of a user based on their group memberships. 
+  // It ensures that the permissions of the currently selected user (this.vgUsers[this.userIndex]) are correctly combined from all relevant groups.
   addUserPerm(listUser: VGUserGroup): void {
     if (listUser.email !== this.vgUsers[this.userIndex].email) {
       return;
@@ -497,15 +548,18 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The helperRemoveUser method updates this.userIndex to the given memberIndex, indicating that a specific user is selected for removal.
   helperRemoveUser(memberIndex: number): void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.userIndex = memberIndex;
   }
 
+  // The helperRemoveGroup method updates this.groupIndex to the given memberIndex, marking a specific group for removal.
   helperRemoveGroup(memberIndex: number): void {
     this.groupIndex = memberIndex;
   }
 
+  // The canDeleteVariant method determines whether a VP Variant can be deleted based on its lock status and the current user's permissions.
   canDeleteVariant(variant: VPVariant): boolean {
     //if (!variant || variant.vpvCount || this.getLockStatus(variant) > 1 ) {
     if (!variant ||this.getLockStatus(variant) > 1 ) {
@@ -517,6 +571,7 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The helperUsersPerGroup method retrieves the number of users associated with a specific group based on its groupId.
   helperUsersPerGroup(groupId: string): number {
     const group = this.vgGroups && this.vgGroups.find(x => x._id === groupId);
     if (group) {
@@ -525,6 +580,7 @@ export class VisboprojectDetailComponent implements OnInit {
     return 0;
   }
 
+  // The removeVPUser method removes a user from a Visbo Project (VP) and updates the internal user and group lists accordingly.
   removeVPUser(user: VGUserGroup, vpid: string): void {
     this.log(`Remove VisboProject User: ${user.email}/${user.userId} Group: ${user.groupName} VP: ${vpid}`);
     this.visboprojectService.deleteVPUser(user, vpid)
@@ -562,6 +618,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The removeVariant method deletes a specific VP Variant from a Visbo Project (VP) and updates the internal list of variants.
   removeVariant(variant: VPVariant, vp: VisboProject): void {
     this.log(`Remove VisboProject Variant: ${variant.variantName} VP: ${vp._id}`);
     this.visboprojectService.deleteVariant(variant._id, vp._id)
@@ -590,6 +647,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The helperVPPerm method calculates and returns the total permission value for a given Visbo Project (VP) group based on its selected permissions.
   helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPViewRestricted) {
@@ -617,12 +675,14 @@ export class VisboprojectDetailComponent implements OnInit {
     return perm;
   }
 
+  // The activateGroup method activates a group by finding it in the vgGroups list and initializing it.
   activateGroup(userGroup: VGUserGroup): void {
     this.log(`Activate Group : ${userGroup.groupName}`);
     const group = this.vgGroups.find(item => item.name == userGroup.groupName);
     this.initGroup(group);
   }
 
+  // The activateUser method activates a user by finding them in the vgUsers list and recalculating their combined permissions.
   activateUser(userGroup: VGUserGroup): void {
     this.log(`Activate User : ${userGroup.email}`);
     const memberIndex = this.vgUsers.findIndex(item => item.email == userGroup.email)
@@ -631,6 +691,7 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The initGroup method initializes the actGroup variable, either by copying data from an existing VGGroup (curGroup) or by setting up a new group with default values.
   initGroup(curGroup: VGGroup): void {
     this.actGroup = new VGGroupExpanded();
     if (curGroup) {
@@ -666,6 +727,8 @@ export class VisboprojectDetailComponent implements OnInit {
     this.log(`Init Group for Creation / Modification: ${this.actGroup.name} ID ${this.actGroup._id} Action ${this.confirm} `);
   }
 
+  // The addModifyVPGroup method creates or modifies a Visbo Project (VP) group based on user permissions and input data. 
+  // It ensures that only authorized users can modify or create groups and updates relevant lists accordingly.
   addModifyVPGroup(): void {
     const newGroup = new VGGroup;
     if (this.actGroup.global || !this.hasVPPerm(this.permVP.ManagePerm)) {
@@ -743,6 +806,7 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The removeVPGroup method removes a specific Visbo Project (VP) group and updates internal user and group lists accordingly.
   removeVPGroup(group: VGGroup, vpid: string ): void {
     this.log(`Remove VisboProject Group: ${group.name}/${group._id} VP: ${vpid}`);
     this.visboprojectService.deleteVPGroup(group, vpid)
@@ -768,7 +832,7 @@ export class VisboprojectDetailComponent implements OnInit {
         }
       );
   }
-
+  // The getLockStatus method determines the lock status of a given VP based on whether it is locked by the current user or someone else.
   getLockStatus(variant: VPVariant): number {
     let result = 0;
     const lock = this.visboproject.lock.find(item => item.variantName == variant.variantName)
@@ -778,6 +842,7 @@ export class VisboprojectDetailComponent implements OnInit {
     return result;
   }
 
+  // The unlockVP method removes a lock on a VP Variant in a Visbo Project by calling the backend API and updating the local lock list.
   unlockVP(lockIndex: number ): void {
     const vpid = this.visboproject._id;
     const variantName = this.visboproject.lock[lockIndex].variantName;
@@ -810,6 +875,7 @@ export class VisboprojectDetailComponent implements OnInit {
       );
   }
 
+  // The getVPVersionsTotal method calculates the total number of VP versions by summing up the main project versions and the versions from all variants.
   getVPVersionsTotal(): number {
     let totalVersions: number;
     if (this.visboproject.vpType == VPTYPE.PORTFOLIO) {
@@ -822,6 +888,7 @@ export class VisboprojectDetailComponent implements OnInit {
     return totalVersions;
   }
 
+  // The getVariantName method translates a specific variant name if it matches 'pfv', otherwise, it returns the name as is.
   getVariantName(name: string): string {
     let result: string;
     if (name == 'pfv') {
@@ -832,6 +899,8 @@ export class VisboprojectDetailComponent implements OnInit {
     return result;
   }
 
+  // The sortUserPermTable method sorts the user permissions table based on a specified column. 
+  // It ensures consistent sorting behavior by toggling between ascending and descending order when sorting the same column multiple times.
   sortUserPermTable(n?: number): void {
 
     if (!this.vgUsers) {
@@ -888,6 +957,8 @@ export class VisboprojectDetailComponent implements OnInit {
     }
   }
 
+  // The sortGroupTable method sorts the group table based on a specified column. 
+  // It manages sorting order by toggling between ascending and descending when sorting the same column multiple times.
   sortVariantTable(n?: number): void {
 
     if (!this.visboproject.variant) {

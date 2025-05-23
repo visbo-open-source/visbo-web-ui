@@ -17,16 +17,21 @@ import { getErrorMessage } from '../../_helpers/visbo.helper';
   selector: 'app-login',
   templateUrl: './login.component.html'
 })
+
+// The LoginComponent is responsible for managing the user login process within the application. 
+// It handles standard email/password authentication, One-Time Token (OTT) login, and Google login. 
+// It also manages language settings and redirects users after successful authentication.
+
 export class LoginComponent implements OnInit {
-  email: string;
-  ott: string;
-  userpw: string;
-  restVersionString: string;
-  loading = false;
-  returnUrl: string;
-  returnParams: string;
-  setting: VisboSetting[];
-  currentLang = 'en';
+  email: string;                // Stores the user's email address.
+  ott: string;                  // One-time token for quick authentication.
+  userpw: string;               // User password for authentication
+  restVersionString: string;    
+  loading = false;              // Indicates if a login operation is in progress
+  returnUrl: string;            // URL to navigate to after a successful login
+  returnParams: string;         // Additional query parameters for navigation
+  setting: VisboSetting[];      // Holds settings retrieved from the server
+  currentLang = 'en';           // Current language setting, default is 'en'
 
   constructor(
     private route: ActivatedRoute,
@@ -39,8 +44,10 @@ export class LoginComponent implements OnInit {
     private titleService: Title
   ) { }
 
+
+  // Initializes the component by logging out the user, fetching settings, and setting up the return URL and parameters.
   ngOnInit(): void {
-    // reset login status
+     // reset login status
     this.authenticationService.logout();
     this.getSetting();
     this.log(`current Language ${this.translate.currentLang} getLangs() ${JSON.stringify(this.translate.getLangs())}`);
@@ -83,6 +90,8 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  // Attempts to authenticate the user using email and password. 
+  // On success, retrieves system center settings and redirects the user accordingly.
   login(): void {
     this.loading = true;
     this.authenticationService.login(this.email, this.userpw)
@@ -125,6 +134,8 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  // Authenticates the user using a one-time token (OTT). 
+  // Similar to login(), it handles redirection and displays success or error messages.
   loginOTT(): void {
     this.authenticationService.loginOTT(this.ott)
       .subscribe(
@@ -162,11 +173,13 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  // Returns the URL for initiating Google login.
   loginGoogleUrl(): string {
     const url = this.authenticationService.loginGoogleUrl();
     return url;
   }
 
+  // Initiates the Google authentication process, handles user login, and manages redirection.
   loginGoogle(): void {
     this.loading = true;
     this.log(`GoogleLogin Start `);
@@ -203,6 +216,7 @@ export class LoginComponent implements OnInit {
       );
   }
 
+  // Navigates the user to the password recovery page.
   pwforgotten(): void {
     const email = (this.email || '').trim();
     this.log(`Forward to password forgotten ${email} `);
@@ -210,11 +224,13 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['pwforgotten'], { queryParams: { email: email }});
   }
 
+  // Redirects to the user registration page.
   register(): void {
     this.log('Forward to Register');
     this.router.navigate(['register']);
   }
 
+  // Handles automatic re-login after a 401 (Not Authenticated) error.
   relogin(): void {
     // called after server respons with 401 'not authenticated'
     this.authenticationService.logout();
@@ -224,26 +240,15 @@ export class LoginComponent implements OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
+  // Switches the current language and updates the language setting.
   useLanguage(language: string): void {
     this.translate.use(language);
     this.currentLang = language;
   }
 
-  // queryStringToJSON(querystring: string): HttpParams {
-  //   const pairs = (querystring || '').split('&');
-  //   let result = new HttpParams();
-  //
-  //   pairs.forEach(function(text) {
-  //     const pair = text.split('=');
-  //     // if (pair[0]) result[pair[0]] = decodeURIComponent(pair[1]) || '';
-  //     if (pair[0]) {
-  //       result = result.append(pair[0], pair[1] || '');
-  //     }
-  //   });
-  //   return result;
-  // }
-
+  
   /* eslint-disable @typescript-eslint/no-explicit-any */
+  // Parses a query string into a JSON object.
   queryStringToJSON(querystring: string): any {
     const pairs = (querystring || '').split('&');
     const result = {};
@@ -258,6 +263,7 @@ export class LoginComponent implements OnInit {
     return result;
   }
 
+  // Checks if a specific setting exists and returns its value if available.
   hasSetting(name: string): string {
     let result = undefined;
     if (name && this.setting) {
@@ -269,6 +275,7 @@ export class LoginComponent implements OnInit {
     return result;
   }
 
+  // Fetches settings from the authentication service and logs the result.
   getSetting(): void {
     this.authenticationService.getSetting()
       .subscribe(
