@@ -419,7 +419,7 @@ export class VisbocenterDetailComponent implements OnInit {
 
   // Adds a new user to a specific group within the VisboCenter.
   addNewVCUser(): void {
-    const email = this.newUserInvite.email.trim();
+    const email = this.newUserInvite.email.trim().toLowerCase();
     const groupName = this.newUserInvite.groupName.trim();
     const inviteGroup = this.vgGroups.filter(group => group.name === groupName)[0];
     const groupId = inviteGroup._id;
@@ -1048,7 +1048,7 @@ export class VisbocenterDetailComponent implements OnInit {
     result.path = item.path?.trim();
     result.name = item.name?.trim();
     result.type = item.type;
-    if (item.email) result.email = item.email?.trim();
+    if (item.email) result.email = item.email?.trim().toLowerCase();
     if (item.employeeNr) result.employeeNr = item.employeeNr;
     result.isExternRole = item.isExternRole;
     if (item.entryDate) {

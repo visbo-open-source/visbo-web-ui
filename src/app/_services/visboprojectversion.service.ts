@@ -588,6 +588,23 @@ importVPVFromOpenProj(vcid: string, vpid: string, variantName: string): Observab
       catchError(this.handleError<VisboProjectVersion>('importVisboProjectVersion'))
     );
 }
+/** POST: compare a Visbo Project Version and its OP-Variant to bring the diffenence as new to openproject **/
+// The compareVPVToOpenProj method is responsible for comparing a Visbo project version (VPV) Standard - Variant and its op-Variant to bring it to the Open Project format using the Open Project Bridge API. 
+// 
+compareVPVStdAndOPToOpenProj(vcid: string, vpid: string): Observable<any> {
+  const url = `${this.openProjURL}/bridge/compare-versions/${vpid}`; 
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  let params = new HttpParams();
+ 
+  const data = { "visboCentreId": vcid };
+  return this.http.post<any>(url , data , { headers , params }).pipe( 
+      map(response => {
+        return response; 
+      }), 
+      tap(() => this.log(`exported VisboProjectVersion w/ id=${vpid}`)),
+      catchError(this.handleError<VisboProjectVersion>('exportVisboProjectVersion'))
+    );
+}
   
   /**
    * Handle Http operation that failed.
