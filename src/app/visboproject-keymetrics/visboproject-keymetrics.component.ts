@@ -1749,71 +1749,97 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   //    - Creates a new variant OPVariant in Visbo to track the OpenProject export.
   //    - Copies the VPV to this new variant.
   //    - If the variant already exists, it reuses the existing one and proceeds with copying the VPV.
-  exportVPVtoOpenProject(): void {
-    this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
-    this.visboprojectversionService.exportVPVToOpenProj(this.vpActive.vcid, this.vpActive._id, "", this.level)
-      .subscribe(
-        openProj => {                
-              const xxx = openProj;
-              if (openProj) {
-                
-                const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
-                this.alertService.success(message, true);
-                
-                // hier erzeugen einer OP - Variante
-                this.newVariant.variantName = this.OPVariant;
-                this.newVariant.email = "ute...";
-                this.newVariant.description="This Project was exported to OpenProject";
-                this.newVPVconnection.tool = 'OpenProject';
-                this.newVPVconnection.toolID = openProj.identifier;
-                
-                this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
-                  .subscribe(
-                    variant => {
-                      // Add Variant to list
-                      this.vpActive.variant.push(variant);
-                      this.newVPVvariantName = variant.variantName;                      
-                      this.copyVPV_OP();
-                      const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
-                      this.alertService.success(message);
-                    },
-                    error => {
-                      this.log(`Create Variant error: ${error.error.message}`);
-                      if (error.status === 403) {
-                        const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
-                        this.alertService.error(message);
-                      } else if (error.status === 409) {
-                        // TODO UR
-                        this.newVPVvariantName = this.newVariant.variantName;                      
-                        this.copyVPV_OP();
-                        const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': this.newVariant.variantName});
-                        this.alertService.success(message);
-                        //const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
-                        //this.alertService.error(message);
-                        
-                        //TODO UR
-                      } else {
-                        this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
-                        this.alertService.error(getErrorMessage(error));
-                      }
-                    }
-                  );
+  exportORCompareVPVtoOpenProject(): void {
 
-
-              }       
-        },
-        error => {
-          this.log(`VPV export to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
-          if (error.status === 403) {
-            const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
-            this.alertService.error(message);
-          } else {
-            const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
-            this.alertService.error(message);
-            //this.alertService.error(getErrorMessage(error));
+    if (this.vpActive.variant.findIndex(item => item.variantName == this.OPVariant) > 0) {
+      this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
+      this.visboprojectversionService.compareVPVStdAndOPToOpenProj(this.vpActive.vcid, this.vpActive._id)
+        .subscribe(
+          openProj => {                
+                const xxx = openProj;
+                if (openProj) {                  
+                  const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
+                  this.alertService.success(message, true);          
+                }       
+          },
+          error => {
+            this.log(`VPV compare VPV to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+              this.alertService.error(message);
+              //this.alertService.error(getErrorMessage(error));
+            }
           }
-        }
-     );
+      );   
+
+    } else {
+      this.log(`Export VPV ${this.vpActive.name} Variant ${this.defaultVariant} to OpenProject`);
+      this.visboprojectversionService.exportVPVToOpenProj(this.vpActive.vcid, this.vpActive._id, "", this.level)
+        .subscribe(
+          openProj => {                
+                const xxx = openProj;
+                if (openProj) {
+                  
+                  const message = this.translate.instant('vpKeyMetric.msg.exportToOpenProjVPVSuccess');
+                  this.alertService.success(message, true);
+                  
+                  // hier erzeugen einer OP - Variante
+                  this.newVariant.variantName = this.OPVariant;
+                  this.newVariant.email = "ute...";
+                  this.newVariant.description="This Project was exported to OpenProject";
+                  this.newVPVconnection.tool = 'OpenProject';
+                  this.newVPVconnection.toolID = openProj.identifier;
+                  
+                  this.visboprojectService.createVariant(this.newVariant, this.vpActive._id )
+                    .subscribe(
+                      variant => {
+                        // Add Variant to list
+                        this.vpActive.variant.push(variant);
+                        this.newVPVvariantName = variant.variantName;                      
+                        this.copyVPV_OP();
+                        const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': variant.variantName});
+                        this.alertService.success(message);
+                      },
+                      error => {
+                        this.log(`Create Variant error: ${error.error.message}`);
+                        if (error.status === 403) {
+                          const message = this.translate.instant('vpDetail.msg.errorCreateVariantPerm');
+                          this.alertService.error(message);
+                        } else if (error.status === 409) {
+                          // TODO UR
+                          this.newVPVvariantName = this.newVariant.variantName;                      
+                          this.copyVPV_OP();
+                          const message = this.translate.instant('vpDetail.msg.createVariantSuccess', {'name': this.newVariant.variantName});
+                          this.alertService.success(message);
+                          //const message = this.translate.instant('vpDetail.msg.errorVariantConflict', {'name': this.newVariant.variantName});
+                          //this.alertService.error(message);
+                          
+                          //TODO UR
+                        } else {
+                          this.log(`Error during creating Variant ${error.error.message}`); // log to console instead
+                          this.alertService.error(getErrorMessage(error));
+                        }
+                      }
+                    );
+                }       
+          },
+          error => {
+            this.log(`VPV export to OpenProject failed: error: ${error.status} message: ${error.error.message}`);
+            if (error.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.vpActive.name});
+              this.alertService.error(message);
+            } else {
+              const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+              this.alertService.error(message);
+              //this.alertService.error(getErrorMessage(error));
+            }
+          }
+      );      
+    }
+
   }
 
   // The importVPVFromOpenProject method imports a Visbo Project Version (VPV) from OpenProject into Visbo.
