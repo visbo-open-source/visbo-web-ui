@@ -22,20 +22,28 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../_helpers/visbo
   templateUrl: './visboprojectversions.component.html',
   styleUrls: ['./visboprojectversions.component.css']
 })
+
+// The VisboProjectVersionsComponent is responsible for displaying and managing different versions 
+// of a selected Visbo Project. It provides functionality to:
+// -    Retrieve and display versions (active or deleted),
+// -    Manage access based on user permissions,
+// -    Navigate to related components,
+// -    Sort and restore versions,
+// -    Delete versions under certain conditions.
 export class VisboProjectVersionsComponent implements OnInit {
 
-  visboprojectversions: VisboProjectVersion[];
-  visboprojectversion: VisboProjectVersion;
-  vpSelected: string;
-  vpActive: VisboProject;
-  deleted = false;
-  sortAscending: boolean;
-  sortColumn: number;
+  visboprojectversions: VisboProjectVersion[];    // List of project versions loaded from backend.
+  visboprojectversion: VisboProjectVersion;       // Currently selected or manipulated version.
+  vpSelected: string;                             // ID of the currently selected project.
+  vpActive: VisboProject;                         // Currently loaded project with its metadata and permissions.
+  deleted = false;                                // Flag indicating whether deleted versions should be shown.
+  sortAscending: boolean;                         // Sorting direction for version list.
+  sortColumn: number;                             // Index of column used for sorting.
 
-  currentUser: VisboUser;
-  combinedPerm: VGPermission = undefined;
-  permVC = VGPVC;
-  permVP = VGPVP;
+  currentUser: VisboUser;                         // User currently logged in.
+  combinedPerm: VGPermission = undefined;         // Combined project and project collection permissions.
+  permVC = VGPVC;                                 // Project collection permission constants.
+  permVP = VGPVP;                                 // Project permission constants.
 
   constructor(
     private visboprojectversionService: VisboProjectVersionService,
@@ -47,18 +55,21 @@ export class VisboProjectVersionsComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // ngOnInit:
+  // -    Retrieves current user from localStorage.
+  // -    Initiates loading of versions via getVisboProjectVersions.
   ngOnInit(): void {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.getVisboProjectVersions();
   }
-
+  // Checks if current user has the specified Visbo Project permission.
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
     }
     return (this.combinedPerm.vp & perm) !== 0;
   }
-
+  // Checks if current user has the specified Visbo Project Collection permission.
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -66,6 +77,10 @@ export class VisboProjectVersionsComponent implements OnInit {
     return (this.combinedPerm.vc & perm) !== 0;
   }
 
+  // Fetches project and version data based on route parameters.
+  // -  Loads permissions.
+  // -  Retrieves versions.
+  // -  Handles permission errors and sorting.
   getVisboProjectVersions(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
@@ -125,6 +140,7 @@ export class VisboProjectVersionsComponent implements OnInit {
     }
   }
 
+  // Toggles between deleted and active versions, then reloads data and updates URL.
   toggleVisboProjectVersions(): void {
     this.deleted = !this.deleted;
     const url = this.route.snapshot.url.join('/');
@@ -134,6 +150,7 @@ export class VisboProjectVersionsComponent implements OnInit {
     this.router.navigate([url], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Checks if a version is locked and optionally if it’s locked by another user.
   checkLocked(visboprojectversion: VisboProjectVersion, otherUser = false): string {
     const variantName = visboprojectversion.variantName || '';
     const lock = this.vpActive.lock.find(item => item.variantName === variantName);
@@ -149,10 +166,12 @@ export class VisboProjectVersionsComponent implements OnInit {
     return result;
   }
 
+  // Sets the selected version by index.
   helperSetVPV(index: number): void {
     this.visboprojectversion = this.visboprojectversions[index];
   }
 
+  // Deletes a version and handles permission, conflict, or lock-related errors.
   delete(visboprojectversion: VisboProjectVersion): void {
     this.log(`delete VPV ${visboprojectversion._id}`);
 
@@ -185,6 +204,7 @@ export class VisboProjectVersionsComponent implements OnInit {
       );
   }
 
+  // Restores a deleted version and removes it from the deleted list on success.
   restore(): void {
     this.log(`update VPV ${this.visboprojectversion._id}`);
     this.visboprojectversionService.updateVisboProjectVersion(this.visboprojectversion, this.deleted)
@@ -211,22 +231,30 @@ export class VisboProjectVersionsComponent implements OnInit {
       );
   }
 
+  // Navigates to key metrics for a project.
   gotoVP(visboproject: VisboProject): void {
     this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
   }
 
+  // Navigates to key metrics for a specific version (with timestamp).
   gotoKMVersion(vpv: VisboProjectVersion): void {
     this.router.navigate(['vpKeyMetrics/'.concat(vpv.vpid)], { queryParams: { refDate: vpv.timestamp }});
   }
 
+  // Navigates to the Visbo Project detail view.
   gotoVPDetail(visboproject: VisboProject): void {
     this.router.navigate(['vpDetail/'.concat(visboproject._id)]);
   }
 
+  // Navigates to the associated collection detail view.
   gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
+  // Determines if a version can be deleted based on:
+  // -  Project status (paused, finished, stopped)
+  // -  User permissions
+  // -  Ownership of the variant
   canDeleteVersion(index: number = undefined): boolean {
     const customVPStatus = constSystemVPStatus.find(item => item == this.vpActive?.vpStatus);
     if (customVPStatus == 'paused' || customVPStatus == 'finished' || customVPStatus == 'stopped') {
@@ -252,6 +280,7 @@ export class VisboProjectVersionsComponent implements OnInit {
     return false;
   }
 
+  // Converts the internal variant name (pfv) into a localized display name (baseline)
   getVariantName(name: string): string {
     let result: string;
     if (name == 'pfv') {
@@ -262,6 +291,12 @@ export class VisboProjectVersionsComponent implements OnInit {
     return result;
   }
 
+  // Sorts visboprojectversions list by column:
+  // 1: timestamp
+  // 2: endDate
+  // 3: ampelStatus
+  // 4: Erloes
+  // 5: variantName
   sortVPVTable(n: number): void {
     if (!this.visboprojectversions) {
       return;

@@ -15,9 +15,14 @@ import { getErrorMessage } from '../../_helpers/visbo.helper';
   templateUrl: './pwforgotten.component.html',
   styleUrls: ['./pwforgotten.component.css']
 })
+
+// The PwforgottenComponent is an Angular component responsible for handling the "Forgot Password" functionality.
+// It allows users to request a password reset by providing their email address. 
+// If successful, a password reset email is sent to the user, and they are redirected to the login page.
+
 export class PwforgottenComponent implements OnInit {
-  user: VisboUser;
-  loading = false;
+  user: VisboUser;        // An instance of the VisboUser class, holding user information, particularly the email address for password reset.
+  loading = false;        // Indicates whether the password reset request is in progress. Used to manage the UI state, such as showing a loading spinner.
 
   constructor(
     private messageService: MessageService,
@@ -28,6 +33,7 @@ export class PwforgottenComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  //  Initializes the component and sets the user's email address if provided in the query parameters.
   ngOnInit(): void {
     this.user = new VisboUser();
     if (this.route.snapshot.queryParams.email) {
@@ -36,6 +42,7 @@ export class PwforgottenComponent implements OnInit {
     this.log(`Password Forgotten for User ${this.user.email}`);
   }
 
+  // Initiates the password reset process by calling the authenticationService.pwforgotten method.
   pwforgotten(): void {
     this.loading = true;
     this.authenticationService.pwforgotten(this.user)

@@ -16,20 +16,34 @@ import { getErrorMessage, visboCmpString, visboCmpDate, visboGetShortText } from
   templateUrl: './visboproject-restrict.component.html',
   styleUrls: ['./visboproject-restrict.component.css']
 })
+
+// VisboprojectRestrictComponent is an Angular component responsible for managing access 
+// restrictions on elements within a VisboProject. It allows viewing, adding, and removing 
+// restrictions associated with user groups, providing functionality around access control 
+// within the VISBO platform.
+// 
+// Responsibilities
+// -    Fetch and display restrictions for a specific project.
+// -    Enable users to add or remove access restrictions for project elements.
+// -    Display project group permissions and handle user-level permission validation.
+// -    Provide navigation to related views (Audit, Project View, etc.).
+// -    Handle sorting of the restriction list by various columns.
+
 export class VisboprojectRestrictComponent implements OnInit {
 
-  visboproject: VisboProject;
-  vgGroups: VGGroup[];
+  visboproject: VisboProject;         // Holds the current VisboProject object.
+  vgGroups: VGGroup[];                // List of user groups associated with the project.
   actGroup: VGGroup;
   groupIndex: number;
   restrictIndex: number;
+  // Hold temporary values used when creating a new restriction.
   newItemName: string;
   newItemPath: [string];
   newItemGroup: string;
   newItemInclChildren: boolean;
 
-  combinedPerm: VGPermission = undefined;
-  combinedUserPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined;     // Combined group-level permissions.
+  combinedUserPerm: VGPermission = undefined; // Permissions specific to the current user.
   permVC = VGPVC;
   permVP = VGPVP;
   deleted = false;
@@ -46,7 +60,10 @@ export class VisboprojectRestrictComponent implements OnInit {
     private alertService: AlertService,
     private translate: TranslateService
   ) { }
-
+  
+  // ngOnInit:
+  // -    Loads restriction path from localStorage if available.
+  // -    Fetches project details and group permission information.
   ngOnInit(): void {
     const id = this.route.snapshot.queryParams['id'];
     if (id) {
@@ -60,6 +77,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     this.getVisboProjectUsers();
   }
 
+  // Fetches project data including restrictions and permissions.
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -83,6 +101,7 @@ export class VisboprojectRestrictComponent implements OnInit {
       );
   }
 
+  // Checks VC-level permission.
   hasVCPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -90,6 +109,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // Checks VP-level permission.
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -97,6 +117,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // Checks if the user has a given VP-level permission.
   hasUserVPPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -105,6 +126,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
+  // Retrieves numeric VP permission value.
   getVPPerm(): number {
     if (this.combinedPerm === undefined) {
       return 0;
@@ -116,6 +138,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  // Builds a readable path string for display.
   getRestrictPath(index: number, len?: number): string {
     const path = index >= 0 ? this.visboproject.restrict[index].elementPath : (this.newItemPath || [""]);
     let result = '';
@@ -129,7 +152,7 @@ export class VisboprojectRestrictComponent implements OnInit {
     }
     return result;
   }
-
+  // Creates and submits a new restriction to the backend.
   addRestriction(): void {
     this.log(`VisboProject Restrict Add Restriction : ${this.newItemPath.join(' / ')} ${this.newItemGroup} ${this.newItemInclChildren}`);
     const restrict = new VPRestrict();
@@ -161,7 +184,7 @@ export class VisboprojectRestrictComponent implements OnInit {
         }
       );
   }
-
+  // Deletes a restriction by its index.
   removeRestriction(index: number): void {
     const restrict = this.visboproject.restrict[index];
     this.log(`VisboProject Restrict Remove Restriction : ${index} ${restrict._id}`);
@@ -190,16 +213,17 @@ export class VisboprojectRestrictComponent implements OnInit {
         }
       );
   }
-
+  // Prepares a restriction for removal.
   helperRemoveRestriction(index: number): void {
     this.restrictIndex = index;
   }
-
+  // Returns the name of a group by its ID.
   getGroupName(groupid: string): string {
     const group = this.vgGroups ? this.vgGroups.find(vgGroup => vgGroup._id === groupid) : undefined;
     return group ? group.name : 'Unknown';
   }
 
+  // Fetches user/group permission info for the project.
   getVisboProjectUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -222,6 +246,7 @@ export class VisboprojectRestrictComponent implements OnInit {
       );
   }
 
+  // Filters only VP-type groups.
   filterGroups(allGroups: VGGroup[]): void {
     this.vgGroups = [];
     allGroups.forEach(group => {
@@ -232,24 +257,29 @@ export class VisboprojectRestrictComponent implements OnInit {
     });
   }
 
+  // Returns to the previous page.
   goBack(): void {
     this.location.back();
   }
 
+  // Navigates to the audit view.
   gotoVPAudit(visboproject: VisboProject): void {
     this.log(`goto VP Audit: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpAudit/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to VC details.
   gotoVCDetail(visboproject: VisboProject): void {
     this.router.navigate(['vcDetail/'.concat(visboproject.vcid)]);
   }
 
+  // Navigates to the VP list.
   gotoVPList(visboproject: VisboProject): void {
     this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vp/'.concat(visboproject.vcid)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to a specific VP or VPF page.
   gotoVP(visboproject: VisboProject): void {
     this.log(`goto VP: ${visboproject._id} Deleted ${this.deleted}`);
     let url = 'vpKeyMetrics/';
@@ -259,13 +289,14 @@ export class VisboprojectRestrictComponent implements OnInit {
     this.router.navigate([url.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Navigates to the project view screen.
   gotoVPView(visboproject: VisboProject): void {
     this.log(`goto VP List: ${visboproject._id} Deleted ${this.deleted}`);
     this.router.navigate(['vpv/'.concat(visboproject._id)], this.deleted ? { queryParams: { deleted: this.deleted }} : {});
   }
 
+  // Sorts the restrictions table by specified column and order.
   sortRestrictTable(n?: number): void {
-
     if (!this.visboproject && !this.visboproject.restrict) {
       return;
     }

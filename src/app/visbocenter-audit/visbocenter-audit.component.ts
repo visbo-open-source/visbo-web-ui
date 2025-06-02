@@ -23,22 +23,27 @@ const EXCEL_EXTENSION = '.xlsx';
   templateUrl: './visbocenter-audit.component.html',
   styleUrls: ['./visbocenter-audit.component.css']
 })
+
+// The VisbocenterAuditComponent is an Angular component responsible for displaying and managing audit logs for a VisboCenter entity. 
+// It allows viewing, filtering, sorting, and exporting audit data related to actions performed on the VisboCenter.
+
 export class VisbocenterAuditComponent implements OnInit {
 
   @Input() visbocenter: VisboCenter;
-  combinedPerm: VGPermission;
-  audit: VisboAudit[];
-  auditIndex: number;
-  auditFrom: Date;
-  auditTo: Date;
-  auditCount: number;
-  auditText: string;
-  showMore: boolean;
-  sortAscending: boolean;
-  sortColumn: number;
-  today: Date;
-  auditType: string;
-  auditTypeAction: string;
+
+  combinedPerm: VGPermission;                 // Stores permissions for the VisboCenter.
+  audit: VisboAudit[];                        // Holds the list of fetched audit logs.
+  auditIndex: number;                         // Tracks the index of the currently selected audit log
+  auditFrom: Date;                            // Date range for filtering audits.
+  auditTo: Date;                              // Date range for filtering audits.
+  auditCount: number;                         // Maximum number of audit entries to fetch.
+  auditText: string;                          // Text filter for audit searches.
+  showMore: boolean;                          // Controls the display of detailed information.
+  sortAscending: boolean;                     // Determines the sorting order.
+  sortColumn: number;                         // Specifies the column used for sorting.
+  today: Date;                                // Represents the current date for date-based filters.
+  auditType: string;                          // Manages the selected audit action type filter.
+  auditTypeAction: string;                    // Manages the selected audit action type filter.
   auditTypeList = [
     {name: 'All', action: ''},
     {name: 'Read', action: 'GET'},
@@ -46,15 +51,15 @@ export class VisbocenterAuditComponent implements OnInit {
     {name: 'Update', action: 'PUT'},
     {name: 'Delete', action: 'DELETE'}
   ];
-  auditArea: string;
-  auditAreaAction: string;
+  auditArea: string;                          // Manages the selected audit area filter.
+  auditAreaAction: string;                    // Manages the selected audit area filter.
   auditAreaList = [
     {name: 'All', action: ''},
     {name: 'VC', action: 'vc'},
     {name: 'VP', action: 'vp'}
   ];
-  sysadmin: boolean;
-  deleted = false;
+  sysadmin: boolean;                          // Indicates if the user is a system administrator.
+  deleted = false;                            // Specifies whether to include deleted items.
 
   constructor(
     private visboauditService: VisboAuditService,
@@ -67,6 +72,10 @@ export class VisbocenterAuditComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // Initializes component state.
+  // Fetches the VisboCenter details using the ID from the route.
+  // Sets up default values for filtering and sorting.
+  // Triggers the fetching of audit data.
   ngOnInit(): void {
     this.sysadmin = this.route.snapshot.queryParams['sysadmin'];
     this.deleted = this.route.snapshot.queryParams['deleted'] === true;
@@ -99,6 +108,9 @@ export class VisbocenterAuditComponent implements OnInit {
     this.sortTable(undefined);
   }
 
+  // Constructs an audit query object based on filters.
+  // Calls VisboAuditService to fetch audit data.
+  // Handles success and error scenarios, displaying appropriate messages.
   getVisboCenterAudits(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const queryAudit = new QueryAuditType;
@@ -148,6 +160,9 @@ export class VisbocenterAuditComponent implements OnInit {
       );
   }
 
+  // Converts the audit data into an Excel file.
+  // Uses XLSX library to generate the file.
+  // Initiates download via a temporary anchor element.
   downloadVisboAudit(): void {
     this.log(`vcAudit Download ${this.audit.length} Items`);
     const audit: VisboAuditXLS[] = []
@@ -207,11 +222,13 @@ export class VisbocenterAuditComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  // Sets the current audit index.
   helperAuditIndex(auditIndex: number): void {
     // this.log(`Remove User Helper: ${userIndex}`);
     this.auditIndex = auditIndex;
   }
 
+  // Formats a byte size value into a human-readable string (e.g., "10 MB").
   helperFormatBytes(a: number, b = 2): string {
     if (0 === a) {
       return '0 B';
@@ -222,6 +239,7 @@ export class VisbocenterAuditComponent implements OnInit {
     return parseFloat((a / Math.pow(c, f)).toFixed(d)) + ' ' + e[f];
   }
 
+  // Updates the current audit index by a given increment, with boundary checks.
   pageAuditIndex(increment: number): void {
     let newAuditIndex = this.auditIndex + increment;
     if (newAuditIndex < 0) {
@@ -233,6 +251,7 @@ export class VisbocenterAuditComponent implements OnInit {
     this.auditIndex = newAuditIndex;
   }
 
+  // Retrieves a localized status message based on the HTTP status code.
   helperResponseText(visboaudit: VisboAudit): string {
     const status = visboaudit.result.status;
     switch (status) {
@@ -252,25 +271,32 @@ export class VisbocenterAuditComponent implements OnInit {
     }
   }
 
+  // Shortens a long text to a specified length.
   helperShortenText(text: string, len: number): string {
     return visboGetShortText(text, len);
   }
 
+  // Navigates back to the previous location.
   goBack(): void {
     // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
   }
 
+  // Toggles the visibility of detailed audit information.
   toggleDetail(): void {
     this.log(`Toggle ShowMore`);
     this.showMore = !this.showMore;
   }
 
+  // Checks if a given date is today.
   isToday(checkDate: string): boolean {
     // this.log(`Check Date ${checkDate} ${this.today.toISOString()}`);
     return new Date(checkDate) > this.today;
   }
 
+  // Sorts the audit data based on the specified column.
+  // Supports ascending and descending sort orders.
+  // Different columns use different sort criteria (e.g., date, string, or numeric).
   sortTable(n: number): void {
     if (!this.audit) {
       return;

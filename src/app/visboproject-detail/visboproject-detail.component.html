@@ -8,7 +8,7 @@
   <form>
     <div class="form-group row">
       <label for="VPName" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.name' | translate }}:</label>
-      <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" [(ngModel)]="visboproject.name" placeholder="Name">
+      <input id="VPName" *ngIf="hasVPPerm(permVP.Modify)" type="text" name=vpName class="col-sm-8 form-control" (change)="setModified()" [(ngModel)]="visboproject.name" placeholder="Name">
       <label id="VPName" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-plaintext pt-2">{{ visboproject.name }} </label>
     </div>
     <div *ngIf="!hasVPPerm(permVP.Modify) && vpManagerList" class="form-group row">
@@ -17,13 +17,13 @@
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify) && vpManagerList" class="form-group row">
       <label class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.manager' | translate }}:</label>
-      <select class="form-select" style="border-width:0px" name="vpManagerEmail" [(ngModel)]="vpManagerEmail">
+      <select class="form-select" style="border-width:0px" name="vpManagerEmail" (change)="setModified()" [(ngModel)]="vpManagerEmail">
         <option *ngFor="let user of vpManagerList" value="{{ user.email }}">{{ getFullUserName(user, true) }}</option>
       </select>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify) || visboproject.description" class="form-group row">
       <label for="VPDesc" class="col-3 col-md-2 col-form-label">{{ 'vpDetail.lbl.description' | translate }}:</label>
-      <textarea id="VPDesc" *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
+      <textarea id="VPDesc" *ngIf="hasVPPerm(permVP.Modify)" name=vpDescription class="col-8 form-control" (change)="setModified()" [(ngModel)]="visboproject.description" placeholder="Type in your description"></textarea>
       <label id="VPDesc" *ngIf="!hasVPPerm(permVP.Modify)" class="col-8 form-control-plaintext pt-2">{{ visboproject.description }} </label>
     </div>
     <div *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="form-group row">
@@ -37,7 +37,21 @@
     </div>
   </form>
   <div *ngIf="getVPPerm() != permVP.View">
+    <div class="mb-3">
+      <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify) && detailsVPModified" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
+      <!-- <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify) && !detailsVPModified" class="btn btn-primary disabled mr-1">{{ 'vpDetail.btn.save' | translate }}</button> -->
+      <button id="Save" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
+      <button (click)="goBack()">{{ 'vpDetail.btn.back' | translate }}</button>
+      <button id="DeleteVP" *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
+      <button id="DestroyVP" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
+    </div>
+    <hr />
     <div class="btn-toolbar" style ="">
+      <!-- <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
+      <button id="Save" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
+      <button (click)="goBack()">{{ 'vpDetail.btn.back' | translate }}</button>
+      <button id="DeleteVP" *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
+      <button id="DestroyVP" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button> -->
       <button id="ViewUser" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('User')">{{ 'vpDetail.btn.viewUsers' | translate }}</button>
       <button id="ViewGroup" type="button" class="btn btn-md btn-light mr-1" (click)="toggleView('Group')">{{ 'vpDetail.btn.viewGroups' | translate }}</button>
       <button id="ViewAudit" *ngIf="hasVPPerm(permVP.ViewAudit)" type="button" class="btn btn-md btn-light mr-1" (click)="gotoVPAudit(visboproject)">{{ 'vpDetail.btn.viewAudit' | translate }}</button>
@@ -239,13 +253,13 @@
     </div>
   </div>
 
-  <div class="mb-3">
+  <!-- <div class="mb-3">
     <button id="Save" *ngIf="!deleted && hasVPPerm(permVP.Modify)" (click)="save()" class="btn btn-primary mr-1">{{ 'vpDetail.btn.save' | translate }}</button>
     <button id="Save" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" (click)="save()" class="btn btn-primary mx-1">{{ 'vpDetail.btn.restore' | translate }}</button>
     <button (click)="goBack()">{{ 'vpDetail.btn.back' | translate }}</button>
     <button id="DeleteVP" *ngIf="!deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-warning mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.delete' | translate }}</button>
     <button id="DestroyVP" *ngIf="deleted && hasVPPerm(permVP.DeleteVP)" class="btn bg-danger text-white mx-1" style="float: right" title="{{ 'vpDetail.titleDeleteProject' | translate }}" data-toggle="modal" data-target="#VpDelete">{{ 'vpDetail.btn.destroy' | translate }}</button>
-  </div>
+  </div> -->
 
   <!-- Modal Add VP User -->
   <div class="modal fade" id="VpUserModalCreate" tabindex="-1" role="dialog" aria-labelledby="VpUserModalCreateTitle" aria-hidden="true">

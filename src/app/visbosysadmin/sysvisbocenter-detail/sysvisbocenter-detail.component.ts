@@ -18,12 +18,19 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   templateUrl: './sysvisbocenter-detail.component.html',
   styleUrls: ['./sysvisbocenter-detail.component.css']
 })
+
+// Overview
+// SysvisbocenterDetailComponent is an Angular component that serves as the detailed administrative 
+// interface for managing a single Visbo Center. 
+// It handles all critical functions including user/group management, 
+// configuration toggling, audit access, permission calculations, 
+// training data metrics, and system-level configuration updates.
 export class SysvisbocenterDetailComponent implements OnInit {
 
-  @Input() visbocenter: VisboCenter;
-  vgUsers: VGUserGroup[];
-  vgGroups: VGGroup[];
-  newUserInvite = new VisboUserInvite();
+  @Input() visbocenter: VisboCenter;      // The currently selected Visbo Center, passed from a parent component.
+  vgUsers: VGUserGroup[];                 // Array of users in the Visbo Center.
+  vgGroups: VGGroup[];                    // Array of groups within the Visbo Center.
+  newUserInvite = new VisboUserInvite(); 
   actGroup: VGGroupExpanded;
   confirm: string;
   userIndex: number;
@@ -31,25 +38,25 @@ export class SysvisbocenterDetailComponent implements OnInit {
   showGroups: boolean;
   showList = 'Users';
 
-  combinedPerm: VGPermission;
-  combinedUserPerm: VGPermission;
+  combinedPerm: VGPermission;             // System-wide combined permission object for the current user.
+  combinedUserPerm: VGPermission;         // Group-based combined permissions for a selected user.
   permSystem = VGPSYSTEM;
   permVC = VGPVC;
   permVP = VGPVP;
   deleted = false;
 
-  vcSettingsEnableDisable: VisboSetting[];
+  vcSettingsEnableDisable: VisboSetting[];  //Configuration toggles for enable/disable settings.
   indexEnableDisable: number;
 
-  totalTraining = 0;
-  totalTrainingVP = 0;
+  totalTraining = 0;                      // Aggregated training statistics.
+  totalTrainingVP = 0;                    // Aggregated training statistics.
 
-  sortUserColumn = 1;
+  sortUserColumn = 1;                     // Column indices for sorting.
   sortUserAscending = true;
-  sortGroupColumn = 1;
+  sortGroupColumn = 1;                    // Column indices for sorting.
   sortGroupAscending = true;
   sortEnableDisableAscending: boolean;
-  sortEnableDisableColumn: number;
+  sortEnableDisableColumn: number;        // Column indices for sorting.
 
   constructor(
     private messageService: MessageService,
@@ -61,6 +68,9 @@ export class SysvisbocenterDetailComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
+  // ngOnInit
+  // Initializes component state.
+  // Fetches Visbo Center details, users, groups, and permissions.
   ngOnInit(): void {
     this.log(`SysVisboCenter Init: ${JSON.stringify(this.visbocenter)}`);
     this.deleted = this.route.snapshot.queryParams['deleted'] ? true : false;
@@ -70,6 +80,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     // this.log(`SysAdmin Role: ${this.vcIsSysAdmin}`);
   }
 
+  // Retrieves the Visbo Center based on route ID.
   getVisboCenter(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -92,6 +103,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Fetches configuration toggles for VC components.
   showEnableDisable(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -118,12 +130,14 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // 
   editEnableDisable(index: number): void {
     if (index >= 0 && index < this.vcSettingsEnableDisable.length) {
       this.indexEnableDisable = index;
     }
   }
 
+  // Updates a setting in the backend.
   updateConfig(setting: VisboSetting): void {
     if (!setting) return;
     this.log(`Update Config VC ${JSON.stringify(setting)}`);
@@ -144,18 +158,22 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Checks if the system permission exists.
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm.system & perm) > 0;
   }
 
+  // Checks VC-level permission.
   hasVCPerm(perm: number): boolean {
     return (this.combinedPerm.vc & perm) > 0;
   }
 
+  // Checks VP-level permission.
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm.vp & perm) > 0;
   }
 
+  // Checks user-specific VC-level permission.
   hasUserVCPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -163,6 +181,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return (this.combinedUserPerm.vc & perm) > 0;
   }
 
+  // Checks user-specific VP-level permission.
   hasUserVPPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -170,6 +189,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
+  // Loads all users and groups assigned to the Visbo Center.
   getVisboCenterUsers(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -194,6 +214,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Navigates to the audit log for the Visbo Center.
   gotoVCAudit(visbocenter: VisboCenter): void {
     this.log(`GoTo VC Audit ${visbocenter.name} ${this.visbocenter.name}`);
     const queryParams = this.deleted ? { sysadmin: 1, deleted: 1 } : { sysadmin: 1 };
@@ -201,6 +222,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     this.router.navigate(['vcAudit/'.concat(visbocenter._id)], { queryParams: queryParams});
   }
 
+  //  Navigates to the VP list view.
   gotoVPList(visbocenter: VisboCenter): void {
     this.log(`GoTo VP List ${JSON.stringify(this.combinedPerm)}`);
     if (this.hasVPPerm(this.permVP.View)) {
@@ -208,11 +230,13 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Returns to the previous page.
   goBack(): void {
     // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
   }
 
+  // Persists changes to the Visbo Center.
   save(): void {
     this.log(`PUT VC: ${this.visbocenter.name} ID: ${this.visbocenter._id} Deleted: ${this.deleted}`);
     this.visbocenterService.updateVisboCenter(this.visbocenter, true, this.deleted)
@@ -234,6 +258,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  //  Deletes the Visbo Center.
   delete(visbocenter: VisboCenter): void {
     this.log(`Delete VC: ${visbocenter.name} ID: ${visbocenter._id} Deleted: ${this.deleted}`);
     this.visbocenterService.deleteVisboCenter(visbocenter, true, this.deleted)
@@ -253,11 +278,13 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Changes between "Users", "Groups", or "Settings" view modes.
   switchView(newView: string): void {
     this.showList = newView;
     this.log('VisboCenter new View: ' + newView);
   }
 
+  // Adds a user to a group and the Visbo Center.
   addNewVCUser(): void {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
@@ -303,10 +330,12 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Stores index for selection context.
   helperUserIndex(memberIndex: number): void {
     this.userIndex = memberIndex;
   }
 
+  // Calculates combined permissions for a specific user.
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -334,10 +363,12 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Stores group index for removal context.
   helperRemoveGroup(memberIndex: number): void {
     this.groupIndex = memberIndex;
   }
 
+  // Returns number of users in the group.
   helperUsersPerGroup(groupName: string): number {
     const group = this.vgGroups && this.vgGroups.find(x => x.name === groupName);
     if (group) {
@@ -346,6 +377,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return 0;
   }
 
+  // Removes a user from the Visbo Center and their group.
   removeVCUser(user: VGUserGroup, vcid: string): void {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Group: ${user.groupName} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid, true)
@@ -381,6 +413,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Computes VC permission bitmask.
   helperVCPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedView) { perm += this.permVC.View; }
@@ -392,6 +425,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return perm;
   }
 
+  // Computes VP permission bitmask.
   helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPView) { perm += this.permVP.View; }
@@ -404,12 +438,14 @@ export class SysvisbocenterDetailComponent implements OnInit {
     return perm;
   }
 
+  // Prepares a group for editing.
   activateGroup(userGroup: VGUserGroup): void {
     this.log(`Activate Group : ${userGroup.groupName}`);
     const group = this.vgGroups.find(item => item.name == userGroup.groupName);
     this.initGroup(group);
   }
 
+  // Calculates and loads permissions for a user.
   activateUser(userGroup: VGUserGroup): void {
     this.log(`Activate User : ${userGroup.email}`);
     const memberIndex = this.vgUsers.findIndex(item => item.email == userGroup.email)
@@ -418,6 +454,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Initializes a new or existing group in the edit form.
   initGroup(curGroup: VGGroup): void {
 
     this.actGroup = new VGGroupExpanded();
@@ -450,6 +487,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
 
   }
 
+  // Adds or modifies a group and updates permission mappings.
   addModifyVCGroup(): void {
     const newGroup = new VGGroup;
 
@@ -517,6 +555,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Deletes a group and removes its users.
   removeVCGroup(group: VGGroup ): void {
     this.log(`Remove VisboCenter Group: ${group.name}/${group._id} VC: ${group.vcid}`);
     this.visbocenterService.deleteVCGroup(group, true)
@@ -540,6 +579,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Retrieves training statistics. no longer used
   getTrainingInfo(): void {
     this.log(`Get Training Info for VC: ${this.visbocenter._id}`);
     this.visbocenterService.getTrainingStatus(this.visbocenter._id)
@@ -562,6 +602,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Resets training statistics.
   removeTrainingInfo(): void {
     this.log(`Remove Training Info for VC: ${this.visbocenter._id}`);
     this.visbocenterService.removeTrainingStatus(this.visbocenter._id)
@@ -584,6 +625,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
       );
   }
 
+  // Sorts user list based on selected column.
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -609,6 +651,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Sorts group list.
   sortGroupTable(n?: number): void {
     if (!this.vgGroups) {
       return;
@@ -636,6 +679,7 @@ export class SysvisbocenterDetailComponent implements OnInit {
     }
   }
 
+  // Sorts configuration flags table.
   sortSettingEnabledDisabled(n?: number): void {
     if (!this.vcSettingsEnableDisable) {
       return;

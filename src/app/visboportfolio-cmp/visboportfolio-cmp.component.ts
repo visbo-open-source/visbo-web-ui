@@ -39,25 +39,38 @@ class DropDown {
   templateUrl: './visboportfolio-cmp.component.html',
   styleUrls: ['./visboportfolio-cmp.component.css']
 })
+
+// OVERVIEW
+// VisboPortfolioCmpComponent is an Angular component used to compare two versions of a Visbo Portfolio. 
+// It handles loading and displaying key metrics, project versions, organizational structures, 
+// and variant configurations for two selected portfolio versions.
+//
+// Key Functionalities
+// -    Initialization of selected portfolio versions via route parameters.
+// -    Loading project data, version data, and portfolio metrics.
+// -    Managing user permissions (project and center level).
+// -    Switching between variant views and reference dates.
+// -    Navigation to detailed project and version views.
+//
 export class VisboPortfolioCmpComponent implements OnInit {
 
-  listVPF: VisboPortfolioVersion[];
-  listVP: VisboProject[];
+  listVPF: VisboPortfolioVersion[];   // List of available portfolio versions.
+  listVP: VisboProject[];             // List of projects within the portfolio.
   listVPFVariant: DropDown[] = [];
 
   // Compare Versions 0 = origin version, 1 = compare version
   activeVPFVariant: DropDown[] = [];
-  vpfActive: VisboPortfolioVersion[] = [];
-  vpvRefDate: Date[] = [];
-  listVPV: VisboProjectVersion[][] = [];
-  listCalcVPV: VisboProjectVersion[][] = [];
+  vpfActive: VisboPortfolioVersion[] = [];  // Currently selected active portfolio versions.
+  vpvRefDate: Date[] = [];                  // Reference dates for the two versions being compared.
+  listVPV: VisboProjectVersion[][] = [];    // List of VisboProjectVersion for both versions.
+  listCalcVPV: VisboProjectVersion[][] = [];// Filtered project version lists based on the selected portfolio items.
   update: Date;
 
-  views = ['KeyMetrics', 'List', 'Capacity'];
+  views = ['KeyMetrics', 'List', 'Capacity'];// Available views: KeyMetrics, List, Capacity.
 
-  user: VisboUser;
+  user: VisboUser;                          // The currently authenticated user.
   vpSelected: string;
-  vpActive: VisboProject;
+  vpActive: VisboProject;                   // The currently active portfolio object.
 
   deleted = false;
   currentLang: string;
@@ -74,7 +87,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
   hasOrga = false;
   vcOrga: VisboOrganisation[];
 
-  combinedPerm: VGPermission = undefined;
+  combinedPerm: VGPermission = undefined; // Combined permission object controlling access rights.
   permVC = VGPVC;
   permVP = VGPVP;
 
@@ -93,12 +106,14 @@ export class VisboPortfolioCmpComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // Sets initial values like language, user, and page title.
     this.currentLang = this.translate.currentLang;
     this.user = this.authenticationService.getActiveUser();
     this.titleService.setTitle(this.translate.instant('vpfCmp.title'));
     this.log(`Init VPF Campare with Transaltion: ${this.translate.instant('vpfCmp.title')}`);
 
     localStorage.removeItem('vpfFilter');
+    // Parses route query parameters to determine selected versions and reference dates.
     const refDate = this.route.snapshot.queryParams['refDate'];
     const refDateCmp = this.route.snapshot.queryParams['refDateCmp'];
     const nextView = this.route.snapshot.queryParams['view'] || 'KeyMetrics';
@@ -110,13 +125,14 @@ export class VisboPortfolioCmpComponent implements OnInit {
     this.vpvRefDate[1] = Date.parse(refDateCmp) > 0 ? new Date(refDateCmp) : new Date();
     this.changeView(1, nextView, refDate ? this.vpvRefDate[1] : undefined, filter, vpfidCmp, false);
 
+    // Loads project and portfolio version data.
     this.getVisboProject();
   }
-
+  // Permission Check for vp
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm?.vp & perm) > 0;
   }
-
+  // Permission Check for vc
   hasVCPerm(perm: number): boolean {
     let result = false;
     if ((this.combinedPerm?.vc & perm) > 0) {
@@ -124,7 +140,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     }
     return result;
   }
-
+  // Loads active portfolio by ID.
   getVisboProject(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.vpSelected = id;
@@ -137,7 +153,9 @@ export class VisboPortfolioCmpComponent implements OnInit {
           this.combinedPerm = visboproject.perm;
           this.titleService.setTitle(this.translate.instant('vpfCmp.titleName', {name: visboproject.name}));
           this.initProjectList(this.vpActive);
+          // Loads all versions of the active portfolio.
           this.getVisboPortfolioVersions();
+          // Loads organization data related to the portfolio.
           this.getVisboCenterOrga();
           // this.getVisboCenterCustomization();
         },
@@ -152,6 +170,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
       });
   }
 
+  // Loads organization data related to the portfolio.
   getVisboCenterOrga(): void {
     if (this.vpActive && this.combinedPerm && (this.combinedPerm.vc & this.permVC.View) > 0) {
       if (this.vcOrga == undefined || this.vcOrga.length > 0) {
@@ -202,6 +221,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     return this.listVPF[index];
   }
 
+  // Loads all versions of the active portfolio.
   getVisboPortfolioVersions(): void {
     this.log(`get Portfolio Versions ${this.vpActive.name} Perm ${JSON.stringify(this.combinedPerm)}`);
     this.visboprojectversionService.getVisboPortfolioVersions(this.vpActive._id, this.deleted)
@@ -234,7 +254,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
         }
       );
   }
-
+  // Refreshes the view data.
   refreshListVPV(version: number, listVPV: VisboProjectVersion[]): void {
     // recreate list, to get refresh in child component
     const indexUnchanged = version ? 0 : 1;
@@ -245,6 +265,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     this.listVPV = list;
   }
 
+  // Loads key metrics for a version.
   getVisboPortfolioKeyMetrics(version: number): void {
     this.log(`get VPF keyMetrics ${this.vpfActive[version].name} ${this.vpfActive[version]._id}`);
 
@@ -266,7 +287,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
         }
       );
   }
-
+  // Filters project versions based on the portfolio version items.
   calcVPVList(version: number): void {
     if (!this.listVPV[version] || !this.vpfActive[version] || !this.vpfActive[version].allItems) {
       return;
@@ -288,21 +309,21 @@ export class VisboPortfolioCmpComponent implements OnInit {
     this.listCalcVPV = listCalcVPV;
   }
 
-  // goto details of the project
+  // Navigate to project detail view.
   gotoVPDetail(visboproject: VisboProject): void {
     const deleted = visboproject.deletedAt ? true : false;
     this.log(`goto Detail for VP ${visboproject._id}`);
     this.router.navigate(['vpDetail/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
-  // get the details of the project
+  // Navigate to portfolio version.
   gotoVP(visboproject: VisboProject): void {
     const deleted = visboproject.deletedAt ? true : false;
     this.log(`goto VP ${visboproject._id}`);
     this.router.navigate(['vpf/'.concat(visboproject._id)], deleted ? { queryParams: { deleted: deleted }} : {});
   }
 
-  // goto specific portfolio version with refDate
+  // Navigate to portfolio version detail.
   gotoVPF(index: number): void {
     const item = this.vpfActive[index];
     if (!item) { return; }
@@ -321,11 +342,11 @@ export class VisboPortfolioCmpComponent implements OnInit {
       }
     );
   }
-
+  // Navigate to the center view.
   gotoVC(visboproject: VisboProject): void {
     this.router.navigate(['vp/'.concat(visboproject.vcid)]);
   }
-
+  // Checks if a variant is active.
   checkVPFActive(item: DropDown, version: number): boolean {
     let result = false;
     if (this.vpfActive[version]
@@ -342,7 +363,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
       }
       this.activeVPFVariant[version]= index >= 0 ? this.listVPFVariant[index] : undefined;
   }
-
+  // Switches active portfolio version by variant name.
   switchPFVersion(variantName: string, version: number): void {
     this.log(`Change Drop Down ${variantName}`);
     const vpf = this.listVPF.find(vpf => vpf.variantName == variantName);
@@ -360,7 +381,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
       this.refreshListVPV(version, undefined);
     }
   }
-
+  // Initializes dropdown list for variant selection.
   dropDownVariantInit(): void {
     this.log(`Init Variant Drop Down List ${this.vpActive.variant.length}`);
     const listVariant: DropDown[] = [];
@@ -403,7 +424,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     }
     return result;
   }
-
+  //  Updates internal state and optionally the URL with new parameters.
   changeView(version: number, nextView: string, refDate: Date = undefined, filter:string = undefined, vpfid:string = undefined, refreshPage = true): void {
     if (nextView) {
       if (this.views.findIndex(item => item === nextView) < 0) {
@@ -436,7 +457,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
     this.update = new Date();
     if (refreshPage) { this.updateUrlParam(); }
   }
-
+  // Updates the browser URL with current query params.
   updateUrlParam(): void {
     // add parameter to URL
     const url = this.route.snapshot.url.join('/');
@@ -458,7 +479,7 @@ export class VisboPortfolioCmpComponent implements OnInit {
       queryParamsHandling: 'merge'
     });
   }
-
+  // Returns a readable name for a variant.
   displayVariantName(variant: DropDown): string {
     let result = this.translate.instant('vpfCmp.lbl.defaultVariant');
     if (variant?.variantName) {
@@ -466,16 +487,16 @@ export class VisboPortfolioCmpComponent implements OnInit {
     }
     return result
   }
-
+  // Refreshes metrics based on new reference date.
   updateDateRange(version: number): void {
     this.changeView(version, undefined, this.vpvRefDate[version], undefined, undefined)
     this.getVisboPortfolioKeyMetrics(version);
   }
-
+  // Parses a string into a date.
   parseDate(dateString: string): Date {
     return dateString ? new Date(dateString) : new Date();
   }
-
+  // Checks if version lists are populated.
   hasListVPV(): boolean {
     if (!this.listVPV || !this.listVPV[0] || !this.listVPV[1]) return false;
     if ( this.listVPV[0].length == 0 && this.listVPV[1].length == 0) return false;

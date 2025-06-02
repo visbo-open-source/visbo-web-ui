@@ -28,3 +28,11 @@
   background-color:#d4e4ff;
   overflow-y: scroll;
 }
+#myInput {
+  background-position: 10px 12px; /* Position the search icon */
+  /* width: 100%; Full-width */
+  font-size: 16px; /* Increase font-size */
+  padding: 10px 12px 10px 12px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 0px; /* Add some space below the input */
+}

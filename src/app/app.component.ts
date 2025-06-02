@@ -10,12 +10,20 @@ import { getErrorMessage, getPreView, switchPreView } from './_helpers/visbo.hel
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
+
+// 🔍 Overview
+// The AppComponent is the root component of the Visbo application. It is responsible for:
+// -  Initializing language translations based on the user's browser settings
+// -  Fetching the backend and UI version info for display or audit
+// -  (Optionally) Initializing password policy (currently commented out)
+// -  Providing preview mode utilities
+// -  Logging important application lifecycle messages
 export class AppComponent implements OnInit {
   // title = 'Your Projects served with Visbo ';
-  version = '25-02';
-  restVersionString = new Date();
-  restUIVersionString = new Date();
-  localsAvailable = false;
+  version = '25-05';                    // UI version label for display (25-04).
+  restVersionString = new Date();       // Date object holding the backend version timestamp.
+  restUIVersionString = new Date();     // Date object holding the frontend (UI) version timestamp.
+  localsAvailable = false;              // Boolean flag indicating whether translation/localization is loaded successfully.
 
   constructor(
     private messageService: MessageService,
@@ -24,6 +32,11 @@ export class AppComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+// ngOnInit
+// -  Detects the browser's default language.
+// -  Loads the translation file using TranslateService.use(...).
+// -  Calls restVersion() to load backend and UI version timestamps.
+// -  (Optionally) Calls pwPolicy() to initialize password policy settings.
   ngOnInit(): void {
     let langToSet: string;
     if (this.translate.getLangs().includes(this.translate.getBrowserLang())) {
@@ -46,6 +59,10 @@ export class AppComponent implements OnInit {
     // this.pwPolicy();
   }
 
+  // Calls the backend via authenticationService.restVersion() to retrieve:
+  // -  Backend version (version)
+  // -  UI version (versionUI)
+  // Stores the retrieved timestamps into restVersionString and restUIVersionString.
   restVersion(): void {
     this.authenticationService.restVersion()
       .subscribe(
@@ -66,6 +83,9 @@ export class AppComponent implements OnInit {
       );
   }
 
+  // pwPolicy
+  // -  Initializes the password policy via authenticationService.initPWPolicy().
+  // -  Logs the success or failure of the policy initialization.
   pwPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(
@@ -79,6 +99,9 @@ export class AppComponent implements OnInit {
       );
   }
 
+  // Wrapper methods for global utility functions:
+  // -  getPreView() returns whether the app is in preview mode.
+  // -  switchPreView() toggles preview mode state.
   getPreView(): boolean {
     return getPreView();
   }

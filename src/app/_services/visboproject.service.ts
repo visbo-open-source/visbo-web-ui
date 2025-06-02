@@ -27,6 +27,8 @@ export class VisboProjectService {
 
   /** GET VisboProjects from the server if id is specified get only projects of this vcid*/
   getVisboProjects(id: string, sysadmin = false, deleted = false, vpType = false): Observable<VisboProject[]> {
+  // The getVisboProjects method retrieves a list of Visbo projects from the server. 
+  // It allows filtering by Visbo Center ID, administrative access, deletion status, and project type.
     const url = `${this.vpUrl}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -53,25 +55,11 @@ export class VisboProjectService {
         catchError(this.handleError<VisboProject[]>('getVisboProjects'))
       );
   }
-
-  /** GET VisboProject by id. Return `undefined` when id not found */
-  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  // getVisboProjectNo404<Data>(id: string): Observable<VisboProject> {
-  //   const url = `${this.vpUrl}`;
-  //   this.log(`Calling HTTP Request: ${this.vpUrl}`);
-  //   return this.http.get<VisboProject[]>(url)
-  //     .pipe(
-  //       map(visboprojects => visboprojects[0]), // returns a {0|1} element array
-  //       tap(h => {
-  //         const outcome = h ? `fetched` : `did not find`;
-  //         this.log(`getVisboProject404 ${outcome} VisboProject id=${id}`);
-  //       }),
-  //       catchError(this.handleError<VisboProject>(`getVisboProject id=${id}`))
-  //     );
-  // }
-
+  
   /** GET VisboProject by id. Will 404 if id not found */
   getVisboProject(id: string, sysadmin = false, deleted = false): Observable<VisboProject> {
+  // The getVisboProject method retrieves a specific Visbo project by its ID. 
+  // It supports optional filters for system administrator access and inclusion of deleted projects.
     const url = `${this.vpUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -97,6 +85,8 @@ export class VisboProjectService {
 
   /** GET Capacity of VisboPortfolio Version by id. Will 404 if id not found */
   getCapacity(vpid: string, vpfid: string, refDate: Date, roleID: string, parentID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
+  // The getCapacity method retrieves capacity(resource needs) data for a specific project portfolio within a Visbo project. 
+  // It allows extensive filtering options based on dates, roles, parent IDs, and administrative access.
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/capacity`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -144,21 +134,10 @@ export class VisboProjectService {
     );
   }
 
-  /* GET VisboProjects whose name contains search term */
-  // searchVisboProjects(term: string): Observable<VisboProject[]> {
-  //   if (!term.trim()) {
-  //     // if not search term, return empty visboproject array.
-  //     return of([]);
-  //   }
-  //   return this.http.get<VisboProject[]>(`api/visboprojects?name=${term}`).pipe(
-  //     tap(_ => this.log(`found VisboProjects matching "${term}"`)),
-  //     catchError(this.handleError<VisboProject[]>('searchVisboProjects', []))
-  //   );
-  // }
-
-
-   /** GET CostTypes of VisboPortfolio Version by id. Will 404 if id not found */
+  /** GET CostTypes of VisboPortfolio Version by id. Will 404 if id not found */
    getCosttypes(vpid: string, vpfid: string, refDate: Date, costID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboProject> {
+   // The getCosttypes method retrieves cost type data for a specific VisboPortfolio Version within a Visbo Portfolio. 
+   // It offers a wide range of filtering options, including hierarchy, portfolio-specific values, administrative access, and date ranges. 
     const url = `${this.vpUrl}/${vpid}/portfolio/${vpfid}/costtypes`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -208,6 +187,8 @@ export class VisboProjectService {
 
   /** POST: add a new Visbo Project to the server */
   addVisboProject (newVP: CreateProjectProperty): Observable<VisboProject> {
+  // The addVisboProject method is used to create a new Visbo project within the system. 
+  // It supports creating projects from scratch or using a template ID when the project type (vpType) is not specified or is set to 0.
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
     if (!newVP.vpType || newVP.vpType == 0) {
@@ -225,6 +206,8 @@ export class VisboProjectService {
 
   /** DELETE: delete the Visbo Project from the server */
   deleteVisboProject (visboproject: VisboProject, deleted = false): Observable<VisboProjectResponse> {
+  // The deleteVisboProject method is responsible for deleting a specified Visbo project from the system. 
+  // It supports optional deletion of archived (deleted) projects.
     const id = visboproject._id;
     const url = `${this.vpUrl}/${id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -243,6 +226,8 @@ export class VisboProjectService {
 
   /** PUT: update the Visbo Project on the server */
   updateVisboProject (visboproject: VisboProject, deleted = false): Observable<VisboProject> {
+  // The updateVisboProject method is responsible for updating an existing Visbo project on the server. 
+  // It supports updating both active and deleted (archived) projects.
     const url = `${this.vpUrl}/${visboproject._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -260,6 +245,8 @@ export class VisboProjectService {
 
   // GET VisboProject Users for a specified VP from the server
   getVPUser(vpid: string, sysadmin = false, deleted = false): Observable<VisboUser[]> {
+  // The getVPUser method retrieves a list of users associated with a specific Visbo project (VP). 
+  // It supports optional filters for administrative access and inclusion of deleted users.
     const url = `${this.vpUrl}/${vpid}/user`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -282,6 +269,8 @@ export class VisboProjectService {
 
   // GET VisboProject Group / Users Permission for a specified VP from the server
   getVPUserGroupPerm(vpid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
+  // The getVPUserGroupPerm method retrieves the permissions of user groups associated with a specific Visbo project (VP). 
+  // It returns a mix of users and groups along with their permissions, supporting optional administrative access and inclusion of deleted groups.
     const url = `${this.vpUrl}/${vpid}/group?userlist=1`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -307,6 +296,8 @@ export class VisboProjectService {
 
   /** POST: add a new User to the Visbo Project */
   addVPUser (email: string, groupId: string, message: string, vpid: string, sysadmin = false): Observable<VGGroup> {
+  // The addVPUser method is responsible for adding a new user to a specific group within a Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${vpid}/group/${groupId}/user`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -328,6 +319,8 @@ export class VisboProjectService {
 
   /** DELETE: remove a User from the Visbo Project */
   deleteVPUser (user: VGUserGroup, vpid: string, sysadmin = false): Observable<VGGroup> {
+  // The deleteVPUser method is responsible for removing a user from a specific group within a Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${vpid}/group/${user.groupId}/user/${user.userId}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -345,6 +338,8 @@ export class VisboProjectService {
 
   /** POST: add a new Group to the Visbo Project */
   addVPGroup (newGroup: VGGroup, sysadmin = false): Observable<VGGroup> {
+  // The addVPGroup method is responsible for creating a new group within a specific Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${newGroup.vpids[0]}/group`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -362,6 +357,8 @@ export class VisboProjectService {
 
   /** PUT: modify a VP Group in the Visbo Project (Change: Name, Global, Permission)*/
   modifyVPGroup (actGroup: VGGroup, sysadmin = false): Observable<VGGroup> {
+  // The modifyVPGroup method is responsible for updating an existing group within a specific Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${actGroup.vpids[0]}/group/${actGroup._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -379,6 +376,8 @@ export class VisboProjectService {
 
   /** DELETE: remove a Group from the Visbo Project */
   deleteVPGroup (group: VGGroup, vpid: string, sysadmin = false): Observable<VGResponse> {
+  // The deleteVPGroup method is responsible for deleting a specific group from a Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${vpid}/group/${group._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -396,6 +395,8 @@ export class VisboProjectService {
 
   /** DELETE: unlock Visbo Project Variant */
   unlockVP (variantid: string, vpid: string, sysadmin = false): Observable<VPLock[]> {
+  // The unlockVP method is responsible for unlocking a specific variant within a Visbo project (VP). 
+  // It supports optional system administrator access to perform the operation with elevated privileges.
     const url = `${this.vpUrl}/${vpid}/lock`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -416,6 +417,8 @@ export class VisboProjectService {
 
   /** DELETE: delete Visbo Project Restriction */
   deleteRestriction (vpid: string, restrictid: string): Observable<VisboProject> {
+  // The deleteRestriction method is responsible for removing a specific restriction from a Visbo project (VP). 
+  // It executes a DELETE request to the server, targeting a particular restriction by its ID.
     const url = `${this.vpUrl}/${vpid}/restrict/${restrictid}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const params = new HttpParams();
@@ -430,6 +433,8 @@ export class VisboProjectService {
 
   /** Add: add Visbo Project Restriction */
   addRestriction (vpid: string, restrict: VPRestrict): Observable<VPRestrict> {
+  // The addRestriction method is responsible for adding a new restriction to a Visbo project (VP). 
+  // It sends a POST request to the server with the restriction data.
     const url = `${this.vpUrl}/${vpid}/restrict`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const params = new HttpParams();
@@ -444,6 +449,8 @@ export class VisboProjectService {
 
   /** POST: add a new Variant to the Visbo Project */
   createVariant (variant: VPVariant, vpid: string, sysadmin = false): Observable<VPVariant> {
+  // The createVariant method is responsible for creating a new variant within a Visbo project (VP). 
+  // It sends a POST request to the server with the variant data and supports optional system administrator access.
     const url = `${this.vpUrl}/${vpid}/variant`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -461,6 +468,8 @@ export class VisboProjectService {
 
   /** PUT: update a Variant to the Visbo Project */
   updateVariant (variant: VPVariant, vpid: string, sysadmin = false): Observable<VPVariant> {
+  // The updateVariant method is responsible for updating an existing variant within a Visbo project (VP). 
+  // It sends a PUT request to the server with the updated variant data and supports optional system administrator access.
     const url = `${this.vpUrl}/${vpid}/variant/${variant._id}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -478,6 +487,8 @@ export class VisboProjectService {
 
   /** DELETE: delete Visbo Project Variant */
   deleteVariant (variantID: string, vpid: string): Observable<VisboProject> {
+  // The deleteVariant method is responsible for deleting a specific variant from a Visbo project (VP). 
+  // It executes a DELETE request to the server, targeting a particular variant by its ID.
     const url = `${this.vpUrl}/${vpid}/variant/${variantID}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const params = new HttpParams();
