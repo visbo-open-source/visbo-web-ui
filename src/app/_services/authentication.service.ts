@@ -17,6 +17,11 @@ const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
+
+/* CLASS Overview
+   The AuthenticationService class manages user authentication and session handling in the VISBO system. 
+   It provides login, logout, password recovery, and user registration functionalities while maintaining user session details. 
+*/
 @Injectable()
 export class AuthenticationService {
 
@@ -32,14 +37,23 @@ export class AuthenticationService {
 
     private authUrl = this.env.restUrl.concat('/token/user');  // URL to web api
 
+    
     logoutCheck(): Date {
+    // Returns the logout time if the user is logged in, otherwise returns undefined.
+
       if (!this.isLoggedIn) {
         return undefined;
       }
       return this.logoutTime;
     }
 
+
+   
     login(username: string, password: string): Observable<VisboUser> {
+    // - Sends a login request to the backend with user credentials.
+    // - Stores user data and JWT token in local storage.
+    // - Sets logoutTime based on the token expiration.
+
       const url = `${this.authUrl}/login`;
       this.log(`Calling HTTP Request: ${url} for: ${username}`);
       const newLogin = new Login();
@@ -73,6 +87,9 @@ export class AuthenticationService {
     }
 
     loginOTT(ott: string): Observable<VisboUser> {
+    // - Authenticates a user using a one-time token (OTT).
+    // - Stores session data similarly to login().
+
       const url = `${this.authUrl}/ott`;
       this.log(`Calling HTTP Request: ${url}`);
       const newOTT = {ott: ott}
@@ -104,11 +121,15 @@ export class AuthenticationService {
     }
 
     loginGoogleUrl(): string {
+    // Returns the Google login endpoint URL.
+
       const url = `${this.authUrl}/logingoogle`;
       return url;
     }
 
     loginGoogle(): Observable<VisboUser> {
+    // Authenticates a user via Google login.
+
       const url = `${this.authUrl}/logingoogle`;
       this.log(`Calling HTTP Request: ${url}`);
 
@@ -140,6 +161,8 @@ export class AuthenticationService {
     }
 
     oauthconfirm(hash: string): void {
+    // Stores the OAuth user details and token in local storage.
+
       // MS TODO: we need to get the full blown real user
       localStorage.setItem('currentUser',
         JSON.stringify({
@@ -154,16 +177,22 @@ export class AuthenticationService {
     }
 
     logout(): void {
+      // Clears user session details and logs out the user.
+
         // remove user from local storage to log user out
         this.isLoggedIn = false;
         localStorage.clear();
     }
 
     getActiveUser(): VisboUser {
+    // Retrieves the currently logged-in user's details from local storage.
+
       return JSON.parse(localStorage.getItem('currentUser'));
     }
 
     pwforgotten(user: VisboUser): Observable<LoginResponse> {
+    // Sends a password reset request for the given user.
+
       const url = `${this.authUrl}/pwforgotten`;
       const newUser = new VisboUser();
       newUser.email = user.email;
@@ -185,6 +214,8 @@ export class AuthenticationService {
     }
 
     pwreset(user: VisboUser, token: string): Observable<LoginResponse> {
+    // Resets the password using a provided token.
+
       const url = `${this.authUrl}/pwreset`;
       const body = {token: token, password: user.password}
       this.log(`Calling HTTP Request: ${url} with: ${token} `);
@@ -206,6 +237,8 @@ export class AuthenticationService {
     }
 
     registerconfirm(userId: string, hash: string): Observable<LoginResponse> {
+    // Confirms user registration using an ID and a hash.
+
       const url = `${this.authUrl}/confirm`;
       const body = {_id: userId, hash: hash};
       this.log(`Calling HTTP Request: ${url} for: ${userId} `);
@@ -225,6 +258,8 @@ export class AuthenticationService {
     }
 
     getUser(id: string, hash: string): Observable<VisboUser> {
+    // Retrieves user information based on ID and hash.
+
       const url = `${this.authUrl}/signup`;
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       let params = new HttpParams();
@@ -244,18 +279,9 @@ export class AuthenticationService {
     }
 
     createUser(user: VisboUser, hash: string): Observable<VisboUser> {
-      const url = `${this.authUrl}/signup`;
-      // const newUser = new VisboUser;
-      // const newUserProfile = new VisboUserProfile;
-      // if (model.username) { newUser.email = model.username; }
-      // if (model._id) { newUser._id = model._id; }
-      // // do not set password before the log statement
-      // newUserProfile.firstName = model.firstName;
-      // newUserProfile.lastName = model.lastName;
-      // newUserProfile.phone = model.phone;
-      // newUserProfile.company = model.company;
-      // newUser.profile = newUserProfile;
+    // Creates a new user account.
 
+      const url = `${this.authUrl}/signup`;      
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       let params = new HttpParams();
       if (hash) {
@@ -281,6 +307,8 @@ export class AuthenticationService {
     }
 
     restVersion(): Observable<VisboVersion> {
+    // Fetches the backend REST API version.
+
       const url = this.env.restUrl.concat('/status');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboVersionResponse>(url, httpOptions)
@@ -292,6 +320,8 @@ export class AuthenticationService {
     }
 
     initPWPolicy(): Observable<VisboStatusPWPolicy> {
+    // Retrieves and stores the system's password policy.
+
       const url = this.env.restUrl.concat('/status/pwpolicy');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboStatusPWPolicyResponse>(url, httpOptions)
@@ -306,6 +336,8 @@ export class AuthenticationService {
     }
 
     getSetting(): Observable<VisboSetting[]> {
+    // Fetches system settings.
+
       const url = this.env.restUrl.concat('/status/setting');
       this.log(`Calling HTTP Request: ${url}` );
       return this.http.get<VisboSettingListResponse>(url, httpOptions)
@@ -317,6 +349,8 @@ export class AuthenticationService {
     }
 
     getPWPolicy(): string {
+    // Returns the stored password policy.
+
       return this.pwPolicy;
     }
 
@@ -327,6 +361,8 @@ export class AuthenticationService {
      * @param result - optional value to return as the observable result
      */
     private handleError<T> (operation = 'operation', result?: T) {
+    // Handles errors from HTTP requests and logs error messages.
+
       // eslint-disable-next-line
       return (error: any): Observable<T> => {
 
@@ -339,8 +375,9 @@ export class AuthenticationService {
       };
     }
 
-    /** Log a message with the MessageService */
     private log(message: string) {
+    // Logs authentication-related messages using MessageService.
+
       this.messageService.add('AuthenticationService: ' + message);
     }
 

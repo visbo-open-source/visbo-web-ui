@@ -14,6 +14,11 @@ const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
+
+/* UserService Class Overview:
+   The UserService class provides methods for managing user profiles, authentication tokens, 
+   and password changes within the VISBO system. 
+*/
 @Injectable()
 export class UserService {
 
@@ -25,8 +30,16 @@ export class UserService {
     private env: EnvService
   ) { }
 
-  // MS TODO Check correct Observable Type VisboUser instead of any
+
   getUserProfile(): Observable<VisboUser> {
+  // Fetches the current user profile from the backend.
+  // Returns:
+  //    An Observable<VisboUser> containing the user profile data.
+  // Process:
+  //    Constructs the API request URL.
+  //    Logs the request.
+  //    Maps the response to extract the user object.
+  //    Catches and handles errors.
     const url = `${this.userUrl}/profile`;
     this.log(`Calling HTTP Get Request: ${url}`);
     return this.http.get<VisboUserResponse>(url, httpOptions)
@@ -38,6 +51,16 @@ export class UserService {
   }
 
   updateUserProfile(user: VisboUser): Observable<VisboUser> {
+  // Updates the user profile.
+  // Parameters:
+  //    user: The VisboUser object containing updated user information.
+  // Returns:
+  //    An Observable<VisboUser> containing the updated user profile.
+  // Process:
+  //    Constructs the API request URL.
+  //    Logs the request.
+  //    Maps the response to extract the updated user.
+  //    Catches and handles errors.
     const url = `${this.userUrl}/profile`;
     this.log(`Calling HTTP Put Request: ${url}`);
     return this.http.put<VisboUserResponse>(url, user, httpOptions)
@@ -49,6 +72,14 @@ export class UserService {
   }
 
   getUserOTT(): Observable<string> {
+  // Fetches a one-time token (OTT) for the user.
+  // Returns:
+  //    An Observable<string> containing the OTT.
+  // Process:
+  //    Constructs the API request URL.
+  //    Logs the request.
+  //    Maps the response to extract the OTT.
+  //    Catches and handles errors.
     const url = `${this.userUrl}/ott`;
     this.log(`Calling HTTP Get Request: ${url}`);
     return this.http.get<VisboOTTResponse>(url, httpOptions)
@@ -59,6 +90,12 @@ export class UserService {
   }
 
   passwordChange(oldpw: string, newpw: string): Observable<VisboUser> {
+  // Changes the user's password.
+  // Parameters:
+  //    oldpw: The current password.
+  //    newpw: The new password to be set.
+  // Returns:
+  //    An Observable<VisboUser> containing the updated user profile.    
     const url = `${this.userUrl}/passwordchange`;
     this.log(`Calling HTTP Put Request: ${url}`);
     const pw = {oldpassword: oldpw, password: newpw};
@@ -75,6 +112,8 @@ export class UserService {
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
+   * Returns:
+   *    An observable that either returns an empty result or throws the error.
    */
   private handleError<T> (operation = 'operation', result?: T) {
     // eslint-disable-next-line

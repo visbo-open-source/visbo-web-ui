@@ -465,7 +465,7 @@ export class EmployeeComponent implements OnInit {
 
    getTimeTrackerList() {
     this.originalColumns = [];
-    this.trackerService.getUserTimeTracker(this.userId, new Date(this.startDate), new Date(this.endDate), false).subscribe(({timeEntries, managerView}) => {
+    this.trackerService.getUserTimeTracker(this.userId, this.startDate, this.endDate, false).subscribe(({timeEntries, managerView}) => {
       this.rows = timeEntries?.map(record => {
         const centerName = this.visboCentersList.find(vc => vc._id === record.vcid)?.name ?? '';
         const projectName = this.visboProjectsList.find(vp => vp._id === record.vpid)?.name ?? '';        
@@ -478,7 +478,7 @@ export class EmployeeComponent implements OnInit {
             notes: record.notes,
             status: record.status,
             time: record.time.$numberDecimal,
-            date: record.date?.split('T')[0],
+            date: record.date,
             approvalId: record.approvalId,
             approvalDate: record.approvalDate,
             vcName: centerName,

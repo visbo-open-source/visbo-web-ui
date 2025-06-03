@@ -16,24 +16,32 @@ import { getErrorMessage, visboCmpString } from '../../_helpers/visbo.helper';
   templateUrl: './sysvisbosystem.component.html',
   styleUrls: ['./sysvisbosystem.component.css']
 })
+
+// 🔍 Overview
+// SysvisbosystemComponent is an Angular component used to manage the system-wide VisboCenter. It provides administrators with a user interface to:
+// -  View and manage users and groups
+// -  Assign and evaluate permissions at System, VisboCenter (VC), and VisboProject (VP) levels
+// -  Add, edit, or remove users and permission groups
+// -  View and edit the system VisboCenter's properties
+// It’s mainly designed for super admin functionalities within the Visbo platform.
 export class SysvisbosystemComponent implements OnInit {
 
-  visbocenter: VisboCenter;
-  vgUsers: VGUserGroup[];
-  vgGroups: VGGroup[];
-  newUserInvite = new VisboUserInvite();
-  actGroup: VGGroupExpanded;
-  confirm: string;
-  userIndex: number;
-  groupIndex: number;
-  showGroups: boolean;
+  visbocenter: VisboCenter;             // The current system-level VisboCenter being managed.
+  vgUsers: VGUserGroup[];               // Array of user-group assignments.
+  vgGroups: VGGroup[];                  // Array of permission groups.
+  newUserInvite = new VisboUserInvite();// Model to capture data for inviting new users.
+  actGroup: VGGroupExpanded;            // The currently active group being edited or created.
+  confirm: string;                      // Flag for action mode ('Modify' or 'Create').
+  userIndex: number;                    // Track selected users
+  groupIndex: number;                   // Track selected groups.
+  showGroups: boolean;                  // UI toggle for showing group list.
 
-  combinedPerm: VGPermission;
-  combinedUserPerm: VGPermission;
+  combinedPerm: VGPermission;           // Permissions of the current system admin (logged-in user).
+  combinedUserPerm: VGPermission;       // Combined permissions for a selected user.
 
-  permSystem = VGPSYSTEM;
-  permVC = VGPVC;
-  permVP = VGPVP;
+  permSystem = VGPSYSTEM;               // Constants for permission mapping.
+  permVC = VGPVC;                       // Constants for permission mapping.
+  permVP = VGPVP;                       // Constants for permission mapping.
 
   sortUserColumn = 1;
   sortUserAscending = true;
@@ -49,6 +57,10 @@ export class SysvisbosystemComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
+  // ngOnInit
+  // -  Initializes the component.
+  // -  Loads system VisboCenter and associated users and groups.
+  // -  Fetches current admin permissions.
   ngOnInit(): void {
     // this.log(`Init SysAdmin`);
     this.getSysVisboCenter();
@@ -74,6 +86,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
+  // Checks current admin’s system/VC/VP permissions.
   hasSystemPerm(perm: number): boolean {
     return (this.combinedPerm.system & perm) > 0;
   }
@@ -85,7 +98,7 @@ export class SysvisbosystemComponent implements OnInit {
   hasVPPerm(perm: number): boolean {
     return (this.combinedPerm.vp & perm) > 0;
   }
-
+  // Checks selected user’s permissions.
   hasUserSystemPerm(perm: number): boolean {
     if (this.combinedUserPerm === undefined) {
       return false;
@@ -107,7 +120,7 @@ export class SysvisbosystemComponent implements OnInit {
     return (this.combinedUserPerm.vp & perm) > 0;
   }
 
-
+  // Fetches users and their assigned groups.
   getVisboCenterUsers(): void {
     const id = this.visbocenter._id;
 
@@ -132,10 +145,12 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
+  // Navigates to the list of VisboProjects within the system VC.
   gotoVPList(visbocenter: VisboCenter): void {
     this.router.navigate(['sysvp/'.concat(visbocenter._id)]);
   }
 
+  // Navigates back in browser history.
   goBack(): void {
     // this.log(`VC Details go Back ${JSON.stringify(this.location)}`)
     this.location.back();
@@ -165,6 +180,7 @@ export class SysvisbosystemComponent implements OnInit {
     this.showGroups = !this.showGroups;
   }
 
+  // Invites a new user and assigns to a group.
   addNewVCUser(): void {
     const email = this.newUserInvite.email.trim();
     const groupName = this.newUserInvite.groupName.trim();
@@ -210,10 +226,12 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
+  // Computes bitwise permission values from the UI checkboxes.
   helperUserIndex(memberIndex: number): void {
     this.userIndex = memberIndex;
   }
 
+  // Calculates combined permissions for a selected user.
   calcCombinedPerm(memberIndex: number): void {
     this.userIndex = memberIndex;
     this.combinedUserPerm = {system: 0, vc: 0, vp: 0};
@@ -253,6 +271,7 @@ export class SysvisbosystemComponent implements OnInit {
     return 0;
   }
 
+  // Deletes a group and removes its users.
   removeVCUser(user: VGUserGroup, vcid: string): void {
     this.log(`Remove VisboCenter User: ${user.email}/${user.userId} Group: ${user.groupName} VC: ${vcid}`);
     this.visbocenterService.deleteVCUser(user, vcid, true)
@@ -288,6 +307,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
+  // Computes bitwise permission values from the UI checkboxes.
   helperSystemPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedSystemView) { perm += this.permSystem.View; }
@@ -301,6 +321,7 @@ export class SysvisbosystemComponent implements OnInit {
     return perm;
   }
 
+  // Computes bitwise permission values from the UI checkboxes.
   helperVCPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedView) { perm += this.permVC.View; }
@@ -312,6 +333,7 @@ export class SysvisbosystemComponent implements OnInit {
     return perm;
   }
 
+  //Computes bitwise permission values from the UI checkboxes.
   helperVPPerm(newGroup: VGGroupExpanded): number {
     let perm = 0;
     if (newGroup.checkedVPView) { perm += this.permVP.View; }
@@ -338,6 +360,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
   }
 
+  //  Initializes group data for editing or creation.
   initGroup(curGroup: VGGroup): void {
 
     this.actGroup = new VGGroupExpanded();
@@ -379,6 +402,7 @@ export class SysvisbosystemComponent implements OnInit {
 
   }
 
+  // Adds a new group or modifies an existing one.
   addModifyVCGroup(): void {
     const newGroup = new VGGroup;
 
@@ -449,6 +473,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
   }
 
+  // Deletes a group and removes its users.
   removeVCGroup(group: VGGroup ): void {
     this.log(`Remove VisboCenter Group: ${group.name}/${group._id} VC: ${group.vcid}`);
     this.visbocenterService.deleteVCGroup(group, true)
@@ -472,6 +497,7 @@ export class SysvisbosystemComponent implements OnInit {
       );
   }
 
+  // Sorts users and groups based on name or size.
   sortUserTable(n?: number): void {
     if (!this.vgUsers) { return; }
     // change sort order otherwise sort same column same direction
@@ -497,6 +523,7 @@ export class SysvisbosystemComponent implements OnInit {
     }
   }
 
+  // Sorts users and groups based on name or size.
   sortGroupTable(n?: number): void {
     if (!this.vgGroups) { return; }
     // change sort order otherwise sort same column same direction

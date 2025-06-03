@@ -13,11 +13,15 @@ import { MessageService } from '../../_services/message.service';
   templateUrl: './logouttimer.component.html',
   styleUrls: ['./logouttimer.component.css']
 })
+
+// The LogoutTimerComponent is an Angular component responsible for handling automatic session timeout and notifying the user before logout. 
+// It monitors session expiration and redirects to the login page if the session has expired.
+
 export class LogoutTimerComponent implements OnInit {
 
-  logoutTimer = true;
-  logoutTime: Date = new Date();
-  timerID: number;
+  logoutTimer = true;               // Indicates if the logout timer is currently active. Default is true
+  logoutTime: Date = new Date();    // Holds the exact date and time when the session is scheduled to expire. Initially set to 100 seconds from the component initialization.
+  timerID: number;                  // Reserved for storing the ID of the timer if needed for future functionality such as clearing intervals
 
   constructor(
     private route: ActivatedRoute,
@@ -28,14 +32,15 @@ export class LogoutTimerComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
-  ngOnInit(): void {
-    // Get Logout Time from authentication Service
+  // Initializes the component by setting the logout time and starts the session expiration check.
+  ngOnInit(): void {    
     this.logoutTime = new Date();
     this.logoutTime.setSeconds(this.logoutTime.getSeconds() + 100);
     this.log(`Logout Time Init ${this.logoutTime.toISOString()} `);
     this.checkLogout();
   }
 
+  // Checks the session status every 10 seconds and triggers alerts or logout actions if necessary.
   checkLogout(): void {
     // emit value in sequence every 10 second
     const source = interval(10000);

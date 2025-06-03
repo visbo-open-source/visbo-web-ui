@@ -16,13 +16,18 @@ import { getErrorMessage } from '../../_helpers/visbo.helper';
   templateUrl: './pwreset.component.html',
   styleUrls: ['./pwreset.component.css']
 })
-export class PwresetComponent implements OnInit {
-  user: VisboUser;
 
-  loading = false;
-  token: string;
-  PWPolicy: string;
-  PWPolicyDescription: string;
+// The PwresetComponent is an Angular component responsible for handling the password reset functionality. 
+// It allows users to set a new password using a reset token, typically received via email. 
+// The component also retrieves and displays the password policy for guidance.
+
+export class PwresetComponent implements OnInit {
+  user: VisboUser;                // Holds user information, particularly the new password to be set
+  loading = false;                // Indicates whether the password reset process is currently in progress. 
+                                  // Useful for displaying a loading spinner or disabling the submit button.
+  token: string;                  // The reset token used to authenticate the password reset request. Retrieved from the URL query parameters.
+  PWPolicy: string;               // The password policy requirements (e.g., complexity rules) fetched from the server.
+  PWPolicyDescription: string;    // A user-friendly description of the password policy to guide the user.
 
   constructor(
     private messageService: MessageService,
@@ -33,6 +38,7 @@ export class PwresetComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // Initializes the component and sets up the required state.
   ngOnInit(): void {
     this.getPWPolicy();
     this.user = new VisboUser();
@@ -40,6 +46,7 @@ export class PwresetComponent implements OnInit {
     this.log(`Init PW Reset Token ${this.token}`);
   }
 
+  // Submits the password reset request with the new password and the reset token.
   pwreset(): void {
     this.loading = true;
 
@@ -59,6 +66,7 @@ export class PwresetComponent implements OnInit {
       );
   }
 
+  // Fetches the password policy from the server to provide guidance to the user.
   getPWPolicy(): void {
     this.authenticationService.initPWPolicy()
       .subscribe(

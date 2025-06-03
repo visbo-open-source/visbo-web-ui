@@ -15,6 +15,10 @@ import { VisboUser, VisboUsersResponse } from '../_models/visbouser';
 
 const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
+/* VisboCenterService Class Overview:
+   The VisboCenterService class provides methods for managing Visbo Centers (VCs), handling user roles, 
+   permissions, projects, training status, cost types, and time tracking. 
+*/
 @Injectable()
 export class VisboCenterService  {
   //   private vcUrl = 'vc';  // URL to api on same server
@@ -23,14 +27,15 @@ export class VisboCenterService  {
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
-    ,
+    private messageService: MessageService,
     private env: EnvService
   ) { }
 
 
   /** GET VisboCenters from the server */
   getVisboCenters(sysadmin = false, deleted = false): Observable<VisboCenter[]> {
+  // Fetches all Visbo Centers from the server.
+  // Supports filtering by system administrator and deleted status.
     const url = this.vcUrl;
     let params = new HttpParams();
 
@@ -48,6 +53,8 @@ export class VisboCenterService  {
 
   /** GET VisboCenters from the server */
   getSysVisboCenter(): Observable<VisboCenter[]> {
+  // Retrieves the system Visbo Center.
+  // Stores permissions and system VC ID in local storage.
     const url = this.vcUrl;
     let params = new HttpParams();
     params = params.append('systemvc', 'true');
@@ -74,6 +81,8 @@ export class VisboCenterService  {
 
   /* Role of User in sysadmin */
   getSysAdminRole(): VGPermission {
+  // Returns the system administrator role permissions.
+  // Retrieves from local storage if not previously set.
     let result: VGPermission;
     if (this.combinedPerm === undefined) {
       result = JSON.parse(localStorage.getItem('combinedPerm'));
@@ -86,30 +95,16 @@ export class VisboCenterService  {
 
   /* VCID of System */
   getSysVCId(): string {
+  // Retrieves the system VC ID from local storage.
     const result = localStorage.getItem('systemVC');
     this.log(`Sysem VC ID: ${result}`);
 
     return result;
   }
 
-  /** GET VisboCenter by id. Return `undefined` when id not found */
-  /** Check that 404 is called correctly, currently rest server delivers 500 instead of 404 */
-  // getVisboCenterNo404<Data>(id: string): Observable<VisboCenter> {
-  //   const url = `${this.vcUrl}/?id=${id}`;
-  //   this.log(`Calling HTTP Request: ${this.vcUrl}`);
-  //   return this.http.get<VisboCenter[]>(url)
-  //     .pipe(
-  //       map(visbocenters => visbocenters[0]), // returns a {0|1} element array
-  //       tap(h => {
-  //         var outcome = h ? `fetched` : `did not find`;
-  //         this.log(`${outcome} VisboCenter ${id}`);
-  //       }),
-  //       catchError(this.handleError<VisboCenter>(`getVisboCenter id: ${id}`))
-  //     );
-  // }
-
   /** GET VisboCenter by id. Will 404 if id not found */
   getVisboCenter(id: string, sysadmin = false, deleted = false): Observable<VisboCenter> {
+  // Fetches a specific Visbo Center by ID.
     const url = `${this.vcUrl}/${id}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -132,6 +127,8 @@ export class VisboCenterService  {
 
   /** GET Capacity of VisboCenter by id. Will 404 if id not found */
   getCapacity(id: string, refDate: Date, roleID: string, parentID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboCenter> {
+  // Retrieves the capacity information of a specific Visbo Center.
+  // Supports filtering by role, parent ID, startDate, endDate, hierarchy, and project-based views.
     const url = `${this.vcUrl}/${id}/capacity`;
     let params = new HttpParams();
     if (hierarchy) {
@@ -177,21 +174,11 @@ export class VisboCenterService  {
     );
   }
 
-  /* GET VisboCenters whose name contains search term */
-  // searchVisboCenters(term: string): Observable<VisboCenter[]> {
-  //   if (!term.trim()) {
-  //     // if not search term, return empty visbocenter array.
-  //     return of([]);
-  //   }
-  //   return this.http.get<VisboCenter[]>(`api/visbocenters?name=${term}`).pipe(
-  //     tap(_ => this.log(`found VisboCenters matching "${term}"`)),
-  //     catchError(this.handleError<VisboCenter[]>('searchVisboCenters'))
-  //   );
-  // }
-
-  
+    
   /** GET Costtypes of VisboCenter by id. Will 404 if id not found */
   getCosttypes(id: string, refDate: Date, costID: string, startDate: Date, endDate: Date, hierarchy = false, pfv = false, sysadmin = false, deleted = false, perProject = false): Observable<VisboCenter> {
+  // Retrieves cost types for a specific Visbo Center.
+  // Supports filtering by hierarchy, project-based views, and date range.
     const url = `${this.vcUrl}/${id}/costtypes`;
     let params = new HttpParams();
     if (hierarchy) {
@@ -237,6 +224,7 @@ export class VisboCenterService  {
 
   /** POST: a new Visbo Center to the server */
   addVisboCenter (visbocenter: VisboCenter): Observable<VisboCenter> {
+  // Adds a new Visbo Center to the system.
     const url = this.vcUrl;
     let params = new HttpParams();
     params = params.append('sysadmin', '1');
@@ -252,6 +240,7 @@ export class VisboCenterService  {
 
   /** DELETE: delete the Visbo Center from the server */
   deleteVisboCenter (visbocenter: VisboCenter, sysadmin = false, deleted = false): Observable<VisboCenterResponse> {
+  // Deletes a Visbo Center from the server.
     const id = visbocenter._id;
     const url = `${this.vcUrl}/${id}`;
     let params = new HttpParams();
@@ -272,6 +261,7 @@ export class VisboCenterService  {
 
   /** PUT: update the Visbo Center on the server */
   updateVisboCenter (visbocenter: VisboCenter, sysadmin = false, deleted = false): Observable<VisboCenter> {
+  // Updates an existing Visbo Center at the server
     const url = `${this.vcUrl}/${visbocenter._id}`;
     let params = new HttpParams();
 
@@ -292,6 +282,7 @@ export class VisboCenterService  {
 
   // GET VisboCenter Users for a specified VC from the server
   getVCUser(vcid: string, sysadmin = false, deleted = false): Observable<VisboUser[]> {
+  // Retrieves users associated with a specific Visbo Center from the server
     const url = `${this.vcUrl}/${vcid}/user`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     let params = new HttpParams();
@@ -314,6 +305,7 @@ export class VisboCenterService  {
 
   // GET VisboCenter Group / Users Permission for a specified VC from the server
   getVCUserGroupPerm(vcid: string, sysadmin = false, deleted = false): Observable<VGUserGroupMix> {
+  // Fetches user and group permissions for a specific Visbo Center.
     const url = `${this.vcUrl}/${vcid}/group?userlist=1`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -339,6 +331,7 @@ export class VisboCenterService  {
 
   /** POST: add a new User to the Visbo Center */
   addVCUser (email: string, groupId: string, message: string, vcid: string, sysadmin?: boolean): Observable<VGGroup> {
+  // Adds a new user to a Visbo Center group.
     const url = `${this.vcUrl}/${vcid}/group/${groupId}/user`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -359,6 +352,7 @@ export class VisboCenterService  {
 
   /** DELETE: remove a User from the Visbo Center */
   deleteVCUser (user: VGUserGroup, vcid: string, sysadmin?: boolean): Observable<VGResponse> {
+  // Removes a user from a Visbo Center group.
     const url = `${this.vcUrl}/${vcid}/group/${user.groupId}/user/${user.userId}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -375,6 +369,7 @@ export class VisboCenterService  {
 
   /** POST: add a new Group to the Visbo Center */
   addVCGroup (newGroup: VGGroup, sysadmin?: boolean): Observable<VGGroup> {
+  // Adds a new group to a Visbo Center.
     const url = `${this.vcUrl}/${newGroup.vcid}/group`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -391,6 +386,7 @@ export class VisboCenterService  {
 
   /** PUT: modify a VC Group in the Visbo Center (Change: Name, Global, Permission)*/
   modifyVCGroup (actGroup: VGGroup, sysadmin?: boolean): Observable<VGGroup> {
+  // Modifies an existing group in a Visbo Center (name, global access, permissions).
     const url = `${this.vcUrl}/${actGroup.vcid}/group/${actGroup._id}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -408,6 +404,7 @@ export class VisboCenterService  {
 
   /** DELETE: remove a Group from the Visbo Center */
   deleteVCGroup (group: VGGroup, sysadmin?: boolean): Observable<VGResponse> {
+  // Deletes a group from a Visbo Center.
     const url = `${this.vcUrl}/${group.vcid}/group/${group._id}`;
     let params = new HttpParams();
     if (sysadmin) {
@@ -458,6 +455,7 @@ export class VisboCenterService  {
    
   /** POST: add the timerecords to the Visbo Center */
   addVCTimeTracking (vcid: string, fromDate: Date, toDate: Date, name:string, sysadmin?: boolean): Observable<VisboProjectVersionResponse> {
+  // Adds time records to a Visbo Center.
     const url = `${this.vcUrl}/${vcid}/timetracking`;
     let params = new HttpParams();
     if (sysadmin) {

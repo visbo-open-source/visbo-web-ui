@@ -15,18 +15,28 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   selector: 'app-syslog',
   templateUrl: './syslog.component.html'
 })
+
+// 🔍 Overview
+// The SysLogComponent is an Angular component that provides a user interface for browsing, 
+// downloading, and managing system log files in the VISBO platform. 
+// It supports:
+// -  Listing system log files for the last n days
+// -  Viewing log metadata (name, size, date)
+// -  Downloading individual logs as .log files
+// -  Viewing and modifying the current log level setting (DEBUG, etc.)
+// -  Sorting logs by name, date, or size
 export class SysLogComponent implements OnInit {
 
-  files: VisboFile[];
-  fileIndex: number;
-  ageDays: number;
-  logDataShow: boolean;
-  logData: string;
-  logLevelSetting: VisboSetting;
-  systemVC: string;
+  files: VisboFile[];                 // List of available log files
+  fileIndex: number;                  // Currently selected file index
+  ageDays: number;                    // Number of days to look back for logs
+  logDataShow: boolean;               // Whether to show inline log content
+  logData: string;                    // Content of selected log file
+  logLevelSetting: VisboSetting;      // Current system log level setting (DEBUG etc.)
+  systemVC: string;                   // ID of the system-wide Visbo Center
 
-  sortAscending: boolean;
-  sortColumn: number;
+  sortAscending: boolean;              // Current sort direction
+  sortColumn: number;                  // Current column used for sorting
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -36,6 +46,10 @@ export class SysLogComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
+  // ngOnInit
+  // -  Sets system VC ID and default age filter (3 days)
+  // -  Retrieves log files via getVisboLogs()
+  // -  Applies initial sorting on column 1 (name)
   ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.ageDays = 3;
@@ -50,6 +64,10 @@ export class SysLogComponent implements OnInit {
   //   this.getVisboAudits();
   // }
 
+  // Retrieves log file metadata from the backend:
+  // -  Uses ageDays to filter logs by recency
+  // -  Sorts the list after fetching
+  // -  Displays success or error messages
   getVisboLogs(): void {
     this.log(`syslog getVisboLogs`);
     this.sortAscending = !this.sortAscending;
@@ -67,14 +85,17 @@ export class SysLogComponent implements OnInit {
       );
   }
 
+  // Sets the index of the selected log file (used by the UI).
   helperFileIndex(fileIndex: number): void {
     this.fileIndex = fileIndex;
   }
 
+  // Toggles between displaying and hiding inline log content.
   switchView(): void {
     this.logDataShow = !this.logDataShow;
   }
 
+  // Fetches the content of a selected log file and triggers a file download.
   getVisboLogFile(file: VisboFile): void {
     this.log(`syslog getVisboLogFile`);
     this.syslogService.getSysLog(file.folder, file.name)
@@ -90,6 +111,7 @@ export class SysLogComponent implements OnInit {
       );
   }
 
+  // Retrieves the current system DEBUG setting from the backend.
   getLogLevel(): void {
     this.log(`syslog getLogLevel`);
     this.visbosettingService.getVCSettingByName(this.systemVC, 'DEBUG', true)
@@ -105,6 +127,7 @@ export class SysLogComponent implements OnInit {
       );
   }
 
+  // Updates the log level (DEBUG configuration) for the system VC.
   setLogLevel(): void {
     this.log(`syslog setLogLevel`);
     this.visbosettingService.updateVCSetting(this.systemVC, this.logLevelSetting, true)
@@ -121,6 +144,7 @@ export class SysLogComponent implements OnInit {
       );
   }
 
+  // Creates a downloadable file in .log format from raw log string data using browser APIs.
   downloadFile(data: string, fileName: string): void {
     this.log(`download File succeeded Len: ${data.length}`);
     const blob = new Blob([data], { type: 'text/plain' });
@@ -134,6 +158,8 @@ export class SysLogComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
+  // Converts a byte value into a human-readable format:
+  // Example: 1024 → "1.00 KB"
   formatBytes(size: number, precision = 2): string {
     if (0 === size) {
       return '0 Bytes';
@@ -143,6 +169,11 @@ export class SysLogComponent implements OnInit {
     return parseFloat((size / Math.pow(c, f)).toFixed(d)) + ' ' + units[f];
   }
 
+  // Sorts the log file list based on column:
+  // -  1: Filename
+  // -  2: Last updated date
+  // -  3: File size
+  // Toggles sorting direction on repeated clicks.
   sortTable(n: number): void {
     if (!this.files) { return; }
     // change sort order otherwise sort same column same direction

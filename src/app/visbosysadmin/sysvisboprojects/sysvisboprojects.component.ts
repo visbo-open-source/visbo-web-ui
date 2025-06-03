@@ -20,6 +20,15 @@ import { getErrorMessage, visboCmpString, visboCmpDate } from '../../_helpers/vi
   selector: 'app-sysvisboprojects',
   templateUrl: './sysvisboprojects.component.html'
 })
+
+// Overview
+  // The SysVisboProjectsComponent is an Angular component responsible for managing and 
+  // displaying a list of Visbo Projects (VPs) within the VISBO system. 
+  // It supports:
+  // -  Loading all Visbo Projects or projects of a specific Visbo Center.
+  // -  Sorting project data.
+  // -  Navigating to detail or center views.
+  // -  Checking permissions before displaying content.
 export class SysVisboProjectsComponent implements OnInit {
 
   visboprojects: VisboProject[];
@@ -43,11 +52,17 @@ export class SysVisboProjectsComponent implements OnInit {
     private translate: TranslateService
   ) { }
 
+  // ngOnInit
+  // Fetches all Visbo Projects or those belonging to a selected Visbo Center.
+  // Retrieves system admin permissions.
   ngOnInit(): void {
     this.getVisboProjects();
     this.combinedPerm = this.visbocenterService.getSysAdminRole();
   }
 
+  // Loads projects for a specific Visbo Center if id is provided.
+  // If not, loads all projects.
+  // Also fetches the selected center’s permissions and filters results based on access.
   getVisboProjects(): void {
     this.log(`VP getSysVisboProjects SysAdminRole ${JSON.stringify(this.combinedPerm)}`);
     const id = this.route.snapshot.paramMap.get('id');
@@ -98,23 +113,33 @@ export class SysVisboProjectsComponent implements OnInit {
     }
   }
 
+  // Uses TranslateService to get the localized display label for a VP type enum.
   getVPType(vpType: number): string {
     return this.translate.instant('vp.type.vpType' + vpType);
   }
 
+  // Placeholder method for future row interactions.
   gotoClickedRow(visboproject: VisboProject): void {
     this.log(`clicked row ${visboproject.name}`);
     // this.router.navigate(['vpKeyMetrics/'.concat(visboproject._id)]);
   }
 
+  // Navigates to the VP detail view.
   gotoDetail(visboproject: VisboProject): void {
     this.router.navigate(['sysvpDetail/'.concat(visboproject._id)]);
   }
 
+  // Navigates to the corresponding Visbo Center detail view.
   gotoVCDetail(visbocenter: VisboCenter): void {
     this.router.navigate(['sysvcDetail/'.concat(visbocenter._id)]);
   }
 
+  // Sorts the table based on column index n.
+  // 1: Project name.
+  // 2: Last updated date.
+  // 3: Visbo Center name.
+  // 4: Count of project variants (VPVs).
+  // Sorting can toggle ascending/descending.
   sortVPTable(n: number): void {
     if (!this.visboprojects) { return; }
     if (n !== undefined) {

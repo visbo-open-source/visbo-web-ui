@@ -18,19 +18,28 @@ const EXCEL_EXTENSION = '.xlsx';
   templateUrl: './sysaudit.component.html',
   styleUrls: ['./sysaudit.component.css']
 })
+
+// 🔍 Overview
+// The SysauditComponent is an Angular component used to analyze and visualize 
+// audit logs from the VISBO system. It supports:
+// -  Filtering audit data by date, area, action, and keyword
+// -  Displaying results as a table or interactive charts
+// -  Exporting filtered data to Excel
+// -  Sorting and pagination
+// -  Visualization by action type, user, and browser/OS
 export class SysauditComponent implements OnInit {
 
-    audit: VisboAudit[];
-    auditIndex: number;
-    auditFrom: Date;
+    audit: VisboAudit[];      // List of audit entries loaded from the backend
+    auditIndex: number;       // Index of the currently selected audit entry
+    auditFrom: Date;          // Date range for filtering
     auditTo: Date;
-    auditCount: number;
-    auditText: string;
-    showMore: boolean;
-    sortAscending: boolean;
+    auditCount: number;       // Maximum number of records to fetch
+    auditText: string;        // Keyword for text-based filtering
+    showMore: boolean; 
+    sortAscending: boolean;   // Sorting logic for table display
     sortColumn: number;
-    today: Date;
-    auditType: string;
+    today: Date;              
+    auditType: string;        // Selected action filters
     auditTypeAction: string;
     auditTypeList = [
       {name: 'All', action: ''},
@@ -39,7 +48,7 @@ export class SysauditComponent implements OnInit {
       {name: 'Update', action: 'PUT'},
       {name: 'Delete', action: 'DELETE'}
     ];
-    auditArea: string;
+    auditArea: string;        // Selected area filters
     auditAreaAction: string;
     auditAreaList = [
       {name: 'Overview', action: 'other'},
@@ -53,8 +62,8 @@ export class SysauditComponent implements OnInit {
     parentThis = this;
     divBarChart1 = "SysAudit_User_div";
     divBarChart2 = "SysAudit_Browser_div";
-    chartButton = 'Chart';
-    graphData = [];
+    chartButton = 'Chart';      // Controls list vs chart mode
+    graphData = [];             // Chart data 
     graphLegend = [
       ['string', 'Action Type'],
       ['number', 'Count']
@@ -62,7 +71,7 @@ export class SysauditComponent implements OnInit {
     graphOptions = {
       'title': 'Audit Activity by Action',
       'sliceVisibilityThreshold': .025
-    };
+    };                          // Chart configurations
     graphDataLineChart = [];
     graphOptionsLineChart = {
       'title': 'Audit Activity by Time',
@@ -99,7 +108,8 @@ export class SysauditComponent implements OnInit {
       'legend': { 'position': 'top', 'maxLines': 3 },
       'hAxis': {'direction': 1 }
     };
-    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']
+    // Known operating systems (e.g., Windows, iOS)
+    listOS = ['Windows', 'Macintosh', 'iPhone', 'iPad', 'Android', 'Linux', 'Unknown']  
 
     constructor(
       private visboauditService: VisboAuditService,
@@ -110,6 +120,10 @@ export class SysauditComponent implements OnInit {
       private router: Router
     ) { }
 
+    // ngOnInit:
+    // -  Sets default filters and chart options
+    // -  Retrieves current system VC ID
+    // -  Calls getVisboAudits() to load initial data
     ngOnInit(): void {
       // this.log(`Audit init Dates ${this.auditFrom} to ${this.auditTo}`);
       this.auditCount = 50;
@@ -117,7 +131,7 @@ export class SysauditComponent implements OnInit {
       this.auditArea = this.auditAreaList[0].name;
       this.today = new Date();
       this.today.setHours(0, 0, 0, 0);
-      this.sysVCId = this.visbocenterService.getSysVCId();
+      this.sysVCId = this.visbocenterService.getSysVCId();    // System VC ID for internal filtering
       this.getVisboAudits();
     }
 
@@ -125,6 +139,12 @@ export class SysauditComponent implements OnInit {
     //   this.getVisboAudits();
     // }
 
+
+    // Builds a query based on UI filters and sends it to VisboAuditService.
+    // On success:    
+    // -  Saves results to audit    
+    // -  Displays success message    
+    // -  Triggers sorting and chart grouping
     getVisboAudits(): void {
       const queryAudit = new QueryAuditType;
 
@@ -173,11 +193,16 @@ export class SysauditComponent implements OnInit {
         );
     }
 
+    // Navigates to audit detail page
     gotoDetail(visboaudit: VisboAudit): void {
       // this.log(`navigate to Audit Detail ${visboaudit._id}`);
       this.router.navigate(['sysaudit/' + visboaudit._id]);
     }
 
+    // Exports current audit data to Excel 
+    // -  Builds a list of VisboAuditXLS entries
+    // -  Converts it into an Excel worksheet using SheetJS (XLSX)
+    // -  Automatically downloads the file with a timestamp-based filename
     downloadVisboAudit(): void {
       this.log(`sysAudit Download ${this.audit.length} Items`);
       const audit: VisboAuditXLS[] = []
@@ -240,12 +265,14 @@ export class SysauditComponent implements OnInit {
 
     }
 
+    // Toggles between chart and table display
     switchChart(): void {
       this.chart = !this.chart;
       this.chartButton = this.chart ? 'List' : 'Chart';
       // this.log(`Switch Chart to ${this.chart} Graph ${JSON.stringify(this.graphData)}`);
     }
 
+    // Groups audit data by action type (pie chart)
     groupGraphData(): void {
       const graphSum = [];
       const graphData = [];
@@ -273,6 +300,7 @@ export class SysauditComponent implements OnInit {
       // this.log(`Group Graph Sum Chart Updated`);
     }
 
+    // Groups by date and area (line chart)
     groupgraphDataActivityChart(): void {
       const graphSum = [];
       const graphData = [];
@@ -312,6 +340,7 @@ export class SysauditComponent implements OnInit {
       this.graphDataLineChart = graphData;
     }
 
+    // Groups by user and activity type (stacked bar chart)
     groupgraphDataUserChart(): void {
       const graphSum = [];
       const graphData = [];
@@ -371,6 +400,7 @@ export class SysauditComponent implements OnInit {
       this.graphDataUserChart = graphData;
     }
 
+    // Detects browser/app from user agent string
     getUserAgent(userAgent: string): string {
       const searchList = ['VISBO Projectboard', 'VISBO RPA', 'VISBO Smartinfo', 'Chrome', 'Firefox', 'Safari', 'Postman']
       let result = 'Unknown';
@@ -384,6 +414,7 @@ export class SysauditComponent implements OnInit {
       return result;
     }
 
+    // Detects OS index from user agent string
     getOSAgent(userAgent: string): number {
       let result = this.listOS.length - 1;
       userAgent = userAgent || '';
@@ -399,6 +430,7 @@ export class SysauditComponent implements OnInit {
       return result;
     }
 
+    // Groups by browser and OS (stacked bar chart)
     groupgraphDataBrowserChart(): void {
       const graphSum = [];
       const graphData = [];
@@ -441,6 +473,7 @@ export class SysauditComponent implements OnInit {
       this.graphDataBrowserChart = graphData;
     }
 
+    // Checks if audit URL matches a certain route
     auditGroup(audit: VisboAudit, match: string): boolean {
       let result = false;
       if ((audit.url || '').indexOf(match) === 0) {
@@ -449,11 +482,13 @@ export class SysauditComponent implements OnInit {
       return result;
     }
 
+    // 
     helperAuditIndex(auditIndex: number): void {
       // this.log(`Remove User Helper: ${userIndex}`);
       this.auditIndex = auditIndex;
     }
 
+    // Formats and shortens REST actions
     helperFormatActionDescription(auditentry: VisboAudit): string {
       this.log(`AuditDescription  ${auditentry.actionDescription} `);
       if (auditentry.actionDescription === 'GET'
@@ -469,6 +504,7 @@ export class SysauditComponent implements OnInit {
       return auditentry.actionDescription;
     }
 
+    // Converts number of bytes to human-readable string
     helperFormatBytes(a: number, b = 2): string {
       if (0 === a) {
         return '0 B';
@@ -479,6 +515,7 @@ export class SysauditComponent implements OnInit {
       return parseFloat((a / Math.pow(c, f)).toFixed(d)) + ' ' + e[f];
     }
 
+    // Navigates between audits using index
     pageAuditIndex(increment: number): void {
       let newAuditIndex = this.auditIndex + increment;
       if (newAuditIndex < 0) {
@@ -490,6 +527,7 @@ export class SysauditComponent implements OnInit {
       this.auditIndex = newAuditIndex;
     }
 
+    // Converts HTTP status to readable labels
     helperResponseText(visboaudit: VisboAudit): string {
       if (visboaudit.result.statusText) {
         return visboaudit.result.statusText;
@@ -507,10 +545,12 @@ export class SysauditComponent implements OnInit {
       return status.toString();
     }
 
+    // Truncates long strings safely
     helperShortenText(text: string, len: number): string {
       return visboGetShortText(text, len);
     }
 
+    // Shows/hides additional audit data
     toggleDetail(): void {
       this.log(`Toggle ShowMore`);
       this.showMore = !this.showMore;
@@ -521,6 +561,7 @@ export class SysauditComponent implements OnInit {
       return new Date(checkDate) > this.today;
     }
 
+    // Sorts the audit table by the specified column
     sortTable(n?:number): void {
       if (!this.audit) {
         return;

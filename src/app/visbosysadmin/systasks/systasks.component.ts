@@ -14,13 +14,22 @@ import { getErrorMessage, visboCmpString } from '../../_helpers/visbo.helper';
   templateUrl: './systasks.component.html',
   styleUrls: ['./systasks.component.css']
 })
+
+// 🔍 Overview
+// The SystasksComponent is part of the VISBO system administration module. 
+// It manages the execution and monitoring of background tasks defined as system settings of type "Task". 
+// It allows administrators to:
+// -  View and sort scheduled system tasks
+// -  Manually trigger task execution
+// -  Paginate through tasks
+// -  Exclude specific tasks (e.g., Predict Collect/Training)
 export class SystasksComponent implements OnInit {
 
-  systemVC: string;
-  vcsetting: VisboSetting[];
-  taskIndex: number;
-  sortAscending: boolean;
-  sortColumn: number;
+  systemVC: string;           // ID of the system-wide Visbo Center
+  vcsetting: VisboSetting[];  // List of all retrieved task settings
+  taskIndex: number;          // Currently selected task index
+  sortAscending: boolean;     // Current sort direction (ascending/descending)
+  sortColumn: number;         // Index of the column to sort by
 
   constructor(
     private visbocenterService: VisboCenterService,
@@ -29,11 +38,17 @@ export class SystasksComponent implements OnInit {
     private alertService: AlertService
   ) { }
 
+  // ngOnInit
+  // -  Retrieves the system VC ID
+  // -  Loads system tasks of type "Task" by calling getVisboTasks()
   ngOnInit(): void {
     this.systemVC = this.visbocenterService.getSysVCId();
     this.getVisboTasks();
   }
 
+  // -  Retrieves all tasks of type "Task" for the current VC
+  // -  Filters out "Predict Collect" and "Predict Training"
+  // -  Sorts results and clears alerts
   getVisboTasks(): void {
     this.log(`getVisboTasks`);
     this.visbosettingService.getVCSettingByType(this.systemVC, 'Task', true)
@@ -54,10 +69,14 @@ export class SystasksComponent implements OnInit {
       );
   }
 
+  // Sets the taskIndex to the selected row, used for task execution.
   helperTaskIndex(taskIndex: number): void {
     this.taskIndex = taskIndex;
   }
 
+  // Enables pagination (e.g., next/previous task):
+  // -  Updates taskIndex by the given increment
+  // -  Clamps values between 0 and vcsetting.length - 1
   pageTaskIndex(increment: number): void {
     let newtaskIndex: number;
     newtaskIndex = this.taskIndex + increment;
@@ -70,6 +89,9 @@ export class SystasksComponent implements OnInit {
     this.taskIndex = newtaskIndex;
   }
 
+  // Sets the selected task's nextRun value to the current date
+  // -  Triggers immediate execution by saving the setting
+  // -  Shows success or error message accordingly
   executeTask(): void {
     this.log(`execute Task Immediately: ${this.vcsetting[this.taskIndex].name} `);
     this.vcsetting[this.taskIndex].value.nextRun = new Date();
@@ -87,6 +109,11 @@ export class SystasksComponent implements OnInit {
       );
   }
 
+  // Sorts the list of tasks based on the selected column:
+  // 1	Task name
+  // 2	lastRun timestamp
+  // 3	nextRun timestamp
+  // 4	taskSpecific.result value (numeric comparison)
   sortTable(n: number): void {
     if (!this.vcsetting) { return; }
     // change sort order otherwise sort same column same direction
