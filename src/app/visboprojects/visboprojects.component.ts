@@ -61,9 +61,11 @@ export class VisboProjectsComponent implements OnInit {
   hasOrga = false;
   vcOrga: VisboOrganisation[];
   customize: VisboSetting;              // Customization setting.
+  customOpenProject: VisboSetting;      // Setting for Imp/Exp OpenProject
   userCustomfields: CustomUserFields[]; // Custom fields for users.
   modusStoppedPaused: boolean;
   vpFilter: string;
+  openProjectID: string;
 
   visboprojectversions: VisboProjectVersion[];
   // vpvList: VisboProjectVersion[];
@@ -230,6 +232,7 @@ export class VisboProjectsComponent implements OnInit {
             this.getVisboCenterCustomization();
             this.getVisboCenterOrga();
             this.getVisboCenterUserCustomFields();
+            this.getVisboCenterCustomOpenProject();
             this.getVisboProjectList(this.vcActive._id, false, this.deleted);
           },
           error => {
@@ -380,6 +383,46 @@ export class VisboProjectsComponent implements OnInit {
       this.checkTemplateCost(templateID);
 
   }
+
+  // The importVPVFromOpenProject method imports a Visbo Project Version (VPV) from OpenProject into Visbo.
+  // Upon success, the imported VPV is added to the VPV list and switched to the correct variant.
+  // If the import fails, an error message is displayed based on the response status.
+  importNewProjectFromOpenProject(): void {
+    this.log(`Import new Project from OpenProject ${this.openProjectID} `);
+    this.visboprojectversionService.importVPVFromOpenProj(this.vcActive._id ,this.openProjectID, "", false)
+      .subscribe(
+        data => { 
+          if (data && (data.success == false)) {
+            this.log(`VPV import from OpenProject failed: error: ${data.status} message: ${data.error.message}`);
+            if (data.status === 403) {
+              const message = this.translate.instant('vpKeyMetric.msg.errorPermVersion', {'name': this.openProjectID});
+              this.alertService.error(message);
+            } else if (data.status === 400 ) {
+                const message = data.details.message;
+                //const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjError');
+                this.alertService.error(message);
+            }  else {
+              const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
+              this.alertService.error(message + data.status);
+              //this.alertService.error(getErrorMessage(error));
+            }
+          } else {
+            const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
+            this.alertService.success(message, true);
+            const vp = data.vp;
+            this.visboprojects.push(vp);
+            this.gotoClickedRow(vp);
+          }
+        },    
+        error => {
+          // show error message from the openProjectBridge          
+          this.log(error.error.error);          
+          this.alertService.error(error.error.error);
+        }
+      );
+  }
+
+
   // Checks if a template includes cost data.
   checkTemplateCost(templateID: string): void {
     let vpv: VisboProjectVersion;
@@ -579,6 +622,27 @@ export class VisboProjectsComponent implements OnInit {
         });
     }
   }
+  
+  getVisboCenterCustomOpenProject(): void {
+    if (this.vcActive && (this.combinedPerm?.vc & this.permVC.View) > 0) {
+      // check if appearance is available
+      this.log(`get VC Setting OpenProject ${this.vcActive._id}`);
+      this.visbosettingService.getVCSettingByName(this.vcActive._id, 'OpenProject')
+        .subscribe(
+          vcsettings => {
+            if (vcsettings.length > 0) { this.customOpenProject = vcsettings[0]; }
+          },          
+          error => {
+            if (error.status === 403) {
+              const message = this.translate.instant('vp.msg.errorPermVC');
+              this.alertService.error(message);
+            } else {
+              this.alertService.error(getErrorMessage(error));
+            }
+        });
+    }
+  }
+
 
   getVisboCenterOrga(): void {
     if (this.vcActive) {
