@@ -346,6 +346,7 @@
 			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "List",
 			"create": "Add",
+			"createVPOP": "Add from OP",
 			"save": "Save",
 			"cancel": "Cancel"
 		},

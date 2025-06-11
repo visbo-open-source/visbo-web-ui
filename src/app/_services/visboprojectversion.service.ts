@@ -574,11 +574,16 @@ exportVPVToOpenProj(vcid: string, vpid: string, variantName: string, level: numb
 /** POST: import a  Visbo Project Version from openproject*/
 // The importVPVFromOpenProj method is responsible for importing an Open Project Project into Visbo project version (VPV)  using the Open Project Bridge API. 
 // It allows importing a specific project variant.
-importVPVFromOpenProj(vcid: string, vpid: string, variantName: string): Observable<any> {  
+importVPVFromOpenProj(vcid: string, vpid: string, variantName: string, exits: boolean): Observable<any> {  
   const url = `${this.openProjURL}/bridge/import-from-open-project/${vpid}`; 
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   let params = new HttpParams();
-  const data = { 'existsOnVisbo' : true,  "visboCentreId": vcid };
+  let data = {};
+  if (exits) {
+    data = { 'existsOnVisbo' : true,  "visboCentreId": vcid };
+  } else {
+    data = { 'existsOnVisbo' : false,  "visboCentreId": vcid };
+  }
  
   return this.http.post<any>(url, data , { headers , params }).pipe( 
       map(response => {
