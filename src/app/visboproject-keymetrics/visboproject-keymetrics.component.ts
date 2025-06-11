@@ -1867,8 +1867,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
             this.alertService.success(message, true);
-            this.addVPVtoList(data);
-            this.switchVariant(data.variantName);
+            const vpv = data.vpv;
+            this.addVPVtoList(vpv);
+            this.switchVariant(vpv.variantName);
           }
         },    
         error => {
