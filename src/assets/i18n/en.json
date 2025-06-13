@@ -710,7 +710,7 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"viewWeb": "View Project Online",
 			"localInstallationRequired": "Installation of VISBO Clients required",
-			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required",			
+			"visboOpenProjectBridgeRequired": "Usage der VISBO - OpenProject - Bridge with Errors",			
 			"importVPVFromOpenProjError": "Project Version imported from OpenProject could not be saved (not valid)!"
 		}
 	},
