@@ -83,6 +83,9 @@
         <button class="btn btn-default" (click)='changeView("KeyMetrics")' title="{{ 'vpfVersion.btn.viewKeyMetrics' | translate }}">
           <img src="assets/icons/noun-bubbles.svg" width="60" />
         </button>
+         <button class="btn btn-default" (click)='changeView("StratRisk")' title="{{ 'vpfVersion.btn.viewStratRisk' | translate }}">
+          <img src="assets/icons/noun-bubbles.svg" width="60" />
+        </button>
         <button class="btn btn-default" (click)='changeView("List")' title="{{ 'vpfVersion.btn.viewList' | translate }}">
           <img src="assets/icons/noun-list.svg" width="60" />
         </button>
@@ -123,6 +126,10 @@
   <div *ngIf="pageParams.view == 'KeyMetrics' && vpfActive && listVPV">
     <hr>
     <app-comp-viewbubble [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcUser]="vcUser" [customize]="customize" [userCustomfields]="userCustomfields" [combinedPerm]="combinedPerm"></app-comp-viewbubble>
+  </div>
+  <div *ngIf="pageParams.view == 'StratRisk' && vpfActive && listVPV">
+    <hr>
+    <app-comp-view-strat-fit-risk [bubbleMode]="true" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcUser]="vcUser" [customize]="customize" [userCustomfields]="userCustomfields" [combinedPerm]="combinedPerm"></app-comp-view-strat-fit-risk>
   </div>
   <div *ngIf="pageParams.view == 'KeyMetric' && vpfActive && listVPV">
     <hr>
