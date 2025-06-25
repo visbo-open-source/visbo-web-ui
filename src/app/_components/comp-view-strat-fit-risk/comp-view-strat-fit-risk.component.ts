@@ -114,9 +114,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
   defaultBubbleOptions: BubbleChartOptions = {
       'chartArea':{'left':120,'top':50,'width':'100%', 'height': '80%'},
       'width': '100%',
-      'height': 600,
-      // 'title':'Key Metrics: Total Cost vs. End Date Plan vs. Base Line',
-      // 'colorAxis': {'colors': ['red', 'yellow', 'green'], 'minValue': 0, 'maxValue': 2, 'legend': {'position': 'none'}},
+      'height': 600,    
       'vAxis': {
         'baseline': 0,
         'minValue': 0,
@@ -138,8 +136,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       'sizeAxis': {
         'minValue': -1000,
         'maxValue': 1000
-      },
-      // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
+      },     
       'explorer': {
         'actions': ['dragToZoom', 'rightClickToReset'],
         'maxZoomIn': .01
@@ -256,8 +253,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         if (this.filterBU === undefined) {
           const customField = getCustomFieldString(item.vp, '_businessUnit');
           if (customField) {
-            // if ( this.filterBU == undefined && lastValueBU && customField.value != lastValueBU) {
-            // if ( this.filterBU == undefined && lastValueBU) {
             if ( this.filterBU == undefined ) {
               this.filterBU = '';
             }
@@ -267,7 +262,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       }
       const vpStatus = item.vp?.vpStatus;
       if (vpStatus) {
-        //if ( this.filterVPStatusIndex == undefined && lastValueVPStatus && vpStatus != lastValueVPStatus) {
           if ( this.filterVPStatusIndex == undefined && lastValueVPStatus ) {
           this.filterVPStatusIndex = 0;
         }
@@ -313,10 +307,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
 
   filterKeyBoardEvent(event: KeyboardEvent): void {
     if (!event) { this.log('No Keyboard Event'); }
-    // let keyCode = event.keyCode;
-    // if (keyCode == 13) {    // return key
-      this.updateUrlParam('filter', undefined)
-    // }
+    this.updateUrlParam('filter', undefined);
     this.visboKeyMetricsCalc();
   }
 
@@ -524,68 +515,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     this.visboKeyMetricsCalcBubble();
   }
 
-  // thinDownMetricList(): void {
-  //   if (!this.metricList || this.metricListFiltered) {
-  //     // filter the metric list only once in the beginning, but not during filtering projects
-  //     return;
-  //   }
-  //   this.metricListFiltered = [];
-  //   if (this.hasKMCost) {
-  //     let item = this.metricList.find(item => item.metric === 'Cost');
-  //     this.metricListFiltered.push(item);
-  //     item = this.metricList.find(item => item.metric === 'ActualCost');
-  //     this.metricListFiltered.push(item);
-  //     if (this.hasKMCostPredict) {
-  //       item = this.metricList.find(item => item.metric === 'CostPredict');
-  //       if (item) {
-  //         this.metricListFiltered.push(item);
-  //       }
-  //     }
-  //   }
-  //   if (this.hasKMEndDate) {
-  //     const item = this.metricList.find(item => item.metric === 'EndDate');
-  //     this.metricListFiltered.push(item);
-  //   }
-  //   if (this.hasKMDelivery) {
-  //     const item = this.metricList.find(item => item.metric === 'Delivery');
-  //     this.metricListFiltered.push(item);
-  //   }
-  //   if (this.hasKMDeadline) {
-  //     const item = this.metricList.find(item => item.metric === 'Deadline');
-  //     this.metricListFiltered.push(item);
-  //   }
-  //   if (this.hasKMDeadlineDelay) {
-  //     let item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineFinishedDelay');
-  //     this.metricListFiltered.push(item);
-  //     item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineUnFinishedDelay');
-  //     this.metricListFiltered.push(item);
-  //   }
-  //   if (this.hasKMDeliveryDelay) {
-  //     let item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryFinishedDelay');
-  //     this.metricListFiltered.push(item);
-  //     item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryUnFinishedDelay');
-  //     this.metricListFiltered.push(item);
-  //   }
-  //   if (this.hasKMRAC) {
-  //     let item = this.metricList && this.metricList.find(item => item.metric === 'Revenue');
-  //     this.metricListFiltered.push(item);      
-  //   }
-
-
-  //   if (this.metricListFiltered.length < 2) {
-  //     this.chart = false;
-  //     // set the X & Y Axis to values that are available
-  //   }
-
-  //   this.metricListSorted = [];
-  //   this.metricListFiltered.forEach(item => this.metricListSorted.push(item))
-  //   this.metricListSorted.sort(function(a, b) { return visboCmpString(a.name, b.name); });
-
-  //   // set the X & Y Axis to values that are available
-  //   this.metricX = this.getMetric(this.metricX, this.metricY, true).metric;
-  //   this.metricY = this.getMetric(this.metricY, this.metricX, true).metric;
-  // }
-
   // getMetrics returns always a metric
   getMetric(name: string, exclude: string = undefined, filtered = false): Metric {
     const list = filtered ? this.metricListFiltered : this.metricList;
@@ -752,40 +681,8 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       minSize = 5;
       maxSize = 5;
       switch (this.metricX) {
-        // case 'Cost':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
-        //   break;
-        // case 'ActualCost':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
-        //   break;
-        // case 'CostPredict':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotalPredict - 1) * 100));
-        //   break;
-        // case 'EndDate':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate)  / 7);
-        //   break;
-        // case 'Deadline':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].timeCompletionActual - 1) * 100));
-        //   break;
-        // case 'DeadlineFinishedDelay':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].keyMetrics.timeDelayFinished || 0) / 7));
-        //   break;
-        // case 'DeadlineUnFinishedDelay':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].keyMetrics.timeDelayUnFinished || 0) / 7));
-        //   break;
-        // case 'Delivery':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].deliveryCompletionActual - 1) * 100));
-        //   break;     
       }
     }
-    // Set the Min/Max Values for the Size of the bubbles decreased/increased by 20%
-    // minSize = Math.max(minSize - 100, 0)
-    // maxSize += 100;
-    //  minSize *= 0.8;
-    //  maxSize *= 1.2;
-    // this.graphBubbleOptions.sizeAxis.minValue = minSize;
-    // this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
-
    
     this.graphBubbleOptions.hAxis.minValue = 0;
     this.graphBubbleOptions.hAxis.maxValue = 10;
@@ -796,30 +693,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         continue;
       }
       switch (this.metricY) {
-        // case 'Cost':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
-        //   break;
-        // case 'ActualCost':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostActual - 1) * 100));
-        //   break;
-        // case 'CostPredict':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotalPredict - 1) * 100));
-        //   break;
-        // case 'EndDate':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs(this.visbokeymetrics[item].savingEndDate) / 7);
-        //   break;
-        // case 'Deadline':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].timeCompletionActual - 1) * 100));
-        //   break;
-        // case 'DeadlineFinishedDelay':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].keyMetrics.timeDelayFinished || 0) / 7));
-        //   break;
-        // case 'DeadlineUnFinishedDelay':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].keyMetrics.timeDelayUnFinished || 0) / 7));
-        //   break;
-        // case 'Delivery':
-        //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].deliveryCompletionActual - 1) * 100));
-        //   break;      
         }
     }
   

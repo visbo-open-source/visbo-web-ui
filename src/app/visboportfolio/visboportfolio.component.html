@@ -94,7 +94,6 @@
           <i class="fas fa-bars"></i>
         </button>
         <div class="dropdown-menu" aria-labelledby="dropDownVPFNavigation">
-          <!-- <button class="dropdown-item" type="button" (click)='changeView("List")'>{{ 'vpfVersion.btn.viewList' | translate }}</button> -->
           <button *ngIf="hasVPPerm(permVP.Modify + permVP.CreateVariant)" class="dropdown-item" type="button" (click)="initVPF()" data-toggle="modal" data-target="#VPFList">{{ 'vpfVersion.btn.editPFList' | translate }}</button>
           <button class="dropdown-item" type="button" (click)="gotoCompareVPF()">{{ 'vpfVersion.btn.compareVPF' | translate }}</button>
         </div>
