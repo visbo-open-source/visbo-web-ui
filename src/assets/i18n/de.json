@@ -1154,8 +1154,6 @@
 			"startDate": "Projektstart",
 			"endDate": "Projektende",
 			"timeline": "Projektübersicht",
-			"xAxis": "X-Achse",
-			"yAxis": "Y-Achse",
 			"bac": "Gesamtkosten (Baseline)",
 			"rac": "Auftragswert",			
 			"racBaseLast": "Auftragswert (Baseline)",			
@@ -1166,8 +1164,6 @@
 			"days": "Tage",
 			"weeks": "Wochen",
 			"weeksShort": "W",
-			"show": "Anzeige",
-			"and": "und",
 			"from": "vom",
 			"planVsBase": "plan-to-date vs. baseline of ",
 			"filtered": "gefiltert mit",
@@ -1216,7 +1212,6 @@
 		"btn": {
 			"showChart": "Zeige Chart",
 			"showList": "Zeige Liste",
-			"change": "Ändern",
 			"cancel": "Abbrechen",
 			"exportExcel": "Excel"
 		},

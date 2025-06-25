@@ -1,27 +1,15 @@
 <!-- <p>comp-view-strat-fit-risk works!</p> -->
 <div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
   <div class="row row-cols-1 row-cols-lg-2">
-    <div class="col col-sm-12 col-lg-8">
-      <!-- <div *ngIf="metricListFiltered && metricListFiltered.length >= 2 && !getPreView()" class='container-fluid d-print-none'>
-        <div class="row text-dark hidden-print">
-          <div class="my-1 pl-1 col-11">
-              <span>{{ 'compViewBubble.lbl.show' | translate }} </span>
-              <span> {{ 'compViewBubble.lbl.planVsBase' | translate }}</span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricX).name}}</a></span>
-              <span> {{ 'compViewBubble.lbl.and' | translate }} </span>
-              <span class="font-weight-bold"><a data-toggle="modal" data-target="#VpfMetricSelector">{{getMetric(this.metricY).name}}</a></span>             
-              <span class="ml-2"><a data-toggle="modal" data-target="#VpfMetricSelector"><i class="fa fa-cog" aria-hidden="true"></i></a></span>
-          </div>
-        </div>
-      </div> -->
+    <div class="col col-sm-12 col-lg-8">     
       <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
         <div class="my-1 row">
           <div class="ml-2">
-            <span> {{ 'compViewBubble.lbl.filter' | translate }}:</span>
+            <span> {{ 'compViewStratRisk.lbl.filter' | translate }}:</span>
             <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
           </div>
           <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
-            <span> {{ 'compViewBubble.lbl.vpStatus' | translate }}: </span>
+            <span> {{ 'compViewStratRisk.lbl.vpStatus' | translate }}: </span>
             <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(true) }}</a>
             <div class="dropdown-menu">
               <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
@@ -30,29 +18,21 @@
             </div>
           </span>          
           <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
-            <span> {{ 'compViewBubble.lbl.bu' | translate }}: </span>
+            <span> {{ 'compViewStratRisk.lbl.bu' | translate }}: </span>
             <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
             <div class="dropdown-menu">
               <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
                 <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
               </a>
             </div>
-          </span>          
-          <!-- <span class="ml-2" *ngIf="filterStrategicFit >= 0">
-            <span> {{ 'compViewBubble.lbl.strategicFit' | translate }} >=</span>
-            <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterStrategicFit" min=0 max=10>
-          </span>
-          <span class="ml-2" *ngIf="filterRisk >= 0">
-            <span> {{ 'compViewBubble.lbl.risk' | translate }} >=</span>
-            <input class="ml-2 col-form-control" type="number" (change)="filterKeyBoardEvent($event)" [(ngModel)]="filterRisk" min=0 max=10>
-          </span>           -->
+          </span> 
           <div class="ml-2">
             <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
-              {{ 'compViewBubble.btn.exportExcel' | translate }}
+              {{ 'compViewStratRisk.btn.exportExcel' | translate }}
             </button>
           </div>
         </div>
-        <div> {{ 'compViewBubble.lbl.nrProjects' | translate }}:   
+        <div> {{ 'compViewStratRisk.lbl.nrProjects' | translate }}:   
             <span class="align-right">
               <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: visbokeymetrics.length < visboprojectversions.length ? 2 : 1}"></ng-container></strong>
               {{visbokeymetrics.length}} / {{visboprojectversions.length}}
@@ -62,11 +42,9 @@
     </div>
 
     <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
-      <!-- <h5 class="card-title">Special title treatment</h5> -->
       <h5 class="card-header p-2">
-        <!-- <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(getLevel(estimateAtCompletion, budgetAtCompletion),getLevel(RACSumBaseline, RACSumCurrent), profitCurrent) }"></ng-container></strong> -->
         <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong>
-        {{ 'compViewBubble.metric.financialSummary' | translate }}
+        {{ 'compViewStratRisk.metric.financialSummary' | translate }}
       </h5>
       <div class="card-body p-2">       
         <div class="row">
@@ -110,128 +88,10 @@
         <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
       </div>
     </div>
-
-    <div *ngIf="chart==false" class='mt-3 container-fluid'>
-      <div class='panel-body'>
-        <table class='table table-hover table-sortable'>
-          <thead id="VPFHead">
-            <tr>
-              <!-- <th class="d-none d-lg-table-cell">{{ 'compViewBubble.lbl.nr' | translate }}</th> -->
-              <th (click)="sortKeyMetricsTable(14)">{{ 'keyMetrics.lbl.trafficLight' | translate }} <i class="fa fa-sort"></i> </th>
-              <th (click)="sortKeyMetricsTable(1)">{{ 'compViewBubble.lbl.project' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="hasVariant" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(12)">{{ 'compViewBubble.lbl.variant' | translate }} <i class="fa fa-sort"></i></th>
-              <th id="SortPM" class="d-none d-lg-table-cell" (click)="sortKeyMetricsTable(20)">{{ 'vp.lbl.manager' | translate }} <i class="fa fa-sort"></i></th>         
-              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(21)">{{ 'compViewBubble.lbl.racBaseLast' | translate }} <i class="fa fa-sort"></i></th>              
-              <th id="SortRAC" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(22)">{{ 'compViewBubble.lbl.racCurrent' | translate }} <i class="fa fa-sort"></i></th>     
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(16)">{{ 'compViewBubble.lbl.pv' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('ActualCost')" class="text-right" (click)="sortKeyMetricsTable(15)">{{getMetric('ActualCost').table}} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Cost')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Cost')" class="text-right" (click)="sortKeyMetricsTable(2)">{{getMetric('Cost').table}} <i class="fa fa-sort"></i></th>
-              <!-- <th *ngIf="selectedMetric('CostPredict')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(3)">{{ 'compViewBubble.lbl.bac' | translate }}</th>
-              <th *ngIf="selectedMetric('CostPredict')" class="text-right" (click)="sortKeyMetricsTable(17)">{{getMetric('CostPredict').table}}</th> -->
-
-              <th *ngIf="selectedMetric('EndDate')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(5)">{{ 'compViewBubble.lbl.endDate' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('EndDate')" class="text-right" (click)="sortKeyMetricsTable(4)">{{getMetric('EndDate').table}} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Deadline')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(7)">{{ 'compViewBubble.lbl.deadlines' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Deadline')" class="text-right" (click)="sortKeyMetricsTable(6)">{{getMetric('Deadline').table}} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('DeadlineUnFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(11)">{{getMetric('DeadlineUnFinishedDelay').table}} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('DeadlineFinishedDelay')" class="text-right" (click)="sortKeyMetricsTable(10)">{{getMetric('DeadlineFinishedDelay').table}} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right d-none d-md-table-cell" (click)="sortKeyMetricsTable(9)">{{ 'compViewBubble.lbl.deliveries' | translate }} <i class="fa fa-sort"></i></th>
-              <th *ngIf="selectedMetric('Delivery')" class="text-right" (click)="sortKeyMetricsTable(8)">{{getMetric('Delivery').table}} <i class="fa fa-sort"></i></th>
-              <th class="d-lg-table-cell" (click)="sortKeyMetricsTable(19)">{{ 'keyMetrics.lbl.vpStatus' | translate }} <i class="fa fa-sort"></i></th>
-              <!-- <th class="text-right d-none d-xl-table-cell" (click)="sortKeyMetricsTable(13)">{{ 'compViewBubble.lbl.timestamp' | translate }}</th> -->
-              <th *ngIf="hasCommitDate()" class="text-right d-none d-lg-table-cell" (click)="sortKeyMetricsTable(18)">{{ 'compViewBubble.lbl.commit' | translate }} <i class="fa fa-sort"></i></th>
-            </tr>
-          </thead>
-          <!--Table body-->
-          <tbody id="VPFTotalList">
-            <tr *ngFor="let vpkm of visbokeymetrics; let vpIndex=index" (click)='gotoClickedRow(vpkm)'
-                data-toggle="modal" data-target="#ProjectDetail">
-              <!-- <td class="d-none d-lg-table-cell">{{vpIndex+1}}</td> -->
-              <td title="{{vpkm.ampelErlaeuterung}}">
-                <ng-container *ngTemplateOutlet="trafficLight; context:{level: vpkm.ampelStatus} " ></ng-container>
-              </td>
-              <td>{{vpkm.name }}</td>
-              <td *ngIf="hasVariant" class="d-none d-lg-table-cell">{{vpkm.variantName}}</td>
-              <td id="ColManager" class="d-none d-lg-table-cell" title="{{getVPManager(vpkm.vp)}}"><a>{{getVPManager(vpkm.vp, false)}}</a></td>
-              <td id="ColRACBase"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACBaseLast || vpkm.Erloes) | number:'1.0-0'}} T€</td> 
-              <td id="ColRACBase"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>    
-              <td id="ColRACPlan"  *ngIf="vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.RACCurrent || vpkm.Erloes) | number:'1.0-0'}} T€</td>
-              <td id="ColRACPlan"  *ngIf="!vpkm.keyMetrics" class="text-right"></td>            
-
-              <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{(vpkm.keyMetrics.costBaseLastActual || 0) | number:'1.0-0'}} T€</td>
-              <td *ngIf="selectedMetric('ActualCost') && vpkm.keyMetrics" class="text-right"
-                      title="{{(vpkm.keyMetrics.costCurrentActual || 0) | number:'1.0-0'}} T€">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingCostActual, 'percentOver')} " ></ng-container>
-                {{vpkm.savingCostActual*100 | number:'1.0-0'}} %
-              </td>
-              <td *ngIf="selectedMetric('ActualCost') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('ActualCost') && !vpkm.keyMetrics"></td>
-
-              <td *ngIf="selectedMetric('Cost') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{vpkm.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
-              <td *ngIf="selectedMetric('Cost') && vpkm.keyMetrics" class="text-right"
-                      title="{{vpkm.keyMetrics.costCurrentTotal | number:'1.0-0'}} T€">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingCostTotal, 'percentOver')} " ></ng-container>
-                {{vpkm.savingCostTotal*100 | number:'1.0-0'}} %
-              </td>
-              <td *ngIf="selectedMetric('Cost') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('Cost') && !vpkm.keyMetrics"></td>
-
-              <td *ngIf="selectedMetric('CostPredict') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{vpkm.keyMetrics.costBaseLastTotal | number:'1.0-0'}} T€</td>
-              <td *ngIf="selectedMetric('CostPredict') && vpkm.keyMetrics" class="text-right"
-                      title="{{vpkm.keyMetrics.costCurrentTotalPredict | number:'1.0-0'}} T€">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingCostTotalPredict, 'percentOver')} " ></ng-container>
-                {{vpkm.savingCostTotalPredict*100 | number:'1.0-0'}} %
-              </td>
-              <td *ngIf="selectedMetric('CostPredict') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('CostPredict') && !vpkm.keyMetrics"></td>
-
-              <td *ngIf="selectedMetric('EndDate') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell"
-                      title="{{vpkm.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">{{vpkm.keyMetrics.endDateBaseLast | date :'dd.MM.yy'}}</td>
-              <td *ngIf="selectedMetric('EndDate') && vpkm.keyMetrics" class="text-right"
-                      title="{{vpkm.keyMetrics.endDateCurrent | date :'dd.MM.yyyy HH:mm'}}">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.savingEndDate / 7, 'delay')} " ></ng-container>
-                {{vpkm.savingEndDate / 7 | number:'1.0-0' }} W
-              </td>
-              <td *ngIf="selectedMetric('EndDate') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"
-                  title="{{vpkm.endDate | date :'dd.MM.yyyy HH:mm'}}">{{vpkm.endDate | date :'dd.MM.yy'}}</td>
-              <td *ngIf="selectedMetric('EndDate') && !vpkm.keyMetrics" class="text-right"></td>
-
-              <td *ngIf="selectedMetric('Deadline') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{vpkm.keyMetrics.timeCompletionBaseLastActual | number:'1.0-0'}}</td>
-              <td *ngIf="selectedMetric('Deadline') && vpkm.keyMetrics" class="text-right"
-                      title="{{vpkm.keyMetrics.timeCompletionCurrentActual | number:'1.0-0'}}">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.timeCompletionActual, 'percentUnder')} " ></ng-container>
-                {{vpkm.timeCompletionActual*100 | number:'1.0-0'}} %
-              </td>
-              <td *ngIf="selectedMetric('Deadline') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('Deadline') && !vpkm.keyMetrics" class="text-right"></td>
-
-              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && vpkm.keyMetrics" class="text-right">{{vpkm.keyMetrics.timeDelayUnFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
-              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && vpkm.keyMetrics" class="text-right">{{vpkm.keyMetrics.timeDelayFinished || 0 | number:'1.0-0'}} {{ 'compViewBubble.lbl.days' | translate }}</td>
-              <td *ngIf="selectedMetric('DeadlineUnFinishedDelay') && !vpkm.keyMetrics" class="text-right"></td>
-              <td *ngIf="selectedMetric('DeadlineFinishedDelay') && !vpkm.keyMetrics" class="text-right"></td>
-
-              <td *ngIf="selectedMetric('Delivery') && vpkm.keyMetrics" class="text-right d-none d-md-table-cell">{{vpkm.keyMetrics.deliverableCompletionBaseLastActual | number:'1.0-0'}}</td>
-              <td *ngIf="selectedMetric('Delivery') && vpkm.keyMetrics" class="text-right"
-                      title="{{vpkm.keyMetrics.deliverableCompletionCurrentActual | number:'1.0-0'}}">
-                <ng-container *ngTemplateOutlet="indicator; context:{level: calcLevel(vpkm.deliveryCompletionActual, 'percentUnder')} " ></ng-container>
-                {{vpkm.deliveryCompletionActual*100 | number:'1.0-0'}} %
-              </td>
-              <td *ngIf="selectedMetric('Delivery') && !vpkm.keyMetrics" class="text-right d-none d-md-table-cell"></td>
-              <td *ngIf="selectedMetric('Delivery') && !vpkm.keyMetrics"></td>
-
-              <td class="d-none d-lg-table-cell">{{ vpkm.vpStatus && getVPStatus(true, vpkm.vpStatus) }}</td>
-              <!-- <td class="text-right d-none d-xl-table-cell"  title="{{getTimestampTooltip(vpkm)}}">{{vpkm.timestamp | date :'dd.MM.yy'}}</td> -->
-              <td id="ColCommitDate" class="text-right d-none d-lg-table-cell" title="{{getPMCommitTooltip(vpkm.vp)}}" *ngIf="hasCommitDate()" >{{getCommitDate(vpkm.vp)  | date :'dd.MM.yy'}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
   <div *ngIf="visbokeymetrics.length == 0">
     <h3 class="d-flex justify-content-center">
-      {{ 'compViewBubble.msg.noVersions' | translate }}
+      {{ 'compViewStratRisk.msg.noVersions' | translate }}
     </h3>
   </div>
 </div>
@@ -254,37 +114,3 @@
 <ng-template #trafficLight let-level="level">
   <i class="fas fa-lightbulb" [ngClass]="{'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
 </ng-template>
-
-<!-- Modal Change Key metrics -->
-<div class="modal fade" id="VpfMetricSelector" tabindex="-1" role="dialog" aria-labelledby="VpfMetricSelectorTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="VpfMetricSelectorTitle">{{ 'compViewBubble.titleChange' | translate }}</h5>
-        <button type="button" class="close"  (click)="changeChart()" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form #f="ngForm" novalidate>
-          <div class="form-group">
-            <label for="XLabel" class="col-form-label">{{ 'compViewBubble.lbl.xAxis' | translate }}:</label>
-            <select class="form-control" id="XLabel" name="metricX" [(ngModel)]="metricX">
-              <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="YLabel" class="col-form-label">{{ 'compViewBubble.lbl.yAxis' | translate }}:</label>
-            <select class="form-control" id="YLabel" name="metricY" [(ngModel)]="metricY">
-              <option *ngFor="let metricItem of metricListSorted" value="{{metricItem.metric}}">{{metricItem.name}}</option>
-            </select>
-          </div>
-          <div class="modal-footer align-items-end">
-            <!-- <button type="button" class="btn btn-secondary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewBubble.btn.cancel' | translate }}</button> -->
-            <button type="submit" class="btn btn-primary" (click)="changeChart()" data-dismiss="modal">{{ 'compViewBubble.btn.change' | translate }}</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>

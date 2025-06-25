@@ -80,7 +80,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
   deleted: boolean;
   timeoutID: ReturnType<typeof setTimeout>;
 
-  colorMetric = [{name: 'Critical', color: 'red'}, {name: 'OK', color: 'grey'}, {name: 'Good', color: 'green'} ];
+  colorMetric = [{name: 'Critical', color: 'red'}, {name: 'OK', color: 'grey'}, {name: 'Good', color: 'green'}, {name: 'Warning', color: 'yellow'} ];
 
   metricList: Metric[];
   metricX: string;
@@ -136,8 +136,8 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         'baselineColor': 'blue'
       },
       'sizeAxis': {
-        'minValue': 20,
-        'maxValue': 200
+        'minValue': -1000,
+        'maxValue': 1000
       },
       // 'chartArea':{'left':20,'top':30,'width':'100%','height':'90%'},
       'explorer': {
@@ -150,10 +150,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           'fontSize': 13
         }
       },
-      // },
-      // 'tooltip': {
-      //   'isHtml': true
-      // },
       'tooltip': {
         'showColorCode': false,
       },
@@ -180,77 +176,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.currentLang = this.translate.currentLang;
     this.log(`Init StrategicFit - Risk - Chart`);
-    this.metricList = [
-      // {
-      //   name: this.translate.instant('compViewStratRisk.metric.costName'),
-      //   metric: 'Cost',
-      //   axis: this.translate.instant('compViewStratRisk.metric.costAxis'),
-      //   bubble: this.translate.instant('compViewStratRisk.metric.costBubble'),
-      //   table: this.translate.instant('compViewStratRisk.metric.costTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.endDateName'),
-      //   metric: 'EndDate',
-      //   axis: this.translate.instant('compViewBubble.metric.endDateAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.endDateBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.endDateTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.costActualName'),
-      //   metric: 'ActualCost',
-      //   axis: this.translate.instant('compViewBubble.metric.costActualAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.costActualBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.costActualTable')
-      // },      
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deadlineName'),
-      //   metric: 'Deadline',
-      //   axis: this.translate.instant('compViewBubble.metric.deadlineAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deadlineBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deadlineTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayName'),
-      //   metric: 'DeadlineFinishedDelay',
-      //   axis: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deadlineFinishedDelayTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayName'),
-      //   metric: 'DeadlineUnFinishedDelay',
-      //   axis: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deadlineUnFinishedDelayTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deliveryName'),
-      //   metric: 'Delivery',
-      //   axis: this.translate.instant('compViewBubble.metric.deliveryAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deliveryBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deliveryTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayName'),
-      //   metric: 'DeliveryFinishedDelay',
-      //   axis: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deliveryFinishedDelayTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayName'),
-      //   metric: 'DeliveryUnFinishedDelay',
-      //   axis: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.deliveryUnFinishedDelayTable')
-      // },
-      // {
-      //   name: this.translate.instant('compViewBubble.metric.RACName'),
-      //   metric: 'Revenue',
-      //   axis: this.translate.instant('compViewBubble.metric.RACAxis'),
-      //   bubble: this.translate.instant('compViewBubble.metric.RACBubble'),
-      //   table: this.translate.instant('compViewBubble.metric.RACTable')
-      // },
+    this.metricList = [      
       {
         name: this.translate.instant('compViewStratRisk.metric.StratFit'),
         metric: 'StrategicFit',
@@ -299,10 +225,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     const filterVPStatus = this.route.snapshot.queryParams['filterVPStatus'] || '';
     const filterVPStatusIndex = constSystemVPStatus.findIndex(item => item == filterVPStatus);
     const filterBU = this.route.snapshot.queryParams['filterBU'] || undefined;
-    // let filterParam = this.route.snapshot.queryParams['filterRisk'];
-    // const filterRisk = filterParam ? filterParam.valueOf() : undefined;
-    // filterParam = this.route.snapshot.queryParams['filterStrategicFit'];
-    // const filterStrategicFit = filterParam ? filterParam.valueOf() : undefined;
     const metricX = this.route.snapshot.queryParams['metricX'] || undefined;
     let metricY = this.route.snapshot.queryParams['metricY'] || undefined;
     if (metricX === metricY) { metricY = undefined; }
@@ -314,17 +236,13 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       this.filter = filter;
     }
     this.filterBU = filterBU;
-    // this.filterRisk = filterRisk;
-    // this.filterStrategicFit = filterStrategicFit;
     this.filterVPStatusIndex = filterVPStatusIndex >= 0 ? filterVPStatusIndex + 1: undefined;
     this.initBUDropDown();
     this.initVPStateDropDown();
     // this.initUserCustomFields();
   }
 
-  initFilter(vpvList: VisboProjectVersion[]): void {
-    // let lastValueRisk: number = 0;
-    // let lastValueSF: number = 0;
+  initFilter(vpvList: VisboProjectVersion[]): void {   
     let lastValueVPStatus: string;
     let lastValueBU: string = '';
     if (!vpvList && vpvList.length < 1) {
@@ -332,26 +250,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     }
     vpvList.forEach( item => {
       if (item.vp?.customFieldDouble) {
-        // if (this.filterStrategicFit === undefined) {
-        //   const customField = getCustomFieldDouble(item.vp, '_strategicFit');
-        //   if (customField) {
-        //     //if ( this.filterStrategicFit == undefined && lastValueSF >= 0 && customField.value != lastValueSF) {
-        //     if ( this.filterStrategicFit == undefined && lastValueSF >= 0 ) {
-        //       this.filterStrategicFit = 0;
-        //     }
-        //     lastValueSF = customField.value
-        //   }
-        // }
-        // if (this.filterRisk === undefined) {
-        //   const customField = getCustomFieldDouble(item.vp, '_risk');
-        //   if (customField) {
-        //     // if ( this.filterRisk == undefined && lastValueRisk >= 0 && customField.value != lastValueRisk) {
-        //     if ( this.filterRisk == undefined && lastValueRisk >= 0) {
-        //       this.filterRisk = 0;
-        //     }
-        //     lastValueRisk = customField.value
-        //   }
-        // }
+        
       }
       if (item.vp?.customFieldString) {
         if (this.filterBU === undefined) {
@@ -405,21 +304,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     }
   }
 
-  
-  
-  // initUserCustomFields(): void {
-  //   const listCF = this.customfields?.value?.liste;
-  //   if (!listCF) return;
-  //   this.userCustomfields = [];
-  //   listCF.forEach(item => {
-  //     this.userCustomfields.push(item.name);
-  //   });
-  //   if (this.userCustomfields.length < 1) { 
-  //     this.userCustomfields = undefined;
-  //   }
-  // }
-
-
   hasVPPerm(perm: number): boolean {
     if (this.combinedPerm === undefined) {
       return false;
@@ -467,11 +351,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       queryParams.filterVPStatus = this.getVPStatus(false);
       localStorage.setItem('vpfFilterVPSStatus', this.getVPStatus(false) || '');
       queryParams.filterBU = this.filterBU;
-      localStorage.setItem('vpfFilterBU', this.filterBU || '');
-      // queryParams.filterRisk = this.filterRisk > 0 ? this.filterRisk.toString() : undefined;
-      // localStorage.setItem('vpfFilterRisk', (this.filterRisk || 0).toString());
-      // queryParams.filterStrategicFit = this.filterStrategicFit > 0 ? this.filterStrategicFit.toString() : undefined;
-      // localStorage.setItem('vpfFilterStrategicFit', (this.filterStrategicFit || 0).toString());
+      localStorage.setItem('vpfFilterBU', this.filterBU || ''); 
     } else if (type == 'metricX' || type == 'metricY') {
       queryParams.metricX = this.metricX;
       queryParams.metricY = this.metricY;
@@ -538,18 +418,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
             continue;
           }
       }  
-      // if (this.filterRisk >= 0) {
-      //   const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_risk');
-      //   if (setting && setting.value < this.filterRisk) {
-      //     continue;
-      //   }
-      // }
-      // if (this.filterStrategicFit >= 0) {
-      //   const setting = getCustomFieldDouble(this.visboprojectversions[item].vp, '_strategicFit');
-      //   if (setting && setting.value < this.filterStrategicFit) {
-      //     continue;
-      //   }
-      // }
+    
       const elementKeyMetric = new VPVKeyMetricsCalc();
       elementKeyMetric.name = this.visboprojectversions[item].name;
       elementKeyMetric.variantName = this.visboprojectversions[item].variantName;
@@ -613,9 +482,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
                                       / elementKeyMetric.Erloes;
         }
 
-        // if (elementKeyMetric.savingCostTotal > 2) elementKeyMetric.savingCostTotal = 2;
-        // if (elementKeyMetric.savingCostActual > 2) elementKeyMetric.savingCostActual = 2;
-
         // Calculate Saving EndDate in number of days related to BaseLine, limit the results to be between -20 and 20
         if (elementKeyMetric.keyMetrics.endDateCurrent && elementKeyMetric.keyMetrics.endDateBaseLast) {
           elementKeyMetric.savingEndDate = this.helperDateDiff(
@@ -655,72 +521,70 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
 
     this.profitBaseline = this.RACSumBaseline - this.budgetAtCompletion;
     this.profitCurrent = this.RACSumCurrent - this.estimateAtCompletion;
-    this.sortKeyMetricsTable(undefined);
-    this.thinDownMetricList();
     this.visboKeyMetricsCalcBubble();
   }
 
-  thinDownMetricList(): void {
-    if (!this.metricList || this.metricListFiltered) {
-      // filter the metric list only once in the beginning, but not during filtering projects
-      return;
-    }
-    this.metricListFiltered = [];
-    if (this.hasKMCost) {
-      let item = this.metricList.find(item => item.metric === 'Cost');
-      this.metricListFiltered.push(item);
-      item = this.metricList.find(item => item.metric === 'ActualCost');
-      this.metricListFiltered.push(item);
-      if (this.hasKMCostPredict) {
-        item = this.metricList.find(item => item.metric === 'CostPredict');
-        if (item) {
-          this.metricListFiltered.push(item);
-        }
-      }
-    }
-    if (this.hasKMEndDate) {
-      const item = this.metricList.find(item => item.metric === 'EndDate');
-      this.metricListFiltered.push(item);
-    }
-    if (this.hasKMDelivery) {
-      const item = this.metricList.find(item => item.metric === 'Delivery');
-      this.metricListFiltered.push(item);
-    }
-    if (this.hasKMDeadline) {
-      const item = this.metricList.find(item => item.metric === 'Deadline');
-      this.metricListFiltered.push(item);
-    }
-    if (this.hasKMDeadlineDelay) {
-      let item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineFinishedDelay');
-      this.metricListFiltered.push(item);
-      item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineUnFinishedDelay');
-      this.metricListFiltered.push(item);
-    }
-    if (this.hasKMDeliveryDelay) {
-      let item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryFinishedDelay');
-      this.metricListFiltered.push(item);
-      item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryUnFinishedDelay');
-      this.metricListFiltered.push(item);
-    }
-    if (this.hasKMRAC) {
-      let item = this.metricList && this.metricList.find(item => item.metric === 'Revenue');
-      this.metricListFiltered.push(item);      
-    }
+  // thinDownMetricList(): void {
+  //   if (!this.metricList || this.metricListFiltered) {
+  //     // filter the metric list only once in the beginning, but not during filtering projects
+  //     return;
+  //   }
+  //   this.metricListFiltered = [];
+  //   if (this.hasKMCost) {
+  //     let item = this.metricList.find(item => item.metric === 'Cost');
+  //     this.metricListFiltered.push(item);
+  //     item = this.metricList.find(item => item.metric === 'ActualCost');
+  //     this.metricListFiltered.push(item);
+  //     if (this.hasKMCostPredict) {
+  //       item = this.metricList.find(item => item.metric === 'CostPredict');
+  //       if (item) {
+  //         this.metricListFiltered.push(item);
+  //       }
+  //     }
+  //   }
+  //   if (this.hasKMEndDate) {
+  //     const item = this.metricList.find(item => item.metric === 'EndDate');
+  //     this.metricListFiltered.push(item);
+  //   }
+  //   if (this.hasKMDelivery) {
+  //     const item = this.metricList.find(item => item.metric === 'Delivery');
+  //     this.metricListFiltered.push(item);
+  //   }
+  //   if (this.hasKMDeadline) {
+  //     const item = this.metricList.find(item => item.metric === 'Deadline');
+  //     this.metricListFiltered.push(item);
+  //   }
+  //   if (this.hasKMDeadlineDelay) {
+  //     let item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineFinishedDelay');
+  //     this.metricListFiltered.push(item);
+  //     item = this.metricList && this.metricList.find(item => item.metric === 'DeadlineUnFinishedDelay');
+  //     this.metricListFiltered.push(item);
+  //   }
+  //   if (this.hasKMDeliveryDelay) {
+  //     let item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryFinishedDelay');
+  //     this.metricListFiltered.push(item);
+  //     item = this.metricList && this.metricList.find(item => item.metric === 'DeliveryUnFinishedDelay');
+  //     this.metricListFiltered.push(item);
+  //   }
+  //   if (this.hasKMRAC) {
+  //     let item = this.metricList && this.metricList.find(item => item.metric === 'Revenue');
+  //     this.metricListFiltered.push(item);      
+  //   }
 
 
-    if (this.metricListFiltered.length < 2) {
-      this.chart = false;
-      // set the X & Y Axis to values that are available
-    }
+  //   if (this.metricListFiltered.length < 2) {
+  //     this.chart = false;
+  //     // set the X & Y Axis to values that are available
+  //   }
 
-    this.metricListSorted = [];
-    this.metricListFiltered.forEach(item => this.metricListSorted.push(item))
-    this.metricListSorted.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+  //   this.metricListSorted = [];
+  //   this.metricListFiltered.forEach(item => this.metricListSorted.push(item))
+  //   this.metricListSorted.sort(function(a, b) { return visboCmpString(a.name, b.name); });
 
-    // set the X & Y Axis to values that are available
-    this.metricX = this.getMetric(this.metricX, this.metricY, true).metric;
-    this.metricY = this.getMetric(this.metricY, this.metricX, true).metric;
-  }
+  //   // set the X & Y Axis to values that are available
+  //   this.metricX = this.getMetric(this.metricX, this.metricY, true).metric;
+  //   this.metricY = this.getMetric(this.metricY, this.metricX, true).metric;
+  // }
 
   // getMetrics returns always a metric
   getMetric(name: string, exclude: string = undefined, filtered = false): Metric {
@@ -790,7 +654,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
     // keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Total Cost in T\u20AC', 'Revenue in T\u20AC'],  {type: 'string', role: 'tooltip', 'p': {'html': true}});
-    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Total Cost in T\u20AC', 'Revenue in T\u20AC']);
+    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Profit in T\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       if (!this.visbokeymetrics[item].keyMetrics) {
         continue;
@@ -799,38 +663,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       let valueX: number;
       let valueY: number;
       switch (this.metricX) {
-        // case 'Cost':
-        //   valueX = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
-        //   colorValue += valueX <= 100 ? 1 : 0;
-        //   break;
-        // case 'ActualCost':
-        //   valueX = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
-        //   colorValue += valueX <= 100 ? 1 : 0;
-        //   break;
-        // case 'CostPredict':
-        //   valueX = Math.round(this.visbokeymetrics[item].savingCostTotalPredict * 100);
-        //   colorValue += valueX <= 100 ? 1 : 0;
-        //   break;
-        // case 'EndDate':
-        //   valueX = Math.round(this.visbokeymetrics[item].savingEndDate / 7 * 10) / 10;
-        //   colorValue += valueX <= 0 ? 1 : 0;
-        //   break;
-        // case 'Deadline':
-        //   valueX = Math.round(this.visbokeymetrics[item].timeCompletionActual * 100);
-        //   colorValue += valueX >= 100 ? 1 : 0;
-        //   break;
-        // case 'DeadlineFinishedDelay':
-        //   valueX = Math.round((this.visbokeymetrics[item].keyMetrics.timeDelayFinished || 0) / 7 * 10) / 10;
-        //   colorValue += valueX <= 0 ? 1 : 0;
-        //   break;
-        // case 'DeadlineUnFinishedDelay':
-        //   valueX = Math.round((this.visbokeymetrics[item].keyMetrics.timeDelayUnFinished || 0) / 7 * 10) / 10;
-        //   colorValue += valueX <= 0 ? 1 : 0;
-        //   break;
-        // case 'Delivery':
-        //   valueX = Math.round(this.visbokeymetrics[item].deliveryCompletionActual * 100);
-        //   colorValue += valueX >= 100 ? 1 : 0;
-        //   break;
+       
         case 'StrategicFit':
           const customFieldStrat = getCustomFieldDouble(this.visbokeymetrics[item].vp, '_strategicFit');
           if (customFieldStrat) {
@@ -838,8 +671,12 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueX = 0;
           }       
-          this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          colorValue = this.getFinancalLevel(this.vpProfit);
+            if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          }   else {
+            this.vpProfit = 0
+          }
+          colorValue = this.getProfitCategory(this.vpProfit);
           break;
         case 'Risk':
           const customFieldRisk = getCustomFieldDouble(this.visbokeymetrics[item].vp, '_risk');
@@ -848,43 +685,16 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueX = 0;
           }        
-          this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          colorValue = this.getFinancalLevel(this.vpProfit);
+            if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          }   else {
+            this.vpProfit = 0
+          }
+          colorValue = this.getProfitCategory(this.vpProfit);
           break;
       }
       switch (this.metricY) {
-        // case 'Cost':
-        //   valueY = Math.round(this.visbokeymetrics[item].savingCostTotal * 100);
-        //   colorValue += valueY <= 100 ? 1 : 0;
-        //   break;
-        // case 'ActualCost':
-        //   valueY = Math.round(this.visbokeymetrics[item].savingCostActual * 100);
-        //   colorValue += valueY <= 100 ? 1 : 0;
-        //   break;
-        // case 'CostPredict':
-        //   valueY = Math.round(this.visbokeymetrics[item].savingCostTotalPredict * 100);
-        //   colorValue += valueY <= 100 ? 1 : 0;
-        //   break;
-        // case 'EndDate':
-        //   valueY = Math.round(this.visbokeymetrics[item].savingEndDate / 7 * 10) / 10;
-        //   colorValue += valueY <= 0 ? 1 : 0;
-        //   break;
-        // case 'Deadline':
-        //   valueY = Math.round(this.visbokeymetrics[item].timeCompletionActual * 100);
-        //   colorValue += valueY >= 100 ? 1 : 0;
-        //   break;
-        // case 'DeadlineFinishedDelay':
-        //   valueY = Math.round((this.visbokeymetrics[item].keyMetrics.timeDelayFinished || 0) / 7 * 10) / 10;
-        //   colorValue += valueY <= 0 ? 1 : 0;
-        //   break;
-        // case 'DeadlineUnFinishedDelay':
-        //   valueY = Math.round((this.visbokeymetrics[item].keyMetrics.timeDelayUnFinished || 0) / 7 * 10) / 10;
-        //   colorValue += valueY <= 0 ? 1 : 0;
-        //   break;
-        // case 'Delivery':
-        //   valueY = Math.round(this.visbokeymetrics[item].deliveryCompletionActual * 100);
-        //   colorValue += valueY >= 100 ? 1 : 0;
-        //   break;
+        
         case 'StrategicFit':
           const customFieldStrat = getCustomFieldDouble(this.visbokeymetrics[item].vp, '_strategicFit');
           if (customFieldStrat) {
@@ -892,8 +702,12 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           }   
-           this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          colorValue = this.getFinancalLevel(this.vpProfit);
+          if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          }   else {
+            this.vpProfit = 0
+          }
+          colorValue = this.getProfitCategory(this.vpProfit);
           break;
         case 'Risk':
           const customFieldRisk = getCustomFieldDouble(this.visbokeymetrics[item].vp, '_risk');
@@ -902,8 +716,12 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           }      
-           this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          colorValue = this.getFinancalLevel(this.vpProfit);
+          if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          }   else {
+            this.vpProfit = 0
+          }
+          colorValue = this.getProfitCategory(this.vpProfit);
           break;
       }
 
@@ -912,32 +730,16 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         valueX,
         valueY,
         this.colorMetric[colorValue].name, 
-        Math.round(this.visbokeymetrics[item].keyMetrics.costCurrentTotal || 1),
-        Math.round(this.visbokeymetrics[item].keyMetrics.RACCurrent|| 1)               
-        //this.createCustomHTMLContent(this.visbokeymetrics[item], true)
+        //(this.vpProfit/this.visbokeymetrics[item].keyMetrics.costCurrentTotal) || 1,
+        Math.round((this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal))
+        // Math.round(this.visbokeymetrics[item].keyMetrics.costCurrentTotal || 1),
+        // Math.round(this.visbokeymetrics[item].keyMetrics.RACCurrent|| 1)    
       ]);
     }
     this.calcRangeAxis();
     this.graphBubbleData = keyMetrics;
   }
-
-  //  createCustomHTMLContent(vpStratRisk: VPVKeyMetricsCalc, actualData: boolean): string {
-  //     const name = this.combineName(vpStratRisk.name, vpStratRisk.variantName);
-  //     let result = '<div style="padding:5px 5px 5px 5px;color:black;width:180px;">' +
-  //       '<div><b>' + name + '</b></div>' + '<div>' +
-  //       '<table>';
-  
-  //     const baselinePV = this.translate.instant('keyMetrics.baselinePV');
-  //     const planAC = this.translate.instant('keyMetrics.planAC');
-  
-  //     result = result + '<tr>' + '<td>' + baselinePV + ':</td>'
-  //                     + '<td align="right"><b>' + Math.round(vpStratRisk.keyMetrics.costCurrentTotal * 10) / 10 +'T\u20AC</b></td>' + '</tr>';
-  //     result = result + '<tr>' + '<td>' +  planAC 
-  //                     + ':</td align="right">' + '<td><b>' + Math.round(vpStratRisk.keyMetrics.RACCurrent * 10) / 10 + ' T\u20AC</b></td>' + '</tr>';      
-  //     result = result + '</table>' + '</div>' + '</div>';
-  //     return result;
-  //   }
-  
+ 
 
   calcRangeAxis(): void {
     let rangeAxis = 0;
@@ -947,8 +749,8 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       if (!this.visbokeymetrics[item].keyMetrics) {
         continue;
       }
-      minSize = 0;
-      maxSize = 10;
+      minSize = 5;
+      maxSize = 5;
       switch (this.metricX) {
         // case 'Cost':
         //   rangeAxis = Math.max(rangeAxis, Math.abs((this.visbokeymetrics[item].savingCostTotal - 1) * 100));
@@ -979,10 +781,10 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     // Set the Min/Max Values for the Size of the bubbles decreased/increased by 20%
     // minSize = Math.max(minSize - 100, 0)
     // maxSize += 100;
-  //  minSize *= 0.8;
-  //  maxSize *= 1.2;
-    this.graphBubbleOptions.sizeAxis.minValue = minSize;
-    this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
+    //  minSize *= 0.8;
+    //  maxSize *= 1.2;
+    // this.graphBubbleOptions.sizeAxis.minValue = minSize;
+    // this.graphBubbleOptions.sizeAxis.maxValue = maxSize;
 
    
     this.graphBubbleOptions.hAxis.minValue = 0;
@@ -1030,31 +832,9 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     if (!this.chart) {
       return;
     }
-    const weekFormat = '# ' + this.translate.instant('compViewBubble.lbl.weeksShort');
 
     this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
-      // case 'Cost':
-      // case 'ActualCost':
-      // case 'CostPredict':
-      //   this.graphBubbleOptions.hAxis.baseline = 100;
-      //   this.graphBubbleOptions.hAxis.direction = -1;
-      //   this.graphBubbleOptions.hAxis.format = "# '%'";
-      //   break;
-      // case 'EndDate':
-      // case 'DeadlineFinishedDelay':
-      // case 'DeadlineUnFinishedDelay':
-      //   this.graphBubbleOptions.hAxis.baseline = 0;
-      //   this.graphBubbleOptions.hAxis.direction = -1;
-      //   this.graphBubbleOptions.hAxis.format = weekFormat;
-      //   break;
-      // case 'Deadline':
-      // case 'Delivery':        
-      // case 'Revenue':
-      //   this.graphBubbleOptions.hAxis.baseline = 100;
-      //   this.graphBubbleOptions.hAxis.direction = 1;
-      //   this.graphBubbleOptions.hAxis.format = "# '%'";
-      //   break;
       case 'StrategicFit':
         this.graphBubbleOptions.hAxis.baseline = 10;
         this.graphBubbleOptions.hAxis.direction = 1;
@@ -1069,27 +849,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
 
     this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
     switch (this.metricY) {
-      // case 'Cost':
-      // case 'ActualCost':
-      // case 'CostPredict':
-      //   this.graphBubbleOptions.vAxis.baseline = 100;
-      //   this.graphBubbleOptions.vAxis.direction = -1;
-      //   this.graphBubbleOptions.vAxis.format = "# '%'";
-      //   break;
-      // case 'EndDate':
-      // case 'DeadlineFinishedDelay':
-      // case 'DeadlineUnFinishedDelay':
-      //   this.graphBubbleOptions.vAxis.baseline = 0;
-      //   this.graphBubbleOptions.vAxis.direction = -1;
-      //   this.graphBubbleOptions.vAxis.format = weekFormat;
-      //   break;
-      // case 'Deadline':
-      // case 'Delivery':
-      // case 'Revenue':
-      //   this.graphBubbleOptions.vAxis.baseline = 100;
-      //   this.graphBubbleOptions.vAxis.direction = 1;
-      //   this.graphBubbleOptions.vAxis.format = "# '%'";
-      //   break; 
       case 'StrategicFit':
         this.graphBubbleOptions.hAxis.baseline = 10;
         this.graphBubbleOptions.hAxis.direction = 1;
@@ -1102,7 +861,6 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         break;
     }
 
-    // this.log(`Series: ${JSON.stringify(this.graphBubbleOptions.series)}`)
   }
 
   gotoClickedRow(vpv: VPVKeyMetricsCalc): void {
@@ -1277,19 +1035,21 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     else return 3;
   }
   
-  getFinancalLevel(profit: number): number {    
-  //getFinancalLevel(cost: number, revenue: number, profit: number): number {
-    // if (cost && revenue && profit) {
-    //   if (cost + revenue + profit <= 4) return 1;
-    //   if (cost + revenue + profit >= 7) return 3;
-    //   if ((cost + revenue + profit > 4) && (cost + revenue + profit < 7)) return 2;
-    // } else {
-    //   return 2;
-    // } 
+  getFinancalLevel(profit: number): number {   
+    if (profit) {
+      if (profit > 0) return 2;
+      if (profit == 0) return 3;
+      if (profit < 0) return 0;
+    }
+  }
+
+  getProfitCategory(profit: number): number {    
     if (profit) {
       if (profit < 0) return 0;
       if (profit == 0) return 1;
       if (profit > 0) return 2;
+    } else {
+      return 1;
     }
   }
 
@@ -1372,103 +1132,103 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     return fullName || '';
   }
 
-  sortKeyMetricsTable(n: number): void {
-    if (!this.visbokeymetrics) {
-      return;
-    }
-    if (n !== undefined) {
-      if (n !== this.sortColumn) {
-        this.sortColumn = n;
-        this.sortAscending = undefined;
-      }
-      if (this.sortAscending === undefined) {
-        // sort name column ascending, number values desc first
-        this.sortAscending = ( n === 1 ) ? true : false;
-      } else {
-        this.sortAscending = !this.sortAscending;
-      }
-    } else {
-      this.sortColumn = 1;
-      this.sortAscending = true;
-    }
-    if (this.sortColumn === 1) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
-    } else if (this.sortColumn === 2) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return a.savingCostTotal - b.savingCostTotal;
-      });
-    } else if (this.sortColumn === 3) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0);
-      });
-    } else if (this.sortColumn === 4) {
-      this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
-    } else if (this.sortColumn === 5) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
-    } else if (this.sortColumn === 6) {
-      this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
-    } else if (this.sortColumn === 7) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.keyMetrics?.timeCompletionBaseLastActual || 0);
-      });
-    } else if (this.sortColumn === 8) {
-      this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
-    } else if (this.sortColumn === 9) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0);
-      });
-    } else if (this.sortColumn === 10) {
-      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
-    } else if (this.sortColumn === 11) {
-      this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0);});
-    } else if (this.sortColumn === 12) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
-    } else if (this.sortColumn === 13) {
-      this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-    } else if (this.sortColumn === 14) {
-      this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
-    } else if (this.sortColumn === 15) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return a.savingCostActual - b.savingCostActual;
-      });
-    } else if (this.sortColumn === 16) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
-      });
-    } else if (this.sortColumn === 17) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return a.savingCostTotalPredict - b.savingCostTotalPredict;
-      });
-    } else if (this.sortColumn === 18) {
-      this.visbokeymetrics.sort(function(a, b) {
-        const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');
-        const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');
-        return visboCmpDate(aDate, bDate); });
-    } else if (this.sortColumn === 19) {
-      this.visbokeymetrics.sort(function(a, b) {
-        return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
-      });
-    } else if (this.sortColumn === 20) {
-      this.visbokeymetrics.sort(function(a, b) {
-        const result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
-          || visboCmpString(a.vp?.manager?.profile?.firstName.toLowerCase() || '', b.vp?.manager?.profile?.firstName.toLowerCase() || '')
-          || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
-        return result;
-      });
-    } else if (this.sortColumn === 22) {
-      this.visbokeymetrics.sort(function(a, b) {
-         return (a.keyMetrics?.RACCurrent || a.Erloes || 0) - (b.keyMetrics?.RACCurrent || b.Erloes || 0);         
-      });
-    } else if (this.sortColumn === 21) {
-      this.visbokeymetrics.sort(function(a, b) { 
-        return (a.keyMetrics?.RACBaseLast || a.Erloes || 0) - (b.keyMetrics?.RACBaseLast || b.Erloes || 0);         
-     });
-    }
+  // sortKeyMetricsTable(n: number): void {
+  //   if (!this.visbokeymetrics) {
+  //     return;
+  //   }
+  //   if (n !== undefined) {
+  //     if (n !== this.sortColumn) {
+  //       this.sortColumn = n;
+  //       this.sortAscending = undefined;
+  //     }
+  //     if (this.sortAscending === undefined) {
+  //       // sort name column ascending, number values desc first
+  //       this.sortAscending = ( n === 1 ) ? true : false;
+  //     } else {
+  //       this.sortAscending = !this.sortAscending;
+  //     }
+  //   } else {
+  //     this.sortColumn = 1;
+  //     this.sortAscending = true;
+  //   }
+  //   if (this.sortColumn === 1) {
+  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
+  //   } else if (this.sortColumn === 2) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return a.savingCostTotal - b.savingCostTotal;
+  //     });
+  //   } else if (this.sortColumn === 3) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0);
+  //     });
+  //   } else if (this.sortColumn === 4) {
+  //     this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
+  //   } else if (this.sortColumn === 5) {
+  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
+  //   } else if (this.sortColumn === 6) {
+  //     this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
+  //   } else if (this.sortColumn === 7) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return (a.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.keyMetrics?.timeCompletionBaseLastActual || 0);
+  //     });
+  //   } else if (this.sortColumn === 8) {
+  //     this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
+  //   } else if (this.sortColumn === 9) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0);
+  //     });
+  //   } else if (this.sortColumn === 10) {
+  //     this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
+  //   } else if (this.sortColumn === 11) {
+  //     this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0);});
+  //   } else if (this.sortColumn === 12) {
+  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
+  //   } else if (this.sortColumn === 13) {
+  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
+  //   } else if (this.sortColumn === 14) {
+  //     this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
+  //   } else if (this.sortColumn === 15) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return a.savingCostActual - b.savingCostActual;
+  //     });
+  //   } else if (this.sortColumn === 16) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
+  //     });
+  //   } else if (this.sortColumn === 17) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return a.savingCostTotalPredict - b.savingCostTotalPredict;
+  //     });
+  //   } else if (this.sortColumn === 18) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');
+  //       const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');
+  //       return visboCmpDate(aDate, bDate); });
+  //   } else if (this.sortColumn === 19) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
+  //     });
+  //   } else if (this.sortColumn === 20) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //       const result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
+  //         || visboCmpString(a.vp?.manager?.profile?.firstName.toLowerCase() || '', b.vp?.manager?.profile?.firstName.toLowerCase() || '')
+  //         || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
+  //       return result;
+  //     });
+  //   } else if (this.sortColumn === 22) {
+  //     this.visbokeymetrics.sort(function(a, b) {
+  //        return (a.keyMetrics?.RACCurrent || a.Erloes || 0) - (b.keyMetrics?.RACCurrent || b.Erloes || 0);         
+  //     });
+  //   } else if (this.sortColumn === 21) {
+  //     this.visbokeymetrics.sort(function(a, b) { 
+  //       return (a.keyMetrics?.RACBaseLast || a.Erloes || 0) - (b.keyMetrics?.RACBaseLast || b.Erloes || 0);         
+  //    });
+  //   }
 
-    if (!this.sortAscending) {
-      this.visbokeymetrics.reverse();
-    }
-  }
+  //   if (!this.sortAscending) {
+  //     this.visbokeymetrics.reverse();
+  //   }
+  // }
 
   getPreView(): boolean {
     return getPreView();
