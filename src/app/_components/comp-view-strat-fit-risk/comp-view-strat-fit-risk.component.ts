@@ -117,7 +117,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       'height': 600,    
       'vAxis': {
         'baseline': 0,
-        'minValue': 0,
+        'minValue': -1,
         'maxValue': 10,
         'direction': -1,
         'format': "",
@@ -126,17 +126,17 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       },
       'hAxis': {
         'minValue': 0,
-        'maxValue': 10,
+        'maxValue': 11,
         'baseline': 1,
         'direction': -1,
         'format': "# '%'",
         'title': 'Risk',
         'baselineColor': 'blue'
-      },
+      }, 
       'sizeAxis': {
-        'minValue': -1000,
-        'maxValue': 1000
-      },     
+        'minSize': 30,
+        'maxSize': 30
+      },    
       'explorer': {
         'actions': ['dragToZoom', 'rightClickToReset'],
         'maxZoomIn': .01
@@ -582,9 +582,9 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     } else {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
-    // keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Total Cost in T\u20AC', 'Revenue in T\u20AC'],  {type: 'string', role: 'tooltip', 'p': {'html': true}});
     keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Profit in T\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
+      // a project without any baseline but with strategicFit and risk values will be shown in the chart as well
       // if (!this.visbokeymetrics[item].keyMetrics) {
       //   continue;
       // }    
@@ -667,41 +667,9 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         // Math.round(this.visbokeymetrics[item].keyMetrics.RACCurrent|| 1)    
       ]);
     }
-    //this.calcRangeAxis();
     this.graphBubbleData = keyMetrics;
   }
- 
-
-  calcRangeAxis(): void {
-    let rangeAxis = 0;
-    let minSize = Infinity, maxSize = 0;
-
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].keyMetrics) {
-        continue;
-      }
-      minSize = 5;
-      maxSize = 5;
-      switch (this.metricX) {
-      }
-    }
-   
-    this.graphBubbleOptions.hAxis.minValue = 0;
-    this.graphBubbleOptions.hAxis.maxValue = 11;
-
-    rangeAxis = 0;
-    for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].keyMetrics) {
-        continue;
-      }
-      switch (this.metricY) {
-        }
-    }
   
-      this.graphBubbleOptions.vAxis.minValue = -1;
-      this.graphBubbleOptions.vAxis.maxValue = 10;
-    
-  }
 
   graphBubbleAxis(): void {
     if (!this.chart) {
@@ -1014,116 +982,13 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       }
     }
     return fullName || '';
-  }
-
-  // sortKeyMetricsTable(n: number): void {
-  //   if (!this.visbokeymetrics) {
-  //     return;
-  //   }
-  //   if (n !== undefined) {
-  //     if (n !== this.sortColumn) {
-  //       this.sortColumn = n;
-  //       this.sortAscending = undefined;
-  //     }
-  //     if (this.sortAscending === undefined) {
-  //       // sort name column ascending, number values desc first
-  //       this.sortAscending = ( n === 1 ) ? true : false;
-  //     } else {
-  //       this.sortAscending = !this.sortAscending;
-  //     }
-  //   } else {
-  //     this.sortColumn = 1;
-  //     this.sortAscending = true;
-  //   }
-  //   if (this.sortColumn === 1) {
-  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.name, b.name); });
-  //   } else if (this.sortColumn === 2) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return a.savingCostTotal - b.savingCostTotal;
-  //     });
-  //   } else if (this.sortColumn === 3) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return (a.keyMetrics?.costBaseLastTotal || 0) - (b.keyMetrics?.costBaseLastTotal || 0);
-  //     });
-  //   } else if (this.sortColumn === 4) {
-  //     this.visbokeymetrics.sort(function(a, b) { return a.savingEndDate - b.savingEndDate; });
-  //   } else if (this.sortColumn === 5) {
-  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.keyMetrics?.endDateBaseLast || a.endDate, b.keyMetrics?.endDateBaseLast || b.endDate); });
-  //   } else if (this.sortColumn === 6) {
-  //     this.visbokeymetrics.sort(function(a, b) { return a.timeCompletionActual - b.timeCompletionActual; });
-  //   } else if (this.sortColumn === 7) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return (a.keyMetrics?.timeCompletionBaseLastActual || 0) - (b.keyMetrics?.timeCompletionBaseLastActual || 0);
-  //     });
-  //   } else if (this.sortColumn === 8) {
-  //     this.visbokeymetrics.sort(function(a, b) { return a.deliveryCompletionActual - b.deliveryCompletionActual; });
-  //   } else if (this.sortColumn === 9) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return (a.keyMetrics?.deliverableCompletionBaseLastActual || 0) - (b.keyMetrics?.deliverableCompletionBaseLastActual || 0);
-  //     });
-  //   } else if (this.sortColumn === 10) {
-  //     this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayFinished || 0) - (b.keyMetrics?.timeDelayFinished || 0); });
-  //   } else if (this.sortColumn === 11) {
-  //     this.visbokeymetrics.sort(function(a, b) { return (a.keyMetrics?.timeDelayUnFinished || 0) - (b.keyMetrics?.timeDelayUnFinished || 0);});
-  //   } else if (this.sortColumn === 12) {
-  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpString(a.variantName, b.variantName); });
-  //   } else if (this.sortColumn === 13) {
-  //     this.visbokeymetrics.sort(function(a, b) { return visboCmpDate(a.timestamp, b.timestamp); });
-  //   } else if (this.sortColumn === 14) {
-  //     this.visbokeymetrics.sort(function(a, b) { return (a.ampelStatus || 0) - (b.ampelStatus || 0); });
-  //   } else if (this.sortColumn === 15) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return a.savingCostActual - b.savingCostActual;
-  //     });
-  //   } else if (this.sortColumn === 16) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return (a.keyMetrics?.costBaseLastActual || 0) - (b.keyMetrics?.costBaseLastActual || 0);
-  //     });
-  //   } else if (this.sortColumn === 17) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return a.savingCostTotalPredict - b.savingCostTotalPredict;
-  //     });
-  //   } else if (this.sortColumn === 18) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       const aDate = getCustomFieldDate(a.vp, '_PMCommit') ? new Date(getCustomFieldDate(a.vp, '_PMCommit').value) : new Date('2001-01-01');
-  //       const bDate = getCustomFieldDate(b.vp, '_PMCommit') ? new Date(getCustomFieldDate(b.vp, '_PMCommit').value) : new Date('2001-01-01');
-  //       return visboCmpDate(aDate, bDate); });
-  //   } else if (this.sortColumn === 19) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       return visboCmpString(b.vpStatusLocale, a.vpStatusLocale);
-  //     });
-  //   } else if (this.sortColumn === 20) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //       const result = visboCmpString(a.vp?.manager?.profile?.lastName.toLowerCase() || '', b.vp?.manager?.profile?.lastName.toLowerCase() || '')
-  //         || visboCmpString(a.vp?.manager?.profile?.firstName.toLowerCase() || '', b.vp?.manager?.profile?.firstName.toLowerCase() || '')
-  //         || visboCmpString(a.vp?.manager?.email.toLowerCase() || '', b.vp?.manager?.email.toLowerCase() || '');
-  //       return result;
-  //     });
-  //   } else if (this.sortColumn === 22) {
-  //     this.visbokeymetrics.sort(function(a, b) {
-  //        return (a.keyMetrics?.RACCurrent || a.Erloes || 0) - (b.keyMetrics?.RACCurrent || b.Erloes || 0);         
-  //     });
-  //   } else if (this.sortColumn === 21) {
-  //     this.visbokeymetrics.sort(function(a, b) { 
-  //       return (a.keyMetrics?.RACBaseLast || a.Erloes || 0) - (b.keyMetrics?.RACBaseLast || b.Erloes || 0);         
-  //    });
-  //   }
-
-  //   if (!this.sortAscending) {
-  //     this.visbokeymetrics.reverse();
-  //   }
-  // }
+  }  
 
   getPreView(): boolean {
     return getPreView();
   }
 
-  getCommitDate(vp: VisboProject):Date {
-    // let result = undefined;
-    // if (!vp) { return undefined }
-    // const pmCommit = getCustomFieldDate(vp, '_PMCommit');
-    // if (!pmCommit) { return undefined }
-    // result = getCustomFieldDate(vp, '_PMCommit').value;
+  getCommitDate(vp: VisboProject):Date {  
     return   getCustomFieldDate(vp, '_PMCommit') ? getCustomFieldDate(vp, '_PMCommit').value : undefined;
    }
 
