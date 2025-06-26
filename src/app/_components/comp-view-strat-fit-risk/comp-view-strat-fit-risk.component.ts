@@ -578,19 +578,20 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       return;
     }
     if (this.visbokeymetrics.length > 10) {
-      this.graphBubbleOptions.bubble.textStyle.fontSize = 1;
+      this.graphBubbleOptions.bubble.textStyle.fontSize = 10;
     } else {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
     // keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Total Cost in T\u20AC', 'Revenue in T\u20AC'],  {type: 'string', role: 'tooltip', 'p': {'html': true}});
     keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Profit in T\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
-      if (!this.visbokeymetrics[item].keyMetrics) {
-        continue;
-      }
+      // if (!this.visbokeymetrics[item].keyMetrics) {
+      //   continue;
+      // }    
       let colorValue = 0;
       let valueX: number;
       let valueY: number;
+      this.vpProfit = 0;
       switch (this.metricX) {
        
         case 'StrategicFit':
@@ -600,7 +601,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueX = 0;
           }       
-            if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
@@ -614,7 +615,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueX = 0;
           }        
-            if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+            if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
@@ -631,7 +632,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           }   
-          if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
@@ -645,7 +646,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           }      
-          if ((this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
@@ -660,12 +661,13 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         valueY,
         this.colorMetric[colorValue].name, 
         //(this.vpProfit/this.visbokeymetrics[item].keyMetrics.costCurrentTotal) || 1,
-        Math.round((this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal))
+        this.vpProfit
+        //Math.round((this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal))
         // Math.round(this.visbokeymetrics[item].keyMetrics.costCurrentTotal || 1),
         // Math.round(this.visbokeymetrics[item].keyMetrics.RACCurrent|| 1)    
       ]);
     }
-    this.calcRangeAxis();
+    //this.calcRangeAxis();
     this.graphBubbleData = keyMetrics;
   }
  
@@ -685,7 +687,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     }
    
     this.graphBubbleOptions.hAxis.minValue = 0;
-    this.graphBubbleOptions.hAxis.maxValue = 10;
+    this.graphBubbleOptions.hAxis.maxValue = 11;
 
     rangeAxis = 0;
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
@@ -696,7 +698,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         }
     }
   
-      this.graphBubbleOptions.vAxis.minValue = 0;
+      this.graphBubbleOptions.vAxis.minValue = -1;
       this.graphBubbleOptions.vAxis.maxValue = 10;
     
   }
@@ -711,26 +713,35 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       case 'StrategicFit':
         this.graphBubbleOptions.hAxis.baseline = 10;
         this.graphBubbleOptions.hAxis.direction = 1;
-        this.graphBubbleOptions.hAxis.format = "# ";
+        this.graphBubbleOptions.hAxis.format = "# "; 
+        this.graphBubbleOptions.hAxis.minValue = 0;
+        this.graphBubbleOptions.hAxis.maxValue = 11;
+
         break;
       case 'Risk':
         this.graphBubbleOptions.hAxis.baseline = 10;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# ";
+        this.graphBubbleOptions.hAxis.minValue = -1;
+        this.graphBubbleOptions.hAxis.maxValue = 10;
         break;
     }
 
     this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
     switch (this.metricY) {
       case 'StrategicFit':
-        this.graphBubbleOptions.hAxis.baseline = 10;
-        this.graphBubbleOptions.hAxis.direction = 1;
-        this.graphBubbleOptions.hAxis.format = "# ";
+        this.graphBubbleOptions.vAxis.baseline = 10;
+        this.graphBubbleOptions.vAxis.direction = 1;
+        this.graphBubbleOptions.vAxis.format = "# ";
+        this.graphBubbleOptions.vAxis.minValue = 0;
+        this.graphBubbleOptions.vAxis.maxValue = 11;
         break;
       case 'Risk':
         this.graphBubbleOptions.vAxis.baseline = 10;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# ";
+        this.graphBubbleOptions.vAxis.minValue = -1;
+        this.graphBubbleOptions.vAxis.maxValue = 10;
         break;
     }
 
