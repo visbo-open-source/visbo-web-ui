@@ -1882,7 +1882,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.alertService.error(message);            
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
-            this.alertService.error(message + error.status);
+            this.alertService.error(message + " " + error.status);
           }
         }
       );

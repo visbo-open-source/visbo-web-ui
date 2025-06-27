@@ -1,0 +1,7 @@
+#VPFHead {
+    background-color:#adc7f1;
+}  
+#VPFTotalList {
+    background-color:#d4e4ff;
+    overflow-y: scroll;
+}

@@ -710,7 +710,7 @@
 			"errorPermVersion": "Permission denied for project versions {{name}}",
 			"viewWeb": "View Project Online",
 			"localInstallationRequired": "Installation of VISBO Clients required",
-			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge required",			
+			"visboOpenProjectBridgeRequired": "Usage der VISBO - OpenProject - Bridge with Errors",			
 			"importVPVFromOpenProjError": "Project Version imported from OpenProject could not be saved (not valid)!"
 		}
 	},
@@ -1133,7 +1133,36 @@
 			"RACDiff": "Abweichung Revenue at Completion"
 		},
 		"msg": {
-			"noVersions": "No Project Versions related to this Date",
+			"noVersions": "No Project Versions matching these Criteria",
+			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
+		}
+	},
+	"compViewStratRisk": {
+		"titleChange": "Change Key Metric",
+		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Number of projects",
+			"vpStatus": "State",
+			"bu": "Program",
+			"filter": "Filter Projects",
+			"all": "All"
+		},
+		"btn": {
+			"exportExcel": "Excel"
+		},
+		"metric": {
+			"financialSummary": "Financial Summary",
+			"StratFit": "StrategicFit",
+			"StratAxis": "Strategic Fit",
+			"StratBubble": "Strategy Assessment",
+			"StratTable": "Strategy",
+			"Risk": "Risk",
+			"RiskAxis": "Risk",
+			"RiskBubble": "Risk Assessnent",
+			"RiskTable": "Risk"
+		},
+		"msg": {
+			"noVersions": "No Project Versions matching these criteria",
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
 		}
 	},
@@ -1360,7 +1389,7 @@
 			"deliveryUnFinishedDelayTable": "unfinished Deadlines"
 		},
 		"msg": {
-			"noVersions": "No Project Versions related to this Date",
+			"noVersions": "No Project Versions matching these Criteria",
 			"errorNoMatchingProjects": "No VISBO Projects for this Timestamp or Filter"
 		}
 	},
@@ -1550,6 +1579,7 @@
 			"changeVPVariant": "Change all available to this Variant"
 		},
 		"btn": {
+			"viewStratRisk": "StrategicFit - Risk - Metric",
 			"viewKeyMetrics": "Project Metric",
 			"viewTopWorse" : "Best / Worst",
 			"viewCapacity": "Capacity",
@@ -1609,7 +1639,7 @@
 		},
 		"msg": {
 			"noProjectList": "This portfolio does not have a project list",
-			"noVersions": "No Project Versions related to these criterias",
+			"noVersions": "No Project Versions matching these Criteria",
 			"errorPermVP": "No Permission for this Projects",
 			"errorPermVersion": "No Permission for VISBO Project Version {{name}}",
 			"errorVPFPerm": "No Permission for VISBO Portfolio {{name}} List"
