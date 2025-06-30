@@ -116,25 +116,25 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
       'width': '100%',
       'height': 600,    
       'vAxis': {
-        'baseline': 0,
+        'baseline': 5,
         'minValue': -1,
-        'maxValue': 10,
+        'maxValue': 11,
         'direction': -1,
         'format': "",
         'title': 'Strategic Fit',
         'baselineColor': 'blue'
       },
       'hAxis': {
-        'minValue': 0,
+        'minValue': -1,
         'maxValue': 11,
-        'baseline': 1,
+        'baseline': 5,
         'direction': -1,
         'format': "# '%'",
         'title': 'Risk',
         'baselineColor': 'blue'
       }, 
       'sizeAxis': {
-        'minSize': 30,
+        'minSize': 0,
         'maxSize': 30
       },    
       'explorer': {
@@ -582,7 +582,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     } else {
       this.graphBubbleOptions.bubble.textStyle.fontSize = 13;
     }
-    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Profit in T\u20AC']);
+    keyMetrics.push(['ID', this.getMetric(this.metricX).bubble, this.getMetric(this.metricY).bubble, 'Key Metrics Status','Profit/Loss in T\u20AC']);
     for (let item = 0; item < this.visbokeymetrics.length; item++) {
       // a project without any baseline but with strategicFit and risk values will be shown in the chart as well
       // if (!this.visbokeymetrics[item].keyMetrics) {
@@ -600,13 +600,13 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
             valueX = customFieldStrat.value;
           } else {
             valueX = 0;
-          }       
+          };           
           if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
-            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
           }
-          colorValue = this.getProfitCategory(this.vpProfit);
+          colorValue = this.getProfitCategory(this.vpProfit);  
           break;
         case 'Risk':
           const customFieldRisk = getCustomFieldDouble(this.visbokeymetrics[item].vp, '_risk');
@@ -614,13 +614,13 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
               valueX = customFieldRisk.value;
           } else {
             valueX = 0;
-          }        
-            if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
+          };             
+          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
           }
-          colorValue = this.getProfitCategory(this.vpProfit);
+          colorValue = this.getProfitCategory(this.vpProfit);   
           break;
       }
       switch (this.metricY) {
@@ -631,7 +631,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
             valueY = customFieldStrat.value;
           } else {
             valueY = 0;
-          }   
+          };
           if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
@@ -645,13 +645,14 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
               valueY = customFieldRisk.value;
           } else {
             valueY = 0;
-          }      
+          };
+           
           if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
             this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
           }   else {
             this.vpProfit = 0
           }
-          colorValue = this.getProfitCategory(this.vpProfit);
+          colorValue = this.getProfitCategory(this.vpProfit);  
           break;
       }
 
@@ -661,7 +662,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         valueY,
         this.colorMetric[colorValue].name, 
         //(this.vpProfit/this.visbokeymetrics[item].keyMetrics.costCurrentTotal) || 1,
-        this.vpProfit
+        Math.abs(this.vpProfit)
         //Math.round((this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal))
         // Math.round(this.visbokeymetrics[item].keyMetrics.costCurrentTotal || 1),
         // Math.round(this.visbokeymetrics[item].keyMetrics.RACCurrent|| 1)    
@@ -679,37 +680,40 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
     this.graphBubbleOptions.hAxis.title = this.getMetric(this.metricX).axis;
     switch (this.metricX) {
       case 'StrategicFit':
-        this.graphBubbleOptions.hAxis.baseline = 10;
+        this.graphBubbleOptions.hAxis.baseline = 5;
         this.graphBubbleOptions.hAxis.direction = 1;
         this.graphBubbleOptions.hAxis.format = "# "; 
-        this.graphBubbleOptions.hAxis.minValue = 0;
+        this.graphBubbleOptions.hAxis.minValue = -1;
         this.graphBubbleOptions.hAxis.maxValue = 11;
-
+        this.graphBubbleOptions.hAxis.gridlines = { count: 12 };
         break;
       case 'Risk':
-        this.graphBubbleOptions.hAxis.baseline = 10;
+        this.graphBubbleOptions.hAxis.baseline = 5;
         this.graphBubbleOptions.hAxis.direction = -1;
         this.graphBubbleOptions.hAxis.format = "# ";
         this.graphBubbleOptions.hAxis.minValue = -1;
-        this.graphBubbleOptions.hAxis.maxValue = 10;
+        this.graphBubbleOptions.hAxis.maxValue = 11;
+        this.graphBubbleOptions.hAxis.gridlines = { count: 12 };
         break;
     }
 
     this.graphBubbleOptions.vAxis.title = this.getMetric(this.metricY).axis;
     switch (this.metricY) {
       case 'StrategicFit':
-        this.graphBubbleOptions.vAxis.baseline = 10;
+        this.graphBubbleOptions.vAxis.baseline = 5;
         this.graphBubbleOptions.vAxis.direction = 1;
         this.graphBubbleOptions.vAxis.format = "# ";
-        this.graphBubbleOptions.vAxis.minValue = 0;
+        this.graphBubbleOptions.vAxis.minValue = -1;
         this.graphBubbleOptions.vAxis.maxValue = 11;
+        this.graphBubbleOptions.vAxis.gridlines = { count: 12 };
         break;
       case 'Risk':
-        this.graphBubbleOptions.vAxis.baseline = 10;
+        this.graphBubbleOptions.vAxis.baseline = 5;
         this.graphBubbleOptions.vAxis.direction = -1;
         this.graphBubbleOptions.vAxis.format = "# ";
         this.graphBubbleOptions.vAxis.minValue = -1;
-        this.graphBubbleOptions.vAxis.maxValue = 10;
+        this.graphBubbleOptions.vAxis.maxValue = 11;
+        this.graphBubbleOptions.vAxis.gridlines = { count: 12 };
         break;
     }
 
