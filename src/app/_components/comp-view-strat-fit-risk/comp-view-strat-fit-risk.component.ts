@@ -134,7 +134,7 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
         'baselineColor': 'blue'
       }, 
       'sizeAxis': {
-        'minSize': 0,
+        'minSize': -50,
         'maxSize': 30
       },    
       'explorer': {
