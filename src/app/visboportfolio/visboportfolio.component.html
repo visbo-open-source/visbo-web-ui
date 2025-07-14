@@ -116,11 +116,11 @@
   </div> 
   <div *ngIf="pageParams.view == 'Costtype' && vpActive && vpfActive && vcOrga">
     <hr>
-    <app-comp-viewcosttype [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcosttype>
+    <app-comp-viewcosttype [vpActive]="vpActive" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcosttype>
   </div>
   <div *ngIf="pageParams.view == 'Capacity' && vpActive && vpfActive && vcOrga">
     <hr>
-    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
+    <app-comp-viewcapacity [vpActive]="vpActive" [vpfActive]="vpfActive" [visboprojectversions]="listVPV" [vcOrganisation]="vcOrga[0]" [refDate]="vpvRefDate" [listVP] = "listVP" [customize]="customize" [combinedPerm]="combinedPerm"></app-comp-viewcapacity>
   </div>
   <div *ngIf="pageParams.view == 'KeyMetrics' && vpfActive && listVPV">
     <hr>
