@@ -600,12 +600,16 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
             valueX = customFieldStrat.value;
           } else {
             valueX = 0;
-          };           
-          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
-            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          }   else {
-            this.vpProfit = 0
-          }
+          }; 
+          if (this.visbokeymetrics[item].keyMetrics) {
+              if (!this.visbokeymetrics[item].keyMetrics.RACCurrent) {
+                this.visbokeymetrics[item].keyMetrics.RACCurrent = 0
+              }
+               if (!this.visbokeymetrics[item].keyMetrics.costCurrentTotal) {
+                this.visbokeymetrics[item].keyMetrics.costCurrentTotal = 0
+              }
+              this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;
+          }               
           colorValue = this.getProfitCategory(this.vpProfit);  
           break;
         case 'Risk':
@@ -614,12 +618,21 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
               valueX = customFieldRisk.value;
           } else {
             valueX = 0;
-          };             
-          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
-            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          }   else {
-            this.vpProfit = 0
-          }
+          };     
+          if (this.visbokeymetrics[item].keyMetrics) {
+            if (!this.visbokeymetrics[item].keyMetrics.RACCurrent) {
+              this.visbokeymetrics[item].keyMetrics.RACCurrent = 0
+            }
+              if (!this.visbokeymetrics[item].keyMetrics.costCurrentTotal) {
+              this.visbokeymetrics[item].keyMetrics.costCurrentTotal = 0
+            }
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;
+          }                       
+          // if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent >= 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >=  0 ){
+          //   this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          // }   else {
+          //   this.vpProfit = 0
+          // }
           colorValue = this.getProfitCategory(this.vpProfit);   
           break;
       }
@@ -632,11 +645,20 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           };
-          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
-            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          }   else {
-            this.vpProfit = 0
-          }
+          if (this.visbokeymetrics[item].keyMetrics) {
+            if (!this.visbokeymetrics[item].keyMetrics.RACCurrent) {
+              this.visbokeymetrics[item].keyMetrics.RACCurrent = 0
+            }
+              if (!this.visbokeymetrics[item].keyMetrics.costCurrentTotal) {
+              this.visbokeymetrics[item].keyMetrics.costCurrentTotal = 0
+            }
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;
+          }               
+          // if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent >= 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >=  0 ){
+          //   this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          // }   else {
+          //   this.vpProfit = 0
+          // }
           colorValue = this.getProfitCategory(this.vpProfit);
           break;
         case 'Risk':
@@ -646,12 +668,20 @@ export class CompViewStratFitRiskComponent implements OnInit, OnChanges {
           } else {
             valueY = 0;
           };
-           
-          if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent > 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >  0 ){
-            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
-          }   else {
-            this.vpProfit = 0
+          if (this.visbokeymetrics[item].keyMetrics) {
+            if (!this.visbokeymetrics[item].keyMetrics.RACCurrent) {
+              this.visbokeymetrics[item].keyMetrics.RACCurrent = 0
+            }
+              if (!this.visbokeymetrics[item].keyMetrics.costCurrentTotal) {
+              this.visbokeymetrics[item].keyMetrics.costCurrentTotal = 0
+            }
+            this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent - this.visbokeymetrics[item].keyMetrics.costCurrentTotal;
           }
+          // if (this.visbokeymetrics[item].keyMetrics && (this.visbokeymetrics[item].keyMetrics.RACCurrent >= 0) && (this.visbokeymetrics[item].keyMetrics.costCurrentTotal) >=  0 ){
+          //   this.vpProfit = this.visbokeymetrics[item].keyMetrics.RACCurrent- this.visbokeymetrics[item].keyMetrics.costCurrentTotal;  
+          // }   else {
+          //   this.vpProfit = 0
+          // }
           colorValue = this.getProfitCategory(this.vpProfit);  
           break;
       }
