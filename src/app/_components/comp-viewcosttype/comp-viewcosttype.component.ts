@@ -117,11 +117,11 @@ export class CompViewcosttypeComponent implements OnInit, OnChanges {
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission; 
+  @Input() visboprojectversions: VisboProjectVersion[];
 
   lastTimestampVPF: Date;
   visboCost: VisboCosttypes[];
   visboCostChild: VisboCosttypes[];
-  visboprojectversions: VisboProjectVersion[];
   visboprojectsversions_filtered: VisboProjectVersion[];
  
   timeoutID: ReturnType<typeof setTimeout>;
