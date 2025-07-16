@@ -346,6 +346,7 @@
 			"viewKanbanBoard": "KanbanBoard",
 			"viewList": "Liste",
 			"create": "Hinzufügen",
+			"createVPOP": "Add from OP",
 			"save": "Speichern",
 			"cancel": "Abbrechen"
 		},
@@ -709,7 +710,7 @@
 			"errorPermVersion": "Keine Berechtigung für VISBO Projekt Versionen {{name}}",
 			"viewWeb": "Anzeige des Projekts Online",
 			"localInstallationRequired": "Installation der VISBO Clients erforderlich",
-			"visboOpenProjectBridgeRequired": "Installation der VISBO - OpenProject - Bridge erforderlich",			
+			"visboOpenProjectBridgeRequired": "Die Verwendung der VISBO - OpenProject - Bridge erfolgte mit Fehler",			
 			"importVPVFromOpenProjError": "Von OpenProject importierte Projekt Version konnte nicht gespeichert (nicht valide)!"
 		}
 	},
@@ -1136,6 +1137,35 @@
 			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
 		}
 	},
+	"compViewStratRisk": {
+		"titleChange": "Ändern der Kennzahlen",
+		"lbl": {
+			"nr": "Nr.",
+			"nrProjects": "Anzahl Projekte",			
+			"vpStatus": "Status",
+			"bu": "Programm",
+			"filter": "Filter Projekte",
+			"all": "Alle"
+		},
+		"btn": {			
+			"exportExcel": "Excel"
+		},
+		"metric": {
+			"financialSummary": "Finanzübersicht",		
+			"StratFit": "StrategicFit",
+			"StratAxis": "Strategic Fit",
+			"StratBubble": "Strategie-Einschätzung",
+			"StratTable": "Strategie",
+			"Risk": "Risiko",
+			"RiskAxis": "Risiko",
+			"RiskBubble": "Risiko-Bewertung",
+			"RiskTable": "Risiko"
+		},
+		"msg": {
+			"noVersions": "Keine Projekte zu diesen Kriterien",
+			"errorNoMatchingProjects": "Keine VISBO Projekte zu diesem Zeitpunkt oder Filter"
+		}
+	},
 	"compViewVpf": {
 		"titleChange": "Ändern der Kennzahlen",
 		"lbl": {
@@ -1549,6 +1579,7 @@
 			"changeVPVariant": "Ändere alle verfügbaren auf diese Variante"
 		},
 		"btn": {
+			"viewStratRisk": "Strategie - Risiko - Metrik",
 			"viewKeyMetrics": "Projekt Metrik",
 			"viewTopWorse" : "Beste / Schlechteste Option",
 			"viewCapacity": "Auslastung",

@@ -1,0 +1,116 @@
+<!-- <p>comp-view-strat-fit-risk works!</p> -->
+<div *ngIf="visbokeymetrics" class='well' (resized)="onResized($event)">
+  <div class="row row-cols-1 row-cols-lg-2">
+    <div class="col col-sm-12 col-lg-8">     
+      <div *ngIf="filter || !getPreView()" class='container-fluid text-dark'>
+        <div class="my-1 row">
+          <div class="ml-2">
+            <span> {{ 'compViewStratRisk.lbl.filter' | translate }}:</span>
+            <input class="ml-2 col-form-control" type="text" (keyup)="filterKeyBoardEvent($event)" [(ngModel)]="filter" placeholder="Filter">
+          </div>
+          <span *ngIf="dropDownVPStatus && filterVPStatusIndex >= 0" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewStratRisk.lbl.vpStatus' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);">{{ getVPStatus(true) }}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownVPStatus; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventVPStatus(itemIndex)">{{ item.localName }}</div>
+              </a>
+            </div>
+          </span>          
+          <span *ngIf="dropDownBU" class="dropdown ml-2 my-1 d-print-none">
+            <span> {{ 'compViewStratRisk.lbl.bu' | translate }}: </span>
+            <a class="dropdown-toggle" data-toggle="dropdown" style="background-color: rgb(232, 232, 232);" >{{filterBU}}</a>
+            <div class="dropdown-menu">
+              <a *ngFor="let item of dropDownBU; let itemIndex = index" class="dropdown-item">
+                <div class="dropdown-item" (click)="filterEventBU(itemIndex)">{{ item }}</div>
+              </a>
+            </div>
+          </span> 
+          <div class="ml-2">
+            <button type="button" class="btn btn-md btn-light my-0 py-1" id="exportExcel" (click)='exportExcel()'>
+              {{ 'compViewStratRisk.btn.exportExcel' | translate }}
+            </button>
+          </div>
+        </div>
+        <div> {{ 'compViewStratRisk.lbl.nrProjects' | translate }}:   
+            <span class="align-right">
+              <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: visbokeymetrics.length < visboprojectversions.length ? 2 : 1}"></ng-container></strong>
+              {{visbokeymetrics.length}} / {{visboprojectversions.length}}
+            </span> 
+        </div>        
+      </div>
+    </div>
+
+    <div *ngIf="visbokeymetrics.length > 0 && hasKMCost" class="col-sm-12 col-md-10 col-lg-4 card align-right px-0">
+      <h5 class="card-header p-2">
+        <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getFinancalLevel(profitCurrent) }"></ng-container></strong>
+        {{ 'compViewStratRisk.metric.financialSummary' | translate }}
+      </h5>
+      <div class="card-body p-2">       
+        <div class="row">
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longEAC' | translate }}">   
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(estimateAtCompletion, budgetAtCompletion)}"></ng-container></strong>         
+            {{ 'keyMetrics.longCostBaseCurr' | translate }} 
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{ budgetAtCompletion | number:'1.0-0'}} T€
+             / {{estimateAtCompletion | number:'1.0-0'}} T€
+          </div>
+        </div>
+        <!-- ur: new for Profit line -->
+        <div class="row">
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getLevel(RACSumBaseline, RACSumCurrent)}"></ng-container></strong>
+            {{ 'keyMetrics.longRACBaseCurr' | translate }} 
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{RACSumBaseline | number:'1.0-0'}} T€
+             / {{RACSumCurrent | number:'1.0-0'}} T€
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-sm-8" title="{{ 'keyMetrics.longRAC' | translate }}">
+            <strong class="mr-1"><ng-container *ngTemplateOutlet="indicator; context:{level: getProfitLevel(profitCurrent, profitBaseline)}"></ng-container></strong>
+            {{ 'keyMetrics.longProfitBaseCurr' | translate }} 
+          </div>
+          <div class="col col-sm-4 text-right">
+            {{profitBaseline | number:'1.0-0'}} T€
+             / {{profitCurrent | number:'1.0-0'}} T€
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div *ngIf="chart" class='container-fluid'>
+      <div *ngIf="countKM > 0 && graphBubbleData">
+        <app-bubble-chart [graphData]="graphBubbleData" [graphOptions]="graphBubbleOptions" [parentThis]="parentThis" [language]="currentLang"></app-bubble-chart>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="visbokeymetrics.length == 0">
+    <h3 class="d-flex justify-content-center">
+      {{ 'compViewStratRisk.msg.noVersions' | translate }}
+    </h3>
+  </div>
+</div>
+
+<ng-template #cardRow let-label="label" let-title="title" let-value="value">
+  <div class="row">
+    <div class="col col-sm-8" title="{{title | translate}}">
+      {{label | translate }}
+    </div>
+    <div class="col col-sm-4 text-right">
+      {{value}}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #indicator let-level="level">
+  <i class="fa" [ngClass]="{'fa-check-circle text-success': level == 1, 'fa-exclamation-triangle text-warning': level == 2, 'fa-exclamation-circle text-danger': level == 3}"></i>
+</ng-template>
+
+<ng-template #trafficLight let-level="level">
+  <i class="fas fa-lightbulb" [ngClass]="{'text-secondary': level == 0, 'text-success': level == 1, 'text-warning': level == 2, 'text-danger': level == 3}"></i>
+</ng-template>

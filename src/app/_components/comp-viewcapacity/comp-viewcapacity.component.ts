@@ -135,11 +135,11 @@ export class VisboCompViewCapacityComponent implements OnInit, OnChanges {
   @Input() vcOrganisation: VisboOrganisation;
   @Input() refDate: Date;
   @Input() combinedPerm: VGPermission; 
+  @Input() visboprojectversions: VisboProjectVersion[];
 
   lastTimestampVPF: Date;
   visboCapacity: VisboCapacity[];
   visboCapacityChild: VisboCapacity[];
-  visboprojectversions: VisboProjectVersion[];
   visboprojectsversions_filtered: VisboProjectVersion[];
 
   capaLoad: CapaLoad[];  

@@ -1847,7 +1847,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
   // If the import fails, an error message is displayed based on the response status.
   importVPVFromOpenProject(): void {
     this.log(`Import VPV ${this.vpActive.name} Variant ${this.OPVariant} from OpenProject`);
-    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive.vcid ,this.vpActive._id, "")
+    this.visboprojectversionService.importVPVFromOpenProj(this.vpActive.vcid ,this.vpActive._id, "", true)
       .subscribe(
         data => { 
           if (data && (data.success == false)) {
@@ -1867,8 +1867,9 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.importVPVFromOpenProjSuccess');
             this.alertService.success(message, true);
-            this.addVPVtoList(data);
-            this.switchVariant(data.variantName);
+            const vpv = data.vpv;
+            this.addVPVtoList(vpv);
+            this.switchVariant(vpv.variantName);
           }
         },    
         error => {
@@ -1881,7 +1882,7 @@ export class VisboProjectKeyMetricsComponent implements OnInit, OnChanges {
               this.alertService.error(message);            
           } else {
             const message = this.translate.instant('vpKeyMetric.msg.visboOpenProjectBridgeRequired');
-            this.alertService.error(message + error.status);
+            this.alertService.error(message + " " + error.status);
           }
         }
       );
