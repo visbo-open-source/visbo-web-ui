@@ -22,8 +22,8 @@ export class VisboProjectVersionService {
 
   private vpvUrl = this.env.restUrl.concat('/vpv'); // URL to web api
   private vpfUrl = this.env.restUrl.concat('/vp');  // URL to web api
-  //private openProjURL = this.env.openProjUrl;
-  private openProjURL = 'http://localhost:3000';
+  private openProjURL = this.env.openProjUrl;
+  //private openProjURL = 'http://localhost:3000';
 
   constructor(
     private http: HttpClient,
