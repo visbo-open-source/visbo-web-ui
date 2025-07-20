@@ -4,6 +4,7 @@ export class EnvService {
   // be overridden by env.js
 
   // API url
+  //public restUrl = 'http://localhost:3484';
   public restUrl = 'https://dev.visbo.net/api';
   //public openProjUrl = 'http://localhost:3000';
   public openProjUrl = 'https://openproject.visbo.net';

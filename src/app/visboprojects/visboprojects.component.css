@@ -36,3 +36,15 @@
   border: 1px solid #ddd; /* Add a grey border */
   margin-bottom: 0px; /* Add some space below the input */
 }
+#CreateVPOPen {  
+  width: 100px; 
+  white-space: nowrap;
+  font-size: 16px; /* Increase font-size */
+  padding: 10px 12px 10px 12px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 0px; /* Add some space below the input */
+}
+#CreateVPOP {
+  white-space: nowrap;
+  text-align: center;
+}
