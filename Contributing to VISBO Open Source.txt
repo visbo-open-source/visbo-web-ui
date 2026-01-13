@@ -10,8 +10,8 @@ Thomas Koytek, VISBO Founder, Email: thomas.koytek@visbo.de
 
 The VISBO founder will collaborate with our preferred partner, WTT Solutions (Ukraine), to coordinate the processing of pull requests, the review of contributions, and the overall management of the open-source development process.
 
-All VISBO software is provided strictly on an �AS IS� basis.
-No warranties, guarantees, or assurances of any kind�whether express, implied, statutory, or otherwise�are provided.
+All VISBO software is provided strictly on an ÂAS ISÂ basis.
+No warranties, guarantees, or assurances of any kindÂwhether express, implied, statutory, or otherwiseÂare provided.
 This includes, but is not limited to, warranties of merchantability, fitness for a particular purpose, non-infringement, or continuous availability of the software or repositories.
 By using, contributing to, or redistributing VISBO software, you acknowledge and accept these conditions.
 
@@ -21,16 +21,28 @@ Harassment, discrimination, or disrespectful behaviour will not be tolerated.
 By participating in this project, you agree to follow these principles.
 
 # 3. Contributor License Agreement (CLA)
-Please be aware, that with submitting code, you **herewidth  agree to the VISBO Contributor License Agreement (CLA)**:
-**See: `CLA.md`**
-The CLA ensures that:
-- You keep full ownership of your contributions.  
-- VISBO receives a license to use your contribution *only* within the open-source version (AGPL v3 + Commons Clause).  
-- VISBO does **not** automatically receive commercial rights to your contribution.  
-- VISBO may independently develop features similar to yours without legal conflict.  
-- You grant VISBO the option to request a commercial license separately, which you may accept or decline.
 
-Important: Submitting a pull request automatically indicates your acceptance of the CLA.
+By submitting any Contribution to a VISBO repository, you **explicitly agree** to the
+VISBO Contributor License Agreement (CLA):
+
+**See: `CLA.md`**
+
+The current CLA ensures that:
+
+- You retain authorship of your Contribution.
+- You grant VISBO GmbH **and any future acquiring entity** a perpetual, irrevocable,
+  worldwide, royalty-free right to **use, modify, distribute, sublicense, and commercialize**
+  your Contribution.
+- VISBO and/or an acquiring entity may use your Contribution in
+  proprietary, closed-source, SaaS, OEM, or otherwise commercial products.
+- No compensation, royalty, or revenue share is owed to the Contributor.
+- VISBO may relicense Contributions under open-source or commercial terms at its discretion.
+
+Important:
+Submitting a pull request, commit, or any other form of Contribution constitutes
+**automatic and binding acceptance** of the CLA, without the need for a handwritten
+or digital signature.
+
 
 # 4. How to Contribute Code
 ## 4.1 Fork the Repository
@@ -54,6 +66,52 @@ Please ensure:
 * ESLint / Prettier / TypeScript or Java conventions are respected (per repo)
 * Tests are included if applicable
 * Commit messages describe why the change was made, not only what
+
+
+# 4.4 Linting (Required before Pull Requests)
+
+VISBO uses **ESLint** to ensure consistent code quality and to detect potential errors early.
+
+Before submitting a Pull Request, contributors are **strongly encouraged** to run ESLint
+on the files they have changed.
+
+## Configuration
+The repository contains:
+- **.eslintrc.cjs** â Safe ESLint configuration for Node.js / Express (CommonJS)
+- **.eslintignore** â Defines files and folders excluded from linting
+
+## Lint Commands
+
+Lint the complete project (no auto-fix):
+```
+npm run lint -- .
+```
+
+Lint a specific folder:
+```
+npm run lint -- components/
+npm run lint -- routes/
+```
+
+Lint a single file:
+```
+npm run lint -- components/timeTracker.js
+```
+
+Apply automatic fixes (recommended only for specific files or folders):
+```
+npm run lint:fix -- components/timeTracker.js
+```
+
+## Best Practices
+- Always commit your work before running `lint:fix`
+- Review all changes using `git diff`
+- Apply fixes incrementally (file by file)
+- Avoid large formatting-only pull requests
+
+Pull Requests that introduce new ESLint errors may be requested to be updated
+before review or merge.
+
 
 4. Submitting a Pull Request
 4.1 Push Your Branch
