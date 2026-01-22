@@ -6,12 +6,12 @@ This document explains how to contribute code, documentation, bug reports, and f
 
 #1 Preamble
 Organizations that are interested in acquiring the intellectual property (IP) and software rights of VISBO are kindly requested to contact the VISBO  Founder and Managing Director 
-Thomas Koytek, VISBO Founder, Email: thomas.koytek@visbo.de
+Thomas Koytek, VISBO Founder nad Liquidator of VISBO i.L , Email: thomas.koytek@visbo.de
 
-The VISBO founder will collaborate with our preferred partner, WTT Solutions (Ukraine), to coordinate the processing of pull requests, the review of contributions, and the overall management of the open-source development process.
+VISBO GmbH is currently in liquidation. Response capacity may therefore be limited. VISBO is actively seeking an acquirer for the software assets who will assume responsibility for further development and support. 
 
-All VISBO software is provided strictly on an ÂAS ISÂ basis.
-No warranties, guarantees, or assurances of any kindÂwhether express, implied, statutory, or otherwiseÂare provided.
+All VISBO software is provided strictly on an "as-is" basis.
+No warranties, guarantees, or assurances of any Kind whether express, implied, statutory, or otherwise are provided.
 This includes, but is not limited to, warranties of merchantability, fitness for a particular purpose, non-infringement, or continuous availability of the software or repositories.
 By using, contributing to, or redistributing VISBO software, you acknowledge and accept these conditions.
 
@@ -63,12 +63,12 @@ Examples:
 Please ensure:
 * Code is clean, readable, and well-structured
 * Public functions and APIs are documented
-* ESLint / Prettier / TypeScript or Java conventions are respected (per repo)
+* for visbo server and web-ui only: ESLint / Prettier / TypeScript or Java conventions are respected (per repo)
 * Tests are included if applicable
 * Commit messages describe why the change was made, not only what
 
 
-# 4.4 Linting (Required before Pull Requests)
+# 4.4 Linting (Required before Pull Requests) (applies only for visbo Server and web-ui) 
 
 VISBO uses **ESLint** to ensure consistent code quality and to detect potential errors early.
 
@@ -122,7 +122,7 @@ In the PR, please include:
 * The problem it solves
 * Screenshots (if UI-related)
 * Notes on testing or potential impact
-A VISBO/WTT maintainer will review the PR, discuss improvements if needed, and merge it once ready.
+A VISBO or other maintainer will review the PR, discuss improvements if needed, and merge it once ready.
 
 5. Reporting Bugs
 Please open a GitHub Issue and include:
@@ -143,14 +143,13 @@ Please open a GitHub Issue tagged enhancement and describe:
 
 
 7. Development Setup
-Each VISBO repository includes a detailed local setup guide in its specific README.md.
+Each VISBO repository includes a detailed local setup guide in the ./admin-doc section.
 
 8. Security Issues
 If you discover a security vulnerability, do not file a public issue.
 Instead, contact us directly:
 security@visbo.de
 (or, if not yet active, temporarily: info@visbo.de)
-We will handle all disclosures responsibly.
 
 9. Communication and Questions
 If you need help:
@@ -158,5 +157,3 @@ If you need help:
 * Use GitHub Issues for technical questions
 * Or email us at info@visbo.de
 We appreciate your support and contributions.
-Thank you for helping VISBO grow and evolve!
-
